@@ -624,7 +624,7 @@ function filterTextExact(text: string) {
 
 function filterText(regex: string) {
   try {
-    const re = new RegExp(regex, "i");
+    const re = new RegExp(regex);
 
     return (card: Card) => {
       return (
