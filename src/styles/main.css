@@ -95,17 +95,19 @@
   --palette-5: var(--nord-5);
   --palette-6: var(--nord-6);
 
-  --text: var(--palette-4);
   --color-guardian: var(--guardian);
   --color-mystic: var(--mystic);
   --color-rogue: var(--rogue);
   --color-seeker: var(--seeker);
   --color-survivor: var(--survivor);
   --color-multiclass: var(--multiclass);
+
+  --text: var(--palette-4);
   --text-mythos: var(--mythos);
   --text-neutral: var(--neutral);
 
   --color-inverted: var(--nord-6);
+  --focus: var(--nord-6);
 
   --willpower: #2c7fc0;
   --intellect: #7c3c85;
@@ -134,19 +136,22 @@
   --palette-5: var(--nord-2);
   --palette-6: var(--nord-1);
 
-  --text: var(--nord-1);
   --color-guardian: var(--guardian-dark);
   --color-mystic: var(--mystic-dark);
   --color-rogue: var(--rogue-dark);
   --color-seeker: var(--seeker-dark);
   --color-survivor: var(--survivor-dark);
   --color-multiclass: var(--multiclass-dark);
+
+  --text: var(--nord-1);
   --text-mythos: var(--mythos-dark);
   --text-neutral: var(--neutral-dark);
 
   --color-inverted: var(--white);
   --color-scrollbar-thumb: #969ba5;
   --color-scrollbar: rgba(0, 0, 0, 0.05);
+
+  --focus: var(--text);
 
   --willpower: #165385;
   --intellect: #7a2d6c;
@@ -238,6 +243,10 @@ a {
   color: var(--nord-9);
   text-decoration: underline;
   text-decoration-style: dotted;
+
+  &:focus-visible {
+    outline: 1px solid var(--focus);
+  }
 }
 
 small,
@@ -324,7 +333,7 @@ select {
   }
 
   &:focus-visible {
-    outline: 1px solid var(--palette-6);
+    outline: 1px solid var(--focus);
   }
 }
 

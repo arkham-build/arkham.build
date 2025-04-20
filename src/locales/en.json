@@ -32,6 +32,7 @@
         "open_on_arkhamdb": "Open on ArkhamDB",
         "reviews": "View reviews",
         "usable_by": "Card pool: {{prefix}}{{name}}",
+        "usable_by_interpolated": "Card pool: <tooltip>{{name}}</tooltip>",
         "view_backside": "Backside",
         "who_can_take": "Who can take this card?"
       },

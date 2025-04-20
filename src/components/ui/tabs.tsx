@@ -113,6 +113,7 @@ export function TabsContent({
       )}
       forceMount={forceMount}
       {...rest}
+      tabIndex={-1}
     >
       {children}
     </Content>

@@ -1,0 +1,8 @@
+.card-link {
+  background-color: transparent;
+  color: var(--accent-color);
+  font-size: inherit;
+  font-weight: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}

@@ -32,6 +32,7 @@
         "open_on_arkhamdb": "Открыть на ArkhamDB",
         "reviews": "Посмотреть отзывы",
         "usable_by": "Доступные карты: {{prefix}}{{name}}",
+        "usable_by_interpolated": "Доступные карты: <tooltip>{{name}}</tooltip>",
         "view_backside": "Оборотная сторона",
         "who_can_take": "Кто может взять?"
       },

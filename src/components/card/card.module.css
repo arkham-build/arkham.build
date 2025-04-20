@@ -240,8 +240,8 @@
   text-decoration: none;
   text-shadow: inherit;
 
-  &:hover,
-  &:focus {
+  &:hover:not(span),
+  &:focus:not(span) {
     text-decoration: underline;
   }
 }

@@ -21,9 +21,15 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  -webkit-text-fill-color: var(--color-inverted);
-  -webkit-text-stroke: 2px currentColor;
-  paint-order: stroke fill;
   transform: translateX(-50%) translateY(calc(-50% - 0.125rem));
   font-size: 0.875em;
+  color: var(--color-inverted);
+
+  /** Chrome < 123 has a bug with paint-order, but lists is as supported. We use a feature with similar browser support as proxy check */
+  @supports (text-wrap-style: balance) {
+    -webkit-text-fill-color: var(--color-inverted);
+    -webkit-text-stroke: 2px currentColor;
+    color: currentColor;
+    paint-order: stroke fill;
+  }
 }

@@ -1,5 +1,4 @@
 import { CardListContainer } from "@/components/card-list/card-list-container";
-import { CardModalProvider } from "@/components/card-modal/card-modal-context";
 import { Filters } from "@/components/filters/filters";
 import { Masthead } from "@/components/masthead";
 import { Button } from "@/components/ui/button";
@@ -60,55 +59,50 @@ export function ListLayoutNoSidebar(props: Props) {
   }, [floatingFilters, setFiltersOpen]);
 
   return (
-    <CardModalProvider>
-      <div
-        className={cx(
-          css["layout"],
-          floatingMenuOpen && css["floating-menu-open"],
-          "fade-in",
-        )}
-        onPointerDown={onContentClick}
+    <div
+      className={cx(
+        css["layout"],
+        floatingMenuOpen && css["floating-menu-open"],
+        "fade-in",
+      )}
+      onPointerDown={onContentClick}
+    >
+      <Masthead className={css["masthead"]}>
+        <Button onClick={goBack} variant="bare" size="sm">
+          <ChevronLeftIcon /> {t("common.back")}
+        </Button>
+      </Masthead>
+      <main
+        className={cx(css["content"], !filtersOpen && css["collapsed-filters"])}
       >
-        <Masthead className={css["masthead"]}>
-          <Button onClick={goBack} variant="bare" size="sm">
-            <ChevronLeftIcon /> {t("common.back")}
-          </Button>
-        </Masthead>
-        <main
-          className={cx(
-            css["content"],
-            !filtersOpen && css["collapsed-filters"],
-          )}
-        >
-          <CardListContainer
-            {...rest}
-            slotRight={
-              !filtersOpen && (
-                <Button
-                  className={css["toggle-filters"]}
-                  onClick={() => setFiltersOpen(true)}
-                  iconOnly
-                  size="lg"
-                >
-                  <FilterIcon />
-                </Button>
-              )
-            }
-            topContent={
-              <header className={css["header"]}>
-                <h1 className={css["title"]}>{title ?? titleString}</h1>
-              </header>
-            }
-          />
-        </main>
-        <nav
-          className={cx(css["filters"], floatingFilters && css["floating"])}
-          data-state={filtersOpen ? "open" : "closed"}
-          onPointerDown={floatingFilters ? preventBubble : undefined}
-        >
-          <Filters />
-        </nav>
-      </div>
-    </CardModalProvider>
+        <CardListContainer
+          {...rest}
+          slotRight={
+            !filtersOpen && (
+              <Button
+                className={css["toggle-filters"]}
+                onClick={() => setFiltersOpen(true)}
+                iconOnly
+                size="lg"
+              >
+                <FilterIcon />
+              </Button>
+            )
+          }
+          topContent={
+            <header className={css["header"]}>
+              <h1 className={css["title"]}>{title ?? titleString}</h1>
+            </header>
+          }
+        />
+      </main>
+      <nav
+        className={cx(css["filters"], floatingFilters && css["floating"])}
+        data-state={filtersOpen ? "open" : "closed"}
+        onPointerDown={floatingFilters ? preventBubble : undefined}
+      >
+        <Filters />
+      </nav>
+    </div>
   );
 }

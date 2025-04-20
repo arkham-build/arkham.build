@@ -5,6 +5,7 @@ import { useStore } from "@/store";
 import { getAdditionalDeckOptions } from "@/store/lib/deck-validation";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { displayAttribute } from "@/utils/card-utils";
+import { cx } from "@/utils/cx";
 import { useHotkey } from "@/utils/use-hotkey";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -48,7 +49,13 @@ export function CardAccessToggles(props: Props) {
   });
 
   return (
-    <Field bordered className={css["card-access-toggles"]}>
+    <Field
+      bordered
+      className={cx(
+        css["card-access-toggles"],
+        (!showLimitedAccess || showUnusable) && css["active"],
+      )}
+    >
       {hasLimitedSlots(deck) && (
         <HotkeyTooltip
           keybind="alt+a"

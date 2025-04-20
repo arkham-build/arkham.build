@@ -32,6 +32,7 @@
         "open_on_arkhamdb": "Ouvrir sur ArkhamDB",
         "reviews": "Voir les avis",
         "usable_by": "Cartes utilisables par : {{prefix}}{{name}}",
+        "usable_by_interpolated": "Cartes utilisables par : <tooltip>{{name}}</tooltip>",
         "view_backside": "Voir le verso",
         "who_can_take": "Qui peut prendre cette carte ?"
       },

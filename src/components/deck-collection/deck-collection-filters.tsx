@@ -61,7 +61,6 @@ export function DeckCollectionFilters(props: Props) {
         />
         <Trigger asChild>
           <Button
-            as="a"
             data-testid="expand-deck-filters"
             tooltip={
               open
@@ -74,10 +73,6 @@ export function DeckCollectionFilters(props: Props) {
           </Button>
         </Trigger>
       </div>
-      <DeckSortingOptions
-        filteredCount={filteredCount}
-        totalCount={totalCount}
-      />
       <Content
         className={css["filters-container"]}
         data-testid="deck-filters-expanded"
@@ -91,6 +86,10 @@ export function DeckCollectionFilters(props: Props) {
         )}
         <DeckTagsFilter containerClass={css["filter"]} />
       </Content>
+      <DeckSortingOptions
+        filteredCount={filteredCount}
+        totalCount={totalCount}
+      />
     </Root>
   );
 }

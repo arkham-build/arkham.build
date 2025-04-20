@@ -32,6 +32,7 @@
         "open_on_arkhamdb": "아컴디비 사이트에서 열기",
         "reviews": "리뷰 보기",
         "usable_by": "{{prefix}}{{name}} 조사자가 접근 가능한 모든 카드 보기",
+        "usable_by_interpolated": "<tooltip>{{name}}</tooltip> 조사자가 접근 가능한 모든 카드 보기",
         "view_backside": "뒷면",
         "who_can_take": "이 카드에 접근 가능한 조사자 보기"
       },

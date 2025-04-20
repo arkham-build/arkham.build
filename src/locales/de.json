@@ -32,6 +32,7 @@
         "open_on_arkhamdb": "In ArkhamDB öffnen",
         "reviews": "Meinungen",
         "usable_by": "{{prefix}}{{name}} Kartenpool",
+        "usable_by_interpolated": "<tooltip>{{name}}</tooltip> Kartenpool",
         "view_backside": "Rückseite",
         "who_can_take": "Wer kann {{name}} verwenden?"
       },

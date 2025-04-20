@@ -187,6 +187,15 @@ export function CardGridItem(
     modalContext.setOpen({ code: card.code });
   }, [modalContext, card.code]);
 
+  const onPressEnter = useCallback(
+    (evt: React.KeyboardEvent) => {
+      if (evt.key === "Enter" && evt.target === evt.currentTarget) {
+        openModal();
+      }
+    },
+    [openModal],
+  );
+
   const quantity = quantities?.[card.code] ?? 0;
 
   return (
@@ -195,9 +204,13 @@ export function CardGridItem(
       key={card.code}
       data-component="card-group-item"
     >
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: no keyboard shortcuts needed here */}
-      {/* biome-ignore lint/a11y/noNoninteractiveTabindex: needs a tabIndex to avoid focus jumping to parent when modal opened. */}
-      <div className={css["group-item-scan"]} onClick={openModal} tabIndex={0}>
+      <div
+        className={css["group-item-scan"]}
+        onClick={openModal}
+        onKeyUp={onPressEnter}
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: needs a tabIndex to avoid focus jumping to parent when modal opened.
+        tabIndex={0}
+      >
         <CardScan card={card} lazy />
       </div>
       <div className={css["group-item-actions"]}>

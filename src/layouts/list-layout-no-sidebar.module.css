@@ -108,6 +108,10 @@
   grid-area: footer;
 }
 
+.title {
+  font-size: var(--text-2xl);
+}
+
 @starting-style {
   .filters.floating {
     transform: translateX(calc(100% + 1.5rem));

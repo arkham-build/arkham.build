@@ -59,6 +59,10 @@
   width: 100%;
   background: transparent;
   cursor: pointer;
+
+  &:focus-visible {
+    outline: 1px solid var(--focus);
+  }
 }
 
 .group-item-scan img {

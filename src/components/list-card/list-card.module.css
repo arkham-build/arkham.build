@@ -251,7 +251,7 @@
 }
 
 .listcard-wrapper.active {
-  outline: 1px solid var(--palette-6);
+  outline: 1px solid var(--focus);
   outline-offset: -1px;
 }
 

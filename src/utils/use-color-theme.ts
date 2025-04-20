@@ -1,5 +1,5 @@
 import i18n from "@/utils/i18n";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useMedia } from "./use-media";
 
 export function getAvailableThemes(): Record<string, string> {
@@ -12,52 +12,67 @@ export function getAvailableThemes(): Record<string, string> {
 
 const DEFAULT_THEME = "dark";
 
-function getPreference() {
+export function getColorThemePreference() {
   const pref = localStorage.getItem("color-scheme-preference");
   if (pref && getAvailableThemes()[pref]) return pref;
   return DEFAULT_THEME;
 }
 
-export function useColorTheme() {
-  const [pref, setPref] = useState(getPreference());
+function persistColorTheme(theme: string | null | undefined) {
+  localStorage.setItem("color-scheme-preference", theme ?? DEFAULT_THEME);
+}
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (pref === "dark") {
-      root.classList.remove("theme-light", "theme-system");
-      root.classList.add("theme-dark");
-    } else if (pref === "light") {
-      root.classList.remove("theme-dark", "theme-system");
-      root.classList.add("theme-light");
-    } else {
-      root.classList.remove("theme-dark", "theme-light");
-      root.classList.add("theme-system");
-    }
+function applyColorTheme(theme: string, prefersDarkMode: boolean) {
+  const root = document.documentElement;
+  if (theme === "dark") {
+    root.classList.remove("theme-light", "theme-system");
+    root.classList.add("theme-dark");
+  } else if (theme === "light") {
+    root.classList.remove("theme-dark", "theme-system");
+    root.classList.add("theme-light");
+  } else {
+    root.classList.remove("theme-dark", "theme-light");
+    root.classList.add("theme-system");
+  }
+  if (theme === "system") {
+    document.documentElement.dataset.theme = prefersDarkMode ? "dark" : "light";
+  } else {
+    document.documentElement.dataset.theme = theme;
+  }
+}
 
-    localStorage.setItem("color-scheme-preference", pref);
-  }, [pref]);
+export function applyStoredColorTheme() {
+  const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
+  const theme = getColorThemePreference();
+  applyColorTheme(theme, prefersDarkMode.matches);
+}
 
-  const isDarkMode = useMedia("(prefers-color-scheme: dark)");
+export function useColorThemeManager() {
+  const [currentTheme, setCurrentTheme] = useState(getColorThemePreference());
 
-  useEffect(() => {
-    if (pref === "system") {
-      document.documentElement.dataset.theme = isDarkMode ? "dark" : "light";
-    } else {
-      document.documentElement.dataset.theme = pref;
-    }
-  }, [pref, isDarkMode]);
+  const prefersDarkMode = useMedia("(prefers-color-scheme: dark)");
 
-  return [pref, setPref] as const;
+  const updateColorScheme = useCallback(
+    (value: string) => {
+      const nextTheme = value || DEFAULT_THEME;
+      setCurrentTheme(nextTheme);
+      persistColorTheme(nextTheme);
+      applyColorTheme(nextTheme, prefersDarkMode);
+    },
+    [prefersDarkMode],
+  );
+
+  return [currentTheme, updateColorScheme] as const;
 }
 
 export function useResolvedColorTheme() {
-  const [pref] = useColorTheme();
+  const [currentTheme] = useColorThemeManager();
 
   const isDarkMode = useMedia("(prefers-color-scheme: dark)");
 
-  if (pref === "system") {
+  if (currentTheme === "system") {
     return isDarkMode ? "dark" : "light";
   }
 
-  return pref;
+  return currentTheme;
 }

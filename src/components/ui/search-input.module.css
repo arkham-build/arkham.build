@@ -2,7 +2,7 @@
   position: relative;
 
   &:focus-within .icon_search {
-    color: var(--palette-5);
+    color: var(--text);
   }
 }
 

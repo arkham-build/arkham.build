@@ -51,10 +51,27 @@
 .card-toggle {
   display: block;
   width: 100%;
+
+  &:focus-visible {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: inherit;
+      background-color: var(--focus);
+      opacity: 0.2;
+      z-index: 2;
+    }
+  }
 }
 
 .selected img {
-  outline: 2px solid var(--palette-6);
+  outline: 2px solid var(--focus);
   outline-offset: 1px;
   transform: scale(1.01);
 }

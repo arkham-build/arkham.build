@@ -80,7 +80,11 @@ export const DialogContent = forwardRef<
   return (
     <FloatingPortal id={FLOATING_PORTAL_ID}>
       <FloatingOverlay lockScroll>
-        <FloatingFocusManager context={floatingContext}>
+        <FloatingFocusManager
+          context={floatingContext}
+          // biome-ignore lint/suspicious/noExplicitAny: bad library type
+          initialFocus={context.refs.setFloating as any}
+        >
           <div
             {...context.getFloatingProps(props)}
             aria-describedby={context.descriptionId}

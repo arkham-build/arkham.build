@@ -18,7 +18,7 @@ import {
   queryMetadata,
 } from "./store/services/queries";
 import { useAgathaEasterEggHint } from "./utils/easter-egg-agatha";
-import { useColorTheme } from "./utils/use-color-theme";
+import { applyStoredColorTheme } from "./utils/use-color-theme";
 import { useVisibilityChange } from "./utils/use-document-visibility";
 
 const Browse = lazy(() => import("./pages/browse/browse"));
@@ -60,7 +60,7 @@ function AppInner() {
   const settings = useStore((state) => state.settings);
   const init = useStore((state) => state.init);
 
-  useColorTheme();
+  applyStoredColorTheme();
 
   // !!!HACK!!!
   // part of the ~~hack~~ workaround for https://github.com/radix-ui/primitives/issues/2777 / https://bugzilla.mozilla.org/show_bug.cgi?id=1885232.

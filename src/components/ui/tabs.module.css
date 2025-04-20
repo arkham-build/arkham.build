@@ -46,7 +46,7 @@
 }
 
 .trigger[data-state="active"]:hover,
-.trigger[data-state="active"]:focus {
+.trigger[data-state="active"]:focus-visible {
   border-color: var(--accent-color, var(--nord-10));
   z-index: 2;
 }

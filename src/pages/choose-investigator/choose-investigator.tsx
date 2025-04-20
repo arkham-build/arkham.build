@@ -1,3 +1,4 @@
+import { CardModalProvider } from "@/components/card-modal/card-modal-context";
 import { Button } from "@/components/ui/button";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
@@ -56,12 +57,14 @@ function DeckCreateChooseInvestigator() {
   if (activeListId !== "create_deck") return null;
 
   return (
-    <ListLayoutContextProvider>
-      <ListLayoutNoSidebar
-        getListCardProps={getListCardProps}
-        titleString={t("choose_investigator.title")}
-      />
-    </ListLayoutContextProvider>
+    <CardModalProvider>
+      <ListLayoutContextProvider>
+        <ListLayoutNoSidebar
+          getListCardProps={getListCardProps}
+          titleString={t("choose_investigator.title")}
+        />
+      </ListLayoutContextProvider>
+    </CardModalProvider>
   );
 }
 
