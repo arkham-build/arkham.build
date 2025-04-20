@@ -21,6 +21,7 @@ import {
   filterLevel,
   filterOwnership,
   filterSkillIcons,
+  makeOptionFilter,
 } from "./filtering";
 
 describe("filter: investigator access", () => {
@@ -1070,5 +1071,43 @@ describe("filter: investigator weakness access", () => {
   it("handles case: weakness is bonded", () => {
     const state = store.getState();
     expect(applyFilter(state, "60101", "06283")).toBeFalsy();
+  });
+});
+
+describe("filter: custom content options", () => {
+  let store: StoreApi<StoreState>;
+
+  beforeAll(async () => {
+    store = await getMockStore();
+  });
+
+  it("handles case: text filters", () => {
+    const option = {
+      text: ["<b>Fight\\.<\\/b>"],
+      level: {
+        min: 0,
+        max: 3,
+      },
+    };
+
+    const state = store.getState();
+    const filter = makeOptionFilter(option);
+    expect(filter?.(state.metadata.cards["05187"])).toBeTruthy();
+    expect(filter?.(state.metadata.cards["60127"])).toBeFalsy();
+  });
+
+  it("handles case: text_exact filters", () => {
+    const option = {
+      text: ["<b>Fight.</b>"],
+      level: {
+        min: 0,
+        max: 3,
+      },
+    };
+
+    const state = store.getState();
+    const filter = makeOptionFilter(option);
+    expect(filter?.(state.metadata.cards["05187"])).toBeTruthy();
+    expect(filter?.(state.metadata.cards["60127"])).toBeFalsy();
   });
 });

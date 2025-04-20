@@ -613,13 +613,30 @@ export function filterTabooSet(tabooSetId: number, metadata: Metadata) {
  * Text
  */
 
-function filterText(text: string) {
+function filterTextExact(text: string) {
   return (card: Card) => {
     return !!(
       card.real_text?.includes(text) ||
       card.real_customization_text?.includes(text)
     );
   };
+}
+
+function filterText(regex: string) {
+  try {
+    const re = new RegExp(regex, "i");
+
+    return (card: Card) => {
+      return (
+        !!card.real_customization_text?.match(re) ||
+        !!card.real_back_text?.match(re) ||
+        !!card.real_text?.match(re)
+      );
+    };
+  } catch {
+    console.error("invalid regex, ignoring deck_option:", regex);
+    return () => true;
+  }
 }
 
 /**
@@ -829,44 +846,39 @@ export function makeOptionFilter(
     optionFilter.push(or(selectFilters));
   }
 
-  // TODO: generalize tag based access.
-
-  // allessandra zorzi
-  if (option.tag?.includes("pa")) {
+  // tag-based access
+  if (option.tag?.length) {
     filterCount += 1;
-    optionFilter.push(filterTag("pa", true));
+    const ors: Filter[] = [];
+
+    for (const tag of option.tag) {
+      ors.push(filterTag(tag, config?.customizable?.properties === "all"));
+    }
+
+    optionFilter.push(or(ors));
   }
 
-  // carolyn fern
-  if (option.tag?.includes("hh")) {
+  // text-based access
+  if (option.text && !option.tag?.length) {
     filterCount += 1;
-    optionFilter.push(
-      filterHealsHorror(config?.customizable?.properties === "all"),
-    );
+    const ors: Filter[] = [];
+
+    for (const text of option.text) {
+      ors.push(filterText(text));
+    }
+
+    optionFilter.push(or(ors));
   }
 
-  // vincent
-  if (option.tag?.includes("hd")) {
+  if (option.text_exact && !option.tag?.length) {
     filterCount += 1;
-    optionFilter.push(
-      filterHealsDamage(config?.customizable?.properties === "all"),
-    );
-  }
+    const ors: Filter[] = [];
 
-  // parallel mateo
-  if (option.tag?.includes("se")) {
-    filterCount += 1;
+    for (const text of option.text_exact) {
+      ors.push(filterTextExact(text));
+    }
 
-    optionFilter.push(
-      filterTag("se", config?.customizable?.properties === "all"),
-    );
-  }
-
-  // Michael McGlen
-  // FIXME: replace this with tag-based access once implemented.
-  if (option.tag?.includes("fa")) {
-    filterCount += 1;
-    optionFilter.push(filterText("[[Firearm]]"));
+    optionFilter.push(or(ors));
   }
 
   // on your own

@@ -69,6 +69,8 @@ export type DeckOption = {
   // not present in dataset, special case on your own.
   slot?: string[];
   virtual?: boolean;
+  // custom content
+  text_exact?: string[];
 };
 
 export type CustomizationOption = {
