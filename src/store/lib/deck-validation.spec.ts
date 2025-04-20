@@ -770,7 +770,7 @@ describe("deck validation", () => {
           [
             {
               "details": {
-                "count": "(3 / 2)",
+                "count": "(2 / 1)",
                 "error": "Too many off-class cards for Versatile.",
               },
               "type": "INVALID_DECK_OPTION",

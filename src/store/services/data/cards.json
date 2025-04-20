@@ -32,6 +32,31 @@
     "patch": true
   },
   {
+    "code": "06167",
+    "deck_options": [
+      {
+        "name": "Versatile",
+        "level": { "min": 0, "max": 0 },
+        "limit": 1,
+        "error": "Too many off-class cards for Versatile."
+      }
+    ],
+    "patch": true
+  },
+  {
+    "code": "53010",
+    "deck_options": [
+      {
+        "not": true,
+        "slot": ["Ally"],
+        "level": { "min": 0, "max": 5 },
+        "error": "You cannot have assets that take up an ally slot.",
+        "virtual": true
+      }
+    ],
+    "patch": true
+  },
+  {
     "code": "10015",
     "tags": "hh.hd.",
     "patch": true

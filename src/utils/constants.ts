@@ -181,8 +181,6 @@ export const SPECIAL_CARD_CODES = {
   MANDY: "06002",
   /** Scales with investigator deck size selection. */
   OCCULT_EVIDENCE: "06008",
-  /** Adds deckbuilding restriction. */
-  ON_YOUR_OWN: "53010",
   /** Has option to add cards to ignore deck limit slots. */
   PARALLEL_AGNES: "90017",
   /** Has spirit deck. */

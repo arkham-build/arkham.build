@@ -6,13 +6,13 @@ import {
   isStaticInvestigator,
 } from "@/utils/card-utils";
 import { DECK_SIZE_ADJUSTMENTS, SPECIAL_CARD_CODES } from "@/utils/constants";
+import { range } from "@/utils/range";
 import { time, timeEnd } from "@/utils/time";
 import type {
   Card,
   DeckOption,
   DeckRequirements,
 } from "../services/queries.types";
-import type { Deck } from "../slices/data.types";
 import type { Metadata } from "../slices/metadata.types";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {
@@ -155,29 +155,18 @@ function formatReturnValue(errors: Error[]) {
   return { valid: errors.length === 0, errors };
 }
 
-export function getAdditionalDeckOptions(deck: Deck | ResolvedDeck) {
-  const additionalDeckOptions: DeckOption[] = [];
+export function getAdditionalDeckOptions(deck: ResolvedDeck) {
+  return Object.values(deck.cards.slots).reduce((acc, { card }) => {
+    if (card.type_code !== "investigator" && card.deck_options) {
+      const quantity = deck.slots[card.code] ?? 0;
 
-  if (deck.slots[SPECIAL_CARD_CODES.VERSATILE]) {
-    additionalDeckOptions.push({
-      name: "Versatile",
-      level: { min: 0, max: 0 },
-      limit: deck.slots[SPECIAL_CARD_CODES.VERSATILE],
-      error: "Too many off-class cards for Versatile.",
-    });
-  }
+      for (const _ of range(0, quantity)) {
+        acc.push(...card.deck_options);
+      }
+    }
 
-  if (deck.slots[SPECIAL_CARD_CODES.ON_YOUR_OWN]) {
-    additionalDeckOptions.push({
-      not: true,
-      slot: ["Ally"],
-      level: { min: 0, max: 5 },
-      error: "You cannot have assets that take up an ally slot.",
-      virtual: true,
-    });
-  }
-
-  return additionalDeckOptions;
+    return acc;
+  }, [] as DeckOption[]);
 }
 
 export function validateDeck(
