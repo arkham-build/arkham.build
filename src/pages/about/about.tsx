@@ -108,6 +108,9 @@ function About() {
           <li>
             French: <strong>@Zaratan</strong>
           </li>
+          <li>
+            Spanish: <strong>@AdrianMeizoso</strong>
+          </li>
         </ul>
         <h2>Image / Icon credits</h2>
         <ul>

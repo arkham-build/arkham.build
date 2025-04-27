@@ -14,6 +14,7 @@ import i18n from "./i18n";
 export const LOCALES = [
   { value: "de", label: "Deutsch (de)", additionalCharacters: "ß" },
   { value: "en", label: "English (en)" },
+  { value: "es", label: "Español (es)", additionalCharacters: "ñ" },
   { value: "fr", label: "Français (fr)" },
   { value: "ko", label: "한국어/Korean (ko)", unicode: true },
   { value: "pl", label: "Polski (pl)" },
