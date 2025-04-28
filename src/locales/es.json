@@ -32,8 +32,8 @@
         "faq": "Ver preguntas frecuentes (FAQ)",
         "open_on_arkhamdb": "Abrir en ArkhamDB",
         "reviews": "Ver reseñas",
-        "usable_by": "Cartas permitidas: {{prefix}}{{name}}",
-        "usable_by_interpolated": "Cartas permitidas: <tooltip>{{name}}</tooltip>",
+        "usable_by": "Cartas permitidas de {{prefix}}{{name}}",
+        "usable_by_interpolated": "Cartas permitidas de <tooltip>{{name}}</tooltip>",
         "view_backside": "Reverso",
         "who_can_take": "¿Quién puede llevar esta carta?"
       },
@@ -43,7 +43,7 @@
         "loading": "Cargando el FAQ...",
         "title": "FAQ"
       },
-      "scan": "Escaneo de {{code}}",
+      "scan": "Imagen de {{code}}",
       "section_actions": "Acciones",
       "section_deckbuilding": "Construcción de mazos",
       "section_faq": "FAQ",
@@ -181,7 +181,7 @@
         "base": "Investigador original",
         "bonded": "Cartas enlazadas",
         "bound": "Cartas vinculadas",
-        "extra": "Cartas especiales",
+        "extra": "Cartas adicionales",
         "level": "Otros niveles",
         "otherSignatures": "Otras características",
         "otherVersions": "Otras versiones",
@@ -246,12 +246,12 @@
         "Arkham": "Arkham",
         "Arkham Asylum": "Manicomio Arkham",
         "Armor": "Protección",
-        "Artist": "Artista",
+        "Artist": "Artista (Artist)",
         "Assistant": "Ayudante",
         "Attack": "Ataque",
         "Augury": "Presagio",
         "Avatar": "Avatar",
-        "Basement": "Basement",
+        "Basement": "Sótano",
         "Bayou": "Bayou",
         "Bazaar": "Bazar",
         "Believer": "Creyente",
@@ -264,14 +264,14 @@
         "Boon": "Ayuda",
         "Bridge": "Puente",
         "Broken": "Roto",
-        "Brotherhood": "Brotherhood",
+        "Brotherhood": "Hermandad",
         "Buenos Aires": "Buenos Aires",
         "Byakhee": "Byakhee",
         "Bystander": "Transeúnte",
         "Cairo": "Cairo",
         "Campsite": "Campamento",
         "Carnevale": "Carnevale",
-        "Cart": "Cart",
+        "Cart": "Carro",
         "Casino": "Casino",
         "Cave": "Cueva",
         "Central": "Central",
@@ -372,7 +372,7 @@
         "Hybrid": "Híbrido",
         "Illicit": "Ilegal",
         "Improvised": "Improvisado",
-        "Inconspicuous": "Inconspicuous",
+        "Inconspicuous": "Discreto",
         "Injury": "Lesión",
         "Innate": "Innato",
         "Innocent": "Inocente",
@@ -623,8 +623,8 @@
         "upgrade": "Mejorar mazo",
         "upgrade_short": "Mejorar"
       },
-      "annotation": "Anotación",
-      "annotation_tooltip": "La carta tiene una anotación",
+      "annotation": "Notas",
+      "annotation_tooltip": "La carta tiene notas",
       "attachments": {
         "bewitching": "Encantadora",
         "eldritch_brand": "Marca de Eldritch",
@@ -657,7 +657,7 @@
         "xp_required_help": "Cantidad de XP requerida para construir este mazo desde cero."
       },
       "tags": {
-        "limited_pool": "Cartas limitadas",
+        "limited_pool": "Conjunto limitado",
         "private": "Privado",
         "sealed": "Sellado",
         "shared": "Compartido"
@@ -691,8 +691,8 @@
       "validation": {
         "forbidden_cards": "El mazo contiene cartas prohibidas (cartas no permitidas por el Investigador):",
         "invalid": "El mazo no es válido.",
-        "invalid_card_count": "El mazo contiene un número no válido de copias de las siguientes cartas:",
-        "invalid_investigator": "El investigador no es válido. Falta la configuración requerida o la carta no es un investigador.",
+        "invalid_card_count": "El mazo contiene un número erróneo de copias de las siguientes cartas:",
+        "invalid_investigator": "El investigador no es válido. Falta la configuración requerida, o la carta no es un investigador.",
         "investigator_requirements": "El mazo no cumple con los requisitos del Investigador:",
         "too_few_cards": "{{deck}} contiene muy pocas cartas.",
         "too_many_cards": "{{deck}} contiene demasiadas cartas."
@@ -706,21 +706,21 @@
       "count_hidden": " ({{count}} ocultos)",
       "deck_url_or_id": "URL o ID del mazo",
       "delete_all": "Eliminar todos los mazos locales",
-      "delete_all_confirm": "¿Seguro que quieres eliminar todos los mazos locales de tu colección?",
+      "delete_all_confirm": "¿Seguro que quieres eliminar todos los mazos locales?",
       "delete_all_error": "Error al eliminar los mazos locales: {{error}}",
       "delete_all_loading": "Eliminando mazos locales...",
       "delete_all_success": "Mazos locales eliminados correctamente.",
       "import": "Importar",
       "import_arkhamdb": "Importar desde ArkhamDB",
-      "import_arkhamdb_help": "Introduce una ID de mazo público de ArkhamDB, URL del mazo o URL de la guía del mazo. Los mazos serán <strong>copiados</strong> y el historial y estado de mejoras no se importarán. Si quieres sincronizar tus mazos de ArkhamDB con esta aplicación, <settings_link>conecta tu cuenta de ArkhamDB.</settings_link>",
-      "import_json": "Importar desde archivos JSON",
+      "import_arkhamdb_help": "Introduce una ID de mazo público de ArkhamDB, URL del mazo o URL de la guía del mazo. El mazo se <strong>copiará</strong>, sin embargo el historial y las mejoras no se importarán. Si quieres sincronizar tus mazos de ArkhamDB con ArkhamBuild, <settings_link>conecta con tu cuenta de ArkhamDB.</settings_link>",
+      "import_json": "Importar desde un archivo JSON",
       "more_filters": "Más filtros",
       "search_placeholder": "Buscar mazos...",
       "sorting": {
         "alphabetical_asc": "Alfabético (A -> Z)",
         "alphabetical_desc": "Alfabético (Z -> A)",
         "date_created": "Creado recientemente",
-        "date_updated": "Actualizado recientemente",
+        "date_updated": "Actualizado recient.",
         "xp_asc": "Menos XP gastado",
         "xp_desc": "Más XP gastado"
       },
@@ -745,29 +745,29 @@
       "loading": "Creando mazo...",
       "random_basic_weakness": "Debilidad básica aleatoria",
       "sealed_deck": {
-        "error": "Error al obtener el mazo sellado: {{error}}",
-        "loading": "Obteniendo mazo sellado...",
-        "success": "Mazo sellado aplicado correctamente."
+        "error": "Error al obtener el mazo Sealed: {{error}}",
+        "loading": "Obteniendo mazo Sealed...",
+        "success": "Mazo Sealed aplicado correctamente."
       },
       "success": "Mazo creado correctamente."
     },
     "deck_edit": {
       "actions": {
-        "cycle_decks": "Cycle deck lists",
-        "decrement_quantity": "Decrement deck quantity",
-        "decrement_side_quantity": "Decrement side deck quantity",
+        "cycle_decks": "Ir al siguiente mazo",
+        "decrement_quantity": "Disminuir cantidad del mazo",
+        "decrement_side_quantity": "Disminuir cantidad del mazo secundario",
         "draw_random_basic_weakness": "Robar debilidad básica aleatoria",
-        "draw_random_basic_weakness_success": "<strong>{{name}}</strong> es tu Debilidad Básica aleatoria.",
+        "draw_random_basic_weakness_success": "<strong>{{name}}</strong> es tu debilidad básica aleatoria.",
         "edit_annotation": "Editar anotación",
-        "increment_quantity": "Increment deck quantity",
-        "increment_side_quantity": "Increment side deck quantity",
+        "increment_quantity": "Aumentar cantidad del mazo",
+        "increment_side_quantity": "Aumentar cantidad del mazo secundario",
         "move_to_main_deck": "Mover al mazo",
         "move_to_side_deck": "Mover al mazo secundario",
         "quick_discard": "Descartar cambios (y permanecer en la página)",
         "quick_save_deck": "Guardar mazo (y permanecer en la página)",
         "quick_upgrade": "Mejorar {{name}}",
-        "set_quantity": "Set deck quantity",
-        "set_side_quantity": "Set side deck quantity"
+        "set_quantity": "Ajustar cantidad del mazo",
+        "set_side_quantity": "Ajustar cantidad del mazo secundario"
       },
       "changes_restored": "Se restauraron los cambios no guardados.",
       "config": {
@@ -779,14 +779,14 @@
           "help": "Los Investigadores, las cartas Personales y los Apoyos de historia no se ven afectados por esta selección.",
           "placeholder": "Seleccionar packs...",
           "section_title": "Ajustes del conjunto de cartas",
-          "title": "Conjunto de cartas limitado",
-          "use_preset": "Usar preajuste de campaña colaborativa"
+          "title": "Limitar conjunto de cartas",
+          "use_preset": "Usar el ajuste predefinido de campaña colaborativa"
         },
         "name": "Nombre del mazo",
         "sealed": {
-          "add": "Añadir mazo sellado",
-          "help": "Sube una definición de mazo sellado (.csv) para usarla. Usa <a>ArkhamSealed</a> para generar un mazo sellado.",
-          "title": "Sellado"
+          "add": "Añadir mazo Sealed",
+          "help": "Sube una definición de mazo Sealed (.csv) para usarla. Usa <a>ArkhamSealed</a> para generar un mazo Sealed.",
+          "title": "Mazo Sealed"
         },
         "sides": {
           "investigator_back": "Reverso del Investigador",
@@ -798,7 +798,7 @@
         },
         "storage_provider": {
           "local": "Privado",
-          "title": "Proveedor de almacenamiento"
+          "title": "Almacenamiento"
         },
         "taboo": "Lista de Tabúes",
         "tags": "Etiquetas",
@@ -821,7 +821,7 @@
         "banner_url": "URL del banner",
         "banner_url_help": "Imagen de banner para el mazo. Se mostrará en la vista del mazo y en las vistas previas de redes sociales. La relación de aspecto es 4:1, el ancho óptimo es 1440px.",
         "banner_url_placeholder": "Introduce URL",
-        "description": "Notas",
+        "description": "Descripción",
         "description_help": "Compatible con markdown estilo ArkhamDB.",
         "intro": "Introducción",
         "intro_help": "Una breve introducción al mazo. Se mostrará en la vista del mazo y en las vistas previas de redes sociales. Compatible con markdown estilo ArkhamDB."
@@ -853,7 +853,7 @@
       "save_success": "Mazo guardado correctamente.",
       "tab_card_list": "Lista de cartas",
       "tab_config": "Ajustes",
-      "tab_notes": "Notas",
+      "tab_notes": "Notas y presentación",
       "tab_recommendations": "Recomendaciones",
       "tab_tools": "Herramientas",
       "title": "Editar: {{name}}",
@@ -867,7 +867,7 @@
       "actions": {
         "display_as_list": "Mostrar como lista",
         "display_as_scans": "Mostrar como escaneos",
-        "import": "Importar mazo a la colección",
+        "import": "Importar mazo",
         "save_upgrade": "Guardar mejora y editar",
         "save_upgrade_close": "Guardar mejora y cerrar",
         "save_upgrade_close_short": "Guardar y cerrar",
@@ -900,23 +900,23 @@
       "list": "Lista",
       "loading": "Obteniendo mazo...",
       "newer_version": "Hay una <a>versión más nueva</a> de este mazo. Este mazo es de sólo lectura.",
-      "scans": "Escaneos",
+      "scans": "Imágenes",
       "sharing": {
         "create": "Crear enlace para compartir",
-        "create_tooltip": "Compartir crea un enlace público de sólo lectura al mazo. Cualquiera con el enlace puede ver el mazo, pero no editarlo.<br />Los enlaces compartidos se pueden eliminar en cualquier momento. Eliminar un enlace no afecta al mazo en sí.",
+        "create_tooltip": "Crea un enlace público al mazo de sólo lectura. Cualquier persona con el enlace puede ver el mazo, pero no editarlo.<br />Los enlaces compartidos se pueden eliminar en cualquier momento. Eliminar un enlace no afecta al mazo.",
         "delete": "Eliminar enlace compartido",
         "description": "El mazo se almacena localmente.",
         "description_present": "Este mazo tiene un enlace público compartido, se puede ver usando <a>este enlace</a>.",
-        "title": "Enlace público compartido",
+        "title": "Compartir mazo",
         "update": "Actualizar enlace compartido"
       },
       "tab_deck_list": "Mazo",
       "tab_history": "Historial",
-      "tab_notes": "Notas",
+      "tab_notes": "Notas y presentación",
       "tab_recommendations": "Recomendaciones",
       "tab_tools": "Herramientas",
       "upgrade_modal": {
-        "error": "Failed to upgrade deck: {{error}}",
+        "error": "Error al actualizar mazo: {{error}}",
         "great_work": "La gran obra",
         "great_work_label": "Fui usurpado por el homúnculo",
         "great_work_status_not_usurped": "Se añadirá automáticamente +1 XP a esta mejora.",
@@ -929,17 +929,17 @@
     },
     "draw_simulator": {
       "draw_tooltip": "Robar {{count}} {{cards}}.",
-      "redraw": "Volver a robar la selección",
+      "redraw": "Volver a robar",
       "redraw_tooltip": "Las cartas seleccionadas se añadirán al final del mazo y luego se reemplazarán con cartas nuevas.",
       "reset": "Reiniciar",
       "reset_tooltip": "Reinicia el simulador a su estado inicial.",
-      "reshuffle": "Rebarajar selección",
+      "reshuffle": "Rebarajar",
       "reshuffle_tooltip": "Las cartas seleccionadas se barajarán de nuevo en el mazo.",
       "title": "Simulador de robo"
     },
     "errors": {
       "404": "Página no encontrada.",
-      "500": "La web ha robado un Fallo automático.",
+      "500": "Has robado el fallo automático.",
       "500_help": "Revisa la consola del navegador para más detalles.",
       "500_help_2": "Por favor, no intentes solucionar este problema borrando cookies u otros datos locales del navegador (a menos que no te importe perder tus mazos locales).",
       "home": "Volver al inicio",
@@ -1044,12 +1044,12 @@
       "shortcuts": {
         "group_card_list": "Lista de cartas",
         "group_card_list_search": "Lista de cartas (búsqueda activa)",
-        "group_card_modal": "Vistal de carta",
+        "group_card_modal": "Vista de la carta",
         "group_deck_collection": "Colección de mazos",
         "group_deck_editor": "Editor de mazos",
-        "group_deck_view": "Vista de mazo",
+        "group_deck_view": "Vista del mazo",
         "group_general": "General",
-        "group_upgrade_modal": "Vista de mejora",
+        "group_upgrade_modal": "Vista de la mejora",
         "title": "Atajos de teclado"
       },
       "title": "Ayuda"
@@ -1058,10 +1058,10 @@
       "actions": {
         "blur_search": "Desenfocar búsqueda",
         "clear_search": "Limpiar búsqueda",
-        "display_as_detailed": "Mostrar como cartas detalladas",
-        "display_as_list": "Mostrar como lista",
-        "display_as_list_text": "Mostrar como lista con texto de carta",
-        "display_as_scans": "Mostrar como escaneos",
+        "display_as_detailed": "Mostrar cartas detalladas",
+        "display_as_list": "Mostrar lista",
+        "display_as_list_text": "Mostrar lista con texto de carta",
+        "display_as_scans": "Mostrar imágenes",
         "focus_search": "Enfocar búsqueda",
         "move_down": "Mover abajo",
         "move_up": "Mover arriba",
@@ -1095,10 +1095,10 @@
         "card_count_one": "{{count}} carta",
         "card_count_other": "{{count}} cartas",
         "display": "Mostrar",
-        "display_as_detailed": "Cartas en detalle",
+        "display_as_detailed": "Detalle",
         "display_as_list": "Lista",
         "display_as_list_text": "Lista con texto",
-        "display_as_scans": "Escaneos",
+        "display_as_scans": "Imágenes",
         "jump_to": "Ir a...",
         "list_settings": "Ajustes de lista"
       },
@@ -1122,10 +1122,10 @@
     },
     "settings": {
       "backup": {
-        "confirm": "¿Seguro que quieres restaurar esta copia de seguridad? Cualquier dato existente será sobrescrito.",
+        "confirm": "¿Seguro que quieres restaurar esta copia de seguridad? Cualquier dato existente se sobreescribirá.",
         "create": "Crear copia de seguridad",
-        "help": "Crea una copia de seguridad de tus ajustes, mazos y colección de cartas como un archivo JSON. Puedes usar este archivo para restaurar tus datos en este dispositivo u otro.",
-        "help_warning": "Cuando se restaura una copia de seguridad, <strong>cualquier dato existente será sobrescrito.</strong>",
+        "help": "Crea una copia de seguridad de tus ajustes, mazos y colección de cartas como un archivo JSON. Puedes usar este archivo para restaurar tus datos en cualquier dispositivo.",
+        "help_warning": "Cuando se restaura una copia de seguridad, <strong>cualquier dato existente se sobreescribirá.</strong>",
         "no_file_selected": "No se ha seleccionado ningún archivo",
         "restore": "Restaurar copia de seguridad",
         "restore_error": "Error al restaurar la copia de seguridad: {{error}}",
@@ -1133,8 +1133,8 @@
         "title": "Copia de Seguridad y Restauración"
       },
       "card_data": {
-        "card_count": "Recuento de cartas",
-        "data_version": "Versión de datos",
+        "card_count": "Número de cartas",
+        "data_version": "Versión de los datos",
         "error": "Error al cargar los últimos datos de cartas.",
         "loading": "Cargando últimos datos de cartas...",
         "locale": "Idioma",
@@ -1146,13 +1146,13 @@
       },
       "collection": {
         "card_collection": "Colección de cartas",
-        "card_count": "Recuento de cartas",
+        "card_count": "Número de cartas",
         "new_format": "Nuevo formato",
         "old_format": "Antiguo formato",
         "show_all_cards_owned": "Mostrar todas las cartas como propiedad",
-        "show_all_cards_owned_help": "Cuando está marcado, los ajustes de colección inferiores se ignoran al comprobar la propiedad de cartas en listas de cartas y mazos.",
+        "show_all_cards_owned_help": "Cuando está seleccionado, los ajustes de colección inferiores se ignoran al comprobar la propiedad de cartas en listas de cartas y mazos.",
         "show_previews": "Mostrar cartas spoilers",
-        "show_previews_help": "Cuando está marcado, las cartas no publicadas se mostrarán en la aplicación y se podrán añadir a los mazos.",
+        "show_previews_help": "Cuando está seleccionado, las cartas no publicadas se mostrarán en la aplicación y se podrán añadir a los mazos.",
         "title": "Colección"
       },
       "connections": {
@@ -1184,17 +1184,17 @@
       },
       "display": {
         "card_level": "Visualización del nivel de carta",
-        "card_level_as_dots": "En icono de carta y como puntos",
-        "card_level_as_text": "En icono de carta y como texto",
-        "card_level_icon_only": "Sólo en icono de carta",
+        "card_level_as_dots": "En el icono de carta y como puntos",
+        "card_level_as_text": "En el icono de carta y como texto",
+        "card_level_icon_only": "Sólo en el icono de carta",
         "font_size": "Tamaño de fuente",
-        "font_size_preview": "Armitage tuvo la idea de que el alfabeto podría ser algo usado esotéricamente por ciertos cultos prohibidos que han llegado desde tiempos antiguos, y que han heredado muchas formas y tradiciones de los magos del mundo sarraceno.",
+        "font_size_preview": "Armitage planteó que el alfabeto pudo haber sido empleado con fines esotéricos por cultos prohibidos surgidos en la antigüedad, que a su vez heredaron gran parte de las prácticas y tradiciones de los magos del mundo sarraceno.",
         "hide_weaknesses": "Ocultar debilidades en listas de cartas de jugador",
-        "hide_weaknesses_help": "Cuando está marcado, las debilidades se ocultan por defecto en las listas de cartas de jugador y deben habilitarse en el filtro <strong>Subtipo</strong> para ser visibles.",
+        "hide_weaknesses_help": "Cuando está seleccionado, las debilidades se ocultan por defecto en las listas de cartas de jugador y deben habilitarse en el filtro <strong>Subtipo</strong> para ser visibles.",
         "show_move_to_side_deck": "Mostrar botón \"Mover al mazo secundario\"",
-        "show_move_to_side_deck_help": "Esto muestra un botón que te permite mover cartas del mazo principal al mazo secundario al editar mazos.",
-        "sort_ignore_punctuation": "Ordenar ignora puntuación",
-        "sort_ignore_punctuation_help": "Cuando está marcado, la lista de cartas ignorará comillas y otros signos de puntuación al ordenar.",
+        "show_move_to_side_deck_help": "Mostrar un botón que te permite mover cartas del mazo principal al mazo secundario al editar mazos.",
+        "sort_ignore_punctuation": "Ignorar signos de puntuación al ordenar cartas",
+        "sort_ignore_punctuation_help": "Cuando está seleccionado, la lista de cartas ignorará comillas y otros signos de puntuación al ordenar.",
         "theme": "Tema",
         "theme_dark": "Oscuro",
         "theme_light": "Claro",
@@ -1205,12 +1205,12 @@
       "general": {
         "default_taboo": "Lista de tabúes por defecto",
         "title": "General",
-        "weakness_limited_card_pool": "Usar conjunto de cartas limitado para robos de Debilidad básica aleatoria",
-        "weakness_limited_card_pool_help": "Cuando está marcado, el robo de Debilidad básica aleatoria respetará el conjunto de cartas limitado de un mazo si está definido."
+        "weakness_limited_card_pool": "Usar el conjunto de cartas limitado para robos de debilidad básica aleatoria",
+        "weakness_limited_card_pool_help": "Si está seleccionado, el robo de debilidad básica aleatoria respetará el conjunto de cartas limitado de un mazo si está definido."
       },
       "lists": {
-        "deck_view": "Vista de mazo",
-        "deck_view_scans": "Vista de mazo (escaneos)",
+        "deck_view": "Cartas del mazo",
+        "deck_view_scans": "Cartas del mazo (imágenes)",
         "title": "Listas"
       },
       "locale": {
