@@ -205,4 +205,39 @@ test.describe("settings", () => {
     await page.getByTestId("masthead-logo").click();
     await expect(page.getByTestId("card-list-scroller")).toBeVisible();
   });
+
+  test("changing theme in settings is only persisted when clicking save", async ({
+    page,
+  }) => {
+    await mockApiCalls(page);
+    await page.goto("/settings");
+    await expect(page.locator("html")).toHaveAttribute("class", "theme-dark");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await page.getByTestId("settings-select-theme").selectOption("light");
+
+    // resets after changing pages as save was not clicked
+    await page.goto("/");
+    await expect(page.locator("html")).toHaveAttribute("class", "theme-dark");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+    page.reload();
+    await expect(page.locator("html")).toHaveAttribute("class", "theme-dark");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+    // now with clicking save
+    await page.goto("/settings");
+    await expect(page.locator("html")).toHaveAttribute("class", "theme-dark");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await page.getByTestId("settings-select-theme").selectOption("light");
+    await page.getByTestId("settings-save").click();
+
+    // now it should be persistent
+    await page.goto("/");
+    await expect(page.locator("html")).toHaveAttribute("class", "theme-light");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+    page.reload();
+    await expect(page.locator("html")).toHaveAttribute("class", "theme-light");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  });
 });

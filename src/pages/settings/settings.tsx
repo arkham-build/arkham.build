@@ -1,9 +1,16 @@
 import { CollectionSettings } from "@/components/collection/collection";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  useTabUrlState,
+} from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/toast.hooks";
 import { AppLayout } from "@/layouts/app-layout";
 import { useStore } from "@/store";
+import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
 import {
   DatabaseBackupIcon,
@@ -15,7 +22,7 @@ import { useTranslation } from "react-i18next";
 import { useSearch } from "wouter";
 import { BackupRestore } from "./backup-restore";
 import { CardDataSync } from "./card-data-sync";
-import { CardLevelDisplaySetting } from "./card-level-display";
+import { CardDisplaySettings } from "./card-display";
 import { Connections } from "./connections";
 import { FontSizeSetting } from "./font-size";
 import { HideWeaknessSetting } from "./hide-weakness";
@@ -34,6 +41,8 @@ import { WeaknessPoolSetting } from "./weakness-pool";
 function Settings() {
   const { t } = useTranslation();
 
+  const [tab, onTabChange] = useTabUrlState("general");
+
   const search = useSearch();
   const toast = useToast();
   const goBack = useGoBack(search.includes("login_state") ? "/" : undefined);
@@ -42,6 +51,9 @@ function Settings() {
 
   const storedSettings = useStore((state) => state.settings);
   const [settings, setSettings] = useState(structuredClone(storedSettings));
+
+  const [storedTheme, persistColorTheme] = useColorThemeManager();
+  const [theme, setTheme] = useState<string>(storedTheme);
 
   useEffect(() => {
     setSettings(storedSettings);
@@ -58,6 +70,7 @@ function Settings() {
 
       try {
         await updateStoredSettings(settings);
+        persistColorTheme(theme);
         toast.dismiss(toastId);
         toast.show({
           children: t("settings.success"),
@@ -72,7 +85,7 @@ function Settings() {
         });
       }
     },
-    [updateStoredSettings, settings, toast, t],
+    [updateStoredSettings, settings, toast, t, theme, persistColorTheme],
   );
 
   return (
@@ -103,7 +116,7 @@ function Settings() {
               <CardDataSync showDetails />
             </Section>
           </div>
-          <Tabs defaultValue="general">
+          <Tabs value={tab} onValueChange={onTabChange}>
             <TabsList>
               <TabsTrigger data-testid="tab-general" value="general">
                 <SlidersVerticalIcon />
@@ -131,12 +144,12 @@ function Settings() {
               </Section>
               <Section title={t("settings.display.title")}>
                 <LocaleSetting settings={settings} setSettings={setSettings} />
-                <ThemeSetting />
+                <ThemeSetting setTheme={setTheme} theme={theme} />
                 <FontSizeSetting
                   settings={settings}
                   setSettings={setSettings}
                 />
-                <CardLevelDisplaySetting
+                <CardDisplaySettings
                   settings={settings}
                   setSettings={setSettings}
                 />

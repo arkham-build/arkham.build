@@ -225,9 +225,8 @@
   font-size: var(--card-title-size);
 }
 
-.name .unique {
+.name .unique svg {
   display: inline-block;
-  margin-left: 0.125rem;
 }
 
 .name button,
@@ -240,8 +239,8 @@
   text-decoration: none;
   text-shadow: inherit;
 
-  &:hover,
-  &:focus {
+  &:hover:not(span),
+  &:focus:not(span) {
     text-decoration: underline;
   }
 }

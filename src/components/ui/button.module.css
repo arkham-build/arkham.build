@@ -29,9 +29,8 @@
     border-color: var(--palette-3);
   }
 
-  &:focus-within,
   &:focus-visible {
-    outline: 1px solid var(--palette-6);
+    outline: 1px solid var(--focus);
   }
 }
 

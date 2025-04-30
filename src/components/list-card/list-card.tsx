@@ -18,7 +18,7 @@ export function ListCard(props: Props) {
   const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
     useRestingTooltip();
 
-  const cardLevelDisplay = useStore((state) => state.settings.cardLevelDisplay);
+  const settings = useStore((state) => state.settings);
 
   if (!card) return null;
 
@@ -27,7 +27,9 @@ export function ListCard(props: Props) {
       <ListCardInner
         {...rest}
         card={card}
-        cardLevelDisplay={cardLevelDisplay}
+        cardLevelDisplay={settings.cardLevelDisplay}
+        cardShowCollectionNumber={settings.cardShowCollectionNumber}
+        cardSkillIconsDisplay={settings.cardSkillIconsDisplay}
         figureRef={refs.setReference}
         referenceProps={referenceProps}
       />

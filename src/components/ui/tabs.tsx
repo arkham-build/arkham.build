@@ -7,7 +7,7 @@ import type {
   TabsTriggerProps,
 } from "@radix-ui/react-tabs";
 import { Content, List, Root, Trigger } from "@radix-ui/react-tabs";
-import { forwardRef, useCallback } from "react";
+import { forwardRef, useCallback, useState } from "react";
 import { Button } from "./button";
 import { HotkeyTooltip } from "./hotkey";
 import css from "./tabs.module.css";
@@ -113,8 +113,28 @@ export function TabsContent({
       )}
       forceMount={forceMount}
       {...rest}
+      tabIndex={-1}
     >
       {children}
     </Content>
   );
+}
+
+export function useTabUrlState(defaultValue: string, queryKey = "tab") {
+  const [tab, setTab] = useState<string>(
+    () =>
+      new URL(window.location.href).searchParams.get(queryKey) ?? defaultValue,
+  );
+
+  const onTabChange = useCallback(
+    (value: string) => {
+      const url = new URL(window.location.href);
+      url.searchParams.set(queryKey, value);
+      window.history.replaceState({}, "", url.toString());
+      setTab(value);
+    },
+    [queryKey],
+  );
+
+  return [tab, onTabChange] as const;
 }

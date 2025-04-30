@@ -14,7 +14,7 @@ import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLatestUpgrade } from "@/store/selectors/decks";
 import type { Card } from "@/store/services/queries.types";
-import { type Tab, mapTabToSlot } from "@/store/slices/deck-edits.types";
+import { mapTabToSlot } from "@/store/slices/deck-edits.types";
 import { cardLimit, isStaticInvestigator } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
@@ -31,7 +31,7 @@ import css from "./latest-upgrade.module.css";
 
 type Props = {
   deck: ResolvedDeck;
-  currentTab?: Tab;
+  currentTab?: string;
   overflowScroll?: boolean;
   readonly?: boolean;
 };

@@ -432,7 +432,7 @@ function SidebarActions(props: {
               )}
               {onArkhamDBUpload && (
                 <>
-                  <Button
+                  <DropdownButton
                     data-testid="view-upload"
                     disabled={!!connectionLock}
                     size="full"
@@ -444,7 +444,7 @@ function SidebarActions(props: {
                     {t("deck_view.actions.upload", {
                       provider: "ArkhamDB",
                     })}
-                  </Button>
+                  </DropdownButton>
                   <hr />
                 </>
               )}

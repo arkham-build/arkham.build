@@ -42,7 +42,7 @@
 }
 
 .root:focus-visible {
-  outline: 1px solid var(--palette-5);
+  outline: 1px solid var(--focus);
   outline-offset: 1px;
 }
 

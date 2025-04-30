@@ -1,3 +1,4 @@
+import { CardModalProvider } from "@/components/card-modal/card-modal-context";
 import { Button } from "@/components/ui/button";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
@@ -11,7 +12,7 @@ import type { Card } from "@/store/services/queries.types";
 import { displayAttribute } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";
 import { useDocumentTitle } from "@/utils/use-document-title";
-import { CirclePlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
@@ -36,7 +37,7 @@ function DeckCreateChooseInvestigator() {
 
   const getListCardProps = useCallback(
     () => ({
-      renderCardAction: (card: Card) => <ChooseInvestigatorLink card={card} />,
+      renderCardExtra: (card: Card) => <ChooseInvestigatorLink card={card} />,
       renderCardMetaExtra:
         activeList?.display.viewMode === "compact"
           ? (card: Card) => (
@@ -56,12 +57,14 @@ function DeckCreateChooseInvestigator() {
   if (activeListId !== "create_deck") return null;
 
   return (
-    <ListLayoutContextProvider>
-      <ListLayoutNoSidebar
-        getListCardProps={getListCardProps}
-        titleString={t("choose_investigator.title")}
-      />
-    </ListLayoutContextProvider>
+    <CardModalProvider>
+      <ListLayoutContextProvider>
+        <ListLayoutNoSidebar
+          getListCardProps={getListCardProps}
+          titleString={t("choose_investigator.title")}
+        />
+      </ListLayoutContextProvider>
+    </CardModalProvider>
   );
 }
 
@@ -110,14 +113,14 @@ function ChooseInvestigatorLink(props: { card: Card }) {
         className={css["choose-investigator-button"]}
         data-testid="create-choose-investigator"
         iconOnly
-        variant="primary"
         size="lg"
         style={cssVariables}
         tooltip={t("choose_investigator.create_tooltip", {
           name: displayAttribute(props.card, "name"),
         })}
+        variant="primary"
       >
-        <CirclePlusIcon />
+        <PlusIcon />
       </Button>
     </Link>
   );

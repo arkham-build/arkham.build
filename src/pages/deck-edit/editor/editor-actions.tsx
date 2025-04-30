@@ -12,7 +12,6 @@ import { PreviewPublishError } from "@/store/lib/errors";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckValid } from "@/store/selectors/decks";
 import { selectConnectionLockForDeck } from "@/store/selectors/shared";
-import type { Tab } from "@/store/slices/deck-edits.types";
 import { useHotkey } from "@/utils/use-hotkey";
 import { SaveIcon, TriangleAlertIcon, Undo2Icon } from "lucide-react";
 import { useCallback } from "react";
@@ -22,7 +21,7 @@ import { LatestUpgrade } from "../../../components/deck-display/deck-history/lat
 import css from "./editor.module.css";
 
 type Props = {
-  currentTab: Tab;
+  currentTab: string;
   deck: ResolvedDeck;
 };
 

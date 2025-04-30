@@ -15,7 +15,11 @@ import { formatRelationTitle } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useMedia } from "@/utils/use-media";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
-import { ExternalLinkIcon, MessagesSquareIcon } from "lucide-react";
+import {
+  CheckCircleIcon,
+  ExternalLinkIcon,
+  MessagesSquareIcon,
+} from "lucide-react";
 import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
@@ -30,6 +34,7 @@ import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { Modal } from "../ui/modal";
 import { AnnotationEdit } from "./card-modal-annotation-edit";
 import { CardModalAttachmentQuantities } from "./card-modal-attachment-quantities";
+import { useCardModalContextChecked } from "./card-modal-context";
 import { CardModalQuantities } from "./card-modal-quantities";
 import css from "./card-modal.module.css";
 import { SpecialistAccess, SpecialistInvestigators } from "./specialist";
@@ -63,6 +68,15 @@ export function CardModal(props: Props) {
   const cardWithRelations = useStore((state) =>
     selectCardWithRelations(state, props.code, true, ctx.resolvedDeck),
   );
+
+  const cardModalCtx = useCardModalContextChecked();
+  const completeTask = useStore((state) => state.completeTask);
+
+  const onCompleteTask = useCallback(() => {
+    if (!ctx.resolvedDeck) return;
+    const nextCode = completeTask(ctx.resolvedDeck.id, props.code);
+    cardModalCtx.setOpen({ code: nextCode });
+  }, [completeTask, ctx.resolvedDeck, props.code, cardModalCtx.setOpen]);
 
   const showQuantities =
     !!ctx.resolvedDeck && cardWithRelations?.card.type_code !== "investigator";
@@ -159,6 +173,9 @@ export function CardModal(props: Props) {
 
   const canonicalCode = getCanonicalCardCode(cardWithRelations.card);
 
+  const traits = cardWithRelations.card.real_traits;
+  const deckQuantity = ctx.resolvedDeck?.slots[canonicalCode] ?? 0;
+
   return (
     <Modal
       key={cardWithRelations.card.code}
@@ -197,6 +214,15 @@ export function CardModal(props: Props) {
             <MessagesSquareIcon />
             {t("card_modal.actions.reviews")}
           </Button>
+          {canEdit &&
+            deckQuantity &&
+            traits?.includes("Task") &&
+            traits?.includes("Incomplete") && (
+              <Button onClick={onCompleteTask}>
+                <CheckCircleIcon />
+                {t("card_modal.actions.complete_task")}
+              </Button>
+            )}
         </>
       }
       data-testid="card-modal"

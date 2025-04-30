@@ -75,14 +75,23 @@ function hotkeyMatches(
 
   if (!matches) return false;
 
+  const cmd = hotkey.modifiers.includes("cmd");
+
   return MODIFIERS.every((mod) => {
-    // If shift is pressed, we only check it if it's part of the hotkey itself.
+    // If shift is pressed, we only check when it's part of the hotkey.
     // This makes special character hotkeys such as `?` work.
     if (mod === "shift" && evt.shiftKey && hotkey.modifiers.length === 0) {
       return true;
     }
 
-    return MODIFIER_MAP[mod](evt) === hotkey.modifiers.includes(mod);
+    if (cmd && mod === "ctrl") {
+      return MODIFIER_MAP["cmd"](evt);
+    }
+
+    const actual = MODIFIER_MAP[mod](evt);
+    const expected = hotkey.modifiers.includes(mod);
+
+    return actual === expected;
   });
 }
 

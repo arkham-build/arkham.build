@@ -18,23 +18,58 @@ import {
   queryMetadata,
 } from "./store/services/queries";
 import { useAgathaEasterEggHint } from "./utils/easter-egg-agatha";
-import { useColorTheme } from "./utils/use-color-theme";
+import { retryFailedDynamicImport } from "./utils/retry-failed-dynamic-import";
+import { applyStoredColorTheme } from "./utils/use-color-theme";
 import { useVisibilityChange } from "./utils/use-document-visibility";
 
-const Browse = lazy(() => import("./pages/browse/browse"));
-const DeckEdit = lazy(() => import("./pages/deck-edit/deck-edit"));
-const ChooseInvestigator = lazy(
-  () => import("./pages/choose-investigator/choose-investigator"),
+const Browse = lazy(() =>
+  import("./pages/browse/browse").catch(retryFailedDynamicImport),
 );
-const DeckCreate = lazy(() => import("./pages/deck-create/deck-create"));
-const DeckView = lazy(() => import("./pages/deck-view/deck-view"));
-const Settings = lazy(() => import("./pages/settings/settings"));
-const CardView = lazy(() => import("./pages/card-view/card-view"));
-const CardViewUsable = lazy(() => import("./pages/card-view/usable-cards"));
-const About = lazy(() => import("./pages/about/about"));
-const Share = lazy(() => import("./pages/share/share"));
-const CollectionStats = lazy(
-  () => import("./pages/collection-stats/collection-stats"),
+
+const DeckEdit = lazy(() =>
+  import("./pages/deck-edit/deck-edit").catch(retryFailedDynamicImport),
+);
+
+const ChooseInvestigator = lazy(() =>
+  import("./pages/choose-investigator/choose-investigator").catch(
+    retryFailedDynamicImport,
+  ),
+);
+
+const DeckCreate = lazy(() =>
+  import("./pages/deck-create/deck-create").catch(retryFailedDynamicImport),
+);
+
+const DeckView = lazy(() =>
+  import("./pages/deck-view/deck-view").catch(retryFailedDynamicImport),
+);
+
+const Settings = lazy(() =>
+  import("./pages/settings/settings").catch(retryFailedDynamicImport),
+);
+
+const CardView = lazy(() =>
+  import("./pages/card-view/card-view").catch(retryFailedDynamicImport),
+);
+
+const CardViewUsable = lazy(() =>
+  import("./pages/card-view/usable-cards").catch(retryFailedDynamicImport),
+);
+
+const About = lazy(() =>
+  import("./pages/about/about").catch(retryFailedDynamicImport),
+);
+
+const Share = lazy(() =>
+  import("./pages/share/share").catch(retryFailedDynamicImport),
+);
+
+const CollectionStats = lazy(() =>
+  import("./pages/collection-stats/collection-stats")
+    .then(() => {
+      throw new Error("Failed to fetch dynamically imported module");
+    })
+    .catch(retryFailedDynamicImport),
 );
 
 function App() {
@@ -60,7 +95,7 @@ function AppInner() {
   const settings = useStore((state) => state.settings);
   const init = useStore((state) => state.init);
 
-  useColorTheme();
+  applyStoredColorTheme();
 
   // !!!HACK!!!
   // part of the ~~hack~~ workaround for https://github.com/radix-ui/primitives/issues/2777 / https://bugzilla.mozilla.org/show_bug.cgi?id=1885232.

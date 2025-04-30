@@ -7,7 +7,13 @@ import { DeckTools } from "@/components/deck-tools/deck-tools";
 import { DecklistValidation } from "@/components/decklist/decklist-validation";
 import { Filters } from "@/components/filters/filters";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  useTabUrlState,
+} from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/toast.hooks";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { useStore } from "@/store";
@@ -17,7 +23,7 @@ import {
   selectResolvedDeckById,
 } from "@/store/selectors/decks";
 import type { Card } from "@/store/services/queries.types";
-import { type Tab, mapTabToSlot } from "@/store/slices/deck-edits.types";
+import { mapTabToSlot } from "@/store/slices/deck-edits.types";
 import { isStaticInvestigator } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";
 import { useDocumentTitle } from "@/utils/use-document-title";
@@ -34,7 +40,7 @@ import {
   UndoIcon,
   WandSparklesIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { Error404 } from "../errors/404";
@@ -74,8 +80,13 @@ function DeckEdit() {
                 </Button>
                 <Button
                   onClick={() => {
-                    discardEdits(id);
-                    onClose();
+                    const safeguardColdtoes = confirm(
+                      t("deck_edit.discard_confirm"),
+                    );
+                    if (safeguardColdtoes) {
+                      discardEdits(id);
+                      onClose();
+                    }
                   }}
                   size="sm"
                 >
@@ -129,8 +140,8 @@ function DeckEditInner() {
 
   useDocumentTitle(t("deck_edit.title", { name: deck.name }));
 
-  const [currentTab, setCurrentTab] = useState<Tab>("slots");
-  const [currentTool, setCurrentTool] = useState<string>("card-list");
+  const [currentTab, setCurrentTab] = useTabUrlState("slots", "list");
+  const [currentTool, setCurrentTool] = useTabUrlState("card-list", "tool");
 
   const tabs = useMemo(() => {
     const tabs = [
@@ -193,12 +204,12 @@ function DeckEditInner() {
     const deckTabs = tabs.filter((tab) => tab.type === "deck");
     const currentIndex = deckTabs.findIndex((tab) => tab.value === currentTab);
     const nextIndex = (currentIndex + 1) % deckTabs.length;
-    setCurrentTab(deckTabs[nextIndex].value as Tab);
-  }, [currentTab, tabs]);
+    setCurrentTab(deckTabs[nextIndex].value);
+  }, [currentTab, tabs, setCurrentTab]);
 
   const onSetMeta = useCallback(() => {
     setCurrentTab("config");
-  }, []);
+  }, [setCurrentTab]);
 
   useHotkey("d", onCycleDeck);
   useHotkey("c", onSetMeta);

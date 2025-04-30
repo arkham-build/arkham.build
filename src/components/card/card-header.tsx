@@ -27,11 +27,13 @@ export function CardHeader(props: Props) {
         {!!slotHeaderActions && (
           <div className={css["header-actions"]}>{slotHeaderActions}</div>
         )}
-        <MulticlassIcons
-          card={card}
-          className={cx(css["header-icon"], css["faction-icons"])}
-          inverted
-        />
+        {card.type_code !== "investigator" && !card.subtype_code && (
+          <MulticlassIcons
+            card={card}
+            className={cx(css["header-icon"], css["faction-icons"])}
+            inverted
+          />
+        )}
       </div>
     </header>
   );

@@ -1,5 +1,6 @@
 import type { ResolvedDeck } from "@/store/lib/types";
-import { ExternalLinkIcon } from "lucide-react";
+import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
+import { ExternalLinkIcon, MessagesSquareIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../ui/button";
 import { Modal } from "../ui/modal";
@@ -18,15 +19,26 @@ export function DeckInvestigatorModal(props: Props) {
   return (
     <Modal
       actions={
-        <Button
-          as="a"
-          href={`/card/${deck.investigatorFront.card.code}`}
-          tabIndex={0}
-          target="_blank"
-        >
-          <ExternalLinkIcon />
-          {t("card_modal.actions.open_card_page")}
-        </Button>
+        <>
+          <Button
+            as="a"
+            href={`/card/${deck.investigatorFront.card.code}`}
+            tabIndex={0}
+            target="_blank"
+          >
+            <ExternalLinkIcon />
+            {t("card_modal.actions.open_card_page")}
+          </Button>
+          <Button
+            as="a"
+            href={`${localizeArkhamDBBaseUrl()}/card/${deck.investigatorFront.card.code}#reviews-header`}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <MessagesSquareIcon />
+            {t("card_modal.actions.reviews")}
+          </Button>
+        </>
       }
       data-testid="investigator-modal"
       onClose={onCloseModal}

@@ -15,6 +15,8 @@ export type Locale = string;
 
 export type SettingsState = {
   cardLevelDisplay: "icon-only" | "dots" | "text";
+  cardShowCollectionNumber?: boolean;
+  cardSkillIconsDisplay: "simple" | "as_printed";
   collection: Record<string, number>; // track as "quantity" owned to accomodate the core set.
   flags?: Record<string, boolean>;
   fontSize: number;

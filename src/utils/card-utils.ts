@@ -1,5 +1,6 @@
-import type { Card } from "@/store/services/queries.types";
+import type { Card, Cycle, Pack } from "@/store/services/queries.types";
 import {
+  CYCLES_WITH_STANDALONE_PACKS,
   ORIENTATION_CHANGED_CARDS,
   PLAYER_CARDS_ENCOUNTER_BACK_IDS,
   REGEX_USES,
@@ -245,4 +246,16 @@ export function displayAttribute(
     | "customization_change",
 ) {
   return card?.[key] ?? card?.[`real_${key}`] ?? "";
+}
+
+export function cycleOrPack(cycle: Cycle, pack: Pack) {
+  if (
+    CYCLES_WITH_STANDALONE_PACKS.includes(cycle.code) ||
+    pack.real_name.includes("Investigator Expansion") ||
+    pack.real_name.includes("Campaign Expansion")
+  ) {
+    return pack;
+  }
+
+  return cycle;
 }

@@ -11,7 +11,6 @@ import {
   selectResolvedCardById,
 } from "@/store/selectors/lists";
 import type { Card as CardT } from "@/store/services/queries.types";
-import type { Tab } from "@/store/slices/deck-edits.types";
 import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
@@ -26,7 +25,7 @@ import css from "./quick-upgrade.module.css";
 type Props = {
   availableUpgrades: AvailableUpgrades;
   card: CardT;
-  currentTab: Tab;
+  currentTab: string;
   deck: ResolvedDeck;
   hideButton?: boolean;
 };

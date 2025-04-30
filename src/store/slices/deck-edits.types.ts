@@ -14,7 +14,7 @@ export type Slot =
 
 export type Tab = Slot | "config";
 
-export function mapTabToSlot(tab: Tab): Slot {
+export function mapTabToSlot(tab: string): Slot {
   switch (tab) {
     case "extraSlots":
       return "extraSlots";
@@ -74,6 +74,8 @@ export type DeckEditsSlice = {
   swapDeck(card: Card, deckId: Id, targetDeck: "slots" | "sideSlots"): void;
 
   drawRandomBasicWeakness(deckId: Id): Card;
+
+  completeTask(deckId: Id, code: string): string;
 
   updateCardQuantity(
     deckId: Id,

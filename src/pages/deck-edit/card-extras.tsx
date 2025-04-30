@@ -4,7 +4,7 @@ import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectAvailableUpgrades } from "@/store/selectors/lists";
 import type { Card } from "@/store/services/queries.types";
-import { type Tab, mapTabToSlot } from "@/store/slices/deck-edits.types";
+import { mapTabToSlot } from "@/store/slices/deck-edits.types";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import css from "./deck-edit.module.css";
@@ -19,8 +19,8 @@ type Props = {
   deck: ResolvedDeck;
   card: Card;
   quantity: number | undefined;
-  currentTab: Tab;
   currentTool: string;
+  currentTab: string;
 };
 
 export function CardExtras(props: Props) {

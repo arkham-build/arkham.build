@@ -10,7 +10,7 @@ import type {
 } from "@/store/services/queries.types";
 import { deckTickToString } from "@/store/slices/recommender";
 import { cx } from "@/utils/cx";
-import { useColorTheme } from "@/utils/use-color-theme";
+import { useResolvedColorTheme } from "@/utils/use-color-theme";
 import { useQuery } from "@/utils/use-query";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { type MutableRefObject, forwardRef, useCallback, useRef } from "react";
@@ -186,7 +186,7 @@ function CardRecommenderInner(
   const { data, quantities, resolvedDeck, listState, getListCardProps } = props;
 
   const { t } = useTranslation();
-  const [theme] = useColorTheme();
+  const theme = useResolvedColorTheme();
 
   const metadata = useStore((state) => state.metadata);
 

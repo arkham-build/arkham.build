@@ -55,6 +55,7 @@ export function getInitialListsSetting(): SettingsState["lists"] {
 export function getInitialSettings(): SettingsState {
   return {
     cardLevelDisplay: "icon-only",
+    cardSkillIconsDisplay: "simple",
     collection: {},
     flags: {},
     fontSize: 100,

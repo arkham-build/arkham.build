@@ -6,7 +6,7 @@ import type { History } from "@/store/selectors/decks";
 import { isEmpty } from "@/utils/is-empty";
 import { useAccentColor } from "@/utils/use-accent-color";
 import { BookOpenTextIcon, ChartAreaIcon, FileClockIcon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import DeckDescription from "../deck-description";
 import { DeckTags } from "../deck-tags";
@@ -17,7 +17,13 @@ import type { ViewMode } from "../decklist/decklist.types";
 import { LimitedCardPoolTag, SealedDeckTag } from "../limited-card-pool";
 import { Dialog } from "../ui/dialog";
 import { Plane } from "../ui/plane";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  useTabUrlState,
+} from "../ui/tabs";
 import css from "./deck-display.module.css";
 import { DeckHistory } from "./deck-history/deck-history";
 import { Sidebar } from "./sidebar";
@@ -33,17 +39,20 @@ export type DeckDisplayProps = {
 export function DeckDisplay(props: DeckDisplayProps) {
   const { origin, deck, history, validation } = props;
 
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
-  const [currentTab, setCurrentTab] = useState("deck");
+  const [viewMode, setViewMode] = useTabUrlState("list", "view_mode");
+  const [currentTab, setCurrentTab] = useTabUrlState("deck");
   const contentRef = useRef<HTMLDivElement>(null);
 
   const { t } = useTranslation();
   const cssVariables = useAccentColor(deck.investigatorBack.card.faction_code);
   const hasHistory = !isEmpty(history);
 
-  const onTabChange = useCallback((val: string) => {
-    setCurrentTab(val);
-  }, []);
+  const onTabChange = useCallback(
+    (val: string) => {
+      setCurrentTab(val);
+    },
+    [setCurrentTab],
+  );
 
   return (
     <AppLayout title={deck ? deck.name : ""}>
@@ -141,7 +150,7 @@ export function DeckDisplay(props: DeckDisplayProps) {
                 />
                 <Decklist
                   deck={deck}
-                  viewMode={viewMode}
+                  viewMode={viewMode as ViewMode}
                   setViewMode={setViewMode}
                 />
               </div>

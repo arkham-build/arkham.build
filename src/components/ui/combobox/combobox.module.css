@@ -36,7 +36,7 @@
 }
 
 .control-row:focus-within .control-indicator {
-  color: var(--palette-5);
+  color: var(--text);
 }
 
 .control-toggle {

@@ -114,7 +114,8 @@
   flex-flow: row wrap;
 }
 
-.name * {
+.name :where(a, button),
+.name :where(a, button) > * {
   background: none;
   font-size: var(--text-base);
   font-family: var(--font-family-content);
@@ -159,6 +160,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+  padding-right: 2px;
 }
 
 .subname > * {
@@ -167,9 +169,6 @@
 
 .taboo {
   flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.125em;
   font-size: var(--text-2xs);
 }
 
@@ -205,6 +204,10 @@
 .ignored svg {
   stroke: var(--nord-7);
   fill: var(--nord-7);
+}
+
+.skill-icons.as_printed {
+  font-size: 0.9375rem;
 }
 
 /**
@@ -251,7 +254,7 @@
 }
 
 .listcard-wrapper.active {
-  outline: 1px solid var(--palette-6);
+  outline: 1px solid var(--focus);
   outline-offset: -1px;
 }
 

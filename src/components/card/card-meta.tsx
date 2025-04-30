@@ -1,7 +1,6 @@
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
 import { isCardWithRelations } from "@/store/lib/types";
-import type { Cycle, Pack } from "@/store/services/queries.types";
-import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
+import { cycleOrPack } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { displayPackName } from "@/utils/formatting";
 import EncounterIcon from "../icons/encounter-icon";
@@ -102,12 +101,4 @@ function getEncounterPositions(position: number, quantity: number) {
   const start = position;
   const end = position + quantity - 1;
   return `${start}-${end}`;
-}
-
-function cycleOrPack(cycle: Cycle, pack: Pack) {
-  if (CYCLES_WITH_STANDALONE_PACKS.includes(cycle.code)) {
-    return pack;
-  }
-
-  return cycle;
 }

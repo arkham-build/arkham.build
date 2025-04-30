@@ -6,9 +6,10 @@ import {
 import { isSkillIconsFilterObject } from "@/store/slices/lists.type-guards";
 import type { SkillIconsFilter as SkillIconsFilterType } from "@/store/slices/lists.types";
 import { assert } from "@/utils/assert";
+import { cx } from "@/utils/cx";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { SkillIcon } from "../icons/skill-icon";
+import { SkillIconFancy } from "../icons/skill-icon-fancy";
 import { CheckboxGroup } from "../ui/checkboxgroup";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import css from "./filters.module.css";
@@ -53,7 +54,10 @@ export function SkillIconsFilter({ id }: FilterProps) {
     >
       <CheckboxGroup as="div" className={css["icons"]} cols={2}>
         {Object.entries(filter.value).map(([key, value]) => (
-          <div className={css["icon"]} key={key}>
+          <div
+            className={cx(key !== "any" ? css["icon"] : css["text"])}
+            key={key}
+          >
             <ToggleGroup
               key={key}
               onValueChange={(val) =>
@@ -68,7 +72,7 @@ export function SkillIconsFilter({ id }: FilterProps) {
             {key === "any" ? (
               t("filters.skill_icons.any")
             ) : (
-              <SkillIcon skill={key} />
+              <SkillIconFancy skill={key} />
             )}
           </div>
         ))}

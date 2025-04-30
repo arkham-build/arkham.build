@@ -202,6 +202,7 @@ export function UpgradeModal(props: Props) {
   return (
     <Modal data-testid="upgrade-modal" onClose={onCloseModal} size="45rem">
       <ModalContent
+        className={css["content"]}
         title={
           <>
             <i className="icon-xp-bold" />

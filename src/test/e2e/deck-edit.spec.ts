@@ -680,4 +680,30 @@ test.describe("deck edit", () => {
       mask: [page.getByTestId("entry-timestamp")],
     });
   });
+
+  test("completing Task.", async ({ page }) => {
+    await page.goto("/deck/create/01001");
+    await page.getByTestId("create-save").click();
+    await page.getByTestId("card-type-encounter").click();
+    await page.getByTestId("search-input").click();
+    await page.getByTestId("search-input").fill("toe the line");
+
+    await page
+      .getByTestId("listcard-11755a")
+      .getByTestId("quantity-increment")
+      .click();
+
+    assertEditorDeckQuantity(page, "11755a", 1);
+
+    await page
+      .getByTestId("virtuoso-item-list")
+      .getByTestId("listcard-title")
+      .click();
+
+    await page.getByRole("button", { name: "Complete task" }).click();
+    await page.locator("body").press("Escape");
+
+    assertEditorDeckQuantity(page, "11755a", 0);
+    assertEditorDeckQuantity(page, "11755b", 1);
+  });
 });

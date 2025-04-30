@@ -10,6 +10,7 @@ import { Fragment, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import css from "./help-menu.module.css";
+import { Socials } from "./socials";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { DropdownButton, DropdownMenu } from "./ui/dropdown-menu";
@@ -275,6 +276,7 @@ export function HelpMenu() {
             >
               <KeyboardIcon /> {t("help.shortcuts.title")}
             </DropdownButton>
+            <Socials className={css["socials"]} />
           </DropdownMenu>
         </PopoverContent>
       </Popover>

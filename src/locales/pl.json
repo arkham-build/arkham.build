@@ -32,6 +32,7 @@
         "open_on_arkhamdb": "Otwórz na ArkhamDB",
         "reviews": "Otwórz recenzje",
         "usable_by": "Pula kart: {{prefix}}{{name}}",
+        "usable_by_interpolated": "Pula kart: <tooltip>{{name}}</tooltip>",
         "view_backside": "Rewers",
         "who_can_take": "Kto może wziąć tę kartę?"
       },

@@ -4,6 +4,18 @@
   border-radius: var(--rounded);
   overflow: hidden;
   transition: border 0.15s ease-in-out;
+
+  &:focus-within {
+    border-color: 1px solid var(--focus);
+  }
+}
+
+.summary a {
+  text-decoration: none;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .thumbnail {
@@ -120,7 +132,7 @@
 }
 
 .summary.interactive {
-  &:not(:hover) {
+  &:not(:hover):not(:focus-within) {
     border-color: var(--palette-2);
   }
 

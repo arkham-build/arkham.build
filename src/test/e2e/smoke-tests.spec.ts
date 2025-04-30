@@ -72,4 +72,17 @@ test.describe("smoke tests", () => {
       await checkDeckVisible(page2);
     },
   );
+
+  test("ctrl+s saved a deck", { tag: "@smoke" }, async ({ page }) => {
+    await page.goto("/");
+
+    await importDeckFromFile(page, "validation/base_case.json", {
+      navigate: "edit",
+    });
+
+    await page.waitForTimeout(300);
+
+    await page.keyboard.press("Control+s");
+    await expect(page.getByTestId("view-edit")).toBeVisible();
+  });
 });
