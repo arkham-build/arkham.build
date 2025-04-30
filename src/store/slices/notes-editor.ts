@@ -1,10 +1,10 @@
 import type { StateCreator } from "zustand";
 import type { StoreState } from ".";
-import type { Id } from "./data.types";
 import {
   cardToMarkdown,
-  insertCardFormatValueToInsertCardFormat,
-} from "./notes-editor-card-to-markdown";
+  insertCardFormatValueToCardFormatDefinition,
+} from "../lib/cards-to-markdown";
+import type { Id } from "./data.types";
 import type { NotesEditorSlice } from "./notes-editor.types";
 
 export const createNotesEditorSlice: StateCreator<
@@ -68,7 +68,7 @@ export const createNotesEditorSlice: StateCreator<
         });
       },
 
-      setInsertCardFormat(value) {
+      setCardFormatDefinition(value) {
         const state = get();
         set({
           notesEditorState: {
@@ -81,7 +81,7 @@ export const createNotesEditorSlice: StateCreator<
       insertCard(deckId, card) {
         const state = get();
         const insertCardFormatValue = state.notesEditorState.insertCardFormat;
-        const insertCardFormat = insertCardFormatValueToInsertCardFormat(
+        const insertCardFormat = insertCardFormatValueToCardFormatDefinition(
           insertCardFormatValue,
         );
         const textToInsert = cardToMarkdown(
@@ -90,6 +90,7 @@ export const createNotesEditorSlice: StateCreator<
           state.metadata,
           insertCardFormat,
         );
+
         return insertStringToDescription(deckId, textToInsert);
       },
 

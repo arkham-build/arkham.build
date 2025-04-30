@@ -5,7 +5,7 @@ import type { Card } from "@/store/services/queries.types";
 import { PencilLine } from "lucide-react";
 import { useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { NotesTextareaRefContext } from "../notes-textarea-ref-context";
+import { NotesTextareaRefContext } from "./notes-rte/notes-textarea-ref-context";
 
 type Props = {
   card: Card;

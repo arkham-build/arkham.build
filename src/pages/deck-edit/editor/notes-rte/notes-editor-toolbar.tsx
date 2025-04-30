@@ -4,19 +4,17 @@ import { HotkeyTooltip } from "@/components/ui/hotkey";
 import { Select, type SelectOption } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useStore } from "@/store";
+import {
+  type CardFormat,
+  type CardFormatDefinition,
+  insertCardFormatValueToCardFormatDefinition,
+} from "@/store/lib/cards-to-markdown";
 import type { ResolvedCard, ResolvedDeck } from "@/store/lib/types";
 import { selectListCards } from "@/store/selectors/lists";
 import type { Card } from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
 import type { Id } from "@/store/slices/data.types";
-import {
-  type InsertCardFormatValue,
-  insertCardFormatValueToInsertCardFormat,
-} from "@/store/slices/notes-editor-card-to-markdown";
-import type {
-  InsertCardFormat,
-  InsertType,
-} from "@/store/slices/notes-editor.types";
+import type { InsertType } from "@/store/slices/notes-editor.types";
 import {
   displayAttribute,
   isRandomBasicWeaknessLike,
@@ -24,8 +22,8 @@ import {
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
-import { NotesTextareaRefContext } from "../notes-textarea-ref-context";
 import css from "./notes-editor-toolbar.module.css";
+import { NotesTextareaRefContext } from "./notes-textarea-ref-context";
 import { SymbolCombobox } from "./symbol-combobox";
 
 type Props = {
@@ -127,10 +125,10 @@ const selectCampaignCardsForCombobox = createSelector(
 );
 
 type InsertCardFrom = "deck" | "usable" | "all_player_cards" | "campaign_cards";
-interface InsertCardFormatList {
+interface CardFormatDefinitionList {
   name: string;
-  value: InsertCardFormatValue;
-  options: InsertCardFormat;
+  value: CardFormat;
+  options: CardFormatDefinition;
 }
 
 export const cardsComboboxId = "notes-editor-cards-combobox";
@@ -176,8 +174,8 @@ export function NotesEditorToolbar(props: Props) {
   const insertCardFormat = useStore(
     (state) => state.notesEditorState.insertCardFormat,
   );
-  const setInsertCardFormat = useStore(
-    (state) => state.notesEditorFunctions.setInsertCardFormat,
+  const setCardFormatDefinition = useStore(
+    (state) => state.notesEditorFunctions.setCardFormatDefinition,
   );
   const insertPositionStart = useStore(
     (state) => state.notesEditorState.insertPositionStart,
@@ -188,28 +186,28 @@ export function NotesEditorToolbar(props: Props) {
     (state) => state.notesEditorFunctions.insertString,
   );
 
-  const builtInInsertCardFormats: InsertCardFormatList[] = [
+  const builtInCardFormatDefinitions: CardFormatDefinitionList[] = [
     {
       name: t("deck_edit.notes.toolbar.insert.built_in_format.paragraph"),
       value: "paragraph",
-      options: insertCardFormatValueToInsertCardFormat("paragraph"),
+      options: insertCardFormatValueToCardFormatDefinition("paragraph"),
     },
     {
       name: t(
         "deck_edit.notes.toolbar.insert.built_in_format.paragraph_colored",
       ),
       value: "paragraphColored",
-      options: insertCardFormatValueToInsertCardFormat("paragraphColored"),
+      options: insertCardFormatValueToCardFormatDefinition("paragraphColored"),
     },
     {
       name: t("deck_edit.notes.toolbar.insert.built_in_format.header"),
       value: "header",
-      options: insertCardFormatValueToInsertCardFormat("header"),
+      options: insertCardFormatValueToCardFormatDefinition("header"),
     },
     {
       name: t("deck_edit.notes.toolbar.insert.built_in_format.header_with_set"),
       value: "headerWithSet",
-      options: insertCardFormatValueToInsertCardFormat("headerWithSet"),
+      options: insertCardFormatValueToCardFormatDefinition("headerWithSet"),
     },
   ];
 
@@ -231,7 +229,7 @@ export function NotesEditorToolbar(props: Props) {
       value: "campaign_cards",
     },
   ];
-  const formatSelectOptions: SelectOption[] = builtInInsertCardFormats.map(
+  const formatSelectOptions: SelectOption[] = builtInCardFormatDefinitions.map(
     (option) => ({
       label: option.name,
       value: option.value,
@@ -307,8 +305,8 @@ export function NotesEditorToolbar(props: Props) {
                   id="notes-editor-format-select"
                   variant="compressed"
                   onChange={(evt) => {
-                    setInsertCardFormat(
-                      evt.currentTarget.value as InsertCardFormatValue,
+                    setCardFormatDefinition(
+                      evt.currentTarget.value as CardFormat,
                     );
                   }}
                   options={formatSelectOptions}
