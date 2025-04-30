@@ -5,7 +5,7 @@ import type { Card } from "@/store/services/queries.types";
 import { PencilLine } from "lucide-react";
 import { useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { NotesTextareaRefContext } from "./notes-rte/notes-textarea-ref-context";
+import { NotesRichTextEditorContext } from "./notes-rte/notes-rte-context";
 
 type Props = {
   card: Card;
@@ -18,7 +18,7 @@ export function AddToNotes(props: Props) {
   const insertCardToDescription = useStore(
     (state) => state.notesEditorFunctions.insertCard,
   );
-  const notesTextareaRef = useContext(NotesTextareaRefContext);
+  const notesTextareaRef = useContext(NotesRichTextEditorContext);
   const notesEditorState = useStore((state) => state.notesEditorState);
   const buttonDisabled = notesEditorState.insertPositionStart === undefined;
   const onButtonClick = useCallback(() => {

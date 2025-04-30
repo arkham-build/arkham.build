@@ -1,3 +1,8 @@
+.notes-rte {
+  height: 20rem;
+  resize: none;
+}
+
 .insert-toolbar {
   margin-bottom: 0.25rem;
 }

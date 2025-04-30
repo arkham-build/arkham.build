@@ -22,8 +22,8 @@ import {
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
-import css from "./notes-editor-toolbar.module.css";
-import { NotesTextareaRefContext } from "./notes-textarea-ref-context";
+import { NotesRichTextEditorContext } from "./notes-rte-context";
+import css from "./notes-rte.module.css";
 import { SymbolCombobox } from "./symbol-combobox";
 
 type Props = {
@@ -137,7 +137,7 @@ export const symbolComboboxId = "notes-editor-symbol-combobox";
 export function NotesEditorToolbar(props: Props) {
   const { deck, deckId } = props;
   const { t } = useTranslation();
-  const notesTextareaRef = useContext(NotesTextareaRefContext);
+  const notesTextareaRef = useContext(NotesRichTextEditorContext);
   const [insertCardFrom, setInsertCardFrom] = useState<InsertCardFrom>("deck");
 
   const deckCards: Card[] = getDeckCardsForCombobox(deck);

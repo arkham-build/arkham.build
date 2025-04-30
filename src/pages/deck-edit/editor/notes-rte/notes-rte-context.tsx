@@ -4,7 +4,7 @@ import type { RefObject } from "react";
 /**
  * Allows focusing or moving the caret of description textarea from other components.
  */
-export const NotesTextareaRefContext = createContext<
+export const NotesRichTextEditorContext = createContext<
   RefObject<HTMLTextAreaElement>
 >({ current: null });
 
@@ -15,8 +15,8 @@ export function NotesTextareaRefContextProvider({
 }) {
   const ref = useRef<HTMLTextAreaElement>(null);
   return (
-    <NotesTextareaRefContext.Provider value={ref}>
+    <NotesRichTextEditorContext.Provider value={ref}>
       {children}
-    </NotesTextareaRefContext.Provider>
+    </NotesRichTextEditorContext.Provider>
   );
 }

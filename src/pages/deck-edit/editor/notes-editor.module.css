@@ -5,8 +5,3 @@
 .notes-editor > * + * {
   margin-top: 0.375rem;
 }
-
-.notes-editor-textarea {
-  height: 20rem;
-  resize: none;
-}
