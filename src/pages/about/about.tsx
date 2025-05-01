@@ -81,8 +81,8 @@ function About() {
             development of the initial version, design concepts.
           </li>
           <li>
-            <strong>@TartanLlama</strong>, <strong>@blu</strong>: Significant
-            contributions to the codebase.
+            <strong>@TartanLlama</strong>, <strong>@blu</strong>,{" "}
+            <strong>@5argon</strong>: Significant contributions to the codebase.
           </li>
           <li>
             <strong>@morvael</strong>: API access to draw customization sheets.

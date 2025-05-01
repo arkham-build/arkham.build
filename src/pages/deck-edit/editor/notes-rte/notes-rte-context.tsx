@@ -37,7 +37,7 @@ export function NotesRichTextEditorContextProvider({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [cardOrigin, setCardOrigin] = useState<CardOrigin>("deck");
-  const [cardFormat, setCardFormat] = useState<CardFormat>("paragraph");
+  const [cardFormat, setCardFormat] = useState<CardFormat>("paragraph_colored");
   const [popoverOpen, setPopoverOpen] = useState<ToolbarPopover | undefined>(
     undefined,
   );
