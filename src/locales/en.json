@@ -215,6 +215,30 @@
         "none": "No Slot",
         "tarot": "Tarot"
       },
+      "symbols": {
+        "action": "Action triggered ability",
+        "agility": "Agility",
+        "auto_fail": "Auto-fail",
+        "bless": "Bless",
+        "combat": "Combat",
+        "cultist": "Cultist",
+        "curse": "Curse",
+        "elder_sign": "Elder Sign",
+        "elder_thing": "Elder Thing",
+        "free": "Free triggered ability",
+        "guardian": "Guardian",
+        "intellect": "Intellect",
+        "mystic": "Mystic",
+        "per_investigator": "Per investigator",
+        "reaction": "Reaction triggered ability",
+        "rogue": "Rogue",
+        "seeker": "Seeker",
+        "skull": "Skull",
+        "survivor": "Survivor",
+        "tablet": "Tablet",
+        "wild": "Wild",
+        "willpower": "Willpower"
+      },
       "specialist": "Specialist",
       "subtype": {
         "basicweakness": "Basic Weakness",
@@ -839,52 +863,26 @@
         "intro": "Introduction",
         "intro_help": "A short deck introduction. Will be displayed on the deck view and in social media previews. Supports ArkhamDB-flavoured markdown.",
         "toolbar": {
-          "insert": {
-            "built_in_format": {
-              "header": "Header",
-              "header_with_set": "Header with set",
-              "paragraph": "Paragraph",
-              "paragraph_colored": "Paragraph colored"
-            },
-            "card": "Card",
-            "format": "Format",
-            "from": "From",
-            "from_list": {
-              "all_player_cards": "All player cards",
-              "campaign_cards": "Campaign cards",
-              "deck": "Deck",
-              "usable": "Usable player cards"
-            },
-            "insert": "Insert",
-            "insert_card_tooltip": "Insert a card while editing notes",
-            "insert_symbol_placeholder": "Select a symbol...",
-            "insert_symbol_tooltip": "Insert a symbol while editing notes",
-            "symbol": "Symbol",
-            "symbol_names": {
-              "action": "Action triggered ability",
-              "agility": "Agility",
-              "auto_fail": "Auto-fail",
-              "bless": "Bless",
-              "combat": "Combat",
-              "cultist": "Cultist",
-              "curse": "Curse",
-              "elder_sign": "Elder Sign",
-              "elder_thing": "Elder Thing",
-              "free": "Free triggered ability",
-              "guardian": "Guardian",
-              "intellect": "Intellect",
-              "mystic": "Mystic",
-              "per_investigator": "Per investigator",
-              "reaction": "Reaction triggered ability",
-              "rogue": "Rogue",
-              "seeker": "Seeker",
-              "skull": "Skull",
-              "survivor": "Survivor",
-              "tablet": "Tablet",
-              "wild": "Wild",
-              "willpower": "Willpower"
-            }
-          }
+          "card": "Card",
+          "card_tooltip": "Insert a card",
+          "format": "Format",
+          "formats": {
+            "header": "Header",
+            "header_with_set": "Header (With set)",
+            "paragraph": "Paragraph",
+            "paragraph_colored": "Paragraph (Colored)"
+          },
+          "origin": "Card origin",
+          "origins": {
+            "player": "All player cards",
+            "campaign": "Campaign cards",
+            "deck": "Cards in deck",
+            "usable": "Usable player cards"
+          },
+          "insert": "Insert",
+          "symbol_placeholder": "Select a symbol...",
+          "symbol_tooltip": "Insert a symbol",
+          "symbol": "Symbol"
         }
       },
       "quick_upgrade": {

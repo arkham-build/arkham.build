@@ -70,7 +70,8 @@ export function ComboboxMenu<T extends Coded>(props: Props<T>) {
               )}
               data-testid={`combobox-menu-item-${item.code}`}
               id={item.code}
-              onClick={() => {
+              onClick={(evt) => {
+                evt.stopPropagation();
                 setSelectedItem(item);
               }}
               onPointerOver={() => {

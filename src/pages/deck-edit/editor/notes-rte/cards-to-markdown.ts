@@ -6,9 +6,9 @@ import { displayPackName } from "@/utils/formatting";
 
 export type CardFormat =
   | "paragraph"
-  | "paragraphColored"
+  | "paragraph_colored"
   | "header"
-  | "headerWithSet";
+  | "header_with_set";
 
 type Padding = "left" | "right" | "both" | false;
 
@@ -43,7 +43,7 @@ export type CardFormatDefinition = {
   };
 };
 
-const FORMATS: Record<CardFormat, CardFormatDefinition> = {
+export const CARD_FORMATS: Record<CardFormat, CardFormatDefinition> = {
   paragraph: {
     templateString: "[{name}](/card/{code})",
     placeholderOptions: {
@@ -72,7 +72,7 @@ const FORMATS: Record<CardFormat, CardFormatDefinition> = {
       },
     },
   },
-  paragraphColored: {
+  paragraph_colored: {
     templateString: "[{name}](/card/{code})",
     placeholderOptions: {
       class: {
@@ -128,7 +128,7 @@ const FORMATS: Record<CardFormat, CardFormatDefinition> = {
       },
     },
   },
-  headerWithSet: {
+  header_with_set: {
     templateString: "{class}[**{name}**](/card/{code}){set}",
     placeholderOptions: {
       class: {
@@ -158,8 +158,8 @@ const FORMATS: Record<CardFormat, CardFormatDefinition> = {
   },
 };
 
-export function insertCardFormatValueToCardFormatDefinition(value: CardFormat) {
-  return FORMATS[value];
+export function cardFormatDefinition(value: CardFormat) {
+  return CARD_FORMATS[value];
 }
 
 function replacePlaceholder(
@@ -249,8 +249,8 @@ function wrapClassColor(str: string, card: Card): string {
 
 export function cardToMarkdown(
   card: Card,
-  lookupTables: LookupTables,
   metadata: Metadata,
+  lookupTables: LookupTables,
   format: CardFormatDefinition,
 ) {
   let str = format.templateString;

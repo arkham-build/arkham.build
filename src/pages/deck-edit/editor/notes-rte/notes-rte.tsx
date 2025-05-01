@@ -1,95 +1,164 @@
+import DeckDescription from "@/components/deck-description";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { StoreState } from "@/store/slices";
-import { useCallback, useContext } from "react";
-import { NotesRichTextEditorContext } from "./notes-rte-context";
-import {
-  NotesEditorToolbar,
-  cardsComboboxId,
-  symbolComboboxId,
-} from "./notes-rte-toolbar";
+import { debounce } from "@/utils/debounce";
+import { PilcrowIcon } from "lucide-react";
+import { useCallback, useState } from "react";
+import { createSelector } from "reselect";
+import { CardsPopover } from "./cards-popover";
+import { useNotesRichTextEditorContext } from "./notes-rte-context";
 import css from "./notes-rte.module.css";
+import { SymbolsPopover } from "./symbols-popover";
+
+const selectUpdateDescription = createSelector(
+  (state: StoreState) => state.updateDescription,
+  (updateDescription) => debounce(updateDescription, 100),
+);
 
 export function NotesRichTextEditor({ deck }: { deck: ResolvedDeck }) {
-  const notesTextareaRef = useContext(NotesRichTextEditorContext);
+  const { textareaRef, setPopoverOpen } = useNotesRichTextEditorContext();
 
-  const editingDeckDescription = useStore(
-    (state: StoreState) =>
-      state.deckEdits[deck.id]?.description_md ?? deck.description_md,
-  );
+  const [preview, setPreview] = useState(false);
 
-  const updateDescription = useStore(
-    (state: StoreState) => state.updateDescription,
-  );
-
-  const setInsertPosition = useStore(
-    (state: StoreState) => state.notesEditorFunctions.setInsertPosition,
-  );
-
-  const setInsertPositionWithFocusEvent = useCallback(
-    (evt: React.FocusEvent<HTMLTextAreaElement>) => {
-      const selectionStart = evt.target.selectionStart;
-      const selectionEnd = evt.target.selectionEnd;
-      setInsertPosition(selectionStart, selectionEnd);
-    },
-    [setInsertPosition],
-  );
-
-  const insertType = useStore(
-    (state: StoreState) => state.notesEditorState.insertType,
-  );
-  const setInsertType = useStore(
-    (state: StoreState) => state.notesEditorFunctions.setInsertType,
-  );
+  const updateDescription = useStore(selectUpdateDescription);
 
   const onDescriptionChange = useCallback(
     (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
       if (evt.target instanceof HTMLTextAreaElement) {
-        updateDescription(deck.id, evt.target.value);
+        // Opinionated regex to make markdown new lines more predictable.
+        const value = evt.target.value.replace(
+          /(?<=^(?!.* {2}$).*?\S.*?)\n(?!\n)/gm,
+          "  \n",
+        );
+
+        updateDescription(deck.id, value);
       }
     },
     [updateDescription, deck.id],
   );
 
+  const handleShortcuts = useCallback(
+    (evt: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (evt.key === "Tab" && evt.shiftKey) {
+        evt.preventDefault();
+        setPopoverOpen("symbols");
+      } else if (evt.key === "Tab") {
+        evt.preventDefault();
+        setPopoverOpen("cards");
+      }
+    },
+    [setPopoverOpen],
+  );
+
   return (
-    <>
-      <NotesEditorToolbar deck={deck} deckId={deck.id} />
-      <textarea
-        className={css["notes-rte"]}
-        data-testid="editor-description"
-        ref={notesTextareaRef}
-        value={editingDeckDescription ?? ""}
-        onFocus={setInsertPositionWithFocusEvent}
-        onChange={onDescriptionChange}
-        onKeyDownCapture={(evt) => {
-          // TODO: Should focus combobox with ref instead of using ID?
-          if (evt.ctrlKey && evt.shiftKey && evt.key === " ") {
-            evt.preventDefault();
-            if (insertType !== "symbol") {
-              setInsertType("symbol");
-              setTimeout(() => {
-                document.getElementById(symbolComboboxId)?.focus();
-              }, 0);
-            } else {
-              document.getElementById(symbolComboboxId)?.focus();
-            }
-          } else if (evt.ctrlKey && evt.key === " ") {
-            evt.preventDefault();
-            if (insertType !== "card") {
-              setInsertType("card");
-              setTimeout(() => {
-                document.getElementById(cardsComboboxId)?.focus();
-              }, 0);
-            } else {
-              document.getElementById(cardsComboboxId)?.focus();
-            }
-          }
-        }}
-        onBlur={(evt) => {
-          onDescriptionChange(evt);
-          setInsertPositionWithFocusEvent(evt);
-        }}
-      />
-    </>
+    <div className={css["rich-text-editor"]}>
+      <NotesRichTextEditorToolbar deck={deck} setPreview={setPreview} />
+      {preview ? (
+        <DeckDescription
+          className={css["preview"]}
+          content={deck.description_md ?? ""}
+        />
+      ) : (
+        <textarea
+          className={css["textarea"]}
+          data-testid="editor-description"
+          defaultValue={deck.description_md ?? ""}
+          onChange={onDescriptionChange}
+          onKeyDown={handleShortcuts}
+          ref={textareaRef}
+        />
+      )}
+    </div>
+  );
+}
+
+function NotesRichTextEditorToolbar({
+  deck,
+  setPreview,
+}: {
+  deck: ResolvedDeck;
+  setPreview: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const { popoverOpen, setPopoverOpen, textareaRef } =
+    useNotesRichTextEditorContext();
+
+  const onCardsOpenChange = useCallback(
+    (open: boolean) => {
+      setPopoverOpen(open ? "cards" : undefined);
+      textareaRef.current?.focus();
+    },
+    [setPopoverOpen, textareaRef.current],
+  );
+
+  const onSymbolsOpenChange = useCallback(
+    (open: boolean) => {
+      setPopoverOpen(open ? "symbols" : undefined);
+      textareaRef.current?.focus();
+    },
+    [setPopoverOpen, textareaRef.current],
+  );
+
+  const onBlurPopover = useCallback(() => {
+    setPopoverOpen(undefined);
+    textareaRef.current?.focus();
+  }, [setPopoverOpen, textareaRef.current]);
+
+  return (
+    <nav className={css["toolbar"]}>
+      <div className={css["toolbar-actions"]}>
+        <Popover
+          placement="bottom-start"
+          open={popoverOpen === "cards"}
+          onOpenChange={onCardsOpenChange}
+        >
+          <PopoverTrigger asChild>
+            <Button
+              iconOnly
+              tooltip="Insert card"
+              size="lg"
+              variant={popoverOpen === "cards" ? "primary" : "secondary"}
+            >
+              <i className="icon-card-outline" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className={css["toolbar-popover"]}>
+              <CardsPopover deck={deck} onEscapePress={onBlurPopover} />
+            </div>
+          </PopoverContent>
+        </Popover>
+        <Popover
+          placement="bottom-start"
+          open={popoverOpen === "symbols"}
+          onOpenChange={onSymbolsOpenChange}
+        >
+          <PopoverTrigger asChild>
+            <Button
+              iconOnly
+              tooltip="Insert symbol"
+              size="lg"
+              variant={popoverOpen === "symbols" ? "primary" : "secondary"}
+            >
+              <PilcrowIcon />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className={css["toolbar-popover"]}>
+              <SymbolsPopover deck={deck} onEscapePress={onBlurPopover} />
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+      <div>
+        <Button onClick={() => setPreview((prev) => !prev)}>Preview</Button>
+      </div>
+    </nav>
   );
 }

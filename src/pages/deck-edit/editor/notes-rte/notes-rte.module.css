@@ -1,32 +1,81 @@
-.notes-rte {
+.rich-text-editor {
+  position: relative;
+}
+
+.rich-text-editor > * {
+  width: 100%;
+}
+
+.rich-text-editor > * + * {
+  margin-top: 0.5rem;
+}
+
+.textarea {
   height: 20rem;
   resize: none;
 }
 
-.insert-toolbar {
-  margin-bottom: 0.25rem;
-}
-
-.insert-field-label {
+.toolbar {
   display: flex;
-  align-items: center;
+  gap: 0.375rem;
   justify-content: space-between;
-  margin-bottom: 0.25rem;
-  flex-wrap: wrap;
 }
 
-.insert-card-field-label-right-side {
+.toolbar-actions {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.toolbar-popover {
+  padding: 0.375rem 0.75rem 0.75rem;
+  background: var(--palette-point-five);
+  border: 1px solid var(--palette-1);
+  border-radius: var(--rounded);
+  width: 30rem;
+  max-width: 95dvw;
+  box-shadow: var(--shadow-md);
+}
+
+.symbol-combobox-item {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.375rem;
+  cursor: pointer;
 }
 
-.insert-card-field-label-right-side-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.cards-popover {
+  padding: 0.5rem;
+
+  @media screen and (min-width: 30rem) {
+    display: grid;
+    grid-template-areas:
+      "format origin"
+      "combobox combobox";
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.5rem;
+  }
 }
 
-.insert-card-field-label-right-side-item > label {
-  margin-bottom: 0;
+.cards-origin {
+  grid-area: origin;
+}
+
+.cards-format {
+  grid-area: format;
+}
+
+.cards-combobox {
+  grid-area: combobox;
+}
+.cards-popover select {
+  width: 100%;
+}
+
+.preview {
+  height: 20rem;
+  overflow: auto;
+  background: var(--palette-point-five);
+  border: 1px solid var(--palette-1);
+  padding: 0.375rem;
 }

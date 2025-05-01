@@ -49,7 +49,7 @@ import { CardExtras } from "./card-extras";
 import css from "./deck-edit.module.css";
 import { Editor } from "./editor/editor";
 import { NotesEditor } from "./editor/notes-editor";
-import { NotesTextareaRefContextProvider } from "./editor/notes-rte/notes-rte-context";
+import { NotesRichTextEditorContextProvider } from "./editor/notes-rte/notes-rte-context";
 import { UndoHistory } from "./editor/undo-history";
 
 function DeckEdit() {
@@ -262,7 +262,7 @@ function DeckEditInner() {
 
   return (
     <ListLayoutContextProvider>
-      <NotesTextareaRefContextProvider>
+      <NotesRichTextEditorContextProvider>
         <ListLayout
           filters={
             <Filters>
@@ -376,7 +376,7 @@ function DeckEditInner() {
             </Tabs>
           )}
         </ListLayout>
-      </NotesTextareaRefContextProvider>
+      </NotesRichTextEditorContextProvider>
     </ListLayoutContextProvider>
   );
 }

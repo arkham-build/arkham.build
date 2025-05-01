@@ -11,7 +11,6 @@ import { createDeckEditsSlice } from "./slices/deck-edits";
 import { createListsSlice } from "./slices/lists";
 import { createLookupTablesSlice } from "./slices/lookup-tables";
 import { createMetadataSlice } from "./slices/metadata";
-import { createNotesEditorSlice } from "./slices/notes-editor";
 import { createRecommenderSlice } from "./slices/recommender";
 import { createRemotingSlice } from "./slices/remoting";
 import { createSettingsSlice } from "./slices/settings";
@@ -28,7 +27,6 @@ const stateCreator = (...args: [any, any, any]) => ({
   ...createSettingsSlice(...args),
   ...createUISlice(...args),
   ...createDeckEditsSlice(...args),
-  ...createNotesEditorSlice(...args),
   ...createDeckCreateSlice(...args),
   ...createSharingSlice(...args),
   ...createDeckFiltersSlice(...args),
