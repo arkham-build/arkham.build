@@ -221,6 +221,30 @@
         "none": "Kein Untertyp",
         "weakness": "Schwäche"
       },
+      "symbols": {
+        "action": "Aktionsauslöser",
+        "agility": "Beweglichkeit",
+        "auto_fail": "Automatisches Misslingen",
+        "bless": "Segensmarker",
+        "combat": "Kampf",
+        "cultist": "Kultist",
+        "curse": "Fluchmarker",
+        "elder_sign": "Älteres Zeichen",
+        "elder_thing": "Älteres Wesen",
+        "free": "Freier Auslöser",
+        "guardian": "Wächter",
+        "intellect": "Intellekt",
+        "mystic": "Mystiker",
+        "per_investigator": "Pro Ermittler",
+        "reaction": "Reaktionsauslöser",
+        "rogue": "Schurke",
+        "seeker": "Sucher",
+        "skull": "Totenschädel",
+        "survivor": "Überlebender",
+        "tablet": "Schrifttafel",
+        "wild": "Joker",
+        "willpower": "Willenskraft"
+      },
       "taboo": "Tabuliste",
       "taboo_chained": "Kostet {{xp}} weitere Erfahrungspunkte.",
       "taboo_mutated": "Mutiert",
@@ -765,6 +789,7 @@
     },
     "deck_edit": {
       "actions": {
+        "add_to_notes": "In die Notizen einfügen",
         "cycle_decks": "Deckliste wechseln",
         "decrement_quantity": "Anzahl im Deck verringern",
         "decrement_side_quantity": "Anzahl im Nebendeck verringern",
@@ -835,8 +860,31 @@
         "banner_url_placeholder": "URL eingeben",
         "description": "Notizen",
         "description_help": "ArkhamDB-Formatierung wird unterstützt.",
+        "description_placeholder": "Notizen eingeben...",
         "intro": "Einführung",
-        "intro_help": "Eine kurze Einführung in das Deck, die in der Deckansicht und Linkvorschau angezeigt wird. ArkhamDB-Formatierung wird unterstützt."
+        "intro_help": "Eine kurze Einführung in das Deck, die in der Deckansicht und Linkvorschau angezeigt wird. ArkhamDB-Formatierung wird unterstützt.",
+        "toolbar": {
+          "card": "Karte",
+          "card_tooltip": "Karte einfügen",
+          "format": "Format",
+          "formats": {
+            "header": "Titel",
+            "header_with_set": "Titel (mit Sammlungsnummer)",
+            "paragraph": "Paragraph",
+            "paragraph_colored": "Paragraph (Farbig)"
+          },
+          "origin": "Verfügbare Karten",
+          "origins": {
+            "campaign": "Szenariokarten",
+            "deck": "Karten im Deck",
+            "player": "Alle Spielerkarten",
+            "usable": "Legale Spielerkarten"
+          },
+          "preview": "Vorschau",
+          "symbol": "Symbol",
+          "symbol_placeholder": "Symbol auswählen...",
+          "symbol_tooltip": "Symbol einfügen"
+        }
       },
       "quick_upgrade": {
         "available_upgrades": "Verfügbare Verbesserungen",

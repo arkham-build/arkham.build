@@ -215,6 +215,12 @@
         "none": "No Slot",
         "tarot": "Tarot"
       },
+      "specialist": "Specialist",
+      "subtype": {
+        "basicweakness": "Basic Weakness",
+        "none": "No subtype",
+        "weakness": "Weakness"
+      },
       "symbols": {
         "action": "Action triggered ability",
         "agility": "Agility",
@@ -238,12 +244,6 @@
         "tablet": "Tablet",
         "wild": "Wild",
         "willpower": "Willpower"
-      },
-      "specialist": "Specialist",
-      "subtype": {
-        "basicweakness": "Basic Weakness",
-        "none": "No subtype",
-        "weakness": "Weakness"
       },
       "taboo": "Taboo list",
       "taboo_chained": "Costs {{xp}} additional experience.",
@@ -860,6 +860,7 @@
         "banner_url_placeholder": "Enter URL",
         "description": "Notes",
         "description_help": "Supports ArkhamDB-flavoured markdown.",
+        "description_placeholder": "Enter notes...",
         "intro": "Introduction",
         "intro_help": "A short deck introduction. Will be displayed on the deck view and in social media previews. Supports ArkhamDB-flavoured markdown.",
         "toolbar": {
@@ -868,21 +869,21 @@
           "format": "Format",
           "formats": {
             "header": "Header",
-            "header_with_set": "Header (With set)",
+            "header_with_set": "Header (with collection number)",
             "paragraph": "Paragraph",
             "paragraph_colored": "Paragraph (Colored)"
           },
-          "origin": "Card origin",
+          "origin": "Available cards",
           "origins": {
-            "player": "All player cards",
             "campaign": "Campaign cards",
             "deck": "Cards in deck",
+            "player": "All player cards",
             "usable": "Usable player cards"
           },
-          "insert": "Insert",
+          "preview": "Preview",
+          "symbol": "Symbol",
           "symbol_placeholder": "Select a symbol...",
-          "symbol_tooltip": "Insert a symbol",
-          "symbol": "Symbol"
+          "symbol_tooltip": "Insert a symbol"
         }
       },
       "quick_upgrade": {

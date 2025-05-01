@@ -1,5 +1,6 @@
 import DeckDescription from "@/components/deck-description";
 import { Button } from "@/components/ui/button";
+import { Hotkey } from "@/components/ui/hotkey";
 import {
   Popover,
   PopoverContent,
@@ -11,6 +12,7 @@ import type { StoreState } from "@/store/slices";
 import { debounce } from "@/utils/debounce";
 import { PilcrowIcon } from "lucide-react";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { CardsPopover } from "./cards-popover";
 import { useNotesRichTextEditorContext } from "./notes-rte-context";
@@ -23,6 +25,7 @@ const selectUpdateDescription = createSelector(
 );
 
 export function NotesRichTextEditor({ deck }: { deck: ResolvedDeck }) {
+  const { t } = useTranslation();
   const { textareaRef, setPopoverOpen } = useNotesRichTextEditorContext();
 
   const [preview, setPreview] = useState(false);
@@ -32,7 +35,7 @@ export function NotesRichTextEditor({ deck }: { deck: ResolvedDeck }) {
   const onDescriptionChange = useCallback(
     (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
       if (evt.target instanceof HTMLTextAreaElement) {
-        // Opinionated regex to make markdown new lines more predictable.
+        // Opinion: regex to make markdown new lines more predictable.
         const value = evt.target.value.replace(
           /(?<=^(?!.* {2}$).*?\S.*?)\n(?!\n)/gm,
           "  \n",
@@ -72,6 +75,7 @@ export function NotesRichTextEditor({ deck }: { deck: ResolvedDeck }) {
           defaultValue={deck.description_md ?? ""}
           onChange={onDescriptionChange}
           onKeyDown={handleShortcuts}
+          placeholder={t("deck_edit.notes.description_placeholder")}
           ref={textareaRef}
         />
       )}
@@ -86,6 +90,7 @@ function NotesRichTextEditorToolbar({
   deck: ResolvedDeck;
   setPreview: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const { t } = useTranslation();
   const { popoverOpen, setPopoverOpen, textareaRef } =
     useNotesRichTextEditorContext();
 
@@ -121,8 +126,13 @@ function NotesRichTextEditorToolbar({
           <PopoverTrigger asChild>
             <Button
               iconOnly
-              tooltip="Insert card"
               size="lg"
+              tooltip={
+                <Hotkey
+                  keybind="tab"
+                  description={t("deck_edit.notes.toolbar.card_tooltip")}
+                />
+              }
               variant={popoverOpen === "cards" ? "primary" : "secondary"}
             >
               <i className="icon-card-outline" />
@@ -142,8 +152,13 @@ function NotesRichTextEditorToolbar({
           <PopoverTrigger asChild>
             <Button
               iconOnly
-              tooltip="Insert symbol"
               size="lg"
+              tooltip={
+                <Hotkey
+                  keybind="shift+tab"
+                  description={t("deck_edit.notes.toolbar.symbol_tooltip")}
+                />
+              }
               variant={popoverOpen === "symbols" ? "primary" : "secondary"}
             >
               <PilcrowIcon />
@@ -157,7 +172,9 @@ function NotesRichTextEditorToolbar({
         </Popover>
       </div>
       <div>
-        <Button onClick={() => setPreview((prev) => !prev)}>Preview</Button>
+        <Button onClick={() => setPreview((prev) => !prev)}>
+          {t("deck_edit.notes.toolbar.preview")}
+        </Button>
       </div>
     </nav>
   );
