@@ -46,7 +46,10 @@ export function NotesRichTextEditorContextProvider({
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    textarea.focus();
+    if (document.activeElement !== textarea) {
+      textarea.focus();
+    }
+
     document.execCommand("insertText", false, text);
 
     textarea.dispatchEvent(
@@ -57,7 +60,9 @@ export function NotesRichTextEditorContextProvider({
     );
 
     setTimeout(() => {
-      textarea.focus();
+      if (document.activeElement !== textarea) {
+        textarea.focus();
+      }
     });
   }, []);
 

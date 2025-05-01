@@ -35,13 +35,7 @@ export function NotesRichTextEditor({ deck }: { deck: ResolvedDeck }) {
   const onDescriptionChange = useCallback(
     (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
       if (evt.target instanceof HTMLTextAreaElement) {
-        // Opinion: regex to make markdown new lines more predictable.
-        const value = evt.target.value.replace(
-          /(?<=^(?!.* {2}$).*?\S.*?)\n(?!\n)/gm,
-          "  \n",
-        );
-
-        updateDescription(deck.id, value);
+        updateDescription(deck.id, evt.target.value);
       }
     },
     [updateDescription, deck.id],
@@ -72,11 +66,16 @@ export function NotesRichTextEditor({ deck }: { deck: ResolvedDeck }) {
         <textarea
           className={css["textarea"]}
           data-testid="editor-description"
+          name="description"
           defaultValue={deck.description_md ?? ""}
           onChange={onDescriptionChange}
           onKeyDown={handleShortcuts}
           placeholder={t("deck_edit.notes.description_placeholder")}
           ref={textareaRef}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
         />
       )}
     </div>
