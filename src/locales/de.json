@@ -870,8 +870,8 @@
           "formats": {
             "header": "Titel",
             "header_with_set": "Titel (mit Sammlungsnummer)",
-            "paragraph": "Paragraph",
-            "paragraph_colored": "Paragraph (Farbig)"
+            "paragraph": "Absatz",
+            "paragraph_colored": "Absatz (Farbig)"
           },
           "origin": "Verfügbare Karten",
           "origins": {
