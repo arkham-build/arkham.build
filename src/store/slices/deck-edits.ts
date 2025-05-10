@@ -1,5 +1,5 @@
 import { assert } from "@/utils/assert";
-import { cardLimit } from "@/utils/card-utils";
+import { cardLimit, displayAttribute } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { capitalize } from "@/utils/formatting";
 import { range } from "@/utils/range";
@@ -442,15 +442,17 @@ export const createDeckEditsSlice: StateCreator<
       (upgrades[0].xp ?? 0) - (sourceCard.xp ?? 0),
     );
   },
-  completeTask(deckId, code) {
+  completeTask(deckId, card) {
     const state = get();
 
-    assert(code.endsWith("a"), `Not an incomplete task: ${code}`);
+    assert(
+      card.real_traits?.includes("Task"),
+      `${displayAttribute(card, "name")} is not a Task.`,
+    );
 
-    const completeId = `${code.slice(0, -1)}b`;
+    const completeId = card.back_link_id ?? `${card.code.slice(0, -1)}b`;
 
-    state.updateCardQuantity(deckId, code, 0, 1, "slots", "set");
-
+    state.updateCardQuantity(deckId, card.code, 0, 1, "slots", "set");
     state.updateCardQuantity(deckId, completeId, 1, 1, "slots", "set");
 
     state.dehydrate("edits").catch(console.error);
