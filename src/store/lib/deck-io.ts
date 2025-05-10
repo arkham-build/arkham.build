@@ -14,7 +14,11 @@ import { randomId } from "@/utils/crypto";
 import { formatTabooSet } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
-import { selectLocaleSortingCollator } from "../selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
+} from "../selectors/shared";
 import { getInitialSettings } from "../slices/settings";
 import {
   type DeckGrouping,
@@ -36,8 +40,17 @@ export function formatDeckImport(
   const now = new Date().toISOString();
 
   const validation = validateDeck(
-    resolveDeck(state, selectLocaleSortingCollator(state), deck),
-    state,
+    resolveDeck(
+      {
+        lookupTables: selectLookupTables(state),
+        metadata: selectMetadata(state),
+        sharing: state.sharing,
+      },
+      selectLocaleSortingCollator(state),
+      deck,
+    ),
+    selectMetadata(state),
+    selectLookupTables(state),
   );
 
   const problem = mapValidationToProblem(validation);
@@ -160,7 +173,7 @@ export function formatDeckAsText(state: StoreState, deck: ResolvedDeck) {
   }
 
   const groups = groupDeckCards(
-    state.metadata,
+    selectMetadata(state),
     selectLocaleSortingCollator(state),
     getInitialSettings().lists.deck,
     deck,
@@ -189,6 +202,7 @@ function formatGrouping(
 ) {
   let text = "";
 
+  const metadata = selectMetadata(state);
   const quantities = resolveQuantities(grouping);
 
   const seenParents = new Set<string>();
@@ -202,13 +216,13 @@ function formatGrouping(
       seenParents.add(parent.key);
       const key = parent.key.split("|").at(-1) as string;
       const type = parent.type.split("|").at(-1) as string;
-      text += `**${getGroupingKeyLabel(type, key, state.metadata)}** (${quantities.get(parent.key) ?? 0})  \n`;
+      text += `**${getGroupingKeyLabel(type, key, metadata)}** (${quantities.get(parent.key) ?? 0})  \n`;
     });
 
     if (!isGroupCollapsed(group)) {
       const key = group.key.split("|").at(-1) as string;
       const type = group.type.split("|").at(-1) as string;
-      text += `_${getGroupingKeyLabel(type, key, state.metadata)}_ (${quantities.get(group.key) ?? 0})  \n`;
+      text += `_${getGroupingKeyLabel(type, key, metadata)}_ (${quantities.get(group.key) ?? 0})  \n`;
     }
 
     text += formatGroupAsText(state, group.cards, slots, customizations);
@@ -226,9 +240,11 @@ function formatGroupAsText(
 ) {
   if (!data.length) return "";
 
+  const metadata = selectMetadata(state);
+
   const sortFn = makeSortFunction(
     ["name"],
-    state.metadata,
+    metadata,
     selectLocaleSortingCollator(state),
   );
 
@@ -319,9 +335,11 @@ function formatCustomizableSelection(
 
   const selections = selection.split("^");
 
+  const metadata = selectMetadata(state);
+
   if (option.choice === "choose_card") {
     return selections
-      .map((code) => displayAttribute(state.metadata.cards[code], "name"))
+      .map((code) => displayAttribute(metadata.cards[code], "name"))
       .join(", ");
   }
 

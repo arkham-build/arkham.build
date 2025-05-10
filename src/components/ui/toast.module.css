@@ -12,7 +12,6 @@
 
 .toast {
   display: flex;
-  align-items: center;
   gap: 0.75rem;
   width: 100%;
   background: var(--palette-point-five);
@@ -24,6 +23,8 @@
   border: 1px solid var(--palette-2);
   text-align: left;
   position: relative;
+  max-height: 70dvh;
+  overflow: auto;
 }
 
 .toast.closable {

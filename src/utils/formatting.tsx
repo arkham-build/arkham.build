@@ -83,7 +83,7 @@ export function formatProviderName(name: string) {
 }
 
 export function displayPackName(pack: Pack | Cycle) {
-  return pack.name ?? pack.real_name;
+  return pack.name ?? pack.real_name ?? "";
 }
 
 export function shortenPackName(pack: Pack) {

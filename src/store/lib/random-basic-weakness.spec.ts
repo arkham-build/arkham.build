@@ -1,7 +1,10 @@
 import { getMockStore } from "@/test/get-mock-store";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { StoreApi } from "zustand";
-import { selectLocaleSortingCollator } from "../selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+} from "../selectors/shared";
 import { StoreState } from "../slices";
 import { Deck } from "../slices/data.types";
 import { SettingsState } from "../slices/settings.types";
@@ -37,12 +40,19 @@ describe("randomBasicWeaknessForDeck", () => {
   it("draws a basic weakness", () => {
     const state = store.getState();
 
+    const opts = {
+      metadata: state.metadata,
+      settings: state.settings,
+      lookupTables: selectLookupTables(state),
+      sharing: state.sharing,
+    };
+
     const weakness = randomBasicWeaknessForDeck(
-      state.metadata,
-      state.lookupTables,
-      state.settings,
+      opts.metadata,
+      opts.lookupTables,
+      opts.settings,
       resolveDeck(
-        state,
+        opts,
         selectLocaleSortingCollator(state),
         state.data.decks.foo,
       ),
@@ -78,12 +88,19 @@ describe("randomBasicWeaknessForDeck", () => {
 
     const state = store.getState();
 
+    const opts = {
+      metadata: state.metadata,
+      settings: state.settings,
+      lookupTables: selectLookupTables(state),
+      sharing: state.sharing,
+    };
+
     const weakness = randomBasicWeaknessForDeck(
-      state.metadata,
-      state.lookupTables,
-      state.settings,
+      opts.metadata,
+      opts.lookupTables,
+      opts.settings,
       resolveDeck(
-        state,
+        opts,
         selectLocaleSortingCollator(state),
         state.data.decks.foo,
       ),
@@ -118,12 +135,19 @@ describe("randomBasicWeaknessForDeck", () => {
 
     const state = store.getState();
 
+    const opts = {
+      metadata: state.metadata,
+      settings: state.settings,
+      lookupTables: selectLookupTables(state),
+      sharing: state.sharing,
+    };
+
     const weakness = randomBasicWeaknessForDeck(
-      state.metadata,
-      state.lookupTables,
-      state.settings,
+      opts.metadata,
+      opts.lookupTables,
+      opts.settings,
       resolveDeck(
-        state,
+        opts,
         selectLocaleSortingCollator(state),
         state.data.decks.foo,
       ),
@@ -151,12 +175,19 @@ describe("randomBasicWeaknessForDeck", () => {
 
     const state = store.getState();
 
+    const opts = {
+      metadata: state.metadata,
+      settings: state.settings,
+      lookupTables: selectLookupTables(state),
+      sharing: state.sharing,
+    };
+
     const weakness = randomBasicWeaknessForDeck(
-      state.metadata,
-      state.lookupTables,
-      state.settings,
+      opts.metadata,
+      opts.lookupTables,
+      opts.settings,
       resolveDeck(
-        state,
+        opts,
         selectLocaleSortingCollator(state),
         state.data.decks.foo,
       ),
@@ -179,11 +210,11 @@ describe("randomBasicWeaknessForDeck", () => {
     });
 
     const secondWeakness = randomBasicWeaknessForDeck(
-      state.metadata,
-      state.lookupTables,
-      state.settings,
+      opts.metadata,
+      opts.lookupTables,
+      opts.settings,
       resolveDeck(
-        state,
+        opts,
         selectLocaleSortingCollator(state),
         store.getState().data.decks.foo,
       ),

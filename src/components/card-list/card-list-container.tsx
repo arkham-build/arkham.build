@@ -5,6 +5,7 @@ import {
   selectActiveListSearch,
   selectListCards,
 } from "@/store/selectors/lists";
+import { selectMetadata } from "@/store/selectors/shared";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { forwardRef, useCallback } from "react";
 import { Footer } from "../footer";
@@ -30,7 +31,7 @@ export const CardListContainer = forwardRef(function CardListContainer(
   const ctx = useResolvedDeck();
 
   const search = useStore(selectActiveListSearch);
-  const metadata = useStore((state) => state.metadata);
+  const metadata = useStore(selectMetadata);
   const data = useStore((state) =>
     selectListCards(state, ctx.resolvedDeck, targetDeck),
   );

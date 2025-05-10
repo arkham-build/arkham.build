@@ -9,6 +9,7 @@ import {
   isTooFewCardsError,
   isTooManyCardsError,
 } from "@/store/lib/deck-validation";
+import { selectMetadata } from "@/store/selectors/shared";
 import { displayAttribute } from "@/utils/card-utils";
 import { InfoIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -25,7 +26,7 @@ export function DecklistValidation(props: Props) {
   const { defaultOpen, validation } = props;
 
   const { t } = useTranslation();
-  const cards = useStore((state) => state.metadata.cards);
+  const cards = useStore((state) => selectMetadata(state).cards);
 
   if (validation.valid) return null;
 

@@ -2,6 +2,7 @@ import { ErrorDisplay } from "@/pages/errors/error-display";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { type ListState, selectListCards } from "@/store/selectors/lists";
+import { selectMetadata } from "@/store/selectors/shared";
 import { getRecommendations } from "@/store/services/queries";
 import type {
   Card,
@@ -188,7 +189,7 @@ function CardRecommenderInner(
   const { t } = useTranslation();
   const theme = useResolvedColorTheme();
 
-  const metadata = useStore((state) => state.metadata);
+  const metadata = useStore(selectMetadata);
 
   const { recommendations, decks_analyzed } = data;
 

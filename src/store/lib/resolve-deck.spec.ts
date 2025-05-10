@@ -14,7 +14,10 @@ import deckXpRequired from "@/test/fixtures/decks/xp_required.json";
 import { getMockStore } from "@/test/get-mock-store";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
-import { selectLocaleSortingCollator } from "../selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+} from "../selectors/shared";
 import type { StoreState } from "../slices";
 import { resolveDeck } from "./resolve-deck";
 
@@ -31,7 +34,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckInvestigatorOriginal;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -47,7 +54,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckInvestigatorParallelFront;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -63,7 +74,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckInvestigatorParallelBack;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -79,7 +94,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckInvestigatorParallelBoth;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -97,7 +116,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckInvestigatorReplacements;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -115,7 +138,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckCustomizable;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -129,7 +156,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckFactionSelected;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -154,7 +185,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckMultiFactionSelected;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -196,7 +231,11 @@ describe("resolveDeck", () => {
       // parallel wendy deck with "both" selected.
       const deck = deckInvestigatorParallelBack;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -268,7 +307,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckSizeAllSpecials;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -279,7 +322,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckSizeAllSpecials;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -293,7 +340,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckSizeParallelAgnes;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -308,7 +359,11 @@ describe("resolveDeck", () => {
       const deck = structuredClone(deckSizeParallelAgnes);
       deck.slots["02154"] = 4;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -324,7 +379,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckExtraSlots;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -348,7 +407,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckExtraSlots;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -361,7 +424,11 @@ describe("resolveDeck", () => {
       const state = store.getState();
       const deck = deckCustomizable;
       const resolved = resolveDeck(
-        state,
+        {
+          metadata: state.metadata,
+          lookupTables: selectLookupTables(state),
+          sharing: state.sharing,
+        },
         selectLocaleSortingCollator(state),
         deck,
       );
@@ -578,7 +645,11 @@ describe("resolveDeck", () => {
         const state = store.getState();
         const deck = deckXpRequired;
         const resolved = resolveDeck(
-          state,
+          {
+            metadata: state.metadata,
+            lookupTables: selectLookupTables(state),
+            sharing: state.sharing,
+          },
           selectLocaleSortingCollator(state),
           deck,
         );
@@ -591,7 +662,11 @@ describe("resolveDeck", () => {
         const state = store.getState();
         const deck = deckCustomizable;
         const resolved = resolveDeck(
-          state,
+          {
+            metadata: state.metadata,
+            lookupTables: selectLookupTables(state),
+            sharing: state.sharing,
+          },
           selectLocaleSortingCollator(state),
           deck,
         );
@@ -604,7 +679,11 @@ describe("resolveDeck", () => {
         const state = store.getState();
         const deck = deckMyriadDifferentNames;
         const resolved = resolveDeck(
-          state,
+          {
+            metadata: state.metadata,
+            lookupTables: selectLookupTables(state),
+            sharing: state.sharing,
+          },
           selectLocaleSortingCollator(state),
           deck,
         );

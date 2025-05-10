@@ -1,9 +1,44 @@
+import { PREVIEW_PACKS } from "@/utils/constants";
 import i18n from "@/utils/i18n";
+import { isEmpty } from "@/utils/is-empty";
+import { time, timeEnd } from "@/utils/time";
 import { createSelector } from "reselect";
 import { ownedCardCount } from "../lib/card-ownership";
+import { addProjectToMetadata, cloneMetadata } from "../lib/custom-content";
+import { createLookupTables } from "../lib/lookup-tables";
 import type { ResolvedDeck } from "../lib/types";
 import type { Card } from "../services/queries.types";
 import type { StoreState } from "../slices";
+
+export const selectMetadata = createSelector(
+  (state: StoreState) => state.metadata,
+  (state: StoreState) => state.customData.projects,
+  (metadata, customContentProjects) => {
+    const projects = Object.values(customContentProjects);
+
+    if (isEmpty(projects)) return metadata;
+
+    time("select_custom_data");
+
+    const meta = cloneMetadata(metadata);
+
+    for (const project of projects) {
+      addProjectToMetadata(meta, project);
+    }
+
+    timeEnd("select_custom_data");
+
+    return meta;
+  },
+);
+
+export const selectLookupTables = createSelector(
+  selectMetadata,
+  (state: StoreState) => state.settings,
+  (metadata, settings) => {
+    return createLookupTables(metadata, settings);
+  },
+);
 
 export const selectClientId = (state: StoreState) => {
   return state.app.clientId;
@@ -16,20 +51,47 @@ export const selectIsInitialized = (state: StoreState) => {
 export const selectCanCheckOwnership = (state: StoreState) =>
   !state.settings.showAllCards;
 
-export const selectCardOwnedCount = createSelector(
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => state.lookupTables,
+export const selectCollection = createSelector(
+  selectMetadata,
   (state: StoreState) => state.settings,
-  (metadata, lookupTables, settings) => {
-    const { collection, showAllCards } = settings;
+  (metadata, settings) => {
+    const collection = {
+      ...settings.collection,
+      ...Object.fromEntries(
+        Object.entries(metadata.packs)
+          .filter(([, pack]) => pack.official === false)
+          .map((pack) => [pack[0], 1]),
+      ),
+    };
 
+    return settings.showPreviews
+      ? {
+          ...collection,
+          ...PREVIEW_PACKS.reduce(
+            (acc, code) => {
+              acc[code] = 1;
+              return acc;
+            },
+            {} as Record<string, number>,
+          ),
+        }
+      : collection;
+  },
+);
+
+export const selectCardOwnedCount = createSelector(
+  selectMetadata,
+  selectLookupTables,
+  selectCollection,
+  (state: StoreState) => state.settings,
+  (metadata, lookupTables, collection, settings) => {
     return (card: Card) => {
       return ownedCardCount(
         card,
         metadata,
         lookupTables,
         collection,
-        showAllCards,
+        settings.showAllCards,
       );
     };
   },
@@ -53,8 +115,8 @@ export const selectConnectionLockForDeck = createSelector(
 );
 
 export const selectBackCard = createSelector(
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => state.lookupTables,
+  selectMetadata,
+  selectLookupTables,
   (_: StoreState, code: string) => code,
   (metadata, lookupTables, code) => {
     const card = metadata.cards[code];

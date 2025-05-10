@@ -3,6 +3,7 @@ import { displayAttribute, getCanonicalCardCode } from "@/utils/card-utils";
 import type { StateCreator } from "zustand";
 import type { StoreState } from ".";
 import { getDefaultDeckName } from "../lib/deck-factory";
+import { selectMetadata } from "../selectors/shared";
 import type { CardSet, DeckCreateSlice } from "./deck-create.types";
 
 export const createDeckCreateSlice: StateCreator<
@@ -15,8 +16,9 @@ export const createDeckCreateSlice: StateCreator<
 
   initCreate(code: string, initialInvestigatorChoice?: string) {
     const state = get();
+    const metadata = selectMetadata(state);
 
-    const investigator = state.metadata.cards[code];
+    const investigator = metadata.cards[code];
 
     assert(
       investigator && investigator.type_code === "investigator",
@@ -26,7 +28,7 @@ export const createDeckCreateSlice: StateCreator<
     const canonicalCode = getCanonicalCardCode(investigator);
 
     const choice = initialInvestigatorChoice
-      ? state.metadata.cards[initialInvestigatorChoice]
+      ? metadata.cards[initialInvestigatorChoice]
       : undefined;
 
     if (initialInvestigatorChoice) {

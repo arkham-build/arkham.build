@@ -7,14 +7,16 @@ import type {
   JsonDataPack,
 } from "@/store/services/queries.types";
 
-export function packToApiFormat(pack: JsonDataPack) {
+export function packToApiFormat(pack: JsonDataPack & { official?: boolean }) {
   return {
     ...pack,
     real_name: pack.name,
   };
 }
 
-export function cycleToApiFormat(cycle: JsonDataCycle) {
+export function cycleToApiFormat(
+  cycle: JsonDataCycle & { official?: boolean },
+) {
   return {
     ...cycle,
     real_name: cycle.name,
@@ -22,7 +24,10 @@ export function cycleToApiFormat(cycle: JsonDataCycle) {
 }
 
 // FIXME: we are missing the `linked` attribute, does it matter?
-export function cardToApiFormat(card: JsonDataCard, mode = "card"): APICard {
+export function cardToApiFormat(
+  card: JsonDataCard & { official?: boolean },
+  mode = "card",
+): APICard {
   const fullCard: APICard = {
     ...card,
     alternate_of_code: card.alternate_of,

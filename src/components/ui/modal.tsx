@@ -10,6 +10,8 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   centerContent?: boolean;
   children: React.ReactNode;
   className?: string;
+  actionsClassName?: string;
+  innerClassName?: string;
   actions?: React.ReactNode;
   onClose?: () => void;
   open?: boolean;
@@ -19,9 +21,11 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 export function Modal(props: Props) {
   const {
     actions,
+    actionsClassName,
     centerContent,
     children,
     className,
+    innerClassName,
     onClose,
     open,
     size = "100%",
@@ -85,10 +89,14 @@ export function Modal(props: Props) {
       style={cssVariables as React.CSSProperties}
     >
       <Scroller type="always">
-        <div className={css["inner"]} ref={innerRef}>
+        <div className={cx(css["inner"], innerClassName)} ref={innerRef}>
           {/* biome-ignore lint/a11y/useKeyWithClickEvents: An escape handler is bound higher up. */}
           <div
-            className={cx(css["actions"], actions && css["has-custom"])}
+            className={cx(
+              css["actions"],
+              actions && css["has-custom"],
+              actionsClassName,
+            )}
             onClick={onCloseActions}
             ref={actionRef}
           >
@@ -106,12 +114,13 @@ export function Modal(props: Props) {
 
 type ModalContentProps = {
   children: React.ReactNode;
+  mainClassName?: string;
   footer?: React.ReactNode;
   title?: React.ReactNode;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, "title">;
 
 export function ModalContent(props: ModalContentProps) {
-  const { children, className, footer, title, ...rest } = props;
+  const { children, className, footer, mainClassName, title, ...rest } = props;
 
   return (
     <section className={cx(css["content"], className)} {...rest}>
@@ -120,7 +129,7 @@ export function ModalContent(props: ModalContentProps) {
           <h2 className={css["content-title"]}>{title}</h2>
         </header>
       )}
-      <div className={css["content-main"]}>{children}</div>
+      <div className={cx(css["content-main"], mainClassName)}>{children}</div>
       {footer && <footer className={css["content-footer"]}>{footer}</footer>}
     </section>
   );

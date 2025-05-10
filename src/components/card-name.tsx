@@ -1,4 +1,5 @@
 import { useStore } from "@/store";
+import { selectMetadata } from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
 import {
   cardLevel,
@@ -56,8 +57,10 @@ export function CardName(props: Props) {
 function CardPackDetail(props: { card: Card }) {
   const { card } = props;
 
-  const pack = useStore((state) => state.metadata.packs[card.pack_code]);
-  const cycle = useStore((state) => state.metadata.cycles[pack.cycle_code]);
+  const metadata = useStore(selectMetadata);
+
+  const pack = metadata.packs[card.pack_code];
+  const cycle = metadata.cycles[pack.cycle_code];
   const displayPack = cycleOrPack(cycle, pack);
 
   return (

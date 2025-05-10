@@ -9,7 +9,6 @@ import { isEmpty } from "@/utils/is-empty";
 import type { Card } from "../services/queries.types";
 import type { StoreState } from "../slices";
 import type { Deck } from "../slices/data.types";
-import type { LookupTables } from "../slices/lookup-tables.types";
 import {
   decodeAnnotations,
   decodeAttachments,
@@ -19,6 +18,7 @@ import {
   decodeSealedDeck,
   decodeSelections,
 } from "./deck-meta";
+import type { LookupTables } from "./lookup-tables.types";
 import { resolveCardWithRelations } from "./resolve-card";
 import { decodeExtraSlots, decodeSlots } from "./slots";
 import type { CardWithRelations, DeckMeta, ResolvedDeck } from "./types";
@@ -27,7 +27,9 @@ import type { CardWithRelations, DeckMeta, ResolvedDeck } from "./types";
  * Given a decoded deck, resolve all cards and metadata for display.
  */
 export function resolveDeck(
-  state: Pick<StoreState, "metadata" | "lookupTables" | "sharing">,
+  deps: Pick<StoreState, "metadata" | "sharing"> & {
+    lookupTables: LookupTables;
+  },
   collator: Intl.Collator,
   deck: Deck,
 ): ResolvedDeck {
@@ -41,7 +43,7 @@ export function resolveDeck(
       : deck.investigator_code;
 
   const investigator = resolveCardWithRelations(
-    state,
+    deps,
     collator,
     investigatorCode,
     deck.taboo_id,
@@ -56,7 +58,7 @@ export function resolveDeck(
   }
 
   const investigatorFront = getInvestigatorForSide(
-    state,
+    deps,
     collator,
     deck.taboo_id,
     investigator,
@@ -65,7 +67,7 @@ export function resolveDeck(
   );
 
   const investigatorBack = getInvestigatorForSide(
-    state,
+    deps,
     collator,
     deck.taboo_id,
     investigator,
@@ -89,17 +91,10 @@ export function resolveDeck(
 
   const extraSlots = decodeExtraSlots(deckMeta);
 
-  const customizations = decodeCustomizations(deckMeta, state.metadata);
+  const customizations = decodeCustomizations(deckMeta, deps.metadata);
 
   const { bondedSlots, cards, deckSize, deckSizeTotal, xpRequired, charts } =
-    decodeSlots(
-      state,
-      collator,
-      deck,
-      extraSlots,
-      investigator,
-      customizations,
-    );
+    decodeSlots(deps, collator, deck, extraSlots, investigator, customizations);
 
   const availableAttachments = Object.entries(getAttachableCards()).reduce<
     AttachableDefinition[]
@@ -132,7 +127,7 @@ export function resolveDeck(
     sealedDeck,
     selections: decodeSelections(investigatorBack, deckMeta),
     sideSlots: Array.isArray(deck.sideSlots) ? {} : deck.sideSlots,
-    shared: !!state.sharing.decks[deck.id],
+    shared: !!deps.sharing.decks[deck.id],
     stats: {
       deckSize,
       deckSizeTotal,
@@ -140,7 +135,7 @@ export function resolveDeck(
       charts,
     },
     tabooSet: deck.taboo_id
-      ? state.metadata.tabooSets[deck.taboo_id]
+      ? deps.metadata.tabooSets[deck.taboo_id]
       : undefined,
   } as ResolvedDeck;
 
@@ -148,7 +143,9 @@ export function resolveDeck(
 }
 
 function getInvestigatorForSide(
-  state: Pick<StoreState, "metadata" | "lookupTables">,
+  deps: Pick<StoreState, "metadata"> & {
+    lookupTables: LookupTables;
+  },
   collator: Intl.Collator,
   tabooId: number | undefined | null,
   investigator: CardWithRelations,
@@ -157,7 +154,7 @@ function getInvestigatorForSide(
 ) {
   if (deckMeta.transform_into) {
     return resolveCardWithRelations(
-      state,
+      deps,
       collator,
       deckMeta.transform_into,
       tabooId,

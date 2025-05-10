@@ -4,12 +4,12 @@ import { devtools } from "zustand/middleware";
 import type { StoreState } from "./slices";
 import { createAppSlice } from "./slices/app";
 import { createConnectionsSlice } from "./slices/connections";
+import { createCustomDataSlice } from "./slices/custom-data";
 import { createDataSlice } from "./slices/data";
 import { createDeckFiltersSlice } from "./slices/deck-collection-filters";
 import { createDeckCreateSlice } from "./slices/deck-create";
 import { createDeckEditsSlice } from "./slices/deck-edits";
 import { createListsSlice } from "./slices/lists";
-import { createLookupTablesSlice } from "./slices/lookup-tables";
 import { createMetadataSlice } from "./slices/metadata";
 import { createRecommenderSlice } from "./slices/recommender";
 import { createRemotingSlice } from "./slices/remoting";
@@ -21,8 +21,8 @@ import { createUISlice } from "./slices/ui";
 const stateCreator = (...args: [any, any, any]) => ({
   ...createAppSlice(...args),
   ...createDataSlice(...args),
+  ...createCustomDataSlice(...args),
   ...createMetadataSlice(...args),
-  ...createLookupTablesSlice(...args),
   ...createListsSlice(...args),
   ...createSettingsSlice(...args),
   ...createUISlice(...args),
@@ -45,13 +45,14 @@ export const useStore = create<StoreState>()(
           },
           partialize(state) {
             return {
+              app: state.app,
               connections: state.connections,
+              customData: state.customData,
               data: state.data,
               deckEdits: state.deckEdits,
+              remoting: state.remoting,
               settings: state.settings,
               sharing: state.sharing,
-              app: state.app,
-              remoting: state.remoting,
             };
           },
           skipSerialization: true,

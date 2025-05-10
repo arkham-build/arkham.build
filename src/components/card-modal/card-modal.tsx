@@ -73,10 +73,16 @@ export function CardModal(props: Props) {
   const completeTask = useStore((state) => state.completeTask);
 
   const onCompleteTask = useCallback(() => {
-    if (!ctx.resolvedDeck) return;
-    const nextCode = completeTask(ctx.resolvedDeck.id, props.code);
+    if (!ctx.resolvedDeck || !cardWithRelations?.card) return;
+
+    const nextCode = completeTask(ctx.resolvedDeck.id, cardWithRelations.card);
     cardModalCtx.setOpen({ code: nextCode });
-  }, [completeTask, ctx.resolvedDeck, props.code, cardModalCtx.setOpen]);
+  }, [
+    completeTask,
+    ctx.resolvedDeck,
+    cardWithRelations?.card,
+    cardModalCtx.setOpen,
+  ]);
 
   const showQuantities =
     !!ctx.resolvedDeck && cardWithRelations?.card.type_code !== "investigator";

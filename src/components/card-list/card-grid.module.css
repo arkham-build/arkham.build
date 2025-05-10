@@ -44,7 +44,7 @@
   }
 
   @container (min-width: 72rem) {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(var(--grid-max-columns, 6), 1fr);
   }
 }
 

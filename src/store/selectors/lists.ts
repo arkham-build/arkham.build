@@ -4,7 +4,6 @@ import {
   FACTION_ORDER,
   type FactionName,
   NO_SLOT_STRING,
-  PREVIEW_PACKS,
   SKILL_KEYS,
   SPECIAL_CARD_CODES,
   type SkillKey,
@@ -50,6 +49,7 @@ import {
   filterType,
 } from "../lib/filtering";
 import { getGroupedCards } from "../lib/grouping";
+import type { LookupTables } from "../lib/lookup-tables.types";
 import { resolveCardWithRelations } from "../lib/resolve-card";
 import { applySearch } from "../lib/searching";
 import {
@@ -76,9 +76,13 @@ import type {
   SkillIconsFilter,
   SubtypeFilter,
 } from "../slices/lists.types";
-import type { LookupTables } from "../slices/lookup-tables.types";
 import type { Metadata } from "../slices/metadata.types";
-import { selectLocaleSortingCollator } from "./shared";
+import {
+  selectCollection,
+  selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
+} from "./shared";
 
 export type CardGroup = {
   type: string;
@@ -319,10 +323,10 @@ export const selectActiveListFilter = createSelector(
   },
 );
 
-export const selectCanonicalTabooSetId = (
+export function selectCanonicalTabooSetId(
   state: StoreState,
   resolvedDeck?: ResolvedDeck,
-) => {
+) {
   if (resolvedDeck) return resolvedDeck.taboo_id;
 
   const filters = selectActiveListFilters(state);
@@ -335,7 +339,7 @@ export const selectCanonicalTabooSetId = (
   if (typeof filterValue?.value === "number") return filterValue.value;
 
   return state.settings.tabooSetId;
-};
+}
 
 // This selector uses a custom equality check that avoid re-creation on every deck change.
 // Deck access is only affected by a few subset of deck changes:
@@ -379,8 +383,8 @@ const customizationsEqualSelector = createCustomEqualSelector((a, b) => {
 });
 
 const selectDeckInvestigatorFilter = deckAccessEqualSelector(
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => state.lookupTables,
+  selectMetadata,
+  selectLookupTables,
   (_: StoreState, resolvedDeck?: ResolvedDeck) => resolvedDeck,
   (
     _: StoreState,
@@ -460,25 +464,25 @@ const selectResolvedDeckCustomizations = customizationsEqualSelector(
 );
 
 const selectBaseListCards = createSelector(
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => state.lookupTables,
-  (state: StoreState) => state.settings,
+  selectMetadata,
+  selectLookupTables,
   (state: StoreState) => selectActiveList(state)?.systemFilter,
   (state: StoreState) => selectActiveList(state)?.duplicateFilter,
   (state: StoreState) => selectActiveList(state)?.filterValues,
   selectDeckInvestigatorFilter,
   selectCanonicalTabooSetId,
   selectResolvedDeckCustomizations,
+  selectCollection,
   (
     metadata,
     lookupTables,
-    settings,
     systemFilter,
     duplicateFilter,
     filterValues,
     deckInvestigatorFilter,
     tabooSetId,
     customizations,
+    collection,
   ) => {
     if (isEmpty(metadata.cards)) {
       console.warn("player cards selected before store is initialized.");
@@ -513,21 +517,9 @@ const selectBaseListCards = createSelector(
 
       if (ownershipFilter) {
         const value = ownershipFilter.value as OwnershipFilter;
+
         if (value !== "all") {
           filters.push((card: Card) => {
-            const collection = settings.showPreviews
-              ? {
-                  ...settings.collection,
-                  ...PREVIEW_PACKS.reduce(
-                    (acc, code) => {
-                      acc[code] = 1;
-                      return acc;
-                    },
-                    {} as Record<string, number>,
-                  ),
-                }
-              : settings.collection;
-
             const ownership = filterOwnership(
               card,
               metadata,
@@ -535,6 +527,7 @@ const selectBaseListCards = createSelector(
               collection,
               false,
             );
+
             return value === "owned" ? ownership : !ownership;
           });
         }
@@ -551,8 +544,8 @@ const selectBaseListCards = createSelector(
 );
 
 export const selectListCards = createSelector(
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => state.lookupTables,
+  selectMetadata,
+  selectLookupTables,
   (state: StoreState) => state.settings,
   selectActiveList,
   selectBaseListCards,
@@ -638,8 +631,8 @@ export const selectListCards = createSelector(
 );
 
 export const selectCardRelationsResolver = createSelector(
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => state.lookupTables,
+  selectMetadata,
+  selectLookupTables,
   selectLocaleSortingCollator,
   (metadata, lookupTables, collator) => {
     return (code: string) => {
@@ -661,10 +654,11 @@ export const selectCardRelationsResolver = createSelector(
  */
 
 const selectListFilterProperties = createSelector(
-  (state: StoreState) => state.lookupTables.actions,
+  selectLookupTables,
   selectBaseListCards,
-  (actionTable, cards) => {
+  (lookupTables, cards) => {
     time("select_card_list_properties");
+    const actionTable = lookupTables.actions;
 
     const cost = { min: Number.MAX_SAFE_INTEGER, max: 0 };
     const health = { min: Number.MAX_SAFE_INTEGER, max: 0 };
@@ -781,7 +775,7 @@ export const selectActionOptions = createSelector(
  */
 
 export const selectAssetOptions = createSelector(
-  (state: StoreState) => state.lookupTables,
+  selectLookupTables,
   selectLocaleSortingCollator,
   selectListFilterProperties,
   (lookupTables, collator, filterProps) => {
@@ -831,7 +825,6 @@ export const selectCostMinMax = createSelector(
 /**
  * Encounter Set
  */
-
 function sortedEncounterSets(metadata: Metadata, collator: Intl.Collator) {
   const encounterSets = Object.values(metadata.encounterSets);
 
@@ -842,7 +835,7 @@ function sortedEncounterSets(metadata: Metadata, collator: Intl.Collator) {
 }
 
 export const selectEncounterSetOptions = createSelector(
-  (state: StoreState) => state.metadata,
+  selectMetadata,
   selectLocaleSortingCollator,
   (metadata, collator) => sortedEncounterSets(metadata, collator),
 );
@@ -853,10 +846,11 @@ export const selectEncounterSetOptions = createSelector(
 
 export const selectFactionOptions = createSelector(
   selectActiveList,
-  (state: StoreState) => state.metadata.factions,
-  (list, factionMeta) => {
+  selectMetadata,
+  (list, metadata) => {
     if (!list) return [];
 
+    const factionMeta = metadata.factions;
     const cardType = list.cardType;
 
     const factions = Object.values(factionMeta).filter((f) =>
@@ -905,8 +899,8 @@ export const selectIllustratorOptions = createSelector(
  */
 
 export const selectInvestigatorOptions = createSelector(
-  (state: StoreState) => state.lookupTables,
-  (state: StoreState) => state.metadata,
+  selectLookupTables,
+  selectMetadata,
   selectLocaleSortingCollator,
   (lookupTables, metadata, collator) => {
     const investigatorTable = lookupTables.typeCode["investigator"];
@@ -938,7 +932,7 @@ export const selectInvestigatorOptions = createSelector(
  */
 
 export const selectCardOptions = createSelector(
-  (state: StoreState) => state.metadata,
+  selectMetadata,
   selectLocaleSortingCollator,
   (metadata, collator) => {
     const sortFn = makeSortFunction(["name", "level"], metadata, collator);
@@ -986,8 +980,8 @@ type CycleWithPacks = (Cycle & {
 })[];
 
 export const selectCyclesAndPacks = createSelector(
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => state.lookupTables,
+  selectMetadata,
+  selectLookupTables,
   (state: StoreState) => state.settings,
   (metadata, lookupTables, settings) => {
     const cycles = Object.entries(lookupTables.packsByCycle).reduce(
@@ -1109,8 +1103,8 @@ export const selectActiveListSearch = createSelector(
 );
 
 export const selectResolvedCardById = createSelector(
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => state.lookupTables,
+  selectMetadata,
+  selectLookupTables,
   selectLocaleSortingCollator,
   (_: StoreState, code: string) => code,
   (_: StoreState, __: string, resolvedDeck?: ResolvedDeck) => resolvedDeck,
@@ -1152,10 +1146,10 @@ export function selectSubtypeOptions() {
  */
 
 export const selectTabooSetOptions = createSelector(
-  (state: StoreState) => state.metadata.tabooSets,
+  selectMetadata,
   selectLocaleSortingCollator,
-  (tabooSets, collator) => {
-    const sets = Object.values(tabooSets);
+  (metadata, collator) => {
+    const sets = Object.values(metadata.tabooSets);
     sets.sort((a, b) => collator.compare(b.date, a.date));
     return sets;
   },
@@ -1195,11 +1189,11 @@ export const selectTraitOptions = createSelector(
 export const selectTypeOptions = createSelector(
   selectListFilterProperties,
   selectLocaleSortingCollator,
-  (state: StoreState) => state.metadata.types,
-  ({ types }, collator, typeTable) => {
+  selectMetadata,
+  ({ types }, collator, metadata) => {
     return Array.from(types)
       .map((code) => ({
-        ...typeTable[code],
+        ...metadata.types[code],
         name: i18n.t(`common.type.${code}`),
       }))
       .sort((a, b) => collator.compare(a.name, b.name));
@@ -1217,8 +1211,8 @@ export type AvailableUpgrades = {
 
 export const selectAvailableUpgrades = createSelector(
   selectDeckInvestigatorFilter,
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => state.lookupTables,
+  selectMetadata,
+  selectLookupTables,
   (_: StoreState, deck: ResolvedDeck) => deck,
   (_: StoreState, __: ResolvedDeck, target: "slots" | "extraSlots") => target,
   (accessFilter, metadata, lookupTables, deck, target) => {
@@ -1334,7 +1328,7 @@ function selectCostChanges(value: CostFilter) {
 
 const selectEncounterSetChanges = createSelector(
   (_: StoreState, value: MultiselectFilter) => value,
-  (state: StoreState) => state.metadata,
+  selectMetadata,
   (value, metadata) => {
     return value
       .map((id) => metadata.encounterSets[id].name)
@@ -1360,7 +1354,7 @@ function selectInvestigatorCardAccessChanges(value: MultiselectFilter) {
 
 const selectInvestigatorChanges = createSelector(
   (_: StoreState, value: SelectFilter) => value,
-  (state: StoreState) => state.metadata,
+  selectMetadata,
   (value, metadata) => {
     if (!value) return "";
     const card = metadata.cards[value];
@@ -1409,7 +1403,7 @@ function selectOwnershipChanges(value: OwnershipFilter) {
 
 const selectPackChanges = createSelector(
   (_: StoreState, value: MultiselectFilter) => value,
-  (state: StoreState) => state.metadata,
+  selectMetadata,
   (value, metadata) => {
     if (!value) return "";
     return value
@@ -1460,7 +1454,7 @@ function selectSubtypeChanges(value: SubtypeFilter) {
 
 const selectTabooSetChanges = createSelector(
   (_: StoreState, value: SelectFilter) => value,
-  (state: StoreState) => state.metadata,
+  selectMetadata,
   (value, metadata) => {
     if (!value) return "";
     const set = metadata.tabooSets[value];

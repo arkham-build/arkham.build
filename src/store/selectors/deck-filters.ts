@@ -18,7 +18,7 @@ import type {
 } from "../slices/deck-collection-filters.types";
 import type { MultiselectFilter } from "../slices/lists.types";
 import { selectLocalDecks } from "./decks";
-import { selectLocaleSortingCollator } from "./shared";
+import { selectLocaleSortingCollator, selectMetadata } from "./shared";
 
 // Arbitrarily chosen for now
 const MATCHING_MAX_TOKEN_DISTANCE_DECKS = 4;
@@ -200,8 +200,8 @@ const selectFilteringFunc = createSelector(selectDeckFilters, (filters) => {
 
 export const selectFactionsInLocalDecks = createSelector(
   selectLocalDecks,
-  (state: StoreState) => state.metadata.factions,
-  (decks, factionMeta) => {
+  selectMetadata,
+  (decks, metadata) => {
     if (!decks) return [];
 
     const factionsSet = new Set<string>();
@@ -210,7 +210,9 @@ export const selectFactionsInLocalDecks = createSelector(
       factionsSet.add(deck.cards.investigator.card.faction_code);
     }
 
-    const factions = Array.from(factionsSet).map((code) => factionMeta[code]);
+    const factions = Array.from(factionsSet).map(
+      (code) => metadata.factions[code],
+    );
 
     return factions.sort(
       (a, b) =>

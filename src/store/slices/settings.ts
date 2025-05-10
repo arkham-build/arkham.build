@@ -105,7 +105,7 @@ export const createSettingsSlice: StateCreator<
       );
     }
 
-    state.refreshLookupTables({
+    set({
       settings,
       lists: makeLists(settings),
     });

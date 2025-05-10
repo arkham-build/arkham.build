@@ -75,7 +75,7 @@ export type DeckEditsSlice = {
 
   drawRandomBasicWeakness(deckId: Id): Card;
 
-  completeTask(deckId: Id, code: string): string;
+  completeTask(deckId: Id, card: Card): string;
 
   updateCardQuantity(
     deckId: Id,

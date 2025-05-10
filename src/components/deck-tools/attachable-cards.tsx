@@ -1,7 +1,10 @@
 import { useStore } from "@/store";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedDeck } from "@/store/lib/types";
-import { selectLocaleSortingCollator } from "@/store/selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectMetadata,
+} from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
 import { getCardColor } from "@/utils/card-utils";
 import type { AttachableDefinition } from "@/utils/constants";
@@ -32,7 +35,7 @@ type Entry = {
 export function AttachableCards(props: Props) {
   const { card, definition, readonly, resolvedDeck } = props;
 
-  const metadata = useStore((state) => state.metadata);
+  const metadata = useStore(selectMetadata);
   const collator = useStore(selectLocaleSortingCollator);
 
   const sortFunction = useMemo(

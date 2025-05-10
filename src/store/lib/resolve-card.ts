@@ -1,7 +1,7 @@
 import { CARD_SET_ORDER } from "@/utils/constants";
 import type { StoreState } from "../slices";
-import type { LookupTables } from "../slices/lookup-tables.types";
 import { applyCardChanges } from "./card-edits";
+import type { LookupTables } from "./lookup-tables.types";
 import { makeSortFunction, sortByName } from "./sorting";
 import type { CardWithRelations, Customizations, ResolvedCard } from "./types";
 
@@ -9,7 +9,7 @@ import type { CardWithRelations, Customizations, ResolvedCard } from "./types";
  * Given a card code, resolve the card and its relations for display.
  */
 export function resolveCardWithRelations<T extends boolean>(
-  state: Pick<StoreState, "metadata" | "lookupTables">,
+  deps: Pick<StoreState, "metadata"> & { lookupTables: LookupTables },
   collator: Intl.Collator,
   code: string | undefined,
   tabooSetId: number | null | undefined,
@@ -18,26 +18,26 @@ export function resolveCardWithRelations<T extends boolean>(
 ): T extends true ? CardWithRelations | undefined : ResolvedCard | undefined {
   if (!code) return undefined;
 
-  let card = state.metadata.cards[code];
+  let card = deps.metadata.cards[code];
   if (!card) return undefined;
 
-  card = applyCardChanges(card, state.metadata, tabooSetId, customizations);
+  card = applyCardChanges(card, deps.metadata, tabooSetId, customizations);
 
-  const pack = state.metadata.packs[card.pack_code];
-  const type = state.metadata.types[card.type_code];
-  const cycle = state.metadata.cycles[pack.cycle_code];
+  const pack = deps.metadata.packs[card.pack_code];
+  const type = deps.metadata.types[card.type_code];
+  const cycle = deps.metadata.cycles[pack.cycle_code];
 
   const subtype = card.subtype_code
-    ? state.metadata.subtypes[card.subtype_code]
+    ? deps.metadata.subtypes[card.subtype_code]
     : undefined;
 
   const encounterSet = card.encounter_code
-    ? state.metadata.encounterSets[card.encounter_code]
+    ? deps.metadata.encounterSets[card.encounter_code]
     : undefined;
 
   const back = card.back_link_id
     ? resolveCardWithRelations(
-        state,
+        deps,
         collator,
         card.back_link_id,
         tabooSetId,
@@ -59,43 +59,43 @@ export function resolveCardWithRelations<T extends boolean>(
     if (card.type_code === "investigator") {
       cardWithRelations.relations = {
         advanced: resolveRelationArray(
-          state,
+          deps,
           collator,
           "advanced",
           card.code,
           tabooSetId,
         ),
-        base: resolveRelation(state, collator, "base", card.code, tabooSetId),
+        base: resolveRelation(deps, collator, "base", card.code, tabooSetId),
         parallel: resolveRelation(
-          state,
+          deps,
           collator,
           "parallel",
           card.code,
           tabooSetId,
         ),
         replacement: resolveRelationArray(
-          state,
+          deps,
           collator,
           "replacement",
           card.code,
           tabooSetId,
         ),
         requiredCards: resolveRelationArray(
-          state,
+          deps,
           collator,
           "requiredCards",
           card.code,
           tabooSetId,
         ),
         parallelCards: resolveRelationArray(
-          state,
+          deps,
           collator,
           "parallelCards",
           card.code,
           tabooSetId,
         ),
         otherVersions: resolveRelationArray(
-          state,
+          deps,
           collator,
           "otherVersions",
           card.code,
@@ -105,14 +105,14 @@ export function resolveCardWithRelations<T extends boolean>(
     } else {
       cardWithRelations.relations = {
         restrictedTo: resolveRelationArray(
-          state,
+          deps,
           collator,
           "restrictedTo",
           card.code,
           tabooSetId,
         ),
         level: resolveRelationArray(
-          state,
+          deps,
           collator,
           "level",
           card.code,
@@ -122,7 +122,7 @@ export function resolveCardWithRelations<T extends boolean>(
 
       if (card.restrictions?.investigator) {
         const investigator = resolveCardWithRelations(
-          state,
+          deps,
           collator,
           Object.keys(card.restrictions.investigator)[0],
           tabooSetId,
@@ -153,7 +153,7 @@ export function resolveCardWithRelations<T extends boolean>(
     }
 
     cardWithRelations.relations.duplicates = resolveRelationArray(
-      state,
+      deps,
       collator,
       "duplicates",
       card.code,
@@ -163,7 +163,7 @@ export function resolveCardWithRelations<T extends boolean>(
     );
 
     cardWithRelations.relations.bound = resolveRelationArray(
-      state,
+      deps,
       collator,
       "bound",
       card.code,
@@ -171,7 +171,7 @@ export function resolveCardWithRelations<T extends boolean>(
     );
 
     cardWithRelations.relations.bonded = resolveRelationArray(
-      state,
+      deps,
       collator,
       "bonded",
       card.code,
@@ -183,7 +183,7 @@ export function resolveCardWithRelations<T extends boolean>(
 }
 
 function resolveRelation(
-  state: Pick<StoreState, "metadata" | "lookupTables">,
+  deps: Pick<StoreState, "metadata"> & { lookupTables: LookupTables },
   collator: Intl.Collator,
   key: keyof LookupTables["relations"],
   code: string,
@@ -191,7 +191,7 @@ function resolveRelation(
   customizations?: Customizations,
 ): ResolvedCard | undefined {
   const relations = resolveRelationArray(
-    state,
+    deps,
     collator,
     key,
     code,
@@ -202,7 +202,7 @@ function resolveRelation(
 }
 
 function resolveRelationArray(
-  state: Pick<StoreState, "metadata" | "lookupTables">,
+  deps: Pick<StoreState, "metadata"> & { lookupTables: LookupTables },
   collator: Intl.Collator,
   key: keyof LookupTables["relations"],
   code: string,
@@ -210,14 +210,14 @@ function resolveRelationArray(
   customizations?: Customizations,
   ignoreDuplicates = true,
 ): ResolvedCard[] {
-  const { metadata, lookupTables } = state;
+  const { metadata, lookupTables } = deps;
 
   const relation = lookupTables.relations[key];
 
   const relations = relation[code]
     ? Object.keys(relation[code]).reduce<CardWithRelations[]>((acc, code) => {
         const card = resolveCardWithRelations(
-          state,
+          deps,
           collator,
           code,
           tabooSetId,

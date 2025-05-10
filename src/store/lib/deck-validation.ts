@@ -6,21 +6,21 @@ import {
   isStaticInvestigator,
 } from "@/utils/card-utils";
 import { DECK_SIZE_ADJUSTMENTS, SPECIAL_CARD_CODES } from "@/utils/constants";
+import { range } from "@/utils/range";
 import { time, timeEnd } from "@/utils/time";
 import type {
   Card,
   DeckOption,
   DeckRequirements,
 } from "../services/queries.types";
-import type { StoreState } from "../slices";
-import type { Deck } from "../slices/data.types";
-import type { LookupTables } from "../slices/lookup-tables.types";
+import type { Metadata } from "../slices/metadata.types";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {
   filterInvestigatorAccess,
   filterInvestigatorWeaknessAccess,
   makeOptionFilter,
 } from "./filtering";
+import type { LookupTables } from "./lookup-tables.types";
 import type { ResolvedDeck } from "./types";
 
 export type DeckValidationResult = {
@@ -155,34 +155,24 @@ function formatReturnValue(errors: Error[]) {
   return { valid: errors.length === 0, errors };
 }
 
-export function getAdditionalDeckOptions(deck: Deck | ResolvedDeck) {
-  const additionalDeckOptions: DeckOption[] = [];
+export function getAdditionalDeckOptions(deck: ResolvedDeck) {
+  return Object.values(deck.cards.slots).reduce((acc, { card }) => {
+    if (card.type_code !== "investigator" && card.deck_options) {
+      const quantity = deck.slots[card.code] ?? 0;
 
-  if (deck.slots[SPECIAL_CARD_CODES.VERSATILE]) {
-    additionalDeckOptions.push({
-      name: "Versatile",
-      level: { min: 0, max: 0 },
-      limit: deck.slots[SPECIAL_CARD_CODES.VERSATILE],
-      error: "Too many off-class cards for Versatile.",
-    });
-  }
+      for (const _ of range(0, quantity)) {
+        acc.push(...card.deck_options);
+      }
+    }
 
-  if (deck.slots[SPECIAL_CARD_CODES.ON_YOUR_OWN]) {
-    additionalDeckOptions.push({
-      not: true,
-      slot: ["Ally"],
-      level: { min: 0, max: 5 },
-      error: "You cannot have assets that take up an ally slot.",
-      virtual: true,
-    });
-  }
-
-  return additionalDeckOptions;
+    return acc;
+  }, [] as DeckOption[]);
 }
 
 export function validateDeck(
   deck: ResolvedDeck,
-  state: StoreState,
+  metadata: Metadata,
+  lookupTables: LookupTables,
 ): DeckValidationResult {
   time("validate_deck");
 
@@ -202,12 +192,12 @@ export function validateDeck(
 
   const errors: Error[] = [
     ...validateDeckSize(deck),
-    ...validateSlots(deck, state),
+    ...validateSlots(deck, metadata, lookupTables),
   ];
 
   if (deck.hasExtraDeck) {
     errors.push(...validateExtraDeckSize(deck));
-    errors.push(...validateSlots(deck, state, "extraSlots"));
+    errors.push(...validateSlots(deck, metadata, lookupTables, "extraSlots"));
   }
 
   timeEnd("validate_deck");
@@ -333,13 +323,14 @@ function validateExtraDeckSize(deck: ResolvedDeck): Error[] {
 
 function validateSlots(
   deck: ResolvedDeck,
-  state: StoreState,
+  metadata: Metadata,
+  lookupTables: LookupTables,
   mode: "slots" | "extraSlots" = "slots",
 ): Error[] {
   const validators: SlotValidator[] = [
     new DeckLimitsValidator(deck),
     new DeckRequiredCardsValidator(deck, mode),
-    new DeckOptionsValidator(deck, state, mode),
+    new DeckOptionsValidator(deck, lookupTables, mode),
   ];
 
   if (mode === "extraSlots") {
@@ -366,7 +357,7 @@ function validateSlots(
     // normalize duplicates to base version before checking access.
     // right now, this is mostly still required for promo marie.
     const normalized = card.duplicate_of_code
-      ? state.metadata.cards[card.duplicate_of_code]
+      ? metadata.cards[card.duplicate_of_code]
       : card;
 
     for (const validator of validators) {
@@ -633,11 +624,11 @@ class DeckOptionsValidator implements SlotValidator {
 
   constructor(
     deck: ResolvedDeck,
-    state: StoreState,
+    lookupTables: LookupTables,
     mode: "slots" | "extraSlots" = "slots",
   ) {
     const investigatorBack = deck.investigatorBack.card;
-    this.lookupTables = state.lookupTables;
+    this.lookupTables = lookupTables;
 
     const { config, deckOptions } = this.configure(deck, mode);
 

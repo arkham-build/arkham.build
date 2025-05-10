@@ -22,6 +22,7 @@ import {
   selectDeckValid,
   selectResolvedDeckById,
 } from "@/store/selectors/decks";
+import { selectLookupTables } from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
 import { mapTabToSlot } from "@/store/slices/deck-edits.types";
 import { isStaticInvestigator } from "@/utils/card-utils";
@@ -184,7 +185,7 @@ function DeckEditInner() {
 
   const updateCardQuantity = useStore((state) => state.updateCardQuantity);
   const validation = useStore((state) => selectDeckValid(state, deck));
-  const lookupTables = useStore((state) => state.lookupTables);
+  const lookupTables = useStore(selectLookupTables);
 
   const accentColor = useAccentColor(deck.investigatorBack.card.faction_code);
 

@@ -4,6 +4,7 @@ import {
   selectFilterChanges,
   selectInvestigatorOptions,
 } from "@/store/selectors/lists";
+import { selectLookupTables } from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
 import { isInvestigatorFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
@@ -28,9 +29,8 @@ export function InvestigatorFilter({ id }: FilterProps) {
 
   const options = useStore(selectInvestigatorOptions);
 
-  const otherVersionsTable = useStore(
-    (state) => state.lookupTables.relations.otherVersions,
-  );
+  const lookupTables = useStore(selectLookupTables);
+  const otherVersionsTable = lookupTables.relations.otherVersions;
 
   const renderOption = useCallback(
     (card: Card) => (

@@ -7,8 +7,9 @@ import type { SettingsState } from "@/store/slices/settings.types";
 import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
 import { displayPackName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { MediaCard } from "../ui/media-card";
 import { CollectionCount } from "./collection-count";
 import { CollectionCycleActions } from "./collection-cycle-actions";
 import { CollectionPack } from "./collection-pack";
@@ -25,6 +26,10 @@ export function CollectionSettings(props: Props) {
 
   const { t } = useTranslation();
   const cyclesWithPacks = useStore(selectCyclesAndPacks);
+
+  const collectionCycles = useMemo(() => {
+    return cyclesWithPacks.filter((cycle) => cycle.official !== false);
+  }, [cyclesWithPacks]);
 
   const canEdit = !!setSettings;
 
@@ -52,7 +57,7 @@ export function CollectionSettings(props: Props) {
           10,
         );
 
-        const cycle = cyclesWithPacks.find((c) => c.code === code);
+        const cycle = collectionCycles.find((c) => c.code === code);
 
         if (cycle) {
           const packs = reprint ? cycle.reprintPacks : cycle.packs;
@@ -75,7 +80,7 @@ export function CollectionSettings(props: Props) {
         }
       }
     },
-    [cyclesWithPacks, setSettings],
+    [collectionCycles, setSettings],
   );
 
   const counts = useStore((state) =>
@@ -93,17 +98,13 @@ export function CollectionSettings(props: Props) {
         name="collection"
         id="collection"
       >
-        <ol className={css["cycles"]}>
-          {cyclesWithPacks.map((cycle) => (
-            <li className={css["cycle"]} key={cycle.code}>
-              <div className={css["cycle-header"]}>
-                <img
-                  loading="lazy"
-                  alt={`Cycle ${displayPackName(cycle)} backdrop`}
-                  className={css["backdrop"]}
-                  src={`/assets/cycles/${cycle.code}.avif`}
-                />
-
+        <div className={css["cycles"]}>
+          {collectionCycles.map((cycle) => (
+            <MediaCard
+              key={cycle.code}
+              bannerAlt={`Cycle ${displayPackName(cycle)} backdrop`}
+              bannerUrl={`/assets/cycles/${cycle.code}.avif`}
+              title={
                 <div className={css["cycle-header-container"]}>
                   <div className={css["cycle-label"]}>
                     <PackIcon code={cycle.code} />
@@ -118,8 +119,8 @@ export function CollectionSettings(props: Props) {
                       />
                     )}
                 </div>
-              </div>
-
+              }
+            >
               {!isEmpty(cycle.reprintPacks) && (
                 <div>
                   <div className={css["cycle-subheader"]}>
@@ -194,9 +195,9 @@ export function CollectionSettings(props: Props) {
                     />
                   </article>
                 )}
-            </li>
+            </MediaCard>
           ))}
-        </ol>
+        </div>
       </fieldset>
     </Field>
   );
