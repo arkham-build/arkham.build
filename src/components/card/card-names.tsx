@@ -24,6 +24,7 @@ export function CardNames(props: Props) {
   const cardName = (
     <>
       <CardName
+        invert
         className={css["name-inner"]}
         card={card}
         cardLevelDisplay={settings.cardLevelDisplay}

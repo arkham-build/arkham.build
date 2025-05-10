@@ -19,6 +19,7 @@ interface Props {
   cardLevelDisplay: "icon-only" | "dots" | "text";
   cardShowCollectionNumber?: boolean;
   className?: string;
+  invert?: boolean;
 }
 
 export function CardName(props: Props) {
@@ -28,6 +29,7 @@ export function CardName(props: Props) {
     cardShowCollectionNumber,
     children,
     className,
+    invert,
   } = props;
   const level = cardLevel(card);
 
@@ -48,14 +50,14 @@ export function CardName(props: Props) {
       )}
       {cardShowCollectionNumber &&
         card.code !== SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS && (
-          <CardPackDetail card={card} />
+          <CardPackDetail card={card} invert={invert} />
         )}
     </div>
   );
 }
 
-function CardPackDetail(props: { card: Card }) {
-  const { card } = props;
+function CardPackDetail(props: { card: Card; invert?: boolean }) {
+  const { card, invert } = props;
 
   const metadata = useStore(selectMetadata);
 
@@ -65,7 +67,12 @@ function CardPackDetail(props: { card: Card }) {
 
   return (
     <span className={css["pack-detail"]}>
-      (<PackIcon className={css["pack-detail-icon"]} code={displayPack.code} />{" "}
+      (
+      <PackIcon
+        className={css["pack-detail-icon"]}
+        code={displayPack.code}
+        invert={invert}
+      />{" "}
       <span className={css["pack-detail-position"]}>{card.position}</span>)
     </span>
   );

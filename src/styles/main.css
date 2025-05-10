@@ -836,6 +836,18 @@ svg {
   border-radius: var(--rounded);
 }
 
+.external-icon {
+  display: inline-block;
+  width: auto;
+  height: 1em;
+  vertical-align: baseline;
+  filter: invert(0.125);
+}
+
+:root[data-theme="light"] .external-icon:not(.invert) {
+  filter: invert(0.666);
+}
+
 .spin {
   animation: spin 1s linear infinite;
 }
