@@ -396,7 +396,7 @@ test.describe("deck view", () => {
 
     await page
       .getByTestId("deck-investigator-front")
-      .getByTestId("card-name")
+      .getByTestId("card-name-inner")
       .click();
 
     await expect(
@@ -425,7 +425,7 @@ test.describe("deck view", () => {
 
     await page
       .getByTestId("deck-investigator-front")
-      .getByTestId("card-name")
+      .getByTestId("card-name-inner")
       .click();
 
     expect(
@@ -452,7 +452,7 @@ test.describe("deck view", () => {
 
     await page
       .getByTestId("deck-investigator-front")
-      .getByTestId("card-name")
+      .getByTestId("card-name-inner")
       .click();
 
     await expect(

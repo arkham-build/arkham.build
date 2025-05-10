@@ -1,3 +1,5 @@
+import type { CardFormat } from "@/pages/deck-edit/editor/notes-rte/cards-to-markdown";
+import type { CardOrigin } from "@/pages/deck-edit/editor/notes-rte/notes-rte-context";
 import type { GroupingType, SortingType, ViewMode } from "./lists.types";
 
 export type ListConfig = {
@@ -15,6 +17,8 @@ export type Locale = string;
 
 export type SettingsState = {
   cardLevelDisplay: "icon-only" | "dots" | "text";
+  cardShowCollectionNumber?: boolean;
+  cardSkillIconsDisplay: "simple" | "as_printed";
   collection: Record<string, number>; // track as "quantity" owned to accomodate the core set.
   flags?: Record<string, boolean>;
   fontSize: number;
@@ -27,11 +31,15 @@ export type SettingsState = {
     deckScans: DecklistConfig;
   };
   locale: Locale;
+  notesEditor: {
+    defaultFormat: CardFormat;
+    defaultOrigin: CardOrigin;
+  };
   showAllCards: boolean;
   showMoveToSideDeck: boolean;
   showPreviews: boolean;
-  tabooSetId: number | undefined;
   sortIgnorePunctuation: boolean;
+  tabooSetId: number | undefined;
   useLimitedPoolForWeaknessDraw: boolean;
 };
 
@@ -39,5 +47,9 @@ export type SettingsSlice = {
   settings: SettingsState;
 } & {
   toggleFlag(key: string): Promise<void>;
-  updateSettings: (payload: SettingsState) => Promise<void>;
+  /**
+   * Updates settings and refreshes application state. (lookup tables, locales)
+   */
+  applySettings: (payload: SettingsState) => Promise<void>;
+  setSettings(payload: Partial<SettingsState>): Promise<void>;
 };

@@ -910,10 +910,9 @@
       "tab_recommendations": "추천",
       "tab_tools": "도구",
       "upgrade_modal": {
+        "automatic_xp_gain": "이 향상에 경험치 {{count}}점이 자동으로 추가됩니다.",
         "error": "덱을 향상하는데 실패함: {{error}}",
-        "great_work": "대업",
         "great_work_label": "호문쿨루스가 당신의 육신을 찬탈하였습니다.",
-        "great_work_status_not_usurped": "이 향상에 경험치 1점이 자동으로 추가됩니다.",
         "great_work_status_usurped": "대업은 당신의 덱에서 모든 전용 카드와 함께 제거됩니다. 당신의 조사자는 호문쿨루스로 교체됩니다.",
         "loading": "덱 향상하기",
         "success": "덱 향상이 성공하였습니다.",

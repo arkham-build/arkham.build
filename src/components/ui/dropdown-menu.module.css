@@ -41,7 +41,7 @@
   border-bottom-color: var(--palette-2);
 }
 
-.dropdown > * {
+.dropdown > :where(.dropdown-item, .dropdown-button) {
   text-align: left;
   justify-content: flex-start;
 }

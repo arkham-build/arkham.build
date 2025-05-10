@@ -210,6 +210,14 @@
   gap: var(--card-spacing);
 }
 
+.header-titles {
+  flex: 1 1 auto;
+}
+
+.header-extras {
+  flex: 0 0 auto;
+}
+
 .header-icon {
   font-size: calc(var(--card-title-size) * 1.75);
   color: currentColor;
@@ -221,13 +229,22 @@
   gap: 0.25rem;
 }
 
+.name-row {
+  flex: 1 1 auto;
+}
+
 .name {
   font-size: var(--card-title-size);
 }
 
-.name .unique {
-  display: inline-block;
-  margin-left: 0.125rem;
+/** Workaround Safari bug where it does not correctly wrap text when svg is present (unique icon) */
+.name-inner {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.name .unique svg {
+  display: inline;
 }
 
 .name button,
@@ -247,9 +264,9 @@
 }
 
 .name .parallel {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 0.125rem;
+  display: inline;
+  vertical-align: baseline;
+  font-size: var(--text-sm);
 }
 
 .sub {
@@ -373,4 +390,5 @@
   fill: currentColor;
   font-size: var(--text-xs);
   filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.2));
+  flex: 0 0 auto;
 }

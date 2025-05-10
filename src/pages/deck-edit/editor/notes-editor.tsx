@@ -9,15 +9,11 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import css from "./notes-editor.module.css";
+import { NotesRichTextEditor } from "./notes-rte/notes-rte";
 
 type Props = {
   deck: ResolvedDeck;
 };
-
-const selectUpdateDescription = createSelector(
-  (state: StoreState) => state.updateDescription,
-  (updateDescription) => debounce(updateDescription, 100),
-);
 
 const selectUpdateMetaProperty = createSelector(
   (state: StoreState) => state.updateMetaProperty,
@@ -28,17 +24,8 @@ export function NotesEditor(props: Props) {
   const { deck } = props;
 
   const { t } = useTranslation();
-  const updateDescription = useStore(selectUpdateDescription);
-  const updateMetaProperty = useStore(selectUpdateMetaProperty);
 
-  const onDescriptionChange = useCallback(
-    (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-      if (evt.target instanceof HTMLTextAreaElement) {
-        updateDescription(deck.id, evt.target.value);
-      }
-    },
-    [updateDescription, deck.id],
-  );
+  const updateMetaProperty = useStore(selectUpdateMetaProperty);
 
   const onBannerUrlChange = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,12 +50,7 @@ export function NotesEditor(props: Props) {
       <div className={css["notes-editor"]}>
         <Field full helpText={t("deck_edit.notes.description_help")} padded>
           <FieldLabel>{t("deck_edit.notes.description")}</FieldLabel>
-          <AutoSizingTextarea
-            className={css["notes-editor-textarea"]}
-            data-testid="editor-description"
-            defaultValue={deck.description_md ?? ""}
-            onChange={onDescriptionChange}
-          />
+          <NotesRichTextEditor deck={deck} />
         </Field>
         <Field full padded helpText={t("deck_edit.notes.banner_url_help")}>
           <FieldLabel>{t("deck_edit.notes.banner_url")}</FieldLabel>

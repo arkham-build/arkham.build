@@ -10,7 +10,8 @@
   line-height: 1;
   border-radius: var(--rounded);
   border: 1px solid var(--palette-1);
-  padding: 0.125rem 0.25rem;
+  padding: calc(var(--card-spacing-x, 0.375rem) / 4)
+    calc(var(--card-spacing-x, 0.375rem) / 2);
   user-select: none;
 }
 

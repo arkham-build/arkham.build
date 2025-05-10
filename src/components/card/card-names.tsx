@@ -23,14 +23,26 @@ export function CardNames(props: Props) {
 
   const cardName = (
     <>
-      {card.parallel && <i className={cx(css["parallel"], "icon-parallel")} />}
-      <CardName card={card} cardLevelDisplay={settings.cardLevelDisplay} />{" "}
-      <span className={css["unique"]}>{card.is_unique && <UniqueIcon />}</span>
+      <CardName
+        className={css["name-inner"]}
+        card={card}
+        cardLevelDisplay={settings.cardLevelDisplay}
+        cardShowCollectionNumber={settings.cardShowCollectionNumber}
+      >
+        {card.parallel && (
+          <i className={cx(css["parallel"], "icon-parallel")} />
+        )}
+        {card.is_unique && (
+          <span className={css["unique"]}>
+            {card.is_unique && <UniqueIcon />}
+          </span>
+        )}
+      </CardName>
     </>
   );
 
   return (
-    <div>
+    <div className={css["name-row"]}>
       <h1 className={css["name"]} data-testid="card-name">
         {titleLinks === "card" && (
           <Link href={`/card/${card.code}`}>{cardName}</Link>

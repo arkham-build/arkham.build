@@ -256,6 +256,21 @@ test.describe("upgrades: views", () => {
     ).toBeDisabled();
   });
 
+  test("charon's obol", async ({ page }) => {
+    await importDeckFromFile(page, "./upgrades/obol_base.json", {
+      navigate: "view",
+    });
+
+    await page.getByTestId("view-upgrade").click();
+    await page.getByTestId("upgrade-xp").fill("1");
+    await page.getByTestId("upgrade-save-close").click();
+    await page.getByTestId("tab-history").click();
+
+    await expect(
+      page.getByTestId("history").getByRole("paragraph"),
+    ).toContainText("XP available: 3 (spent: 0)");
+  });
+
   test("the great work", async ({ page }) => {
     await importDeckFromFile(page, "./upgrades/the_great_work_base.json", {
       navigate: "view",

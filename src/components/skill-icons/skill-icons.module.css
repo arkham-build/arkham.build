@@ -1,5 +1,6 @@
 .skills {
   display: flex;
+  flex-flow: row wrap;
   list-style: none;
   align-items: center;
   color: var(--palette-4);

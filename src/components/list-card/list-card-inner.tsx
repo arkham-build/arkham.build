@@ -23,10 +23,10 @@ import { CardThumbnail } from "../card-thumbnail";
 import { CardDetails } from "../card/card-details";
 import { CardIcons } from "../card/card-icons";
 import { CardText } from "../card/card-text";
-import { ExperienceDots } from "../experience-dots";
 import { MulticlassIcons } from "../icons/multiclass-icons";
 import { SkillIcons } from "../skill-icons/skill-icons";
 import { SkillIconsInvestigator } from "../skill-icons/skill-icons-investigator";
+import { TabooIndicator } from "../taboo-indicator";
 import { QuantityInput } from "../ui/quantity-input";
 import { QuantityOutput } from "../ui/quantity-output";
 import { DefaultTooltip } from "../ui/tooltip";
@@ -39,6 +39,8 @@ export type Props = {
   as?: "li" | "div";
   card: Card;
   cardLevelDisplay: SettingsState["cardLevelDisplay"];
+  cardShowCollectionNumber?: SettingsState["cardShowCollectionNumber"];
+  cardSkillIconsDisplay?: SettingsState["cardSkillIconsDisplay"];
   className?: string;
   disableKeyboard?: boolean;
   disableModalOpen?: boolean;
@@ -70,6 +72,8 @@ export function ListCardInner(props: Props) {
     as = "div",
     card,
     cardLevelDisplay,
+    cardShowCollectionNumber,
+    cardSkillIconsDisplay,
     className,
     disableKeyboard,
     disableModalOpen,
@@ -186,6 +190,7 @@ export function ListCardInner(props: Props) {
                           ? "dots"
                           : cardLevelDisplay
                       }
+                      cardShowCollectionNumber={cardShowCollectionNumber}
                     />
                   </button>
                 </h4>
@@ -244,19 +249,22 @@ export function ListCardInner(props: Props) {
                     card.parallel && <i className="icon-parallel" />
                   )}
 
-                  {hasSkillIcons(card) && <SkillIcons card={card} />}
-
-                  {!!card.taboo_set_id && (
-                    <span className={cx(css["taboo"], "color-taboo")}>
-                      <i className="icon-tablet icon-layout color-taboo" />
-                      {card.taboo_xp &&
-                        (cardLevelDisplay === "text" ? (
-                          <strong>{signedInteger(card.taboo_xp)} XP</strong>
-                        ) : (
-                          <ExperienceDots xp={card.taboo_xp} />
-                        ))}
-                    </span>
+                  {hasSkillIcons(card) && (
+                    <SkillIcons
+                      className={cx(
+                        css["skill-icons"],
+                        cardSkillIconsDisplay && css[cardSkillIconsDisplay],
+                      )}
+                      card={card}
+                      fancy={cardSkillIconsDisplay === "as_printed"}
+                    />
                   )}
+
+                  <TabooIndicator
+                    className={css["taboo"]}
+                    card={card}
+                    cardLevelDisplay={cardLevelDisplay}
+                  />
 
                   {!!annotation && <AnnotationIndicator />}
 
@@ -324,8 +332,4 @@ export function ListCardInner(props: Props) {
       )}
     </Element>
   );
-}
-
-function signedInteger(num: number) {
-  return num > 0 ? `+${num}` : num.toString();
 }

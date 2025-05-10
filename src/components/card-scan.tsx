@@ -41,10 +41,21 @@ export function CardScan(props: Props) {
       ? (backCard?.code ?? (suffix ? code : `${code}b`))
       : backType;
 
-  const imageCode = useAgathaEasterEggTransform(`${code}${suffix ?? ""}`);
+  const tabooSetId =
+    card.taboo_set_id && card.taboo_set_id <= 8 ? card.taboo_set_id : undefined;
+
+  const imageCode = useAgathaEasterEggTransform(
+    tabooSetId
+      ? `${code}${suffix ?? ""}-${tabooSetId}`
+      : `${code}${suffix ?? ""}`,
+  );
+
+  const reverseImageCode = useAgathaEasterEggTransform(
+    tabooSetId ? `${backCode}-${tabooSetId}` : backCode,
+  );
+
   const isSideways = sideways(card);
 
-  const reverseImageCode = useAgathaEasterEggTransform(backCode);
   const reverseSideways = backCard
     ? sideways(backCard)
     : backType === "card"

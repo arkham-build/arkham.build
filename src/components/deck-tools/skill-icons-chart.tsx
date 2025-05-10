@@ -1,4 +1,5 @@
-import type { ChartableData } from "@/store/lib/types";
+import type { ChartableData } from "@/store/lib/deck-charts";
+import { cx } from "@/utils/cx";
 import type { TFunction } from "i18next";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,7 +26,7 @@ export function SkillIconsChart({ data }: Props) {
   const { t } = useTranslation();
 
   return (
-    <div ref={ref} className={css["chart-container"]}>
+    <div ref={ref} className={cx(css["chart-container"], css["chart-victory"])}>
       {width > 0 && (
         <>
           <h4 className={css["chart-title"]}>{t("deck.tools.skill_icons")}</h4>

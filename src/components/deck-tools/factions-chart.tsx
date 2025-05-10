@@ -1,10 +1,10 @@
-import type { ChartableData } from "@/store/lib/types";
+import type { ChartableData } from "@/store/lib/deck-charts";
 import type { FactionName } from "@/utils/constants";
+import { cx } from "@/utils/cx";
 import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   VictoryContainer,
-  VictoryLabel,
   type VictoryLabelProps,
   VictoryPie,
   VictoryTooltip,
@@ -28,7 +28,7 @@ export function FactionsChart({ data }: Props) {
   }, [data]);
 
   return (
-    <div ref={ref} className={css["chart-container"]}>
+    <div ref={ref} className={cx(css["chart-container"], css["chart-victory"])}>
       {width > 0 && (
         <>
           <h4 className={css["chart-title"]}>{t("deck.tools.factions")}</h4>
@@ -38,9 +38,10 @@ export function FactionsChart({ data }: Props) {
             }
             data={normalizedData}
             theme={chartsTheme}
-            labelPlacement="parallel"
+            labelPosition="centroid"
+            labelPlacement={"vertical"}
             labelComponent={<CustomLabel />}
-            labels={({ datum }) => t(`common.factions.${datum.xName}`)}
+            labelRadius={({ radius }) => (radius as number) + 16}
             width={width}
             sortKey={"y"}
             style={{
@@ -61,14 +62,29 @@ export function FactionsChart({ data }: Props) {
 function CustomLabel(props: VictoryLabelProps) {
   const { t } = useTranslation();
 
-  const { datum } = props;
+  const { datum, x, y } = props;
+
   const count = datum?.y ?? 0;
+
+  const faction = datum?.xName ?? "unknown";
 
   const text = `${count} ${t(`common.factions.${datum?.xName ?? "unknown"}`)} ${t("common.card", { count: props.datum?.y })}`;
 
+  const size = 24;
+
   return (
     <g>
-      <VictoryLabel {...props} />
+      <foreignObject
+        x={(x ?? 0) - size / 2}
+        y={(y ?? 0) - size / 2}
+        width={size}
+        height={size}
+      >
+        <i
+          className={`icon-${faction} fg-${faction}`}
+          style={{ fontSize: "24px" }}
+        />
+      </foreignObject>
       <VictoryTooltip
         // biome-ignore lint/suspicious/noExplicitAny: wrong library typings.
         active={(props as any).active}
@@ -78,7 +94,9 @@ function CustomLabel(props: VictoryLabelProps) {
         angle={0}
         theme={chartsTheme}
         labelPlacement="vertical"
-        flyoutWidth={120}
+        flyoutWidth={(s) => {
+          return s.text.length * 12;
+        }}
         constrainToVisibleArea
         text={text}
       />

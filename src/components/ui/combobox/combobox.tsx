@@ -6,6 +6,7 @@ import { normalizeDiacritics } from "@/utils/normalize-diacritics";
 import {
   FloatingFocusManager,
   FloatingPortal,
+  type FloatingPortalProps,
   autoUpdate,
   flip,
   offset,
@@ -59,7 +60,9 @@ function fuzzyMatch<T extends Coded>(
 export type Props<T extends Coded> = {
   autoFocus?: boolean;
   className?: string;
+  defaultOpen?: boolean;
   disabled?: boolean;
+  omitFloatingPortal?: boolean;
   id: string;
   items: T[];
   itemToString?: (item: T) => string;
@@ -67,6 +70,7 @@ export type Props<T extends Coded> = {
   limit?: number;
   omitItemPadding?: boolean;
   onValueChange?: (value: string[]) => void;
+  onEscapeBlur?: () => void;
   placeholder?: string;
   readonly?: boolean;
   renderItem?: (item: T) => React.ReactNode;
@@ -82,6 +86,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
   const {
     autoFocus,
     className,
+    defaultOpen,
     disabled,
     id,
     items,
@@ -91,20 +96,21 @@ export function Combobox<T extends Coded>(props: Props<T>) {
     placeholder,
     omitItemPadding,
     onValueChange,
+    onEscapeBlur,
     readonly,
     renderItem = defaultRenderer,
     renderResult = defaultRenderer,
     selectedItems,
     showLabel,
+    omitFloatingPortal,
   } = props;
 
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
-  const [isOpen, setOpen] = useState(false);
+  const [isOpen, setOpen] = useState(defaultOpen);
   const [inputValue, setInputValue] = useState("");
 
   const { context, refs, floatingStyles } = useFloating({
     whileElementsMounted: autoUpdate,
-    strategy: "fixed",
     placement: "bottom-start",
     open: isOpen,
     middleware: [
@@ -214,6 +220,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                     evt.preventDefault();
                     setOpen(false);
                     (evt.target as HTMLInputElement)?.blur();
+                    onEscapeBlur?.();
                   } else if (evt.key === "Enter" && activeIndex != null) {
                     evt.preventDefault();
                     const activeItem = filteredItems[activeIndex];
@@ -267,7 +274,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
         </div>
       )}
       {!readonly && isOpen && (
-        <FloatingPortal id={FLOATING_PORTAL_ID}>
+        <ToggleableFloatingPortal enabled={!omitFloatingPortal}>
           <FloatingFocusManager context={context} initialFocus={-1}>
             <div
               className={css["menu"]}
@@ -289,7 +296,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
               />
             </div>
           </FloatingFocusManager>
-        </FloatingPortal>
+        </ToggleableFloatingPortal>
       )}
       {!isEmpty(selectedItems) && (
         <ComboboxResults
@@ -299,5 +306,18 @@ export function Combobox<T extends Coded>(props: Props<T>) {
         />
       )}
     </div>
+  );
+}
+
+function ToggleableFloatingPortal(
+  props: FloatingPortalProps & {
+    enabled?: boolean;
+  },
+) {
+  if (!props.enabled) return props.children;
+  return (
+    <FloatingPortal id={FLOATING_PORTAL_ID} {...props}>
+      {props.children}
+    </FloatingPortal>
   );
 }

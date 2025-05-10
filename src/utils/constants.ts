@@ -14,6 +14,7 @@ import i18n from "./i18n";
 export const LOCALES = [
   { value: "de", label: "Deutsch (de)", additionalCharacters: "ß" },
   { value: "en", label: "English (en)" },
+  { value: "es", label: "Español (es)", additionalCharacters: "ñ" },
   { value: "fr", label: "Français (fr)" },
   { value: "ko", label: "한국어/Korean (ko)", unicode: true },
   { value: "pl", label: "Polski (pl)" },
@@ -165,6 +166,8 @@ export const SPECIAL_CARD_CODES = {
   BURDEN_OF_DESTINY: "08015",
   /** Allows to exile arbitrary cards. */
   BURN_AFTER_READING: "08076",
+  /** Additional XP gain. */
+  CHARONS_OBOL: "03308",
   /** Changes XP calculation for upgrades. */
   DEJA_VU: "60531",
   /** Connected to parallel roland's front. */

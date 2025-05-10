@@ -537,9 +537,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     await state.dehydrate("app", "edits");
     return nextDeck.id;
   },
-  async upgradeDeck({ id, xp: _xp, exileString, usurped }) {
-    const xp = _xp + (usurped === false ? 1 : 0);
-
+  async upgradeDeck({ id, xp, exileString, usurped }) {
     const state = get();
     const metadata = selectMetadata(state);
 
@@ -555,6 +553,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       (deck.xp ?? 0) + (deck.xp_adjustment ?? 0) - (deck.xp_spent ?? 0);
 
     const now = new Date().toISOString();
+
     let newDeck: Deck = {
       ...structuredClone(deck),
       id: randomId(),

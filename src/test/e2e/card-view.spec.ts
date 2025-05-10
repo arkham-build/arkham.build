@@ -48,7 +48,7 @@ test.describe("card view: display", () => {
     page,
   }) => {
     await page.goto("/card/01001");
-    await page.getByTestId("card-98005").getByTestId("card-name").click();
+    await page.getByTestId("card-98005").getByTestId("card-name-inner").click();
 
     await cardVisible(page, "98005");
     await cardVisible(page, "01001", "restrictedTo");

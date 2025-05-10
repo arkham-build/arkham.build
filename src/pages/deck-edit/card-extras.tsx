@@ -8,6 +8,7 @@ import { mapTabToSlot } from "@/store/slices/deck-edits.types";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import css from "./deck-edit.module.css";
+import { AddToNotes } from "./editor/add-to-notes";
 import { DrawBasicWeakness } from "./editor/draw-basic-weakness";
 import { MoveToMainDeck } from "./editor/move-to-main-deck";
 import { MoveToSideDeck } from "./editor/move-to-side-deck";
@@ -18,11 +19,12 @@ type Props = {
   deck: ResolvedDeck;
   card: Card;
   quantity: number | undefined;
+  currentTool: string;
   currentTab: string;
 };
 
 export function CardExtras(props: Props) {
-  const { canEdit, card, deck, quantity, currentTab } = props;
+  const { canEdit, card, deck, quantity, currentTab, currentTool } = props;
 
   const settings = useStore((state) => state.settings);
 
@@ -36,6 +38,10 @@ export function CardExtras(props: Props) {
 
   if (currentTab === "config" || currentTab === "ignoreDeckLimitSlots") {
     return null;
+  }
+
+  if (currentTool === "notes") {
+    return <AddToNotes card={card} deck={deck} />;
   }
 
   if (currentTab === "sideSlots") {

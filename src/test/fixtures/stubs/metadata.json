@@ -86,12 +86,6 @@
         "real_name": "Dark Revelations"
       },
       {
-        "code": "ltr",
-        "cycle_code": "parallel",
-        "position": 7,
-        "real_name": "Laid to Rest"
-      },
-      {
         "code": "def",
         "cycle_code": "tic",
         "position": 3,
@@ -122,12 +116,6 @@
         "real_name": "Into the Maelstrom"
       },
       {
-        "code": "ptr",
-        "cycle_code": "parallel",
-        "position": 8,
-        "real_name": "Path of the Righteous"
-      },
-      {
         "code": "rttcu",
         "cycle_code": "return",
         "position": 5,
@@ -140,64 +128,10 @@
         "real_name": "Edge of the Earth Investigator Expansion"
       },
       {
-        "code": "rop",
-        "cycle_code": "parallel",
-        "position": 9,
-        "real_name": "Relics of the Past"
-      },
-      {
-        "code": "hfa",
-        "cycle_code": "parallel",
-        "position": 10,
-        "real_name": "Hunting for Answers"
-      },
-      {
-        "code": "pap",
-        "cycle_code": "parallel",
-        "position": 11,
-        "real_name": "Pistols and Pearls"
-      },
-      {
-        "code": "tmg",
-        "cycle_code": "side_stories",
-        "position": 11,
-        "real_name": "The Midwinter Gala"
-      },
-      {
-        "code": "aof",
-        "cycle_code": "parallel",
-        "position": 12,
-        "real_name": "Aura of Faith"
-      },
-      {
         "code": "eoec",
         "cycle_code": "eoe",
         "position": 2,
         "real_name": "Edge of the Earth Campaign Expansion"
-      },
-      {
-        "code": "core",
-        "cycle_code": "core",
-        "position": 1,
-        "real_name": "Core Set"
-      },
-      {
-        "code": "promo",
-        "cycle_code": "promotional",
-        "position": 30,
-        "real_name": "Promo"
-      },
-      {
-        "code": "dwl",
-        "cycle_code": "dwl",
-        "position": 1,
-        "real_name": "The Dunwich Legacy"
-      },
-      {
-        "code": "tdcc",
-        "cycle_code": "tdc",
-        "position": 2,
-        "real_name": "The Drowned City Campaign Expansion"
       },
       {
         "code": "cotr",
@@ -224,16 +158,28 @@
         "real_name": "Fortune and Folly"
       },
       {
-        "code": "tskp",
-        "cycle_code": "tsk",
+        "code": "core",
+        "cycle_code": "core",
         "position": 1,
-        "real_name": "The Scarlet Keys Investigator Expansion"
+        "real_name": "Core Set"
       },
       {
-        "code": "tskc",
-        "cycle_code": "tsk",
+        "code": "promo",
+        "cycle_code": "promotional",
+        "position": 30,
+        "real_name": "Promo"
+      },
+      {
+        "code": "dwl",
+        "cycle_code": "dwl",
+        "position": 1,
+        "real_name": "The Dunwich Legacy"
+      },
+      {
+        "code": "tdcc",
+        "cycle_code": "tdc",
         "position": 2,
-        "real_name": "The Scarlet Keys Campaign Expansion"
+        "real_name": "The Drowned City Campaign Expansion"
       },
       {
         "code": "blbe",
@@ -264,6 +210,60 @@
         "cycle_code": "parallel",
         "position": 6,
         "real_name": "On the Road Again"
+      },
+      {
+        "code": "ltr",
+        "cycle_code": "parallel",
+        "position": 7,
+        "real_name": "Laid to Rest"
+      },
+      {
+        "code": "ptr",
+        "cycle_code": "parallel",
+        "position": 8,
+        "real_name": "Path of the Righteous"
+      },
+      {
+        "code": "rop",
+        "cycle_code": "parallel",
+        "position": 9,
+        "real_name": "Relics of the Past"
+      },
+      {
+        "code": "hfa",
+        "cycle_code": "parallel",
+        "position": 10,
+        "real_name": "Hunting for Answers"
+      },
+      {
+        "code": "pap",
+        "cycle_code": "parallel",
+        "position": 11,
+        "real_name": "Pistols and Pearls"
+      },
+      {
+        "code": "tskp",
+        "cycle_code": "tsk",
+        "position": 1,
+        "real_name": "The Scarlet Keys Investigator Expansion"
+      },
+      {
+        "code": "tskc",
+        "cycle_code": "tsk",
+        "position": 2,
+        "real_name": "The Scarlet Keys Campaign Expansion"
+      },
+      {
+        "code": "tmg",
+        "cycle_code": "side_stories",
+        "position": 11,
+        "real_name": "The Midwinter Gala"
+      },
+      {
+        "code": "aof",
+        "cycle_code": "parallel",
+        "position": 12,
+        "real_name": "Aura of Faith"
       },
       {
         "code": "icc",
@@ -380,36 +380,6 @@
         "real_name": "The Feast of Hemlock Vale Campaign Expansion"
       },
       {
-        "code": "lol",
-        "cycle_code": "side_stories",
-        "position": 3,
-        "real_name": "The Labyrinths of Lunacy"
-      },
-      {
-        "code": "guardians",
-        "cycle_code": "side_stories",
-        "position": 4,
-        "real_name": "Guardians of the Abyss"
-      },
-      {
-        "code": "hotel",
-        "cycle_code": "side_stories",
-        "position": 5,
-        "real_name": "Murder at the Excelsior Hotel"
-      },
-      {
-        "code": "blob",
-        "cycle_code": "side_stories",
-        "position": 6,
-        "real_name": "The Blob That Ate Everything"
-      },
-      {
-        "code": "wog",
-        "cycle_code": "side_stories",
-        "position": 7,
-        "real_name": "War of the Outer Gods"
-      },
-      {
         "code": "iotv",
         "cycle_code": "promotional",
         "position": 22,
@@ -420,18 +390,6 @@
         "cycle_code": "ptc",
         "position": 4,
         "real_name": "A Phantom of Truth"
-      },
-      {
-        "code": "rod",
-        "cycle_code": "parallel",
-        "position": 1,
-        "real_name": "Read or Die"
-      },
-      {
-        "code": "aon",
-        "cycle_code": "parallel",
-        "position": 2,
-        "real_name": "All or Nothing"
       },
       {
         "code": "tpm",
@@ -470,6 +428,18 @@
         "real_name": "The Forgotten Age"
       },
       {
+        "code": "lol",
+        "cycle_code": "side_stories",
+        "position": 3,
+        "real_name": "The Labyrinths of Lunacy"
+      },
+      {
+        "code": "guardians",
+        "cycle_code": "side_stories",
+        "position": 4,
+        "real_name": "Guardians of the Abyss"
+      },
+      {
         "code": "tdg",
         "cycle_code": "promotional",
         "position": 23,
@@ -500,10 +470,34 @@
         "real_name": "Heart of the Elders"
       },
       {
+        "code": "hotel",
+        "cycle_code": "side_stories",
+        "position": 5,
+        "real_name": "Murder at the Excelsior Hotel"
+      },
+      {
+        "code": "blob",
+        "cycle_code": "side_stories",
+        "position": 6,
+        "real_name": "The Blob That Ate Everything"
+      },
+      {
+        "code": "wog",
+        "cycle_code": "side_stories",
+        "position": 7,
+        "real_name": "War of the Outer Gods"
+      },
+      {
         "code": "tdcp",
         "cycle_code": "tdc",
         "position": 1,
         "real_name": "The Drowned City Investigator Expansion"
+      },
+      {
+        "code": "rod",
+        "cycle_code": "parallel",
+        "position": 1,
+        "real_name": "Read or Die"
       },
       {
         "code": "tcoa",
@@ -522,6 +516,12 @@
         "cycle_code": "tfa",
         "position": 7,
         "real_name": "Shattered Aeons"
+      },
+      {
+        "code": "aon",
+        "cycle_code": "parallel",
+        "position": 2,
+        "real_name": "All or Nothing"
       },
       {
         "code": "rtdwl",
@@ -561,36 +561,157 @@
       }
     ],
     "cycle": [
-      { "code": "core", "position": 1, "real_name": "Core" },
-      { "code": "dwl", "position": 2, "real_name": "The Dunwich Legacy" },
-      { "code": "ptc", "position": 3, "real_name": "The Path to Carcosa" },
-      { "code": "tfa", "position": 4, "real_name": "The Forgotten Age" },
-      { "code": "tcu", "position": 5, "real_name": "The Circle Undone" },
-      { "code": "tde", "position": 6, "real_name": "The Dream-Eaters" },
-      { "code": "tic", "position": 7, "real_name": "The Innsmouth Conspiracy" },
-      { "code": "eoe", "position": 8, "real_name": "Edge of the Earth" },
-      { "code": "tsk", "position": 9, "real_name": "The Scarlet Keys" },
       {
-        "code": "fhv",
-        "position": 10,
-        "real_name": "The Feast of Hemlock Vale"
+        "code": "tdc",
+        "position": 11,
+        "real_name": "The Drowned City"
       },
-      { "code": "promotional", "position": 80, "real_name": "Promotional" },
-      { "code": "tdc", "position": 11, "real_name": "The Drowned City" },
-      { "code": "return", "position": 50, "real_name": "Return to..." },
+      {
+        "code": "promotional",
+        "position": 80,
+        "real_name": "Promotional"
+      },
+      {
+        "code": "return",
+        "position": 50,
+        "real_name": "Return to..."
+      },
       {
         "code": "investigator",
         "position": 60,
         "real_name": "Investigator Starter Decks"
       },
-      { "code": "side_stories", "position": 70, "real_name": "Side Stories" },
-      { "code": "parallel", "position": 90, "real_name": "Parallel" }
+      {
+        "code": "side_stories",
+        "position": 70,
+        "real_name": "Side Stories"
+      },
+      {
+        "code": "parallel",
+        "position": 90,
+        "real_name": "Parallel"
+      },
+      {
+        "code": "core",
+        "position": 1,
+        "real_name": "Core"
+      },
+      {
+        "code": "dwl",
+        "position": 2,
+        "real_name": "The Dunwich Legacy"
+      },
+      {
+        "code": "ptc",
+        "position": 3,
+        "real_name": "The Path to Carcosa"
+      },
+      {
+        "code": "tfa",
+        "position": 4,
+        "real_name": "The Forgotten Age"
+      },
+      {
+        "code": "tcu",
+        "position": 5,
+        "real_name": "The Circle Undone"
+      },
+      {
+        "code": "tde",
+        "position": 6,
+        "real_name": "The Dream-Eaters"
+      },
+      {
+        "code": "tic",
+        "position": 7,
+        "real_name": "The Innsmouth Conspiracy"
+      },
+      {
+        "code": "eoe",
+        "position": 8,
+        "real_name": "Edge of the Earth"
+      },
+      {
+        "code": "tsk",
+        "position": 9,
+        "real_name": "The Scarlet Keys"
+      },
+      {
+        "code": "fhv",
+        "position": 10,
+        "real_name": "The Feast of Hemlock Vale"
+      }
     ],
     "card_encounter_set": [
       {
-        "code": "the_miskatonic_museum",
+        "code": "alien_machinery",
         "locale": "en",
-        "name": "The Miskatonic Museum"
+        "name": "Alien Machinery"
+      },
+      {
+        "code": "one_last_job",
+        "locale": "en",
+        "name": "One Last Job"
+      },
+      {
+        "code": "tdc_flood",
+        "locale": "en",
+        "name": "Flood"
+      },
+      {
+        "code": "cosmic_legacy",
+        "locale": "en",
+        "name": "Cosmic Legacy"
+      },
+      {
+        "code": "blob_that_ate_everything_else",
+        "locale": "en",
+        "name": "The Blob That Ate Everything Else"
+      },
+      {
+        "code": "the_vanishing_of_elina_harper",
+        "locale": "en",
+        "name": "The Vanishing of Elina Harper"
+      },
+      {
+        "code": "byakhee",
+        "locale": "en",
+        "name": "Byakhee"
+      },
+      {
+        "code": "by_the_book",
+        "locale": "en",
+        "name": "By the Book"
+      },
+      {
+        "code": "brotherhood_of_the_beast",
+        "locale": "en",
+        "name": "Brotherhood of the Beast"
+      },
+      {
+        "code": "domination",
+        "locale": "en",
+        "name": "Domination"
+      },
+      {
+        "code": "obsidian_canyons",
+        "locale": "en",
+        "name": "Obsidian Canyons"
+      },
+      {
+        "code": "court_of_the_ancients",
+        "locale": "en",
+        "name": "Court of the Ancients"
+      },
+      {
+        "code": "deep_ones",
+        "locale": "en",
+        "name": "Deep Ones"
+      },
+      {
+        "code": "rlyeh",
+        "locale": "en",
+        "name": "R'lyeh"
       },
       {
         "code": "beyond_the_threshold",
@@ -602,35 +723,26 @@
         "locale": "en",
         "name": "The Blob That Ate Everything"
       },
-      { "code": "by_the_book", "locale": "en", "name": "By the Book" },
-      { "code": "byakhee", "locale": "en", "name": "Byakhee" },
-      {
-        "code": "the_vanishing_of_elina_harper",
-        "locale": "en",
-        "name": "The Vanishing of Elina Harper"
-      },
-      {
-        "code": "blob_that_ate_everything_else",
-        "locale": "en",
-        "name": "The Blob That Ate Everything Else"
-      },
       {
         "code": "agents_of_atlach_nacha",
         "locale": "en",
         "name": "Agents of Atlach-Nacha"
       },
       {
-        "code": "brotherhood_of_the_beast",
+        "code": "the_doom_of_arkham_part_2",
         "locale": "en",
-        "name": "Brotherhood of the Beast"
+        "name": "The Doom of Arkham Part II"
       },
-      { "code": "dark_veiling", "locale": "en", "name": "Dark Veiling" },
       {
-        "code": "dealings_in_the_dark",
+        "code": "dreams",
         "locale": "en",
-        "name": "Dealings in the Dark"
+        "name": "Dreams"
       },
-      { "code": "day_of_rain", "locale": "en", "name": "Day of Rain" },
+      {
+        "code": "day_of_rain",
+        "locale": "en",
+        "name": "Day of Rain"
+      },
       {
         "code": "creatures_of_the_underworld",
         "locale": "en",
@@ -641,44 +753,105 @@
         "locale": "en",
         "name": "Creatures of the Deep"
       },
-      { "code": "creeping_cold", "locale": "en", "name": "Creeping Cold" },
-      { "code": "devil_reef", "locale": "en", "name": "Devil Reef" },
-      { "code": "death_of_stars", "locale": "en", "name": "Death of Stars" },
-      { "code": "dogs_of_war", "locale": "en", "name": "Dogs of War" },
+      {
+        "code": "dark_veiling",
+        "locale": "en",
+        "name": "Dark Veiling"
+      },
+      {
+        "code": "dealings_in_the_dark",
+        "locale": "en",
+        "name": "Dealings in the Dark"
+      },
+      {
+        "code": "creeping_cold",
+        "locale": "en",
+        "name": "Creeping Cold"
+      },
+      {
+        "code": "elder_mist",
+        "locale": "en",
+        "name": "Elder Mist"
+      },
+      {
+        "code": "the_drowned_quarter",
+        "locale": "en",
+        "name": "The Drowned Quarter"
+      },
+      {
+        "code": "the_grand_vault",
+        "locale": "en",
+        "name": "The Grand Vault"
+      },
+      {
+        "code": "death_of_stars",
+        "locale": "en",
+        "name": "Death of Stars"
+      },
+      {
+        "code": "dogs_of_war",
+        "locale": "en",
+        "name": "Dogs of War"
+      },
       {
         "code": "doomed_expedition",
         "locale": "en",
         "name": "Doomed Expedition"
       },
-      { "code": "dim_carcosa", "locale": "en", "name": "Dim Carcosa" },
       {
         "code": "decaying_reality",
         "locale": "en",
         "name": "Decaying Reality"
       },
-      { "code": "flooded_caverns", "locale": "en", "name": "Flooded Caverns" },
-      { "code": "fatal_mirage", "locale": "en", "name": "Fatal Mirage" },
+      {
+        "code": "devil_reef",
+        "locale": "en",
+        "name": "Devil Reef"
+      },
+      {
+        "code": "the_inescapable",
+        "locale": "en",
+        "name": "The Inescapable"
+      },
+      {
+        "code": "flooded_caverns",
+        "locale": "en",
+        "name": "Flooded Caverns"
+      },
+      {
+        "code": "decay",
+        "locale": "en",
+        "name": "Decay & Filth"
+      },
+      {
+        "code": "fatal_mirage",
+        "locale": "en",
+        "name": "Fatal Mirage"
+      },
       {
         "code": "fate_of_the_vale",
         "locale": "en",
         "name": "Fate of the Vale"
       },
-      { "code": "decay", "locale": "en", "name": "Decay & Filth" },
       {
         "code": "echoes_of_the_past",
         "locale": "en",
         "name": "Echoes of the Past"
       },
-      { "code": "flux", "locale": "en", "name": "Temporal Flux" },
       {
-        "code": "agents_of_azathoth",
+        "code": "pilgrims",
         "locale": "en",
-        "name": "Agents of Azathoth"
+        "name": "Pilgrims"
       },
       {
-        "code": "for_the_greater_good",
+        "code": "the_miskatonic_museum",
         "locale": "en",
-        "name": "For the Greater Good"
+        "name": "The Miskatonic Museum"
+      },
+      {
+        "code": "flux",
+        "locale": "en",
+        "name": "Temporal Flux"
       },
       {
         "code": "fog_over_innsmouth",
@@ -686,39 +859,125 @@
         "name": "Fog over Innsmouth"
       },
       {
+        "code": "undersea_creatures",
+        "locale": "en",
+        "name": "Undersea Creatures"
+      },
+      {
+        "code": "the_western_wall",
+        "locale": "en",
+        "name": "The Western Wall"
+      },
+      {
+        "code": "for_the_greater_good",
+        "locale": "en",
+        "name": "For the Greater Good"
+      },
+      {
         "code": "fortune_and_folly",
         "locale": "en",
         "name": "Fortune and Folly"
+      },
+      {
+        "code": "agents_of_azathoth",
+        "locale": "en",
+        "name": "Agents of Azathoth"
+      },
+      {
+        "code": "stowaways",
+        "locale": "en",
+        "name": "Stowaways"
+      },
+      {
+        "code": "sepulchre_of_the_sleeper",
+        "locale": "en",
+        "name": "Sepulchre of the Sleeper"
+      },
+      {
+        "code": "star_spawn",
+        "locale": "en",
+        "name": "Star Spawn"
+      },
+      {
+        "code": "dim_carcosa",
+        "locale": "en",
+        "name": "Dim Carcosa"
       },
       {
         "code": "a_thousand_shapes_of_horror",
         "locale": "en",
         "name": "A Thousand Shapes of Horror"
       },
-      { "code": "bad_blood", "locale": "en", "name": "Bad Blood" },
+      {
+        "code": "bad_blood",
+        "locale": "en",
+        "name": "Bad Blood"
+      },
       {
         "code": "beyond_the_beyond",
         "locale": "en",
         "name": "Beyond the Beyond"
       },
-      { "code": "fortunes_chosen", "locale": "en", "name": "Fortune's Chosen" },
-      { "code": "hasturs_gift", "locale": "en", "name": "Hastur's Gift" },
       {
-        "code": "guardians_of_time",
+        "code": "fortunes_chosen",
         "locale": "en",
-        "name": "Guardians of Time"
+        "name": "Fortune's Chosen"
       },
-      { "code": "ghouls", "locale": "en", "name": "Ghouls" },
+      {
+        "code": "tdc_expedition",
+        "locale": "en",
+        "name": "Expedition"
+      },
       {
         "code": "ghouls_of_umôrdhoth",
         "locale": "en",
         "name": "Ghouls of Umôrdhoth"
       },
-      { "code": "hasturs_envoys", "locale": "en", "name": "Hastur's Envoys" },
-      { "code": "globetrotting", "locale": "en", "name": "Globetrotting" },
-      { "code": "hauntings", "locale": "en", "name": "Hauntings" },
-      { "code": "bad_luck", "locale": "en", "name": "Bad Luck" },
-      { "code": "impending_evils", "locale": "en", "name": "Impending Evils" },
+      {
+        "code": "ghouls",
+        "locale": "en",
+        "name": "Ghouls"
+      },
+      {
+        "code": "hauntings",
+        "locale": "en",
+        "name": "Hauntings"
+      },
+      {
+        "code": "hasturs_envoys",
+        "locale": "en",
+        "name": "Hastur's Envoys"
+      },
+      {
+        "code": "the_apiary",
+        "locale": "en",
+        "name": "The Apiary"
+      },
+      {
+        "code": "tasks",
+        "locale": "en",
+        "name": "Tasks"
+      },
+      {
+        "code": "globetrotting",
+        "locale": "en",
+        "name": "Globetrotting"
+      },
+      {
+        "code": "guardians_of_time",
+        "locale": "en",
+        "name": "Guardians of Time"
+      },
+      {
+        "code": "bad_luck",
+        "locale": "en",
+        "name": "Bad Luck"
+      },
+      {
+        "code": "hasturs_gift",
+        "locale": "en",
+        "name": "Hastur's Gift"
+      },
       {
         "code": "inhabitants_of_carcosa",
         "locale": "en",
@@ -729,12 +988,25 @@
         "locale": "en",
         "name": "In the Clutches of Chaos"
       },
-      { "code": "inexorable_fate", "locale": "en", "name": "Inexorable Fate" },
-      { "code": "in_too_deep", "locale": "en", "name": "In Too Deep" },
       {
-        "code": "into_the_maelstrom",
+        "code": "impending_evils",
         "locale": "en",
-        "name": "Into the Maelstrom"
+        "name": "Impending Evils"
+      },
+      {
+        "code": "the_doom_of_arkham_part_1",
+        "locale": "en",
+        "name": "The Doom of Arkham Part I"
+      },
+      {
+        "code": "inexorable_fate",
+        "locale": "en",
+        "name": "Inexorable Fate"
+      },
+      {
+        "code": "machinations_through_time",
+        "locale": "en",
+        "name": "Machinations Through Time"
       },
       {
         "code": "lost_in_time_and_space",
@@ -742,22 +1014,34 @@
         "name": "Lost in Time and Space"
       },
       {
-        "code": "machinations_through_time",
-        "locale": "en",
-        "name": "Machinations Through Time"
-      },
-      { "code": "left_behind", "locale": "en", "name": "Left Behind" },
-      { "code": "laid_to_rest", "locale": "en", "name": "Laid to Rest" },
-      {
         "code": "in_the_labyrinths_of_lunacy",
         "locale": "en",
         "name": "The Labyrinths of Lunacy"
       },
-      { "code": "knyan", "locale": "en", "name": "K'n-yan" },
       {
-        "code": "memorials_of_the_lost",
+        "code": "left_behind",
         "locale": "en",
-        "name": "Memorials of the Lost"
+        "name": "Left Behind"
+      },
+      {
+        "code": "laid_to_rest",
+        "locale": "en",
+        "name": "Laid to Rest"
+      },
+      {
+        "code": "in_too_deep",
+        "locale": "en",
+        "name": "In Too Deep"
+      },
+      {
+        "code": "into_the_maelstrom",
+        "locale": "en",
+        "name": "Into the Maelstrom"
+      },
+      {
+        "code": "knyan",
+        "locale": "en",
+        "name": "K'n-yan"
       },
       {
         "code": "maddening_delusions",
@@ -765,11 +1049,10 @@
         "name": "Maddening Delusions"
       },
       {
-        "code": "agents_of_the_outside",
+        "code": "malfunction",
         "locale": "en",
-        "name": "Agents of the Outside"
+        "name": "Malfunction"
       },
-      { "code": "malfunction", "locale": "en", "name": "Malfunction" },
       {
         "code": "machinations_through_time_epic_multiplayer",
         "locale": "en",
@@ -780,7 +1063,21 @@
         "locale": "en",
         "name": "Single Group"
       },
-      { "code": "arkham", "locale": "en", "name": "The Midnight Masks" },
+      {
+        "code": "memorials_of_the_lost",
+        "locale": "en",
+        "name": "Memorials of the Lost"
+      },
+      {
+        "code": "agents_of_the_outside",
+        "locale": "en",
+        "name": "Agents of the Outside"
+      },
+      {
+        "code": "arkham",
+        "locale": "en",
+        "name": "The Midnight Masks"
+      },
       {
         "code": "a_phantom_of_truth",
         "locale": "en",
@@ -796,17 +1093,10 @@
         "locale": "en",
         "name": "Merging Realities"
       },
-      { "code": "miasma", "locale": "en", "name": "Miasma" },
-      { "code": "migo_incursion", "locale": "en", "name": "Mi-Go Incursion" },
       {
-        "code": "bloodthirsty_spirits",
+        "code": "miasma",
         "locale": "en",
-        "name": "Bloodthirsty Spirits"
-      },
-      {
-        "code": "migo_incursion_2",
-        "locale": "en",
-        "name": "Mi-Go Incursion II"
+        "name": "Miasma"
       },
       {
         "code": "blood_on_the_altar",
@@ -819,15 +1109,34 @@
         "name": "Beyond the Gates of Sleep"
       },
       {
-        "code": "children_of_paradise",
+        "code": "migo_incursion",
         "locale": "en",
-        "name": "Children of Paradise"
+        "name": "Mi-Go Incursion"
       },
-      { "code": "chilling_cold", "locale": "en", "name": "Chilling Cold" },
+      {
+        "code": "bloodthirsty_spirits",
+        "locale": "en",
+        "name": "Bloodthirsty Spirits"
+      },
+      {
+        "code": "migo_incursion_2",
+        "locale": "en",
+        "name": "Mi-Go Incursion II"
+      },
+      {
+        "code": "chilling_cold",
+        "locale": "en",
+        "name": "Chilling Cold"
+      },
       {
         "code": "murder_at_the_excelsior_hotel",
         "locale": "en",
         "name": "Murder at the Excelsior Hotel"
+      },
+      {
+        "code": "children_of_paradise",
+        "locale": "en",
+        "name": "Children of Paradise"
       },
       {
         "code": "extracurricular_activity",
@@ -854,10 +1163,36 @@
         "locale": "en",
         "name": "Mysteries Abound"
       },
-      { "code": "cleanup_crew", "locale": "en", "name": "Cleanup Crew" },
-      { "code": "myconids", "locale": "en", "name": "Myconids" },
-      { "code": "cultists", "locale": "en", "name": "Cult of Umôrdhoth" },
-      { "code": "naomis_crew", "locale": "en", "name": "Naomi's Crew" },
+      {
+        "code": "cleanup_crew",
+        "locale": "en",
+        "name": "Cleanup Crew"
+      },
+      {
+        "code": "myconids",
+        "locale": "en",
+        "name": "Myconids"
+      },
+      {
+        "code": "nameless_horrors",
+        "locale": "en",
+        "name": "Nameless Horrors"
+      },
+      {
+        "code": "outsiders",
+        "locale": "en",
+        "name": "Outsiders"
+      },
+      {
+        "code": "cultists",
+        "locale": "en",
+        "name": "Cult of Umôrdhoth"
+      },
+      {
+        "code": "naomis_crew",
+        "locale": "en",
+        "name": "Naomi's Crew"
+      },
       {
         "code": "essex_county_express",
         "locale": "en",
@@ -868,12 +1203,6 @@
         "locale": "en",
         "name": "Cult of Pnakotus"
       },
-      {
-        "code": "nameless_horrors",
-        "locale": "en",
-        "name": "Nameless Horrors"
-      },
-      { "code": "outsiders", "locale": "en", "name": "Outsiders" },
       {
         "code": "pnakotic_brotherhood",
         "locale": "en",
@@ -894,7 +1223,11 @@
         "locale": "en",
         "name": "Point of No Return"
       },
-      { "code": "agents_of_dagon", "locale": "en", "name": "Agents of Dagon" },
+      {
+        "code": "agents_of_dagon",
+        "locale": "en",
+        "name": "Agents of Dagon"
+      },
       {
         "code": "plan_in_shambles",
         "locale": "en",
@@ -905,78 +1238,186 @@
         "locale": "en",
         "name": "Agents of Hastur"
       },
-      { "code": "delusions", "locale": "en", "name": "Delusions" },
-      { "code": "poison", "locale": "en", "name": "Poison" },
-      { "code": "agents_of_hydra", "locale": "en", "name": "Agents of Hydra" },
-      { "code": "rats", "locale": "en", "name": "Rats" },
-      { "code": "rainforest", "locale": "en", "name": "Rainforest" },
+      {
+        "code": "delusions",
+        "locale": "en",
+        "name": "Delusions"
+      },
+      {
+        "code": "poison",
+        "locale": "en",
+        "name": "Poison"
+      },
+      {
+        "code": "agents_of_hydra",
+        "locale": "en",
+        "name": "Agents of Hydra"
+      },
+      {
+        "code": "rats",
+        "locale": "en",
+        "name": "Rats"
+      },
+      {
+        "code": "rainforest",
+        "locale": "en",
+        "name": "Rainforest"
+      },
       {
         "code": "disappearance_at_the_twilight_estate",
         "locale": "en",
         "name": "Disappearance at the Twilight Estate"
       },
-      { "code": "realm_of_death", "locale": "en", "name": "Realm of Death" },
+      {
+        "code": "realm_of_death",
+        "locale": "en",
+        "name": "Realm of Death"
+      },
       {
         "code": "agents_of_nyarlathotep",
         "locale": "en",
         "name": "Agents of Nyarlathotep"
       },
-      { "code": "read_or_die", "locale": "en", "name": "Read or Die" },
-      { "code": "bayou", "locale": "en", "name": "The Bayou" },
-      { "code": "armitages_fate", "locale": "en", "name": "Armitage's Fate" },
-      { "code": "bishops_thralls", "locale": "en", "name": "Bishop's Thralls" },
+      {
+        "code": "read_or_die",
+        "locale": "en",
+        "name": "Read or Die"
+      },
+      {
+        "code": "bayou",
+        "locale": "en",
+        "name": "The Bayou"
+      },
+      {
+        "code": "armitages_fate",
+        "locale": "en",
+        "name": "Armitage's Fate"
+      },
+      {
+        "code": "bishops_thralls",
+        "locale": "en",
+        "name": "Bishop's Thralls"
+      },
       {
         "code": "agents_of_the_colour",
         "locale": "en",
         "name": "Agents of the Colour"
       },
-      { "code": "blight", "locale": "en", "name": "Blight" },
+      {
+        "code": "blight",
+        "locale": "en",
+        "name": "Blight"
+      },
       {
         "code": "blob_epic_multiplayer",
         "locale": "en",
         "name": "Epic Multiplayer"
       },
-      { "code": "blob_single_group", "locale": "en", "name": "Single Group" },
+      {
+        "code": "blob_single_group",
+        "locale": "en",
+        "name": "Single Group"
+      },
       {
         "code": "agents_of_shub",
         "locale": "en",
         "name": "Agents of Shub-Niggurath"
       },
-      { "code": "city_of_sins", "locale": "en", "name": "City of Sins" },
+      {
+        "code": "city_of_sins",
+        "locale": "en",
+        "name": "City of Sins"
+      },
       {
         "code": "city_of_the_damned",
         "locale": "en",
         "name": "City of the Damned"
       },
-      { "code": "chilling_mists", "locale": "en", "name": "Chilling Mists" },
-      { "code": "curtain_call", "locale": "en", "name": "Curtain Call" },
-      { "code": "dark_rituals", "locale": "en", "name": "Dark Rituals" },
-      { "code": "dancing_mad", "locale": "en", "name": "Dancing Mad" },
+      {
+        "code": "chilling_mists",
+        "locale": "en",
+        "name": "Chilling Mists"
+      },
+      {
+        "code": "curtain_call",
+        "locale": "en",
+        "name": "Curtain Call"
+      },
+      {
+        "code": "dark_rituals",
+        "locale": "en",
+        "name": "Dark Rituals"
+      },
+      {
+        "code": "dancing_mad",
+        "locale": "en",
+        "name": "Dancing Mad"
+      },
       {
         "code": "crimson_conspiracy",
         "locale": "en",
         "name": "Crimson Conspiracy"
       },
-      { "code": "dead_heat", "locale": "en", "name": "Dead Heat" },
-      { "code": "day_of_rest", "locale": "en", "name": "Day of Rest" },
+      {
+        "code": "dead_heat",
+        "locale": "en",
+        "name": "Dead Heat"
+      },
+      {
+        "code": "day_of_rest",
+        "locale": "en",
+        "name": "Day of Rest"
+      },
       {
         "code": "day_of_the_feast",
         "locale": "en",
         "name": "Day of the Feast"
       },
-      { "code": "ice_and_death", "locale": "en", "name": "Ice and Death" },
-      { "code": "dreamers_curse", "locale": "en", "name": "Dreamer's Curse" },
-      { "code": "neurotic_fear", "locale": "en", "name": "Neurotic Fear" },
-      { "code": "nightgaunts", "locale": "en", "name": "Nightgaunts" },
+      {
+        "code": "ice_and_death",
+        "locale": "en",
+        "name": "Ice and Death"
+      },
+      {
+        "code": "dreamers_curse",
+        "locale": "en",
+        "name": "Dreamer's Curse"
+      },
+      {
+        "code": "neurotic_fear",
+        "locale": "en",
+        "name": "Neurotic Fear"
+      },
+      {
+        "code": "nightgaunts",
+        "locale": "en",
+        "name": "Nightgaunts"
+      },
       {
         "code": "epic_multiplayer",
         "locale": "en",
         "name": "Epic Multiplayer"
       },
-      { "code": "erratic_fear", "locale": "en", "name": "Erratic Fear" },
-      { "code": "deadly_weather", "locale": "en", "name": "Deadly Weather" },
-      { "code": "elder_things", "locale": "en", "name": "Elder Things" },
-      { "code": "penguins", "locale": "en", "name": "Penguins" },
+      {
+        "code": "erratic_fear",
+        "locale": "en",
+        "name": "Erratic Fear"
+      },
+      {
+        "code": "deadly_weather",
+        "locale": "en",
+        "name": "Deadly Weather"
+      },
+      {
+        "code": "elder_things",
+        "locale": "en",
+        "name": "Elder Things"
+      },
+      {
+        "code": "penguins",
+        "locale": "en",
+        "name": "Penguins"
+      },
       {
         "code": "agents_of_cthulhu",
         "locale": "en",
@@ -997,49 +1438,95 @@
         "locale": "en",
         "name": "Alien Interference"
       },
-      { "code": "abyssal_gifts", "locale": "en", "name": "Abyssal Gifts" },
-      { "code": "all_or_nothing", "locale": "en", "name": "All or Nothing" },
+      {
+        "code": "abyssal_gifts",
+        "locale": "en",
+        "name": "Abyssal Gifts"
+      },
+      {
+        "code": "all_or_nothing",
+        "locale": "en",
+        "name": "All or Nothing"
+      },
       {
         "code": "a_light_in_the_fog",
         "locale": "en",
         "name": "A Light in the Fog"
       },
-      { "code": "sorcery", "locale": "en", "name": "Sorcery" },
-      { "code": "ancient_evils", "locale": "en", "name": "Ancient Evils" },
-      { "code": "pentagram", "locale": "en", "name": "Dark Cult" },
-      { "code": "anettes_coven", "locale": "en", "name": "Anette's Coven" },
+      {
+        "code": "sorcery",
+        "locale": "en",
+        "name": "Sorcery"
+      },
+      {
+        "code": "ancient_evils",
+        "locale": "en",
+        "name": "Ancient Evils"
+      },
+      {
+        "code": "pentagram",
+        "locale": "en",
+        "name": "Dark Cult"
+      },
+      {
+        "code": "anettes_coven",
+        "locale": "en",
+        "name": "Anette's Coven"
+      },
       {
         "code": "at_deaths_doorstep",
         "locale": "en",
         "name": "At Death's Doorstep"
       },
-      { "code": "on_thin_ice", "locale": "en", "name": "On Thin Ice" },
-      { "code": "red_coterie", "locale": "en", "name": "Red Coterie" },
-      { "code": "beast_thralls", "locale": "en", "name": "Beast Thralls" },
-      { "code": "dunwich", "locale": "en", "name": "Dunwich" },
-      { "code": "dreamlands", "locale": "en", "name": "Dreamlands" },
-      { "code": "red_tide_rising", "locale": "en", "name": "Red Tide Rising" },
+      {
+        "code": "beast_thralls",
+        "locale": "en",
+        "name": "Beast Thralls"
+      },
+      {
+        "code": "dunwich",
+        "locale": "en",
+        "name": "Dunwich"
+      },
+      {
+        "code": "dreamlands",
+        "locale": "en",
+        "name": "Dreamlands"
+      },
+      {
+        "code": "red_tide_rising",
+        "locale": "en",
+        "name": "Red Tide Rising"
+      },
+      {
+        "code": "on_thin_ice",
+        "locale": "en",
+        "name": "On Thin Ice"
+      },
+      {
+        "code": "red_coterie",
+        "locale": "en",
+        "name": "Red Coterie"
+      },
       {
         "code": "return_to_before_the_black_throne",
         "locale": "en",
         "name": "Return to Before the Black Throne"
       },
       {
-        "code": "relics_of_the_past",
+        "code": "residents",
         "locale": "en",
-        "name": "Relics of the Past"
-      },
-      { "code": "residents", "locale": "en", "name": "Residents" },
-      { "code": "refractions", "locale": "en", "name": "Refractions" },
-      {
-        "code": "return_to_black_stars_rise",
-        "locale": "en",
-        "name": "Return to Black Stars Rise"
+        "name": "Residents"
       },
       {
         "code": "return_to_at_deaths_doorstep",
         "locale": "en",
         "name": "Return to At Death's Doorstep"
+      },
+      {
+        "code": "refractions",
+        "locale": "en",
+        "name": "Refractions"
       },
       {
         "code": "before_the_black_throne",
@@ -1051,26 +1538,40 @@
         "locale": "en",
         "name": "Return Cult of Umôrdhoth"
       },
-      { "code": "resurgent_evils", "locale": "en", "name": "Resurgent Evils" },
+      {
+        "code": "resurgent_evils",
+        "locale": "en",
+        "name": "Resurgent Evils"
+      },
+      {
+        "code": "relics_of_the_past",
+        "locale": "en",
+        "name": "Relics of the Past"
+      },
       {
         "code": "return_to_a_phantom_of_truth",
         "locale": "en",
         "name": "Return to A Phantom of Truth"
       },
       {
-        "code": "return_to_echoes_of_the_past",
+        "code": "return_to_black_stars_rise",
         "locale": "en",
-        "name": "Return to Echoes of the Past"
-      },
-      {
-        "code": "return_to_dim_carcosa",
-        "locale": "en",
-        "name": "Return to Dim Carcosa"
+        "name": "Return to Black Stars Rise"
       },
       {
         "code": "return_to_knyan",
         "locale": "en",
         "name": "Return to K'n-yan"
+      },
+      {
+        "code": "return_to_blood_on_the_altar",
+        "locale": "en",
+        "name": "Return to Blood on the Altar"
+      },
+      {
+        "code": "return_to_curtain_call",
+        "locale": "en",
+        "name": "Return to Curtain Call"
       },
       {
         "code": "return_to_disappearance_at_the_twilight_estate",
@@ -1083,21 +1584,25 @@
         "name": "Return to For the Greater Good"
       },
       {
-        "code": "return_to_curtain_call",
+        "code": "return_to_echoes_of_the_past",
         "locale": "en",
-        "name": "Return to Curtain Call"
+        "name": "Return to Echoes of the Past"
       },
       {
-        "code": "return_to_blood_on_the_altar",
+        "code": "return_to_dim_carcosa",
         "locale": "en",
-        "name": "Return to Blood on the Altar"
+        "name": "Return to Dim Carcosa"
       },
       {
         "code": "return_to_lost_in_time_and_space",
         "locale": "en",
         "name": "Return to Lost in Time and Space"
       },
-      { "code": "corsairs", "locale": "en", "name": "Corsairs" },
+      {
+        "code": "corsairs",
+        "locale": "en",
+        "name": "Corsairs"
+      },
       {
         "code": "return_to_pillars_of_judgment",
         "locale": "en",
@@ -1119,6 +1624,36 @@
         "name": "Congress of the Keys"
       },
       {
+        "code": "return_to_the_miskatonic_museum",
+        "locale": "en",
+        "name": "Return to The Miskatonic Museum"
+      },
+      {
+        "code": "cult_of_the_yellow_sign",
+        "locale": "en",
+        "name": "Cult of the Yellow Sign"
+      },
+      {
+        "code": "return_to_the_midnight_masks",
+        "locale": "en",
+        "name": "Return to the Midnight Masks"
+      },
+      {
+        "code": "return_to_the_essex_county_express",
+        "locale": "en",
+        "name": "Return to The Essex County Express"
+      },
+      {
+        "code": "return_to_the_doom_of_eztli",
+        "locale": "en",
+        "name": "Return to the Doom of Eztli"
+      },
+      {
+        "code": "return_to_the_last_king",
+        "locale": "en",
+        "name": "Return to The Last King"
+      },
+      {
         "code": "return_to_the_devourer_below",
         "locale": "en",
         "name": "Return to the Devourer Below"
@@ -1129,36 +1664,6 @@
         "name": "Return to The House Always Wins"
       },
       {
-        "code": "return_to_the_miskatonic_museum",
-        "locale": "en",
-        "name": "Return to The Miskatonic Museum"
-      },
-      {
-        "code": "return_to_the_essex_county_express",
-        "locale": "en",
-        "name": "Return to The Essex County Express"
-      },
-      {
-        "code": "return_to_the_last_king",
-        "locale": "en",
-        "name": "Return to The Last King"
-      },
-      {
-        "code": "return_to_the_doom_of_eztli",
-        "locale": "en",
-        "name": "Return to the Doom of Eztli"
-      },
-      {
-        "code": "return_to_the_midnight_masks",
-        "locale": "en",
-        "name": "Return to the Midnight Masks"
-      },
-      {
-        "code": "cult_of_the_yellow_sign",
-        "locale": "en",
-        "name": "Cult of the Yellow Sign"
-      },
-      {
         "code": "return_to_the_gathering",
         "locale": "en",
         "name": "Return to the Gathering"
@@ -1167,17 +1672,6 @@
         "code": "return_to_the_pallid_mask",
         "locale": "en",
         "name": "Return to The Pallid Mask"
-      },
-      { "code": "delusory_evils", "locale": "en", "name": "Delusory Evils" },
-      {
-        "code": "descent_into_the_pitch",
-        "locale": "en",
-        "name": "Descent into the Pitch"
-      },
-      {
-        "code": "return_to_the_untamed_wilds",
-        "locale": "en",
-        "name": "Return to the Untamed Wilds"
       },
       {
         "code": "return_to_the_rainforest",
@@ -1190,14 +1684,40 @@
         "name": "Return to The Witching Hour"
       },
       {
+        "code": "delusory_evils",
+        "locale": "en",
+        "name": "Delusory Evils"
+      },
+      {
+        "code": "descent_into_the_pitch",
+        "locale": "en",
+        "name": "Descent into the Pitch"
+      },
+      {
         "code": "return_to_the_wages_of_sin",
         "locale": "en",
         "name": "Return to The Wages of Sin"
       },
-      { "code": "expedition_team", "locale": "en", "name": "Expedition Team" },
-      { "code": "evil_portents", "locale": "en", "name": "Evil Portents" },
-      { "code": "expedition", "locale": "en", "name": "Expedition" },
-      { "code": "eztli", "locale": "en", "name": "The Doom of Eztli" },
+      {
+        "code": "return_to_the_untamed_wilds",
+        "locale": "en",
+        "name": "Return to the Untamed Wilds"
+      },
+      {
+        "code": "evil_portents",
+        "locale": "en",
+        "name": "Evil Portents"
+      },
+      {
+        "code": "expedition",
+        "locale": "en",
+        "name": "Expedition"
+      },
+      {
+        "code": "eztli",
+        "locale": "en",
+        "name": "The Doom of Eztli"
+      },
       {
         "code": "return_to_undimensioned_and_unseen",
         "locale": "en",
@@ -1208,34 +1728,71 @@
         "locale": "en",
         "name": "Excelsior Management"
       },
-      { "code": "sands_of_egypt", "locale": "en", "name": "Sands of Egypt" },
       {
-        "code": "return_to_where_doom_awaits",
+        "code": "expedition_team",
         "locale": "en",
-        "name": "Return to Where Doom Awaits"
+        "name": "Expedition Team"
       },
-      { "code": "secret_doors", "locale": "en", "name": "Secret Doors" },
-      { "code": "rising_tide", "locale": "en", "name": "Rising Tide" },
       {
-        "code": "return_to_union_and_disillusion",
+        "code": "secret_doors",
         "locale": "en",
-        "name": "Return to Union and Disillusion"
+        "name": "Secret Doors"
+      },
+      {
+        "code": "rougarou",
+        "locale": "en",
+        "name": "Curse of the Rougarou"
+      },
+      {
+        "code": "ruins",
+        "locale": "en",
+        "name": "Forgotten Ruins"
+      },
+      {
+        "code": "sanguine_shadows",
+        "locale": "en",
+        "name": "Sanguine Shadows"
+      },
+      {
+        "code": "fire",
+        "locale": "en",
+        "name": "Fire!"
+      },
+      {
+        "code": "rising_tide",
+        "locale": "en",
+        "name": "Rising Tide"
       },
       {
         "code": "riddles_and_rain",
         "locale": "en",
         "name": "Riddles and Rain"
       },
-      { "code": "scarlet_sorcery", "locale": "en", "name": "Scarlet Sorcery" },
       {
-        "code": "sanguine_shadows",
+        "code": "scarlet_sorcery",
         "locale": "en",
-        "name": "Sanguine Shadows"
+        "name": "Scarlet Sorcery"
       },
-      { "code": "fire", "locale": "en", "name": "Fire!" },
-      { "code": "ruins", "locale": "en", "name": "Forgotten Ruins" },
-      { "code": "rougarou", "locale": "en", "name": "Curse of the Rougarou" },
-      { "code": "flood", "locale": "en", "name": "The Flood Below" },
+      {
+        "code": "return_to_union_and_disillusion",
+        "locale": "en",
+        "name": "Return to Union and Disillusion"
+      },
+      {
+        "code": "sands_of_egypt",
+        "locale": "en",
+        "name": "Sands of Egypt"
+      },
+      {
+        "code": "return_to_where_doom_awaits",
+        "locale": "en",
+        "name": "Return to Where Doom Awaits"
+      },
+      {
+        "code": "flood",
+        "locale": "en",
+        "name": "The Flood Below"
+      },
       {
         "code": "heart_of_the_elders",
         "locale": "en",
@@ -1262,20 +1819,6 @@
         "name": "Hazards of Antarctica"
       },
       {
-        "code": "return_to_shattered_aeons",
-        "locale": "en",
-        "name": "Return to Shattered Aeons"
-      },
-      {
-        "code": "horror_in_high_gear",
-        "locale": "en",
-        "name": "Horror in High Gear"
-      },
-      { "code": "hexcraft", "locale": "en", "name": "Hexcraft" },
-      { "code": "secret_war", "locale": "en", "name": "Secret War" },
-      { "code": "heirlooms", "locale": "en", "name": "Heirlooms" },
-      { "code": "hemlock_house", "locale": "en", "name": "Hemlock House" },
-      {
         "code": "hideous_abominations",
         "locale": "en",
         "name": "Hideous Abominations"
@@ -1285,20 +1828,36 @@
         "locale": "en",
         "name": "Return to the Boundary Beyond"
       },
-      { "code": "serpents", "locale": "en", "name": "Serpents" },
-      { "code": "shattered_aeons", "locale": "en", "name": "Shattered Aeons" },
-      { "code": "abyssal_tribute", "locale": "en", "name": "Abyssal Tribute" },
       {
-        "code": "shattered_memories",
+        "code": "return_to_shattered_aeons",
         "locale": "en",
-        "name": "Shattered Memories"
+        "name": "Return to Shattered Aeons"
       },
       {
-        "code": "seeping_nightmares",
+        "code": "horror_in_high_gear",
         "locale": "en",
-        "name": "Seeping Nightmares"
+        "name": "Horror in High Gear"
       },
-      { "code": "shoggoths", "locale": "en", "name": "Shoggoths" },
+      {
+        "code": "hexcraft",
+        "locale": "en",
+        "name": "Hexcraft"
+      },
+      {
+        "code": "secret_war",
+        "locale": "en",
+        "name": "Secret War"
+      },
+      {
+        "code": "heirlooms",
+        "locale": "en",
+        "name": "Heirlooms"
+      },
+      {
+        "code": "hemlock_house",
+        "locale": "en",
+        "name": "Hemlock House"
+      },
       {
         "code": "shades_of_suffering",
         "locale": "en",
@@ -1314,13 +1873,51 @@
         "locale": "en",
         "name": "Horrors in the Rock"
       },
-      { "code": "locked_doors", "locale": "en", "name": "Locked Doors" },
+      {
+        "code": "serpents",
+        "locale": "en",
+        "name": "Serpents"
+      },
+      {
+        "code": "shattered_aeons",
+        "locale": "en",
+        "name": "Shattered Aeons"
+      },
+      {
+        "code": "abyssal_tribute",
+        "locale": "en",
+        "name": "Abyssal Tribute"
+      },
+      {
+        "code": "shattered_memories",
+        "locale": "en",
+        "name": "Shattered Memories"
+      },
+      {
+        "code": "seeping_nightmares",
+        "locale": "en",
+        "name": "Seeping Nightmares"
+      },
+      {
+        "code": "shoggoths",
+        "locale": "en",
+        "name": "Shoggoths"
+      },
+      {
+        "code": "locked_doors",
+        "locale": "en",
+        "name": "Locked Doors"
+      },
       {
         "code": "agents_of_yog",
         "locale": "en",
         "name": "Agents of Yog-Sothoth"
       },
-      { "code": "agents_of_yig", "locale": "en", "name": "Agents of Yig" },
+      {
+        "code": "agents_of_yig",
+        "locale": "en",
+        "name": "Agents of Yig"
+      },
       {
         "code": "silence_and_mystery",
         "locale": "en",
@@ -1331,45 +1928,50 @@
         "locale": "en",
         "name": "Lost in the Night"
       },
-      { "code": "single_group", "locale": "en", "name": "Single Group" },
-      {
-        "code": "sins_of_the_past",
-        "locale": "en",
-        "name": "Sins of the Past"
-      },
       {
         "code": "stirring_in_the_deep",
         "locale": "en",
         "name": "Stirring in the Deep"
       },
-      { "code": "spatial_anomaly", "locale": "en", "name": "Spatial Anomaly" },
-      {
-        "code": "strange_happenings",
-        "locale": "en",
-        "name": "Strange Happenings"
-      },
-      {
-        "code": "spreading_corruption",
-        "locale": "en",
-        "name": "Spreading Corruption"
-      },
-      { "code": "spiders", "locale": "en", "name": "Spiders" },
       {
         "code": "silver_twilight_lodge",
         "locale": "en",
         "name": "Silver Twilight Lodge"
       },
       {
+        "code": "spiders",
+        "locale": "en",
+        "name": "Spiders"
+      },
+      {
+        "code": "spatial_anomaly",
+        "locale": "en",
+        "name": "Spatial Anomaly"
+      },
+      {
+        "code": "spreading_corruption",
+        "locale": "en",
+        "name": "Spreading Corruption"
+      },
+      {
+        "code": "strange_happenings",
+        "locale": "en",
+        "name": "Strange Happenings"
+      },
+      {
+        "code": "single_group",
+        "locale": "en",
+        "name": "Single Group"
+      },
+      {
+        "code": "sins_of_the_past",
+        "locale": "en",
+        "name": "Sins of the Past"
+      },
+      {
         "code": "spectral_predators",
         "locale": "en",
         "name": "Spectral Predators"
-      },
-      { "code": "stranger", "locale": "en", "name": "The Stranger" },
-      { "code": "tekelili", "locale": "en", "name": "Tekeli-Li" },
-      {
-        "code": "the_boundary_beyond",
-        "locale": "en",
-        "name": "The Boundary Beyond"
       },
       {
         "code": "music_of_the_damned",
@@ -1377,20 +1979,95 @@
         "name": "Music of the Damned"
       },
       {
+        "code": "tentacles",
+        "locale": "en",
+        "name": "The Devourer Below"
+      },
+      {
+        "code": "the_beyond",
+        "locale": "en",
+        "name": "The Beyond"
+      },
+      {
+        "code": "mutations",
+        "locale": "en",
+        "name": "Mutations"
+      },
+      {
         "code": "terror_of_the_vale",
         "locale": "en",
         "name": "Terror of the Vale"
       },
-      { "code": "syzygy", "locale": "en", "name": "Syzygy" },
       {
         "code": "swarm_of_assimilation",
         "locale": "en",
         "name": "Swarm of Assimilation"
       },
-      { "code": "mutations", "locale": "en", "name": "Mutations" },
-      { "code": "the_beyond", "locale": "en", "name": "The Beyond" },
-      { "code": "tentacles", "locale": "en", "name": "The Devourer Below" },
-      { "code": "striking_fear", "locale": "en", "name": "Striking Fear" },
+      {
+        "code": "tekelili",
+        "locale": "en",
+        "name": "Tekeli-Li"
+      },
+      {
+        "code": "syzygy",
+        "locale": "en",
+        "name": "Syzygy"
+      },
+      {
+        "code": "stranger",
+        "locale": "en",
+        "name": "The Stranger"
+      },
+      {
+        "code": "the_boundary_beyond",
+        "locale": "en",
+        "name": "The Boundary Beyond"
+      },
+      {
+        "code": "striking_fear",
+        "locale": "en",
+        "name": "Striking Fear"
+      },
+      {
+        "code": "the_search_for_kadath",
+        "locale": "en",
+        "name": "The Search for Kadath"
+      },
+      {
+        "code": "the_pallid_mask",
+        "locale": "en",
+        "name": "The Pallid Mask"
+      },
+      {
+        "code": "the_depths_of_yoth",
+        "locale": "en",
+        "name": "The Depths of Yoth"
+      },
+      {
+        "code": "the_longest_night",
+        "locale": "en",
+        "name": "The Longest Night"
+      },
+      {
+        "code": "the_crash",
+        "locale": "en",
+        "name": "The Crash"
+      },
+      {
+        "code": "the_second_day",
+        "locale": "en",
+        "name": "The Second Day"
+      },
+      {
+        "code": "the_locals",
+        "locale": "en",
+        "name": "The Locals"
+      },
+      {
+        "code": "the_pit_of_despair",
+        "locale": "en",
+        "name": "The Pit of Despair"
+      },
       {
         "code": "the_nights_usurper",
         "locale": "en",
@@ -1402,50 +2079,34 @@
         "name": "The Devourers Cult"
       },
       {
-        "code": "the_search_for_kadath",
-        "locale": "en",
-        "name": "The Search for Kadath"
-      },
-      {
-        "code": "the_pit_of_despair",
-        "locale": "en",
-        "name": "The Pit of Despair"
-      },
-      { "code": "the_locals", "locale": "en", "name": "The Locals" },
-      { "code": "the_crash", "locale": "en", "name": "The Crash" },
-      { "code": "the_second_day", "locale": "en", "name": "The Second Day" },
-      {
-        "code": "the_longest_night",
-        "locale": "en",
-        "name": "The Longest Night"
-      },
-      {
-        "code": "the_depths_of_yoth",
-        "locale": "en",
-        "name": "The Depths of Yoth"
-      },
-      { "code": "the_pallid_mask", "locale": "en", "name": "The Pallid Mask" },
-      {
         "code": "the_city_of_archives",
         "locale": "en",
         "name": "The City of Archives"
       },
-      { "code": "the_watcher", "locale": "en", "name": "The Watcher" },
       {
-        "code": "the_witching_hour",
+        "code": "the_secret_name",
         "locale": "en",
-        "name": "The Witching Hour"
+        "name": "The Secret Name"
       },
-      { "code": "the_secret_name", "locale": "en", "name": "The Secret Name" },
+      {
+        "code": "torch",
+        "locale": "en",
+        "name": "The Gathering"
+      },
+      {
+        "code": "threads_of_fate",
+        "locale": "en",
+        "name": "Threads of Fate"
+      },
+      {
+        "code": "the_vale",
+        "locale": "en",
+        "name": "The Vale"
+      },
       {
         "code": "the_wages_of_sin",
         "locale": "en",
         "name": "The Wages of Sin"
-      },
-      {
-        "code": "the_silent_heath",
-        "locale": "en",
-        "name": "The Silent Heath"
       },
       {
         "code": "the_twisted_hollow",
@@ -1457,18 +2118,25 @@
         "locale": "en",
         "name": "The Thing in the Depths"
       },
-      { "code": "the_vale", "locale": "en", "name": "The Vale" },
-      { "code": "threads_of_fate", "locale": "en", "name": "Threads of Fate" },
-      { "code": "torch", "locale": "en", "name": "The Gathering" },
+      {
+        "code": "the_silent_heath",
+        "locale": "en",
+        "name": "The Silent Heath"
+      },
+      {
+        "code": "the_watcher",
+        "locale": "en",
+        "name": "The Watcher"
+      },
+      {
+        "code": "the_witching_hour",
+        "locale": "en",
+        "name": "The Witching Hour"
+      },
       {
         "code": "the_unspeakable_oath",
         "locale": "en",
         "name": "The Unspeakable Oath"
-      },
-      {
-        "code": "the_eternal_slumber",
-        "locale": "en",
-        "name": "The Eternal Slumber"
       },
       {
         "code": "return_to_extracurricular_activities",
@@ -1485,15 +2153,45 @@
         "locale": "en",
         "name": "To the Forbidden Peaks"
       },
-      { "code": "the_final_day", "locale": "en", "name": "The Final Day" },
-      { "code": "unstable_realm", "locale": "en", "name": "Unstable Realm" },
-      { "code": "unknown", "locale": "en", "name": "Unknown" },
-      { "code": "turn_back_time", "locale": "en", "name": "Turn Back Time" },
-      { "code": "trapped_spirits", "locale": "en", "name": "Trapped Spirits" },
+      {
+        "code": "the_final_day",
+        "locale": "en",
+        "name": "The Final Day"
+      },
+      {
+        "code": "the_eternal_slumber",
+        "locale": "en",
+        "name": "The Eternal Slumber"
+      },
+      {
+        "code": "trapped_spirits",
+        "locale": "en",
+        "name": "Trapped Spirits"
+      },
+      {
+        "code": "unknown",
+        "locale": "en",
+        "name": "Unknown"
+      },
+      {
+        "code": "unspeakable_fate",
+        "locale": "en",
+        "name": "Unspeakable Fate"
+      },
       {
         "code": "union_and_disillusion",
         "locale": "en",
         "name": "Union and Disillusion"
+      },
+      {
+        "code": "unstable_realm",
+        "locale": "en",
+        "name": "Unstable Realm"
+      },
+      {
+        "code": "turn_back_time",
+        "locale": "en",
+        "name": "Turn Back Time"
       },
       {
         "code": "return_to_in_the_clutches_of_chaos",
@@ -1501,15 +2199,30 @@
         "name": "Return to In the Clutches of Chaos"
       },
       {
-        "code": "unspeakable_fate",
+        "code": "transfiguration",
         "locale": "en",
-        "name": "Unspeakable Fate"
+        "name": "Transfiguration"
       },
-      { "code": "transfiguration", "locale": "en", "name": "Transfiguration" },
-      { "code": "venice", "locale": "en", "name": "Carnevale of Horrors" },
-      { "code": "vortex", "locale": "en", "name": "The Vortex Above" },
-      { "code": "venom", "locale": "en", "name": "Yig's Venom" },
-      { "code": "zoogs", "locale": "en", "name": "Zoogs" },
+      {
+        "code": "venice",
+        "locale": "en",
+        "name": "Carnevale of Horrors"
+      },
+      {
+        "code": "vortex",
+        "locale": "en",
+        "name": "The Vortex Above"
+      },
+      {
+        "code": "venom",
+        "locale": "en",
+        "name": "Yig's Venom"
+      },
+      {
+        "code": "zoogs",
+        "locale": "en",
+        "name": "Zoogs"
+      },
       {
         "code": "waking_nightmare",
         "locale": "en",
@@ -1520,7 +2233,11 @@
         "locale": "en",
         "name": "Vile Experiments"
       },
-      { "code": "venomous_hate", "locale": "en", "name": "Venomous Hate" },
+      {
+        "code": "venomous_hate",
+        "locale": "en",
+        "name": "Venomous Hate"
+      },
       {
         "code": "return_to_the_unspeakable_oath",
         "locale": "en",
@@ -1531,26 +2248,46 @@
         "locale": "en",
         "name": "Return to The Secret Name"
       },
-      { "code": "the_great_seal", "locale": "en", "name": "The Great Seal" },
+      {
+        "code": "the_great_seal",
+        "locale": "en",
+        "name": "The Great Seal"
+      },
       {
         "code": "the_heart_of_madness",
         "locale": "en",
         "name": "The Heart of Madness"
       },
-      { "code": "the_first_day", "locale": "en", "name": "The First Day" },
-      { "code": "the_forest", "locale": "en", "name": "The Forest" },
+      {
+        "code": "the_first_day",
+        "locale": "en",
+        "name": "The First Day"
+      },
+      {
+        "code": "the_forest",
+        "locale": "en",
+        "name": "The Forest"
+      },
       {
         "code": "the_house_always_wins",
         "locale": "en",
         "name": "The House Always Wins"
       },
-      { "code": "the_last_king", "locale": "en", "name": "The Last King" },
+      {
+        "code": "the_last_king",
+        "locale": "en",
+        "name": "The Last King"
+      },
       {
         "code": "the_lair_of_dagon",
         "locale": "en",
         "name": "The Lair of Dagon"
       },
-      { "code": "the_lost_sister", "locale": "en", "name": "The Lost Sister" },
+      {
+        "code": "the_lost_sister",
+        "locale": "en",
+        "name": "The Lost Sister"
+      },
       {
         "code": "the_midwinter_gala",
         "locale": "en",
@@ -1561,9 +2298,21 @@
         "locale": "en",
         "name": "Temporal Hunters"
       },
-      { "code": "whippoorwills", "locale": "en", "name": "Whippoorwills" },
-      { "code": "written_in_rock", "locale": "en", "name": "Written in Rock" },
-      { "code": "traps", "locale": "en", "name": "Deadly Traps" },
+      {
+        "code": "whippoorwills",
+        "locale": "en",
+        "name": "Whippoorwills"
+      },
+      {
+        "code": "written_in_rock",
+        "locale": "en",
+        "name": "Written in Rock"
+      },
+      {
+        "code": "traps",
+        "locale": "en",
+        "name": "Deadly Traps"
+      },
       {
         "code": "where_doom_awaits",
         "locale": "en",
@@ -1584,8 +2333,16 @@
         "locale": "en",
         "name": "War of the Outer Gods"
       },
-      { "code": "wilds", "locale": "en", "name": "The Untamed Wilds" },
-      { "code": "witchcraft", "locale": "en", "name": "Witchcraft" },
+      {
+        "code": "wilds",
+        "locale": "en",
+        "name": "The Untamed Wilds"
+      },
+      {
+        "code": "witchcraft",
+        "locale": "en",
+        "name": "Witchcraft"
+      },
       {
         "code": "whispers_of_hypnos",
         "locale": "en",
@@ -1596,17 +2353,61 @@
         "locale": "en",
         "name": "Yog-Sothoth's Emissaries"
       },
-      { "code": "without_a_trace", "locale": "en", "name": "Without a Trace" }
+      {
+        "code": "without_a_trace",
+        "locale": "en",
+        "name": "Without a Trace"
+      }
     ],
     "taboo_set": [
-      { "name": "1.5", "card_count": 13, "id": 1, "date": "2019-04-20" },
-      { "name": "1.6", "card_count": 16, "id": 2, "date": "2019-09-27" },
-      { "name": "1.8", "card_count": 27, "id": 3, "date": "2020-10-15" },
-      { "name": "1.9", "card_count": 32, "id": 4, "date": "2021-06-28" },
-      { "name": "2.0", "card_count": 51, "id": 5, "date": "2022-08-26" },
-      { "name": "2.1", "card_count": 61, "id": 6, "date": "2023-08-30" },
-      { "name": "2.2", "card_count": 68, "id": 7, "date": "2024-02-20" },
-      { "name": "2.3", "card_count": 73, "id": 8, "date": "2024-10-23" }
+      {
+        "name": "1.5",
+        "card_count": 13,
+        "id": 1,
+        "date": "2019-04-20"
+      },
+      {
+        "name": "1.6",
+        "card_count": 16,
+        "id": 2,
+        "date": "2019-09-27"
+      },
+      {
+        "name": "1.8",
+        "card_count": 27,
+        "id": 3,
+        "date": "2020-10-15"
+      },
+      {
+        "name": "1.9",
+        "card_count": 32,
+        "id": 4,
+        "date": "2021-06-28"
+      },
+      {
+        "name": "2.0",
+        "card_count": 51,
+        "id": 5,
+        "date": "2022-08-26"
+      },
+      {
+        "name": "2.1",
+        "card_count": 61,
+        "id": 6,
+        "date": "2023-08-30"
+      },
+      {
+        "name": "2.2",
+        "card_count": 68,
+        "id": 7,
+        "date": "2024-02-20"
+      },
+      {
+        "name": "2.3",
+        "card_count": 73,
+        "id": 8,
+        "date": "2024-10-23"
+      }
     ]
   }
 }

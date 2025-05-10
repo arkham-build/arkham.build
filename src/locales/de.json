@@ -22,6 +22,7 @@
     },
     "card_modal": {
       "actions": {
+        "complete_task": "Aufgabe vollenden",
         "open_card_page": "Kartenseite",
         "reviews": "Meinungen"
       }
@@ -220,6 +221,31 @@
         "none": "Kein Untertyp",
         "weakness": "Schwäche"
       },
+      "symbols": {
+        "action": "Aktionsauslöser",
+        "agility": "Beweglichkeit",
+        "auto_fail": "Automatisches Misslingen",
+        "bless": "Segensmarker",
+        "combat": "Kampf",
+        "cultist": "Kultist",
+        "curse": "Fluchmarker",
+        "elder_sign": "Älteres Zeichen",
+        "elder_thing": "Älteres Wesen",
+        "free": "Freier Auslöser",
+        "frost": "Frost",
+        "guardian": "Wächter",
+        "intellect": "Intellekt",
+        "mystic": "Mystiker",
+        "per_investigator": "Pro Ermittler",
+        "reaction": "Reaktionsauslöser",
+        "rogue": "Schurke",
+        "seeker": "Sucher",
+        "skull": "Totenschädel",
+        "survivor": "Überlebender",
+        "tablet": "Schrifttafel",
+        "wild": "Joker",
+        "willpower": "Willenskraft"
+      },
       "taboo": "Tabuliste",
       "taboo_chained": "Kostet {{xp}} weitere Erfahrungspunkte.",
       "taboo_mutated": "Mutiert",
@@ -245,6 +271,7 @@
         "Arkham": "Arkham",
         "Arkham Asylum": "Arkham Sanatorium",
         "Armor": "Rüstung",
+        "Artifact": "Artifact",
         "Artist": "Künstler",
         "Assistant": "Assistent",
         "Attack": "Angriff",
@@ -284,6 +311,7 @@
         "Clover Club": "Clover Club",
         "Coastal": "Küste",
         "Colour": "Farbe",
+        "Completed": "Completed",
         "Composure": "Gelassenheit",
         "Condition": "Zustand",
         "Connection": "Verbindung",
@@ -351,6 +379,7 @@
         "Ghast": "Ghast",
         "Ghoul": "Ghoul",
         "Glacier": "Gletscher",
+        "Glyph": "Glyph",
         "Government": "Regierung",
         "Grant": "Zuschuss",
         "Graveyard": "Friedhof",
@@ -371,6 +400,7 @@
         "Hybrid": "Hybrid",
         "Illicit": "Illegal",
         "Improvised": "Improvisiert",
+        "Incomplete": "Incomplete",
         "Inconspicuous": "Inconspicuous",
         "Injury": "Verletzung",
         "Innate": "Angeboren",
@@ -455,6 +485,7 @@
         "Private": "Privat",
         "Providence": "Providence",
         "Public": "Öffentlich",
+        "R'lyeh": "R'lyeh",
         "Rail": "Bahngleis",
         "Ranged": "Fernkampf",
         "Relic": "Relikt",
@@ -504,8 +535,10 @@
         "St Mary's": "St Mary's",
         "Stable": "Stabil",
         "Staff": "Personal",
+        "Star Spawn": "Star Spawn",
         "Station": "Haltestelle",
         "Steps": "Stufen",
+        "Stowaway": "Stowaway",
         "Summon": "Beschwörung",
         "Sunken": "Versunken",
         "Supply": "Vorrat",
@@ -575,22 +608,28 @@
       },
       "undo": "Rückgängig",
       "unique": "Einzigartig",
+      "update_default_settings": "Standardeinstellungen aktualisieren",
       "uses": {
         "aether": "Äther",
         "ammo": "Munition",
         "bounties": "Kopfgelder",
         "brilliance": "Brillianz",
+        "chances": "Chances",
         "charges": "Ladungen",
+        "discoveries": "Discoveries",
         "durability": "Haltbarkeit",
         "evidence": "Beweis",
         "inspiration": "Inspiration",
         "keys": "Schlüssel",
         "leylines": "Ley-Linien",
+        "obligations": "Obligations",
+        "obsessions": "Obsessions",
         "offerings": "Angebote",
         "portents": "Vorzeichen",
         "resources": "Ressourcen",
         "secrets": "Geheimnisse",
         "shell": "Shell",
+        "signs": "Signs",
         "supplies": "Ausrüstung",
         "tickets": "Fahrkarten",
         "time": "Zeit",
@@ -679,6 +718,7 @@
       },
       "tools": {
         "cards": "Karten",
+        "count": "Anzahl",
         "factions": "Klassen",
         "loading": "Werkzeuge laden...",
         "resource_cost": "Ressourcenkosten",
@@ -752,6 +792,7 @@
     },
     "deck_edit": {
       "actions": {
+        "add_to_notes": "In die Notizen einfügen",
         "cycle_decks": "Deckliste wechseln",
         "decrement_quantity": "Anzahl im Deck verringern",
         "decrement_side_quantity": "Anzahl im Nebendeck verringern",
@@ -822,8 +863,31 @@
         "banner_url_placeholder": "URL eingeben",
         "description": "Notizen",
         "description_help": "ArkhamDB-Formatierung wird unterstützt.",
+        "description_placeholder": "Notizen eingeben...",
         "intro": "Einführung",
-        "intro_help": "Eine kurze Einführung in das Deck, die in der Deckansicht und Linkvorschau angezeigt wird. ArkhamDB-Formatierung wird unterstützt."
+        "intro_help": "Eine kurze Einführung in das Deck, die in der Deckansicht und Linkvorschau angezeigt wird. ArkhamDB-Formatierung wird unterstützt.",
+        "toolbar": {
+          "card": "Karte",
+          "card_tooltip": "Karte einfügen",
+          "format": "Format",
+          "formats": {
+            "header": "Titel",
+            "header_with_set": "Titel (mit Sammlungsnummer)",
+            "paragraph": "Absatz",
+            "paragraph_colored": "Absatz (Farbig)"
+          },
+          "origin": "Verfügbare Karten",
+          "origins": {
+            "campaign": "Szenariokarten",
+            "deck": "Karten im Deck",
+            "player": "Alle Spielerkarten",
+            "usable": "Legale Spielerkarten"
+          },
+          "preview": "Vorschau",
+          "symbol": "Symbol",
+          "symbol_placeholder": "Symbol auswählen...",
+          "symbol_tooltip": "Symbol einfügen"
+        }
       },
       "quick_upgrade": {
         "available_upgrades": "Verfügbare Verbesserungen",
@@ -855,7 +919,12 @@
       "tab_notes": "Notizen",
       "tab_recommendations": "Empfehlungen",
       "tab_tools": "Werkzeuge",
-      "title": "Bearbeiten: {{name}}"
+      "title": "Bearbeiten: {{name}}",
+      "versions": {
+        "entry_title": "Version {{version}}",
+        "entry_title_current": "Aktuelle Version",
+        "title": "Versionen"
+      }
     },
     "deck_view": {
       "actions": {
@@ -910,11 +979,10 @@
       "tab_recommendations": "Empfehlungen",
       "tab_tools": "Werkzeuge",
       "upgrade_modal": {
+        "automatic_xp_gain": "+{{count}} EP werden dem Upgrade automatisch hinzufügt.",
         "error": "Verbesserung fehlgeschlagen: {{error}}",
-        "great_work": "The Great Work",
-        "great_work_label": "I was usurped by the homunculus",
-        "great_work_status_not_usurped": "+1 XP will be automatically added to this upgrade.",
-        "great_work_status_usurped": "The Great Work will be removed from your deck alongside each of your signature cards. Your investigator will be replaced with the homunculus.",
+        "great_work_label": "Der Homunkulus hat sich meines Körpers bemächtigt.",
+        "great_work_status_usurped": "Das Große Werk wird zusammen mit jeder deiner Signaturkarten aus deinem Deck entfernt. Dein Ermittler wird durch den Homunkulus ersetzt.",
         "loading": "Verbesserung wird gespeichert...",
         "success": "Verbesserung wurde erfolgreich gespeichert.",
         "title": "Deck verbessern",
@@ -1177,10 +1245,15 @@
         "username": "Nutzername"
       },
       "display": {
-        "card_level": "Anzeige der Kartenstufe",
+        "card_display": "Kartenanzeige",
+        "card_level": "Kartenstufe",
         "card_level_as_dots": "In Icon und als Punkte",
         "card_level_as_text": "In Icon und als Text",
         "card_level_icon_only": "In Icon",
+        "card_show_collection_number": "Kollektionsnummer anzeigen",
+        "card_skill_icons": "Fertigkeitssymbole",
+        "card_skill_icons_as_printed": "Wie gedruckt",
+        "card_skill_icons_simple": "Einfach",
         "font_size": "Schriftgröße",
         "font_size_preview": "Dann plötzlich sah ich es. Mit nur einem leichten Schäumen des Wassers, das seinen Aufsteig an die Oberfläche kennzeichnete, glitt das Ding über dem finstren Gewässer in mein Blickfeld. Gewaltig wie Polyphemos und widerwärtig wie ein riesiges Ungeheuer aus einem Albtraum schoss es den Monolithen hoch, um den es seine gigantischen, schuppenbedeckten Arme schlang, während es sein scheußliches Haupt neigte und rhythmische Laute ausstieß. Ich glaube, in diesem Augenblick wurde ich wahnsinnig.",
         "hide_weaknesses": "Schwächen in Spielerkartenlisten standardmäßig ausblenden",

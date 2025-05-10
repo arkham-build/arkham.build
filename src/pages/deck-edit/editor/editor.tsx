@@ -9,7 +9,6 @@ import type { DeckGrouping } from "@/store/lib/deck-grouping";
 import type { DeckValidationResult } from "@/store/lib/deck-validation";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckGroups } from "@/store/selectors/decks";
-import type { Tab } from "@/store/slices/deck-edits.types";
 import type { ViewMode } from "@/store/slices/lists.types";
 import { getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
@@ -34,7 +33,7 @@ type Props = {
   currentTab: string;
   tabs: TabDefinition[];
   currentTool: string;
-  onTabChange: (tab: Tab) => void;
+  onTabChange: (tab: string) => void;
   getListCardProps?: FilteredListCardPropsGetter;
   validation?: DeckValidationResult;
   viewMode?: ViewMode;
@@ -63,7 +62,7 @@ export function Editor(props: Props) {
       <Tabs
         className={css["editor-tabs"]}
         onValueChange={(value: string) => {
-          onTabChange(value as Tab);
+          onTabChange(value);
         }}
         value={currentTab}
       >

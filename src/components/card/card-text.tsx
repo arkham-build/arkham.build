@@ -26,7 +26,7 @@ export function CardText(props: Props) {
         <p
           // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is from trusted source.
           dangerouslySetInnerHTML={{
-            __html: parseCardTextHtml(text),
+            __html: parseCardTextHtml(text, { bullets: true }),
           }}
         />
       )}

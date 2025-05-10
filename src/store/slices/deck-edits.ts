@@ -442,4 +442,19 @@ export const createDeckEditsSlice: StateCreator<
       (upgrades[0].xp ?? 0) - (sourceCard.xp ?? 0),
     );
   },
+  completeTask(deckId, code) {
+    const state = get();
+
+    assert(code.endsWith("a"), `Not an incomplete task: ${code}`);
+
+    const completeId = `${code.slice(0, -1)}b`;
+
+    state.updateCardQuantity(deckId, code, 0, 1, "slots", "set");
+
+    state.updateCardQuantity(deckId, completeId, 1, 1, "slots", "set");
+
+    state.dehydrate("edits").catch(console.error);
+
+    return completeId;
+  },
 });

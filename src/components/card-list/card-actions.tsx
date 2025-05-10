@@ -1,5 +1,6 @@
 import type { Card } from "@/store/services/queries.types";
 import { cardLimit } from "@/utils/card-utils";
+import { TabooIndicator } from "../taboo-indicator";
 import { QuantityInput } from "../ui/quantity-input";
 import { QuantityOutput } from "../ui/quantity-output";
 import css from "./card-actions.module.css";
@@ -33,6 +34,7 @@ export function CardActions(props: Props) {
         ) : (
           <QuantityOutput value={quantity || 0} />
         )}
+        <TabooIndicator card={card} />
         {listCardProps?.renderCardExtra?.(card, quantity)}
       </div>
     </div>

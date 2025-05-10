@@ -1,0 +1,28 @@
+{
+  "id": "asdZvonvPCf5T3n",
+  "date_creation": "2025-05-07T22:16:57.874Z",
+  "date_update": "2025-05-07T22:22:12.973Z",
+  "description_md": "",
+  "meta": "{}",
+  "ignoreDeckLimitSlots": {},
+  "sideSlots": {},
+  "next_deck": null,
+  "previous_deck": null,
+  "tags": "",
+  "version": "0.3",
+  "taboo_id": null,
+  "xp": null,
+  "xp_spent": null,
+  "exile_string": null,
+  "xp_adjustment": null,
+  "investigator_code": "02003",
+  "investigator_name": "Jenny Barnes",
+  "name": "Der Jenny Barnes Job",
+  "slots": {
+    "01000": 1,
+    "02010": 1,
+    "02011": 1,
+    "03308": 1
+  },
+  "problem": "too_few_cards"
+}

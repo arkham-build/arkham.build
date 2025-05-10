@@ -11,7 +11,7 @@ import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectConnectionLockForDeck } from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
-import { decodeExileSlots } from "@/utils/card-utils";
+import { decodeExileSlots, displayAttribute } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";
@@ -91,6 +91,8 @@ export function UpgradeModal(props: Props) {
   const [exileString, setExileString] = useState("");
 
   const hasGreatWork = !!deck.slots[SPECIAL_CARD_CODES.THE_GREAT_WORK];
+  const hasCharonsObol = !!deck.slots[SPECIAL_CARD_CODES.CHARONS_OBOL];
+
   const [usurped, setUsurped] = useState(false);
 
   const onUsurpedChange = useCallback((val: boolean | string) => {
@@ -110,10 +112,14 @@ export function UpgradeModal(props: Props) {
         variant: "loading",
       });
 
+      let upgradeXp = xp ? +xp : 0;
+      if (hasCharonsObol) upgradeXp += 2;
+      if (hasGreatWork && !usurped) upgradeXp += 1;
+
       try {
         const newDeck = await upgradeDeck({
           id: deck.id,
-          xp: xp ? +xp : 0,
+          xp: upgradeXp,
           exileString,
           usurped: hasGreatWork ? usurped : undefined,
         });
@@ -148,6 +154,7 @@ export function UpgradeModal(props: Props) {
       exileString,
       usurped,
       hasGreatWork,
+      hasCharonsObol,
       t,
     ],
   );
@@ -202,6 +209,7 @@ export function UpgradeModal(props: Props) {
   return (
     <Modal data-testid="upgrade-modal" onClose={onCloseModal} size="45rem">
       <ModalContent
+        className={css["content"]}
         title={
           <>
             <i className="icon-xp-bold" />
@@ -276,13 +284,18 @@ export function UpgradeModal(props: Props) {
                   </i>
                 ) : (
                   <i>
-                    {t("deck_view.upgrade_modal.great_work_status_not_usurped")}
+                    {t("deck_view.upgrade_modal.automatic_xp_gain", {
+                      count: 1,
+                    })}
                   </i>
                 )
               }
             >
               <FieldLabel htmlFor="xp-gained">
-                {t("deck_view.upgrade_modal.great_work")}
+                {displayAttribute(
+                  deck.cards.slots[SPECIAL_CARD_CODES.THE_GREAT_WORK].card,
+                  "name",
+                )}
               </FieldLabel>
               <Checkbox
                 label={t("deck_view.upgrade_modal.great_work_label")}
@@ -290,6 +303,25 @@ export function UpgradeModal(props: Props) {
                 checked={usurped}
                 onCheckedChange={onUsurpedChange}
               />
+            </Field>
+          )}
+          {hasCharonsObol && (
+            <Field bordered>
+              <FieldLabel>
+                {displayAttribute(
+                  deck.cards.slots[SPECIAL_CARD_CODES.CHARONS_OBOL].card,
+                  "name",
+                )}
+              </FieldLabel>
+              <p>
+                <small>
+                  <em>
+                    {t("deck_view.upgrade_modal.automatic_xp_gain", {
+                      count: 2,
+                    })}
+                  </em>
+                </small>
+              </p>
             </Field>
           )}
           {!isEmpty(exilableCards) && (

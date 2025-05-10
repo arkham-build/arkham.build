@@ -102,7 +102,7 @@ export const createConnectionsSlice: StateCreator<
       });
     }
 
-    state.dehydrate("app");
+    state.dehydrate("app").catch(console.error);
   },
   async syncProvider(provider) {
     const state = get();
@@ -276,7 +276,7 @@ export const createConnectionsSlice: StateCreator<
       throw err;
     } finally {
       state.setRemoting("arkhamdb", false);
-      state.dehydrate("app");
+      state.dehydrate("app").catch(console.error);
     }
   },
 });

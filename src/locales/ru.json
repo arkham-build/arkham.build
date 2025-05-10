@@ -225,6 +225,31 @@
         "none": "Нет",
         "weakness": "Слабость"
       },
+      "symbols": {
+        "action": "Активация действием",
+        "agility": "Ловкость",
+        "auto_fail": "Автопровал",
+        "bless": "Благословение",
+        "combat": "Сила",
+        "cultist": "Культист",
+        "curse": "Проклятие",
+        "elder_sign": "Знак Старших богов",
+        "elder_thing": "Старец",
+        "free": "Бесплатная активация",
+        "frost": "Мороз",
+        "guardian": "Хранитель",
+        "intellect": "Интеллект",
+        "mystic": "Мистик",
+        "per_investigator": "За сыщика",
+        "reaction": "Активация реакцией",
+        "rogue": "Ловкач",
+        "seeker": "Искатель",
+        "skull": "Череп",
+        "survivor": "Выживший",
+        "tablet": "Скрижаль",
+        "wild": "Универсальный",
+        "willpower": "Воля"
+      },
       "taboo": "Список табу",
       "taboo_chained": "Дороже на {{xp}} опыта.",
       "taboo_mutated": "Изменённая",
@@ -607,9 +632,9 @@
         "wishes": "Wishes"
       },
       "victory": "Победа",
-      "xp_one": "Опыт",
       "xp_few": "Опыта",
-      "xp_many": "Опыта"
+      "xp_many": "Опыта",
+      "xp_one": "Опыт"
     },
     "connect": {
       "error": "Ошибка соединения {{provider}}: {{error}}",
@@ -914,10 +939,9 @@
       "tab_recommendations": "Рекомендации",
       "tab_tools": "Утилиты",
       "upgrade_modal": {
+        "automatic_xp_gain": "+{{count}} XP will be automatically added to this upgrade.",
         "error": "Ошибка улучшения колоды: {{error}}",
-        "great_work": "The Great Work",
         "great_work_label": "I was usurped by the homunculus",
-        "great_work_status_not_usurped": "+1 XP will be automatically added to this upgrade.",
         "great_work_status_usurped": "The Great Work will be removed from your deck alongside each of your signature cards. Your investigator will be replaced with the homunculus.",
         "loading": "Улучшение колоды",
         "success": "Колода успешно улучшена.",

@@ -1,4 +1,4 @@
-import type { ChartableData } from "@/store/lib/types";
+import type { ChartableData } from "@/store/lib/deck-charts";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";
 import type { TFunction } from "i18next";
@@ -28,8 +28,9 @@ export function CostCurveChart({ data }: Props) {
   // have an actual entry (even if its value is 0)
   const normalizedData = useMemo((): ChartableData => {
     const max = Math.max(...data.filter((x) => x).map((tick) => tick?.x ?? 0));
+
     return range(0, max + 1).map((cost) => {
-      return data[cost] ?? { x: cost, y: 0 };
+      return data.find(({ x }) => x === cost) ?? { x: cost, y: 0 };
     });
   }, [data]);
 
@@ -48,7 +49,7 @@ export function CostCurveChart({ data }: Props) {
   const { width } = useElementSize(ref);
 
   return (
-    <div ref={ref} className={cx(css["chart-container"], css["fullsize"])}>
+    <div ref={ref} className={cx(css["chart-container"], css["chart-victory"])}>
       {width > 0 && (
         <>
           <h4 className={css["chart-title"]}>

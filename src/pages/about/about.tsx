@@ -1,3 +1,4 @@
+import { Socials } from "@/components/socials";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/layouts/app-layout";
 import { cx } from "@/utils/cx";
@@ -16,6 +17,7 @@ function About() {
         <Button onClick={goBack} variant="bare">
           <ChevronLeftIcon /> {t("common.back")}
         </Button>
+        <Socials />
         <h1>{t("about.title")}</h1>
         <p>
           The information presented in this app about{" "}
@@ -79,8 +81,8 @@ function About() {
             development of the initial version, design concepts.
           </li>
           <li>
-            <strong>@TartanLlama</strong>, <strong>@blu</strong>: Significant
-            contributions to the codebase.
+            <strong>@TartanLlama</strong>, <strong>@blu</strong>,{" "}
+            <strong>@5argon</strong>: Significant contributions to the codebase.
           </li>
           <li>
             <strong>@morvael</strong>: API access to draw customization sheets.
@@ -105,6 +107,9 @@ function About() {
           </li>
           <li>
             French: <strong>@Zaratan</strong>
+          </li>
+          <li>
+            Spanish: <strong>@AdrianMeizoso</strong>
           </li>
         </ul>
         <h2>Image / Icon credits</h2>

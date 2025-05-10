@@ -50,6 +50,7 @@ import { CardExtras } from "./card-extras";
 import css from "./deck-edit.module.css";
 import { Editor } from "./editor/editor";
 import { NotesEditor } from "./editor/notes-editor";
+import { NotesRichTextEditorContextProvider } from "./editor/notes-rte/notes-rte-context";
 import { UndoHistory } from "./editor/undo-history";
 
 function DeckEdit() {
@@ -80,8 +81,13 @@ function DeckEdit() {
                 </Button>
                 <Button
                   onClick={() => {
-                    discardEdits(id);
-                    onClose();
+                    const safeguardColdtoes = confirm(
+                      t("deck_edit.discard_confirm"),
+                    );
+                    if (safeguardColdtoes) {
+                      discardEdits(id);
+                      onClose();
+                    }
                   }}
                   size="sm"
                 >
@@ -226,10 +232,11 @@ function DeckEditInner() {
           deck={deck}
           quantity={quantity}
           currentTab={currentTab}
+          currentTool={currentTool}
         />
       );
     },
-    [canEdit, currentTab, deck],
+    [canEdit, currentTab, currentTool, deck],
   );
 
   const getListCardProps = useCallback(
@@ -256,119 +263,121 @@ function DeckEditInner() {
 
   return (
     <ListLayoutContextProvider>
-      <ListLayout
-        filters={
-          <Filters>
-            <DecklistValidation
-              defaultOpen={validation.errors.length < 3}
+      <NotesRichTextEditorContextProvider>
+        <ListLayout
+          filters={
+            <Filters>
+              <DecklistValidation
+                defaultOpen={validation.errors.length < 3}
+                validation={validation}
+              />
+              <CardAccessToggles deck={deck} />
+            </Filters>
+          }
+          sidebar={
+            <Editor
+              currentTab={currentTab}
+              currentTool={currentTool}
+              getListCardProps={getListCardProps}
+              onTabChange={setCurrentTab}
+              tabs={tabs}
               validation={validation}
             />
-            <CardAccessToggles deck={deck} />
-          </Filters>
-        }
-        sidebar={
-          <Editor
-            currentTab={currentTab}
-            currentTool={currentTool}
-            getListCardProps={getListCardProps}
-            onTabChange={setCurrentTab}
-            tabs={tabs}
-            validation={validation}
-          />
-        }
-        sidebarWidthMax="var(--sidebar-width-two-col)"
-      >
-        {(props) => (
-          <Tabs
-            onValueChange={setCurrentTool}
-            className={css["tabs"]}
-            value={currentTool}
-          >
-            <TabsList className={css["tabs-list"]} style={accentColor}>
-              <TabsTrigger
-                hotkey="l"
-                onTabChange={setCurrentTool}
-                tooltip={t("deck_edit.tab_card_list")}
-                value="card-list"
-              >
-                <LayoutListIcon />
-                <span>{t("deck_edit.tab_card_list")}</span>
-              </TabsTrigger>
-              <TabsTrigger
-                hotkey="r"
-                onTabChange={setCurrentTool}
-                tooltip={t("deck_edit.tab_recommendations")}
-                value="recommendations"
-              >
-                <WandSparklesIcon />
-                <span>{t("deck_edit.tab_recommendations")}</span>
-              </TabsTrigger>
-              <TabsTrigger
-                hotkey="n"
-                onTabChange={setCurrentTool}
-                tooltip={t("deck_edit.tab_notes")}
-                data-testid="editor-notes"
-                value="notes"
-              >
-                <BookOpenTextIcon />
-                <span>{t("deck_edit.tab_notes")}</span>
-              </TabsTrigger>
-              <TabsTrigger
-                hotkey="t"
-                onTabChange={setCurrentTool}
-                tooltip={t("deck_edit.tab_tools")}
-                value="deck-tools"
-              >
-                <ChartAreaIcon />
-                <span>{t("deck_edit.tab_tools")}</span>
-              </TabsTrigger>
-              <TabsTrigger
-                hotkey="v"
-                data-testid="editor-versions"
-                iconOnly
-                onTabChange={setCurrentTool}
-                tooltip={t("deck_edit.versions.title")}
-                value="versions"
-              >
-                <HistoryIcon />
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="card-list" asChild>
-              <CardListContainer
-                {...props}
-                getListCardProps={getListCardProps}
-                quantities={deck[mapTabToSlot(currentTab)] ?? undefined}
-                targetDeck={
-                  mapTabToSlot(currentTab) === "extraSlots"
-                    ? "extraSlots"
-                    : "slots"
-                }
-              />
-            </TabsContent>
-            <TabsContent asChild value="notes">
-              <NotesEditor deck={deck} />
-            </TabsContent>
-            <TabsContent asChild value="deck-tools">
-              <DeckTools {...props} deck={deck} scrollable />
-            </TabsContent>
-            <TabsContent asChild value="versions">
-              <UndoHistory deck={deck} />
-            </TabsContent>
-            <TabsContent asChild value="recommendations">
-              <CardRecommender
-                {...props}
-                getListCardProps={getListCardProps}
-                quantities={deck[mapTabToSlot(currentTab)] ?? undefined}
-                targetDeck={
-                  mapTabToSlot(currentTab) === "extraSlots"
-                    ? "extraSlots"
-                    : "slots"
-                }
-              />
-            </TabsContent>
-          </Tabs>
-        )}
-      </ListLayout>
+          }
+          sidebarWidthMax="var(--sidebar-width-two-col)"
+        >
+          {(props) => (
+            <Tabs
+              onValueChange={setCurrentTool}
+              className={css["tabs"]}
+              value={currentTool}
+            >
+              <TabsList className={css["tabs-list"]} style={accentColor}>
+                <TabsTrigger
+                  hotkey="l"
+                  onTabChange={setCurrentTool}
+                  tooltip={t("deck_edit.tab_card_list")}
+                  value="card-list"
+                >
+                  <LayoutListIcon />
+                  <span>{t("deck_edit.tab_card_list")}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  hotkey="r"
+                  onTabChange={setCurrentTool}
+                  tooltip={t("deck_edit.tab_recommendations")}
+                  value="recommendations"
+                >
+                  <WandSparklesIcon />
+                  <span>{t("deck_edit.tab_recommendations")}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  hotkey="n"
+                  onTabChange={setCurrentTool}
+                  tooltip={t("deck_edit.tab_notes")}
+                  data-testid="editor-notes"
+                  value="notes"
+                >
+                  <BookOpenTextIcon />
+                  <span>{t("deck_edit.tab_notes")}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  hotkey="t"
+                  onTabChange={setCurrentTool}
+                  tooltip={t("deck_edit.tab_tools")}
+                  value="deck-tools"
+                >
+                  <ChartAreaIcon />
+                  <span>{t("deck_edit.tab_tools")}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  hotkey="v"
+                  data-testid="editor-versions"
+                  iconOnly
+                  onTabChange={setCurrentTool}
+                  tooltip={t("deck_edit.versions.title")}
+                  value="versions"
+                >
+                  <HistoryIcon />
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="card-list" asChild>
+                <CardListContainer
+                  {...props}
+                  getListCardProps={getListCardProps}
+                  quantities={deck[mapTabToSlot(currentTab)] ?? undefined}
+                  targetDeck={
+                    mapTabToSlot(currentTab) === "extraSlots"
+                      ? "extraSlots"
+                      : "slots"
+                  }
+                />
+              </TabsContent>
+              <TabsContent asChild value="notes">
+                <NotesEditor deck={deck} />
+              </TabsContent>
+              <TabsContent asChild value="deck-tools">
+                <DeckTools {...props} deck={deck} scrollable />
+              </TabsContent>
+              <TabsContent asChild value="versions">
+                <UndoHistory deck={deck} />
+              </TabsContent>
+              <TabsContent asChild value="recommendations">
+                <CardRecommender
+                  {...props}
+                  getListCardProps={getListCardProps}
+                  quantities={deck[mapTabToSlot(currentTab)] ?? undefined}
+                  targetDeck={
+                    mapTabToSlot(currentTab) === "extraSlots"
+                      ? "extraSlots"
+                      : "slots"
+                  }
+                />
+              </TabsContent>
+            </Tabs>
+          )}
+        </ListLayout>
+      </NotesRichTextEditorContextProvider>
     </ListLayoutContextProvider>
   );
 }

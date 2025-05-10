@@ -128,16 +128,11 @@ export type Selection = OptionSelection | FactionSelection | DeckSizeSelection;
 export type Selections = Record<string, Selection>;
 
 export type DeckCharts = {
-  costCurve: ChartableData;
-  skillIcons: ChartableData<SkillIcon>;
-  factions: ChartableData<FactionName>;
+  costCurve: Map<number, number>;
+  skillIcons: Map<SkillIcon, number>;
+  factions: Map<FactionName, number>;
+  traits: Map<string, number>;
 };
-
-// Victory chart's accepted data format
-export type ChartableData<T extends string | number = number> = {
-  x: T;
-  y: number;
-}[];
 
 export type Annotations = Record<string, string | null>;
 

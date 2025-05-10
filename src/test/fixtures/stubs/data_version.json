@@ -2,10 +2,11 @@
   "data": {
     "all_card_updated": [
       {
-        "card_count": 6736,
-        "cards_updated_at": "2025-03-09T15:42:56.563994",
+        "card_count": 6813,
+        "cards_updated_at": "2025-04-15T22:27:28.969772",
         "locale": "en",
-        "translation_updated_at": "2025-03-08T01:18:30.12356"
+        "translation_updated_at": "2025-04-15T22:27:30.666083",
+        "version": 8
       }
     ]
   }

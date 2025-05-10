@@ -93,12 +93,16 @@
   margin-top: var(--filters-spacing-y);
 }
 
-.skill-filter .icons {
-  font-size: var(--icon-md);
-}
-
-.skill-filter .icon {
+.skill-filter :where(.icon, .text) {
   display: flex;
   gap: 0.375rem;
   align-items: center;
+}
+
+.skill-filter .icons {
+  font-size: var(--text-sm);
+}
+
+.skill-filter .icon {
+  font-size: var(--text-lg);
 }

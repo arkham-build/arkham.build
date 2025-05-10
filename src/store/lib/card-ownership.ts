@@ -34,7 +34,7 @@ export function ownedCardCount(
 
   // HACK: ownership of the revised core encounters.
   if (!duplicates && pack.cycle_code === "core" && collection["rcore"]) {
-    quantityOwned += 1;
+    quantityOwned += card.quantity;
   }
 
   if (!duplicates) return quantityOwned;

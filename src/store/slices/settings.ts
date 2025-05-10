@@ -55,12 +55,17 @@ export function getInitialListsSetting(): SettingsState["lists"] {
 export function getInitialSettings(): SettingsState {
   return {
     cardLevelDisplay: "icon-only",
+    cardSkillIconsDisplay: "simple",
     collection: {},
     flags: {},
     fontSize: 100,
     hideWeaknessesByDefault: false,
     lists: getInitialListsSetting(),
     locale: "en",
+    notesEditor: {
+      defaultFormat: "paragraph",
+      defaultOrigin: "player",
+    },
     showAllCards: true,
     showMoveToSideDeck: false,
     showPreviews: false,
@@ -78,7 +83,7 @@ export const createSettingsSlice: StateCreator<
 > = (set, get) => ({
   settings: getInitialSettings(),
   // TODO: extract to `shared` since this touches other state slices.
-  async updateSettings(settings) {
+  async applySettings(settings) {
     const state = get();
 
     if (settings.locale !== state.settings.locale) {
@@ -103,6 +108,18 @@ export const createSettingsSlice: StateCreator<
     set({
       settings,
       lists: makeLists(settings),
+    });
+
+    await state.dehydrate("app");
+  },
+  async setSettings(payload) {
+    const state = get();
+
+    set({
+      settings: {
+        ...state.settings,
+        ...payload,
+      },
     });
 
     await state.dehydrate("app");
