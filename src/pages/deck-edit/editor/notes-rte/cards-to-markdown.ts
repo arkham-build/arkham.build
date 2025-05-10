@@ -1,5 +1,5 @@
+import type { LookupTables } from "@/store/lib/lookup-tables.types";
 import type { Card } from "@/store/services/queries.types";
-import type { LookupTables } from "@/store/slices/lookup-tables.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { cardLevel, cycleOrPack, displayAttribute } from "@/utils/card-utils";
 import { displayPackName } from "@/utils/formatting";

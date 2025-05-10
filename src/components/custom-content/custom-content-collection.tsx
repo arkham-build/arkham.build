@@ -143,6 +143,7 @@ export function CustomContentCollection() {
                     }}
                   />
                 )}
+
                 {meta.external_link && (
                   <Button
                     as="a"

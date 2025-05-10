@@ -1,9 +1,10 @@
-.header {
-  margin-bottom: 1rem;
-}
-
 .title {
   font-size: var(--text-lg);
+  margin-bottom: 0.375rem;
+}
+
+.header {
+  margin-bottom: 1rem;
 }
 
 .projects {
