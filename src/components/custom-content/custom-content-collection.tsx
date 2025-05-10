@@ -137,7 +137,7 @@ export function CustomContentCollection() {
               <div className={cx(css["section"], "longform")}>
                 {meta.description && (
                   <div
-                    // biome-ignore lint/security/noDangerouslySetInnerHtml: escaped in parseMarkdown
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: escaped in markdown parser
                     dangerouslySetInnerHTML={{
                       __html: parseMarkdown(meta.description),
                     }}
