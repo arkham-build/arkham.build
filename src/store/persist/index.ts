@@ -4,7 +4,7 @@ import { VERSION, makeStorageAdapter } from "./storage";
 
 type AppState = Pick<
   StoreState,
-  "app" | "connections" | "data" | "settings" | "sharing" | "customData"
+  "app" | "connections" | "data" | "settings" | "sharing" | "fanMadeData"
 >;
 
 type EditsState = Pick<StoreState, "deckEdits">;
@@ -23,7 +23,7 @@ export const appStorage = makeStorageAdapter<AppState>(
   (state) => ({
     app: state.app,
     connections: state.connections,
-    customData: state.customData,
+    fanMadeData: state.fanMadeData,
     data: state.data,
     settings: state.settings,
     sharing: state.sharing,

@@ -62,7 +62,7 @@ export function CardScan(props: Props) {
       ? isSideways
       : false;
 
-  // Custom content uses card urls for sides, these take precedence.
+  // Fan-made content uses card urls for sides, these take precedence.
   const frontUrl = suffix === "b" ? card.back_image_url : card.image_url;
   const backUrl = backCard
     ? backCard.image_url

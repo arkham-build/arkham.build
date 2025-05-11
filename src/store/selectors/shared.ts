@@ -4,7 +4,7 @@ import { isEmpty } from "@/utils/is-empty";
 import { time, timeEnd } from "@/utils/time";
 import { createSelector } from "reselect";
 import { ownedCardCount } from "../lib/card-ownership";
-import { addProjectToMetadata, cloneMetadata } from "../lib/custom-content";
+import { addProjectToMetadata, cloneMetadata } from "../lib/fan-made-content";
 import { createLookupTables } from "../lib/lookup-tables";
 import type { ResolvedDeck } from "../lib/types";
 import type { Card } from "../services/queries.types";
@@ -12,9 +12,9 @@ import type { StoreState } from "../slices";
 
 export const selectMetadata = createSelector(
   (state: StoreState) => state.metadata,
-  (state: StoreState) => state.customData.projects,
-  (metadata, customContentProjects) => {
-    const projects = Object.values(customContentProjects);
+  (state: StoreState) => state.fanMadeData.projects,
+  (metadata, fanMadeProjects) => {
+    const projects = Object.values(fanMadeProjects);
 
     if (isEmpty(projects)) return metadata;
 

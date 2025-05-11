@@ -1,5 +1,5 @@
 import { CollectionSettings } from "@/components/collection/collection";
-import { CustomContentCollection } from "@/components/custom-content/custom-content-collection";
+import { FanMadeContentCollection } from "@/components/fan-made-content/fan-made-content-collection";
 import { Button } from "@/components/ui/button";
 import {
   Tabs,
@@ -129,9 +129,9 @@ function Settings() {
                 <LibraryIcon />
                 <span>{t("settings.collection.title")}</span>
               </TabsTrigger>
-              <TabsTrigger data-testid="tab-custom" value="custom">
+              <TabsTrigger data-testid="tab-fan-made" value="fan-made-content">
                 <Icon iconNode={featherText} />
-                <span>{t("custom_content.title")}</span>
+                <span>{t("fan_made_content.title")}</span>
               </TabsTrigger>
               <TabsTrigger data-testid="tab-backup" value="backup">
                 <DatabaseBackupIcon />
@@ -224,9 +224,9 @@ function Settings() {
                 />
               </Section>
             </TabsContent>
-            <TabsContent value="custom" forceMount>
-              <Section title={t("custom_content.title")}>
-                <CustomContentCollection />
+            <TabsContent value="fan-made-content" forceMount>
+              <Section title={t("fan_made_content.title")}>
+                <FanMadeContentCollection />
               </Section>
             </TabsContent>
             <TabsContent value="backup" forceMount>

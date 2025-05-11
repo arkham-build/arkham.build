@@ -2,11 +2,11 @@ import { useStore } from "@/store";
 import {
   addProjectToMetadata,
   cloneMetadata,
-} from "@/store/lib/custom-content";
-import type { CustomContentProject } from "@/store/lib/custom-content.schemas";
+} from "@/store/lib/fan-made-content";
+import type { FanMadeProject } from "@/store/lib/fan-made-content.schemas";
 import { getGroupedCards } from "@/store/lib/grouping";
 import { makeSortFunction } from "@/store/lib/sorting";
-import { selectOwnedCustomProjects } from "@/store/selectors/custom-content";
+import { selectOwnedFanMadeProjects } from "@/store/selectors/fan-made-content";
 import {
   selectLocaleSortingCollator,
   selectMetadata,
@@ -31,17 +31,17 @@ import { FileInput } from "../ui/file-input";
 import { MediaCard } from "../ui/media-card";
 import { Modal, ModalContent } from "../ui/modal";
 import { useToast } from "../ui/toast.hooks";
-import css from "./custom-content-collection.module.css";
+import css from "./fan-made-content-collection.module.css";
 
-export function CustomContentCollection() {
+export function FanMadeContentCollection() {
   const toast = useToast();
 
-  const customProjects = useStore(selectOwnedCustomProjects);
+  const fanMadeProjects = useStore(selectOwnedFanMadeProjects);
   const metadata = useStore(selectMetadata);
   const sortingCollator = useStore(selectLocaleSortingCollator);
 
-  const addCustomProject = useStore((state) => state.addCustomProject);
-  const removeCustomProject = useStore((state) => state.removeCustomProject);
+  const addFanMadeProject = useStore((state) => state.addFanMadeProject);
+  const removeFanMadeProject = useStore((state) => state.removeFanMadeProject);
 
   const { t } = useTranslation();
 
@@ -54,7 +54,7 @@ export function CustomContentCollection() {
         try {
           const text = await file.text();
           const parsed = JSON.parse(text);
-          await addCustomProject(parsed);
+          await addFanMadeProject(parsed);
         } catch (err) {
           const message =
             err instanceof z.core.$ZodError
@@ -72,13 +72,13 @@ export function CustomContentCollection() {
         }
       }
     },
-    [addCustomProject, toast],
+    [addFanMadeProject, toast],
   );
 
   return (
     <section className={css["collection"]}>
       <header className={css["header"]}>
-        <h2 className={css["title"]}>{t("custom_content.collection")}</h2>
+        <h2 className={css["title"]}>{t("fan_made_content.collection")}</h2>
         <FileInput
           accept="application/json"
           id="collection-import"
@@ -88,7 +88,7 @@ export function CustomContentCollection() {
         </FileInput>
       </header>
       <div className={css["projects"]}>
-        {customProjects.map((project) => {
+        {fanMadeProjects.map((project) => {
           const { meta } = project;
 
           const projectMetadata = selectMetadataWithPack(metadata, project);
@@ -151,7 +151,7 @@ export function CustomContentCollection() {
                     href={meta.external_link}
                     size="none"
                   >
-                    {t("custom_content.view_external")}
+                    {t("fan_made_content.view_external")}
                     <ExternalLinkIcon />
                   </Button>
                 )}
@@ -193,7 +193,7 @@ export function CustomContentCollection() {
                 <Button
                   iconOnly
                   size="sm"
-                  onClick={() => removeCustomProject(project.meta.code)}
+                  onClick={() => removeFanMadeProject(project.meta.code)}
                 >
                   <Trash2Icon /> Remove
                 </Button>
@@ -206,10 +206,7 @@ export function CustomContentCollection() {
   );
 }
 
-function selectMetadataWithPack(
-  metadata: Metadata,
-  project: CustomContentProject,
-) {
+function selectMetadataWithPack(metadata: Metadata, project: FanMadeProject) {
   const meta = cloneMetadata(metadata);
   addProjectToMetadata(meta, project);
   return meta;

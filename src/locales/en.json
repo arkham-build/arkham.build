@@ -646,7 +646,7 @@
       "syncing": "Syncing {{provider}}...",
       "title": "Connecting {{provider}}..."
     },
-    "custom_content": {
+    "fan_made_content": {
       "collection": "Collection",
       "title": "Fan-made content",
       "view_external": "Learn more"

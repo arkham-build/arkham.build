@@ -4,11 +4,11 @@ import { devtools } from "zustand/middleware";
 import type { StoreState } from "./slices";
 import { createAppSlice } from "./slices/app";
 import { createConnectionsSlice } from "./slices/connections";
-import { createCustomDataSlice } from "./slices/custom-data";
 import { createDataSlice } from "./slices/data";
 import { createDeckFiltersSlice } from "./slices/deck-collection-filters";
 import { createDeckCreateSlice } from "./slices/deck-create";
 import { createDeckEditsSlice } from "./slices/deck-edits";
+import { createFanMadeDataSlice } from "./slices/fan-made-data";
 import { createListsSlice } from "./slices/lists";
 import { createMetadataSlice } from "./slices/metadata";
 import { createRecommenderSlice } from "./slices/recommender";
@@ -21,7 +21,7 @@ import { createUISlice } from "./slices/ui";
 const stateCreator = (...args: [any, any, any]) => ({
   ...createAppSlice(...args),
   ...createDataSlice(...args),
-  ...createCustomDataSlice(...args),
+  ...createFanMadeDataSlice(...args),
   ...createMetadataSlice(...args),
   ...createListsSlice(...args),
   ...createSettingsSlice(...args),
@@ -47,7 +47,7 @@ export const useStore = create<StoreState>()(
             return {
               app: state.app,
               connections: state.connections,
-              customData: state.customData,
+              fanMadeData: state.fanMadeData,
               data: state.data,
               deckEdits: state.deckEdits,
               remoting: state.remoting,

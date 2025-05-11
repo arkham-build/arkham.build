@@ -8,18 +8,16 @@ import type { EncounterSet } from "../services/queries.types";
 import type { StoreState } from "../slices";
 import type { Metadata } from "../slices/metadata.types";
 import {
-  type CustomContentCard,
-  type CustomContentProject,
-  CustomContentProjectSchema,
-} from "./custom-content.schemas";
+  type FanMadeCard,
+  type FanMadeProject,
+  FanMadeProjectSchema,
+} from "./fan-made-content.schemas";
 
-export function parseCustomContentProject(data: unknown): CustomContentProject {
-  return z.parse(CustomContentProjectSchema, data);
+export function parseFanMadeProject(data: unknown): FanMadeProject {
+  return z.parse(FanMadeProjectSchema, data);
 }
 
-export function validateCustomContentProject(
-  project: CustomContentProject,
-): void {
+export function validateFanMadeProject(project: FanMadeProject): void {
   const errors = [];
 
   const encounterCodes = new Set(
@@ -28,7 +26,7 @@ export function validateCustomContentProject(
 
   const packCodes = new Set(project.data.packs.map((pack) => pack.code));
 
-  const cards: Record<string, CustomContentCard> = {};
+  const cards: Record<string, FanMadeCard> = {};
   const backLinks = new Set<string>();
 
   for (const card of project.data.cards) {
@@ -83,10 +81,7 @@ export function cloneMetadata(metadata: StoreState["metadata"]) {
   };
 }
 
-export function addProjectToMetadata(
-  meta: Metadata,
-  project: CustomContentProject,
-) {
+export function addProjectToMetadata(meta: Metadata, project: FanMadeProject) {
   const encounterSets = project.data.encounter_sets.reduce(
     (acc, curr) => {
       acc[curr.code] = curr as EncounterSet;

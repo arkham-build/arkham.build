@@ -85,20 +85,20 @@ const ProjectMetaSchema = z.object({
   }),
 });
 
-const CustomContentEncounterSetSchema = z.object({
+const FanMadeEncounterSetSchema = z.object({
   code: z.string(),
   name: z.string(),
   icon_url: z.optional(z.url()),
 });
 
-const CustomContentPackSchema = z.object({
+const FanMadePackSchema = z.object({
   code: z.string(),
   icon_url: z.optional(z.url()),
   name: z.string(),
   position: z.optional(z.number()),
 });
 
-const CustomContentCardSchema = z.object({
+const FanMadeCardSchema = z.object({
   back_flavor: z.optional(z.string()),
   back_illustrator: z.optional(z.string()),
   back_image_url: z.optional(z.url()),
@@ -171,15 +171,15 @@ const CustomContentCardSchema = z.object({
   xp: z.optional(z.number()),
 });
 
-export const CustomContentProjectSchema = z.object({
+export const FanMadeProjectSchema = z.object({
   meta: ProjectMetaSchema,
   data: z.object({
-    cards: z.array(CustomContentCardSchema),
-    encounter_sets: z.array(CustomContentEncounterSetSchema),
-    packs: z.array(CustomContentPackSchema),
+    cards: z.array(FanMadeCardSchema),
+    encounter_sets: z.array(FanMadeEncounterSetSchema),
+    packs: z.array(FanMadePackSchema),
   }),
 });
 
-export type CustomContentProject = z.infer<typeof CustomContentProjectSchema>;
+export type FanMadeProject = z.infer<typeof FanMadeProjectSchema>;
 
-export type CustomContentCard = z.infer<typeof CustomContentCardSchema>;
+export type FanMadeCard = z.infer<typeof FanMadeCardSchema>;
