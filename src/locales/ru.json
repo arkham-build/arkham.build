@@ -22,6 +22,7 @@
     },
     "card_modal": {
       "actions": {
+        "complete_task": "Complete task",
         "open_card_page": "Страница карты",
         "reviews": "Отзывы"
       }
@@ -276,6 +277,7 @@
         "Arkham": "Аркхэм",
         "Arkham Asylum": "Аркхэмская лечебница",
         "Armor": "Защита",
+        "Artifact": "Artifact",
         "Artist": "Художник",
         "Assistant": "Ассистент",
         "Attack": "Наступление",
@@ -315,6 +317,7 @@
         "Clover Club": "Клуб «Клевер»",
         "Coastal": "Coastal",
         "Colour": "Цвет",
+        "Completed": "Completed",
         "Composure": "Хладнокровие",
         "Condition": "Состояние",
         "Connection": "Связи",
@@ -382,6 +385,7 @@
         "Ghast": "Гаст",
         "Ghoul": "Упырь",
         "Glacier": "Ледник",
+        "Glyph": "Glyph",
         "Government": "Правительство",
         "Grant": "Грант",
         "Graveyard": "Graveyard",
@@ -402,6 +406,7 @@
         "Hybrid": "Hybrid",
         "Illicit": "Незаконный",
         "Improvised": "Экспромт",
+        "Incomplete": "Incomplete",
         "Inconspicuous": "Inconspicuous",
         "Injury": "Повреждение",
         "Innate": "Врождённый",
@@ -486,6 +491,7 @@
         "Private": "Приватная",
         "Providence": "Провиденс",
         "Public": "Public",
+        "R'lyeh": "R'lyeh",
         "Rail": "Метро",
         "Ranged": "Дальнобойный",
         "Relic": "Редкий",
@@ -535,8 +541,10 @@
         "St Mary's": "Собор Святой Марии",
         "Stable": "Устойчивый",
         "Staff": "Персонал",
+        "Star Spawn": "Star Spawn",
         "Station": "Station",
         "Steps": "Ступени",
+        "Stowaway": "Stowaway",
         "Summon": "Призванный",
         "Sunken": "Затонувшая",
         "Supply": "Запас",
@@ -607,22 +615,28 @@
       },
       "undo": "Откатить",
       "unique": "Уникальный",
+      "update_default_settings": "Обновить настройки по умолчанию",
       "uses": {
         "aether": "Эфир",
         "ammo": "Патроны",
         "bounties": "Награды",
         "brilliance": "Brilliance",
+        "chances": "Chances",
         "charges": "Заряды",
+        "discoveries": "Discoveries",
         "durability": "Прочность",
         "evidence": "Evidence",
         "inspiration": "Inspiration",
         "keys": "Ключи",
         "leylines": "Лей-линии",
+        "obligations": "Obligations",
+        "obsessions": "Obsessions",
         "offerings": "Подношения",
         "portents": "Portents",
         "resources": "Ресурсы",
         "secrets": "Тайны",
         "shell": "Shell",
+        "signs": "Signs",
         "supplies": "Припасы",
         "tickets": "Билеты",
         "time": "Time",
@@ -675,6 +689,7 @@
         "xp_spent": "опыта потрачено"
       },
       "limited_decks": {
+        "Secondary Class": "Дополнительный класс",
         "Versatile": "Разносторонний"
       },
       "limited_slots": "Ограниченные слоты",
@@ -713,6 +728,7 @@
       },
       "tools": {
         "cards": "Кол-во карт",
+        "count": "Кол-во",
         "factions": "Классы",
         "loading": "Загрузка утилит…",
         "resource_cost": "Цены карт",
@@ -777,14 +793,21 @@
       "help_replacements": "<p>Signature cards with \"Replacement\" can replace the signature cards that are listed under \"Deckbuilding Requirements\". Doing so still satisfies the requirement and the deck is valid to play.</p><p>If doing so, <strong>both</strong> signature cards must be replaced and if doing so for a campaign, you cannot later change to using the original signature cards.</p><p>Alternatively, the \"Replacement\" cards can be included in addition to the signature cards.</p>",
       "loading": "Создание колоды…",
       "random_basic_weakness": "Слуучайная базовая слабость",
+      "sealed_deck": {
+        "error": "Failed to fetch sealed deck: {{error}}",
+        "loading": "Fetching sealed deck...",
+        "success": "Sealed deck applied successfully."
+      },
       "success": "Колода создана успешно."
     },
     "deck_edit": {
       "actions": {
+        "add_to_notes": "Добавить в заметки",
         "cycle_decks": "Cycle deck lists",
         "decrement_quantity": "Decrement deck quantity",
         "decrement_side_quantity": "Decrement side deck quantity",
         "draw_random_basic_weakness": "Взять случайную базовую слабость",
+        "draw_random_basic_weakness_success": "Ваша случайная базовая слабость — <strong>{{name}}</strong>.",
         "edit_annotation": "Редактировать аннотацию",
         "increment_quantity": "Increment deck quantity",
         "increment_side_quantity": "Increment side deck quantity",
@@ -848,11 +871,34 @@
       "notes": {
         "banner_url": "URL баннера",
         "banner_url_help": "Баннер для колоды. Будет отображаться на экране колоды и в превью социальных сетей. Соотношение сторон 4:1, оптимальная ширина 1440px.",
-        "banner_url_placeholder": "Enter URL",
+        "banner_url_placeholder": "Введите URL",
         "description": "Заметки",
         "description_help": "Поддерживает разметку ArkhamDB.",
+        "description_placeholder": "Добавьте заметки…",
         "intro": "Вступление",
-        "intro_help": "Короткое вступление для колоды. Будет отображаться на экране колоды и в превью социальных сетей. Поддерживает разметку ArkhamDB."
+        "intro_help": "Короткое вступление для колоды. Будет отображаться на экране колоды и в превью социальных сетей. Поддерживает разметку ArkhamDB.",
+        "toolbar": {
+          "card": "Карта",
+          "card_tooltip": "Вставить карту",
+          "format": "Формат",
+          "formats": {
+            "header": "Название с иконкой",
+            "header_with_set": "Название с иконкой (с номером в коллекции)",
+            "paragraph": "Название",
+            "paragraph_colored": "Название (Цветное)"
+          },
+          "origin": "Доступные карты",
+          "origins": {
+            "campaign": "Карты кампании",
+            "deck": "Карты в колоде",
+            "player": "Все карты игрока",
+            "usable": "Используемые карты игрока"
+          },
+          "preview": "Предварительный просмотр",
+          "symbol": "Символ",
+          "symbol_placeholder": "Выберите символ…",
+          "symbol_tooltip": "Встаить символ"
+        }
       },
       "quick_upgrade": {
         "available_upgrades": "Доступные улучшения",
@@ -884,7 +930,12 @@
       "tab_notes": "Заметки",
       "tab_recommendations": "Рекомендации",
       "tab_tools": "Утилиты",
-      "title": "Редактировать: {{name}}"
+      "title": "Редактировать: {{name}}",
+      "versions": {
+        "entry_title": "Версия {{version}}",
+        "entry_title_current": "Текущая версия",
+        "title": "Версии"
+      }
     },
     "deck_view": {
       "actions": {
@@ -992,6 +1043,10 @@
         "title": "Здоровье"
       },
       "health_sanity_x": "Включить здоровье / рассудок «X»",
+      "illustrator": {
+        "placeholder": "Выберите художников…",
+        "title": "Художник"
+      },
       "investigator": {
         "placeholder": "Выбрать сыщиков",
         "title": "Сыщик"
@@ -1004,6 +1059,7 @@
         "title": "Навыки"
       },
       "level": {
+        "no_level": "Без уровня",
         "title": "Уровень"
       },
       "or": "или",
@@ -1085,6 +1141,7 @@
         "open_card_modal": "Открыть выбранную карту",
         "reset_filters": "Сбросить фильтры",
         "show_limited_access": "Показывать ограниченный доступ",
+        "show_limited_access_help": "Сыщики могут иметь ограниченный опциональный доступ к картам по уровню, классу, чертам, типу и/или другим критериям. Данная функция при включении отображает карты этого ограниченного доступа.",
         "show_unusable_cards": "Показывать неиспользованные карты",
         "toggle_filter_menu": "Toggle filter menu",
         "toggle_filters": "Toggle filters",
@@ -1200,10 +1257,15 @@
         "username": "Имя пользователя"
       },
       "display": {
+        "card_display": "Настройки отображения карт",
         "card_level": "Отображение уровня карт",
         "card_level_as_dots": "В иконке и точками",
         "card_level_as_text": "В иконке и текстом",
         "card_level_icon_only": "Только в иконке",
+        "card_show_collection_number": "Показывать номер в коллекции",
+        "card_skill_icons": "Иконки навыка",
+        "card_skill_icons_as_printed": "Как на картах",
+        "card_skill_icons_simple": "Простые",
         "font_size": "Размер шрифта",
         "font_size_preview": "Armitage had an idea that the alphabet might be something esoterically used by certain forbidden cults which have come down from old times, and which have inherited many forms and traditions from the wizards of the Saracenic world.",
         "hide_weaknesses": "Скрывать слабости в списке карт игрока",
