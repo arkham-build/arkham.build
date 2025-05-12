@@ -22,7 +22,6 @@
     },
     "card_modal": {
       "actions": {
-        "complete_task": "Complete task",
         "open_card_page": "Страница карты",
         "reviews": "Отзывы"
       }
@@ -46,8 +45,7 @@
       "scan": "Скан {{code}}",
       "section_actions": "Действия",
       "section_deckbuilding": "Колодостроение",
-      "section_faq": "FAQ",
-      "thumbnail": "Thumbnail of {{code}}"
+      "section_faq": "FAQ"
     },
     "choose_investigator": {
       "create_tooltip": "Создать колоду {{name}}",
@@ -91,29 +89,17 @@
       "cycle_many": "циклов",
       "cycle_one": "цикл",
       "deck_options": {
-        "Atleast constraint violated.": "Atleast constraint violated.",
         "Blessed": "Благословенный",
         "Blessed and Cursed": "Благословенный и Проклятый",
         "Class Choice": "Второстепенный класс",
         "Cursed": "Проклятый",
         "Deck Size": "Размер колоды",
-        "Deck must have at least 10 skill cards.": "Deck must have at least 10 skill cards.",
-        "Fortune": "Fortune",
-        "Gambit": "Gambit",
-        "Improvised": "Improvised",
-        "No permanents except story and signature permanents": "No permanents except story and signature permanents",
         "Secondary Class": "Побочный класс",
-        "Too many off-class cards for Versatile.": "Too many off-class cards for Versatile.",
-        "Too many off-class cards.": "Too many off-class cards.",
         "Trait Choice": "Выбор черты",
-        "You cannot have assets that take up an ally slot.": "You cannot have assets that take up an ally slot.",
         "You cannot have more than 15 level 0-1 Guardian and/or Survivor cards": "В колоде не может быть более 15 карт Хранителя и/или Выжившего уровня 0–1",
         "You cannot have more than 15 level 0-1 Seeker and/or Mystic cards": "У вас не может быть больше 15 карт Искателей и/или Мистиков 0–1 уровня",
         "You cannot have more than 5 Guardian and/or Mystic cards": "У вас не может быть больше 5 карт Хранителей и/или Мистиков",
-        "You cannot have more than 5 Mystic cards.": "You cannot have more than 5 Mystic cards.",
-        "You cannot have more than 5 Rogue cards.": "You cannot have more than 5 Rogue cards.",
         "You cannot have more than 5 Seeker and/or Survivor cards": "У вас не может быть более 5 карт Искателя и/или Выжившего",
-        "You cannot have more than 5 Survivor cards.": "You cannot have more than 5 Survivor cards.",
         "You cannot have more than 5 cards that are not Guardian or Neutral": "Превышен лимит в 5 карт не из числа нейтральных и карт Хранителей",
         "You cannot have more than 5 cards that are not Mystic or Neutral": "Превышен лимит в 5 карт не из числа нейтральных и карт Мистиков",
         "You cannot have more than 5 cards that are not Rogue or Neutral": "Превышен лимит в 5 карт не из числа нейтральных и карт Ловкачей",
@@ -124,15 +110,12 @@
         "You cannot have more than 5 level 0 Rogue cards": "Нельзя включить больше 5 карт Ловкачей уровня 0",
         "You cannot have more than 5 level 0 Seeker cards": "Нельзя включить больше 5 карт Искателей уровня 0",
         "You cannot have more than 5 level 0 Survivor cards": "Нельзя включить больше 5 карт Выживших уровня 0",
-        "You cannot have more than one Covenant in your deck.": "You cannot have more than one Covenant in your deck.",
         "You must have at least 7 cards from 3 different factions": "У вас должно быть хотя бы по 7 карт из 3 разных классов",
         "You must have at least 7 cards from each class": "У вас должно быть хотя бы по 7 карт каждого класса"
       },
       "decks": {
         "bondedSlots": "Зависимые карты",
         "bondedSlots_short": "Зависимые",
-        "extraSlots": "Extra deck",
-        "extraSlots_short": "Extra",
         "ignoreDeckLimitSlots": "Игнорировать лимит карт колоды",
         "sideSlots": "Отложенные карты",
         "sideSlots_short": "Отложенные",
@@ -159,14 +142,6 @@
       "icon_few": "символа навыков",
       "icon_many": "символов навыков",
       "icon_one": "символ навыков",
-      "level": {
-        "base": "Level 0 / Null",
-        "none": "No level",
-        "upgrades": "Upgrades",
-        "value": "Level {{level}}"
-      },
-      "more_actions": "More actions",
-      "no_entries": "No entries",
       "none": "Нет",
       "nonexceptional": "Не исключительный",
       "ok": "OK",
@@ -194,9 +169,7 @@
         "parallelCards": "Parallel cards",
         "replacement": "Замены",
         "requiredCards": "Персональные карты",
-        "restrictedTo": "Привязано к",
-        "specialist": "Specialist",
-        "specialist_investigators": "Specialist Investigators"
+        "restrictedTo": "Привязано к"
       },
       "reset": "Сбросить",
       "seal": "Печать",
@@ -354,7 +327,6 @@
         "Elder Thing": "Старец",
         "Eldritch": "Непостижимая",
         "Elite": "Элитный",
-        "Emissary": "Emissary",
         "Endtimes": "Конец времён",
         "Entrepreneur": "Предприниматель",
         "Evidence": "Свидетельство",
@@ -364,7 +336,6 @@
         "Extradimensional": "Сверхпространственная",
         "Extraterrestrial": "Инопланетная",
         "Eztli": "Эцтли",
-        "Falcon Point": "Falcon Point",
         "Familiar": "Фамильяр",
         "Farm": "Ферма",
         "Fated": "Предначертанное",
@@ -374,26 +345,21 @@
         "Flaw": "Изъян",
         "Flora": "Флора",
         "Footwear": "Обувь",
-        "Forbidden": "Forbidden",
         "Forest": "Чаща",
         "Forgotten": "Забытая",
         "Fortune": "Удача",
         "Future": "Будущее",
         "Gambit": "Авантюра",
-        "Game": "Game",
         "Geist": "Привидение",
         "Ghast": "Гаст",
         "Ghoul": "Упырь",
         "Glacier": "Ледник",
-        "Glyph": "Glyph",
         "Government": "Правительство",
         "Grant": "Грант",
-        "Graveyard": "Graveyard",
         "Ground Floor": "Первый этаж",
         "Guest": "Гость",
         "Gug": "Гуг",
         "Hall": "Зала",
-        "Hardship": "Hardship",
         "Haunted": "Нечистая",
         "Havana": "Гавана",
         "Hazard": "Происшествие",
@@ -406,8 +372,6 @@
         "Hybrid": "Hybrid",
         "Illicit": "Незаконный",
         "Improvised": "Экспромт",
-        "Incomplete": "Incomplete",
-        "Inconspicuous": "Inconspicuous",
         "Injury": "Повреждение",
         "Innate": "Врождённый",
         "Innocent": "Невинный",
@@ -418,35 +382,26 @@
         "Island": "Остров",
         "Istanbul": "Стамбул",
         "Item": "Вещь",
-        "Job": "Job",
         "Jungle": "Джунгли",
         "Kadath": "Кадат",
         "Key": "Ключ",
-        "Kingsport": "Kingsport",
         "Kuala Lumpur": "Куала-Лумпур",
-        "Lair": "Lair",
-        "Lantern Club": "Lantern Club",
         "Lead": "Зацепка",
-        "Leader": "Leader",
         "Leng": "Лэнг",
         "Lit": "Зажённый",
         "Locus Site": "Место локуса",
         "Lodge": "Ложа",
         "London": "Лондон",
-        "Machination": "Machination",
         "Madness": "Безумие",
         "Mainland": "Материк",
         "Manifold": "Реплика",
-        "Manor": "Manor",
         "Marrakesh": "Марракеш",
         "Mask": "Маска",
         "Medic": "Врач",
         "Melee": "Рукопашный",
         "Mexico City": "Мехико",
         "Mi-Go": "Ми-го",
-        "Midtown": "Midtown",
         "Mirage": "Мираж",
-        "Misfortune": "Misfortune",
         "Miskatonic": "Мискатоник",
         "Mnar": "Мнар",
         "Monster": "Монстр",
@@ -462,7 +417,6 @@
         "Occult": "Оккультный",
         "Ocean": "Океан",
         "Omen": "Знамение",
-        "Ooth-Nargai": "Ooth-Nargai",
         "Ooze": "Слизь",
         "Oozified": "Поглощённая",
         "Oriab": "Ориаб",
@@ -476,7 +430,6 @@
         "Past": "Прошлое",
         "Patron": "Покровитель",
         "Performer": "Артист",
-        "Plot": "Plot",
         "Pnakotus": "Пнакот",
         "Poison": "Яд",
         "Police": "Полиция",
@@ -490,21 +443,15 @@
         "Prison": "Тюрьма",
         "Private": "Приватная",
         "Providence": "Провиденс",
-        "Public": "Public",
-        "R'lyeh": "R'lyeh",
         "Rail": "Метро",
         "Ranged": "Дальнобойный",
         "Relic": "Редкий",
         "Reporter": "Репортёр",
-        "Research": "Research",
-        "Resident": "Resident",
         "Resolute": "Неколебимый",
-        "Restricted": "Restricted",
         "Return": "Возвращение",
         "Risen": "Восставший",
         "Ritual": "Ритуал",
         "Ritual Site": "Место ритуала",
-        "Rival": "Rival",
         "River": "Река",
         "Riverside": "Риверсайд",
         "Road": "Дорога",
@@ -518,7 +465,6 @@
         "Scholar": "Учёный",
         "Science": "Наука",
         "Scientist": "Натуралист",
-        "Scion": "Scion",
         "Script": "Рукопись",
         "Second Floor": "Второй этаж",
         "Sentinel Hill": "Часовой холм",
@@ -530,7 +476,6 @@
         "Ship": "Корабль",
         "Shoggoth": "Шоггот",
         "Silver Twilight": "Серебряные Сумерки",
-        "Skai": "Skai",
         "Socialite": "Бомонд",
         "Song": "Песнопение",
         "Sorcerer": "Чародей",
@@ -544,7 +489,6 @@
         "Star Spawn": "Star Spawn",
         "Station": "Station",
         "Steps": "Ступени",
-        "Stowaway": "Stowaway",
         "Summon": "Призванный",
         "Sunken": "Затонувшая",
         "Supply": "Запас",
@@ -699,16 +643,12 @@
         "ignored_many": "{{count}} копий не учитываются в лимит размера колоды.",
         "ignored_one": "{{count}} копия не учитывается в лимит размера колоды.",
         "unowned": "Недоступные: {{count}} из {{total}} карт",
-        "uses_parallel": "Uses a parallel side",
         "xp_available_help": "опыта получено в последнем улучшении.",
         "xp_required": "Опыта необходимо",
         "xp_required_help": "Количество опыта чтобы собрать колоду с нуля."
       },
       "tags": {
-        "limited_pool": "Ограниченная коллекция",
-        "private": "Private",
-        "sealed": "Sealed",
-        "shared": "Shared"
+        "limited_pool": "Ограниченная коллекция"
       },
       "toasts": {
         "delete_confirm": "Вы уверены, что хотите удалить эту колоду?",
@@ -741,7 +681,6 @@
         "forbidden_cards": "Колода содержит запрещённые карты (карты не доступные сыщику):",
         "invalid": "Ошибка в колоде.",
         "invalid_card_count": "Колода содержит неверное количество следующих карт:",
-        "invalid_investigator": "Investigator is invalid. Required configuration is missing or the card is not an investigator.",
         "investigator_requirements": "Колода не удовлетворяет ограничениям сыщика:",
         "too_few_cards": "{{deck}} — слишком мало карт.",
         "too_many_cards": "{{deck}} — слишком много карт."
@@ -789,35 +728,22 @@
         "survivor": "{{name}} отправляется в путь"
       },
       "error": "Ошибка создания колоды: {{error}}",
-      "help_advanced": "<p>Signature cards with \"Advanced\" are stronger versions of an investigator's signature cards that are listed under \"Deck Requirements\".</p><p>At any point during a campaign (including at deck creation) you may optionally choose to include these advanced signature cards <strong>instead of</strong> the original signature cards.</p>",
-      "help_replacements": "<p>Signature cards with \"Replacement\" can replace the signature cards that are listed under \"Deckbuilding Requirements\". Doing so still satisfies the requirement and the deck is valid to play.</p><p>If doing so, <strong>both</strong> signature cards must be replaced and if doing so for a campaign, you cannot later change to using the original signature cards.</p><p>Alternatively, the \"Replacement\" cards can be included in addition to the signature cards.</p>",
       "loading": "Создание колоды…",
       "random_basic_weakness": "Слуучайная базовая слабость",
-      "sealed_deck": {
-        "error": "Failed to fetch sealed deck: {{error}}",
-        "loading": "Fetching sealed deck...",
-        "success": "Sealed deck applied successfully."
-      },
       "success": "Колода создана успешно."
     },
     "deck_edit": {
       "actions": {
         "add_to_notes": "Добавить в заметки",
         "cycle_decks": "Cycle deck lists",
-        "decrement_quantity": "Decrement deck quantity",
-        "decrement_side_quantity": "Decrement side deck quantity",
         "draw_random_basic_weakness": "Взять случайную базовую слабость",
         "draw_random_basic_weakness_success": "Ваша случайная базовая слабость — <strong>{{name}}</strong>.",
         "edit_annotation": "Редактировать аннотацию",
-        "increment_quantity": "Increment deck quantity",
-        "increment_side_quantity": "Increment side deck quantity",
         "move_to_main_deck": "Переместить в колоду",
         "move_to_side_deck": "Переместить в отложенные карты",
         "quick_discard": "Отменить изменения (и остаться на странице)",
         "quick_save_deck": "Сохранить колоду (и остаться на странице)",
-        "quick_upgrade": "Улучшить {{name}}",
-        "set_quantity": "Set deck quantity",
-        "set_side_quantity": "Set side deck quantity"
+        "quick_upgrade": "Улучшить {{name}}"
       },
       "changes_restored": "Несохранённые изменения были восстановлены.",
       "config": {
@@ -825,19 +751,12 @@
           "campaign": "Кампания",
           "choose_campaign": "Выбрать кампанию",
           "choose_campaign_placeholder": "Выбрать кампанию",
-          "cpa_help": "The Campaign Play-Along is an ongoing event hosted on the Mythos Busters discord server. It is designed to play Arkham campaigns together, share stories and generally create a sense of community.",
           "help": "Сыщики, персональные карты и сюжетные активы не подержены данному ограничению.",
           "placeholder": "Выбрать наборы",
           "section_title": "Настройка наборов карт",
-          "title": "Ограниченный набор карт",
-          "use_preset": "Use campaign-playalong preset"
+          "title": "Ограниченный набор карт"
         },
         "name": "Название колоды",
-        "sealed": {
-          "add": "Add sealed deck",
-          "help": "Upload a sealed deck definition (.csv) to use it. Use <a>ArkhamSealed</a> to generate a sealed deck.",
-          "title": "Sealed"
-        },
         "sides": {
           "investigator_back": "Оборот сыщика",
           "investigator_front": "Лицо сыщика",
@@ -852,11 +771,7 @@
         },
         "taboo": "Список табу",
         "tags": "Теги",
-        "tags_help": "Введите теги, разделяя пробелами",
-        "version": {
-          "switch": "Switch",
-          "title": "Other versions"
-        }
+        "tags_help": "Введите теги, разделяя пробелами"
       },
       "create_local_copy": "Создать локальную копию",
       "create_local_copy_help": "Создайте локальную копию этой колоды. Это позволит применить все оставшиеся правки и сохранить их. Обновления и история колоды не будут перенесены.",
@@ -906,7 +821,6 @@
         "shrewd_analysis_help": "Приложение добавит корректировку опыта, соответствующую полученной скидке.",
         "title": "Улучшение {{name}}"
       },
-      "read_only": "This deck has an upgrade and is read-only.",
       "recommendations": {
         "absolute": "Абсолютно",
         "absolute_help": "Считает в скольких колодах {{name}} использована каждая карта",
@@ -992,8 +906,6 @@
       "upgrade_modal": {
         "automatic_xp_gain": "+{{count}} XP will be automatically added to this upgrade.",
         "error": "Ошибка улучшения колоды: {{error}}",
-        "great_work_label": "I was usurped by the homunculus",
-        "great_work_status_usurped": "The Great Work will be removed from your deck alongside each of your signature cards. Your investigator will be replaced with the homunculus.",
         "loading": "Улучшение колоды",
         "success": "Колода успешно улучшена.",
         "title": "Улучшить колоду с опытом",
@@ -1142,10 +1054,7 @@
         "reset_filters": "Сбросить фильтры",
         "show_limited_access": "Показывать ограниченный доступ",
         "show_limited_access_help": "Сыщики могут иметь ограниченный опциональный доступ к картам по уровню, классу, чертам, типу и/или другим критериям. Данная функция при включении отображает карты этого ограниченного доступа.",
-        "show_unusable_cards": "Показывать неиспользованные карты",
-        "toggle_filter_menu": "Toggle filter menu",
-        "toggle_filters": "Toggle filters",
-        "toggle_sidebar": "Toggle sidebar"
+        "show_unusable_cards": "Показывать неиспользованные карты"
       },
       "all_cards": "Все карты",
       "categories": {
@@ -1188,15 +1097,11 @@
     },
     "preview_banner": {
       "actions": {
-        "dismiss": "Отклонить",
-        "enable": "Enable previews"
-      },
-      "description": "Enabling previews will show cards from upcoming sets in the card browser. You can change this setting at any time in the collection settings.",
-      "title": "Preview season is here!"
+        "dismiss": "Отклонить"
+      }
     },
     "settings": {
       "backup": {
-        "confirm": "Are you sure you want to restore this backup? Any existing data will be overwritten.",
         "create": "Создать резервную копию",
         "help": "Создать резервную копию ваших настроек, колод и коллекции карт в иде JSON файла. Вы можете использовать этот файл для восстаноления данных на любом устройстве.",
         "help_warning": "Когда резервная копия восстановлена <strong>любые сюществующие данные будут перезаписаны.</strong>",
@@ -1241,7 +1146,6 @@
         "items_synced": "Объектов синхронизировано",
         "last_modified": "Дата",
         "last_synced_at": "Последнее подключение",
-        "lock": "Another {{provider}} operation is in progress, please wait...",
         "no_errors": "Нет ошибок",
         "provider_error": "Ошибка синхронизации с {{provider}}: {{error}}",
         "provider_success": "Синхронизация с {{provider}} успешна.",
@@ -1267,7 +1171,6 @@
         "card_skill_icons_as_printed": "Как на картах",
         "card_skill_icons_simple": "Простые",
         "font_size": "Размер шрифта",
-        "font_size_preview": "Armitage had an idea that the alphabet might be something esoterically used by certain forbidden cults which have come down from old times, and which have inherited many forms and traditions from the wizards of the Saracenic world.",
         "hide_weaknesses": "Скрывать слабости в списке карт игрока",
         "hide_weaknesses_help": "Скрывает слабости в списке карт игрока по умолчанию и требует включения в фильтре <strong>Подтип</strong> для отображения.",
         "show_move_to_side_deck": "Показывать кнопку «Переместить в отложенные карты»",
