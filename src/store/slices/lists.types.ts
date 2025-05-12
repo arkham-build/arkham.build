@@ -27,6 +27,8 @@ export type MultiselectFilter = string[];
 
 export type OwnershipFilter = "unowned" | "owned" | "all";
 
+export type FanMadeContentFilter = "fan-made" | "official" | "all";
+
 export type PropertiesFilter = {
   bonded: boolean;
   customizable: boolean;
@@ -77,6 +79,7 @@ export type FilterMapping = {
   cost: CostFilter;
   encounterSet: MultiselectFilter;
   faction: MultiselectFilter;
+  fanMadeContent: FanMadeContentFilter;
   health: HealthFilter;
   illustrator: MultiselectFilter;
   investigator: SelectFilter;

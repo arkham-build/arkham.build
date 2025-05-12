@@ -66,6 +66,10 @@ export function filterPreviews(card: Card) {
   return !!card.preview;
 }
 
+export function filterOfficial(card: Card) {
+  return !!card.official;
+}
+
 /**
  * Actions
  */

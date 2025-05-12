@@ -23,7 +23,7 @@
 
   @media screen and (min-width: 66rem) {
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 2rem;
+    gap: 1.25rem;
   }
 }
 

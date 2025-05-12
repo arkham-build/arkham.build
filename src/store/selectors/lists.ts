@@ -38,6 +38,7 @@ import {
   filterInvestigatorWeaknessAccess,
   filterLevel,
   filterMythosCards,
+  filterOfficial,
   filterOwnership,
   filterPackCode,
   filterProperties,
@@ -63,6 +64,7 @@ import type { StoreState } from "../slices";
 import type {
   AssetFilter,
   CostFilter,
+  FanMadeContentFilter,
   FilterMapping,
   HealthFilter,
   InvestigatorSkillsFilter,
@@ -143,6 +145,18 @@ function makeUserFilter(
       case "faction": {
         const value = filterValue.value as MultiselectFilter;
         if (value.length) filters.push(filterFactions(value));
+        break;
+      }
+
+      case "fanMadeContent": {
+        const value = filterValue.value as FanMadeContentFilter;
+
+        if (value === "official") {
+          filters.push(filterOfficial);
+        } else if (value === "fan-made") {
+          filters.push(filterOfficial, not(filterOfficial));
+        }
+
         break;
       }
 
@@ -1336,6 +1350,15 @@ const selectEncounterSetChanges = createSelector(
   },
 );
 
+function selectFanMadeContentChanges(value: FanMadeContentFilter) {
+  const t = i18n.t;
+  return value === "all"
+    ? ""
+    : value === "official"
+      ? t("filters.fan_made_content.official")
+      : t("filters.fan_made_content.fan_made");
+}
+
 function selectHealthChanges(value: [number, number] | undefined) {
   return formatHealthChanges(value, i18n.t("filters.health.title"));
 }
@@ -1504,6 +1527,10 @@ export function selectFilterChanges<T extends keyof FilterMapping>(
 
     case "faction": {
       return "";
+    }
+
+    case "fanMadeContent": {
+      return selectFanMadeContentChanges(value as FanMadeContentFilter);
     }
 
     case "health": {

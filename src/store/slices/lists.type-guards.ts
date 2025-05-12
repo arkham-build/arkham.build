@@ -1,6 +1,7 @@
 import type {
   AssetFilter,
   CostFilter,
+  FanMadeContentFilter,
   FilterKey,
   FilterObject,
   InvestigatorSkillsFilter,
@@ -39,6 +40,12 @@ export function isFactionFilterObject(
   filter?: FilterObject<FilterKey>,
 ): filter is FilterObject<"faction"> {
   return !!filter && filter.type === "faction";
+}
+
+export function isFanMadeContentFilterObject(
+  filter?: FilterObject<FilterKey>,
+): filter is FilterObject<"fanMadeContent"> {
+  return !!filter && filter.type === "fanMadeContent";
 }
 
 export function isInvestigatorFilterObject(
@@ -176,6 +183,12 @@ export function isMultiSelectFilter(value: unknown): value is string[] {
 
 export function isOwnershipFilter(value: unknown): value is OwnershipFilter {
   return value === "all" || value === "owned" || value === "unowned";
+}
+
+export function isFanMadeContentFilter(
+  value: unknown,
+): value is FanMadeContentFilter {
+  return value === "all" || value === "fan-made" || value === "official";
 }
 
 export function isPropertiesFilter(value: unknown): value is PropertiesFilter {

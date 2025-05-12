@@ -15,6 +15,7 @@ import type { Card } from "../services/queries.types";
 import {
   isAssetFilter,
   isCostFilter,
+  isFanMadeContentFilter,
   isInvestigatorSkillsFilter,
   isLevelFilter,
   isMultiSelectFilter,
@@ -192,6 +193,15 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         );
 
         filterValues[id] = { ...filterValues[id], value };
+        break;
+      }
+
+      case "fanMadeContent": {
+        assert(
+          isFanMadeContentFilter(payload),
+          `filter ${id} value must be a string.`,
+        );
+        filterValues[id] = { ...filterValues[id], value: payload };
         break;
       }
 
@@ -567,6 +577,13 @@ function makeFilterValue(
       );
     }
 
+    case "fanMadeContent": {
+      return makeFilterObject(
+        type,
+        isFanMadeContentFilter(initialValue) ? initialValue : "all",
+      );
+    }
+
     case "properties": {
       return makeFilterObject(
         type,
@@ -670,7 +687,7 @@ function makePlayerCardsList(
     additionalFilters = [] as FilterKey[],
   } = {},
 ): List {
-  const filters: FilterKey[] = ["faction", "type", "level"];
+  const filters: FilterKey[] = ["faction", "type", "level", "fanMadeContent"];
 
   if (!settings.showAllCards) {
     filters.push("ownership");
@@ -727,6 +744,7 @@ function makeInvestigatorCardsList(
   const filters: FilterKey[] = [
     "faction",
     "investigatorSkills",
+    "fanMadeContent",
     "investigatorCardAccess",
     "trait",
     "health",
@@ -734,7 +752,7 @@ function makeInvestigatorCardsList(
   ];
 
   if (!settings.showAllCards) {
-    filters.splice(2, 0, "ownership");
+    filters.splice(3, 0, "ownership");
   }
 
   return makeList({
@@ -764,7 +782,7 @@ function makeEncounterCardsList(
     additionalFilters = [] as FilterKey[],
   } = {},
 ): List {
-  const filters: FilterKey[] = ["faction", "type"];
+  const filters: FilterKey[] = ["faction", "type", "fanMadeContent"];
 
   if (!settings.showAllCards) {
     filters.push("ownership");

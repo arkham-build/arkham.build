@@ -21,6 +21,7 @@ import { CardTypeFilter } from "./card-type-filter";
 import { CostFilter } from "./cost-filter";
 import { EncounterSetFilter } from "./encounter-set-filter";
 import { FactionFilter } from "./faction-filter";
+import { FanMadeContentFilter } from "./fan-made-content-filter";
 import css from "./filters.module.css";
 import { HealthFilter } from "./health-filter";
 import { IllustratorFilter } from "./illustrator-filter";
@@ -132,6 +133,7 @@ export function Filters(props: Props) {
               {filter === "investigator" && <InvestigatorFilter id={id} />}
               {filter === "level" && <LevelFilter id={id} />}
               {filter === "ownership" && <OwnershipFilter id={id} />}
+              {filter === "fanMadeContent" && <FanMadeContentFilter id={id} />}
               {filter === "pack" && <PackFilter id={id} />}
               {filter === "properties" && <PropertiesFilter id={id} />}
               {filter === "skillIcons" && <SkillIconsFilter id={id} />}
