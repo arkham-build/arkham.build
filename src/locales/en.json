@@ -647,9 +647,32 @@
       "title": "Connecting {{provider}}..."
     },
     "fan_made_content": {
-      "collection": "Collection",
-      "title": "Fan-made content",
-      "view_external": "Learn more"
+      "actions": {
+        "uninstall": "Uninstall",
+        "import_file": "Import from file",
+        "import_url": "Import from URL",
+        "install": "Install content",
+        "view_cards": "View cards",
+        "view_external": "Learn more"
+      },
+      "available_content": "Available content",
+      "import_url": {
+        "label": "Content URL",
+        "placeholder": "Enter an URL...",
+        "submit": "Import"
+      },
+      "installed_content": "Installed content",
+      "empty": "No content installed",
+      "messages": {
+        "content_installed": "Content added successfully.",
+        "content_loading": "Loading content...",
+        "available_content_loading": "Loading available content...",
+        "fetch_failed": "Failed to load content: {{error}}",
+        "parse_failed": "Failed to add content: {{error}}",
+        "registry_failed": "Failed to load available content from registry: {{error}}"
+      },
+      "status_installed": "Installed",
+      "title": "Fan-made content"
     },
     "deck": {
       "actions": {

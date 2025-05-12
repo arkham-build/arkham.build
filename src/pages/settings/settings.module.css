@@ -1,9 +1,12 @@
-.settings {
-  position: relative;
+.main {
+  @media screen and (min-width: 45rem) {
+    padding-inline: 1.5rem;
+    padding-top: 1rem;
+  }
 }
 
-.settings > * + * {
-  margin-top: 1.5rem;
+.settings {
+  position: relative;
 }
 
 .container > * + * {

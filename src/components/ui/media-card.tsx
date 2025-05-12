@@ -5,16 +5,31 @@ type Props = {
   bannerAlt?: string;
   bannerUrl?: string;
   children: React.ReactNode;
-  className?: string;
+  headerSlot?: React.ReactNode;
+  footerSlot?: React.ReactNode;
+  classNames?: {
+    container?: string;
+    header?: string;
+    content?: string;
+    footer?: string;
+  };
   title: React.ReactNode;
 };
 
 export function MediaCard(props: Props) {
-  const { bannerAlt, bannerUrl, children, className, title } = props;
+  const {
+    bannerAlt,
+    bannerUrl,
+    children,
+    classNames,
+    footerSlot,
+    headerSlot,
+    title,
+  } = props;
 
   return (
-    <article className={cx(css["card"], className)}>
-      <header className={css["header"]}>
+    <article className={cx(css["card"], classNames?.container)}>
+      <header className={cx(css["header"], classNames?.header)}>
         {bannerUrl && (
           <img
             alt={bannerAlt}
@@ -24,8 +39,12 @@ export function MediaCard(props: Props) {
           />
         )}
         <div className={css["title"]}>{title}</div>
+        {headerSlot}
       </header>
-      <div className={css["content"]}>{children}</div>
+      <div className={cx(css["content"], classNames?.content)}>{children}</div>
+      {footerSlot && (
+        <footer className={classNames?.footer}>{footerSlot}</footer>
+      )}
     </article>
   );
 }

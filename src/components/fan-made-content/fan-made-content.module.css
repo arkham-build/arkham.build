@@ -1,0 +1,140 @@
+.container > * + * {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--palette-1);
+}
+
+.section > * + * {
+  margin-top: 1rem;
+}
+
+.title {
+  font-size: var(--text-lg);
+}
+
+.list {
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+
+  @media screen and (min-width: 40rem) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media screen and (min-width: 66rem) {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+}
+
+.project {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.project-header,
+.project-footer {
+  flex: 0 0 auto;
+}
+
+.project-content {
+  flex: 1 1 auto;
+  border-bottom: 1px solid var(--palette-1);
+}
+
+.project-content > * {
+  margin-block: 0.25rem;
+  padding-block: 0.25rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.modal-inner {
+  display: flex;
+  flex-flow: column nowrap;
+  height: calc(100dvh - 2rem);
+  min-height: 0;
+}
+
+.modal-actions {
+  flex: 0 0 auto;
+}
+
+.modal-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+  min-height: 0;
+}
+
+.modal-content > * {
+  flex: 0 0 auto;
+}
+
+.modal-content > .modal-content-main {
+  flex: 1 1 auto;
+  height: 100%;
+  --grid-max-columns: 5;
+}
+
+.loader {
+  position: relative;
+  width: 100%;
+  height: 25rem;
+}
+
+.installed {
+  align-items: center;
+  background: var(--rogue-dark);
+  border-radius: var(--rounded-lg);
+  border: 2px solid var(--rogue-dark);
+  display: inline-flex;
+  font-size: var(--text-sm);
+  gap: 0.125rem;
+  padding-inline: 0.375rem;
+}
+
+.error {
+  border-radius: var(--rounded);
+  border: 2px solid var(--nord-11);
+  display: flex;
+  font-size: var(--text-sm);
+  gap: 0.125rem;
+  padding: 0.375rem;
+}
+
+.empty {
+  width: 100%;
+  border: 1px dashed var(--palette-2);
+  border-radius: var(--rounded);
+  padding: 2rem;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--palette-4);
+}
+
+.empty-icon {
+  font-size: var(--icon-lg);
+}
+
+.import-popover {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 0.375rem;
+  min-width: 18rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--palette-1);
+}
+
+.import-popover-input {
+  width: 100%;
+}

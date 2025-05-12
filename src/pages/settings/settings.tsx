@@ -1,5 +1,5 @@
 import { CollectionSettings } from "@/components/collection/collection";
-import { FanMadeContentCollection } from "@/components/fan-made-content/fan-made-content-collection";
+import { FanMadeContent } from "@/components/fan-made-content/fan-made-content";
 import { Button } from "@/components/ui/button";
 import {
   Tabs,
@@ -92,7 +92,7 @@ function Settings() {
   );
 
   return (
-    <AppLayout title={t("settings.title")}>
+    <AppLayout title={t("settings.title")} mainClassName={css["main"]}>
       <form className={css["settings"]} onSubmit={onSubmit}>
         <header className={css["header"]}>
           <h1 className={css["title"]}>{t("settings.title")}</h1>
@@ -226,7 +226,7 @@ function Settings() {
             </TabsContent>
             <TabsContent value="fan-made-content" forceMount>
               <Section title={t("fan_made_content.title")}>
-                <FanMadeContentCollection />
+                <FanMadeContent />
               </Section>
             </TabsContent>
             <TabsContent value="backup" forceMount>
