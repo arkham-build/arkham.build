@@ -226,7 +226,7 @@ function Settings() {
             </TabsContent>
             <TabsContent value="fan-made-content" forceMount>
               <Section title={t("fan_made_content.title")}>
-                <FanMadeContent />
+                <FanMadeContent settings={settings} setSettings={setSettings} />
               </Section>
             </TabsContent>
             <TabsContent value="backup" forceMount>

@@ -11,6 +11,7 @@ type Props = {
   changes?: string;
   children: React.ReactNode;
   className?: string;
+  noChangesLabel?: string;
   nonCollapsibleContent?: React.ReactNode;
   onOpenChange: (val: boolean) => void;
   onReset?: () => void;
@@ -23,6 +24,7 @@ export function FilterContainer(props: Props) {
     changes,
     children,
     className,
+    noChangesLabel,
     nonCollapsibleContent,
     alwaysShowChanges,
     open,
@@ -62,7 +64,11 @@ export function FilterContainer(props: Props) {
       className={className}
       onOpenChange={onOpenChange}
       open={open}
-      sub={alwaysShowChanges || !open ? changes || t("filters.all") : undefined}
+      sub={
+        alwaysShowChanges || !open
+          ? changes || noChangesLabel || t("filters.all")
+          : undefined
+      }
       title={
         <span className={css["title-container"]}>
           {active && <CircleIcon className={css["active"]} />}

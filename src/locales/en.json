@@ -671,6 +671,10 @@
         "parse_failed": "Failed to add content: {{error}}",
         "registry_failed": "Failed to load available content from registry: {{error}}"
       },
+      "settings": {
+        "card_lists": "Card lists",
+        "card_lists_help": "This setting controls the default value of the \"Fan-made content\" filter in card lists."
+      },
       "status_installed": "Installed",
       "title": "Fan-made content"
     },
@@ -1058,8 +1062,9 @@
       },
       "fan_made_content": {
         "title": "Fan-made content",
-        "official": "Official only",
-        "fan_made": "Fan-made only"
+        "all": "Show everything",
+        "official": "Official content only",
+        "fan_made": "Fan-made content only"
       },
       "health": {
         "title": "Health"

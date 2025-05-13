@@ -1,7 +1,8 @@
 /* FIXME: this should be a class. */
 select {
   appearance: none;
-  min-width: 10rem;
+  min-width: 11rem;
+  max-width: 100%;
   background-image: var(--background-select);
   background-repeat: no-repeat;
   background-position: 95% 50%;

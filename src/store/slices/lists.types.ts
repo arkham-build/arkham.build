@@ -77,14 +77,14 @@ export type FilterMapping = {
   action: MultiselectFilter;
   asset: AssetFilter;
   cost: CostFilter;
-  encounterSet: MultiselectFilter;
+  encounter_set: MultiselectFilter;
   faction: MultiselectFilter;
-  fanMadeContent: FanMadeContentFilter;
+  fan_made_content: FanMadeContentFilter;
   health: HealthFilter;
   illustrator: MultiselectFilter;
   investigator: SelectFilter;
-  investigatorCardAccess: InvestigatorCardAccessFilter;
-  investigatorSkills: InvestigatorSkillsFilter;
+  investigator_card_access: InvestigatorCardAccessFilter;
+  investigator_skills: InvestigatorSkillsFilter;
   level: LevelFilter;
   ownership: OwnershipFilter;
   pack: MultiselectFilter;

@@ -42,6 +42,7 @@ export function FanMadeContentFilter({ id }: FilterProps) {
     <FilterContainer
       alwaysShowChanges
       changes={changes}
+      noChangesLabel={t("filters.fan_made_content.all")}
       onOpenChange={onOpenChange}
       open={filter.open}
       title={t("filters.fan_made_content.title")}

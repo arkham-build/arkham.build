@@ -1,3 +1,4 @@
+import type { SettingProps } from "@/pages/settings/types";
 import { useStore } from "@/store";
 import {
   addProjectToMetadata,
@@ -17,6 +18,7 @@ import {
   queryFanMadeProjects,
 } from "@/store/services/queries";
 import type { Card } from "@/store/services/queries.types";
+import type { FanMadeContentFilter } from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
@@ -34,7 +36,7 @@ import {
   LinkIcon,
   Trash2Icon,
 } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CardGrid } from "../card-list/card-grid";
 import { Button } from "../ui/button";
@@ -46,10 +48,11 @@ import { MediaCard } from "../ui/media-card";
 import { Modal, ModalContent } from "../ui/modal";
 import { Plane } from "../ui/plane";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Select } from "../ui/select";
 import { useToast } from "../ui/toast.hooks";
 import css from "./fan-made-content.module.css";
 
-export function FanMadeContent() {
+export function FanMadeContent(props: SettingProps) {
   const { t } = useTranslation();
   const toast = useToast();
 
@@ -88,9 +91,64 @@ export function FanMadeContent() {
 
   return (
     <div className={css["container"]}>
+      <DisplaySettings {...props} />
       <Collection />
       <Registry onAddProject={onAddProject} />
     </div>
+  );
+}
+
+function DisplaySettings(props: SettingProps) {
+  const { settings, setSettings } = props;
+
+  const { t } = useTranslation();
+
+  const options = useMemo(
+    () => [
+      {
+        value: "all",
+        label: t("filters.fan_made_content.all"),
+      },
+      {
+        value: "official",
+        label: t("filters.fan_made_content.official"),
+      },
+      {
+        value: "fan-made",
+        label: t("filters.fan_made_content.fan_made"),
+      },
+    ],
+    [t],
+  );
+
+  const onChangeDisplay = useCallback(
+    (evt: React.ChangeEvent<HTMLSelectElement>) => {
+      setSettings({
+        ...settings,
+        cardListsDefaultContentType: evt.target.value as FanMadeContentFilter,
+      });
+    },
+    [setSettings, settings],
+  );
+
+  return (
+    <section className={css["section"]}>
+      <header className={css["header"]}>
+        <h2 className={css["title"]}>{t("settings.display.title")}</h2>
+      </header>
+      <Field bordered helpText={t("fan_made_content.settings.card_lists_help")}>
+        <FieldLabel htmlFor="fan-made-content-list-display">
+          {t("fan_made_content.settings.card_lists")}
+        </FieldLabel>
+        <Select
+          defaultValue={settings.cardListsDefaultContentType}
+          id="fan-made-content-list-display"
+          onChange={onChangeDisplay}
+          options={options}
+          required
+        />
+      </Field>
+    </section>
   );
 }
 

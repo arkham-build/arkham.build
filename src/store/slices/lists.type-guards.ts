@@ -32,8 +32,8 @@ export function isCostFilterObject(
 
 export function isEncounterSetFilterObject(
   filter?: FilterObject<FilterKey>,
-): filter is FilterObject<"encounterSet"> {
-  return !!filter && filter.type === "encounterSet";
+): filter is FilterObject<"encounter_set"> {
+  return !!filter && filter.type === "encounter_set";
 }
 
 export function isFactionFilterObject(
@@ -44,8 +44,8 @@ export function isFactionFilterObject(
 
 export function isFanMadeContentFilterObject(
   filter?: FilterObject<FilterKey>,
-): filter is FilterObject<"fanMadeContent"> {
-  return !!filter && filter.type === "fanMadeContent";
+): filter is FilterObject<"fan_made_content"> {
+  return !!filter && filter.type === "fan_made_content";
 }
 
 export function isInvestigatorFilterObject(
@@ -122,14 +122,14 @@ export function isHealthFilterObject(
 
 export function isInvestigatorSkillsFilterObject(
   filter?: FilterObject<FilterKey>,
-): filter is FilterObject<"investigatorSkills"> {
-  return !!filter && filter.type === "investigatorSkills";
+): filter is FilterObject<"investigator_skills"> {
+  return !!filter && filter.type === "investigator_skills";
 }
 
 export function isInvestigatorCardAccessFilterObject(
   filter?: FilterObject<FilterKey>,
-): filter is FilterObject<"investigatorCardAccess"> {
-  return !!filter && filter.type === "investigatorCardAccess";
+): filter is FilterObject<"investigator_card_access"> {
+  return !!filter && filter.type === "investigator_card_access";
 }
 
 export function isIllustratorFilterObject(

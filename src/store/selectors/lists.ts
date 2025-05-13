@@ -136,7 +136,7 @@ function makeUserFilter(
         break;
       }
 
-      case "encounterSet": {
+      case "encounter_set": {
         const value = filterValue.value as MultiselectFilter;
         if (value.length) filters.push(filterEncounterCode(value));
         break;
@@ -148,13 +148,13 @@ function makeUserFilter(
         break;
       }
 
-      case "fanMadeContent": {
+      case "fan_made_content": {
         const value = filterValue.value as FanMadeContentFilter;
 
         if (value === "official") {
           filters.push(filterOfficial);
         } else if (value === "fan-made") {
-          filters.push(filterOfficial, not(filterOfficial));
+          filters.push(not(filterOfficial));
         }
 
         break;
@@ -259,13 +259,13 @@ function makeUserFilter(
         break;
       }
 
-      case "investigatorSkills": {
+      case "investigator_skills": {
         const value = filterValue.value as InvestigatorSkillsFilter;
         filters.push(filterInvestigatorSkills(value));
         break;
       }
 
-      case "investigatorCardAccess": {
+      case "investigator_card_access": {
         const value = filterValue.value as MultiselectFilter;
         if (value.length) {
           const filter = (card: Card) => {
@@ -1521,7 +1521,7 @@ export function selectFilterChanges<T extends keyof FilterMapping>(
       return selectCostChanges(value as CostFilter);
     }
 
-    case "encounterSet": {
+    case "encounter_set": {
       return selectEncounterSetChanges(state, value as MultiselectFilter);
     }
 
@@ -1529,7 +1529,7 @@ export function selectFilterChanges<T extends keyof FilterMapping>(
       return "";
     }
 
-    case "fanMadeContent": {
+    case "fan_made_content": {
       return selectFanMadeContentChanges(value as FanMadeContentFilter);
     }
 
@@ -1541,11 +1541,11 @@ export function selectFilterChanges<T extends keyof FilterMapping>(
       return selectInvestigatorChanges(state, value as SelectFilter);
     }
 
-    case "investigatorCardAccess": {
+    case "investigator_card_access": {
       return selectInvestigatorCardAccessChanges(value as MultiselectFilter);
     }
 
-    case "investigatorSkills": {
+    case "investigator_skills": {
       return selectInvestigatorSkillIconsChanges(
         value as InvestigatorSkillsFilter,
       );
