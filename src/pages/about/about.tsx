@@ -97,7 +97,7 @@ function About() {
         </p>
         <ul>
           <li>
-            Korean: <strong>@derornos</strong>
+            Korean: <strong>푸른이(@derornos)</strong>
           </li>
           <li>
             Polish: <strong>@javnik36</strong>
