@@ -1,6 +1,7 @@
 import type {
   AssetFilter,
   CostFilter,
+  FanMadeContentFilter,
   FilterKey,
   FilterObject,
   InvestigatorSkillsFilter,
@@ -31,14 +32,20 @@ export function isCostFilterObject(
 
 export function isEncounterSetFilterObject(
   filter?: FilterObject<FilterKey>,
-): filter is FilterObject<"encounterSet"> {
-  return !!filter && filter.type === "encounterSet";
+): filter is FilterObject<"encounter_set"> {
+  return !!filter && filter.type === "encounter_set";
 }
 
 export function isFactionFilterObject(
   filter?: FilterObject<FilterKey>,
 ): filter is FilterObject<"faction"> {
   return !!filter && filter.type === "faction";
+}
+
+export function isFanMadeContentFilterObject(
+  filter?: FilterObject<FilterKey>,
+): filter is FilterObject<"fan_made_content"> {
+  return !!filter && filter.type === "fan_made_content";
 }
 
 export function isInvestigatorFilterObject(
@@ -115,14 +122,14 @@ export function isHealthFilterObject(
 
 export function isInvestigatorSkillsFilterObject(
   filter?: FilterObject<FilterKey>,
-): filter is FilterObject<"investigatorSkills"> {
-  return !!filter && filter.type === "investigatorSkills";
+): filter is FilterObject<"investigator_skills"> {
+  return !!filter && filter.type === "investigator_skills";
 }
 
 export function isInvestigatorCardAccessFilterObject(
   filter?: FilterObject<FilterKey>,
-): filter is FilterObject<"investigatorCardAccess"> {
-  return !!filter && filter.type === "investigatorCardAccess";
+): filter is FilterObject<"investigator_card_access"> {
+  return !!filter && filter.type === "investigator_card_access";
 }
 
 export function isIllustratorFilterObject(
@@ -176,6 +183,12 @@ export function isMultiSelectFilter(value: unknown): value is string[] {
 
 export function isOwnershipFilter(value: unknown): value is OwnershipFilter {
   return value === "all" || value === "owned" || value === "unowned";
+}
+
+export function isFanMadeContentFilter(
+  value: unknown,
+): value is FanMadeContentFilter {
+  return value === "all" || value === "fan-made" || value === "official";
 }
 
 export function isPropertiesFilter(value: unknown): value is PropertiesFilter {

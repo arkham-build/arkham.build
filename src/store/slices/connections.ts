@@ -5,7 +5,11 @@ import { assert } from "@/utils/assert";
 import type { StoreState } from ".";
 import { resolveDeck } from "../lib/resolve-deck";
 import { disconnectProviderIfUnauthorized, syncAdapters } from "../lib/sync";
-import { selectLocaleSortingCollator } from "../selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
+} from "../selectors/shared";
 import { ApiError, getDecks, newDeck, updateDeck } from "../services/queries";
 import type {
   ConnectionsSlice,
@@ -221,7 +225,11 @@ export const createConnectionsSlice: StateCreator<
     assert(deck, `Deck with id ${id} was not found.`);
 
     const resolved = resolveDeck(
-      state,
+      {
+        lookupTables: selectLookupTables(state),
+        metadata: selectMetadata(state),
+        sharing: state.sharing,
+      },
       selectLocaleSortingCollator(state),
       deck,
     );

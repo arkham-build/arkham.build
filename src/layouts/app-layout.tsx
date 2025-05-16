@@ -9,18 +9,19 @@ type Props = {
   children: React.ReactNode;
   mainClassName?: string;
   title: string;
-};
+} & React.HTMLProps<HTMLDivElement>;
 
 export const AppLayout = forwardRef(function AppLayout(
   props: Props,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const { children, mainClassName, title } = props;
+  const { children, mainClassName, title, ...rest } = props;
 
   useDocumentTitle(title);
 
   return (
     <div
+      {...rest}
       className={cx(css["layout"], "fade-in")}
       data-testid="app-layout"
       ref={ref}

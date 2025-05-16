@@ -1,6 +1,11 @@
 import type { CardFormat } from "@/pages/deck-edit/editor/notes-rte/cards-to-markdown";
 import type { CardOrigin } from "@/pages/deck-edit/editor/notes-rte/notes-rte-context";
-import type { GroupingType, SortingType, ViewMode } from "./lists.types";
+import type {
+  FanMadeContentFilter,
+  GroupingType,
+  SortingType,
+  ViewMode,
+} from "./lists.types";
 
 export type ListConfig = {
   group: GroupingType[];
@@ -17,6 +22,7 @@ export type Locale = string;
 
 export type SettingsState = {
   cardLevelDisplay: "icon-only" | "dots" | "text";
+  cardListsDefaultContentType: FanMadeContentFilter;
   cardShowCollectionNumber?: boolean;
   cardSkillIconsDisplay: "simple" | "as_printed";
   collection: Record<string, number>; // track as "quantity" owned to accomodate the core set.

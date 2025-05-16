@@ -13,12 +13,17 @@ import { filterEncounterCards } from "@/store/lib/filtering";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectListCards } from "@/store/selectors/lists";
-import { selectLocaleSortingCollator } from "@/store/selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
+} from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
 import { and, not } from "@/utils/fp";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
 import {
   type CardOrigin,
   useNotesRichTextEditorContext,
@@ -45,20 +50,21 @@ export function CardsPopover(props: Props) {
     settingsChanged,
   } = useNotesRichTextEditorContext();
 
-  const state = useStore();
+  const metadata = useStore(selectMetadata);
+  const lookupTables = useStore(selectLookupTables);
+  const setSettings = useStore((state) => state.setSettings);
 
   const onUpdateDefaults = useCallback(() => {
-    state.setSettings({
+    setSettings({
       notesEditor: {
         defaultFormat: cardFormat,
         defaultOrigin: cardOrigin,
       },
     });
-  }, [state, cardFormat, cardOrigin]);
+  }, [setSettings, cardFormat, cardOrigin]);
 
-  const cards = useMemo(
-    () => selectCardOptions(state, cardOrigin, deck),
-    [state, cardOrigin, deck],
+  const cards = useStore(
+    useShallow((state) => selectCardOptions(state, cardOrigin, deck)),
   );
 
   const formatOptions = useMemo(
@@ -81,18 +87,19 @@ export function CardsPopover(props: Props) {
 
   const onSelectItem = useCallback(
     (item: string[]) => {
-      const card = state.metadata.cards[item[0]];
+      const card = metadata.cards[item[0]];
+
       if (!card) return;
       insertTextAtCaret(
         cardToMarkdown(
           card,
-          state.metadata,
-          state.lookupTables,
+          metadata,
+          lookupTables,
           cardFormatDefinition(cardFormat),
         ),
       );
     },
-    [insertTextAtCaret, state.metadata, state.lookupTables, cardFormat],
+    [insertTextAtCaret, metadata, lookupTables, cardFormat],
   );
 
   return (
@@ -164,7 +171,7 @@ function selectCardOptions(
   origin: CardOrigin,
   deck: ResolvedDeck,
 ) {
-  const metadata = state.metadata;
+  const metadata = selectMetadata(state);
   const collator = selectLocaleSortingCollator(state);
 
   const sortFn = makeSortFunction(

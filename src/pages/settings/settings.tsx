@@ -1,4 +1,5 @@
 import { CollectionSettings } from "@/components/collection/collection";
+import { FanMadeContent } from "@/components/fan-made-content/fan-made-content";
 import { Button } from "@/components/ui/button";
 import {
   Tabs,
@@ -12,8 +13,10 @@ import { AppLayout } from "@/layouts/app-layout";
 import { useStore } from "@/store";
 import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
+import { featherText } from "@lucide/lab";
 import {
   DatabaseBackupIcon,
+  Icon,
   LibraryIcon,
   SlidersVerticalIcon,
 } from "lucide-react";
@@ -89,7 +92,7 @@ function Settings() {
   );
 
   return (
-    <AppLayout title={t("settings.title")}>
+    <AppLayout title={t("settings.title")} mainClassName={css["main"]}>
       <form className={css["settings"]} onSubmit={onSubmit}>
         <header className={css["header"]}>
           <h1 className={css["title"]}>{t("settings.title")}</h1>
@@ -125,6 +128,10 @@ function Settings() {
               <TabsTrigger data-testid="tab-collection" value="collection">
                 <LibraryIcon />
                 <span>{t("settings.collection.title")}</span>
+              </TabsTrigger>
+              <TabsTrigger data-testid="tab-fan-made" value="fan-made-content">
+                <Icon iconNode={featherText} />
+                <span>{t("fan_made_content.title")}</span>
               </TabsTrigger>
               <TabsTrigger data-testid="tab-backup" value="backup">
                 <DatabaseBackupIcon />
@@ -215,6 +222,11 @@ function Settings() {
                   settings={settings}
                   setSettings={setSettings}
                 />
+              </Section>
+            </TabsContent>
+            <TabsContent value="fan-made-content" forceMount>
+              <Section title={t("fan_made_content.title")}>
+                <FanMadeContent settings={settings} setSettings={setSettings} />
               </Section>
             </TabsContent>
             <TabsContent value="backup" forceMount>

@@ -1,5 +1,5 @@
 import { assert } from "@/utils/assert";
-import { cardLimit } from "@/utils/card-utils";
+import { cardLimit, displayAttribute } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { capitalize } from "@/utils/formatting";
 import { range } from "@/utils/range";
@@ -9,6 +9,7 @@ import { clampAttachmentQuantity } from "../lib/attachments";
 import { randomBasicWeaknessForDeck } from "../lib/random-basic-weakness";
 import { getDeckLimitOverride } from "../lib/resolve-deck";
 import { selectResolvedDeckById } from "../selectors/decks";
+import { selectLookupTables, selectMetadata } from "../selectors/shared";
 import type { Id } from "./data.types";
 import { type DeckEditsSlice, mapTabToSlot } from "./deck-edits.types";
 
@@ -233,6 +234,7 @@ export const createDeckEditsSlice: StateCreator<
   },
   drawRandomBasicWeakness(deckId) {
     const state = get();
+    const metadata = selectMetadata(state);
 
     const resolvedDeck = selectResolvedDeckById(state, deckId, true);
 
@@ -242,8 +244,8 @@ export const createDeckEditsSlice: StateCreator<
     );
 
     const weakness = randomBasicWeaknessForDeck(
-      state.metadata,
-      state.lookupTables,
+      metadata,
+      selectLookupTables(state),
       state.settings,
       resolvedDeck,
     );
@@ -278,7 +280,7 @@ export const createDeckEditsSlice: StateCreator<
 
     state.dehydrate("edits").catch(console.error);
 
-    return state.metadata.cards[weakness];
+    return metadata.cards[weakness];
   },
   updateAttachment({ deck, targetCode, code, quantity, limit }) {
     const attachments = get().deckEdits[deck.id]?.attachments ?? {};
@@ -321,7 +323,11 @@ export const createDeckEditsSlice: StateCreator<
 
     const edits = currentEdits(state, deckId);
 
-    const limitOverride = getDeckLimitOverride(state.lookupTables, deck, card);
+    const limitOverride = getDeckLimitOverride(
+      selectLookupTables(state),
+      deck,
+      card,
+    );
 
     const targetQuantity = Math.min(
       (deck?.[target]?.[card.code] ?? 0) + 1,
@@ -374,6 +380,7 @@ export const createDeckEditsSlice: StateCreator<
 
   upgradeCard({ deckId, availableUpgrades, code, upgradeCode, delta, slots }) {
     const state = get();
+    const metadata = selectMetadata(state);
 
     const deck = selectResolvedDeckById(state, deckId, true);
     assert(deck, `Tried to edit deck that does not exist: ${deckId}`);
@@ -382,27 +389,28 @@ export const createDeckEditsSlice: StateCreator<
       deckId,
       upgradeCode,
       delta,
-      cardLimit(state.metadata.cards[upgradeCode]),
+      cardLimit(metadata.cards[upgradeCode]),
       slots,
     );
 
     const shouldUpdateSourceQuantity =
       availableUpgrades.upgrades[code].reduce((acc, curr) => {
         return acc + (deck[slots]?.[curr.code] ?? 0);
-      }, 0) <= cardLimit(state.metadata.cards[code]);
+      }, 0) <= cardLimit(metadata.cards[code]);
 
     if (shouldUpdateSourceQuantity) {
       state.updateCardQuantity(
         deckId,
         code,
         delta * -1,
-        cardLimit(state.metadata.cards[code]),
+        cardLimit(metadata.cards[code]),
         slots,
       );
     }
   },
   applyShrewdAnalysis({ availableUpgrades, code, deckId, slots }) {
     const state = get();
+    const metadata = selectMetadata(state);
 
     const upgrades = availableUpgrades.upgrades[code];
     assert(upgrades.length, "No upgrades available for card");
@@ -427,22 +435,24 @@ export const createDeckEditsSlice: StateCreator<
       });
     }
 
-    const sourceCard = state.metadata.cards[code];
+    const sourceCard = metadata.cards[code];
 
     state.updateXpAdjustment(
       deckId,
       (upgrades[0].xp ?? 0) - (sourceCard.xp ?? 0),
     );
   },
-  completeTask(deckId, code) {
+  completeTask(deckId, card) {
     const state = get();
 
-    assert(code.endsWith("a"), `Not an incomplete task: ${code}`);
+    assert(
+      card.real_traits?.includes("Task"),
+      `${displayAttribute(card, "name")} is not a Task.`,
+    );
 
-    const completeId = `${code.slice(0, -1)}b`;
+    const completeId = card.back_link_id ?? `${card.code.slice(0, -1)}b`;
 
-    state.updateCardQuantity(deckId, code, 0, 1, "slots", "set");
-
+    state.updateCardQuantity(deckId, card.code, 0, 1, "slots", "set");
     state.updateCardQuantity(deckId, completeId, 1, 1, "slots", "set");
 
     state.dehydrate("edits").catch(console.error);

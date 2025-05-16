@@ -79,7 +79,10 @@ import { getMockStore } from "@/test/get-mock-store";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { beforeAll, describe, expect, it } from "vitest";
 import { StoreApi } from "zustand";
-import { selectLocaleSortingCollator } from "../selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+} from "../selectors/shared";
 import { StoreState } from "../slices";
 import { getChangeStats } from "./deck-upgrades";
 import { resolveDeck } from "./resolve-deck";
@@ -94,73 +97,170 @@ describe("getChangeStats", () => {
   describe("xp calculation", () => {
     it("handles case: add level 0", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, add0);
-      const next = resolveDeck(state, collator, add02);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        add0,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        add02,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: 0 to 1-5", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, from0ToUpgrade);
-      const next = resolveDeck(state, collator, from0ToUpgrade2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        from0ToUpgrade,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        from0ToUpgrade2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: 1-5 to 1-5", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, fromToUpgrade);
-      const next = resolveDeck(state, collator, fromToUpgrade2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        fromToUpgrade,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        fromToUpgrade2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: story assets", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, story);
-      const next = resolveDeck(state, collator, story2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        story,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        story2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: myriad", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, myriad);
-      const next = resolveDeck(state, collator, myriad2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        myriad,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        myriad2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: exceptional", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const first = resolveDeck(state, collator, exceptional);
-      const second = resolveDeck(state, collator, exceptional2);
-      const third = resolveDeck(state, collator, exceptional3);
+      const first = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exceptional,
+      );
+      const second = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exceptional2,
+      );
+      const third = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exceptional3,
+      );
+
       expect(getChangeStats(first, second).xpSpent).toEqual(second.xp);
+
       expect(getChangeStats(second, third).xpSpent).toEqual(third.xp);
     });
 
     it("handles case: arcane research", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, arcaneResearch);
-      const next = resolveDeck(state, collator, arcaneResearch2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        arcaneResearch,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        arcaneResearch2,
+      );
 
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
 
       prev.slots[SPECIAL_CARD_CODES.ARCANE_RESEARCH] = 2;
+
       expect(getChangeStats(prev, next).xpSpent).toEqual((next.xp ?? 0) - 1);
     });
 
     // TODO: fix this failing test.
     it.fails("handles case: arcane research (swap + add)", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, arcaneResearchSwap);
 
-      const next = resolveDeck(state, collator, arcaneResearchSwap2);
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        arcaneResearchSwap,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        arcaneResearchSwap2,
+      );
 
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
@@ -168,58 +268,123 @@ describe("getChangeStats", () => {
     describe("down the rabbit hole", () => {
       it("handles case: down the rabbit hole XP reduction", () => {
         const state = store.getState();
+        const lookupTables = selectLookupTables(state);
         const collator = selectLocaleSortingCollator(state);
-        const prev = resolveDeck(state, collator, dtrh);
-        const next = resolveDeck(state, collator, dtrh2);
+
+        const prev = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          dtrh,
+        );
+
+        const next = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          dtrh2,
+        );
+
         expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
       });
 
       it("handles case: interaction with arcane research", () => {
         const state = store.getState();
+        const lookupTables = selectLookupTables(state);
         const collator = selectLocaleSortingCollator(state);
-        const prev = resolveDeck(state, collator, arcaneResearchDtrh);
-        const next = resolveDeck(state, collator, arcaneResearchDtrh2);
+
+        const prev = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          arcaneResearchDtrh,
+        );
+
+        const next = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          arcaneResearchDtrh2,
+        );
 
         expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
       });
 
       it("handles case: interaction with myriad", () => {
         const state = store.getState();
+        const lookupTables = selectLookupTables(state);
         const collator = selectLocaleSortingCollator(state);
-        const prev = resolveDeck(state, collator, dtrhMyriad);
-        const next = resolveDeck(state, collator, dtrhMyriad2);
+
+        const prev = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          dtrhMyriad,
+        );
+
+        const next = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          dtrhMyriad2,
+        );
 
         expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
       });
 
       it("handles case: handles XP penalty for level 0 cards", () => {
         const state = store.getState();
+        const lookupTables = selectLookupTables(state);
         const collator = selectLocaleSortingCollator(state);
-        const prev = resolveDeck(state, collator, dtrhPenaltyBase);
-        const next = resolveDeck(state, collator, dtrhPenaltyLevel0);
+
+        const prev = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          dtrhPenaltyBase,
+        );
+
+        const next = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          dtrhPenaltyLevel0,
+        );
 
         expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
       });
 
       it("handles case: handles XP penalty for level 0 customizables", () => {
         const state = store.getState();
+        const lookupTables = selectLookupTables(state);
         const collator = selectLocaleSortingCollator(state);
 
         const base = structuredClone(dtrhPenaltyBase);
         base.slots["02110"] = 0;
 
-        const prev = resolveDeck(state, collator, dtrhPenaltyBase);
+        const prev = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          dtrhPenaltyBase,
+        );
 
-        const next = resolveDeck(state, collator, dtrhPenaltyLevel0_2);
+        const next = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          dtrhPenaltyLevel0_2,
+        );
 
         expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
       });
 
       it("handles case: handles XP penalty for exile cards", () => {
         const state = store.getState();
+        const lookupTables = selectLookupTables(state);
         const collator = selectLocaleSortingCollator(state);
-        const prev = resolveDeck(state, collator, dtrhPenaltyBase);
-        const next = resolveDeck(state, collator, dtrhPenaltyExile);
+
+        const prev = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          dtrhPenaltyBase,
+        );
+
+        const next = resolveDeck(
+          { metadata: state.metadata, lookupTables, sharing: state.sharing },
+          collator,
+          dtrhPenaltyExile,
+        );
 
         expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
       });
@@ -227,229 +392,544 @@ describe("getChangeStats", () => {
 
     it("handles case: ignore deck limit", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, ignoreDeckLimit1);
-      const next = resolveDeck(state, collator, ignoreDeckLimit2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        ignoreDeckLimit1,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        ignoreDeckLimit2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: ignore deck limit (story asset)", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, ignoreDeckLimitCampaign1);
-      const next = resolveDeck(state, collator, ignoreDeckLimitCampaign2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        ignoreDeckLimitCampaign1,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        ignoreDeckLimitCampaign2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: down the rabbit hole + xp reduction", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, ignoreDeckLimit21);
-      const next = resolveDeck(state, collator, ignoreDeckLimit22);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        ignoreDeckLimit21,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        ignoreDeckLimit22,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: adaptable", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, adaptable);
-      const next = resolveDeck(state, collator, adaptable2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        adaptable,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        adaptable2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: adaptable + myriad", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, adaptableMyriad);
-      const next = resolveDeck(state, collator, adaptableMyriad2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        adaptableMyriad,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        adaptableMyriad2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: adaptable + myriad + down the rabbit hole", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, adaptableMyriadDtrh);
-      const next = resolveDeck(state, collator, adaptableMyriadDtrh2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        adaptableMyriadDtrh,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        adaptableMyriadDtrh2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: adaptable + taboo", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, adaptableTaboo);
-      const next = resolveDeck(state, collator, adaptableTaboo2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        adaptableTaboo,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        adaptableTaboo2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: deck size adjustment", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, deckSize);
-      const next = resolveDeck(state, collator, deckSize2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        deckSize,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        deckSize2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: permanent", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, permanent);
-      const next = resolveDeck(state, collator, permanent2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        permanent,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        permanent2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: customizable (corner cases)", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, customizable);
-      const next = resolveDeck(state, collator, customizable2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        customizable,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        customizable2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: customizable purchase", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, customizablePurchase);
-      const next = resolveDeck(state, collator, customizablePurchase2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        customizablePurchase,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        customizablePurchase2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: customizable upgrade", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, customizableUpgrade);
-      const next = resolveDeck(state, collator, customizableUpgrade2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        customizableUpgrade,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        customizableUpgrade2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: customizable + down the rabbit hole", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, customizableDtrh);
-      const next = resolveDeck(state, collator, customizableDtrh2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        customizableDtrh,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        customizableDtrh2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
 
       delete prev.slots["09081"];
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(6);
     });
 
     it("handles case: customizable (checkbox removed)", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, customizableXpRemoved);
-      const next = resolveDeck(state, collator, customizableXpRemoved2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        customizableXpRemoved,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        customizableXpRemoved2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: exile, repurchase", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, exileBase1);
-      const next = resolveDeck(state, collator, exileRepurchase2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileBase1,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileRepurchase2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: exile, level 0 swaps", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, exileBase1);
-      const next = resolveDeck(state, collator, exileLevel02);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileBase1,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileLevel02,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: exile, burn after reading", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, exileBurnAfterReading1);
-      const next = resolveDeck(state, collator, exileBurnAfterReading2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileBurnAfterReading1,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileBurnAfterReading2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: exile, deja vu", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, exileDejavu1);
-      const next = resolveDeck(state, collator, exileDejavu2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileDejavu1,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileDejavu2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: exile, deja vu (level difference)", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, exileDejavu1);
-      const next = resolveDeck(state, collator, exileDejavu2a);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileDejavu1,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileDejavu2a,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: exile, customizable", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, exileCustomizable);
-      const next = resolveDeck(state, collator, exileCustomizable2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileCustomizable,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileCustomizable2,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: exile, customizable (lvl. 0)", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, exileCustomizable);
-      const next = resolveDeck(state, collator, exileCustomizable2a);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileCustomizable,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileCustomizable2a,
+      );
+
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: exile singles", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, exileSingles);
-      const next = resolveDeck(state, collator, exileSingles2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileSingles,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileSingles2,
+      );
 
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: exile, adaptable", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, exileAdaptable1);
 
-      const next = resolveDeck(state, collator, exileAdaptable2);
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileAdaptable1,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        exileAdaptable2,
+      );
 
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: extra deck, versatile", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, extraDeckBase);
-      const next = resolveDeck(state, collator, extraDeckVersatile2);
+
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        extraDeckBase,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        extraDeckVersatile2,
+      );
 
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: extra deck, upgrades", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, extraDeckBase);
 
-      const next = resolveDeck(state, collator, extraDeckUpgrade2);
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        extraDeckBase,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        extraDeckUpgrade2,
+      );
 
       expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
     });
 
     it("handles case: extra deck, exile", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, extraDeckExile);
 
-      const next = resolveDeck(state, collator, extraDeckExile2);
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        extraDeckExile,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        extraDeckExile2,
+      );
 
       expect(getChangeStats(prev, next).xpSpent).toEqual(extraDeckExile2.xp);
     });
 
     it("handles case: negative quantity", () => {
       const state = store.getState();
+      const lookupTables = selectLookupTables(state);
       const collator = selectLocaleSortingCollator(state);
-      const prev = resolveDeck(state, collator, negativeQuantity);
 
-      const next = resolveDeck(state, collator, negativeQuantity2);
+      const prev = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        negativeQuantity,
+      );
+
+      const next = resolveDeck(
+        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        collator,
+        negativeQuantity2,
+      );
 
       expect(getChangeStats(prev, next)).toMatchInlineSnapshot(`
         {

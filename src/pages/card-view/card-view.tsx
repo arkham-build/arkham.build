@@ -1,3 +1,7 @@
+import {
+  CardArkhamDBLink,
+  CardReviewsLink,
+} from "@/components/card-modal/card-arkhamdb-links";
 import { CardModalProvider } from "@/components/card-modal/card-modal-context";
 import { Footer } from "@/components/footer";
 import { Masthead } from "@/components/masthead";
@@ -6,11 +10,10 @@ import { CardViewCards } from "@/pages/card-view/card-view-cards";
 import { useStore } from "@/store";
 import type { CardWithRelations } from "@/store/lib/types";
 import { selectCardWithRelations } from "@/store/selectors/card-view";
-import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 import { displayAttribute, isStaticInvestigator } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { useDocumentTitle } from "@/utils/use-document-title";
-import { GlobeIcon, MessagesSquareIcon } from "lucide-react";
+import { GlobeIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "wouter";
 import { Error404 } from "../errors/404";
@@ -59,24 +62,10 @@ function CardView() {
         <nav className={css["sidebar"]}>
           <div className={css["sidebar-inner"]}>
             <SidebarSection title={t("card_view.section_actions")}>
-              <Button
-                as="a"
-                href={`${localizeArkhamDBBaseUrl()}/card/${cardWithRelations.card.code}`}
-                rel="noreferrer"
-                target="_blank"
-                size="full"
-              >
+              <CardArkhamDBLink card={cardWithRelations.card} size="full">
                 <GlobeIcon /> {t("card_view.actions.open_on_arkhamdb")}
-              </Button>
-              <Button
-                as="a"
-                href={`${localizeArkhamDBBaseUrl()}/card/${cardWithRelations.card.code}#reviews-header`}
-                rel="noreferrer"
-                target="_blank"
-                size="full"
-              >
-                <MessagesSquareIcon /> {t("card_view.actions.reviews")}
-              </Button>
+              </CardArkhamDBLink>
+              <CardReviewsLink card={cardWithRelations.card} size="full" />
               {isBuildableInvestigator && (
                 <Link
                   asChild
@@ -92,9 +81,11 @@ function CardView() {
                 </Link>
               )}
             </SidebarSection>
-            <SidebarSection title={t("card_view.section_faq")}>
-              <Faq card={cardWithRelations.card} />
-            </SidebarSection>
+            {cardWithRelations.card.official && (
+              <SidebarSection title={t("card_view.section_faq")}>
+                <Faq card={cardWithRelations.card} />
+              </SidebarSection>
+            )}
 
             {(deckbuildable || isInvestigator) && (
               <SidebarSection title={t("card_view.section_deckbuilding")}>

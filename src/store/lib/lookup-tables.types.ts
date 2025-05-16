@@ -52,9 +52,3 @@ export type LookupTables = {
   uses: LookupTable<string>;
   level: LookupTable<number>;
 };
-
-export type LookupTablesSlice = {
-  lookupTables: LookupTables;
-
-  refreshLookupTables(partial?: unknown): void;
-};

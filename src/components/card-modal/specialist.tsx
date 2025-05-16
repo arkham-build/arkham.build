@@ -6,7 +6,10 @@ import {
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedCard } from "@/store/lib/types";
 import { selectUsableByInvestigators } from "@/store/selectors/card-view";
-import { selectLocaleSortingCollator } from "@/store/selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectMetadata,
+} from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
 import { isSpecialist } from "@/utils/card-utils";
@@ -20,7 +23,7 @@ type Props = {
 };
 
 const selectSpecialistAccess = createSelector(
-  (state: StoreState) => state.metadata,
+  selectMetadata,
   (state: StoreState) => state.settings,
   selectLocaleSortingCollator,
   (_: StoreState, card: Card) => card,

@@ -2,7 +2,10 @@ import { useStore } from "@/store";
 import type { ChartableData } from "@/store/lib/deck-charts";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedDeck } from "@/store/lib/types";
-import { selectLocaleSortingCollator } from "@/store/selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectMetadata,
+} from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
 import { cx } from "@/utils/cx";
 import { useTranslation } from "react-i18next";
@@ -66,7 +69,7 @@ function TraitsChartTooltip({
   deck: ResolvedDeck;
   trait: ChartableData<string>[0];
 }) {
-  const metadata = useStore((state) => state.metadata);
+  const metadata = useStore(selectMetadata);
   const collator = useStore(selectLocaleSortingCollator);
 
   const matches = Object.values(deck.cards.slots)

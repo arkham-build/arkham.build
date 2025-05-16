@@ -3,6 +3,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Select } from "@/components/ui/select";
 import { useStore } from "@/store";
+import { selectMetadata } from "@/store/selectors/shared";
 import type { SettingsState } from "@/store/slices/settings.types";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -16,7 +17,7 @@ export function CardDisplaySettings(props: SettingProps) {
 
   const { t } = useTranslation();
 
-  const metadata = useStore((state) => state.metadata);
+  const metadata = useStore(selectMetadata);
 
   const [liveValue, setLiveValue] = useState<Partial<SettingsState>>(settings);
 

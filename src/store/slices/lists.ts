@@ -15,6 +15,7 @@ import type { Card } from "../services/queries.types";
 import {
   isAssetFilter,
   isCostFilter,
+  isFanMadeContentFilter,
   isInvestigatorSkillsFilter,
   isLevelFilter,
   isMultiSelectFilter,
@@ -25,6 +26,7 @@ import {
   isSubtypeFilter,
 } from "./lists.type-guards";
 import type {
+  FanMadeContentFilter,
   FilterKey,
   FilterMapping,
   List,
@@ -87,6 +89,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         [state.activeList]: makeList({
           ...list,
           initialValues: {
+            fan_made_content: getInitialFanMadeContentFilter(state.settings),
             ownership: getInitialOwnershipFilter(state.settings),
             subtype: getInitialSubtypeFilter(state.settings),
           },
@@ -169,7 +172,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
     switch (filterValues[id].type) {
       case "illustrator":
       case "action":
-      case "encounterSet":
+      case "encounter_set":
       case "trait":
       case "type":
       case "pack":
@@ -192,6 +195,15 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         );
 
         filterValues[id] = { ...filterValues[id], value };
+        break;
+      }
+
+      case "fan_made_content": {
+        assert(
+          isFanMadeContentFilter(payload),
+          `filter ${id} value must be a string.`,
+        );
+        filterValues[id] = { ...filterValues[id], value: payload };
         break;
       }
 
@@ -294,7 +306,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         break;
       }
 
-      case "investigatorSkills": {
+      case "investigator_skills": {
         assert(
           isInvestigatorSkillsFilter(payload),
           `filter ${id} value must be an object.`,
@@ -303,7 +315,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         break;
       }
 
-      case "investigatorCardAccess": {
+      case "investigator_card_access": {
         assert(
           isMultiSelectFilter(payload),
           `filter ${id} value must be an array.`,
@@ -518,7 +530,7 @@ function makeFilterValue(
       );
     }
 
-    case "investigatorSkills": {
+    case "investigator_skills": {
       return makeFilterObject(
         type,
         isInvestigatorSkillsFilter(initialValue)
@@ -533,9 +545,9 @@ function makeFilterValue(
     }
 
     case "illustrator":
-    case "investigatorCardAccess":
+    case "investigator_card_access":
     case "action":
-    case "encounterSet":
+    case "encounter_set":
     case "pack":
     case "trait":
     case "type":
@@ -564,6 +576,13 @@ function makeFilterValue(
       return makeFilterObject(
         type,
         isOwnershipFilter(initialValue) ? initialValue : "all",
+      );
+    }
+
+    case "fan_made_content": {
+      return makeFilterObject(
+        type,
+        isFanMadeContentFilter(initialValue) ? initialValue : "all",
       );
     }
 
@@ -676,6 +695,8 @@ function makePlayerCardsList(
     filters.push("ownership");
   }
 
+  filters.push("fan_made_content");
+
   if (showInvestigators) {
     filters.push("investigator");
   }
@@ -726,8 +747,9 @@ function makeInvestigatorCardsList(
 ): List {
   const filters: FilterKey[] = [
     "faction",
-    "investigatorSkills",
-    "investigatorCardAccess",
+    "investigator_skills",
+    "fan_made_content",
+    "investigator_card_access",
     "trait",
     "health",
     "sanity",
@@ -771,6 +793,7 @@ function makeEncounterCardsList(
   }
 
   filters.push(
+    "fan_made_content",
     "cost",
     "trait",
     "subtype",
@@ -779,7 +802,7 @@ function makeEncounterCardsList(
     "properties",
     "action",
     "pack",
-    "encounterSet",
+    "encounter_set",
     ...additionalFilters,
   );
 
@@ -853,9 +876,16 @@ function mergeInitialValues(
 ) {
   return {
     ...initialValues,
+    fanMadeContent: getInitialFanMadeContentFilter(settings),
     ownership: getInitialOwnershipFilter(settings),
     subtype: getInitialSubtypeFilter(settings),
   };
+}
+
+function getInitialFanMadeContentFilter(
+  settings: SettingsState,
+): FanMadeContentFilter {
+  return settings.cardListsDefaultContentType ?? "all";
 }
 
 function getInitialOwnershipFilter(settings: SettingsState): OwnershipFilter {

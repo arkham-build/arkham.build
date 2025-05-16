@@ -8,17 +8,21 @@ import { range } from "@/utils/range";
 import type { Card } from "../services/queries.types";
 import type { StoreState } from "../slices";
 import { addCardToDeckCharts, emptyDeckCharts } from "./deck-charts";
+import type { LookupTables } from "./lookup-tables.types";
 import { resolveCardWithRelations } from "./resolve-card";
 import type {
   CardWithRelations,
   Customizations,
   DeckCharts,
   DeckMeta,
+  ResolvedCard,
   ResolvedDeck,
 } from "./types";
 
 export function decodeSlots(
-  state: Pick<StoreState, "metadata" | "lookupTables">,
+  deps: Pick<StoreState, "metadata"> & {
+    lookupTables: LookupTables;
+  },
   collator: Intl.Collator,
   deck: Deck,
   extraSlots: ResolvedDeck["extraSlots"],
@@ -35,6 +39,35 @@ export function decodeSlots(
     slots: {},
   };
 
+  let fanMadeData: ResolvedDeck["fanMadeData"];
+
+  function addToFanMadeData({ card, cycle, pack, encounterSet }: ResolvedCard) {
+    if (!card.official) {
+      fanMadeData ??= {
+        cards: {},
+        cycles: {},
+        encounter_sets: {},
+        packs: {},
+      };
+
+      if (!fanMadeData.cycles[cycle.code]) {
+        fanMadeData.cycles[cycle.code] = cycle;
+      }
+
+      if (!fanMadeData.packs[pack.code]) {
+        fanMadeData.packs[pack.code] = pack;
+      }
+
+      if (encounterSet && !fanMadeData.encounter_sets[encounterSet.code]) {
+        fanMadeData.encounter_sets[encounterSet.code] = encounterSet;
+      }
+
+      if (!fanMadeData.cards[card.code]) {
+        fanMadeData.cards[card.code] = card;
+      }
+    }
+  }
+
   let deckSize = 0;
   let deckSizeTotal = 0;
   let xpRequired = 0;
@@ -43,11 +76,15 @@ export function decodeSlots(
 
   const bonded: Card[] = [];
 
+  // Add fan-made investigators to data.
+  addToFanMadeData(investigator);
+
   // Add cards bonded to investigator to deck.
   const investigatorRelations = investigator?.relations;
   if (investigatorRelations?.bound?.length) {
-    for (const { card } of investigatorRelations.bound) {
-      bonded.push(card);
+    for (const related of investigatorRelations.bound) {
+      bonded.push(related.card);
+      addToFanMadeData(related);
     }
   }
 
@@ -56,7 +93,7 @@ export function decodeSlots(
 
   for (const [code, quantity] of Object.entries(deck.slots)) {
     const card = resolveCardWithRelations(
-      state,
+      deps,
       collator,
       code,
       deck.taboo_id,
@@ -88,13 +125,14 @@ export function decodeSlots(
         );
       }
 
+      addToFanMadeData(card);
       addCardToDeckCharts(card.card, quantity, charts);
 
       // Collect bonded cards, filtering out duplicates.
       // These can occur when e.g. two versions of `Dream Diary` are in a deck.
       const bound = Object.keys(
-        state.lookupTables.relations.bound[code] ?? {},
-      ).map((code) => state.metadata.cards[code]);
+        deps.lookupTables.relations.bound[code] ?? {},
+      ).map((code) => deps.metadata.cards[code]);
 
       if (bound?.length) {
         for (const boundCard of bound) {
@@ -113,7 +151,7 @@ export function decodeSlots(
   if (deck.sideSlots && !Array.isArray(deck.sideSlots)) {
     for (const [code] of Object.entries(deck.sideSlots)) {
       const card = resolveCardWithRelations(
-        state,
+        deps,
         collator,
         code,
         deck.taboo_id,
@@ -122,6 +160,7 @@ export function decodeSlots(
       ); // SAFE! we do not need relations for side deck.
 
       if (card) {
+        addToFanMadeData(card);
         cards.sideSlots[code] = card;
       }
     }
@@ -131,7 +170,7 @@ export function decodeSlots(
 
   for (const [code] of Object.entries(exileSlots)) {
     const card = resolveCardWithRelations(
-      state,
+      deps,
       collator,
       code,
       deck.taboo_id,
@@ -140,6 +179,7 @@ export function decodeSlots(
     ); // SAFE! we do not need relations for exile deck.
 
     if (card) {
+      addToFanMadeData(card);
       cards.exileSlots[code] = card;
     }
   }
@@ -147,7 +187,7 @@ export function decodeSlots(
   if (extraSlots && !Array.isArray(extraSlots)) {
     for (const [code, quantity] of Object.entries(extraSlots)) {
       const card = resolveCardWithRelations(
-        state,
+        deps,
         collator,
         code,
         deck.taboo_id,
@@ -159,6 +199,7 @@ export function decodeSlots(
         xpRequired += countExperience(card.card, quantity);
         deckSizeTotal += quantity;
         cards.extraSlots[code] = card;
+        addToFanMadeData(card);
       }
     }
   }
@@ -167,7 +208,7 @@ export function decodeSlots(
 
   for (const card of bonded) {
     const resolved = resolveCardWithRelations(
-      state,
+      deps,
       collator,
       card.code,
       deck.taboo_id,
@@ -175,6 +216,7 @@ export function decodeSlots(
       false,
     );
     if (resolved) {
+      addToFanMadeData(resolved);
       cards.bondedSlots[card.code] = resolved;
       bondedSlots[card.code] = card.quantity;
     }
@@ -183,6 +225,7 @@ export function decodeSlots(
   return {
     bondedSlots,
     cards,
+    fanMadeData,
     deckSize,
     deckSizeTotal,
     xpRequired,

@@ -62,6 +62,14 @@ export function CardScan(props: Props) {
       ? isSideways
       : false;
 
+  // Fan-made content uses card urls for sides, these take precedence.
+  const frontUrl = suffix === "b" ? card.back_image_url : card.image_url;
+  const backUrl = backCard
+    ? backCard.image_url
+    : suffix === "b"
+      ? card.image_url
+      : card.back_image_url;
+
   const onToggleFlip = useCallback(
     (evt: React.MouseEvent) => {
       evt.preventDefault();
@@ -92,7 +100,7 @@ export function CardScan(props: Props) {
           alt={t("card_view.scan", { code: imageCode })}
           lazy={lazy}
           sideways={isSideways}
-          url={card.image_url ? card.image_url : imageUrl(imageCode)}
+          url={frontUrl ? frontUrl : imageUrl(imageCode)}
         />
       </div>
       {!preventFlip && (
@@ -104,7 +112,7 @@ export function CardScan(props: Props) {
                 hidden={!flipped}
                 lazy={lazy}
                 sideways={backCard ? sideways(backCard) : isSideways}
-                url={imageUrl(reverseImageCode)}
+                url={backUrl ? backUrl : imageUrl(reverseImageCode)}
               />
             ) : (
               <CardScanInner
@@ -112,11 +120,7 @@ export function CardScan(props: Props) {
                 hidden={!flipped}
                 lazy={lazy}
                 sideways={false}
-                url={
-                  card.back_image_url
-                    ? card.back_image_url
-                    : cardBackTypeUrl(backType)
-                }
+                url={backUrl || cardBackTypeUrl(backType)}
               />
             )}
           </div>

@@ -8,15 +8,9 @@ import {
   REGEX_SUCCEED_BY,
 } from "@/utils/constants";
 import { time, timeEnd } from "@/utils/time";
-import type { StateCreator } from "zustand";
-import type { StoreState } from ".";
-import type {
-  LookupTable,
-  LookupTables,
-  LookupTablesSlice,
-} from "./lookup-tables.types";
-import type { Metadata } from "./metadata.types";
-import type { SettingsState } from "./settings.types";
+import type { Metadata } from "../slices/metadata.types";
+import type { SettingsState } from "../slices/settings.types";
+import type { LookupTable, LookupTables } from "./lookup-tables.types";
 
 function getInitialLookupTables(): LookupTables {
   return {
@@ -53,33 +47,6 @@ function getInitialLookupTables(): LookupTables {
     packsByCycle: {},
   };
 }
-
-export const createLookupTablesSlice: StateCreator<
-  StoreState,
-  [],
-  [],
-  LookupTablesSlice
-> = (set, get) => ({
-  lookupTables: getInitialLookupTables(),
-
-  refreshLookupTables(partial: Partial<StoreState>) {
-    const state = get();
-
-    const lookupTables = createLookupTables(
-      partial.metadata ?? state.metadata,
-      partial.settings ?? state.settings,
-    );
-
-    set({
-      ...partial,
-      lookupTables,
-      ui: {
-        ...state.ui,
-        initialized: true,
-      },
-    });
-  },
-});
 
 export function createLookupTables(
   metadata: Metadata,

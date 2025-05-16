@@ -6,7 +6,6 @@ import {
 import { Loader } from "@/components/ui/loader";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";
-import type { ResolvedDeck } from "@/store/lib/types";
 import {
   getDeckHistory,
   selectDeckHistoryCached,
@@ -16,8 +15,11 @@ import {
 import {
   selectClientId,
   selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
 } from "@/store/selectors/shared";
 import { queryDeck } from "@/store/services/queries";
+import type { Id } from "@/store/slices/data.types";
 import { isNumeric } from "@/utils/is-numeric";
 import { useQuery } from "@/utils/use-query";
 import { ResolvedDeckProvider } from "@/utils/use-resolved-deck";
@@ -30,10 +32,10 @@ import { ShareInner } from "../share/share";
 function DeckView() {
   const { id, type } = useParams<{ id: string; type: string }>();
 
-  const resolvedDeck = useStore((state) => selectResolvedDeckById(state, id));
+  const hasDeck = useStore((state) => !!state.data.decks[id]);
 
-  if (resolvedDeck && type === "deck") {
-    return <LocalDeckView deck={resolvedDeck} />;
+  if (hasDeck && type === "deck") {
+    return <LocalDeckView id={id} />;
   }
 
   if (isNumeric(id)) {
@@ -49,16 +51,28 @@ function ArkhamDbDeckView({ id, type }: { id: string; type: string }) {
 
   const idInt = Number.parseInt(id, 10);
 
+  const cacheFanMadeContent = useStore((state) => state.cacheFanMadeContent);
+
   const query = useMemo(() => {
-    return Number.isFinite(idInt)
-      ? () => queryDeck(clientId, type, idInt)
-      : undefined;
-  }, [clientId, idInt, type]);
+    if (!Number.isFinite(idInt)) {
+      return undefined;
+    }
+
+    async function query() {
+      const decks = await queryDeck(clientId, type, idInt);
+      for (const deck of decks) {
+        cacheFanMadeContent(deck);
+      }
+      return decks;
+    }
+
+    return query;
+  }, [clientId, idInt, type, cacheFanMadeContent]);
 
   const { data, state } = useQuery(query);
 
-  const metadata = useStore((state) => state.metadata);
-  const lookupTables = useStore((state) => state.lookupTables);
+  const metadata = useStore(selectMetadata);
+  const lookupTables = useStore(selectLookupTables);
   const sharing = useStore((state) => state.sharing);
   const collator = useStore(selectLocaleSortingCollator);
 
@@ -99,9 +113,15 @@ function ArkhamDbDeckView({ id, type }: { id: string; type: string }) {
   );
 }
 
-function LocalDeckView({ deck }: { deck: ResolvedDeck }) {
-  const history = useStore((state) => selectDeckHistoryCached(state, deck.id));
-  return <DeckViewInner origin="local" deck={deck} history={history} />;
+function LocalDeckView({ id }: { id: Id }) {
+  const history = useStore((state) => selectDeckHistoryCached(state, id));
+
+  const resolvedDeck = useStore((state) =>
+    selectResolvedDeckById(state, id, true),
+  );
+  if (!resolvedDeck) return null;
+
+  return <DeckViewInner origin="local" deck={resolvedDeck} history={history} />;
 }
 
 function DeckViewInner({

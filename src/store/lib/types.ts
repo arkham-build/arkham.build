@@ -77,6 +77,12 @@ export type DeckMeta = {
   card_pool?: string | null;
   deck_size_selected?: string | null;
   extra_deck?: string | null;
+  fan_made_content?: {
+    cards: Record<string, Card>;
+    cycles: Record<string, Cycle>;
+    encounter_sets: Record<string, EncounterSet>;
+    packs: Record<string, Pack>;
+  };
   faction_1?: string | null;
   faction_2?: string | null;
   faction_selected?: string | null;
@@ -153,10 +159,10 @@ export type ResolvedDeck = Omit<Deck, "sideSlots"> & {
     sideSlots: Record<string, ResolvedCard>;
     slots: Record<string, ResolvedCard>;
   };
-
   cardPool?: string[];
   metaParsed: DeckMeta;
   customizations?: Customizations;
+  fanMadeData?: DeckMeta["fan_made_content"];
   investigatorFront: CardWithRelations;
   investigatorBack: CardWithRelations;
   hasExtraDeck: boolean;

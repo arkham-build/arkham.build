@@ -8,8 +8,8 @@ import { createDataSlice } from "./slices/data";
 import { createDeckFiltersSlice } from "./slices/deck-collection-filters";
 import { createDeckCreateSlice } from "./slices/deck-create";
 import { createDeckEditsSlice } from "./slices/deck-edits";
+import { createFanMadeDataSlice } from "./slices/fan-made-data";
 import { createListsSlice } from "./slices/lists";
-import { createLookupTablesSlice } from "./slices/lookup-tables";
 import { createMetadataSlice } from "./slices/metadata";
 import { createRecommenderSlice } from "./slices/recommender";
 import { createRemotingSlice } from "./slices/remoting";
@@ -21,8 +21,8 @@ import { createUISlice } from "./slices/ui";
 const stateCreator = (...args: [any, any, any]) => ({
   ...createAppSlice(...args),
   ...createDataSlice(...args),
+  ...createFanMadeDataSlice(...args),
   ...createMetadataSlice(...args),
-  ...createLookupTablesSlice(...args),
   ...createListsSlice(...args),
   ...createSettingsSlice(...args),
   ...createUISlice(...args),
@@ -45,13 +45,14 @@ export const useStore = create<StoreState>()(
           },
           partialize(state) {
             return {
+              app: state.app,
               connections: state.connections,
+              fanMadeData: state.fanMadeData,
               data: state.data,
               deckEdits: state.deckEdits,
+              remoting: state.remoting,
               settings: state.settings,
               sharing: state.sharing,
-              app: state.app,
-              remoting: state.remoting,
             };
           },
           skipSerialization: true,

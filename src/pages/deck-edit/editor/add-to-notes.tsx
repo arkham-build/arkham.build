@@ -5,6 +5,7 @@ import {
 } from "@/pages/deck-edit/editor/notes-rte/cards-to-markdown";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
+import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
 import { PencilLine } from "lucide-react";
 import { useCallback } from "react";
@@ -20,7 +21,8 @@ export function AddToNotes(props: Props) {
   const { card } = props;
   const { t } = useTranslation();
 
-  const state = useStore();
+  const metadata = useStore(selectMetadata);
+  const lookupTables = useStore(selectLookupTables);
 
   const { cardFormat, insertTextAtCaret } = useNotesRichTextEditorContext();
 
@@ -28,12 +30,12 @@ export function AddToNotes(props: Props) {
     insertTextAtCaret(
       cardToMarkdown(
         card,
-        state.metadata,
-        state.lookupTables,
+        metadata,
+        lookupTables,
         cardFormatDefinition(cardFormat),
       ),
     );
-  }, [card, insertTextAtCaret, state.metadata, state.lookupTables, cardFormat]);
+  }, [card, insertTextAtCaret, metadata, lookupTables, cardFormat]);
 
   return (
     <Button

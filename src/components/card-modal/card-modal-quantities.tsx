@@ -1,6 +1,7 @@
 import { useStore } from "@/store";
 import { getDeckLimitOverride } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
+import { selectLookupTables } from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
 import type { Slot } from "@/store/slices/deck-edits.types";
 import { cardLimit } from "@/utils/card-utils";
@@ -65,7 +66,7 @@ export function CardModalQuantities(props: Props) {
 
   const code = card.code;
 
-  const lookupTables = useStore((state) => state.lookupTables);
+  const lookupTables = useStore(selectLookupTables);
   const limitOverride = getDeckLimitOverride(lookupTables, deck, card);
   const limit = limitOverride ?? cardLimit(card);
 

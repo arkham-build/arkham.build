@@ -55,6 +55,7 @@ export function getInitialListsSetting(): SettingsState["lists"] {
 export function getInitialSettings(): SettingsState {
   return {
     cardLevelDisplay: "icon-only",
+    cardListsDefaultContentType: "all",
     cardSkillIconsDisplay: "simple",
     collection: {},
     flags: {},
@@ -105,7 +106,7 @@ export const createSettingsSlice: StateCreator<
       );
     }
 
-    state.refreshLookupTables({
+    set({
       settings,
       lists: makeLists(settings),
     });

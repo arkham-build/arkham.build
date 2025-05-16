@@ -83,7 +83,11 @@ import { getMockStore } from "@/test/get-mock-store";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
-import { selectLocaleSortingCollator } from "../selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
+} from "../selectors/shared";
 import type { StoreState } from "../slices";
 import type { Deck } from "../slices/data.types";
 import { validateDeck } from "./deck-validation";
@@ -91,9 +95,22 @@ import { resolveDeck } from "./resolve-deck";
 
 function validate(store: StoreApi<StoreState>, deck: Deck) {
   const state = store.getState();
+
+  const metadata = selectMetadata(state);
+  const lookupTables = selectLookupTables(state);
+
   return validateDeck(
-    resolveDeck(state, selectLocaleSortingCollator(state), deck),
-    state,
+    resolveDeck(
+      {
+        sharing: state.sharing,
+        metadata,
+        lookupTables,
+      },
+      selectLocaleSortingCollator(state),
+      deck,
+    ),
+    metadata,
+    lookupTables,
   );
 }
 
@@ -753,7 +770,7 @@ describe("deck validation", () => {
           [
             {
               "details": {
-                "count": "(3 / 2)",
+                "count": "(2 / 1)",
                 "error": "Too many off-class cards for Versatile.",
               },
               "type": "INVALID_DECK_OPTION",

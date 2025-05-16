@@ -6,7 +6,11 @@ import limitCarolynVersatile from "@/test/fixtures/decks/validation/limit_caroly
 import limitCarolynVersatileInvalid from "@/test/fixtures/decks/validation/limit_carolyn_versatile_invalid.json";
 import { getMockStore } from "@/test/get-mock-store";
 import { StoreApi } from "zustand";
-import { selectLocaleSortingCollator } from "../selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
+} from "../selectors/shared";
 import { StoreState } from "../slices";
 import { LimitedSlotOccupation, limitedSlotOccupation } from "./limited-slots";
 import { resolveDeck } from "./resolve-deck";
@@ -28,9 +32,17 @@ describe("limitedSlotOccupation()", () => {
   it("handles investigators with limit deckbuilding", () => {
     const state = store.getState();
 
+    const metadata = selectMetadata(state);
+    const lookupTables = selectLookupTables(state);
+    const sharing = state.sharing;
+
     expect(
       limitedSlotOccupation(
-        resolveDeck(state, selectLocaleSortingCollator(state), limitCarolyn),
+        resolveDeck(
+          { lookupTables, metadata, sharing },
+          selectLocaleSortingCollator(state),
+          limitCarolyn,
+        ),
       )?.map(toSnapShot),
     ).toMatchInlineSnapshot(`
       [
@@ -44,7 +56,11 @@ describe("limitedSlotOccupation()", () => {
     expect(
       limitedSlotOccupation(
         resolveDeck(
-          state,
+          {
+            lookupTables,
+            metadata,
+            sharing,
+          },
           selectLocaleSortingCollator(state),
           limitCarolynInvalid,
         ),
@@ -62,10 +78,18 @@ describe("limitedSlotOccupation()", () => {
   it("handles presence of dynamic limit deck building (versatile)", () => {
     const state = store.getState();
 
+    const metadata = selectMetadata(state);
+    const lookupTables = selectLookupTables(state);
+    const sharing = state.sharing;
+
     expect(
       limitedSlotOccupation(
         resolveDeck(
-          state,
+          {
+            lookupTables,
+            metadata,
+            sharing,
+          },
           selectLocaleSortingCollator(state),
           limitCarolynVersatile,
         ),
@@ -86,7 +110,11 @@ describe("limitedSlotOccupation()", () => {
     expect(
       limitedSlotOccupation(
         resolveDeck(
-          state,
+          {
+            lookupTables,
+            metadata,
+            sharing,
+          },
           selectLocaleSortingCollator(state),
           limitCarolynVersatileInvalid,
         ),

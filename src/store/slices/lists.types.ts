@@ -27,6 +27,8 @@ export type MultiselectFilter = string[];
 
 export type OwnershipFilter = "unowned" | "owned" | "all";
 
+export type FanMadeContentFilter = "fan-made" | "official" | "all";
+
 export type PropertiesFilter = {
   bonded: boolean;
   customizable: boolean;
@@ -75,13 +77,14 @@ export type FilterMapping = {
   action: MultiselectFilter;
   asset: AssetFilter;
   cost: CostFilter;
-  encounterSet: MultiselectFilter;
+  encounter_set: MultiselectFilter;
   faction: MultiselectFilter;
+  fan_made_content: FanMadeContentFilter;
   health: HealthFilter;
   illustrator: MultiselectFilter;
   investigator: SelectFilter;
-  investigatorCardAccess: InvestigatorCardAccessFilter;
-  investigatorSkills: InvestigatorSkillsFilter;
+  investigator_card_access: InvestigatorCardAccessFilter;
+  investigator_skills: InvestigatorSkillsFilter;
   level: LevelFilter;
   ownership: OwnershipFilter;
   pack: MultiselectFilter;

@@ -4,6 +4,7 @@ import type { ListState } from "@/store/selectors/lists";
 import {
   selectCanCheckOwnership,
   selectCardOwnedCount,
+  selectLookupTables,
 } from "@/store/selectors/shared";
 import { range } from "@/utils/range";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -40,7 +41,7 @@ export function CardList(props: CardListImplementationProps) {
   const activeGroup = useRef<string | undefined>(undefined);
   const canCheckOwnerhip = useStore(selectCanCheckOwnership);
   const cardOwnedCount = useStore(selectCardOwnedCount);
-  const lookupTables = useStore((state) => state.lookupTables);
+  const lookupTables = useStore(selectLookupTables);
 
   const onScrollChange = useCallback(() => {
     setCurrentTop(-1);

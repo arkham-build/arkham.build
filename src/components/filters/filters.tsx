@@ -21,6 +21,7 @@ import { CardTypeFilter } from "./card-type-filter";
 import { CostFilter } from "./cost-filter";
 import { EncounterSetFilter } from "./encounter-set-filter";
 import { FactionFilter } from "./faction-filter";
+import { FanMadeContentFilter } from "./fan-made-content-filter";
 import css from "./filters.module.css";
 import { HealthFilter } from "./health-filter";
 import { IllustratorFilter } from "./illustrator-filter";
@@ -128,10 +129,13 @@ export function Filters(props: Props) {
               {filter === "cost" && (
                 <CostFilter id={id} resolvedDeck={resolvedDeck} />
               )}
-              {filter === "encounterSet" && <EncounterSetFilter id={id} />}
+              {filter === "encounter_set" && <EncounterSetFilter id={id} />}
               {filter === "investigator" && <InvestigatorFilter id={id} />}
               {filter === "level" && <LevelFilter id={id} />}
               {filter === "ownership" && <OwnershipFilter id={id} />}
+              {filter === "fan_made_content" && (
+                <FanMadeContentFilter id={id} />
+              )}
               {filter === "pack" && <PackFilter id={id} />}
               {filter === "properties" && <PropertiesFilter id={id} />}
               {filter === "skillIcons" && <SkillIconsFilter id={id} />}
@@ -148,10 +152,10 @@ export function Filters(props: Props) {
 
               {filter === "faction" && <FactionFilter id={id} />}
 
-              {filter === "investigatorSkills" && (
+              {filter === "investigator_skills" && (
                 <InvestigatorSkillsFilter id={id} resolvedDeck={resolvedDeck} />
               )}
-              {filter === "investigatorCardAccess" && (
+              {filter === "investigator_card_access" && (
                 <InvestigatorCardAccessFilter id={id} />
               )}
               {filter === "health" && (

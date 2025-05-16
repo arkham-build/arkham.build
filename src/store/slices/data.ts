@@ -4,7 +4,7 @@ import type { StoreState } from ".";
 import { applyDeckEdits } from "../lib/deck-edits";
 import { cloneDeck } from "../lib/deck-factory";
 import { formatDeckImport } from "../lib/deck-io";
-import { selectClientId } from "../selectors/shared";
+import { selectClientId, selectMetadata } from "../selectors/shared";
 import { importDeck } from "../services/queries";
 import { type DataSlice, type Deck, type Id, isDeck } from "./data.types";
 
@@ -90,14 +90,13 @@ export const createDataSlice: StateCreator<StoreState, [], [], DataSlice> = (
 
   async duplicateDeck(id, options) {
     const state = get();
+    const metadata = selectMetadata(state);
 
     const deck = state.data.decks[id];
     assert(deck, `Deck ${id} does not exist.`);
 
     const newDeck = options?.applyEdits
-      ? cloneDeck(
-          applyDeckEdits(deck, state.deckEdits[id], state.metadata, true),
-        )
+      ? cloneDeck(applyDeckEdits(deck, state.deckEdits[id], metadata, true))
       : cloneDeck(deck);
 
     set({

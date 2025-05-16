@@ -1,6 +1,6 @@
 import type { Card } from "../services/queries.types";
-import type { LookupTables } from "../slices/lookup-tables.types";
 import type { Metadata } from "../slices/metadata.types";
+import type { LookupTables } from "./lookup-tables.types";
 
 export function ownedCardCount(
   card: Card,
@@ -21,9 +21,9 @@ export function ownedCardCount(
     quantityOwned += packsOwned * card.quantity;
   }
 
-  // ownership of the format.
   const pack = metadata.packs[card.pack_code];
 
+  // ownership of the format.
   const reprintId = `${pack.cycle_code}${card.encounter_code ? "c" : "p"}`;
 
   if (card.pack_code !== reprintId && collection[reprintId]) {

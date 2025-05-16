@@ -6,6 +6,8 @@ import { selectDeckHistory } from "../selectors/decks";
 import {
   selectClientId,
   selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
 } from "../selectors/shared";
 import { createShare, deleteShare, updateShare } from "../services/queries";
 import { type Deck, isDeck } from "./data.types";
@@ -40,7 +42,15 @@ export const createSharingSlice: StateCreator<
     await createShare(
       selectClientId(state),
       formatDeckShare(deck, previousDeckShared ? previousDeckId : null),
-      selectDeckHistory(state, selectLocaleSortingCollator(state), deck),
+      selectDeckHistory(
+        {
+          ...state,
+          metadata: selectMetadata(state),
+        },
+        selectLookupTables(state),
+        selectLocaleSortingCollator(state),
+        deck,
+      ),
     );
 
     set({
@@ -64,7 +74,15 @@ export const createSharingSlice: StateCreator<
       selectClientId(state),
       deck.id.toString(),
       formatDeckShare(deck),
-      selectDeckHistory(state, selectLocaleSortingCollator(state), deck),
+      selectDeckHistory(
+        {
+          ...state,
+          metadata: selectMetadata(state),
+        },
+        selectLookupTables(state),
+        selectLocaleSortingCollator(state),
+        deck,
+      ),
     );
 
     set({

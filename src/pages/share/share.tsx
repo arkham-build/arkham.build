@@ -4,7 +4,11 @@ import { Loader } from "@/components/ui/loader";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";
 import { selectDeckValid } from "@/store/selectors/decks";
-import { selectLocaleSortingCollator } from "@/store/selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
+} from "@/store/selectors/shared";
 import { getShare } from "@/store/services/queries";
 import type { StoreState } from "@/store/slices";
 import type { Deck } from "@/store/slices/data.types";
@@ -16,8 +20,8 @@ import { useParams } from "wouter";
 import { Error404 } from "../errors/404";
 
 const selectResolvedShare = createSelector(
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => state.lookupTables,
+  selectMetadata,
+  selectLookupTables,
   (state: StoreState) => state.sharing,
   selectLocaleSortingCollator,
   (_: StoreState, data: Deck | undefined) => data,
@@ -42,13 +46,21 @@ function Share() {
 
 export function ShareInner(props: { id: string }) {
   const { id } = props;
-  const query = useCallback(() => getShare(id), [id]);
+
+  const cacheFanMadeContent = useStore((state) => state.cacheFanMadeContent);
+
+  const query = useCallback(async () => {
+    const shareRead = await getShare(id);
+    cacheFanMadeContent(shareRead.data);
+    return shareRead;
+  }, [id, cacheFanMadeContent]);
 
   const { data, state, error } = useQuery(query);
 
   const resolvedDeck = useStore((state) =>
     selectResolvedShare(state, data?.data),
   );
+
   const validation = useStore((state) => selectDeckValid(state, resolvedDeck));
 
   if (state === "initial" || state === "loading")
