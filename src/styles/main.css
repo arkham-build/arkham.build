@@ -841,11 +841,11 @@ svg {
   width: auto;
   height: 1em;
   vertical-align: baseline;
-  filter: invert(0.125);
+  filter: invert(0.875);
 }
 
 :root[data-theme="light"] .external-icon:not(.invert) {
-  filter: invert(0.666);
+  filter: invert(0.25);
 }
 
 .spin {
