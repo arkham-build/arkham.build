@@ -183,3 +183,7 @@ export const FanMadeProjectSchema = z.object({
 export type FanMadeProject = z.infer<typeof FanMadeProjectSchema>;
 
 export type FanMadeCard = z.infer<typeof FanMadeCardSchema>;
+
+export type FanMadePack = z.infer<typeof FanMadePackSchema>;
+
+export type FanMadeEncounterSet = z.infer<typeof FanMadeEncounterSetSchema>;

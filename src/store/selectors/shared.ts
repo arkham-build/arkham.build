@@ -13,10 +13,11 @@ import type { StoreState } from "../slices";
 export const selectMetadata = createSelector(
   (state: StoreState) => state.metadata,
   (state: StoreState) => state.fanMadeData.projects,
-  (metadata, fanMadeProjects) => {
+  (state: StoreState) => state.ui.fanMadeContentCache,
+  (metadata, fanMadeProjects, cache) => {
     const projects = Object.values(fanMadeProjects);
 
-    if (isEmpty(projects)) return metadata;
+    if (isEmpty(projects) && isEmpty(cache?.cards)) return metadata;
 
     time("select_custom_data");
 
@@ -24,6 +25,38 @@ export const selectMetadata = createSelector(
 
     for (const project of projects) {
       addProjectToMetadata(meta, project);
+    }
+
+    if (cache?.cycles) {
+      for (const cycle of Object.values(cache.cycles)) {
+        if (!meta.cycles[cycle.code]) {
+          meta.cycles[cycle.code] = cycle;
+        }
+      }
+    }
+
+    if (cache?.packs) {
+      for (const pack of Object.values(cache.packs)) {
+        if (!meta.packs[pack.code]) {
+          meta.packs[pack.code] = pack;
+        }
+      }
+    }
+
+    if (cache?.cards) {
+      for (const card of Object.values(cache.cards)) {
+        if (!meta.cards[card.code]) {
+          meta.cards[card.code] = card;
+        }
+      }
+    }
+
+    if (cache?.encounter_sets) {
+      for (const set of Object.values(cache.encounter_sets)) {
+        if (!meta.encounterSets[set.code]) {
+          meta.encounterSets[set.code] = set;
+        }
+      }
     }
 
     timeEnd("select_custom_data");

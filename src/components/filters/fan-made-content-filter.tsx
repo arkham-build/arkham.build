@@ -33,7 +33,11 @@ export function FanMadeContentFilter({ id }: FilterProps) {
   );
 
   const showFilter = useStore((state) => {
-    return !isEmpty(state.fanMadeData.projects) || filter.value !== "all";
+    return (
+      !isEmpty(state.ui.fanMadeContentCache?.cards) ||
+      !isEmpty(state.fanMadeData.projects) ||
+      filter.value !== "all"
+    );
   });
 
   if (!showFilter) return null;

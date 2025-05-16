@@ -23,6 +23,7 @@ import type { StoreState } from "@/store/slices";
 import { and, not } from "@/utils/fp";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
 import {
   type CardOrigin,
   useNotesRichTextEditorContext,
@@ -62,7 +63,9 @@ export function CardsPopover(props: Props) {
     });
   }, [setSettings, cardFormat, cardOrigin]);
 
-  const cards = useStore((state) => selectCardOptions(state, cardOrigin, deck));
+  const cards = useStore(
+    useShallow((state) => selectCardOptions(state, cardOrigin, deck)),
+  );
 
   const formatOptions = useMemo(
     () =>

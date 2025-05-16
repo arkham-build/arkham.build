@@ -110,6 +110,10 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
         },
       });
 
+      for (const deck of Object.values(state.data.decks)) {
+        state.cacheFanMadeContent(deck);
+      }
+
       return false;
     }
 
@@ -259,7 +263,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
         continue;
       }
 
-      meta[key as keyof DeckMeta] = value;
+      meta[key as keyof Omit<DeckMeta, "fan_made_content">] = value;
     }
 
     if (deckSizeOption && !meta.deck_size_selected) {
@@ -311,17 +315,23 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       problem: "too_few_cards",
     });
 
-    if (state.deckCreate.provider === "arkhamdb") {
-      const resolved = resolveDeck(
-        {
-          lookupTables: selectLookupTables(state),
-          metadata,
-          sharing: state.sharing,
-        },
-        selectLocaleSortingCollator(state),
-        deck,
-      );
+    const resolved = resolveDeck(
+      {
+        lookupTables: selectLookupTables(state),
+        metadata,
+        sharing: state.sharing,
+      },
+      selectLocaleSortingCollator(state),
+      deck,
+    );
 
+    if (resolved.fanMadeData) {
+      const meta = decodeDeckMeta(deck);
+      meta.fan_made_content = resolved.fanMadeData;
+      deck.meta = JSON.stringify(meta);
+    }
+
+    if (state.deckCreate.provider === "arkhamdb") {
       assertCanPublishDeck(resolved);
 
       state.setRemoting("arkhamdb", true);
@@ -468,6 +478,12 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       nextDeck,
     );
 
+    if (resolved.fanMadeData) {
+      const meta = decodeDeckMeta(nextDeck);
+      meta.fan_made_content = resolved.fanMadeData;
+      nextDeck.meta = JSON.stringify(meta);
+    }
+
     const validation = selectDeckValid(state, resolved);
     nextDeck.problem = mapValidationToProblem(validation);
 
@@ -606,6 +622,21 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       }
 
       meta.extra_deck = encodeExtraSlots(extraSlots);
+    }
+
+    const resolved = resolveDeck(
+      {
+        lookupTables: selectLookupTables(state),
+        metadata,
+        sharing: state.sharing,
+      },
+      selectLocaleSortingCollator(state),
+      newDeck,
+    );
+
+    if (resolved.fanMadeData) {
+      const meta = decodeDeckMeta(newDeck);
+      meta.fan_made_content = resolved.fanMadeData;
     }
 
     newDeck.meta = JSON.stringify(meta);

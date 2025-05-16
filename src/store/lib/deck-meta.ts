@@ -55,7 +55,7 @@ export function decodeSelections(
           name: option.name ?? key,
           value:
             (option.id
-              ? deckMeta[option.id as keyof DeckMeta]
+              ? deckMeta[option.id as keyof Omit<DeckMeta, "fan_made_content">]
               : deckMeta.faction_selected) ?? undefined,
         };
       } else if (option.option_select) {
@@ -95,7 +95,7 @@ export function decodeCustomizations(deckMeta: DeckMeta, metadata: Metadata) {
       hasCustomizations = true;
       const code = key.split("cus_")[1];
 
-      customizations[code] = value
+      customizations[code] = (value as string)
         .split(",")
         .reduce<Record<number, Customization>>((acc, curr) => {
           const entries = curr.split("|");
@@ -159,7 +159,7 @@ export function decodeAttachments(deckMeta: DeckMeta) {
 
       const code = key.split("attachments_")[1];
 
-      attachments[code] = value
+      attachments[code] = (value as string)
         .split(",")
         .reduce<Record<string, number>>((acc, curr) => {
           acc[curr] ??= 0;
@@ -237,7 +237,7 @@ export function decodeAnnotations(deckMeta: DeckMeta): Annotations {
   for (const [key, value] of Object.entries(deckMeta)) {
     if (key.startsWith("annotation_") && value) {
       const code = key.split("annotation_")[1];
-      annotations[code] = value;
+      annotations[code] = value as string;
     }
   }
 

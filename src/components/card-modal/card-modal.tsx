@@ -4,7 +4,6 @@ import {
   getRelatedCards,
 } from "@/store/lib/resolve-card";
 import { selectCardWithRelations } from "@/store/selectors/card-view";
-import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 import {
   getCanonicalCardCode,
   isSpecialist,
@@ -15,11 +14,7 @@ import { formatRelationTitle } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useMedia } from "@/utils/use-media";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
-import {
-  CheckCircleIcon,
-  ExternalLinkIcon,
-  MessagesSquareIcon,
-} from "lucide-react";
+import { CheckCircleIcon } from "lucide-react";
 import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
@@ -32,11 +27,13 @@ import { AttachableCards } from "../deck-tools/attachable-cards";
 import { Button } from "../ui/button";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { Modal } from "../ui/modal";
+import { CardReviewsLink } from "./card-arkhamdb-links";
 import { AnnotationEdit } from "./card-modal-annotation-edit";
 import { CardModalAttachmentQuantities } from "./card-modal-attachment-quantities";
 import { useCardModalContextChecked } from "./card-modal-context";
 import { CardModalQuantities } from "./card-modal-quantities";
 import css from "./card-modal.module.css";
+import { CardPageLink } from "./card-page-link";
 import { SpecialistAccess, SpecialistInvestigators } from "./specialist";
 
 type Props = {
@@ -203,23 +200,8 @@ export function CardModal(props: Props) {
                 </Button>
               </Link>
             )}
-          <Button
-            as="a"
-            href={`/card/${cardWithRelations.card.code}`}
-            target="_blank"
-          >
-            <ExternalLinkIcon />
-            {t("card_modal.actions.open_card_page")}
-          </Button>
-          <Button
-            as="a"
-            href={`${localizeArkhamDBBaseUrl()}/card/${cardWithRelations.card.code}#reviews-header`}
-            rel="noreferrer"
-            target="_blank"
-          >
-            <MessagesSquareIcon />
-            {t("card_modal.actions.reviews")}
-          </Button>
+          <CardPageLink card={cardWithRelations.card} />
+          <CardReviewsLink card={cardWithRelations.card} />
           {canEdit &&
             !!deckQuantity &&
             traits?.includes("Task") &&

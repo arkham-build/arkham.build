@@ -46,13 +46,21 @@ function Share() {
 
 export function ShareInner(props: { id: string }) {
   const { id } = props;
-  const query = useCallback(() => getShare(id), [id]);
+
+  const cacheFanMadeContent = useStore((state) => state.cacheFanMadeContent);
+
+  const query = useCallback(async () => {
+    const shareRead = await getShare(id);
+    cacheFanMadeContent(shareRead.data);
+    return shareRead;
+  }, [id, cacheFanMadeContent]);
 
   const { data, state, error } = useQuery(query);
 
   const resolvedDeck = useStore((state) =>
     selectResolvedShare(state, data?.data),
   );
+
   const validation = useStore((state) => selectDeckValid(state, resolvedDeck));
 
   if (state === "initial" || state === "loading")

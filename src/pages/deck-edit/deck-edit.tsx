@@ -62,7 +62,9 @@ function DeckEdit() {
   const resetFilters = useStore((state) => state.resetFilters);
   const setActiveList = useStore((state) => state.setActiveList);
   const discardEdits = useStore((state) => state.discardEdits);
+
   const deck = useStore((state) => selectResolvedDeckById(state, id, true));
+
   const changes = useStore((state) => state.deckEdits[id]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: we only want to run this effect once on mount.
