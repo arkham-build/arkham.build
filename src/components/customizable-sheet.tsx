@@ -62,7 +62,7 @@ function customizationSheetUrl(
           deck.customizations?.[card.code][index]?.selections ?? "";
 
         for (const code of choices.split("^")) {
-          const name = displayAttribute(metadata.cards[code], "name");
+          const name = metadata.cards[code]?.real_name;
           if (name) acc[code] = name;
         }
       }
