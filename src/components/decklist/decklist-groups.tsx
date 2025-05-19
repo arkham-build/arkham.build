@@ -16,19 +16,17 @@ import {
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
-import { customizationSheetUrl } from "@/store/services/queries";
 import type { Card } from "@/store/services/queries.types";
 import type { Slots } from "@/store/slices/data.types";
-import { displayAttribute } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";
-import { Fragment, useCallback, useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CardGridItem } from "../card-list/card-grid";
 import { GroupLabel } from "../card-list/grouphead";
 import type { FilteredListCardPropsGetter } from "../card-list/types";
-import { useCardModalContextChecked } from "../card-modal/card-modal-context";
-import { CardScan, CardScanInner } from "../card-scan";
+import { CardScan } from "../card-scan";
+import { CustomizableSheet } from "../customizable-sheet";
 import { ListCard } from "../list-card/list-card";
 import css from "./decklist-groups.module.css";
 import type { ViewMode } from "./decklist.types";
@@ -187,7 +185,11 @@ function Scans(props: {
           </li>
           {!!card.customization_options && (
             <li>
-              <CustomizationScan card={card} deck={deck} />
+              <figure className={css["scan"]}>
+                <div className={css["scan-images"]}>
+                  <CustomizableSheet card={card} deck={deck} />
+                </div>
+              </figure>
             </li>
           )}
         </Fragment>
@@ -237,40 +239,6 @@ function Scan(props: {
     </figure>
   );
 }
-
-function CustomizationScan(props: { card: Card; deck: ResolvedDeck }) {
-  const { card, deck } = props;
-
-  const { t } = useTranslation();
-  const modalContext = useCardModalContextChecked();
-
-  const openModal = useCallback(() => {
-    modalContext.setOpen({ code: card.code });
-  }, [modalContext, card.code]);
-
-  return (
-    <figure className={css["scan"]}>
-      <div className={css["scan-images"]}>
-        <div>
-          <CardScanInner
-            onClick={openModal}
-            crossOrigin="anonymous"
-            url={customizationSheetUrl(card, deck)}
-            alt={t("deck.customization_sheet", {
-              name: displayAttribute(card, "name"),
-            })}
-            style={
-              {
-                "--scan-level": 0,
-              } as React.CSSProperties
-            }
-          />
-        </div>
-      </div>
-    </figure>
-  );
-}
-
 function GroupQuantity(props: { quantity: number }) {
   return <span className={css["group-quantity"]}>{props.quantity}</span>;
 }

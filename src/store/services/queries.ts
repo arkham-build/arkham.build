@@ -9,12 +9,11 @@ import { assert } from "@/utils/assert";
 import { displayPackName } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
 import type { FanMadeProject } from "../lib/fan-made-content.schemas";
-import type { ResolvedDeck, SealedDeck } from "../lib/types";
+import type { SealedDeck } from "../lib/types";
 import type { History } from "../selectors/decks";
 import type { Locale } from "../slices/settings.types";
 import type {
   APICard,
-  Card,
   Cycle,
   DataVersion,
   JsonDataEncounterSet,
@@ -324,23 +323,6 @@ export async function upgradeDeck(
   });
 
   return await res.json();
-}
-
-export function customizationSheetUrl(card: Card, deck: ResolvedDeck) {
-  const base = `${import.meta.env.VITE_API_URL}/v1/public/customization_sheet`;
-
-  const tabooId = deck.taboo_id ?? "0";
-  const customizations = deck.metaParsed[`cus_${card.code}`] ?? "";
-
-  let customizationStr = btoa(customizations);
-  // the sheet api uses php and expects base64 without padding, remove trailing `=`
-  while (customizationStr.endsWith("=")) {
-    customizationStr = customizationStr.slice(0, -1);
-  }
-
-  const params = `${card.code}-${tabooId}-${customizationStr}`;
-
-  return `${base}/${params}.webp`;
 }
 
 async function recommendationRequest(
