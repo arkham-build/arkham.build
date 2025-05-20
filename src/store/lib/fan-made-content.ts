@@ -3,7 +3,7 @@ import {
   cycleToApiFormat,
   packToApiFormat,
 } from "@/utils/arkhamdb-json-format";
-import * as z from "@zod/mini";
+import * as z from "zod/v4-mini";
 import type { EncounterSet } from "../services/queries.types";
 import type { StoreState } from "../slices";
 import type { Metadata } from "../slices/metadata.types";

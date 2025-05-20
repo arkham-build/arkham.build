@@ -25,7 +25,6 @@ import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { parseMarkdown } from "@/utils/markdown";
 import { useQuery } from "@/utils/use-query";
-import * as z from "@zod/mini";
 import {
   BookDashedIcon,
   CheckIcon,
@@ -38,6 +37,7 @@ import {
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import * as z from "zod/v4-mini";
 import { CardGrid } from "../card-list/card-grid";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
