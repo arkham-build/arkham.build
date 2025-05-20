@@ -21,6 +21,7 @@ import {
   filterLevel,
   filterOwnership,
   filterSkillIcons,
+  filterTagFallback,
   makeOptionFilter,
 } from "./filtering";
 
@@ -1109,5 +1110,55 @@ describe("filter: custom content options", () => {
     const filter = makeOptionFilter(option);
     expect(filter?.(state.metadata.cards["05187"])).toBeTruthy();
     expect(filter?.(state.metadata.cards["60127"])).toBeFalsy();
+  });
+});
+
+describe("filter: tag fallbacks", () => {
+  let store: StoreApi<StoreState>;
+
+  beforeAll(async () => {
+    store = await getMockStore();
+  });
+
+  it("matches pa. tags", () => {
+    const filter = filterTagFallback("pa", true);
+    const state = store.getState();
+    const cards = state.metadata.cards;
+    expect(filter(cards["10064"])).toBeTruthy();
+    expect(filter(cards["07194"])).toBeFalsy();
+  });
+
+  it("matches fa. tags", () => {
+    const filter = filterTagFallback("fa", true);
+    const state = store.getState();
+    const cards = state.metadata.cards;
+    expect(filter(cards["08122"])).toBeTruthy();
+    expect(filter(cards["08080"])).toBeFalsy();
+  });
+
+  it("matches se. tags", () => {
+    const filter = filterTagFallback("se", true);
+    const state = store.getState();
+    const cards = state.metadata.cards;
+    expect(filter(cards["04311"])).toBeTruthy();
+    expect(filter(cards["10105"])).toBeFalsy();
+  });
+
+  it("matches hd. tags", () => {
+    const filter = filterTagFallback("hd", true);
+    const state = store.getState();
+    const cards = state.metadata.cards;
+    expect(filter(cards["11106"])).toBeTruthy();
+    expect(filter(cards["09005"])).toBeTruthy();
+    expect(filter(cards["05114"])).toBeFalsy();
+  });
+
+  it("matches hh. tags", () => {
+    const filter = filterTagFallback("hh", true);
+    const state = store.getState();
+    const cards = state.metadata.cards;
+    expect(filter(cards["11106"])).toBeTruthy();
+    expect(filter(cards["04304"])).toBeTruthy();
+    expect(filter(cards["09123"])).toBeFalsy();
   });
 });

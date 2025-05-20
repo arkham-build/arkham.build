@@ -327,3 +327,11 @@ export const RETURN_TO_CYCLES: Record<string, string> = {
   tfa: "rttfa",
   tcu: "rttcu",
 };
+
+export const TAG_REGEX_FALLBACKS: Record<string, RegExp> = {
+  fa: /[Ff]irearm/,
+  hd: /[Hh]eal(?!ed)(?!th)(?! in excess of)[^.!?]*?damage/,
+  hh: /[Hh]eal(?!ed)(?!th)(?! in excess of)[^.!?]*?horror/,
+  pa: /[Pp]arley/,
+  se: /[Ss]eal(?! of the)/,
+};

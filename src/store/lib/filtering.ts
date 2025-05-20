@@ -10,6 +10,7 @@ import {
   REGEX_BONDED,
   SKILL_KEYS,
   SPECIAL_CARD_CODES,
+  TAG_REGEX_FALLBACKS,
 } from "@/utils/constants";
 import { capitalize } from "@/utils/formatting";
 import type { Filter } from "@/utils/fp";
@@ -440,27 +441,56 @@ function filterSucceedBy(
   return (card: Card) => !!succeedByTable[card.code];
 }
 
-function filterTag(tag: string, includeUnselectedCustomizationTags: boolean) {
+export function filterTag(tag: string, checkUnselectedCustomizations: boolean) {
   return (card: Card) => {
+    if (!card.official) {
+      return filterTagFallback(tag, checkUnselectedCustomizations)(card);
+    }
+
     const hasTag = !!card.tags?.includes(tag);
 
     if (
       hasTag ||
-      !includeUnselectedCustomizationTags ||
+      !checkUnselectedCustomizations ||
       !card.customization_options
-    )
+    ) {
       return hasTag;
+    }
 
     return !!card.customization_options?.some((o) => o.tags?.includes(tag));
   };
 }
 
-function filterHealsDamage(includeUnselectedCustomizationTags: boolean) {
-  return filterTag("hd", includeUnselectedCustomizationTags);
+export function filterTagFallback(
+  tag: string,
+  checkUnselectedCustomizations: boolean,
+) {
+  return (card: Card) => {
+    const fallback = TAG_REGEX_FALLBACKS[tag];
+    if (!fallback) return false;
+
+    const textMatches =
+      !!card.real_text?.match(fallback) ||
+      !!card.real_back_text?.match(fallback);
+
+    if (
+      textMatches ||
+      !checkUnselectedCustomizations ||
+      !card.customization_options
+    ) {
+      return textMatches;
+    }
+
+    return !!card.real_customization_text?.match(fallback);
+  };
 }
 
-function filterHealsHorror(includeUnselectedCustomizationTags: boolean) {
-  return filterTag("hh", includeUnselectedCustomizationTags);
+function filterHealsDamage(checkUnselectedCustomizations: boolean) {
+  return filterTag("hd", checkUnselectedCustomizations);
+}
+
+function filterHealsHorror(checkUnselectedCustomizations: boolean) {
+  return filterTag("hh", checkUnselectedCustomizations);
 }
 
 /**
