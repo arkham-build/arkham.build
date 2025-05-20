@@ -52,6 +52,7 @@ function DeckDescription(props: Props) {
   const onMouseMove = useCallback(
     (evt: MouseEvent) => {
       const code = getCardCodeForEvent(evt);
+
       if (code) {
         clearTimeout(restTimeoutRef.current);
 
@@ -169,7 +170,7 @@ function getCardCodeForEvent(
   const target = (evt.target as HTMLElement)?.closest("a");
 
   if (target instanceof HTMLAnchorElement) {
-    return /\/card\/(\d*)$/.exec(target.href)?.[1];
+    return /\/card\/(.*)$/.exec(target.href)?.[1];
   }
 }
 
