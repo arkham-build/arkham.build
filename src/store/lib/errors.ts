@@ -2,7 +2,7 @@ import { displayAttribute } from "@/utils/card-utils";
 import i18n from "@/utils/i18n";
 import type { ResolvedCard } from "./types";
 
-export class PreviewPublishError extends Error {
+export class UnsupportedPublishError extends Error {
   constructor(cards: ResolvedCard[]) {
     const names = cards
       .map(

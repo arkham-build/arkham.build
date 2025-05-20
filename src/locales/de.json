@@ -1005,7 +1005,7 @@
       "500_help": "Details zum Fehler können in der Browserkonsole eingesehen werden.",
       "500_help_2": "Achtung: Bitte versuche nicht, diesen Fehler zu lösen, indem du Cookies oder Browserdaten löschst, da dies auch die von arkham.build genutzte lokale Datenbank löschen kann.",
       "home": "Startseite",
-      "preview_publish": "Deck enthält Vorschaukarten: {{names}}. Bitte entferne diese, bevor du das Deck zu {{provider}} hochlädst.",
+      "preview_publish": "Deck enthält Karten, die von {{provider}} nicht unterstützt werden: {{names}}. Bitte entferne sie, bevor du das Deck zu hochlädst.",
       "report": "Fehler melden"
     },
     "filters": {

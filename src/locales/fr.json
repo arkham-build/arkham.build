@@ -966,7 +966,7 @@
       "500_help": "Vérifiez la console du navigateur pour plus de détails.",
       "500_help_2": "Veuillez ne pas essayer de résoudre ce problème en vidant vos cookies ou autres données locales (sauf si vous acceptez de perdre vos decks locaux).",
       "home": "Retour à l’accueil",
-      "preview_publish": "Le deck contient des cartes en prévisualisation : {{names}}. Veuillez les retirer avant de le téléverser sur {{provider}}.",
+      "preview_publish": "Le deck contient des cartes non prises en charge par {{provider}} : {{names}}. Veuillez les retirer avant de le téléverser.",
       "report": "Signaler un problème"
     },
     "filters": {

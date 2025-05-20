@@ -1037,7 +1037,7 @@
       "500_help": "Check the browser console for further details.",
       "500_help_2": "Please don't try to fix this issue by clearing cookies or other local browser data (unless you are fine with losing your local decks).",
       "home": "Return home",
-      "preview_publish": "Deck contains preview cards: {{names}}. Please remove them before uploading to {{provider}}.",
+      "preview_publish": "Deck contains cards not supported by {{provider}}: {{names}}. Please remove them before uploading.",
       "report": "Report issue"
     },
     "filters": {

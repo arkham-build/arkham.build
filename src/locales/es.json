@@ -967,7 +967,7 @@
       "500_help": "Revisa la consola del navegador para más detalles.",
       "500_help_2": "Por favor, no intentes solucionar este problema borrando cookies u otros datos locales del navegador (a menos que no te importe perder tus mazos locales).",
       "home": "Volver al inicio",
-      "preview_publish": "El mazo contiene cartas spoiler: {{names}}. Por favor, elimínalas antes de subir a {{provider}}.",
+      "preview_publish": "El mazo contiene cartas no compatibles con {{provider}}: {{names}}. Por favor, elimínalas antes de subirlo.",
       "report": "Reportar incidencia"
     },
     "filters": {

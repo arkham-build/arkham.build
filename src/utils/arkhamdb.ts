@@ -1,4 +1,4 @@
-import { PreviewPublishError } from "@/store/lib/errors";
+import { UnsupportedPublishError } from "@/store/lib/errors";
 import type { ResolvedDeck } from "@/store/lib/types";
 import i18n from "./i18n";
 
@@ -40,13 +40,17 @@ export function redirectArkhamDBLinks(evt: React.MouseEvent) {
 export function assertCanPublishDeck(deck: ResolvedDeck) {
   const previews = Object.values({
     ...deck.cards.slots,
+    ...deck.cards.sideSlots,
     ...deck.cards.extraSlots,
+    ...deck.cards.exileSlots,
+    ...deck.cards.bondedSlots,
+    ...deck.cards.ignoreDeckLimitSlots,
     investigatorBack: deck.investigatorBack,
     investigatorFront: deck.investigatorFront,
-  }).filter((c) => c.card.preview);
+  }).filter((c) => c.card.preview || !c.card.official);
 
   if (previews.length) {
-    throw new PreviewPublishError(previews);
+    throw new UnsupportedPublishError(previews);
   }
 }
 

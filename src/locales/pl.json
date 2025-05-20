@@ -944,7 +944,7 @@
       "500_help": "Aby uzyskać więcej szczegółów, sprawdź konsolę przeglądarki.",
       "500_help_2": "Nie próbuj naprawiać tego problemu poprzez czyszczenie ciasteczek lub innych lokalnych danych przeglądarki (chyba że nie masz nic przeciwko utracie lokalnych talii).",
       "home": "Wróć na stronę główną",
-      "preview_publish": "Talia zawiera nieopublikowane karty: {{names}}. Usuń je proszę, przed wysłaniem talii na {{provider}}.",
+      "preview_publish": "Talia zawiera karty nieobsługiwane przez {{provider}}: {{names}}. Usuń je proszę przed wysłaniem.",
       "report": "Zgłoś błąd"
     },
     "filters": {

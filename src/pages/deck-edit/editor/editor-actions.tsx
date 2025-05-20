@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useStore } from "@/store";
-import { PreviewPublishError } from "@/store/lib/errors";
+import { UnsupportedPublishError } from "@/store/lib/errors";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckValid } from "@/store/selectors/decks";
 import { selectConnectionLockForDeck } from "@/store/selectors/shared";
@@ -75,7 +75,7 @@ export function EditorActions(props: Props) {
               <p>
                 {t("deck_edit.save_error", { error: (err as Error).message })}
               </p>
-              {err instanceof PreviewPublishError && (
+              {err instanceof UnsupportedPublishError && (
                 <Button
                   className={css["error-action"]}
                   onClick={onduplicateWithEdits}
