@@ -786,7 +786,7 @@
       "sealed_deck": {
         "error": "봉인된 덱을 가져오는데 실패함: {{error}}",
         "loading": "봉인된 덱을 가져오는 중...",
-        "success": "봉인된 덱이 성공적으로 적용되었습니다."
+        "success": "봉인된 덱 적용이 성공하였습니다."
       },
       "success": "덱 생성이 완료되었습니다."
     },
@@ -1008,6 +1008,38 @@
       "preview_publish": "덱에 {{provider}}에서 지원하지 않는 카드가 포함되어 있음: {{names}}. 업로드하기 전에 해당 카드들을 제거해 주세요.",
       "report": "이슈 제보하기"
     },
+    "fan_made_content": {
+      "actions": {
+        "import_file": "파일로부터 가져오기",
+        "import_url": "URL로부터 가져오기",
+        "install": "콘텐츠 설치하기",
+        "uninstall": "삭제하기",
+        "view_cards": "카드 보기",
+        "view_external": "더보기"
+      },
+      "available_content": "사용가능한 콘텐츠",
+      "empty": "설치된 콘텐츠 없음",
+      "import_url": {
+        "label": "콘텐츠 URL",
+        "placeholder": "URL을 입력하세요...",
+        "submit": "가져오기"
+      },
+      "installed_content": "설치된 콘텐츠",
+      "messages": {
+        "available_content_loading": "사용가능한 콘텐츠를 불러오는 중...",
+        "content_installed": "콘텐츠 추가가 성공하였습니다.",
+        "content_loading": "콘텐츠 불러오는 중...",
+        "fetch_failed": "콘텐츠를 불러오는데 실패함: {{error}}",
+        "parse_failed": "콘텐츠를 추가하는데 실패함: {{error}}",
+        "registry_failed": "저장소에서 사용가능한 콘텐츠를 불러오는데 실패함: {{error}}"
+      },
+      "settings": {
+        "card_lists": "카드 목록",
+        "card_lists_help": "이 설정은 카드 목록에서 “팬 제작 콘텐츠” 필터의 기본값을 제어합니다."
+      },
+      "status_installed": "설치됨",
+      "title": "팬 제작 콘텐츠"
+    },
     "filters": {
       "action": {
         "placeholder": "행동 선택하기...",
@@ -1027,6 +1059,12 @@
       "encounter_set": {
         "placeholder": "조우 세트 선택...",
         "title": "조우 세트"
+      },
+      "fan_made_content": {
+        "all": "모두 보기",
+        "fan_made": "팬 제작 콘텐츠만 보기",
+        "official": "공식 콘텐츠만 보기",
+        "title": "팬 제작 콘텐츠"
       },
       "health": {
         "title": "체력"
