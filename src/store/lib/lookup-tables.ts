@@ -371,6 +371,7 @@ export function createRelations(metadata: Metadata, tables: LookupTables) {
     // Index multi-class investigators.
     if (
       card.type_code === "investigator" &&
+      (card.deck_limit || 0) > 0 &&
       investigatorsByName[card.real_name]?.length > 1
     ) {
       for (const investigator of investigatorsByName[card.real_name]) {
