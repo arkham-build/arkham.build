@@ -22,6 +22,7 @@
     },
     "card_modal": {
       "actions": {
+        "complete_task": "Complete task",
         "open_card_page": "Strona karty",
         "reviews": "Recenzje"
       }
@@ -186,18 +187,18 @@
       "player_cards": "Karty badacza",
       "player_cards_short": "Badacz",
       "relations": {
-        "advanced": "Wymagane karty (wersje Zaawansowane)",
+        "advanced": "Karty osobiste (wersje Zaawansowane)",
         "base": "Podstawowy badacz",
         "bonded": "Powiązane karty",
         "bound": "Powiązane karty",
         "extra": "Karty specjalne",
         "level": "Inne poziomy",
-        "otherSignatures": "Inne wymagane karty",
+        "otherSignatures": "Inne karty osobiste",
         "otherVersions": "Inne wersje",
         "parallel": "Badacz z równoległego świata",
         "parallelCards": "Karty z równoległego świata",
-        "replacement": "Wymagane karty (wersje Replacement)",
-        "requiredCards": "Wymagane karty",
+        "replacement": "Karty osobiste (wersje Replacement)",
+        "requiredCards": "Karty osobiste",
         "restrictedTo": "Ograniczone do",
         "specialist": "Specialist",
         "specialist_investigators": "Specialist Investigators"
@@ -282,6 +283,7 @@
         "Arkham": "Arkham",
         "Arkham Asylum": "Przytułek Arkham",
         "Armor": "Pancerz",
+        "Artifact": "Artefakt",
         "Artist": "Artysta",
         "Assistant": "Asystent",
         "Attack": "Atak",
@@ -321,6 +323,7 @@
         "Clover Club": "Clover Club",
         "Coastal": "Nadbrzeżny",
         "Colour": "Kolor",
+        "Completed": "Completed",
         "Composure": "Opanowanie",
         "Condition": "Stan",
         "Connection": "Powiązanie",
@@ -388,6 +391,7 @@
         "Ghast": "Ghast",
         "Ghoul": "Ghoul",
         "Glacier": "Lodowiec",
+        "Glyph": "Glif",
         "Government": "Rząd",
         "Grant": "Dotacja",
         "Graveyard": "Cmentarz",
@@ -408,6 +412,7 @@
         "Hybrid": "Hybryda",
         "Illicit": "Nielegalny",
         "Improvised": "Improwizowany",
+        "Incomplete": "Incomplete",
         "Inconspicuous": "Dyskretny",
         "Injury": "Uraz",
         "Innate": "Wrodzona",
@@ -492,6 +497,7 @@
         "Private": "Prywatna",
         "Providence": "Providence",
         "Public": "Publiczna",
+        "R'lyeh": "R'lyeh",
         "Rail": "Kolejka",
         "Ranged": "Dystansowa",
         "Relic": "Relikt",
@@ -541,8 +547,10 @@
         "St Mary's": "Szpital św. Marii",
         "Stable": "Stabilny",
         "Staff": "Personel",
+        "Star Spawn": "Gwiezdny pomiot",
         "Station": "Station",
         "Steps": "Stopnie",
+        "Stowaway": "Gapowicz",
         "Summon": "Przyzwanie",
         "Sunken": "Sunken",
         "Supply": "Zapasy",
@@ -612,22 +620,28 @@
       },
       "undo": "Anuluj",
       "unique": "Unikatowa",
+      "update_default_settings": "Zaktualizuj ustawienia domyślne",
       "uses": {
-        "aether": "Aether",
+        "aether": "Eter",
         "ammo": "Amunicja",
         "bounties": "Nagrody",
         "brilliance": "Brilliance",
+        "chances": "Chances",
         "charges": "Ładunki",
+        "discoveries": "Discoveries",
         "durability": "Durability",
-        "evidence": "Evidence",
-        "inspiration": "Inspiration",
+        "evidence": "Dowód",
+        "inspiration": "Inspiracja",
         "keys": "Klucze",
-        "leylines": "Leylines",
-        "offerings": "Offerings",
+        "leylines": "Linie geomantyczne",
+        "obligations": "Obligations",
+        "obsessions": "Obsessions",
+        "offerings": "Ofiary",
         "portents": "Portents",
         "resources": "Zasoby",
         "secrets": "Sekrety",
-        "shell": "Shell",
+        "shell": "Łuska",
+        "signs": "Signs",
         "supplies": "Ekwipunek",
         "tickets": "Bilety",
         "time": "Time",
@@ -678,6 +692,7 @@
         "xp_spent": "Wydane XP"
       },
       "limited_decks": {
+        "Secondary Class": "Drugorzędna klasa",
         "Versatile": "Wszechstronny"
       },
       "limited_slots": "Limitowane sloty",
@@ -688,8 +703,8 @@
         "ignored_one": "{{count}} kopia nie wlicza się do rozmiaru talii.",
         "ignored_other": "{{count}} kopie nie wliczają się do rozmiaru talii.",
         "unowned": "Unavailable: {{count}} of {{total}} cards",
-        "uses_parallel": "Uses a parallel side",
-        "xp_available_help": "XP earned with latest upgrade.",
+        "uses_parallel": "Używa strony z równoległego świata",
+        "xp_available_help": "XP zdobyte przy ostatnim ulepszeniu.",
         "xp_required": "Wymagane XP",
         "xp_required_help": "Liczba XP wymagana do zbudowania tej talii od podstaw."
       },
@@ -699,8 +714,25 @@
         "sealed": "Zapieczętowana",
         "shared": "Udostępniona"
       },
+      "toasts": {
+        "delete_confirm": "Jesteś pewien, że chcesz usunąć tą talię?",
+        "delete_error": "Nie udało się usunąć talii: {{error}}",
+        "delete_loading": "Usuwanie talii...",
+        "delete_success": "Usuwanie talii zostało zakończone sukcesem.",
+        "delete_upgrade_confirm": "Jesteś pewien, że chcesz usunąć to ulepszenie?",
+        "delete_upgrade_error": "Nie udało się usunąć ulepszenia: {{error}}",
+        "delete_upgrade_loading": "Usuwanie ulepszenia...",
+        "delete_upgrade_success": "Usuwanie ulepszenia zostało zakończone sukcesem.",
+        "duplicate_error": "Nie udało się zduplikować talii: {{error}}",
+        "duplicate_success": "Duplikowanie talii zostało zakończone sukcesem.",
+        "export_error": "Nie udało się wyeksportować talii: {{error}}",
+        "upload_error": "Nie udało się wysłać talii do {{provider}}: {{error}}",
+        "upload_loading": "Wysyłanie talii do {{provider}}...",
+        "upload_success": "Wysyłanie talii zostało zakończone sukcesem."
+      },
       "tools": {
         "cards": "Karty",
+        "count": "Liczba",
         "factions": "Klasy",
         "loading": "Wczytywanie narzędzia talii...",
         "resource_cost": "Koszt zasobów",
@@ -735,7 +767,7 @@
       "delete_all_success": "Usuwanie lokalnych talii zostało zakończone sukcesem.",
       "import": "Zaimportuj",
       "import_arkhamdb": "Importuj z ArkhamDB",
-      "import_arkhamdb_help": "Wprowadź ID publicznej talii, jej URL lub URL przewodnika talii. Talia zostanie <strong>skopiowana</strong> bez jej historii.",
+      "import_arkhamdb_help": "Wprowadź ID publicznej talii, jej URL lub URL przewodnika talii. Talia zostanie <strong>skopiowana</strong> bez jej historii i stanu ulepszenia. Jeśli zamierzasz zsynchornizować swoje talie z ArkhamDB z tą aplikacją, <settings_link>połącz swoje konto ArkhamDB.</settings_link>",
       "import_json": "Importuj z plików JSON",
       "more_filters": "Więcej filtrów",
       "search_placeholder": "Szukaj talii...",
@@ -755,26 +787,33 @@
     },
     "deck_create": {
       "default_name": {
-        "guardian": "The Adventures of {{name}}",
-        "mystic": "The {{name}} Mysteries",
-        "neutral": "{{name}} Does It All",
-        "rogue": "The {{name}} Job",
-        "seeker": "{{name}} Investigates",
-        "survivor": "{{name}} on the Road"
+        "guardian": "Przygody {{name}}",
+        "mystic": "Arkana {{name}}",
+        "neutral": "{{name}} ma to coś",
+        "rogue": "Robota {{name}}",
+        "seeker": "{{name}} szuka wskazówek",
+        "survivor": "{{name}} w drodze"
       },
       "error": "Nie udało się utworzyć talii: {{error}}",
-      "help_advanced": "<p>Wymagane karty ze słowem kluczowym „Zaawansowana” to mocniejsze wersje kart, które wymagane są przez „Wymogi tworzenia talii”.</p><p>W dowolnym momencie kampanii (w tym podczas tworzenia talii) możesz opcjonalnie zdecydować się na dołączenie tych zaawansowanych wersji kart <strong>zamiast</strong> ich oryginalnych odpowiedników.</p>",
-      "help_replacements": "<p>Wymagane karty ze słowem kluczowym „Replacement” mogą zamienić domyślnie wymagane karty wymienione w „Wymogach tworzenia talii”. Robiąc to nadal spełniasz wymagania - talia jest poprawna i gotowa do gry.</p><p>Jeśli chcesz to zrobić, <strong>obie</strong> wymagane karty muszą zostać wymienione. Jeśli robisz to na potrzeby kampanii, nie będziesz mógł później wrócić do korzystania z domyślnych kart.</p><p>Alternatywnie możesz dołączyć do talii wersje ze słowem kluczowym „Replacement”, dodatkowo do ich domyślnych wariantów.</p>",
+      "help_advanced": "<p>Karty osobiste ze słowem kluczowym „Zaawansowana” to mocniejsze wersje kart, które wymagane są przez „Wymogi tworzenia talii”.</p><p>W dowolnym momencie kampanii (w tym podczas tworzenia talii) możesz opcjonalnie zdecydować się na dołączenie tych zaawansowanych wersji kart <strong>zamiast</strong> ich oryginalnych odpowiedników.</p>",
+      "help_replacements": "<p>Karty osobiste ze słowem kluczowym „Replacement” mogą zamienić domyślne karty osobiste wymienione w „Wymogach tworzenia talii”. Robiąc to nadal spełniasz wymagania - talia jest poprawna i gotowa do gry.</p><p>Jeśli chcesz to zrobić, <strong>obie</strong> karty osobiste muszą zostać wymienione. Jeśli robisz to na potrzeby kampanii, nie będziesz mógł później wrócić do korzystania z domyślnych kart.</p><p>Alternatywnie możesz dołączyć do talii wersje ze słowem kluczowym „Replacement”, dodatkowo do ich domyślnych wariantów.</p>",
       "loading": "Tworzenie talii...",
       "random_basic_weakness": "Losowe podstawowe osłabienie",
+      "sealed_deck": {
+        "error": "Nie udało się zaimportować zapieczętowanej talii: {{error}}",
+        "loading": "Wgrywanie zapieczętowanej talii...",
+        "success": "Zapieczętowana talia została pomyślnie wczytana."
+      },
       "success": "Talia została utworzona pomyślnie."
     },
     "deck_edit": {
       "actions": {
+        "add_to_notes": "Dodaj do notatek",
         "cycle_decks": "Przełączaj między listami talii",
         "decrement_quantity": "Zmniejsz ilość w talii",
         "decrement_side_quantity": "Zmniejsz ilość w talii pobocznej",
         "draw_random_basic_weakness": "Wylosuj podstawowe osłabienie",
+        "draw_random_basic_weakness_success": "<strong>{{name}}</strong> jest twoim podstawowym osłabieniem.",
         "edit_annotation": "Edytuj adnotacje",
         "increment_quantity": "Zwiększ ilość w talii",
         "increment_side_quantity": "Zwiększ ilość w talii pobocznej",
@@ -842,8 +881,31 @@
         "banner_url_placeholder": "Wprowadź URL",
         "description": "Notatki",
         "description_help": "Wspiera znaczniki markdown w wersji ArkhamDB.",
+        "description_placeholder": "Wprowadź notatki...",
         "intro": "Wstęp",
-        "intro_help": "Krótki wstęp wyświetlany w widoku talii i podglądach mediów społecznościowych. Wspiera znaczniki markdown w wersji ArkhamDB."
+        "intro_help": "Krótki wstęp wyświetlany w widoku talii i podglądach mediów społecznościowych. Wspiera znaczniki markdown w wersji ArkhamDB.",
+        "toolbar": {
+          "card": "Karta",
+          "card_tooltip": "Wstaw znacznik karty",
+          "format": "Styl",
+          "formats": {
+            "header": "Nagłówek",
+            "header_with_set": "Nagłówek (z numerem karty)",
+            "paragraph": "Akapit",
+            "paragraph_colored": "Akapit (kolorowany)"
+          },
+          "origin": "Dostępne karty",
+          "origins": {
+            "campaign": "Karty kampanii",
+            "deck": "Karty w talii",
+            "player": "Wszystkie karty badacza",
+            "usable": "Tylko używalne karty"
+          },
+          "preview": "Podgląd",
+          "symbol": "Symbol",
+          "symbol_placeholder": "Wybierz symbol...",
+          "symbol_tooltip": "Wstaw symbol"
+        }
       },
       "quick_upgrade": {
         "available_upgrades": "Dostępne ulepszenia",
@@ -856,7 +918,8 @@
         "absolute": "Absolutnie",
         "absolute_help": "Policz, w ilu taliach badacza {{name}} użyto każdej karty",
         "analyze_side_decks": "Analizuj talie poboczne",
-        "core": "Core",
+        "core": "Istotna",
+        "core_help": "Oznaczenie karty jako \"Istotna\" spowoduje wzięcie pod uwagę przez silnik rekomendujący tylko talii ją zawierających.",
         "error": "Nie udało się wczytać rekomendacji.",
         "loading": "Przeliczanie rekomendacji...",
         "no_results": "Brak rekomendacji dla tej konfiguracji.",
@@ -874,7 +937,12 @@
       "tab_notes": "Notatki",
       "tab_recommendations": "Rekomendacje",
       "tab_tools": "Narzędzia",
-      "title": "Edytuj: {{name}}"
+      "title": "Edytuj: {{name}}",
+      "versions": {
+        "entry_title": "Wersja {{version}}",
+        "entry_title_current": "Aktualna wersja",
+        "title": "Wersje"
+      }
     },
     "deck_view": {
       "actions": {
@@ -898,9 +966,10 @@
         "downTheRabbitHole": "Przez króliczą norę"
       },
       "history": {
-        "added": "Dadano",
+        "added": "Dodano",
         "current_upgrade": "Aktualne ulepszenie",
         "discounts": "Zniżki",
+        "initial_deck": "Początkowa talia",
         "no_changes": "Brak zmian",
         "removed": "Usunięto",
         "slot_changes": "{{slot}} - zmiany",
@@ -928,15 +997,25 @@
       "tab_recommendations": "Rekomendacje",
       "tab_tools": "Narzędzia",
       "upgrade_modal": {
-        "automatic_xp_gain": "+{{count}} XP will be automatically added to this upgrade.",
+        "automatic_xp_gain": "+{{count}} XP zostanie automatycznie dodane do tego ulepszenia.",
         "error": "Nie udało się ulepszyć talii: {{error}}",
-        "great_work_label": "I was usurped by the homunculus",
-        "great_work_status_usurped": "The Great Work will be removed from your deck alongside each of your signature cards. Your investigator will be replaced with the homunculus.",
+        "great_work_label": "Zostałem pochłonięty przez Homunkulusa",
+        "great_work_status_usurped": "Wielkie dzieło zostanie usunięte z twojej talii wraz z twoimi kartami osobistymi. Twój badacz będzie zastąpiony Homunkulusem.",
         "loading": "Ulepszanie talii...",
         "success": "Talia została ulepszona pomyślnie.",
         "title": "Ulepsz talię",
         "xp_gained": "Zyskane XP"
       }
+    },
+    "draw_simulator": {
+      "draw_tooltip": "Wylosuj {{count}} {{cards}}.",
+      "redraw": "Wylosuj wybrane ponownie",
+      "redraw_tooltip": "Wybrane karty zostaną przesunięte na koniec talii, a następnie zastąpione nowymi kartami.",
+      "reset": "Resetuj",
+      "reset_tooltip": "Zresetuj symulator do stanu początkowego.",
+      "reshuffle": "Przetasuj wybrane",
+      "reshuffle_tooltip": "Wybrane karty zostaną wtasowane ponownie do talii.",
+      "title": "Symulator losowania ręki"
     },
     "errors": {
       "404": "Strona nie została odnaleziona.",
@@ -946,6 +1025,55 @@
       "home": "Wróć na stronę główną",
       "preview_publish": "Talia zawiera karty nieobsługiwane przez {{provider}}: {{names}}. Usuń je proszę przed wysłaniem.",
       "report": "Zgłoś błąd"
+    },
+    "fan_made_content": {
+      "actions": {
+        "import_file": "Importuj z pliku",
+        "import_url": "Importuj z URL",
+        "install": "Zainstaluj dodatek",
+        "uninstall": "Odinstaluj",
+        "view_cards": "Pokaż karty",
+        "view_external": "Dowiedz się więcej"
+      },
+      "available_content": "Dostępna zawartość",
+      "content_types": "Rodzaj dodatku",
+      "content_version": "Wersja dodatku",
+      "empty": "Brak zainstalowanej zawartości",
+      "import_url": {
+        "label": "URL zawartości",
+        "placeholder": "Wpisz URL...",
+        "submit": "Zaimportuj"
+      },
+      "installed_content": "Zainstalowana zawartość",
+      "messages": {
+        "available_content_loading": "Wczytywanie dostępnej zawartości...",
+        "content_installed": "Zawartość została pomyślnie zainstalowana.",
+        "content_loading": "Ładowanie zawartości...",
+        "fetch_failed": "Nie udało się załadować zawartości: {{error}}",
+        "parse_failed": "Nie udało się dodać zawartości: {{error}}",
+        "registry_failed": "Nie udało się załadować dostępnej zawartości z rejestru: {{error}}"
+      },
+      "settings": {
+        "card_lists": "Lista kart",
+        "card_lists_help": "To ustawienie kontroluje domyślną wartość filtra \"Zawartość fanowska\" listy kart."
+      },
+      "status": {
+        "alpha": "Alfa",
+        "beta": "Beta",
+        "complete": "Kompletna",
+        "draft": "Draft",
+        "final": "Finalna"
+      },
+      "status_installed": "Zainstalowany",
+      "tags": "Tagi",
+      "title": "Zawartość fanowska",
+      "types": {
+        "campaign": "Kampania",
+        "investigators": "Badacze",
+        "player_cards": "Karty badacza",
+        "rework": "Przeróbka",
+        "scenario": "Scenariusz"
+      }
     },
     "filters": {
       "action": {
@@ -967,10 +1095,20 @@
         "placeholder": "Wybierz zestawy spotkań...",
         "title": "Zestaw spotkań"
       },
+      "fan_made_content": {
+        "all": "Pokaż wszystko",
+        "fan_made": "Tylko zawartość fanowska",
+        "official": "Tylko oficjalna zawartość",
+        "title": "Zawartość fanowska"
+      },
       "health": {
         "title": "Wytrzymałość"
       },
       "health_sanity_x": "Uwzględnij wytrzymałość / poczytalność 'X'",
+      "illustrator": {
+        "placeholder": "Wybierz ilustratorów...",
+        "title": "Ilustrator"
+      },
       "investigator": {
         "placeholder": "Wybierz badaczy...",
         "title": "Badacz"
@@ -983,6 +1121,7 @@
         "title": "Statystyki"
       },
       "level": {
+        "no_level": "Brak",
         "title": "Poziom"
       },
       "or": "or",
@@ -1035,7 +1174,7 @@
     },
     "help": {
       "about": "O tej stronie",
-      "changelog": "Changelog",
+      "changelog": "Dziennik zmian",
       "collection_stats": "Statystyki kolekcji",
       "shortcuts": {
         "group_card_list": "Lista kart",
@@ -1064,6 +1203,7 @@
         "open_card_modal": "Otwórz okno karty dla zaznaczonej karty",
         "reset_filters": "Resetuj filtry",
         "show_limited_access": "Pokaż karty z limitowanym dostępem",
+        "show_limited_access_help": "Badacze mogą mieć limitowany, opcjonalny dostęp do kart na podstawie poziomu, klasy, cechy, typu i/lub innych kryteriów. Kiedy ta opcja jest włączona, karty z limitowanym dostępem będą pokazywane.",
         "show_unusable_cards": "Pokaż nieużyteczne karty",
         "toggle_filter_menu": "Przełącz menu filtrów",
         "toggle_filters": "Przełącz filtry",
@@ -1179,16 +1319,23 @@
         "username": "Nazwa użytkownika"
       },
       "display": {
+        "card_display": "Opcje wyświetlania kart",
         "card_level": "Wyświetlanie poziomu karty",
         "card_level_as_dots": "Ikona karty + kropki",
         "card_level_as_text": "Ikona karty + tekst",
         "card_level_icon_only": "Tylko jako ikona karty",
+        "card_show_collection_number": "Pokazuj numer karty",
+        "card_skill_icons": "Wyświetlanie ikon umiejętności",
+        "card_skill_icons_as_printed": "Jak na karcie",
+        "card_skill_icons_simple": "Uproszczone",
         "font_size": "Rozmiar czcionki",
         "font_size_preview": "Nie ma zatem takiego człowieka, który kocha cierpienie samo w sobie, kto by do niego dążył lub chciał go doświadczyć, tylko dlatego, że jest to cierpienie, a dlatego, że czasami zdarzają się takie okoliczności, w których to cierpienie może doprowadzić go do jakiejś wielkiej przyjemności. Dając przykład banalny: któż z nas kiedyś nie podejmował się trudnego wysiłku fizycznego mając na względzie uzyskanie z tego korzyści?",
         "hide_weaknesses": "Ukryj osłabienia w liście kart gracza",
         "hide_weaknesses_help": "Jeśli ta opcja jest zaznaczona, osłabienia są domyślnie ukryte w liście kart gracza. Aby je wyświetlić, należy użyć filtra <strong>Podtyp</strong>.",
         "show_move_to_side_deck": "Pokazuj przycisk \"Przenieś do talii pobocznej\"",
         "show_move_to_side_deck_help": "Jeśli ta opcja jest zaznaczona, przycisk pozwalający na przeniesienie kart z talii do talii pobocznej będzie zawsze widoczny w trakcie edytowania talii. Pomocne jeśli budujesz swoją talię poprzez przepełnienie talli, a następnie jej redukowanie.",
+        "sort_ignore_punctuation": "Sortowanie ignoruje interpunkcję",
+        "sort_ignore_punctuation_help": "Jeśli ta opcja jest zaznaczona, lista kart ignoruje cudzysłowy i inne znaki interpunkcyjne przy sortowaniu.",
         "theme": "Motyw",
         "theme_dark": "Ciemny",
         "theme_light": "Jasny",
