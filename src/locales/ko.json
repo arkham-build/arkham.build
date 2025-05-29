@@ -1018,6 +1018,8 @@
         "view_external": "더보기"
       },
       "available_content": "사용가능한 콘텐츠",
+      "content_types": "콘텐츠 유형",
+      "content_version": "콘텐츠 버전",
       "empty": "설치된 콘텐츠 없음",
       "import_url": {
         "label": "콘텐츠 URL",
@@ -1037,8 +1039,23 @@
         "card_lists": "카드 목록",
         "card_lists_help": "이 설정은 카드 목록에서 “팬 제작 콘텐츠” 필터의 기본값을 제어합니다."
       },
+      "status": {
+        "alpha": "알파",
+        "beta": "베타",
+        "complete": "정식",
+        "draft": "초안",
+        "final": "최종"
+      },
       "status_installed": "설치됨",
-      "title": "팬 제작 콘텐츠"
+      "tags": "태그",
+      "title": "팬 제작 콘텐츠",
+      "types": {
+        "campaign": "캠페인",
+        "investigators": "조사자",
+        "player_cards": "플레이어 카드",
+        "rework": "개선",
+        "scenario": "시나리오"
+      }
     },
     "filters": {
       "action": {
