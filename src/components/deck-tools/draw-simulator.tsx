@@ -12,9 +12,52 @@ import { useTranslation } from "react-i18next";
 import { CardScan } from "../card-scan";
 import css from "./draw-simulator.module.css";
 
+import type { Card } from "@/store/services/queries.types";
+import { PortaledCardTooltip } from "../card-tooltip/card-tooltip-portaled";
+import { useRestingTooltip } from "../ui/tooltip.hooks";
+
 type Props = {
   deck: ResolvedDeck;
 };
+
+type DrawSimulatorCardProps = {
+  index: number;
+  state: State;
+  card: Card;
+  dispatch: React.Dispatch<Action>;
+};
+
+function DrawSimulatorCard(props: DrawSimulatorCardProps) {
+  const { card, dispatch, index, state } = props;
+
+  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
+    useRestingTooltip();
+
+  return (
+    <li className={css["card"]}>
+      <button
+        {...referenceProps}
+        ref={refs.setReference}
+        className={cx(
+          css["card-toggle"],
+          state.selection.includes(index) && css["selected"],
+        )}
+        onClick={() => dispatch({ type: "select", index })}
+        type="button"
+      >
+        <CardScan card={card} preventFlip />
+      </button>
+      {isMounted && (
+        <PortaledCardTooltip
+          card={card}
+          ref={refs.setFloating}
+          floatingStyles={floatingStyles}
+          transitionStyles={transitionStyles}
+        />
+      )}
+    </li>
+  );
+}
 
 export function DrawSimulator(props: Props) {
   const { deck } = props;
@@ -100,18 +143,13 @@ export function DrawSimulator(props: Props) {
       {!isEmpty(state.drawn) && (
         <ol className={css["drawn"]}>
           {state.drawn.map((code, index) => (
-            <li key={`${index}-${code}`} className={css["card"]}>
-              <button
-                className={cx(
-                  css["card-toggle"],
-                  state.selection.includes(index) && css["selected"],
-                )}
-                onClick={() => dispatch({ type: "select", index })}
-                type="button"
-              >
-                <CardScan card={deck.cards.slots[code].card} preventFlip />
-              </button>
-            </li>
+            <DrawSimulatorCard
+              key={`${index}-${code}`}
+              card={deck.cards.slots[code].card}
+              index={index}
+              state={state}
+              dispatch={dispatch}
+            />
           ))}
         </ol>
       )}

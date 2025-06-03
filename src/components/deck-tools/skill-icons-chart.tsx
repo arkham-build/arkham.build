@@ -37,6 +37,7 @@ export function SkillIconsChart({ data }: Props) {
             theme={chartsTheme}
             polar
             width={width}
+            minDomain={{ y: 0 }} //Fix to ensure the chart's y value doesn't begin at your lowest skill icon count.
           >
             <VictoryPolarAxis
               tickFormat={formatTickLabels}
