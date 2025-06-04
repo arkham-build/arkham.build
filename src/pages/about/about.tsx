@@ -111,6 +111,9 @@ function About() {
           <li>
             Spanish: <strong>@AdrianMeizoso</strong>
           </li>
+          <li>
+            Simplified Chinese: <strong>泡菜大王(@Ruikoto)</strong>
+          </li>
         </ul>
         <h2>Image / Icon credits</h2>
         <ul>
