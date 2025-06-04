@@ -776,7 +776,7 @@
       "create_local_copy": "Создать локальную копию",
       "create_local_copy_help": "Создайте локальную копию этой колоды. Это позволит применить все оставшиеся правки и сохранить их. Обновления и история колоды не будут перенесены.",
       "customizable": {
-        "skill_placeholder": "Выбраать навык",
+        "skill_placeholder": "Выбрать навык",
         "traits_placeholder_few": "Выбрать черты",
         "traits_placeholder_many": "Выбрать черт",
         "traits_placeholder_one": "Выбрать черту"
