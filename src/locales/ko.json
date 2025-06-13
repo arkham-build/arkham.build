@@ -1,6 +1,33 @@
 {
   "translation": {
     "about": {
+      "description": "<p>이 어플리케이션에 표시된 <ffg>〈아컴 호러: 카드 게임〉</ffg>, 의 텍스트 및 그래픽 정보는 모두 © Fantasy Flight Games {{date}}의 소유입니다. 이 어플리케이션은 팬 프로젝트이며 Fantasy Flight Games에서 제작, 보증, 지원하거나 제휴하지 않습니다.</p><p>이 애플리케이션은 〈아컴 호러: 카드 게임〉 커뮤니티를 지원하기 위해 <felix_url>Felix</felix_url> 및 <contrib_url>기여자</contrib_url> 분들에 의해 만들어졌습니다. 이 프로젝트의 소스 코드는 <github_url>Github</github_url>에서 확인할 수 있습니다. 피드백 및 버그 보고는 Github 이슈 또는 Mythos Busters 디스코드 서버의 전용 채널을 통해 환영합니다.</p><p>모든 아트워크와 일러스트는 해당 제작자의 지적 재산입니다. All 〈아컴 호러: 카드 게임〉 이미지와 그래픽의 저작권은 Fantasy Flight Games에 있습니다.</p>",
+      "hall_of_fame": {
+        "arkham_db": "OAuth 액세스, 구조화된 카드 데이터, 그리고 수년간 커뮤니티의 중추적인 역할을 해왔습니다.",
+        "card_design": "사용자 지정 카드 디자인.",
+        "code": "코드 기반에 대한 상당한 기여.",
+        "customization_api": "맞춤형 카드 요소 시트를 위한 API 접근.",
+        "testing": "초기 버전 개발 중 환자 피드백 및 테스트, 디자인 컨셉.",
+        "title": "명예의 전당",
+        "translation": {
+          "es": "스페인어/Spanish",
+          "fr": "프랑스어/French",
+          "ko": "한국어/Korean (ko)",
+          "pl": "폴란드어/Polish",
+          "ru": "러시아어/Russian",
+          "title": "이 앱은 다음과 같은 기여자 덕분에 여러 언어로 제공됩니다.",
+          "zh": "중국어(간체)/Simplified Chinese"
+        },
+        "zzorba": "아컴카드 API와 아이콘에 액세스하고, 덱 빌더를 위한 질문과 영감을 얻으세요. 여러분이 없었다면 이 프로젝트는 불가능했을 것입니다."
+      },
+      "image_credits": {
+        "404": "404 일러스트 (편집)",
+        "arkham_cards_icons": "아컴카드 아이콘 재사용",
+        "card_icons": "카드 아이콘",
+        "logo": "로고 디자인",
+        "other": "다른 아이콘",
+        "title": "이미지 / 아이콘 크레딧 정보"
+      },
       "title": "정보"
     },
     "app": {
@@ -195,6 +222,7 @@
       },
       "reset": "초기화",
       "seal": "봉인",
+      "set_as_default": "기본 값으로 설정",
       "shroud": "장막",
       "skill": {
         "agility": "민첩",
@@ -667,8 +695,8 @@
         "Bewitching": "환혹",
         "Eldritch Brand": "섬뜩한 낙인",
         "Hunch deck": "직감 덱",
-        "Stick to the Plan": "계획 엄수",
-        "Market deck": "거래 덱"
+        "Market deck": "거래 덱",
+        "Stick to the Plan": "계획 엄수"
       },
       "customization_sheet": "{{name}} 향상 요소 시트",
       "id": "덱 ID",
@@ -819,6 +847,7 @@
           "help": "조사자, 전용 카드 및 이야기 자산 카드는 이 선택에 영향을 받지 않습니다..",
           "placeholder": "팩 선택하기...",
           "section_title": "카드 풀 설정",
+          "selected_cards": "선택된 카드",
           "title": "제한된 카드 풀",
           "use_preset": "캠페인 따르기 사전 설정 사용"
         },
@@ -838,6 +867,7 @@
         },
         "storage_provider": {
           "local": "비공개",
+          "shared": "공개됨",
           "title": "저장소 공급자"
         },
         "taboo": "금기 목록",
