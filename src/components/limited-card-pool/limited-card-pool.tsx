@@ -1,6 +1,9 @@
 import { useStore } from "@/store";
 import type { SealedDeck } from "@/store/lib/types";
-import { selectPackOptions } from "@/store/selectors/lists";
+import {
+  selectLimitedPoolPackOptions,
+  selectPackOptions,
+} from "@/store/selectors/lists";
 import { selectMetadata } from "@/store/selectors/shared";
 import type { Pack } from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
@@ -102,7 +105,7 @@ export function LimitedCardPoolField(props: {
   const { onValueChange, selectedItems } = props;
   const { t } = useTranslation();
 
-  const packs = useStore(selectPackOptions);
+  const packs = useStore(selectLimitedPoolPackOptions);
 
   const items = useMemo(
     () =>

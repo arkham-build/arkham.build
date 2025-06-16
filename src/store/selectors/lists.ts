@@ -1105,6 +1105,22 @@ export const selectPackOptions = createSelector(
   },
 );
 
+export const selectLimitedPoolPackOptions = createSelector(
+  selectCyclesAndPacks,
+  selectActiveList,
+  (cycles, list) => {
+    return cycles.flatMap((cycle) => {
+      if (cycle.reprintPacks.length && cycle.code !== "core") {
+        return filterNewFormat(cycle.reprintPacks, list?.cardType);
+      }
+
+      return cycle.official !== false && cycle.packs.length === 2
+        ? filterNewFormat(cycle.packs, list?.cardType)
+        : [...cycle.reprintPacks, ...cycle.packs];
+    });
+  },
+);
+
 /**
  * Properties
  */
