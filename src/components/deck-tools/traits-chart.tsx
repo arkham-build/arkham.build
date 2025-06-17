@@ -101,6 +101,7 @@ function TraitsChartRow({
                   key={card.code}
                   quantity={deck.slots[card.code]}
                   size="sm"
+                  omitBorders
                 />
               ))}
             </ol>

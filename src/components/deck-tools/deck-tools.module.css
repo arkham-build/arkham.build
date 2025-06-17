@@ -91,6 +91,9 @@
 
 .trait-chart-column-trait {
   width: 100%;
+}
+
+td.trait-chart-column-trait {
   padding: 0;
 }
 
