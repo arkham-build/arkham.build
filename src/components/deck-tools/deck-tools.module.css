@@ -64,8 +64,19 @@
   margin-top: 0.125rem;
 }
 
+.trait-chart-trait-title span {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.trait-chart-item-details-list {
+  margin-left: 2.5rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
 .table-container {
-  max-height: 250px;
+  max-height: 330px;
   width: 100%;
 }
 
@@ -94,7 +105,7 @@
   border-bottom: 1px solid var(--palette-2);
 }
 
-.table :where(tr:hover) {
+.table :where(tr:not(.table-no-hover):hover) {
   background-color: var(--palette-3);
 }
 
@@ -104,6 +115,17 @@
 
 .table tr:not(:last-child) {
   border-bottom: 1px solid var(--palette-2);
+}
+
+.trait-chart-column-trait {
+  width: 100%;
+}
+
+.trait-chart-column-count {
+  width: auto;
+  padding-right: 0.75rem;
+  vertical-align: top;
+  text-align: right;
 }
 
 @media screen and (max-width: 75rem) {
