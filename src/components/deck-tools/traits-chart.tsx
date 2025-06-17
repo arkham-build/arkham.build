@@ -14,9 +14,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ListCard } from "../list-card/list-card";
 import { ListCardInner } from "../list-card/list-card-inner";
-import { Button } from "../ui/button";
 import { Scroller } from "../ui/scroller";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { DefaultTooltip } from "../ui/tooltip";
 import css from "./deck-tools.module.css";
 
 type Props = {
@@ -67,7 +66,6 @@ function TraitsChartRow({
 
   const { i18n, t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const settings = useStore((state) => state.settings);
 
   const cards = Object.values(deck.cards.slots)
     .reduce((acc, { card }) => {
@@ -77,44 +75,32 @@ function TraitsChartRow({
     .sort(makeSortFunction(["name", "level", "position"], metadata, collator));
 
   return (
-    <tr className={open ? css["table-no-hover"] : css["table-hover"]}>
+    <tr className={open ? css["open"] : css["closed"]}>
       <td className={css["trait-chart-column-trait"]}>
         <Root open={open} onOpenChange={setOpen}>
-          <div className={css["trait-chart-trait-title"]}>
-            <Trigger>
-              <Button
-                tooltip={
-                  open
-                    ? t("ui.collapsible.collapse")
-                    : t("ui.collapsible.expand")
-                }
-                variant="bare"
-                size="xs"
-              >
+          <DefaultTooltip
+            tooltip={<TraitsChartTooltip deck={deck} cards={cards} />}
+            paused={open}
+          >
+            <Trigger asChild>
+              <button className={css["trait-chart-title"]} type="button">
                 {open ? <ChevronUpIcon /> : <ChevronDownIcon />}
-              </Button>
-              <Tooltip delay={200} key={trait.x}>
-                <TooltipTrigger asChild>
-                  <span className={css["trait"]}>
-                    {i18n.exists(`common.traits.${trait.x}`)
-                      ? t(`common.traits.${trait.x}`)
-                      : trait.x}
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <TraitsChartTooltip deck={deck} cards={cards} />
-                </TooltipContent>
-              </Tooltip>
+                <span className={css["trait"]}>
+                  {i18n.exists(`common.traits.${trait.x}`)
+                    ? t(`common.traits.${trait.x}`)
+                    : trait.x}
+                </span>
+              </button>
             </Trigger>
-          </div>
+          </DefaultTooltip>
           <Content className={css["trait-chart-item-details"]}>
             <ol className={css["trait-chart-item-details-list"]}>
               {cards.map((card) => (
                 <ListCard
                   card={card}
-                  cardLevelDisplay={settings.cardLevelDisplay}
                   key={card.code}
                   quantity={deck.slots[card.code]}
+                  size="sm"
                 />
               ))}
             </ol>
