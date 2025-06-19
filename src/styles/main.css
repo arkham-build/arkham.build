@@ -852,6 +852,38 @@ svg {
   filter: invert(0.25);
 }
 
+/**
+ Locale-specific styles
+*/
+
+@font-face {
+  font-family: "Gapyeong Hanseokbong";
+  src: url("../assets/fonts/GapyeongHanseokbong-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gapyeong Hanseokbong";
+  src: url("../assets/fonts/GapyeongHanseokbong-Light.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root[lang="ko"] {
+  --font-family-content:
+    "Gapyeong Hanseokbong", "Noto Sans KR",
+    "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic", "맑은 고딕", "Dotum",
+    "Noto Sans Variable", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-ui:
+    "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+    "Nanum Gothic", "맑은 고딕", "Dotum", "Noto Sans Variable", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
 .spin {
   animation: spin 1s linear infinite;
 }
