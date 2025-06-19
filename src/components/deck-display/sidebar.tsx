@@ -61,6 +61,7 @@ type Props = {
   origin: DeckOrigin;
   deck: ResolvedDeck;
 };
+import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 
 export function Sidebar(props: Props) {
   const { className, origin, deck } = props;
@@ -683,7 +684,7 @@ function ArkhamDbDetails(props: { deck: ResolvedDeck }) {
             </p>
             <Button
               as="a"
-              href={`${import.meta.env.VITE_ARKHAMDB_BASE_URL}/deck/view/${deck.id}`}
+              href={`${localizeArkhamDBBaseUrl()}/deck/view/${deck.id}`}
               size="sm"
               rel="noreferrer"
               target="_blank"
