@@ -243,6 +243,7 @@ export function createRelations(metadata: Metadata, tables: LookupTables) {
 
     if (
       card.type_code === "investigator" &&
+      card.deck_limit &&
       !card.duplicate_of_code &&
       !card.alt_art_investigator &&
       !card.alternate_of_code &&
