@@ -1077,6 +1077,7 @@
         "final": "최종"
       },
       "status_installed": "설치됨",
+      "status_update_available": "콘텐츠 갱신",
       "tags": "태그",
       "title": "팬 제작 콘텐츠",
       "types": {
