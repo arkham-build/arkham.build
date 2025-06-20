@@ -122,6 +122,10 @@ td.trait-chart-column-trait {
   }
 }
 
+:lang(ko, zh, zh-Hant, zh-Hans) .trait {
+  font-style: normal;
+}
+
 .trait-chart-item-details-list {
   margin: 0.375rem;
 }

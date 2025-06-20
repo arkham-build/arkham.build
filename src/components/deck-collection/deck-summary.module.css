@@ -87,6 +87,10 @@
   font-size: var(--text-xs);
 }
 
+:lang(ko, zh, zh-Hant, zh-Hans) .sub {
+  font-style: normal;
+}
+
 .meta {
   position: relative;
   grid-area: meta;

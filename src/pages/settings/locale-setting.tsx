@@ -21,6 +21,11 @@ export function LocaleSetting(props: SettingProps) {
     [setSettings],
   );
 
+  const localesOptions = Object.values(LOCALES).map((locale) => ({
+    value: locale.value,
+    label: locale.label,
+  }));
+
   return (
     <Field bordered helpText={t("settings.locale.help")}>
       <FieldLabel as="label" htmlFor="locale-select">
@@ -28,7 +33,7 @@ export function LocaleSetting(props: SettingProps) {
       </FieldLabel>
       <Select
         id="locale-select"
-        options={LOCALES}
+        options={localesOptions}
         required
         value={settings.locale}
         onChange={onSelectChange}

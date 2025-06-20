@@ -2,6 +2,7 @@ import type { Cycle, Pack, TabooSet } from "@/store/services/queries.types";
 import i18n from "@/utils/i18n";
 import i18next from "i18next";
 import { createSelector } from "reselect";
+import { LOCALES } from "./constants";
 
 export function capitalize(s: string | number) {
   const str = s.toString();
@@ -96,4 +97,8 @@ export function shortenPackName(pack: Pack) {
 export function formatDeckOptionString(str: string | undefined) {
   const key = `common.deck_options.${str}`;
   return i18n.exists(key) ? i18n.t(key) : (str ?? "");
+}
+
+export function dataLanguage() {
+  return LOCALES[i18n.language]?.dataLocale;
 }

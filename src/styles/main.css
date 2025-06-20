@@ -253,9 +253,16 @@ small,
   font-size: var(--text-xs);
 }
 
+i,
 em,
 .em {
   font-style: italic;
+}
+
+:lang(zh),
+:lang(ko),
+:lang(zh-Hant) :where(i, em, .em) {
+  font-style: normal;
 }
 
 ol,
@@ -872,16 +879,28 @@ svg {
   font-display: swap;
 }
 
-:root[lang="ko"] {
-  --font-family-content:
-    "Gapyeong Hanseokbong", "Noto Sans KR",
+:lang(ko) {
+  --font-family-content: "Gapyeong Hanseokbong", "Noto Sans KR",
     "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic", "맑은 고딕", "Dotum",
-    "Noto Sans Variable", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-family-ui:
-    "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
-    "Nanum Gothic", "맑은 고딕", "Dotum", "Noto Sans Variable", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    "Noto Sans Variable", -apple-system, BlinkMacSystemFont, ui-sans-serif,
+    sans-serif;
+  --font-family-ui: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+    "Nanum Gothic", "맑은 고딕", "Dotum", "Noto Sans Variable", -apple-system,
+    BlinkMacSystemFont, ui-sans-serif, sans-serif;
+}
+
+:lang(zh, zh-Hans) {
+  --font-family-ui: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "WenQuanYi Micro Hei", -apple-system, BlinkMacSystemFont, ui-sans-serif,
+    sans-serif;
+  --font-family-content: var(--font-family-ui);
+}
+
+:lang(zh-Hant) {
+  --font-family-ui: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC",
+    "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, ui-sans-serif,
+    sans-serif;
+  --font-family-content: var(--font-family-ui);
 }
 
 .spin {

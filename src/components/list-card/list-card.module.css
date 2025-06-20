@@ -167,6 +167,10 @@
   vertical-align: middle;
 }
 
+:lang(ko, zh, zh-Hant, zh-Hans) .subname {
+  font-style: normal;
+}
+
 .taboo {
   flex: 0 0 auto;
   font-size: var(--text-2xs);
