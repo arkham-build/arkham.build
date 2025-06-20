@@ -9,7 +9,7 @@
   font-weight: 700;
 }
 
-:lang(ko, zh, zh-Hant, zh-Hans) .traits {
+:lang(zh, zh-Hant, zh-Hans) .traits {
   font-style: normal;
 }
 
