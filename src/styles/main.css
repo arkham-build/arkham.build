@@ -259,9 +259,7 @@ em,
   font-style: italic;
 }
 
-:lang(zh),
-:lang(ko),
-:lang(zh-Hant) :where(i, em, .em) {
+:lang(ko, zh, zh-Hans, zh-Hant) :where(i, em, .em) {
   font-style: normal;
 }
 
