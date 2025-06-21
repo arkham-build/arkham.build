@@ -259,10 +259,6 @@ em,
   font-style: italic;
 }
 
-:lang(ko, zh, zh-Hans, zh-Hant) :where(i, em, .em) {
-  font-style: normal;
-}
-
 ol,
 ul {
   padding: 0;
