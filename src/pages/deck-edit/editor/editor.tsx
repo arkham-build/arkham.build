@@ -16,10 +16,10 @@ import { isEmpty } from "@/utils/is-empty";
 import { useAccentColor } from "@/utils/use-accent-color";
 import { useResolvedDeckChecked } from "@/utils/use-resolved-deck";
 import { useTranslation } from "react-i18next";
+import { MetaEditor } from "./config-editor";
 import { EditorActions } from "./editor-actions";
 import css from "./editor.module.css";
 import { InvestigatorListcard } from "./investigator-listcard";
-import { MetaEditor } from "./meta-editor";
 
 type TabDefinition = {
   value: string;

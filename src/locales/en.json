@@ -843,6 +843,7 @@
         "taboo": "Taboo list",
         "tags": "Tags",
         "tags_help": "Enter tags, separated by spaces",
+        "title_and_tags": "Edit Title & Tags",
         "version": {
           "switch": "Switch",
           "title": "Other versions"

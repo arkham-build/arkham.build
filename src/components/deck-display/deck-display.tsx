@@ -5,7 +5,12 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import type { History } from "@/store/selectors/decks";
 import { isEmpty } from "@/utils/is-empty";
 import { useAccentColor } from "@/utils/use-accent-color";
-import { BookOpenTextIcon, ChartAreaIcon, FileClockIcon } from "lucide-react";
+import {
+  BookOpenTextIcon,
+  ChartAreaIcon,
+  FileClockIcon,
+  PencilIcon,
+} from "lucide-react";
 import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import DeckDescription from "../deck-description";
@@ -15,7 +20,9 @@ import { Decklist } from "../decklist/decklist";
 import { DecklistValidation } from "../decklist/decklist-validation";
 import type { ViewMode } from "../decklist/decklist.types";
 import { LimitedCardPoolTag, SealedDeckTag } from "../limited-card-pool";
-import { Dialog } from "../ui/dialog";
+import { Button } from "../ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { Modal, ModalContent } from "../ui/modal";
 import { Plane } from "../ui/plane";
 import {
   Tabs,
@@ -24,10 +31,13 @@ import {
   TabsTrigger,
   useTabUrlState,
 } from "../ui/tabs";
-import css from "./deck-display.module.css";
 import { DeckHistory } from "./deck-history/deck-history";
 import { Sidebar } from "./sidebar";
 import type { DeckOrigin } from "./types";
+
+import { useDialogContextChecked } from "@/components/ui/dialog.hooks";
+import { Field, FieldLabel } from "@/components/ui/field";
+import css from "./deck-display.module.css";
 
 export type DeckDisplayProps = {
   deck: ResolvedDeck;
@@ -54,11 +64,86 @@ export function DeckDisplay(props: DeckDisplayProps) {
     [setCurrentTab],
   );
 
+  type TitleEditModalProps = {
+    deck: ResolvedDeck;
+  };
+
+  function TitleEditModal(props: TitleEditModalProps) {
+    const { deck } = props;
+
+    const modalContext = useDialogContextChecked();
+
+    const onCloseModal = useCallback(() => {
+      modalContext?.setOpen(false);
+    }, [modalContext]);
+
+    const handleSubmit = (event: React.BaseSyntheticEvent) => {
+      event.preventDefault();
+
+      const editedDeck = { ...deck };
+      editedDeck.name = event.target.name.value;
+      editedDeck.tags = event.target.tags.value;
+
+      //Store Goes here... probably? You know better than I.
+    };
+
+    return (
+      <DialogContent>
+        <Modal size="45rem" onClose={onCloseModal}>
+          <ModalContent
+            title={t("deck_edit.config.title_and_tags")}
+            style={cssVariables}
+          >
+            <form onSubmit={handleSubmit}>
+              <Field full padded>
+                <FieldLabel>{t("deck_edit.config.name")}</FieldLabel>
+                <input
+                  type="text"
+                  name="name"
+                  required={true}
+                  defaultValue={deck.name}
+                />
+              </Field>
+              <Field full padded helpText={t("deck_edit.config.tags_help")}>
+                <FieldLabel>{t("deck_edit.config.tags")}</FieldLabel>
+                <input type="text" name="tags" defaultValue={deck.tags} />
+              </Field>
+              <div style={{ marginTop: "0.375rem" }}>
+                <Button variant="primary" type="submit">
+                  {t("deck_edit.save_short")}
+                </Button>
+                <Button onClick={onCloseModal} variant="bare">
+                  {t("common.cancel")}
+                </Button>
+              </div>
+            </form>
+          </ModalContent>
+        </Modal>
+      </DialogContent>
+    );
+  }
+
   return (
     <AppLayout title={deck ? deck.name : ""}>
       <main className={css["main"]} style={cssVariables}>
         <header className={css["header"]}>
           <h1 className={css["title"]} data-testid="view-title">
+            <Dialog>
+              {" "}
+              {/*The quick edit button*/}
+              <DialogTrigger asChild>
+                <Button
+                  tooltip={t("deck_edit.config.title_and_tags")}
+                  iconOnly={true}
+                  variant="bare"
+                >
+                  <PencilIcon />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <TitleEditModal deck={deck} />
+              </DialogContent>
+            </Dialog>
             {deck.name} <small>{deck.version}</small>
           </h1>
           <div className={css["tags"]}>
