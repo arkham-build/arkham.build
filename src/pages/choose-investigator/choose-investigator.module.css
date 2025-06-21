@@ -9,10 +9,6 @@
   font-weight: 700;
 }
 
-:lang(zh, zh-Hant, zh-Hans) .traits {
-  font-style: normal;
-}
-
 .signatures {
   display: inline-flex;
   flex-flow: row wrap;

@@ -406,10 +406,6 @@
   flex: 0 0 auto;
 }
 
-:lang(ko) :where(.sub, .flavor) {
-  font-style: normal;
-}
-
-:lang(zh, zh-Hant, zh-Hans) :where(.sub, .flavor, .details-traits) {
+:lang(ko, zh, zh-Hant, zh-Hans) :where(.sub) {
   font-style: normal;
 }
