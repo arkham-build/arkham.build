@@ -81,7 +81,9 @@ function App() {
 function Providers(props: { children: React.ReactNode }) {
   return (
     <ErrorBoundary>
-      <ToastProvider>{props.children}</ToastProvider>
+      <Suspense>
+        <ToastProvider>{props.children}</ToastProvider>
+      </Suspense>
     </ErrorBoundary>
   );
 }

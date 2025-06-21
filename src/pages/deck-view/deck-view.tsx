@@ -115,7 +115,7 @@ function LocalDeckView({ id }: { id: Id }) {
   const history = useStore((state) => selectDeckHistoryCached(state, id));
 
   const resolvedDeck = useStore((state) =>
-    selectResolvedDeckById(state, id, true),
+    selectResolvedDeckById(state, id, false),
   );
   if (!resolvedDeck) return null;
 

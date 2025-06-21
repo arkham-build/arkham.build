@@ -26,6 +26,11 @@ export type AppSlice = {
 
   saveDeck(deckId: Id): Promise<Id>;
 
+  updateNameAndTag(
+    deckId: Id,
+    edit: { name: string; tags: string },
+  ): Promise<Id>;
+
   upgradeDeck(payload: {
     id: Id;
     xp: number;

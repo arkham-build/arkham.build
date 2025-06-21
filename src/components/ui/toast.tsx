@@ -1,5 +1,7 @@
+import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { randomId } from "@/utils/crypto";
 import { cx } from "@/utils/cx";
+import { FloatingPortal } from "@floating-ui/react";
 import {
   CheckCircleIcon,
   CircleAlertIcon,
@@ -35,19 +37,21 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <ToastContext.Provider value={ctx}>
-      {children}
-      <section className={css["toast-container"]}>
-        {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            toast={toast}
-            id={toast.id}
-            onRemove={dismissToast}
-          />
-        ))}
-      </section>
-    </ToastContext.Provider>
+    <FloatingPortal id={FLOATING_PORTAL_ID}>
+      <ToastContext.Provider value={ctx}>
+        {children}
+        <section className={css["toast-container"]}>
+          {toasts.map((toast) => (
+            <Toast
+              key={toast.id}
+              toast={toast}
+              id={toast.id}
+              onRemove={dismissToast}
+            />
+          ))}
+        </section>
+      </ToastContext.Provider>
+    </FloatingPortal>
   );
 }
 

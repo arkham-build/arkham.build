@@ -9,9 +9,9 @@ import {
   BookOpenTextIcon,
   ChartAreaIcon,
   FileClockIcon,
-  PencilIcon,
+  SquarePenIcon,
 } from "lucide-react";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DeckDescription from "../deck-description";
 import { DeckTags } from "../deck-tags";
@@ -40,6 +40,9 @@ import type { DeckOrigin } from "./types";
 
 import { useDialogContextChecked } from "@/components/ui/dialog.hooks";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { useStore } from "@/store";
+import { useToast } from "../ui/toast.hooks";
+import { DefaultTooltip } from "../ui/tooltip";
 import css from "./deck-display.module.css";
 
 export type DeckDisplayProps = {
@@ -67,88 +70,26 @@ export function DeckDisplay(props: DeckDisplayProps) {
     [setCurrentTab],
   );
 
-  type TitleEditModalProps = {
-    deck: ResolvedDeck;
-  };
-
-  function TitleEditModal(props: TitleEditModalProps) {
-    const { deck } = props;
-
-    const modalContext = useDialogContextChecked();
-
-    const onCloseModal = useCallback(() => {
-      modalContext?.setOpen(false);
-    }, [modalContext]);
-
-    const handleSubmit = (event: React.BaseSyntheticEvent) => {
-      event.preventDefault();
-
-      const editedDeck = { ...deck };
-      editedDeck.name = event.target.name.value;
-      editedDeck.tags = event.target.tags.value;
-
-      //Store Goes here... probably? You know better than I.
-    };
-
-    return (
-      <DialogContent>
-        <Modal size="45rem" onClose={onCloseModal}>
-          <ModalContent
-            title={t("deck_edit.config.title_and_tags")}
-            style={cssVariables}
-          >
-            <form onSubmit={handleSubmit}>
-              <Field full padded>
-                <FieldLabel>{t("deck_edit.config.name")}</FieldLabel>
-                <input
-                  type="text"
-                  name="name"
-                  required={true}
-                  defaultValue={deck.name}
-                />
-              </Field>
-              <Field full padded helpText={t("deck_edit.config.tags_help")}>
-                <FieldLabel>{t("deck_edit.config.tags")}</FieldLabel>
-                <input type="text" name="tags" defaultValue={deck.tags} />
-              </Field>
-              <div style={{ marginTop: "0.375rem" }}>
-                <Button variant="primary" type="submit">
-                  {t("deck_edit.save_short")}
-                </Button>
-                <Button onClick={onCloseModal} variant="bare">
-                  {t("common.cancel")}
-                </Button>
-              </div>
-            </form>
-          </ModalContent>
-        </Modal>
-      </DialogContent>
-    );
-  }
-
   return (
     <AppLayout title={deck ? deck.name : ""}>
       <main className={css["main"]} style={cssVariables}>
         <header className={css["header"]}>
-          <h1 className={css["title"]} data-testid="view-title">
-            <Dialog>
-              {" "}
-              {/*The quick edit button*/}
-              <DialogTrigger asChild>
-                <Button
-                  tooltip={t("deck_edit.config.title_and_tags")}
-                  iconOnly={true}
-                  variant="bare"
-                >
-                  <PencilIcon />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <TitleEditModal deck={deck} />
-              </DialogContent>
-            </Dialog>
-            {deck.name} <small>{deck.version}</small>
-          </h1>
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className={css["title-modal-trigger"]} type="button">
+                <DefaultTooltip tooltip={t("deck_edit.config.title_and_tags")}>
+                  <SquarePenIcon className={css["title-modal-icon"]} />
+                </DefaultTooltip>
+                <h1 className={css["title"]} data-testid="view-title">
+                  {deck.name} <small>{deck.version}</small>
+                </h1>
+              </button>
+            </DialogTrigger>
+            <DialogContent>
+              <TitleEditModal deck={deck} />
+            </DialogContent>
+          </Dialog>
+
           <div className={css["tags"]}>
             <DeckTags
               tags={
@@ -262,5 +203,102 @@ export function DeckDisplay(props: DeckDisplayProps) {
         </div>
       </main>
     </AppLayout>
+  );
+}
+
+type TitleEditModalProps = {
+  deck: ResolvedDeck;
+};
+
+function TitleEditModal(props: TitleEditModalProps) {
+  const { deck } = props;
+
+  const [loading, setLoading] = useState(false);
+
+  const { t } = useTranslation();
+  const toast = useToast();
+  const modalContext = useDialogContextChecked();
+  const cssVariables = useAccentColor(deck.investigatorBack.card.faction_code);
+
+  const updateNameAndTag = useStore((state) => state.updateNameAndTag);
+
+  const onCloseModal = useCallback(() => {
+    modalContext?.setOpen(false);
+  }, [modalContext]);
+
+  const handleSubmit = useCallback(
+    async (evt: React.FormEvent) => {
+      evt.preventDefault();
+
+      setLoading(true);
+
+      const toastId = toast.show({
+        children: t("deck_edit.save_loading"),
+        variant: "loading",
+      });
+
+      try {
+        const values = new FormData(evt.target as HTMLFormElement);
+
+        await updateNameAndTag(deck.id, {
+          name: values.get("name")?.toString() || "",
+          tags: values.get("tags")?.toString() || "",
+        });
+
+        toast.show({
+          children: t("deck_edit.save_success"),
+          variant: "success",
+        });
+
+        onCloseModal();
+      } catch (err) {
+        toast.show({
+          children: t("deck_edit.save_error", {
+            message: (err as Error).message,
+          }),
+          variant: "error",
+        });
+      } finally {
+        toast.dismiss(toastId);
+        setLoading(false);
+      }
+    },
+    [deck.id, updateNameAndTag, onCloseModal, toast, t],
+  );
+
+  return (
+    <DialogContent>
+      <Modal size="45rem" onClose={onCloseModal}>
+        <ModalContent
+          title={t("deck_edit.config.title_and_tags")}
+          style={cssVariables}
+        >
+          <form onSubmit={handleSubmit}>
+            <Field full padded>
+              <FieldLabel>{t("deck_edit.config.name")}</FieldLabel>
+              <input
+                autoComplete="off"
+                type="text"
+                name="name"
+                required
+                defaultValue={deck.name}
+              />
+            </Field>
+            <Field full padded helpText={t("deck_edit.config.tags_help")}>
+              <FieldLabel>{t("deck_edit.config.tags")}</FieldLabel>
+              <input type="text" name="tags" defaultValue={deck.tags} />
+            </Field>
+            <div className={css["title-modal-footer"]}>
+              <Button disabled={loading} variant="primary" type="submit">
+                {t("deck_edit.save_short")}
+              </Button>
+              <Button onClick={onCloseModal} variant="bare">
+                {t("common.cancel")}
+              </Button>
+            </div>
+          </form>
+        </ModalContent>
+      </Modal>
+    </DialogContent>
   );
 }

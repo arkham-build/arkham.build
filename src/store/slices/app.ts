@@ -463,6 +463,64 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       await state.deleteAllShares().catch(console.error);
     }
   },
+  // TECH DEBT: Generalize.
+  async updateNameAndTag(deckId, edit) {
+    const state = get();
+
+    const deck = state.data.decks[deckId];
+    assert(deck, `Deck ${deckId} does not exist.`);
+
+    let nextDeck = {
+      ...deck,
+      ...edit,
+    };
+
+    nextDeck.date_update = new Date().toISOString();
+    nextDeck.version = incrementVersion(deck.version);
+
+    if (nextDeck.source === "arkhamdb") {
+      state.setRemoting("arkhamdb", true);
+
+      try {
+        const adapter = new syncAdapters.arkhamdb(state);
+        nextDeck = adapter.in(await updateDeck(adapter.out(nextDeck)));
+      } catch (err) {
+        disconnectProviderIfUnauthorized("arkhamdb", err, set);
+        throw err;
+      } finally {
+        state.setRemoting("arkhamdb", false);
+      }
+    } else {
+      await state.updateShare(nextDeck);
+    }
+
+    set((prev) => {
+      const edit = prev.deckEdits[deckId];
+      const nextEdits = { ...prev.deckEdits };
+
+      if (edit) {
+        const { name: _, tags: __, ...rest } = edit;
+        nextEdits[deckId] = rest;
+      }
+
+      return {
+        deckEdits: nextEdits,
+        data: {
+          ...prev.data,
+          decks: {
+            ...prev.data.decks,
+            [nextDeck.id]: nextDeck,
+          },
+        },
+      };
+    });
+
+    tryEnablePersistence();
+
+    await state.dehydrate("app", "edits");
+
+    return nextDeck.id;
+  },
   async saveDeck(deckId) {
     const state = get();
     const metadata = selectMetadata(state);
