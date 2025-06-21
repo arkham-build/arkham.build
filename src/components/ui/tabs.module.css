@@ -1,7 +1,11 @@
 .list {
+  --background-active: var(--palette-point-five);
+  --background-inactive: transparent;
+  --color-border: var(--palette-1);
+
   display: flex;
   flex-flow: row wrap;
-  border-bottom: 1px solid var(--palette-1);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .list > * {
@@ -10,8 +14,10 @@
 }
 
 .trigger {
+  background-color: var(--background-inactive) !important;
   container-type: inline-size;
   border-radius: 0;
+  border-width: 0;
   border-bottom: 0.125rem solid transparent;
   min-height: 1rem;
   padding: 0.375rem 0.125rem;
@@ -41,7 +47,7 @@
 }
 
 .trigger[data-state="active"] {
-  background-color: var(--palette-point-five);
+  background-color: var(--background-active) !important;
   border-bottom: 0.125rem solid var(--accent-color-dark, var(--nord-10));
 }
 
@@ -57,4 +63,10 @@
   &[data-state="active"] {
     display: block;
   }
+}
+
+:root[data-theme="light"] .list {
+  --background-active: transparent;
+  --background-inactive: transparent;
+  --color-border: var(--palette-1);
 }

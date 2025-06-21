@@ -1,4 +1,4 @@
-import type { DeckMeta } from "../lib/types";
+import type { DeckFanMadeContent } from "../lib/types";
 import type { Deck } from "./data.types";
 
 export type UIState = {
@@ -6,12 +6,12 @@ export type UIState = {
     initialized: boolean;
     showUnusableCards: boolean;
     showLimitedAccess: boolean;
-    fanMadeContentCache: Partial<DeckMeta["fan_made_content"]>;
+    fanMadeContentCache: Partial<DeckFanMadeContent>;
   };
 };
 
 export type UISlice = UIState & {
   setShowUnusableCards(value: boolean): void;
   setShowLimitedAccess(value: boolean): void;
-  cacheFanMadeContent(deck: Deck): undefined;
+  cacheFanMadeContent(decks: Deck[]): undefined;
 };

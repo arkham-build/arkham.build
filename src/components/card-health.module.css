@@ -4,4 +4,5 @@
   flex-flow: row nowrap;
   gap: 0.25rem;
   font-size: calc(1.5 * var(--card-text-size, var(--text-sm)));
+  color: var(--white);
 }

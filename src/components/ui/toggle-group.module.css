@@ -28,15 +28,20 @@
 }
 
 .item {
+  --background-inactive: var(--palette-point-five);
+  --background-active: var(--palette-2);
+  --color-border: var(--palette-2);
   --active-color: var(--palette-6);
+
+  background: var(--background-inactive);
   border-style: solid;
-  border-color: var(--palette-2);
+  border-color: var(--color-border);
   border-top-width: 1px;
   border-bottom-width: 1px;
   border-right-width: 1px;
   border-left-width: 0;
   color: currentColor;
-  border-right-color: var(--palette-2);
+  border-right-color: var(--color-border);
   display: inline-flex;
   gap: 0.25rem;
   align-items: center;
@@ -56,13 +61,13 @@
 
   &:last-child {
     border-radius: 0 var(--rounded-xl) var(--rounded-xl) 0;
-    border-right-color: var(--palette-2);
+    border-right-color: var(--color-border);
   }
 
   &[data-state="on"] {
     color: var(--active-color);
-    background: var(--palette-2);
-    border-right-color: var(--palette-2);
+    background: var(--background-active);
+    border-right-color: var(--color-border);
   }
 
   &:focus-visible {
@@ -72,12 +77,18 @@
   &:hover:not([data-state="on"]),
   &:active:not([data-state="on"]),
   &:focus-visible:not([data-state="on"]) {
-    background: var(--palette-1);
+    background: var(--background-inactive);
   }
 
   &:hover[data-state="on"],
   &:active[data-state="on"],
   &:focus-visible[data-state="on"] {
-    background: var(--palette-2);
+    background: var(--background-active);
   }
+}
+
+:root[data-theme="light"] .item {
+  --background-active: var(--white);
+  --background-inactive: var(--palette-1);
+  --color-border: var(--palette-2);
 }

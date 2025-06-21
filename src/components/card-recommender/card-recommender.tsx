@@ -58,9 +58,9 @@ export const CardRecommender = forwardRef(function CardRecommender(
         string,
         string,
       ];
-      // We don't want to recommend signatures, story cards, or weaknesses
+      // We don't want to recommend fan-made cards signatures, story cards, or weaknesses.
       const toRecommend = listState.cards
-        .filter((card) => card.xp != null)
+        .filter((card) => card.official && card.xp != null)
         .map((card) => card.code);
 
       const canonicalFrontCode =
@@ -81,7 +81,7 @@ export const CardRecommender = forwardRef(function CardRecommender(
           dateRangeStrings,
         );
     },
-    listState?.cards, //Allows the new version of listState.cards to be a subset of the old one
+    listState?.cards.map((c) => c.code), //Allows the new version of listState.cards to be a subset of the old one
     [
       resolvedDeck?.id,
       resolvedDeck?.investigator_code,

@@ -20,12 +20,15 @@ export type DecklistConfig = {
 
 export type Locale = string;
 
+export type DeckStorageProvider = "local" | "shared" | "arkhamdb";
+
 export type SettingsState = {
   cardLevelDisplay: "icon-only" | "dots" | "text";
   cardListsDefaultContentType: FanMadeContentFilter;
   cardShowCollectionNumber?: boolean;
   cardSkillIconsDisplay: "simple" | "as_printed";
   collection: Record<string, number>; // track as "quantity" owned to accomodate the core set.
+  defaultStorageProvider: DeckStorageProvider;
   flags?: Record<string, boolean>;
   fontSize: number;
   hideWeaknessesByDefault: boolean;

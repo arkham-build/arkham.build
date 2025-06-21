@@ -11,6 +11,7 @@ import {
 } from "@/store/lib/deck-validation";
 import { selectMetadata } from "@/store/selectors/shared";
 import { displayAttribute } from "@/utils/card-utils";
+import { formatDeckOptionString } from "@/utils/formatting";
 import { InfoIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Collapsible, CollapsibleContent } from "../ui/collapsible";
@@ -70,7 +71,7 @@ export function DecklistValidation(props: Props) {
                   t("deck.validation.invalid_investigator")}
                 {isDeckOptionsError(error) && (
                   <>
-                    {t(`common.deck_options.${error.details.error}`)}{" "}
+                    {formatDeckOptionString(error.details.error)}{" "}
                     {error.details.count}
                   </>
                 )}

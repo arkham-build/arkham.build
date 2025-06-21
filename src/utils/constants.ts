@@ -1,5 +1,13 @@
 import localPacks from "@/store/services/data/packs.json";
 
+type Locale = {
+  value: string;
+  label: string;
+  unicode?: boolean;
+  dataLocale?: string; // TECH DEBT: For mixed locales like zh-Hans/zh-Hant
+  additionalCharacters?: string; // For languages with additional characters like ß or ñ
+};
+
 /**
  * If your language uses a different alphabet, please set the `unicode` flag here to `true`.
  * This is only necessary if the alphabet is not based on the latin alphabet at all.
@@ -8,16 +16,21 @@ import localPacks from "@/store/services/data/packs.json";
  * Example of where this is not necessary: French, Polish.
  * Some languages add specific additional characters to the latin alphabet. These can be added as `additionalCharacters`.
  */
-export const LOCALES = [
-  { value: "zh", label: "简体中文/Chinese (zh)", unicode: true },
-  { value: "de", label: "Deutsch (de)", additionalCharacters: "ß" },
-  { value: "en", label: "English (en)" },
-  { value: "es", label: "Español (es)", additionalCharacters: "ñ" },
-  { value: "fr", label: "Français (fr)" },
-  { value: "ko", label: "한국어/Korean (ko)", unicode: true },
-  { value: "pl", label: "Polski (pl)" },
-  { value: "ru", label: "Русский (ru)", unicode: true },
-];
+export const LOCALES: Record<string, Locale> = {
+  de: { value: "de", label: "Deutsch (de)", additionalCharacters: "ß" },
+  en: { value: "en", label: "English (en)" },
+  es: { value: "es", label: "Español (es)", additionalCharacters: "ñ" },
+  fr: { value: "fr", label: "Français (fr)" },
+  ko: { value: "ko", label: "한국어/Korean (ko)", unicode: true },
+  pl: { value: "pl", label: "Polski (pl)" },
+  ru: { value: "ru", label: "Русский (ru)", unicode: true },
+  zh: {
+    value: "zh",
+    label: "简体中文/Chinese (zh)",
+    unicode: true,
+    dataLocale: "zh-Hant",
+  },
+};
 
 export const FLOATING_PORTAL_ID = "floating";
 

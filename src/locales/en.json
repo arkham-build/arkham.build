@@ -1,6 +1,33 @@
 {
   "translation": {
     "about": {
+      "description": "<p>The information presented in this app about <ffg>Arkham Horror: The Card Game™</ffg>, both textual and graphical, is © Fantasy Flight Games {{date}}. This app is a fan project and is not produced, endorsed, or supported by, or affiliated with Fantasy Flight Games.</p><p>This application was created by <felix_url>Felix</felix_url> and <contrib_url>contributors</contrib_url> to support the Arkham Horror: The Card Game community. The source code of this project is available at <github_url>Github</github_url>. Feedback and bug reports are welcome via Github issues or the dedicated channel on the Mythos Busters discord server.</p><p>All artwork and illustrations are the intellectual property of their respective creators. All Arkham Horror: The Card Game™ images and graphics are copyrighted by Fantasy Flight Games.</p>",
+      "hall_of_fame": {
+        "arkham_db": "OAuth access, structured card data and many years of being the backbone of the community.",
+        "card_design": "Custom card design.",
+        "code": "Significant contributions to the codebase.",
+        "customization_api": "API access to draw customization sheets.",
+        "testing": "Patient feedback and testing during development of the initial version, design concepts.",
+        "title": "Hall of Fame",
+        "translation": {
+          "es": "Spanish",
+          "fr": "French",
+          "ko": "Korean",
+          "pl": "Polish",
+          "ru": "Russian",
+          "title": "This app is available in multiple languages thanks to the following contributors",
+          "zh": "Simplified Chinese"
+        },
+        "zzorba": "Access to the ArkhamCards API and icons, assistance with questions and inspiration for the deckbuilder. Without you this project would not have been possible."
+      },
+      "image_credits": {
+        "404": "404 illustration (edit)",
+        "arkham_cards_icons": "Re-used ArkhamCards icons",
+        "card_icons": "Card icons",
+        "logo": "Logo design",
+        "other": "Other icons",
+        "title": "Image / Icon credits"
+      },
       "title": "About"
     },
     "app": {
@@ -195,6 +222,7 @@
       },
       "reset": "Reset",
       "seal": "Seal",
+      "set_as_default": "Set as default",
       "shroud": "Shroud",
       "skill": {
         "agility": "Agility",
@@ -667,8 +695,8 @@
         "Bewitching": "Bewitching",
         "Eldritch Brand": "Eldritch Brand",
         "Hunch deck": "Hunch deck",
-        "Stick to the Plan": "Stick to the Plan",
-        "Market deck": "Market deck"
+        "Market deck": "Market deck",
+        "Stick to the Plan": "Stick to the Plan"
       },
       "customization_sheet": "Customization sheet for {{name}}",
       "id": "Deck ID",
@@ -819,6 +847,7 @@
           "help": "Investigators, signature cards and story assets are not affected by this selection.",
           "placeholder": "Select packs...",
           "section_title": "Card pool settings",
+          "selected_cards": "Selected cards",
           "title": "Limited card pool",
           "use_preset": "Use campaign-playalong preset"
         },
@@ -838,6 +867,7 @@
         },
         "storage_provider": {
           "local": "Private",
+          "shared": "Shared",
           "title": "Storage provider"
         },
         "taboo": "Taboo list",
@@ -1048,6 +1078,7 @@
         "final": "Final"
       },
       "status_installed": "Installed",
+      "status_update_available": "Update content",
       "tags": "Tags",
       "title": "Fan-made content",
       "types": {

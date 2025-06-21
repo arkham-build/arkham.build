@@ -10,6 +10,7 @@ import {
 } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
+import { dataLanguage } from "@/utils/formatting";
 import type { ReferenceType } from "@floating-ui/react";
 import { FileWarningIcon, StarIcon } from "lucide-react";
 import { useCallback } from "react";
@@ -135,6 +136,7 @@ export function ListCardInner(props: Props) {
         !!renderCardAfter && css["has-after"],
       )}
       data-testid={`listcard-${card.code}`}
+      lang={dataLanguage()}
     >
       <div className={css["listcard-action"]}>
         {!!renderCardAction && renderCardAction(card, quantity)}

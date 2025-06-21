@@ -183,7 +183,7 @@ function Scans(props: {
               getListCardProps={getListCardProps}
             />
           </li>
-          {!!card.customization_options && (
+          {!!card.customization_options && card.official && (
             <li>
               <figure className={css["scan"]}>
                 <div className={css["scan-images"]}>

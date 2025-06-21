@@ -25,7 +25,7 @@ import { cx } from "@/utils/cx";
 import { capitalize, formatDate } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { parseMarkdown } from "@/utils/markdown";
-import { useQuery } from "@/utils/use-query";
+import { type QueryState, useQuery } from "@/utils/use-query";
 import {
   BookDashedIcon,
   CheckIcon,
@@ -59,6 +59,8 @@ export function FanMadeContent(props: SettingProps) {
   const toast = useToast();
 
   const addFanMadeProject = useStore((state) => state.addFanMadeProject);
+
+  const listingsQuery = useQuery(queryFanMadeProjects);
 
   const onAddProject = useCallback(
     async (payload: unknown) => {
@@ -94,8 +96,8 @@ export function FanMadeContent(props: SettingProps) {
   return (
     <div className={css["container"]}>
       <DisplaySettings {...props} />
-      <Collection />
-      <Registry onAddProject={onAddProject} />
+      <Collection onAddProject={onAddProject} listingsQuery={listingsQuery} />
+      <Registry onAddProject={onAddProject} listingsQuery={listingsQuery} />
     </div>
   );
 }
@@ -154,15 +156,22 @@ function DisplaySettings(props: SettingProps) {
   );
 }
 
-function Collection() {
+type RegistryProps = {
+  onAddProject: (payload: unknown) => Promise<void>;
+  listingsQuery: QueryState<FanMadeProjectListing[]>;
+};
+
+function Collection({ onAddProject, listingsQuery }: RegistryProps) {
   const { t } = useTranslation();
+
+  const { onAddFromRegistry } = useProjectRegistry(onAddProject);
 
   const owned = useStore(selectOwnedFanMadeProjects);
 
   const removeFanMadeProject = useStore((state) => state.removeFanMadeProject);
 
   return (
-    <section className={css["section"]}>
+    <section className={css["section"]} data-testid="collection">
       <header className={css["header"]}>
         <h2 className={css["title"]}>
           {t("fan_made_content.installed_content")}
@@ -179,8 +188,22 @@ function Collection() {
       <div className={css["list"]}>
         {owned.map((project) => {
           const { meta } = project;
+
+          const hasRemote = !!meta.url;
+
+          const listing = listingsQuery.data?.find(
+            (listing) => listing.meta.code === meta.code,
+          );
+
           return (
             <ProjectCard key={meta.code} project={project}>
+              {hasRemote && listing && (
+                <ProjectInstallStatus
+                  installed={project}
+                  remote={listing}
+                  onUpdate={onAddFromRegistry}
+                />
+              )}
               <Dialog>
                 <DialogTrigger asChild>
                   <Button size="sm" data-testid="collection-project-view-cards">
@@ -206,86 +229,14 @@ function Collection() {
   );
 }
 
-function Registry({
-  onAddProject,
-}: { onAddProject: (payload: unknown) => Promise<void> }) {
-  const toast = useToast();
-
+function Registry({ onAddProject, listingsQuery }: RegistryProps) {
   const { t } = useTranslation();
-
-  const listings = useQuery(queryFanMadeProjects);
-
-  const onAddQuery = useCallback(
-    async (query: () => Promise<FanMadeProject>) => {
-      let project: FanMadeProject;
-      let toastId: string | undefined;
-
-      try {
-        toastId = toast.show({
-          children: t("fan_made_content.messages.content_loading"),
-          variant: "loading",
-        });
-        project = await query();
-      } catch (err) {
-        toast.show({
-          children: t("fan_made_content.messages.fetch_failed", {
-            error: (err as Error).message,
-          }),
-          variant: "error",
-        });
-
-        console.error(err);
-        return;
-      } finally {
-        if (toastId) toast.dismiss(toastId);
-      }
-
-      await onAddProject(project);
-    },
-    [onAddProject, toast, t],
-  );
-
-  const onAddLocalProject = useCallback(
-    async (evt: React.ChangeEvent<HTMLInputElement>) => {
-      const files = evt.target.files;
-      if (!files?.length) return;
-      for (const file of files) {
-        const text = await file.text();
-        await onAddProject(JSON.parse(text));
-      }
-    },
-    [onAddProject],
-  );
-
-  const onAddFromUrl = useCallback(
-    async (evt: React.FormEvent<HTMLFormElement>) => {
-      evt.preventDefault();
-      evt.stopPropagation();
-
-      const formData = new FormData(evt.currentTarget);
-
-      const url = formData.get("url")?.toString();
-      if (!url) return;
-
-      await onAddQuery(async () => {
-        const res = await fetch(url);
-        assert(res.ok, `Bad status code: ${res.status}`);
-        return res.json();
-      });
-    },
-    [onAddQuery],
-  );
-
-  const onAddFromRegistry = useCallback(
-    async (project: FanMadeProjectListing) => {
-      await onAddQuery(() => queryFanMadeProjectData(project.bucket_path));
-    },
-    [onAddQuery],
-  );
+  const { onAddLocalProject, onAddFromUrl, onAddFromRegistry } =
+    useProjectRegistry(onAddProject);
 
   const owned = useStore((state) => state.fanMadeData.projects);
 
-  const loading = !listings.data && !listings.error;
+  const loading = !listingsQuery.data && !listingsQuery.error;
 
   return (
     <section className={css["section"]}>
@@ -343,10 +294,10 @@ function Registry({
         </Popover>
       </nav>
 
-      {!!listings.error && (
+      {!!listingsQuery.error && (
         <div className={css["error"]}>
           {t("fan_made_content.messages.registry_failed", {
-            error: (listings.error as Error)?.message,
+            error: (listingsQuery.error as Error)?.message,
           })}
         </div>
       )}
@@ -360,25 +311,27 @@ function Registry({
         </div>
       )}
 
-      {listings.data && (
+      {listingsQuery.data && (
         <div className={css["list"]}>
-          {listings.data.map((listing) => {
+          {listingsQuery.data.map((listing) => {
             const { meta } = listing;
             const projectOwned = owned[meta.code];
+
+            const addProject = () => {
+              onAddFromRegistry(listing);
+            };
+
             return (
               <ProjectCard key={meta.code} project={listing}>
                 {projectOwned ? (
-                  <span className={css["installed"]}>
-                    <CheckIcon />
-                    {t("fan_made_content.status_installed")}
-                  </span>
+                  <ProjectInstallStatus
+                    installed={projectOwned}
+                    remote={listing}
+                    onUpdate={onAddFromRegistry}
+                    showFallback
+                  />
                 ) : (
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      onAddFromRegistry(listing);
-                    }}
-                  >
+                  <Button size="sm" onClick={addProject}>
                     <CloudDownloadIcon />{" "}
                     {t("fan_made_content.actions.install")}
                   </Button>
@@ -389,6 +342,40 @@ function Registry({
         </div>
       )}
     </section>
+  );
+}
+
+function ProjectInstallStatus(props: {
+  onUpdate: (listing: FanMadeProjectListing) => Promise<void>;
+  installed?: FanMadeProject;
+  remote?: FanMadeProjectListing;
+  showFallback?: boolean;
+}) {
+  const { installed, remote, showFallback, onUpdate } = props;
+
+  const { t } = useTranslation();
+
+  if (!remote?.meta.date_updated || !installed?.meta.date_updated) {
+    return null;
+  }
+
+  const updateAvailable =
+    new Date(remote.meta.date_updated) > new Date(installed.meta.date_updated);
+
+  if (!updateAvailable) {
+    return showFallback ? (
+      <span className={css["installed"]}>
+        <CheckIcon />
+        {t("fan_made_content.status_installed")}
+      </span>
+    ) : null;
+  }
+
+  return (
+    <Button variant="primary" size="sm" onClick={() => onUpdate(remote)}>
+      <CloudDownloadIcon />
+      {t("fan_made_content.status_update_available")}
+    </Button>
   );
 }
 
@@ -548,6 +535,85 @@ function PreviewModal({ project }: { project: FanMadeProject }) {
       </ModalContent>
     </Modal>
   );
+}
+
+function useProjectRegistry(onAddProject: (payload: unknown) => Promise<void>) {
+  const { t } = useTranslation();
+  const toast = useToast();
+
+  const onAddQuery = useCallback(
+    async (query: () => Promise<FanMadeProject>) => {
+      let project: FanMadeProject;
+      let toastId: string | undefined;
+
+      try {
+        toastId = toast.show({
+          children: t("fan_made_content.messages.content_loading"),
+          variant: "loading",
+        });
+        project = await query();
+      } catch (err) {
+        toast.show({
+          children: t("fan_made_content.messages.fetch_failed", {
+            error: (err as Error).message,
+          }),
+          variant: "error",
+        });
+
+        console.error(err);
+        return;
+      } finally {
+        if (toastId) toast.dismiss(toastId);
+      }
+
+      await onAddProject(project);
+    },
+    [onAddProject, toast, t],
+  );
+
+  const onAddLocalProject = useCallback(
+    async (evt: React.ChangeEvent<HTMLInputElement>) => {
+      const files = evt.target.files;
+      if (!files?.length) return;
+      for (const file of files) {
+        const text = await file.text();
+        await onAddProject(JSON.parse(text));
+      }
+    },
+    [onAddProject],
+  );
+
+  const onAddFromUrl = useCallback(
+    async (evt: React.FormEvent<HTMLFormElement>) => {
+      evt.preventDefault();
+      evt.stopPropagation();
+
+      const formData = new FormData(evt.currentTarget);
+
+      const url = formData.get("url")?.toString();
+      if (!url) return;
+
+      await onAddQuery(async () => {
+        const res = await fetch(url);
+        assert(res.ok, `Bad status code: ${res.status}`);
+        return res.json();
+      });
+    },
+    [onAddQuery],
+  );
+
+  const onAddFromRegistry = useCallback(
+    async (project: FanMadeProjectListing) => {
+      await onAddQuery(() => queryFanMadeProjectData(project.bucket_path));
+    },
+    [onAddQuery],
+  );
+
+  return {
+    onAddLocalProject,
+    onAddFromUrl,
+    onAddFromRegistry,
+  };
 }
 
 function selectMetadataWithPack(metadata: Metadata, project: FanMadeProject) {

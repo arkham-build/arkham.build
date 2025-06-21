@@ -11,7 +11,7 @@ import type { StoreState } from "@/store/slices";
 import type { Deck, DeckProblem, Id } from "@/store/slices/data.types";
 import { displayAttribute, splitMultiValue } from "@/utils/card-utils";
 import { randomId } from "@/utils/crypto";
-import { formatTabooSet } from "@/utils/formatting";
+import { formatDeckOptionString, formatTabooSet } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import {
@@ -156,13 +156,13 @@ export function formatDeckAsText(state: StoreState, deck: ResolvedDeck) {
         if (selection.type === "faction") {
           str = t(`common.factions.${value}`);
         } else if (selection.type === "option") {
-          str = t(`common.deck_options.${(value as OptionSelect).name}`);
+          str = formatDeckOptionString((value as OptionSelect).name);
         } else {
           str = value as string;
         }
       }
 
-      text += `${t(`common.deck_options.${selection.name}`)}: ${str}  \n`;
+      text += `${formatDeckOptionString(selection.name)}: ${str}  \n`;
     }
   }
 

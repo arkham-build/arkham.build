@@ -263,18 +263,23 @@ function DeckEditInner() {
     ],
   );
 
+  const tabHasFilters =
+    currentTool === "card-list" || currentTool === "recommendations";
+
   return (
     <ListLayoutContextProvider>
       <NotesRichTextEditorContextProvider>
         <ListLayout
           filters={
-            <Filters>
-              <DecklistValidation
-                defaultOpen={validation.errors.length < 3}
-                validation={validation}
-              />
-              <CardAccessToggles deck={deck} />
-            </Filters>
+            tabHasFilters ? (
+              <Filters>
+                <DecklistValidation
+                  defaultOpen={validation.errors.length < 3}
+                  validation={validation}
+                />
+                <CardAccessToggles deck={deck} />
+              </Filters>
+            ) : null
           }
           sidebar={
             <Editor

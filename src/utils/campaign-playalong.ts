@@ -1,5 +1,8 @@
 import { RETURN_TO_CYCLES } from "./constants";
 
+export const CAMPAIGN_PLAYALONG_PROJECT_ID =
+  "5b6a1f95-73d1-4059-8af2-b9a645efd625";
+
 const CAMPAIGN_PLAYALONG_PACKS = [
   "core",
   "rcore",

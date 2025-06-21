@@ -16,6 +16,15 @@ const CardTypeSchema = z.enum(PLAYER_TYPE_ORDER);
 
 const SubtypeSchema = z.enum(["basicweakness", "weakness"]);
 
+const CustomizableChoice = z.enum([
+  "choose_card",
+  "choose_trait",
+  "remove_slot",
+  "choose_skill",
+]);
+
+const CustomizableTextChange = z.enum(["replace", "insert", "append"]);
+
 const ProjectMetaSchema = z.object({
   author: z.string().register(z.globalRegistry, {
     description: "Author of the project.",
@@ -77,6 +86,10 @@ const FanMadePackSchema = z.object({
   position: z.optional(z.number()),
 });
 
+const CardPoolExtensionSchema = z.object({
+  type: z.enum(["card"]),
+});
+
 const FanMadeCardSchema = z.object({
   attachments: z.optional(AttachmentsSchema),
   back_flavor: z.optional(z.string()),
@@ -89,14 +102,38 @@ const FanMadeCardSchema = z.object({
   back_traits: z.optional(z.string()),
   bonded_count: z.optional(z.number()),
   bonded_to: z.optional(z.string()),
+  card_pool_extension: z.optional(CardPoolExtensionSchema),
   clues: z.optional(z.nullable(z.number())),
   clues_fixed: z.optional(z.boolean()),
   code: z.string(),
   cost: z.optional(z.nullable(z.number())),
-  // not supported right now. TODO: review if the logic is generic enough.
-  // customization_change: z.optional(z.string()),
-  // customization_options: z.optional(z.array(z.looseObject({}))),
-  // customization_text: z.optional(z.string()),
+  customization_change: z.optional(z.string()),
+  customization_options: z.optional(
+    z.array(
+      z.looseObject({
+        card: z.optional(
+          z.object({
+            type: z.array(z.string()),
+            trait: z.array(z.string()),
+          }),
+        ),
+        choice: z.optional(CustomizableChoice),
+        cost: z.optional(z.number()),
+        deck_limit: z.optional(z.number()),
+        health: z.optional(z.number()),
+        sanity: z.optional(z.number()),
+        position: z.optional(z.number()),
+        quantity: z.optional(z.number()),
+        real_slot: z.optional(z.string()),
+        real_text: z.optional(z.string()),
+        real_traits: z.optional(z.string()),
+        tags: z.optional(z.array(z.string())),
+        text_change: CustomizableTextChange,
+        xp: z.number(),
+      }),
+    ),
+  ),
+  customization_text: z.optional(z.string()),
   deck_requirements: z.optional(z.nullable(z.string())),
   deck_options: z.optional(z.nullable(z.array(z.looseObject({})))),
   deck_limit: z.optional(z.number()),

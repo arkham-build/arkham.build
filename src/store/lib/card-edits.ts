@@ -26,8 +26,9 @@ function applyCustomizations(
     !card.real_customization_change ||
     !card.real_customization_text ||
     !card.customization_options
-  )
+  ) {
     return card;
+  }
 
   const cardCustomizations = customizations[card.code];
   const customizationChanges = card.real_customization_change.split("\n");

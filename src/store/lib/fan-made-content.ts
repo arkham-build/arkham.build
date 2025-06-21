@@ -6,12 +6,15 @@ import {
 import * as z from "zod/v4-mini";
 import type { EncounterSet } from "../services/queries.types";
 import type { StoreState } from "../slices";
+import type { Deck } from "../slices/data.types";
 import type { Metadata } from "../slices/metadata.types";
+import { decodeDeckMeta } from "./deck-meta";
 import {
   type FanMadeCard,
   type FanMadeProject,
   FanMadeProjectSchema,
 } from "./fan-made-content.schemas";
+import type { DeckFanMadeContent } from "./types";
 
 export function parseFanMadeProject(data: unknown): FanMadeProject {
   return z.parse(FanMadeProjectSchema, data);
@@ -125,4 +128,48 @@ export function addProjectToMetadata(meta: Metadata, project: FanMadeProject) {
       meta.encounterSets[encounterSet.code] = encounterSet;
     }
   }
+}
+
+export function buildCacheFromDecks(decks: Deck[]) {
+  return decks.reduce(
+    (acc, deck) => {
+      const meta = decodeDeckMeta(deck);
+
+      const content = meta.fan_made_content;
+
+      if (!content) return acc;
+
+      if (content.cards) {
+        for (const key of Object.keys(content.cards)) {
+          acc.cards[key] = content.cards[key];
+        }
+      }
+
+      if (content.cycles) {
+        for (const key of Object.keys(content.cycles)) {
+          acc.cycles[key] = content.cycles[key];
+        }
+      }
+
+      if (content.packs) {
+        for (const key of Object.keys(content.packs || {})) {
+          acc.packs[key] = content.packs[key];
+        }
+      }
+
+      if (content.encounter_sets) {
+        for (const key of Object.keys(content.encounter_sets)) {
+          acc.encounter_sets[key] = content.encounter_sets[key];
+        }
+      }
+
+      return acc;
+    },
+    {
+      cards: {},
+      cycles: {},
+      packs: {},
+      encounter_sets: {},
+    } as DeckFanMadeContent,
+  );
 }

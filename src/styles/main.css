@@ -4,7 +4,7 @@
   --font-family-content: "Noto Serif Variable", ui-serif, Georgia, Cambria,
     "Times New Roman", Times, serif;
 
-  --white: #f6f6fb;
+  --white: #f3f6f6;
   --nord-0: #2e3440;
   --nord-1: #3b4252;
   --nord-point-five: #353b49;
@@ -61,13 +61,13 @@
   --mythos: var(--nord-4);
   --neutral: var(--nord-4);
 
-  --guardian-dark: hsl(210, 65%, 45%);
-  --seeker-dark: hsl(33, 80%, 45%);
-  --rogue-dark: hsl(124, 55%, 30%);
-  --mystic-dark: hsl(247, 50%, 55%);
-  --survivor-dark: hsl(357, 55%, 50%);
+  --guardian-dark: #1c6e9f;
+  --seeker-dark: #ba6d2a;
+  --rogue-dark: #1e6b24;
+  --mystic-dark: #554c9e;
+  --survivor-dark: #bd2330;
   --neutral-dark: var(--nord-3);
-  --multiclass-dark: hsl(45, 90%, 40%);
+  --multiclass-dark: #997b2d;
   --mythos-dark: var(--nord-3);
 
   --rounded: 0.25rem;
@@ -104,9 +104,6 @@
   --text-mythos: var(--mythos);
   --text-neutral: var(--neutral);
 
-  --color-inverted: var(--nord-6);
-  --focus: var(--nord-6);
-
   --willpower: #2c7fc0;
   --intellect: #7c3c85;
   --combat: #ae4236;
@@ -117,8 +114,11 @@
   --health: #ae4236;
   --sanity: #2c7fc0;
 
+  --color-inverted: var(--nord-6);
+  --color-link: var(--nord-9);
   --color-scrollbar-thumb: #969ba5;
   --color-scrollbar: rgba(0, 0, 0, 0.05);
+  --focus: var(--nord-6);
 
   --background-select: url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA0LjkgMTAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDQuOSAxMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiNkOGRlZTk7fQo8L3N0eWxlPgo8dGl0bGU+YXJyb3dzPC90aXRsZT4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIxLjQsNC43IDIuNSwzLjIgMy41LDQuNyAiLz4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIzLjUsNS4zIDIuNSw2LjggMS40LDUuMyAiLz4KPC9zdmc+);
 }
@@ -148,18 +148,19 @@
   --color-inverted: var(--white);
   --color-scrollbar-thumb: #969ba5;
   --color-scrollbar: rgba(0, 0, 0, 0.05);
+  --color-link: var(--nord-10);
 
   --focus: var(--text);
 
-  --willpower: #165385;
-  --intellect: #7a2d6c;
-  --combat: #8d181e;
-  --agility: #0d6813;
-  --wild: #635120;
+  --willpower: #02456d;
+  --intellect: #56224e;
+  --combat: #6d2511;
+  --agility: #00553a;
+  --wild: #74580b;
 
-  --health: #c92124;
-  --sanity: #18467c;
-  --taboo: #6e4db3;
+  --health: #c91d20;
+  --sanity: #16477f;
+  --taboo: #5a3f91;
 
   --background-select: url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA0LjkgMTAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDQuOSAxMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiMyZTM0NDA7fQo8L3N0eWxlPgo8dGl0bGU+YXJyb3dzPC90aXRsZT4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIxLjQsNC43IDIuNSwzLjIgMy41LDQuNyAiLz4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIzLjUsNS4zIDIuNSw2LjggMS40LDUuMyAiLz4KPC9zdmc+);
 }
@@ -238,7 +239,7 @@ p {
 }
 
 a {
-  color: var(--nord-9);
+  color: var(--color-link);
   text-decoration: underline;
   text-decoration-style: dotted;
 
@@ -252,6 +253,7 @@ small,
   font-size: var(--text-xs);
 }
 
+i,
 em,
 .em {
   font-style: italic;
@@ -474,7 +476,7 @@ kbd {
 .background-guardian {
   background-color: var(--guardian-dark);
   &::after {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.025);
     mask-image: url("../assets/patterns/guardian.svg");
   }
 }
@@ -490,7 +492,7 @@ kbd {
 .background-rogue {
   background: var(--rogue-dark);
   &::after {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.025);
     mask-image: url("../assets/patterns/rogue.svg");
   }
 }
@@ -499,7 +501,7 @@ kbd {
   background: var(--seeker-dark);
 
   &::after {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.025);
     mask-image: url("../assets/patterns/seeker.svg");
   }
 }
@@ -507,7 +509,7 @@ kbd {
 .background-survivor {
   background: var(--survivor-dark);
   &::after {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.0375);
     mask-image: url("../assets/patterns/survivor.svg");
   }
 }
@@ -531,7 +533,7 @@ kbd {
 .background-neutral {
   background: var(--neutral-dark);
   &::after {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.025);
     mask-image: url("../assets/patterns/neutral.svg");
   }
 }
@@ -765,8 +767,6 @@ svg {
 }
 
 :root[data-theme="light"] .longform a {
-  color: currentColor;
-
   &:has(.fg-rogue) {
     text-decoration-color: var(--rogue-dark);
   }
@@ -800,31 +800,31 @@ svg {
   color: currentColor;
 }
 
-.longform .icon-rogue {
+.longform :where(.icon-rogue) {
   color: var(--rogue);
 }
 
-.longform .icon-guardian {
+.longform :where(.icon-guardian) {
   color: var(--guardian);
 }
 
-.longform .icon-seeker {
+.longform :where(.icon-seeker) {
   color: var(--seeker);
 }
 
-.longform .icon-survivor {
+.longform :where(.icon-survivor) {
   color: var(--survivor);
 }
 
-.longform .icon-neutral {
+.longform :where(.icon-neutral) {
   color: var(--text);
 }
 
-.longform .icon-multiclass {
+.longform :where(.icon-multiclass) {
   color: var(--multiclass);
 }
 
-.longform .icon-mythos {
+.longform :where(.icon-mythos) {
   color: var(--mythos);
 }
 
@@ -851,6 +851,50 @@ svg {
 
 :root[data-theme="light"] .external-icon:not(.invert) {
   filter: invert(0.25);
+}
+
+/**
+ Locale-specific styles
+*/
+
+@font-face {
+  font-family: "Gapyeong Hanseokbong";
+  src: url("../assets/fonts/GapyeongHanseokbong-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gapyeong Hanseokbong";
+  src: url("../assets/fonts/GapyeongHanseokbong-Light.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:lang(ko) {
+  --font-family-content: "Gapyeong Hanseokbong", "Noto Sans KR",
+    "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic", "맑은 고딕", "Dotum",
+    "Noto Sans Variable", -apple-system, BlinkMacSystemFont, ui-sans-serif,
+    sans-serif;
+  --font-family-ui: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+    "Nanum Gothic", "맑은 고딕", "Dotum", "Noto Sans Variable", -apple-system,
+    BlinkMacSystemFont, ui-sans-serif, sans-serif;
+}
+
+:lang(zh, zh-Hans) {
+  --font-family-ui: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "WenQuanYi Micro Hei", -apple-system, BlinkMacSystemFont, ui-sans-serif,
+    sans-serif;
+  --font-family-content: var(--font-family-ui);
+}
+
+:lang(zh-Hant) {
+  --font-family-ui: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC",
+    "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, ui-sans-serif,
+    sans-serif;
+  --font-family-content: var(--font-family-ui);
 }
 
 .spin {

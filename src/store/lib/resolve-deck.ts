@@ -52,7 +52,7 @@ export function resolveDeck(
 
   if (!investigator) {
     throw new Error(
-      `Investigator not found in store: ${deck.investigator_code}`,
+      `Investigator not found in store: ${deck.id} - ${deck.investigator_code}`,
     );
   }
 
@@ -81,8 +81,6 @@ export function resolveDeck(
   if (!investigatorFront || !investigatorBack) {
     throw new Error(`Investigator not found: ${deck.investigator_code}`);
   }
-
-  const cardPool = decodeCardPool(deckMeta);
 
   const sealedDeck = decodeSealedDeck(deckMeta);
 
@@ -118,6 +116,8 @@ export function resolveDeck(
 
     return acc;
   }, []);
+
+  const cardPool = decodeCardPool(deck.slots, cards["slots"], deckMeta);
 
   const resolved = {
     ...deck,
@@ -241,14 +241,15 @@ export function extendedDeckTags(deck: ResolvedDeck, includeCardPool = false) {
   }
 
   if (includeCardPool) {
-    if (deck.metaParsed.card_pool) {
+    if (deck.cardPool) {
       tags.push("limited pool");
     }
 
-    if (deck.metaParsed.sealed_deck) {
+    if (deck.sealedDeck) {
       tags.push("sealed");
     }
   }
+
   tags.push(...deckTags(deck));
   return tags;
 }

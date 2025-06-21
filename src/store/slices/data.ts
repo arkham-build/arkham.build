@@ -48,7 +48,7 @@ export const createDataSlice: StateCreator<StoreState, [], [], DataSlice> = (
   },
 
   async importFromFiles(files) {
-    const state = get();
+    let state = get();
     const decks = [];
 
     for (const file of files) {
@@ -57,6 +57,10 @@ export const createDataSlice: StateCreator<StoreState, [], [], DataSlice> = (
         const parsed = JSON.parse(text);
 
         assert(isDeck(parsed), `file '${file.name}' is not an arkhamdb deck`);
+
+        state.cacheFanMadeContent([parsed]);
+        state = get();
+
         const deck = formatDeckImport(state, parsed, "deck");
 
         decks.push(deck);

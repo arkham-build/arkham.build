@@ -239,7 +239,7 @@ function resolveRelationArray(
     collator,
   );
 
-  relations.sort(({ card: a }, { card: b }) => sortFn(a, b));
+  relations.sort((a, b) => sortFn(a.card, b.card));
   return relations;
 }
 

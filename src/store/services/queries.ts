@@ -414,7 +414,7 @@ export async function queryFanMadeProjectData(
   bucketPath: string,
 ): Promise<FanMadeProject> {
   const res = await fetch(
-    `${import.meta.env.VITE_CARD_IMAGE_URL}/${bucketPath}`,
+    `${import.meta.env.VITE_CARD_IMAGE_URL}/${bucketPath}?nonce=${Date.now()}`,
   );
 
   assert(res.ok, `Failed to fetch ${bucketPath}`);

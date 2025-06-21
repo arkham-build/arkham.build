@@ -3,6 +3,7 @@ import { displayAttribute } from "@/utils/card-utils";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { ListCard } from "./list-card/list-card";
+import { ListCardInner } from "./list-card/list-card-inner";
 import { Combobox, type Props as ComboboxProps } from "./ui/combobox/combobox";
 
 type Props = Omit<
@@ -23,8 +24,16 @@ export function CardsCombobox(props: Props) {
   );
 
   const resultRenderer = useCallback((item: Card) => {
-    const name = displayAttribute(item, "name");
-    return item.xp ? `${name} (${item.xp})` : name;
+    return (
+      <ListCardInner
+        cardLevelDisplay="icon-only"
+        cardShowCollectionNumber
+        omitBorders
+        omitThumbnail
+        size="xs"
+        card={item}
+      />
+    );
   }, []);
 
   const itemToString = useCallback((item: Card) => {

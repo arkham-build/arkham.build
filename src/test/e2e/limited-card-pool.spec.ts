@@ -1,6 +1,6 @@
 import path from "node:path";
 import test, { Page, expect } from "@playwright/test";
-import { fillSearch } from "./actions";
+import { fillSearch, importPackFromFile } from "./actions";
 import { mockApiCalls } from "./mocks";
 
 test.beforeEach(async ({ page }) => {
@@ -95,6 +95,70 @@ test.describe("limited card pool", () => {
     await page.getByTestId("combobox-input").fill("drown");
     await page.getByTestId("combobox-menu-item-tdcp").click();
     await expect(page.getByTestId("listcard-11021")).toBeVisible();
+  });
+
+  test("allows adding cards to the card pool", async ({ page }) => {
+    // import CPA pack
+    await page.goto("/settings?tab=fan-made-content");
+    await importPackFromFile(page, "campaign_playalong_project.json");
+    await page.goto("/deck/create/01001");
+
+    // configure limited card pool
+    await page.getByTestId("combobox-input").click();
+    await page.getByTestId("combobox-input").fill("revised core");
+    await page.getByTestId("combobox-menu-item-rcore").click();
+    await page.getByTestId("combobox-input").fill("CPA Basic Contracts");
+    await page
+      .getByTestId("combobox-menu-item-095447eb-1bcb-4203-9328-5a58436abbed")
+      .click();
+    await page.getByTestId("combobox-input").press("Escape");
+    await page.getByTestId("create-save").click();
+
+    // assert a card not in pool is not in card pool
+    await page.getByTestId("search-input").fill("strong-armed");
+    await expect(page.getByTestId("listcard-10031")).not.toBeVisible();
+
+    // add a contract
+    await page.getByTestId("search-input").fill("in the thick");
+    await page
+      .getByTestId("listcard-70b5bb78-8b12-40e4-a567-85f6996e836f")
+      .getByTestId("quantity-increment")
+      .click();
+
+    // open card modal
+    await page
+      .getByTestId("editor-tabs-slots")
+      .getByTestId("listcard-70b5bb78-8b12-40e4-a567-85f6996e836f")
+      .getByTestId("listcard-title")
+      .click();
+
+    // add a card to the card pool
+    let combobox = page.getByTestId(
+      "card_pool_extension_70b5bb78-8b12-40e4-a567-85f6996e836f",
+    );
+    await combobox.getByTestId("combobox-input").click();
+    await combobox.getByTestId("combobox-input").fill("strong-armed");
+    await page.getByTestId("combobox-menu-item-10031").click();
+    await combobox.getByTestId("combobox-input").press("Escape");
+    await combobox.getByTestId("combobox-input").press("Escape");
+
+    // check that card pool is configurable from the config
+    await page.getByTestId("editor-tab-config").click();
+
+    // assert the card is now in the card pool
+    await page.getByTestId("search-input").fill("strong-armed");
+    await expect(page.getByTestId("listcard-10031")).toBeVisible();
+
+    combobox = page
+      .getByTestId("meta-limited-card-pool")
+      .getByTestId("card_pool_extension_70b5bb78-8b12-40e4-a567-85f6996e836f");
+
+    await combobox
+      .getByTestId("combobox-result-10031")
+      .getByTestId("combobox-result-remove")
+      .click();
+
+    await expect(page.getByTestId("listcard-10031")).not.toBeVisible();
   });
 });
 

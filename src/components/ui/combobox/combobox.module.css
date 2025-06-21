@@ -1,4 +1,4 @@
-.combobox > * + * {
+.combobox > :not(:global(.sr-only)) + :not(:global(.sr-only)) {
   margin-top: 0.25rem;
 }
 

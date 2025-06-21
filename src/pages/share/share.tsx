@@ -51,7 +51,7 @@ export function ShareInner(props: { id: string }) {
 
   const query = useCallback(async () => {
     const shareRead = await getShare(id);
-    cacheFanMadeContent(shareRead.data);
+    cacheFanMadeContent([shareRead.data]);
     return shareRead;
   }, [id, cacheFanMadeContent]);
 

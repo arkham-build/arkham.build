@@ -1,6 +1,33 @@
 {
   "translation": {
     "about": {
+      "description": "<p>Die in dieser App dargestellten Informationen über <ffg>Arkham Horror: Das Kartenspiel™</ffg>, sowohl textlich als auch grafisch, sind © Fantasy Flight Games {{date}}. Diese Anwendung ist ein Fanprojekt und wird nicht von Fantasy Flight Games produziert, unterstützt oder gefördert.</p><p>Diese Anwendung wurde von <felix_url>Felix</felix_url> und <contrib_url>Beitragenden</contrib_url> zur Unterstützung der Arkham Horror: Das Kartenspiel™ Community entwickelt. Der Quellcode dieses Projekts ist auf <github_url>Github</github_url> verfügbar. Feedback und Fehlerberichte sind über Github Issues oder den entsprechenden Channel auf dem Mythos Busters Discord Server willkommen.</p><p>Alle Grafiken und Illustrationen sind geistiges Eigentum ihrer gekennzeichneten Urheber. Alle Arkham Horror: Das Kartenspiel™ Bilder und Grafiken sind urheberrechtlich geschützt durch Fantasy Flight Games.</p>",
+      "hall_of_fame": {
+        "arkham_db": "OAuth Zugang zu ArkhamDB, Bereitstellung von strukturierten Kartendaten.",
+        "card_design": "Anwendungsspezifische Spielerkarten.",
+        "code": "Signifikante Code-Beiträge zu der Anwendung.",
+        "customization_api": "Zugang zu API, die es ermöglicht, Verbesserungsbögen zu zeichnen.",
+        "testing": "Testen der Anwendung, Feedback und Fehlermeldungen in der frühen Entwicklungsphase.",
+        "title": "Hall of Fame",
+        "translation": {
+          "es": "Spanisch",
+          "fr": "Französisch",
+          "ko": "Koreanisch",
+          "pl": "Polnisch",
+          "ru": "Russisch",
+          "title": "Die folgenden Personen haben zu den Übersetzungen dieser Seite beigetragen",
+          "zh": "Chinesisch (vereinfacht)"
+        },
+        "zzorba": "Zugriff auf die ArkhamCards API und Icons, Unterstützung bei Fragen und Inspiration für den Deckbuilder. Ohne dich wäre dieses Projekt nicht möglich gewesen."
+      },
+      "image_credits": {
+        "404": "404 Illustration (Bearbeitung)",
+        "arkham_cards_icons": "Wiederverwendete Arkham Cards Icons",
+        "card_icons": "Offizielle Spielsymbole",
+        "logo": "Logo",
+        "other": "Andere Icons",
+        "title": "Bilder & Icons"
+      },
       "title": "Über diese Seite"
     },
     "app": {
@@ -195,6 +222,7 @@
       },
       "reset": "Zurücksetzen",
       "seal": "Versiegeln",
+      "set_as_default": "Als Standard festlegen",
       "shroud": "Schleier",
       "skill": {
         "agility": "Beweglichkeit",
@@ -667,8 +695,8 @@
         "Bewitching": "Bezaubernd",
         "Eldritch Brand": "Eldritch Brand",
         "Hunch deck": "Spürnase-Deck",
-        "Stick to the Plan": "Sich an den Plan halten",
-        "Market deck": "Marktdeck"
+        "Market deck": "Marktdeck",
+        "Stick to the Plan": "Sich an den Plan halten"
       },
       "customization_sheet": "Individualisierungen für {{name}}",
       "id": "Deck ID",
@@ -819,6 +847,7 @@
           "help": "Auswahl gilt nicht für Ermittler, Signaturkarten und Schwächen.",
           "placeholder": "Packs auswählen...",
           "section_title": "Kartenpooleinstellungen",
+          "selected_cards": "Ausgewählte Karten",
           "title": "Eingeschränkter Kartenpool",
           "use_preset": "\"Campaign Play-Along\" Voreinstellung"
         },
@@ -838,6 +867,7 @@
         },
         "storage_provider": {
           "local": "Lokal",
+          "shared": "Freigegeben",
           "title": "Speicherort"
         },
         "taboo": "Tabuliste",
@@ -1047,6 +1077,7 @@
         "final": "Final"
       },
       "status_installed": "Hinzugefügt",
+      "status_update_available": "Inhalt aktualisieren",
       "tags": "Tags",
       "title": "Inoffizielle Inhalte",
       "types": {

@@ -1,0 +1,29 @@
+{
+  "id": "VU3nlPP07EIXBCK",
+  "date_creation": "2024-08-13T09:54:14.832Z",
+  "date_update": "2024-08-13T09:55:26.016Z",
+  "description_md": "",
+  "meta": "{\"cus_09100\":\"2|0,3|0\",\"customizations\":{}}",
+  "ignoreDeckLimitSlots": {},
+  "sideSlots": {},
+  "next_deck": null,
+  "previous_deck": null,
+  "tags": "",
+  "version": "0.1",
+  "taboo_id": null,
+  "xp": null,
+  "xp_spent": null,
+  "exile_string": null,
+  "xp_adjustment": null,
+  "investigator_code": "01005",
+  "investigator_name": "Wendy Adams",
+  "name": "Wendy Adams on the Road",
+  "slots": {
+    "01000": 1,
+    "01014": 1,
+    "01015": 1,
+    "08076": 2,
+    "09100": 2
+  },
+  "problem": "too_few_cards"
+}

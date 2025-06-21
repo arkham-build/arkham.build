@@ -1,6 +1,33 @@
 {
   "translation": {
     "about": {
+      "description": "<p>Informacje zawarte w tej aplikacji o <ffg>Horrorze w Arkham: Grze karcianej™</ffg>, zarówno tekstowe, jak i graficzne, są zastrzeżone przez © Fantasy Flight Games {{date}}. Ta aplikacja jest projektem fanowskim i nie jest produkowana, popierana, wspierana ani powiązana z Fantasy Flight Games.</p><p>Aplikacja została stworzona przez <felix_url>Felix'a</felix_url> i <contrib_url>kontrybutorów</contrib_url> w celu wsparcia społeczności Horroru w Arkham: Gry karcianej. Kod źródłowy tego projektu jest dostępny na <github_url>Github'ie</github_url>. Recenzje i zgłoszenia błędów są mile widziane za pośrednictwem Github'a lub dedykowanego kanału na serwerze Discord Mythos Busters.</p><p>Wszystkie dzieła sztuki i ilustracje są własnością intelektualną ich twórców. Wszystkie obrazki i grafiki Horroru w Arkham: Gry karcianej są własnością intelektualną Fantasy Flight Games.</p>",
+      "hall_of_fame": {
+        "arkham_db": "Za dostęp do OAuth, ustrukturyzowane dane kart i za bycie wieloletnią podstawą społeczności.",
+        "card_design": "Za dostosowany do aplikacji projekt kart.",
+        "code": "Za znaczący wkład w kod aplikacji.",
+        "customization_api": "Za dostęp do API z arkuszami usprawnień.",
+        "testing": "Za cierpliwy feedback i testowanie podczas opracowywania wstępnej wersji oraz koncepcje projektowe.",
+        "title": "Galeria Sław",
+        "translation": {
+          "es": "hiszpański",
+          "fr": "francuski",
+          "ko": "koreański",
+          "pl": "polski",
+          "ru": "rosyjski",
+          "title": "Aplikacja dostępna jest w wielu językach dzięki następującym kontrybutorom",
+          "zh": "chiński (uproszczony)"
+        },
+        "zzorba": "Za dostęp do ikon i API ArkhamCards, pomoc z pytaniami i inspiracje do aplikacji. Bez niego ten projekt nie byłby możliwy."
+      },
+      "image_credits": {
+        "404": "Ilustracja błędu 404 (edycja)",
+        "arkham_cards_icons": "Użyte ikony aplikacji ArkhamCards",
+        "card_icons": "Ikony kart",
+        "logo": "Projekt logo",
+        "other": "Inne ikony",
+        "title": "Autorzy obrazków / ikon"
+      },
       "title": "O aplikacji"
     },
     "app": {
@@ -57,8 +84,8 @@
       "counts": "Posiadasz <strong>{{player_count}}</strong> kart badacza oraz <strong>{{encounter_count}}</strong> kart kampanii.",
       "description": "Ta strona wyświetla twoją kolekcję kart wraz z ich liczbą na podstawie twoich wyborów w ustawieniach kolekcji. Aby zaktualizować ustawienia kolekcji, odwiedź <a>Ustawienia</a>.",
       "title": "Statystyki kolekcji",
-      "tooltip_count_encounter": "Całkowita liczba kart kampanii w {{type}}",
-      "tooltip_count_player": "Całkowita liczba kart kampanii w {{type}}"
+      "tooltip_count_encounter": "Ten {{type}}: Całkowita liczba kart kampanii",
+      "tooltip_count_player": "Ten {{type}}: Całkowita liczba kart badacza"
     },
     "common": {
       "actions": {
@@ -205,6 +232,7 @@
       },
       "reset": "Resetuj",
       "seal": "Pieczęć",
+      "set_as_default": "Ustaw jako domyślne",
       "shroud": "Zasłona",
       "skill": {
         "agility": "Zręczność",
@@ -679,8 +707,8 @@
         "Bewitching": "Zły urok",
         "Eldritch Brand": "Eldritch Brand",
         "Hunch deck": "Talia przeczuć",
-        "Stick to the Plan": "Trzymaj się planu",
-        "Market deck": "Talia handlu"
+        "Market deck": "Talia handlu",
+        "Stick to the Plan": "Trzymaj się planu"
       },
       "customization_sheet": "Arkusz usprawnień dla {{name}}",
       "id": "ID talii",
@@ -853,7 +881,8 @@
           "parallel_front": "Równoległy awers"
         },
         "storage_provider": {
-          "local": "Lokalnie",
+          "local": "Lokalne",
+          "shared": "Współdzielone",
           "title": "Miejsce przechowywania talii"
         },
         "taboo": "Lista tabu",

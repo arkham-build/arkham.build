@@ -1,6 +1,7 @@
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Select } from "@/components/ui/select";
 import type { Selections } from "@/store/lib/types";
+import { formatDeckOptionString } from "@/utils/formatting";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -14,7 +15,7 @@ export function SelectionEditor(props: Props) {
 
   return Object.entries(selections).map(([key, value]) => (
     <Field full key={key} padded>
-      <FieldLabel>{t(`common.deck_options.${value.name}`)}</FieldLabel>
+      <FieldLabel>{formatDeckOptionString(value.name)}</FieldLabel>
       {value.type === "deckSize" && (
         <Select
           data-testid={`create-select-${key}`}
@@ -53,7 +54,7 @@ export function SelectionEditor(props: Props) {
           onChange={onSelectionChange}
           options={value.options.map((v) => ({
             value: v.id,
-            label: t(`common.deck_options.${v.name}`),
+            label: formatDeckOptionString(v.name),
           }))}
           value={value.value?.id ?? ""}
         />

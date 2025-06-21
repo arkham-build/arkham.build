@@ -36,7 +36,7 @@ function mapCardsToDeckOptions(deck: ResolvedDeck, deckOptions: DeckOption[]) {
     const filter = makeOptionFilter(option, {
       customizable: {
         properties: "actual",
-        level: "all",
+        level: "actual",
       },
       selections: deck.selections,
       targetDeck: "slots",

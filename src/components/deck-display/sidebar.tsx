@@ -20,7 +20,11 @@ import {
 } from "@/store/selectors/shared";
 import type { Id } from "@/store/slices/data.types";
 import { cx } from "@/utils/cx";
-import { capitalize, formatTabooSet } from "@/utils/formatting";
+import {
+  capitalize,
+  formatDeckOptionString,
+  formatTabooSet,
+} from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
 import {
@@ -57,6 +61,7 @@ type Props = {
   origin: DeckOrigin;
   deck: ResolvedDeck;
 };
+import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 
 export function Sidebar(props: Props) {
   const { className, origin, deck } = props;
@@ -162,7 +167,7 @@ function SidebarDetails(props: { deck: ResolvedDeck }) {
               className={css["detail-label"]}
               data-testid={`selection-${key}-label`}
             >
-              {t(`common.deck_options.${selection.name}`)}
+              {formatDeckOptionString(selection.name)}
             </div>
             {selection.type === "deckSize" && (
               <p
@@ -192,7 +197,7 @@ function SidebarDetails(props: { deck: ResolvedDeck }) {
                 className={css["detail-value"]}
                 data-testid={`selection-${key}-value`}
               >
-                {t(`common.deck_options.${selection.value?.name}`)}
+                {formatDeckOptionString(selection.value?.name)}
               </p>
             )}
           </li>
@@ -679,7 +684,7 @@ function ArkhamDbDetails(props: { deck: ResolvedDeck }) {
             </p>
             <Button
               as="a"
-              href={`${import.meta.env.VITE_ARKHAMDB_BASE_URL}/deck/view/${deck.id}`}
+              href={`${localizeArkhamDBBaseUrl()}/deck/view/${deck.id}`}
               size="sm"
               rel="noreferrer"
               target="_blank"

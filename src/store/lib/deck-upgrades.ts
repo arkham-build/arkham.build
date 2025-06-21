@@ -38,6 +38,30 @@ export type UpgradeStats = {
   modifierStats: Partial<ModifierStats>;
 };
 
+function calculateOptimalXpSpent(
+  prev: ResolvedDeck,
+  next: ResolvedDeck,
+  changes: DeckChanges,
+): { xp: number; modifierStats: Partial<ModifierStats> } {
+  const defaultResult = calculateXpSpent(prev, next, changes);
+
+  if (
+    !prev.slots[SPECIAL_CARD_CODES.ARCANE_RESEARCH] ||
+    !prev.slots[SPECIAL_CARD_CODES.DOWN_THE_RABBIT_HOLE]
+  ) {
+    return defaultResult;
+  }
+
+  const altResult = calculateXpSpent(
+    prev,
+    next,
+    changes,
+    /* dtrhFirst */ false,
+  );
+
+  return altResult.xp < defaultResult.xp ? altResult : defaultResult;
+}
+
 export function getChangeStats(
   prev: ResolvedDeck,
   next: ResolvedDeck,
@@ -49,7 +73,11 @@ export function getChangeStats(
   const xp = next.xp ?? 0;
   const xpAdjustment = next.xp_adjustment ?? 0;
 
-  const { xp: xpSpent, modifierStats } = calculateXpSpent(prev, next, changes);
+  const { xp: xpSpent, modifierStats } = calculateOptimalXpSpent(
+    prev,
+    next,
+    changes,
+  );
   const xpAvailable = xp + xpAdjustment - xpSpent;
 
   return {
@@ -144,6 +172,7 @@ function calculateXpSpent(
   prev: ResolvedDeck,
   next: ResolvedDeck,
   changes: DeckChanges,
+  dtrhFirst = true,
 ) {
   let xp = 0;
 
@@ -297,9 +326,14 @@ function calculateXpSpent(
       if (upgradedFrom) {
         const upgradedCount = Math.abs(upgradedFrom[1]);
         cost -= countExperience(upgradedFrom[0], upgradedCount);
+        if (dtrhFirst) {
+          cost = applyDownTheRabbitHole(cost, upgradedCount);
+          cost = applyArcaneResearch(card, cost);
+        } else {
+          cost = applyArcaneResearch(card, cost);
+          cost = applyDownTheRabbitHole(cost, upgradedCount);
+        }
         // upgrades can be discounted via DtRH and Arcane Research (spells).
-        cost = applyDownTheRabbitHole(cost, upgradedCount);
-        cost = applyArcaneResearch(card, cost);
       } else if (level === 0) {
         cost = applyFree0Swaps(cost, quantity);
         // if an XP card is new and DtRH is in deck, a penalty of 1XP is applied,
@@ -330,9 +364,14 @@ function calculateXpSpent(
       const card = prev.cards.slots[code].card;
       let cost = entries.reduce((acc, curr) => acc + curr.xp_spent, 0);
 
-      // Dtrh can discount each customizable only once.
-      cost = applyDownTheRabbitHole(cost, 1);
-      cost = applyArcaneResearch(card, cost);
+      if (dtrhFirst) {
+        // Dtrh can discount each customizable only once.
+        cost = applyDownTheRabbitHole(cost, 1);
+        cost = applyArcaneResearch(card, cost);
+      } else {
+        cost = applyArcaneResearch(card, cost);
+        cost = applyDownTheRabbitHole(cost, 1);
+      }
 
       xp += cost;
     }

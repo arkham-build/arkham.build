@@ -1,0 +1,29 @@
+{
+  "id": "4nfclQ0Ebm0pPAy",
+  "date_creation": "2024-08-11T10:01:33.357Z",
+  "date_update": "2024-08-11T10:02:06.373Z",
+  "description_md": "should cost 6xp (4xp + 2 XP penalty)",
+  "meta": "{\"cus_09081\":\"0|1,1|1,2|1,3|1\"}",
+  "ignoreDeckLimitSlots": {},
+  "sideSlots": {},
+  "next_deck": null,
+  "previous_deck": null,
+  "tags": "",
+  "version": "0.1",
+  "taboo_id": 7,
+  "xp": 3,
+  "xp_spent": null,
+  "exile_string": null,
+  "xp_adjustment": null,
+  "investigator_code": "07004",
+  "investigator_name": "Dexter Drake",
+  "name": "The Dexter Drake Mysteries",
+  "slots": {
+    "01000": 1,
+    "07012": 1,
+    "07013": 1,
+    "08059": 1,
+    "09081": 2
+  },
+  "problem": "too_few_cards"
+}

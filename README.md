@@ -8,7 +8,8 @@ arkham.build extends the _arkhamdb deck schema_ with a few fields for additional
 
 - `meta.extra_deck`: Parallel Jim's spirit deck. Format: comma-separated list of ids `"id1,id2,id3"`.
 - `meta.attachments_{code}`: cards that are attached to a specific setup deck, for example _Joe Diamond_ or _Stick to the Plan_. Format: comma-separated list of ids `"id1,id2,id2,id3"`.
-- `meta.card_pool`: packs that can be used for this deck. Used for limited pool deckbuilding such as #campaign-playalong. Format: `"<pack_code>,<pack_code>"`. For arkham.build, new format pack codes take precedence over old format.
+- `meta.card_pool`: packs that can be used for this deck. Used for limited pool deckbuilding such as #campaign-playalong. Format: `"<pack_code>,<pack_code>"`. For arkham.build, new format pack codes take precedence over old format. Single cards can be added to the pool by adding the `card:` prefix. Example: `card:02022` to add _Shortcut_.
+- `meta.card_pool_extension_{code}`: Some cards can extend the card pool with choices. This tracks their selection state. Format: `"card:<code>,card:<code>"`. 
 - `meta.sealed_deck`: card ids that are pickable for this deck. Used for sealed deckbuilding. Format: comma-separated list of `id` / `quantity` pairs in the format `"id:2,id:1,..."`.
 - `meta.sealed_deck_name`: name of the sealed deck definition used. format: string.
 - `meta.transform_into`: code of the investigator that this deck's investigator has transformed into. I.e. `04244` for _Body of a Yithian_.

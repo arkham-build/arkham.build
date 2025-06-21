@@ -1,0 +1,29 @@
+{
+  "id": "L1atRFLiFZQXju0",
+  "date_creation": "2024-08-11T09:55:49.442Z",
+  "date_update": "2024-08-11T10:01:10.440Z",
+  "description_md": "",
+  "meta": "{}",
+  "ignoreDeckLimitSlots": {},
+  "sideSlots": {},
+  "next_deck": null,
+  "previous_deck": null,
+  "tags": "",
+  "version": "0.1",
+  "taboo_id": 7,
+  "xp": null,
+  "xp_spent": null,
+  "exile_string": null,
+  "xp_adjustment": null,
+  "investigator_code": "07004",
+  "investigator_name": "Dexter Drake",
+  "name": "The Dexter Drake Mysteries",
+  "slots": {
+    "01000": 1,
+    "07012": 1,
+    "07013": 1,
+    "08059": 1,
+    "09081": 2
+  },
+  "problem": "too_few_cards"
+}

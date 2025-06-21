@@ -15,12 +15,13 @@ import {
 import { selectTabooSetSelectOptions } from "@/store/selectors/lists";
 import { selectConnectionLock } from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
+import type { DeckStorageProvider } from "@/store/slices/settings.types";
 import { formatProviderName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useGoBack } from "@/utils/use-go-back";
 import type { TFunction } from "i18next";
 import { ArrowRightLeftIcon } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { useAccentColor } from "../../utils/use-accent-color";
@@ -38,6 +39,7 @@ export function DeckCreateEditor() {
   const connectionLock = useStore(selectConnectionLock);
   const tabooSets = useStore(selectTabooSetSelectOptions);
   const provider = useStore((state) => state.deckCreate?.provider);
+  const settings = useStore((state) => state.settings);
 
   const createDeck = useStore((state) => state.createDeck);
   const setTitle = useStore((state) => state.deckCreateSetTitle);
@@ -119,6 +121,14 @@ export function DeckCreateEditor() {
     [setSelection],
   );
 
+  const onStorageDefaultChange = useCallback(() => {
+    const state = useStore.getState();
+
+    state.setSettings({
+      defaultStorageProvider: deckCreate.provider as DeckStorageProvider,
+    });
+  }, [deckCreate.provider]);
+
   const investigatorActionRenderer = useCallback(
     (card: Card) => (
       <Button size="sm" onClick={() => setInvestigatorCode(card.code)}>
@@ -132,27 +142,55 @@ export function DeckCreateEditor() {
   const selections = decodeSelections(back, deckCreate.selections);
   const cssVariables = useAccentColor(investigator.card.faction_code);
 
+  const storageProviderOptions = useMemo(
+    () => [
+      {
+        label: t("deck_edit.config.storage_provider.local"),
+        value: "local",
+      },
+      {
+        label: t("deck_edit.config.storage_provider.shared"),
+        value: "shared",
+      },
+      ...connections.map((connection) => ({
+        label: formatProviderName(connection.provider),
+        value: connection.provider,
+      })),
+    ],
+    [t, connections],
+  );
+
+  const providerChanged =
+    deckCreate.provider !== settings.defaultStorageProvider;
+
   return (
     <div className={css["editor"]} style={cssVariables}>
-      {!isEmpty(connections) && (
-        <Field full padded>
-          <FieldLabel htmlFor="provider">
-            {t("deck_edit.config.storage_provider.title")}
-          </FieldLabel>
-          <Select
-            name="provider"
-            emptyLabel={t("deck_edit.config.storage_provider.local")}
-            options={connections.map((connection) => ({
-              label: formatProviderName(connection.provider),
-              value: connection.provider,
-            }))}
-            onChange={(evt) => {
-              setProvider(evt.target.value);
-            }}
-            value={deckCreate.provider}
-          />
-        </Field>
-      )}
+      <Field full padded>
+        <FieldLabel htmlFor="provider">
+          {t("deck_edit.config.storage_provider.title")}
+        </FieldLabel>
+        <Select
+          data-testid="create-provider"
+          name="provider"
+          options={storageProviderOptions}
+          onChange={(evt) => {
+            setProvider(evt.target.value);
+          }}
+          required
+          value={deckCreate.provider}
+        />
+        {providerChanged && (
+          <Button
+            className={css["provider-default"]}
+            data-testid="create-provider-set-default"
+            onClick={onStorageDefaultChange}
+            variant="link"
+            size="xs"
+          >
+            {t("common.set_as_default")}
+          </Button>
+        )}
+      </Field>
       <Field full padded>
         <FieldLabel htmlFor="title">{t("deck_edit.config.name")}</FieldLabel>
         <input

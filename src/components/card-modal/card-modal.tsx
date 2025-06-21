@@ -24,6 +24,7 @@ import { CardSet } from "../cardset";
 import { Customizations } from "../customizations/customizations";
 import { CustomizationsEditor } from "../customizations/customizations-editor";
 import { AttachableCards } from "../deck-tools/attachable-cards";
+import { CardPoolExtension } from "../limited-card-pool/card-pool-extension";
 import { Button } from "../ui/button";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { Modal } from "../ui/modal";
@@ -105,22 +106,35 @@ export function CardModal(props: Props) {
         resolvedCard={cardWithRelations}
         size={canRenderFull ? "full" : "compact"}
         slotCardFooter={
-          !!ctx.resolvedDeck &&
-          (canEdit ? (
-            <div className={css["related"]}>
-              <AnnotationEdit
-                cardCode={cardWithRelations.card.code}
-                deckId={ctx.resolvedDeck.id}
-                text={annotation}
-              />
-            </div>
-          ) : (
-            annotation && (
+          <>
+            {ctx.resolvedDeck && cardWithRelations.card.card_pool_extension && (
               <div className={css["related"]}>
-                <Annotation content={annotation} />
+                <CardPoolExtension
+                  canEdit={canEdit}
+                  card={cardWithRelations.card}
+                  deck={ctx.resolvedDeck}
+                  showLabel
+                />
               </div>
-            )
-          ))
+            )}
+
+            {!!ctx.resolvedDeck &&
+              (canEdit ? (
+                <div className={css["related"]}>
+                  <AnnotationEdit
+                    cardCode={cardWithRelations.card.code}
+                    deckId={ctx.resolvedDeck.id}
+                    text={annotation}
+                  />
+                </div>
+              ) : (
+                annotation && (
+                  <div className={css["related"]}>
+                    <Annotation content={annotation} />
+                  </div>
+                )
+              ))}
+          </>
         }
       >
         {ctx.resolvedDeck && !!attachableDefinition && (

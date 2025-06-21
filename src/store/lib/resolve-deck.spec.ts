@@ -9,7 +9,7 @@ import deckInvestigatorParallelBoth from "@/test/fixtures/decks/investigator_par
 import deckInvestigatorParallelFront from "@/test/fixtures/decks/investigator_parallel_front.json";
 import deckInvestigatorReplacements from "@/test/fixtures/decks/investigator_replacement.json";
 import deckMultiFactionSelected from "@/test/fixtures/decks/multi_faction_select.json";
-import deckMyriadDifferentNames from "@/test/fixtures/decks/upgrades/dtrh_myriad_2.json";
+import deckMyriadDifferentNames from "@/test/fixtures/decks/upgrades/dtrh_penalty_myriad_2.json";
 import deckXpRequired from "@/test/fixtures/decks/xp_required.json";
 import { getMockStore } from "@/test/get-mock-store";
 import { beforeAll, describe, expect, it } from "vitest";

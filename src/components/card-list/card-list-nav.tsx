@@ -8,7 +8,10 @@ import { useHotkey } from "@/utils/use-hotkey";
 import { SlidersVerticalIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { LimitedCardPoolTag, SealedDeckTag } from "../limited-card-pool";
+import {
+  LimitedCardPoolTag,
+  SealedDeckTag,
+} from "../limited-card-pool/limited-card-pool";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,

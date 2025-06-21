@@ -1,7 +1,8 @@
+import { CardPoolExtensionFields } from "@/components/limited-card-pool/card-pool-extension";
 import {
   LimitedCardPoolField,
   SealedDeckField,
-} from "@/components/limited-card-pool";
+} from "@/components/limited-card-pool/limited-card-pool";
 import { Field, FieldLabel } from "@/components/ui/field";
 import type { SelectOption } from "@/components/ui/select";
 import { Select } from "@/components/ui/select";
@@ -237,6 +238,7 @@ export function MetaEditor(props: Props) {
           selectedItems={selectedPacks}
           onValueChange={onCardPoolChange}
         />
+        <CardPoolExtensionFields deck={deck} />
         <SealedDeckField
           onValueChange={onSealedDeckChange}
           value={deck.sealedDeck}

@@ -16,6 +16,13 @@
   padding: var(--card-spacing);
 }
 
+.text img {
+  display: inline-block;
+  height: 1em;
+  width: auto;
+  vertical-align: middle;
+}
+
 .text p {
   max-width: 60ch;
 }

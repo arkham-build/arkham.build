@@ -46,6 +46,7 @@ import subTypes from "@/store/services/data/subtypes.json";
 import types from "@/store/services/data/types.json";
 import { assertCanPublishDeck, incrementVersion } from "@/utils/arkhamdb";
 import { applyCardChanges } from "../lib/card-edits";
+import { buildCacheFromDecks } from "../lib/fan-made-content";
 import { applyLocalData } from "../lib/local-data";
 import {
   dehydrateApp,
@@ -107,12 +108,11 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
         ui: {
           ...state.ui,
           initialized: true,
+          fanMadeContentCache: buildCacheFromDecks(
+            Object.values(state.data.decks),
+          ),
         },
       });
-
-      for (const deck of Object.values(state.data.decks)) {
-        state.cacheFanMadeContent(deck);
-      }
 
       return false;
     }
@@ -217,6 +217,9 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       ui: {
         ...state.ui,
         initialized: true,
+        fanMadeContentCache: buildCacheFromDecks(
+          Object.values(state.data.decks),
+        ),
       },
       lists: makeLists(state.settings),
     });
@@ -365,6 +368,11 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     });
 
     await state.dehydrate("app");
+
+    if (state.deckCreate.provider === "shared") {
+      await state.createShare(deck.id as string);
+    }
+
     return deck.id;
   },
   async deleteDeck(id, cb) {

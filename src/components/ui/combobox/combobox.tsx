@@ -188,15 +188,15 @@ export function Combobox<T extends Coded>(props: Props<T>) {
   }, [isOpen]);
 
   return (
-    <div className={cx(css["combobox"], className)}>
-      {!readonly && (
-        <div className={css["control"]}>
-          <label
-            className={cx(css["control-label"], !showLabel && "sr-only")}
-            htmlFor={id}
-          >
-            {label}
-          </label>
+    <div className={cx(css["combobox"], className)} data-testid={id}>
+      <div className={cx(css["control"], !showLabel && readonly && "sr-only")}>
+        <label
+          className={cx(css["control-label"], !showLabel && "sr-only")}
+          htmlFor={id}
+        >
+          {label}
+        </label>
+        {!readonly && (
           <div className={css["control-row"]}>
             <input
               autoComplete="off"
@@ -271,8 +271,8 @@ export function Combobox<T extends Coded>(props: Props<T>) {
               <ChevronDownIcon className={css["control-indicator"]} />
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
       {!readonly && isOpen && (
         <ToggleableFloatingPortal enabled={!omitFloatingPortal}>
           <FloatingFocusManager context={context} initialFocus={-1}>

@@ -146,3 +146,15 @@ export async function openUrlInNewContext(page: Page, url: string) {
   await ctxPage.goto(url);
   return ctxPage;
 }
+
+export async function importPackFromFile(page: Page, packPath: string) {
+  const fileChooserPromise = page.waitForEvent("filechooser");
+
+  await page.getByTestId("collection-import-button").click();
+
+  const fileChooser = await fileChooserPromise;
+
+  await fileChooser.setFiles([
+    path.join(process.cwd(), "src/test/fixtures/stubs", packPath),
+  ]);
+}

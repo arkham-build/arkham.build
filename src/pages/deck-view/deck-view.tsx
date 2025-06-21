@@ -60,9 +60,7 @@ function ArkhamDbDeckView({ id, type }: { id: string; type: string }) {
 
     async function query() {
       const decks = await queryDeck(clientId, type, idInt);
-      for (const deck of decks) {
-        cacheFanMadeContent(deck);
-      }
+      cacheFanMadeContent(decks);
       return decks;
     }
 

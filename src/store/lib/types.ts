@@ -68,18 +68,20 @@ export type Customizations = Record<
   Record<number | string, Customization>
 >;
 
+export type DeckFanMadeContent = {
+  cards: Record<string, Card>;
+  cycles: Record<string, Cycle>;
+  encounter_sets: Record<string, EncounterSet>;
+  packs: Record<string, Pack>;
+};
+
 export type DeckMeta = {
   alternate_back?: string | null;
   alternate_front?: string | null;
   card_pool?: string | null;
   deck_size_selected?: string | null;
   extra_deck?: string | null;
-  fan_made_content?: {
-    cards: Record<string, Card>;
-    cycles: Record<string, Cycle>;
-    encounter_sets: Record<string, EncounterSet>;
-    packs: Record<string, Pack>;
-  };
+  fan_made_content?: DeckFanMadeContent;
   faction_1?: string | null;
   faction_2?: string | null;
   faction_selected?: string | null;
@@ -95,6 +97,8 @@ export type DeckMeta = {
   [key in `attachments_${string}`]: string | null;
 } & {
   [key in `annotation_${string}`]: string | null;
+} & {
+  [key in `card_pool_extension_${string}`]: string | null;
 };
 
 type DeckSizeSelection = {
@@ -159,7 +163,7 @@ export type ResolvedDeck = Omit<Deck, "sideSlots"> & {
   cardPool?: string[];
   metaParsed: DeckMeta;
   customizations?: Customizations;
-  fanMadeData?: DeckMeta["fan_made_content"];
+  fanMadeData?: DeckFanMadeContent;
   investigatorFront: CardWithRelations;
   investigatorBack: CardWithRelations;
   hasExtraDeck: boolean;

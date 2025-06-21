@@ -1,13 +1,13 @@
 import { useStore } from "@/store";
 import type { SealedDeck } from "@/store/lib/types";
 import {
-  selectCyclesAndPacks,
+  selectLimitedPoolPackOptions,
   selectPackOptions,
 } from "@/store/selectors/lists";
-import type { Cycle, Pack } from "@/store/services/queries.types";
+import { selectMetadata } from "@/store/selectors/shared";
+import type { Pack } from "@/store/services/queries.types";
+import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";
-import { campaignPlayalongPacks } from "@/utils/campaign-playalong";
-import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
 import { displayPackName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { parseCsv } from "@/utils/parse-csv";
@@ -17,34 +17,48 @@ import { useCallback, useMemo } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useShallow } from "zustand/react/shallow";
-import css from "./limited-card-pool.module.css";
-import { PackName } from "./pack-name";
-import { Button } from "./ui/button";
-import { Combobox } from "./ui/combobox/combobox";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import { useDialogContextChecked } from "./ui/dialog.hooks";
-import { Field, FieldLabel } from "./ui/field";
-import { FileInput } from "./ui/file-input";
-import { Modal, ModalContent } from "./ui/modal";
-import { Tag } from "./ui/tag";
-import { useToast } from "./ui/toast.hooks";
+import { ListCardInner } from "../list-card/list-card-inner";
+import { PackName } from "../pack-name";
+import { Button } from "../ui/button";
+import { Combobox } from "../ui/combobox/combobox";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { Field, FieldLabel } from "../ui/field";
+import { FileInput } from "../ui/file-input";
+import { Tag } from "../ui/tag";
+import { useToast } from "../ui/toast.hooks";
 import {
   DefaultTooltip,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "./ui/tooltip";
+} from "../ui/tooltip";
+import { ChooseCampaignModal } from "./choose-campaign-modal";
+import css from "./limited-card-pool.module.css";
+
+const selectLimitedCardPoolCards = createSelector(
+  selectMetadata,
+  (_: StoreState, cardPool: string[] | undefined) => cardPool,
+  (metadata, cardPool) => {
+    return cardPool
+      ?.filter((str) => str.startsWith("card:"))
+      .map((str) => metadata.cards[str.replace("card:", "")]);
+  },
+);
 
 export function LimitedCardPoolTag() {
   const ctx = useResolvedDeck();
   const { t } = useTranslation();
 
-  const cardPool = ctx.resolvedDeck?.metaParsed.card_pool;
+  const cardPool = ctx.resolvedDeck?.cardPool;
 
   const selectedPacks = useStore(
     useShallow((state) =>
       selectPackOptions(state).filter((pack) => cardPool?.includes(pack.code)),
     ),
+  );
+
+  const selectedCards = useStore((state) =>
+    selectLimitedCardPoolCards(state, cardPool),
   );
 
   if (isEmpty(selectedPacks)) return null;
@@ -61,6 +75,19 @@ export function LimitedCardPoolTag() {
               </li>
             ) : null;
           })}
+          {!isEmpty(selectedCards) &&
+            selectedCards.map((card) => (
+              <li className={css["pack"]} key={card.code}>
+                <ListCardInner
+                  cardShowCollectionNumber
+                  cardLevelDisplay="icon-only"
+                  size="xs"
+                  omitBorders
+                  omitThumbnail
+                  card={card}
+                />
+              </li>
+            ))}
         </ol>
       }
     >
@@ -78,7 +105,7 @@ export function LimitedCardPoolField(props: {
   const { onValueChange, selectedItems } = props;
   const { t } = useTranslation();
 
-  const packs = useStore(selectPackOptions);
+  const packs = useStore(selectLimitedPoolPackOptions);
 
   const items = useMemo(
     () =>
@@ -285,73 +312,5 @@ export function SealedDeckTag() {
         {value.name} ({count} {t("common.card", { count })})
       </TooltipContent>
     </Tooltip>
-  );
-}
-
-const selectCampaignCycles = createSelector(selectCyclesAndPacks, (cycles) =>
-  cycles.filter((cycle) => !CYCLES_WITH_STANDALONE_PACKS.includes(cycle.code)),
-);
-
-function ChooseCampaignModal(props: {
-  onValueChange: (items: string[]) => void;
-}) {
-  const { onValueChange } = props;
-  const { t } = useTranslation();
-
-  const dialogCtx = useDialogContextChecked();
-  const cycles = useStore(selectCampaignCycles);
-
-  const packRenderer = useCallback(
-    (cycle: Cycle) => <PackName pack={cycle} shortenNewFormat />,
-    [],
-  );
-
-  const packToString = useCallback(
-    (pack: Cycle) => displayPackName(pack).toLowerCase(),
-    [],
-  );
-
-  const selectCampaign = useCallback(
-    (selection: string[]) => {
-      if (!selection.length) return;
-      const cycle = selection[0];
-
-      const packs = campaignPlayalongPacks(cycle);
-      onValueChange(packs);
-      dialogCtx.setOpen(false);
-    },
-    [onValueChange, dialogCtx.setOpen],
-  );
-
-  const selectedItems = useMemo(() => [], []);
-
-  return (
-    <Modal size="60rem">
-      <ModalContent title={t("deck_edit.config.card_pool.choose_campaign")}>
-        <Field
-          full
-          padded
-          bordered
-          helpText={t("deck_edit.config.card_pool.cpa_help")}
-        >
-          <Combobox
-            autoFocus
-            id="campaign-playalong-combobox"
-            limit={1}
-            placeholder={t(
-              "deck_edit.config.card_pool.choose_campaign_placeholder",
-            )}
-            renderItem={packRenderer}
-            renderResult={packRenderer}
-            itemToString={packToString}
-            onValueChange={selectCampaign}
-            items={cycles}
-            label={t("deck_edit.config.card_pool.campaign")}
-            showLabel
-            selectedItems={selectedItems}
-          />
-        </Field>
-      </ModalContent>
-    </Modal>
   );
 }

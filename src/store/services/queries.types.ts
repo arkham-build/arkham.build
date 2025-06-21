@@ -271,13 +271,17 @@ export type Card = Omit<APICard, "id"> & {
   customization_xp?: number;
   /* copy of real slot, can be changed by customizable. */
   original_slot?: string;
+  /** marks custom cards */
+  official?: boolean;
   /* custom content may have images defined in the card data. */
   back_image_url?: string;
   image_url?: string;
   thumbnail_url?: string;
   back_thumbnail_url?: string;
-  /** marks custom cards */
-  official?: boolean;
+  /* Some cards can extend the limited card pool if one is defined. Used for CPA deckbuilding. */
+  card_pool_extension?: {
+    type: "card";
+  };
 };
 
 export type JsonDataCycle = {

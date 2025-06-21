@@ -33,7 +33,7 @@
 .drawn {
   --cols: 5;
   --gap: 0.5rem;
-  --card-width: 7rem;
+  --card-width: 9rem;
 
   display: grid;
   list-style: none;

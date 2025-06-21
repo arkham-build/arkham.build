@@ -1,4 +1,4 @@
-import type { Deck } from "@/store/slices/data.types";
+import type { Deck, Slots } from "@/store/slices/data.types";
 import type { AttachmentQuantities } from "@/store/slices/deck-edits.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { range } from "@/utils/range";
@@ -8,6 +8,7 @@ import type {
   Customization,
   Customizations,
   DeckMeta,
+  ResolvedCard,
   SealedDeck,
   Selection,
   Selections,
@@ -197,8 +198,25 @@ export function encodeAttachments(attachments: AttachmentQuantities) {
   );
 }
 
-export function decodeCardPool(deckMeta: DeckMeta) {
-  return deckMeta.card_pool?.split(",");
+export function decodeCardPool(
+  slots: Slots,
+  cards: Record<string, ResolvedCard>,
+  deckMeta: DeckMeta,
+) {
+  const pool = deckMeta.card_pool?.split(",");
+  if (!pool?.length) return undefined;
+
+  for (const { card } of Object.values(cards)) {
+    if (!card.card_pool_extension || !slots[card.code]) continue;
+
+    const extension = deckMeta[`card_pool_extension_${card.code}`];
+
+    if (extension) {
+      pool.push(...extension.split(","));
+    }
+  }
+
+  return pool;
 }
 
 export function encodeCardPool(cardPool: string[]) {

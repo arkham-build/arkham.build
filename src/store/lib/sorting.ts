@@ -1,4 +1,4 @@
-import { displayAttribute } from "@/utils/card-utils";
+import { displayAttribute, splitMultiValue } from "@/utils/card-utils";
 import type { FactionName, PlayerType } from "@/utils/constants";
 import {
   ASSET_SLOT_ORDER,
@@ -173,8 +173,8 @@ export function sortByEncounterSet(
 
 export function sortBySlots(collator: Intl.Collator) {
   return (a: string, b: string) => {
-    const slotA = ASSET_SLOT_ORDER.indexOf(a);
-    const slotB = ASSET_SLOT_ORDER.indexOf(b);
+    const slotA = getSlotIndex(a);
+    const slotB = getSlotIndex(b);
 
     if (slotA === -1 && slotB === -1) {
       return collator.compare(a, b);
@@ -185,6 +185,18 @@ export function sortBySlots(collator: Intl.Collator) {
 
     return slotA - slotB;
   };
+}
+
+function getSlotIndex(slot: string) {
+  if (!slot || slot === "permanent") return -1;
+
+  const index = ASSET_SLOT_ORDER.indexOf(slot);
+  if (index !== -1) return index;
+
+  const split = splitMultiValue(slot)[0];
+  const splitIndex = ASSET_SLOT_ORDER.indexOf(split);
+
+  return splitIndex === -1 ? -1 : splitIndex + 0.5;
 }
 
 function sortBySlot(collator: Intl.Collator) {

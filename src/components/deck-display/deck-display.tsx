@@ -19,7 +19,10 @@ import { DeckTools } from "../deck-tools/deck-tools";
 import { Decklist } from "../decklist/decklist";
 import { DecklistValidation } from "../decklist/decklist-validation";
 import type { ViewMode } from "../decklist/decklist.types";
-import { LimitedCardPoolTag, SealedDeckTag } from "../limited-card-pool";
+import {
+  LimitedCardPoolTag,
+  SealedDeckTag,
+} from "../limited-card-pool/limited-card-pool";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { Modal, ModalContent } from "../ui/modal";

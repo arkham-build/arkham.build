@@ -3,6 +3,7 @@ import { displayAttribute, getCanonicalCardCode } from "@/utils/card-utils";
 import type { StateCreator } from "zustand";
 import type { StoreState } from ".";
 import { getDefaultDeckName } from "../lib/deck-factory";
+import { selectConnectionsData } from "../selectors/connections";
 import { selectMetadata } from "../selectors/shared";
 import type { CardSet, DeckCreateSlice } from "./deck-create.types";
 
@@ -17,6 +18,8 @@ export const createDeckCreateSlice: StateCreator<
   initCreate(code: string, initialInvestigatorChoice?: string) {
     const state = get();
     const metadata = selectMetadata(state);
+    const settings = state.settings;
+    const connections = selectConnectionsData(state);
 
     const investigator = metadata.cards[code];
 
@@ -43,13 +46,20 @@ export const createDeckCreateSlice: StateCreator<
       );
     }
 
+    const provider = settings.defaultStorageProvider;
+
+    // when arkhamdb is set as default storage, but not available, default to local.
+    const providerExists =
+      provider !== "arkhamdb" ||
+      connections.some((c) => c.provider === provider);
+
     set({
       deckCreate: {
         extraCardQuantities: {},
         investigatorBackCode: choice ? choice.code : canonicalCode,
         investigatorCode: canonicalCode,
         investigatorFrontCode: choice ? choice.code : canonicalCode,
-        provider: "",
+        provider: providerExists ? provider : "local",
         selections: {},
         sets: ["requiredCards"],
         tabooSetId: state.settings.tabooSetId ?? undefined,

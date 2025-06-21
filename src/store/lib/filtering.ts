@@ -191,6 +191,50 @@ export function filterAttribute(attributeFilter: AttributeFilter) {
 }
 
 /**
+ * Card Pool
+ */
+
+export function filterCardPool(
+  value: MultiselectFilter,
+  metadata: Metadata,
+  lookupTables: LookupTables,
+) {
+  const [cards, packs] = partition(value, (key) => key.startsWith("card:"));
+
+  const packFilter = filterPackCode(packs, metadata, lookupTables);
+  if (isEmpty(cards)) return packFilter;
+
+  const codes = cards.map((key) => key.replace("card:", ""));
+
+  const ors = [];
+
+  if (!isEmpty(codes)) {
+    ors.push((card: Card) => codes.includes(card.code));
+  }
+
+  if (packFilter) {
+    ors.push(packFilter);
+  }
+
+  return !isEmpty(ors) ? or(ors) : undefined;
+}
+
+function partition<T>(a: T[], predicate: (t: T) => boolean): [T[], T[]] {
+  const truthy: T[] = [];
+  const falsy: T[] = [];
+
+  for (const item of a) {
+    if (predicate(item)) {
+      truthy.push(item);
+    } else {
+      falsy.push(item);
+    }
+  }
+
+  return [truthy, falsy];
+}
+
+/**
  * Cost
  */
 
@@ -954,9 +998,13 @@ export function makeOptionFilter(
   // on your own
   if (option.slot) {
     filterCount += 1;
+    const ors: Filter[] = [];
+
     for (const slot of option.slot) {
-      optionFilter.push(filterSlots(slot));
+      ors.push(filterSlots(slot));
     }
+
+    optionFilter.push(or(ors));
   }
 
   if (filterCount <= 1) {
@@ -1026,9 +1074,9 @@ function makePlayerCardsFilter(
   config?: InvestigatorAccessConfig,
 ) {
   let options = investigator[optionsAccessor];
-  const requirements = investigator[requiredAccessor]?.card;
+  const requirements = investigator[requiredAccessor]?.card ?? {};
 
-  if (!requirements || !options) {
+  if (!options) {
     return undefined;
   }
 

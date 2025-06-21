@@ -43,8 +43,8 @@ export function EditorActions(props: Props) {
 
   const validation = useStore((state) => selectDeckValid(state, deck));
 
-  const onduplicateWithEdits = useCallback(() => {
-    const id = duplicateDeck(deck.id, { applyEdits: true });
+  const onduplicateWithEdits = useCallback(async () => {
+    const id = await duplicateDeck(deck.id, { applyEdits: true });
     navigate(`~/deck/view/${id}`);
   }, [duplicateDeck, deck.id, navigate]);
 

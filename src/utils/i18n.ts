@@ -42,9 +42,12 @@ i18n
     },
   });
 
+i18n.on("languageChanged", (lng) => {
+  if (document) document.documentElement.lang = lng;
+});
+
 export function changeLanguage(lng: Locale) {
   if (i18n.language === lng) return;
-  document.documentElement.lang = lng;
   i18n.changeLanguage(lng);
 }
 

@@ -1,7 +1,7 @@
 import {
   LimitedCardPoolField,
   SealedDeckField,
-} from "@/components/limited-card-pool";
+} from "@/components/limited-card-pool/limited-card-pool";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { useStore } from "@/store";
 import { useMemo } from "react";

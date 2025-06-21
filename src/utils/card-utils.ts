@@ -223,7 +223,8 @@ export function cardUses(card: Card) {
   const match = firstLine?.match(REGEX_USES);
 
   if (match?.length) {
-    return match[1] === "charge" ? "charges" : match[1];
+    const uses = match[1].toLowerCase();
+    return uses === "charge" ? "charges" : uses;
   }
 
   return undefined;

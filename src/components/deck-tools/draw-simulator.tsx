@@ -31,7 +31,7 @@ function DrawSimulatorCard(props: DrawSimulatorCardProps) {
   const { card, dispatch, index, state } = props;
 
   const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
-    useRestingTooltip();
+    useRestingTooltip({ delay: 350 });
 
   return (
     <li className={css["card"]}>
@@ -228,16 +228,19 @@ function drawReducer(state: State, action: Action): State {
     }
 
     case "redraw": {
-      const codes = shuffle(
-        state.drawn.filter((_, index) => state.selection.includes(index)),
+      const codes = state.drawn.filter((_, index) =>
+        state.selection.includes(index),
       );
 
-      const drawn = [...state.drawn];
-      const bag = [...state.bag, ...codes];
+      const bag = [...state.bag, ...shuffle(codes)];
 
-      for (const index of state.selection) {
+      const drawn = state.drawn.filter(
+        (_, index) => !state.selection.includes(index),
+      );
+
+      for (const _ of range(0, codes.length)) {
         // biome-ignore lint/style/noNonNullAssertion: we extend the bag for each draw, so this is safe.
-        drawn.splice(index, 1, bag.shift()!);
+        drawn.push(bag.shift()!);
       }
 
       return { bag, drawn, selection: [] };
@@ -250,11 +253,9 @@ function drawReducer(state: State, action: Action): State {
 
       const bag = shuffle([...state.bag, ...codes]);
 
-      const drawn = [...state.drawn];
-
-      for (const index of state.selection) {
-        drawn.splice(index, 1);
-      }
+      const drawn = state.drawn.filter(
+        (_, index) => !state.selection.includes(index),
+      );
 
       return { bag, drawn, selection: [] };
     }

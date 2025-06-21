@@ -98,3 +98,7 @@
 .card-selections > * + * {
   margin-top: 0.5rem;
 }
+
+.provider-default {
+  margin-top: 0.125rem;
+}

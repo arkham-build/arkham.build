@@ -24,7 +24,11 @@ type StateError = {
   state: "error";
 };
 
-type State<T> = StateLoading | StateError | StateSuccess<T> | StateInitial;
+export type QueryState<T> =
+  | StateLoading
+  | StateError
+  | StateSuccess<T>
+  | StateInitial;
 
 type Action<T> =
   | { type: "LOADING" }
@@ -32,7 +36,7 @@ type Action<T> =
   | { type: "ERROR"; payload: unknown }
   | { type: "RESET" };
 
-function reducer<T>(_: State<T>, action: Action<T>): State<T> {
+function reducer<T>(_: QueryState<T>, action: Action<T>): QueryState<T> {
   switch (action.type) {
     case "LOADING":
       return { error: undefined, data: undefined, state: "loading" };
@@ -47,12 +51,12 @@ function reducer<T>(_: State<T>, action: Action<T>): State<T> {
 
 type Query<T> = () => Promise<T>;
 
-export function useQuery<T>(query: Query<T> | undefined): State<T> {
+export function useQuery<T>(query: Query<T> | undefined): QueryState<T> {
   const [state, dispatch] = useReducer(reducer<T>, {
     state: "initial",
     error: undefined,
     data: undefined,
-  } as State<T>);
+  } as QueryState<T>);
 
   // Lock to prevent re-running the same query multiple times while it's already running.
   const lock = useRef<null | Query<T>>(null);
@@ -107,14 +111,14 @@ export function useQuery<T>(query: Query<T> | undefined): State<T> {
   return state;
 }
 
-export function useMutate<T>(query: Query<T>): State<T> & {
+export function useMutate<T>(query: Query<T>): QueryState<T> & {
   mutate: () => Promise<void>;
 } {
   const [state, dispatch] = useReducer(reducer<T>, {
     state: "initial",
     error: undefined,
     data: undefined,
-  } as State<T>);
+  } as QueryState<T>);
 
   const mutate = useCallback(async () => {
     dispatch({ type: "LOADING" });

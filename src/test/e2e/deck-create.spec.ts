@@ -242,4 +242,12 @@ test.describe("deck create", () => {
     await expect(locateScan(page, "90008")).toBeVisible();
     await expect(locateScan(page, "90008b")).toBeVisible();
   });
+
+  test("update storage provider default", async ({ page }) => {
+    await page.goto("/deck/create/01001");
+    await page.getByTestId("create-provider").selectOption("shared");
+    await page.getByTestId("create-provider-set-default").click();
+    await page.reload();
+    await expect(page.getByTestId("create-provider")).toHaveValue("shared");
+  });
 });

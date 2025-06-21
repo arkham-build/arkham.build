@@ -98,6 +98,7 @@
   background: var(--rogue-dark);
   border-radius: var(--rounded-lg);
   border: 2px solid var(--rogue-dark);
+  color: var(--color-inverted);
   display: inline-flex;
   font-size: var(--text-sm);
   gap: 0.125rem;

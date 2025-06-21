@@ -32,6 +32,8 @@ export function cardToApiFormat(
     ...card,
     alternate_of_code: card.alternate_of,
     back_link_id: card.back_link,
+    real_customization_change: card.customization_change,
+    real_customization_text: card.customization_text,
     duplicate_of_code: card.duplicate_of,
     id: card.code,
     exceptional: card.text?.includes("Exceptional."),

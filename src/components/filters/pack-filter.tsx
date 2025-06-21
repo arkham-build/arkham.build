@@ -34,16 +34,26 @@ export function PackFilter({ id }: FilterProps) {
   );
 
   const packOptions = useStore(selectPackOptions);
+  const canShowUnusableCards = useStore((state) => state.ui.showUnusableCards);
+
   const options = useMemo(
     () =>
       packOptions.filter((pack) => {
-        const cardPool = ctx.resolvedDeck?.metaParsed?.card_pool;
+        const cardPool = ctx.resolvedDeck?.cardPool;
 
         return cardPool && activeList?.cardType === "player"
-          ? cardPool.includes(pack.code) || filter.value.includes(pack.code)
+          ? canShowUnusableCards ||
+              cardPool.includes(pack.code) ||
+              filter.value.includes(pack.code)
           : true;
       }),
-    [filter.value, ctx.resolvedDeck, packOptions, activeList],
+    [
+      filter.value,
+      ctx.resolvedDeck,
+      packOptions,
+      activeList,
+      canShowUnusableCards,
+    ],
   );
 
   const nameRenderer = useCallback(

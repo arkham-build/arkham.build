@@ -1,5 +1,5 @@
 .annotation-icon svg {
-  color: var(--nord-9);
-  fill: var(--nord-9);
+  color: var(--color-link);
+  fill: var(--color-link);
   font-size: var(--text-xs);
 }

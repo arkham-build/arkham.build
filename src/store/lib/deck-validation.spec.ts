@@ -1,4 +1,4 @@
-import myriad from "@/test/fixtures/decks/upgrades/dtrh_myriad_2.json";
+import myriad from "@/test/fixtures/decks/upgrades/dtrh_penalty_myriad_2.json";
 import accessCustomizableValid from "@/test/fixtures/decks/validation/access_customizable.json";
 import accessCustomizableInvalid from "@/test/fixtures/decks/validation/access_customizable_invalid.json";
 import atleastAncestralKnowledge from "@/test/fixtures/decks/validation/atleast_ancestral_knowledge.json";
@@ -9,6 +9,7 @@ import baseCase from "@/test/fixtures/decks/validation/base_case.json";
 import covenantValid from "@/test/fixtures/decks/validation/covenant.json";
 import covenantInvalid from "@/test/fixtures/decks/validation/covenant_invalid.json";
 import deckLimitSubtitles from "@/test/fixtures/decks/validation/deck_limit_subtitles.json";
+import eldritchBrand from "@/test/fixtures/decks/validation/eldritch_brand.json";
 import extraSlotsForbidden from "@/test/fixtures/decks/validation/extra_slots_forbidden.json";
 import extraSlotsTooFewCards from "@/test/fixtures/decks/validation/extra_slots_too_few_cards.json";
 import extraSlotsTooManyCards from "@/test/fixtures/decks/validation/extra_slots_too_many_cards.json";
@@ -639,6 +640,30 @@ describe("deck validation", () => {
                 "code": "09095",
                 "limit": 2,
                 "quantity": 4,
+              },
+            ],
+            "type": "INVALID_CARD_COUNT",
+          },
+        ]
+      `);
+    });
+
+    it("handles case: eldritch brand", () => {
+      const result = validate(store, eldritchBrand);
+      expect(result.valid).toBeTruthy();
+      const invalid = structuredClone(eldritchBrand);
+      invalid.slots["04197"] = 1;
+      invalid.slots["05322"] = 2;
+      const invalidResult = validate(store, invalid);
+      expect(invalidResult.valid).toBeFalsy();
+      expect(invalidResult.errors).toMatchInlineSnapshot(`
+        [
+          {
+            "details": [
+              {
+                "code": "05322",
+                "limit": 1,
+                "quantity": 2,
               },
             ],
             "type": "INVALID_CARD_COUNT",

@@ -69,3 +69,4 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}

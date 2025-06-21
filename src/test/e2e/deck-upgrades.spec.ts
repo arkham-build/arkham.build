@@ -91,7 +91,7 @@ test.describe("upgrades: interactions", () => {
   });
 
   test("exile cards", async ({ page }) => {
-    await importDeckFromFile(page, "./upgrades/exile_base_1.json", {
+    await importDeckFromFile(page, "./upgrades/exile_repurchase_1.json", {
       navigate: "view",
     });
     await page.getByTestId("view-upgrade").click();

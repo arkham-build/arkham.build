@@ -90,7 +90,11 @@ export function useTooltip({
   );
 }
 
-export function useRestingTooltip(options?: UseFloatingOptions<ReferenceType>) {
+export function useRestingTooltip(
+  options?: UseFloatingOptions<ReferenceType> & {
+    delay?: number;
+  },
+) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const restTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
@@ -110,7 +114,12 @@ export function useRestingTooltip(options?: UseFloatingOptions<ReferenceType>) {
     ...options,
   });
 
-  const { isMounted, styles } = useTransitionStyles(context);
+  const { isMounted, styles } = useTransitionStyles(context, {
+    duration: {
+      open: 250,
+      close: 50,
+    },
+  });
 
   const onPointerLeave = useCallback(() => {
     clearTimeout(restTimeoutRef.current);
@@ -124,8 +133,8 @@ export function useRestingTooltip(options?: UseFloatingOptions<ReferenceType>) {
 
     restTimeoutRef.current = setTimeout(() => {
       setTooltipOpen(true);
-    }, 25);
-  }, [tooltipOpen]);
+    }, options?.delay ?? 25);
+  }, [tooltipOpen, options?.delay]);
 
   const referenceProps = useMemo(
     () => ({

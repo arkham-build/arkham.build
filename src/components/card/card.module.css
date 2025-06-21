@@ -405,3 +405,7 @@
   filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.2));
   flex: 0 0 auto;
 }
+
+:lang(ko, zh, zh-Hant, zh-Hans) :where(.sub) {
+  font-style: normal;
+}

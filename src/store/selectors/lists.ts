@@ -26,6 +26,7 @@ import {
   filterActions,
   filterAssets,
   filterBacksides,
+  filterCardPool,
   filterCost,
   filterDuplicates,
   filterEncounterCards,
@@ -377,9 +378,8 @@ const deckAccessEqualSelector = createCustomEqualSelector((a, b) => {
         JSON.stringify(getAdditionalDeckOptions(b)) && // 4
       JSON.stringify(a.customizations) === JSON.stringify(b.customizations) && // 5
       JSON.stringify(a.selections) === JSON.stringify(b.selections) && // 6
-      JSON.stringify(a.metaParsed.card_pool) ===
-        JSON.stringify(b.metaParsed.card_pool) && // 7
-      a.metaParsed.sealed_deck === b.metaParsed.sealed_deck && // 8
+      JSON.stringify(a.cardPool) === JSON.stringify(b.cardPool) && // 7
+      a.sealedDeck === b.sealedDeck && // 8
       a.date_update === b.date_update // 9
     );
   }
@@ -462,9 +462,10 @@ const selectDeckInvestigatorFilter = deckAccessEqualSelector(
 
     const cardPool = resolvedDeck.cardPool;
     if (cardPool?.length) {
-      const packFilter = filterPackCode(cardPool, metadata, lookupTables);
-      if (packFilter) {
-        ands.push(or([packFilter, (c) => c.xp == null]));
+      const cardPoolFilter = filterCardPool(cardPool, metadata, lookupTables);
+
+      if (cardPoolFilter) {
+        ands.push(or([cardPoolFilter, (c) => c.xp == null]));
       }
     }
 
@@ -718,10 +719,18 @@ const selectListFilterProperties = createSelector(
     const traits = new Set<string>();
     const types = new Set<string>();
     const illustrators = new Set<string>();
+    const investigators = new Set<string>();
+    const packs = new Set<string>();
 
     if (cards) {
       for (const card of cards) {
+        if (card.type_code === "investigator") {
+          investigators.add(card.code);
+        }
+
         types.add(card.type_code);
+
+        packs.add(card.pack_code);
 
         if (card.illustrator) {
           illustrators.add(card.illustrator);
@@ -790,6 +799,8 @@ const selectListFilterProperties = createSelector(
       cost,
       health,
       illustrators,
+      investigators,
+      packs,
       sanity,
       skills,
       traits,
@@ -941,28 +952,25 @@ export const selectIllustratorOptions = createSelector(
  */
 
 export const selectInvestigatorOptions = createSelector(
-  selectLookupTables,
+  selectListFilterProperties,
   selectMetadata,
   selectLocaleSortingCollator,
-  (lookupTables, metadata, collator) => {
-    const investigatorTable = lookupTables.typeCode["investigator"];
+  (listFilterProperties, metadata, collator) => {
+    const investigators = Array.from(listFilterProperties.investigators).reduce<
+      Card[]
+    >((acc, code) => {
+      const card = metadata.cards[code];
 
-    const investigators = Object.keys(investigatorTable).reduce<Card[]>(
-      (acc, code) => {
-        const card = metadata.cards[code];
+      if (
+        card &&
+        !card.encounter_code &&
+        (!card.alt_art_investigator || card.parallel)
+      ) {
+        acc.push(card);
+      }
 
-        if (
-          card &&
-          !card.encounter_code &&
-          (!card.alt_art_investigator || card.parallel)
-        ) {
-          acc.push(card);
-        }
-
-        return acc;
-      },
-      [],
-    );
+      return acc;
+    }, []);
 
     investigators.sort(sortByName(collator));
     return investigators;
@@ -1072,10 +1080,41 @@ const filterNewFormat = (packs: Pack[], cardType?: string) => {
 };
 
 export const selectPackOptions = createSelector(
+  selectListFilterProperties,
   selectCyclesAndPacks,
   selectActiveList,
-  (cycles, list) => {
+  (listFilterProperties, cycles, list) => {
+    return cycles.reduce((acc, cycle) => {
+      const present = cycle.packs.some((pack) =>
+        listFilterProperties.packs.has(pack.code),
+      );
+
+      if (!present) return acc;
+
+      if (cycle.reprintPacks.length && cycle.code !== "core") {
+        acc.push(...filterNewFormat(cycle.reprintPacks, list?.cardType));
+      } else if (cycle.official !== false && cycle.packs.length === 2) {
+        acc.push(...filterNewFormat(cycle.packs, list?.cardType));
+      } else {
+        acc.push(...cycle.packs);
+        acc.push(...cycle.reprintPacks);
+      }
+
+      return acc;
+    }, [] as Pack[]);
+  },
+);
+
+export const selectLimitedPoolPackOptions = createSelector(
+  selectCyclesAndPacks,
+  selectActiveList,
+  (state: StoreState) => state.fanMadeData.projects,
+  (cycles, list, fanMadeProjects) => {
     return cycles.flatMap((cycle) => {
+      if (cycle.official === false && !fanMadeProjects?.[cycle.code]) {
+        return [];
+      }
+
       if (cycle.reprintPacks.length && cycle.code !== "core") {
         return filterNewFormat(cycle.reprintPacks, list?.cardType);
       }
