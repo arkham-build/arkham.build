@@ -1,6 +1,33 @@
 {
   "translation": {
     "about": {
+      "description": "<p>本应用提供的关于<ffg>诡镇奇谈：卡牌版™</ffg>的所有图文信息，© Fantasy Flight Games {{date}}。本应用为爱好者项目，非 Fantasy Flight Games 制作、认可、支持或关联产品。</p><p>此应用由<felix_url>Felix</felix_url>及<contrib_url>贡献者</contrib_url>共同开发，旨在支持诡镇奇谈：卡牌版社区。项目源码发布于<github_url>Github</github_url>。欢迎通过Github issues或Mythos Busters discord专属频道提交反馈与错误报告。</p><p>所有美术作品及插图均为其创作者的知识产权。诡镇奇谈：卡牌版™所有图像及图形版权归Fantasy Flight Games所有。</p>",
+      "hall_of_fame": {
+        "arkham_db": "提供OAuth接入、结构化卡牌数据，并多年作为社区的中流砥柱。",
+        "card_design": "定制卡牌设计。",
+        "code": "对代码库的重大贡献。",
+        "customization_api": "用于生成定制卡牌升级的API接口。",
+        "testing": "在初期版本开发中给予耐心反馈与测试，贡献设计理念。",
+        "title": "荣誉殿堂",
+        "translation": {
+          "es": "西班牙语 / Spanish",
+          "fr": "法语 / French",
+          "ko": "韩语 / Korean",
+          "pl": "波兰语 / Polish",
+          "ru": "俄语 / Russian",
+          "title": "本应用支持多种语言，感谢以下贡献者的付出",
+          "zh": "简体中文 / Simplified Chinese"
+        },
+        "zzorba": "提供ArkhamCards API及图标资源、解答疑问并为卡组构建工具带来灵感。没有你，这个项目不可能实现。"
+      },
+      "image_credits": {
+        "404": "404 illustration (编辑)",
+        "arkham_cards_icons": "复用的ArkhamCards图标",
+        "card_icons": "卡牌图标",
+        "logo": "Logo设计",
+        "other": "其他图标",
+        "title": "图片 / 图标 版权信息"
+      },
       "title": "关于"
     },
     "app": {
@@ -820,6 +847,7 @@
           "help": "调查员、专属卡牌及剧情资产不受此选项影响。",
           "placeholder": "选择扩展包...",
           "section_title": "卡牌池设置",
+          "selected_cards": "已选择卡牌",
           "title": "限定牌池",
           "use_preset": "使用战役模式预设"
         },
@@ -845,6 +873,7 @@
         "taboo": "禁卡表",
         "tags": "标签",
         "tags_help": "输入标签，以空格分隔",
+        "title_and_tags": "编辑标题与标签",
         "version": {
           "switch": "切换",
           "title": "其他版本"
@@ -1049,6 +1078,7 @@
         "final": "最终版"
       },
       "status_installed": "已安装",
+      "status_update_available": "更新内容",
       "tags": "标签",
       "title": "玩家自制内容",
       "types": {
