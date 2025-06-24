@@ -2,6 +2,7 @@ import { assert } from "@/utils/assert";
 import type { StateCreator } from "zustand";
 import type { StoreState } from ".";
 import { formatDeckImport, formatDeckShare } from "../lib/deck-io";
+import { dehydrate } from "../persist";
 import { selectDeckHistory } from "../selectors/decks";
 import {
   selectClientId,
@@ -62,7 +63,7 @@ export const createSharingSlice: StateCreator<
       },
     });
 
-    await state.dehydrate("app");
+    await dehydrate(get(), "app");
   },
 
   async updateShare(deck) {
@@ -95,7 +96,7 @@ export const createSharingSlice: StateCreator<
       },
     });
 
-    await state.dehydrate("app");
+    await dehydrate(get(), "app");
 
     return deck.id;
   },
@@ -116,7 +117,7 @@ export const createSharingSlice: StateCreator<
       },
     });
 
-    await state.dehydrate("app");
+    await dehydrate(get(), "app");
   },
 
   async deleteAllShares() {
@@ -135,7 +136,7 @@ export const createSharingSlice: StateCreator<
       },
     });
 
-    await state.dehydrate("app");
+    await dehydrate(get(), "app");
   },
   async importSharedDeck(importDeck) {
     const state = get();
@@ -162,7 +163,7 @@ export const createSharingSlice: StateCreator<
       },
     });
 
-    await state.dehydrate("app");
+    await dehydrate(get(), "app");
 
     return deck.id;
   },

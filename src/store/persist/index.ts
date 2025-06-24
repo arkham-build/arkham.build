@@ -1,3 +1,4 @@
+import { time, timeEnd } from "@/utils/time";
 import type { StoreState } from "../slices";
 import { migrate } from "./migrate";
 import { VERSION, makeStorageAdapter } from "./storage";
@@ -6,6 +7,8 @@ type AppState = Pick<
   StoreState,
   "app" | "connections" | "data" | "settings" | "sharing" | "fanMadeData"
 >;
+
+export type StorageType = "app" | "edits" | "metadata";
 
 type EditsState = Pick<StoreState, "deckEdits">;
 
@@ -72,14 +75,33 @@ export async function hydrate() {
   return state;
 }
 
-export function dehydrateMetadata(state: StoreState) {
-  return metadataStorage.set(state);
-}
+export async function dehydrate(
+  state: StoreState,
+  ...types: ("all" | StorageType)[]
+) {
+  time("dehydration");
 
-export function dehydrateApp(state: StoreState) {
-  return appStorage.set(state);
-}
+  try {
+    await Promise.all(
+      types.reduce((acc, t) => {
+        if (t === "all" || t === "app") {
+          acc.push(appStorage.set(state));
+        }
 
-export function dehydrateEdits(state: StoreState) {
-  return editsStorage.set(state);
+        if (t === "all" || t === "edits") {
+          acc.push(editsStorage.set(state));
+        }
+
+        if (t === "all" || t === "metadata") {
+          acc.push(metadataStorage.set(state));
+        }
+
+        return acc;
+      }, [] as Promise<void>[]),
+    );
+    timeEnd("dehydration");
+  } catch (err) {
+    timeEnd("dehydration");
+    throw err;
+  }
 }

@@ -1,4 +1,3 @@
-import { shared } from "use-broadcast-ts";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import type { StoreState } from "./slices";
@@ -36,26 +35,5 @@ const stateCreator = (...args: [any, any, any]) => ({
 });
 
 export const useStore = create<StoreState>()(
-  import.meta.env.MODE === "test"
-    ? stateCreator
-    : devtools(
-        shared(stateCreator, {
-          merge(state, receivedState) {
-            return { ...state, ...receivedState };
-          },
-          partialize(state) {
-            return {
-              app: state.app,
-              connections: state.connections,
-              fanMadeData: state.fanMadeData,
-              data: state.data,
-              deckEdits: state.deckEdits,
-              remoting: state.remoting,
-              settings: state.settings,
-              sharing: state.sharing,
-            };
-          },
-          skipSerialization: true,
-        }),
-      ),
+  import.meta.env.MODE === "test" ? stateCreator : devtools(stateCreator),
 );

@@ -5,6 +5,7 @@ import { assert } from "@/utils/assert";
 import type { StoreState } from ".";
 import { resolveDeck } from "../lib/resolve-deck";
 import { disconnectProviderIfUnauthorized, syncAdapters } from "../lib/sync";
+import { dehydrate } from "../persist";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
@@ -50,7 +51,7 @@ export const createConnectionsSlice: StateCreator<
 
     set({ connections });
 
-    await state.dehydrate("app");
+    await dehydrate(get(), "app");
     return connections;
   },
   async removeConnection(provider) {
@@ -73,7 +74,7 @@ export const createConnectionsSlice: StateCreator<
 
     set(patch);
 
-    await state.dehydrate("app");
+    await dehydrate(get(), "app");
   },
   async sync() {
     const state = get();
@@ -102,7 +103,7 @@ export const createConnectionsSlice: StateCreator<
       });
     }
 
-    state.dehydrate("app").catch(console.error);
+    dehydrate(get(), "app").catch(console.error);
   },
   async syncProvider(provider) {
     const state = get();
@@ -276,7 +277,7 @@ export const createConnectionsSlice: StateCreator<
       throw err;
     } finally {
       state.setRemoting("arkhamdb", false);
-      state.dehydrate("app").catch(console.error);
+      dehydrate(get(), "app").catch(console.error);
     }
   },
 });

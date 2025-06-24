@@ -4,6 +4,7 @@ import {
   parseFanMadeProject,
   validateFanMadeProject,
 } from "../lib/fan-made-content";
+import { dehydrate } from "../persist";
 import type { FanMadeDataSlice, FanMadeDataState } from "./fan-made-data.types";
 
 function getInitialFanMadeData(): FanMadeDataState {
@@ -37,7 +38,7 @@ export const createFanMadeDataSlice: StateCreator<
       },
     }));
 
-    await get().dehydrate("app");
+    await dehydrate(get(), "app");
 
     return project.meta.code;
   },
@@ -55,6 +56,6 @@ export const createFanMadeDataSlice: StateCreator<
       };
     });
 
-    await get().dehydrate("app");
+    await dehydrate(get(), "app");
   },
 });

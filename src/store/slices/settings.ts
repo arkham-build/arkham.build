@@ -1,6 +1,7 @@
 import { changeLanguage } from "@/utils/i18n";
 import type { StateCreator } from "zustand";
 import type { StoreState } from ".";
+import { dehydrate } from "../persist";
 import {
   queryCards,
   queryDataVersion,
@@ -112,7 +113,7 @@ export const createSettingsSlice: StateCreator<
       lists: makeLists(settings),
     });
 
-    await state.dehydrate("app");
+    await dehydrate(get(), "app");
   },
   async setSettings(payload) {
     const state = get();
@@ -124,7 +125,7 @@ export const createSettingsSlice: StateCreator<
       },
     });
 
-    await state.dehydrate("app");
+    await dehydrate(get(), "app");
   },
   async toggleFlag(key) {
     set((state) => ({
@@ -137,6 +138,6 @@ export const createSettingsSlice: StateCreator<
       },
     }));
 
-    await get().dehydrate("app");
+    await dehydrate(get(), "app");
   },
 });
