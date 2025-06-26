@@ -7,13 +7,10 @@ import { isFactionFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
 import { useCallback } from "react";
 import { FactionToggle } from "../faction-toggle";
+import type { FilterProps } from "./filters.types";
 import { useFilterCallbacks } from "./primitives/filter-hooks";
 
-type Props = {
-  id: number;
-};
-
-export function FactionFilter(props: Props) {
+export function FactionFilter(props: FilterProps) {
   const { id } = props;
 
   const filter = useStore((state) => selectActiveListFilter(state, id));

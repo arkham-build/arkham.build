@@ -9,15 +9,13 @@ import type { Pack } from "@/store/services/queries.types";
 import { isPackFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
 import { shortenPackName } from "@/utils/formatting";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { PackName } from "../pack-name";
 import type { FilterProps } from "./filters.types";
 import { MultiselectFilter } from "./primitives/multiselect-filter";
 
-export function PackFilter({ id }: FilterProps) {
-  const ctx = useResolvedDeck();
+export function PackFilter({ id, resolvedDeck }: FilterProps) {
   const { t } = useTranslation();
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
@@ -33,13 +31,15 @@ export function PackFilter({ id }: FilterProps) {
     selectFilterChanges(state, filter.type, filter.value),
   );
 
-  const packOptions = useStore(selectPackOptions);
+  const packOptions = useStore((state) =>
+    selectPackOptions(state, resolvedDeck),
+  );
   const canShowUnusableCards = useStore((state) => state.ui.showUnusableCards);
 
   const options = useMemo(
     () =>
       packOptions.filter((pack) => {
-        const cardPool = ctx.resolvedDeck?.cardPool;
+        const cardPool = resolvedDeck?.cardPool;
 
         return cardPool && activeList?.cardType === "player"
           ? canShowUnusableCards ||
@@ -47,13 +47,7 @@ export function PackFilter({ id }: FilterProps) {
               filter.value.includes(pack.code)
           : true;
       }),
-    [
-      filter.value,
-      ctx.resolvedDeck,
-      packOptions,
-      activeList,
-      canShowUnusableCards,
-    ],
+    [filter.value, resolvedDeck, packOptions, activeList, canShowUnusableCards],
   );
 
   const nameRenderer = useCallback(

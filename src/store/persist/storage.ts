@@ -12,7 +12,7 @@ interface Storage<T extends Partial<StoreState>> {
   storageKey: string;
   get(): Promise<StoredState<T> | undefined>;
   partialize(state: StoreState): T;
-  set(state: Partial<StoreState>): Promise<void>;
+  set(state: Partial<StoreState>): Promise<T>;
 }
 
 export function makeStorageAdapter<T extends Partial<StoreState>>(
@@ -30,18 +30,22 @@ export function makeStorageAdapter<T extends Partial<StoreState>>(
       if (!data) return undefined;
       return JSON.parse(data);
     },
-    set(state: StoreState) {
-      if (import.meta.env.MODE === "test") return Promise.resolve();
+    async set(state: StoreState) {
+      const partial = partialize(state);
+
+      if (import.meta.env.MODE === "test") return Promise.resolve(partial);
 
       console.debug(`[persist] write ${storageKey}`);
 
-      return set(
+      await set(
         storageKey,
         JSON.stringify({
-          state: partialize(state),
+          state: partial,
           version: VERSION,
         }),
       );
+
+      return partial;
     },
   };
 }

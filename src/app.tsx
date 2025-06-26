@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useRef } from "react";
+import { Suspense, lazy, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Route, Router, Switch, useLocation } from "wouter";
 import { useBrowserLocation } from "wouter/use-browser-location";
@@ -11,6 +11,8 @@ import { Error404 } from "./pages/errors/404";
 import { CardDataSync } from "./pages/settings/card-data-sync";
 import { useStore } from "./store";
 import { useSync } from "./store/hooks/use-sync";
+import { tabSync } from "./store/persist";
+import type { TabSyncEvent } from "./store/persist/sync";
 import { selectIsInitialized } from "./store/selectors/shared";
 import {
   queryCards,
@@ -129,6 +131,17 @@ function AppInner() {
       document.documentElement.style.fontSize = `${settings.fontSize}%`;
     }
   }, [storeInitialized, settings.fontSize]);
+
+  const onTabSync = useCallback((evt: TabSyncEvent) => {
+    useStore.setState(evt.state);
+  }, []);
+
+  useEffect(() => {
+    tabSync.addListener(onTabSync);
+    return () => {
+      tabSync.removeListener(onTabSync);
+    };
+  }, [onTabSync]);
 
   return (
     <>

@@ -117,56 +117,49 @@ export function Filters(props: Props) {
       </div>
       <Scroller type="hover">
         <div className={css["content"]}>
-          {filters.map((filter, id) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: index is unique key.
-            <Fragment key={id}>
-              {filter === "action" && (
-                <ActionFilter id={id} resolvedDeck={resolvedDeck} />
-              )}
-              {filter === "asset" && (
-                <AssetFilter id={id} resolvedDeck={resolvedDeck} />
-              )}
-              {filter === "cost" && (
-                <CostFilter id={id} resolvedDeck={resolvedDeck} />
-              )}
-              {filter === "encounter_set" && <EncounterSetFilter id={id} />}
-              {filter === "investigator" && <InvestigatorFilter id={id} />}
-              {filter === "level" && <LevelFilter id={id} />}
-              {filter === "ownership" && <OwnershipFilter id={id} />}
-              {filter === "fan_made_content" && (
-                <FanMadeContentFilter id={id} />
-              )}
-              {filter === "pack" && <PackFilter id={id} />}
-              {filter === "properties" && <PropertiesFilter id={id} />}
-              {filter === "skillIcons" && <SkillIconsFilter id={id} />}
-              {filter === "subtype" && (
-                <SubtypeFilter id={id} resolvedDeck={resolvedDeck} />
-              )}
-              {filter === "trait" && (
-                <TraitFilter id={id} resolvedDeck={resolvedDeck} />
-              )}
-              {filter === "tabooSet" && <TabooSetFilter id={id} />}
-              {filter === "type" && (
-                <TypeFilter id={id} resolvedDeck={resolvedDeck} />
-              )}
+          {filters.map((filter, id) => {
+            const params = {
+              id: id,
+              resolvedDeck,
+            };
 
-              {filter === "faction" && <FactionFilter id={id} />}
-
-              {filter === "investigator_skills" && (
-                <InvestigatorSkillsFilter id={id} resolvedDeck={resolvedDeck} />
-              )}
-              {filter === "investigator_card_access" && (
-                <InvestigatorCardAccessFilter id={id} />
-              )}
-              {filter === "health" && (
-                <HealthFilter id={id} resolvedDeck={resolvedDeck} />
-              )}
-              {filter === "sanity" && (
-                <SanityFilter id={id} resolvedDeck={resolvedDeck} />
-              )}
-              {filter === "illustrator" && <IllustratorFilter id={id} />}
-            </Fragment>
-          ))}
+            return (
+              // biome-ignore lint/suspicious/noArrayIndexKey: index is unique key.
+              <Fragment key={id}>
+                {filter === "action" && <ActionFilter {...params} />}
+                {filter === "asset" && <AssetFilter {...params} />}
+                {filter === "cost" && <CostFilter {...params} />}
+                {filter === "encounter_set" && (
+                  <EncounterSetFilter {...params} />
+                )}
+                {filter === "investigator" && (
+                  <InvestigatorFilter {...params} />
+                )}
+                {filter === "level" && <LevelFilter {...params} />}
+                {filter === "ownership" && <OwnershipFilter {...params} />}
+                {filter === "fan_made_content" && (
+                  <FanMadeContentFilter {...params} />
+                )}
+                {filter === "pack" && <PackFilter {...params} />}
+                {filter === "properties" && <PropertiesFilter {...params} />}
+                {filter === "skillIcons" && <SkillIconsFilter {...params} />}
+                {filter === "subtype" && <SubtypeFilter {...params} />}
+                {filter === "trait" && <TraitFilter {...params} />}
+                {filter === "tabooSet" && <TabooSetFilter {...params} />}
+                {filter === "type" && <TypeFilter {...params} />}
+                {filter === "faction" && <FactionFilter {...params} />}
+                {filter === "investigator_skills" && (
+                  <InvestigatorSkillsFilter {...params} />
+                )}
+                {filter === "investigator_card_access" && (
+                  <InvestigatorCardAccessFilter {...params} />
+                )}
+                {filter === "health" && <HealthFilter {...params} />}
+                {filter === "sanity" && <SanityFilter {...params} />}
+                {filter === "illustrator" && <IllustratorFilter {...params} />}
+              </Fragment>
+            );
+          })}
         </div>
       </Scroller>
     </search>

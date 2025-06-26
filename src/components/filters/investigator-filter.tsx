@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import type { FilterProps } from "./filters.types";
 import { SelectFilter } from "./primitives/select-filter";
 
-export function InvestigatorFilter({ id }: FilterProps) {
+export function InvestigatorFilter({ id, resolvedDeck }: FilterProps) {
   const { t } = useTranslation();
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
@@ -27,7 +27,9 @@ export function InvestigatorFilter({ id }: FilterProps) {
     selectFilterChanges(state, filter.type, filter.value),
   );
 
-  const options = useStore(selectInvestigatorOptions);
+  const options = useStore((state) =>
+    selectInvestigatorOptions(state, resolvedDeck),
+  );
 
   const lookupTables = useStore(selectLookupTables);
   const otherVersionsTable = lookupTables.relations.otherVersions;

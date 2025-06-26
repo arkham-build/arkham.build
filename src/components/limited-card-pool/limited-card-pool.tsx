@@ -53,7 +53,9 @@ export function LimitedCardPoolTag() {
 
   const selectedPacks = useStore(
     useShallow((state) =>
-      selectPackOptions(state).filter((pack) => cardPool?.includes(pack.code)),
+      selectPackOptions(state, ctx.resolvedDeck).filter((pack) =>
+        cardPool?.includes(pack.code),
+      ),
     ),
   );
 
