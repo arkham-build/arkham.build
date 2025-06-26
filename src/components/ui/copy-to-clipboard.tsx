@@ -1,7 +1,7 @@
-import { useCopyToClipboard } from "@/utils/use-copy-to-clipboard";
 import { CheckIcon, ClipboardCopyIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useCopyToClipboard } from "@/utils/use-copy-to-clipboard";
 import { Button, type Props as ButtonProps } from "./button";
 
 interface Props extends Omit<ButtonProps<"button">, "children" | "onClick"> {

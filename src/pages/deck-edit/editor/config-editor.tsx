@@ -1,3 +1,7 @@
+import type { TFunction } from "i18next";
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { createSelector } from "reselect";
 import { CardPoolExtensionFields } from "@/components/limited-card-pool/card-pool-extension";
 import {
   LimitedCardPoolField,
@@ -17,10 +21,6 @@ import { selectTabooSetSelectOptions } from "@/store/selectors/lists";
 import type { DeckOptionSelectType } from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
 import { debounce } from "@/utils/debounce";
-import type { TFunction } from "i18next";
-import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { createSelector } from "reselect";
 import css from "./editor.module.css";
 import { SelectionEditor } from "./selection-editor";
 

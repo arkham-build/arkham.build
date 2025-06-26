@@ -1,6 +1,6 @@
-import { cx } from "@/utils/cx";
 import { SearchIcon, XIcon } from "lucide-react";
 import { forwardRef, useCallback } from "react";
+import { cx } from "@/utils/cx";
 import { Button } from "./button";
 import css from "./search-input.module.css";
 

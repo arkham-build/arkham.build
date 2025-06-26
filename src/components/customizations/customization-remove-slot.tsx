@@ -1,7 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { Select } from "@/components/ui/select";
 import type { Card } from "@/store/services/queries.types";
 import { splitMultiValue } from "@/utils/card-utils";
-import { useTranslation } from "react-i18next";
 import { Tag } from "../ui/tag";
 
 type Props = {

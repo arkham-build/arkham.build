@@ -1,5 +1,5 @@
-import i18n from "@/utils/i18n";
 import { useCallback, useState } from "react";
+import i18n from "@/utils/i18n";
 import { useMedia } from "./use-media";
 
 export function getAvailableThemes(): Record<string, string> {

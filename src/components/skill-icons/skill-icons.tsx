@@ -1,8 +1,8 @@
+import { Fragment } from "react";
 import type { Card } from "@/store/services/queries.types";
 import { SKILL_KEYS } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";
-import { Fragment } from "react";
 import { SkillIcon } from "../icons/skill-icon";
 import { SkillIconFancy } from "../icons/skill-icon-fancy";
 import css from "./skill-icons.module.css";

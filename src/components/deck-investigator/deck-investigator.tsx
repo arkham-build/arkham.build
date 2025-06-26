@@ -1,3 +1,6 @@
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   getRelatedCardQuantity,
   getRelatedCards,
@@ -5,13 +8,10 @@ import {
 import type { ResolvedDeck } from "@/store/lib/types";
 import { cx } from "@/utils/cx";
 import { formatRelationTitle } from "@/utils/formatting";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { SpecialistAccess } from "../card-modal/specialist";
 import { CardBack } from "../card/card-back";
 import { CardContainer } from "../card/card-container";
 import { CardFace } from "../card/card-face";
+import { SpecialistAccess } from "../card-modal/specialist";
 import { CardSet } from "../cardset";
 import { AttachableCards } from "../deck-tools/attachable-cards";
 import { LimitedSlots } from "../deck-tools/limited-slots";

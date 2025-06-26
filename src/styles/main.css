@@ -1,8 +1,10 @@
 :root {
-  --font-family-ui: "Noto Sans Variable", ui-sans-serif, system-ui, sans-serif,
+  --font-family-ui:
+    "Noto Sans Variable", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-family-content: "Noto Serif Variable", ui-serif, Georgia, Cambria,
-    "Times New Roman", Times, serif;
+  --font-family-content:
+    "Noto Serif Variable", ui-serif, Georgia, Cambria, "Times New Roman", Times,
+    serif;
 
   --white: #f3f6f6;
   --nord-0: #2e3440;
@@ -31,10 +33,10 @@
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow: 0 2px 3px 0 rgb(0 0 0 / 0.125), 0 1px 2px -1px rgb(0 0 0 / 0.125);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px
-    rgb(0 0 0 / 0.2);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px
-    rgb(0 0 0 / 0.3);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+  --shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
 
   --text-2xs: 0.675rem;
   --text-xs: 0.75rem;
@@ -874,26 +876,27 @@ svg {
 }
 
 :lang(ko) {
-  --font-family-content: "Gapyeong Hanseokbong", "Noto Sans KR",
-    "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic", "맑은 고딕", "Dotum",
-    "Noto Sans Variable", -apple-system, BlinkMacSystemFont, ui-sans-serif,
-    sans-serif;
-  --font-family-ui: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
-    "Nanum Gothic", "맑은 고딕", "Dotum", "Noto Sans Variable", -apple-system,
+  --font-family-content:
+    "Gapyeong Hanseokbong", "Noto Sans KR", "Apple SD Gothic Neo",
+    "Malgun Gothic", "Nanum Gothic", "맑은 고딕", "Dotum", "Noto Sans Variable",
+    -apple-system, BlinkMacSystemFont, ui-sans-serif, sans-serif;
+  --font-family-ui:
+    "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic",
+    "맑은 고딕", "Dotum", "Noto Sans Variable", -apple-system,
     BlinkMacSystemFont, ui-sans-serif, sans-serif;
 }
 
 :lang(zh, zh-Hans) {
-  --font-family-ui: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
-    "WenQuanYi Micro Hei", -apple-system, BlinkMacSystemFont, ui-sans-serif,
-    sans-serif;
+  --font-family-ui:
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei",
+    -apple-system, BlinkMacSystemFont, ui-sans-serif, sans-serif;
   --font-family-content: var(--font-family-ui);
 }
 
 :lang(zh-Hant) {
-  --font-family-ui: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC",
-    "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, ui-sans-serif,
-    sans-serif;
+  --font-family-ui:
+    "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", "Segoe UI",
+    -apple-system, BlinkMacSystemFont, Roboto, ui-sans-serif, sans-serif;
   --font-family-content: var(--font-family-ui);
 }
 

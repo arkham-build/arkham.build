@@ -1,6 +1,8 @@
-import { cx } from "@/utils/cx";
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: escape handler is defined higher up. */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: backdrop needs to be clickable. */
 import { XIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { cx } from "@/utils/cx";
 import { Button } from "./button";
 import { useDialogContext } from "./dialog.hooks";
 import css from "./modal.module.css";
@@ -90,7 +92,6 @@ export function Modal(props: Props) {
     >
       <Scroller type="always">
         <div className={cx(css["inner"], innerClassName)} ref={innerRef}>
-          {/* biome-ignore lint/a11y/useKeyWithClickEvents: An escape handler is bound higher up. */}
           <div
             className={cx(
               css["actions"],

@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectActiveListFilter,
@@ -7,8 +9,6 @@ import { isSkillIconsFilterObject } from "@/store/slices/lists.type-guards";
 import type { SkillIconsFilter as SkillIconsFilterType } from "@/store/slices/lists.types";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { SkillIconFancy } from "../icons/skill-icon-fancy";
 import { CheckboxGroup } from "../ui/checkboxgroup";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";

@@ -1,11 +1,11 @@
+import type { i18n, TFunction } from "i18next";
+import { useCallback } from "react";
 import { useStore } from "@/store";
 import { filterAttribute } from "@/store/lib/filtering";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Attachments, Card } from "@/store/services/queries.types";
 import { cardLimit } from "@/utils/card-utils";
 import { useResolvedDeckChecked } from "@/utils/use-resolved-deck";
-import type { TFunction, i18n } from "i18next";
-import { useCallback } from "react";
 
 export function canAttach(card: Card, definition: Attachments) {
   return (

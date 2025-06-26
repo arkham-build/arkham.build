@@ -324,7 +324,7 @@ function calculateXpSpent(
 
       // if an XP card is upgraded, i.e. (1) => (5), subtract the previous upgrade's XP cost.
       if (upgradedFrom) {
-        const upgradedCount = Math.abs(upgradedFrom[1]);
+        const upgradedCount = upgradedFrom[1];
         cost -= countExperience(upgradedFrom[0], upgradedCount);
         if (dtrhFirst) {
           cost = applyDownTheRabbitHole(cost, upgradedCount);
@@ -485,9 +485,15 @@ function countFreeLevel0Cards(
 
 function getDirectUpgrades(slotDiff: Diff) {
   const upgrades: Record<string, SlotDiff | undefined> = {};
-  for (const [card] of slotDiff.adds) {
+  for (const [card, quantityAdded] of slotDiff.adds) {
     const removed = slotDiff.removes.find((diff) => findUpgraded(diff, card));
-    if (removed) upgrades[card.code] = removed;
+    if (removed) {
+      const quantityRemoved = Math.abs(removed[1]);
+      upgrades[card.code] = [
+        removed[0],
+        Math.min(quantityRemoved, quantityAdded),
+      ];
+    }
   }
 
   return upgrades;

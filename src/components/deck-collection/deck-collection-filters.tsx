@@ -1,13 +1,13 @@
+import { Content, Root, Trigger } from "@radix-ui/react-collapsible";
+import { FilterIcon, Minimize2Icon } from "lucide-react";
+import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectDeckFactionFilter,
   selectDeckSearchTerm,
   selectFactionsInLocalDecks,
 } from "@/store/selectors/deck-filters";
-import { Content, Root, Trigger } from "@radix-ui/react-collapsible";
-import { FilterIcon, Minimize2Icon } from "lucide-react";
-import { useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { FactionToggle } from "../faction-toggle";
 import { Button } from "../ui/button";
 import { SearchInput } from "../ui/search-input";

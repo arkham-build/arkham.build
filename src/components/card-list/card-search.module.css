@@ -37,7 +37,9 @@
   transform-origin: top;
   transform: scaleY(0%);
   transition-behavior: allow-discrete;
-  transition: 0.125s transform ease-in, 0.125s visibility;
+  transition:
+    0.125s transform ease-in,
+    0.125s visibility;
   visibility: hidden;
   width: 100%;
   z-index: 2;

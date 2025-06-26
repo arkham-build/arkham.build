@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
 import { HotkeyTooltip } from "@/components/ui/hotkey";
@@ -7,8 +9,6 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { displayAttribute } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { useHotkey } from "@/utils/use-hotkey";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import css from "./deck-edit.module.css";
 
 type Props = {

@@ -1,11 +1,3 @@
-import { useStore } from "@/store";
-import type { DeckValidationResult } from "@/store/lib/deck-validation";
-import { extendedDeckTags } from "@/store/lib/resolve-deck";
-import type { ResolvedDeck } from "@/store/lib/types";
-import { selectConnectionLockForDeck } from "@/store/selectors/shared";
-import type { Id } from "@/store/slices/data.types";
-import { displayAttribute, getCardColor } from "@/utils/card-utils";
-import { cx } from "@/utils/cx";
 import {
   CircleAlertIcon,
   CopyIcon,
@@ -15,6 +7,14 @@ import {
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
+import { useStore } from "@/store";
+import type { DeckValidationResult } from "@/store/lib/deck-validation";
+import { extendedDeckTags } from "@/store/lib/resolve-deck";
+import type { ResolvedDeck } from "@/store/lib/types";
+import { selectConnectionLockForDeck } from "@/store/selectors/shared";
+import type { Id } from "@/store/slices/data.types";
+import { displayAttribute, getCardColor } from "@/utils/card-utils";
+import { cx } from "@/utils/cx";
 import { CardThumbnail } from "../card-thumbnail";
 import { DeckStats } from "../deck-stats";
 import { DeckTags } from "../deck-tags";

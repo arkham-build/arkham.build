@@ -1,9 +1,5 @@
 import encounterSets from "@/store/services/data/encounter_sets.json";
 import packs from "@/store/services/data/packs.json";
-import type { Deck, Id } from "../slices/data.types";
-import { isDeck } from "../slices/data.types";
-import reprintPacks from "./data/reprint_packs.json";
-
 import { packToApiFormat } from "@/utils/arkhamdb-json-format";
 import { assert } from "@/utils/assert";
 import { displayPackName } from "@/utils/formatting";
@@ -11,7 +7,10 @@ import i18n from "@/utils/i18n";
 import type { FanMadeProject } from "../lib/fan-made-content.schemas";
 import type { SealedDeck } from "../lib/types";
 import type { History } from "../selectors/decks";
+import type { Deck, Id } from "../slices/data.types";
+import { isDeck } from "../slices/data.types";
 import type { Locale } from "../slices/settings.types";
+import reprintPacks from "./data/reprint_packs.json";
 import type {
   APICard,
   Cycle,

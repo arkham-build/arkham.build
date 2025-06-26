@@ -1,7 +1,7 @@
-import type { Cycle, Pack, TabooSet } from "@/store/services/queries.types";
-import i18n from "@/utils/i18n";
 import i18next from "i18next";
 import { createSelector } from "reselect";
+import type { Cycle, Pack, TabooSet } from "@/store/services/queries.types";
+import i18n from "@/utils/i18n";
 import { LOCALES } from "./constants";
 
 export function capitalize(s: string | number) {

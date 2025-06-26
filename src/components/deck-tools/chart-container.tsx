@@ -7,9 +7,7 @@ import { FactionsChart } from "./factions-chart";
 import { SkillIconsChart } from "./skill-icons-chart";
 import { TraitsChart } from "./traits-chart";
 
-export default function ChartContainer(props: {
-  deck: ResolvedDeck;
-}) {
+export default function ChartContainer(props: { deck: ResolvedDeck }) {
   const { deck } = props;
 
   return (

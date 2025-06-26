@@ -1,8 +1,8 @@
-import { getMockStore } from "@/test/get-mock-store";
 import { beforeAll, describe, expect, it } from "vitest";
-import { StoreApi } from "zustand";
-import { StoreState } from ".";
+import type { StoreApi } from "zustand";
+import { getMockStore } from "@/test/get-mock-store";
 import { selectLookupTables } from "../selectors/shared";
+import type { StoreState } from ".";
 
 describe("lookup-tables", () => {
   let store: StoreApi<StoreState>;

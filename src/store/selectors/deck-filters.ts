@@ -1,11 +1,11 @@
+import uFuzzy from "@leeoniya/ufuzzy";
+import { createSelector } from "reselect";
 import { assert } from "@/utils/assert";
 import { displayAttribute } from "@/utils/card-utils";
 import { FACTION_ORDER, type FactionName } from "@/utils/constants";
 import { and, or } from "@/utils/fp";
 import i18n from "@/utils/i18n";
 import { normalizeDiacritics } from "@/utils/normalize-diacritics";
-import uFuzzy from "@leeoniya/ufuzzy";
-import { createSelector } from "reselect";
 import { extendedDeckTags } from "../lib/resolve-deck";
 import type { ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";

@@ -1,15 +1,15 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectActiveList,
   selectActiveListFilter,
   selectFilterChanges,
+  selectTypeOptions,
 } from "@/store/selectors/lists";
-import { selectTypeOptions } from "@/store/selectors/lists";
 import type { Type } from "@/store/services/queries.types";
 import { isTypeFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import type { FilterProps } from "./filters.types";
 import { MultiselectFilter } from "./primitives/multiselect-filter";

@@ -1,3 +1,6 @@
+import { CheckIcon, CloudOffIcon } from "lucide-react";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store";
 import { selectAvailableConnections } from "@/store/selectors/connections";
@@ -5,9 +8,6 @@ import { selectConnectionLock } from "@/store/selectors/shared";
 import type { Connection, Provider } from "@/store/slices/connections.types";
 import { cx } from "@/utils/cx";
 import { capitalize, formatDate, formatProviderName } from "@/utils/formatting";
-import { CheckIcon, CloudOffIcon } from "lucide-react";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import css from "./connections.module.css";
 
 export function Connections() {
@@ -46,9 +46,7 @@ export function Connections() {
   );
 }
 
-function ConnectionStatusOutput(props: {
-  connection: Connection;
-}) {
+function ConnectionStatusOutput(props: { connection: Connection }) {
   const { status } = props.connection;
   const { t } = useTranslation();
 
@@ -73,16 +71,14 @@ function ConnectionDetails(props: {
   const { t } = useTranslation();
 
   const { connection, lastSyncedAt } = props;
-  const removeConnection = useStore((state) => state.removeConnection);
+  const unsync = useStore((state) => state.unsync);
 
   const connectionLock = useStore(selectConnectionLock);
 
   const onRemoveConnection = useCallback(async () => {
     // TODO: surface this error
-    await removeConnection(connection.provider as Provider).catch(
-      console.error,
-    );
-  }, [removeConnection, connection]);
+    await unsync(connection.provider as Provider).catch(console.error);
+  }, [unsync, connection]);
 
   return (
     <>
@@ -154,9 +150,7 @@ function ConnectionDetails(props: {
   );
 }
 
-function ConnectionInit(props: {
-  provider: Provider;
-}) {
+function ConnectionInit(props: { provider: Provider }) {
   const { t } = useTranslation();
   const { provider } = props;
 

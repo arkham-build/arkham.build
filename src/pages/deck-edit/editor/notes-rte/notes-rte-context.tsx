@@ -1,4 +1,3 @@
-import { useStore } from "@/store";
 import {
   createContext,
   useCallback,
@@ -7,6 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useStore } from "@/store";
 import type { CardFormat } from "./cards-to-markdown";
 
 export type ToolbarPopover = "symbols" | "cards";

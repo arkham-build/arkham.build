@@ -1,10 +1,3 @@
-import { AppLayout } from "@/layouts/app-layout";
-import type { DeckValidationResult } from "@/store/lib/deck-validation";
-import { deckTags, extendedDeckTags } from "@/store/lib/resolve-deck";
-import type { ResolvedDeck } from "@/store/lib/types";
-import type { History } from "@/store/selectors/decks";
-import { isEmpty } from "@/utils/is-empty";
-import { useAccentColor } from "@/utils/use-accent-color";
 import {
   BookOpenTextIcon,
   ChartAreaIcon,
@@ -13,12 +6,22 @@ import {
 } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useDialogContextChecked } from "@/components/ui/dialog.hooks";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { AppLayout } from "@/layouts/app-layout";
+import { useStore } from "@/store";
+import type { DeckValidationResult } from "@/store/lib/deck-validation";
+import { deckTags, extendedDeckTags } from "@/store/lib/resolve-deck";
+import type { ResolvedDeck } from "@/store/lib/types";
+import type { History } from "@/store/selectors/decks";
+import { isEmpty } from "@/utils/is-empty";
+import { useAccentColor } from "@/utils/use-accent-color";
 import DeckDescription from "../deck-description";
 import { DeckTags } from "../deck-tags";
 import { DeckTools } from "../deck-tools/deck-tools";
 import { Decklist } from "../decklist/decklist";
-import { DecklistValidation } from "../decklist/decklist-validation";
 import type { ViewMode } from "../decklist/decklist.types";
+import { DecklistValidation } from "../decklist/decklist-validation";
 import {
   LimitedCardPoolTag,
   SealedDeckTag,
@@ -34,16 +37,12 @@ import {
   TabsTrigger,
   useTabUrlState,
 } from "../ui/tabs";
-import { DeckHistory } from "./deck-history/deck-history";
-import { Sidebar } from "./sidebar";
-import type { DeckOrigin } from "./types";
-
-import { useDialogContextChecked } from "@/components/ui/dialog.hooks";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { useStore } from "@/store";
 import { useToast } from "../ui/toast.hooks";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./deck-display.module.css";
+import { DeckHistory } from "./deck-history/deck-history";
+import { Sidebar } from "./sidebar";
+import type { DeckOrigin } from "./types";
 
 export type DeckDisplayProps = {
   deck: ResolvedDeck;

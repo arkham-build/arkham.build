@@ -1,3 +1,6 @@
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
 import { CardsCombobox } from "@/components/cards-combobox";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -21,14 +24,11 @@ import {
 import type { Card } from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
 import { and, not } from "@/utils/fp";
-import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { useShallow } from "zustand/react/shallow";
+import css from "./notes-rte.module.css";
 import {
   type CardOrigin,
   useNotesRichTextEditorContext,
 } from "./notes-rte-context";
-import css from "./notes-rte.module.css";
 
 const emptySelection: string[] = [];
 

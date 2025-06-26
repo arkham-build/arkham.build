@@ -1,3 +1,8 @@
+import { FloatingPortal } from "@floating-ui/react";
+import { DicesIcon } from "lucide-react";
+import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
 import { Card } from "@/components/card/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -15,11 +20,6 @@ import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { useAccentColor } from "@/utils/use-accent-color";
-import { FloatingPortal } from "@floating-ui/react";
-import { DicesIcon } from "lucide-react";
-import { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useShallow } from "zustand/react/shallow";
 import css from "./quick-upgrade.module.css";
 
 type Props = {

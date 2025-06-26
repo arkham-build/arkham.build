@@ -41,7 +41,9 @@
 .layout.floating-menu-open::before {
   display: block;
   opacity: 1;
-  transition: opacity 0.2s ease-in, display 0.2s;
+  transition:
+    opacity 0.2s ease-in,
+    display 0.2s;
   transition-behavior: allow-discrete;
 }
 
@@ -83,7 +85,9 @@
   z-index: 3;
   background: var(--palette-0);
   box-shadow: var(--shadow-md);
-  transition: transform 0.2s ease-in, display 0.2s;
+  transition:
+    transform 0.2s ease-in,
+    display 0.2s;
   transition-behavior: allow-discrete;
 
   &[data-state="open"] {

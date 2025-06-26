@@ -1,10 +1,10 @@
+import { useTranslation } from "react-i18next";
 import { ListCard } from "@/components/list-card/list-card";
 import { Details } from "@/components/ui/details";
 import { useStore } from "@/store";
 import { selectUsableByInvestigators } from "@/store/selectors/card-view";
 import type { Card } from "@/store/services/queries.types";
 import { displayAttribute } from "@/utils/card-utils";
-import { useTranslation } from "react-i18next";
 
 type Props = {
   card: Card;

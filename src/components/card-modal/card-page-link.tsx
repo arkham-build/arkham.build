@@ -1,7 +1,7 @@
-import { useStore } from "@/store";
-import type { Card } from "@/store/services/queries.types";
 import { ExternalLinkIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useStore } from "@/store";
+import type { Card } from "@/store/services/queries.types";
 import { Button } from "../ui/button";
 
 type Props = {

@@ -7,8 +7,8 @@ import type { DecklistConfig } from "../slices/settings.types";
 import {
   type GroupedCards,
   type GroupingResult,
-  NONE,
   getGroupedCards,
+  NONE,
 } from "./grouping";
 import { makeSortFunction } from "./sorting";
 import type { ResolvedDeck } from "./types";

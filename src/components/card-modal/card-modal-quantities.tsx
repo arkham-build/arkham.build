@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { getDeckLimitOverride } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -7,8 +9,6 @@ import type { Slot } from "@/store/slices/deck-edits.types";
 import { cardLimit } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { inputFocused } from "@/utils/keyboard";
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { QuantityInput } from "../ui/quantity-input";
 import css from "./card-modal.module.css";
 
@@ -25,6 +25,10 @@ export function CardModalQuantities(props: Props) {
   const { t } = useTranslation();
 
   const updateCardQuantity = useStore((state) => state.updateCardQuantity);
+
+  const lookupTables = useStore(selectLookupTables);
+  const limitOverride = getDeckLimitOverride(lookupTables, deck, card);
+  const limit = limitOverride ?? cardLimit(card);
 
   useEffect(() => {
     if (!canEdit) return;
@@ -51,7 +55,7 @@ export function CardModalQuantities(props: Props) {
     return () => {
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [canEdit, card.code, updateCardQuantity, deck?.id]);
+  }, [canEdit, card.code, updateCardQuantity, deck?.id, limit]);
 
   const quantities = deck?.slots;
   const sideSlotQuantities = deck?.sideSlots;
@@ -65,10 +69,6 @@ export function CardModalQuantities(props: Props) {
   };
 
   const code = card.code;
-
-  const lookupTables = useStore(selectLookupTables);
-  const limitOverride = getDeckLimitOverride(lookupTables, deck, card);
-  const limit = limitOverride ?? cardLimit(card);
 
   const isBonded = !!bondedSlotQuantities?.[code];
 

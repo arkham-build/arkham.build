@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useRef } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Route, Router, Switch, useLocation } from "wouter";
 import { useBrowserLocation } from "wouter/use-browser-location";
@@ -22,7 +22,6 @@ import {
 import { useAgathaEasterEggHint } from "./utils/easter-egg-agatha";
 import { retryFailedDynamicImport } from "./utils/retry-failed-dynamic-import";
 import { applyStoredColorTheme } from "./utils/use-color-theme";
-import { useVisibilityChange } from "./utils/use-document-visibility";
 
 const Browse = lazy(() =>
   import("./pages/browse/browse").catch(retryFailedDynamicImport),
@@ -98,15 +97,6 @@ function AppInner() {
   const init = useStore((state) => state.init);
 
   applyStoredColorTheme();
-
-  // !!!HACK!!!
-  // part of the ~~hack~~ workaround for https://github.com/radix-ui/primitives/issues/2777 / https://bugzilla.mozilla.org/show_bug.cgi?id=1885232.
-  // make sure pointer events are re-enabled when the tab is focused - we disable them on pointerdown for slider and scrollarea
-  // and changing the tab while the pointer is down will leave the page in a state where pointer events are disabled.
-  // FIXME: remove this when Firefox fixes this bug, alongside the package patches.
-  useVisibilityChange(() => {
-    document.body.style.pointerEvents = "auto";
-  });
 
   useEffect(() => {
     async function initStore() {

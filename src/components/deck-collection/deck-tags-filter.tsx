@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Combobox } from "@/components/ui/combobox/combobox";
 import { useStore } from "@/store";
 import {
@@ -7,8 +9,6 @@ import {
 } from "@/store/selectors/deck-filters";
 import type { Coded } from "@/store/services/queries.types";
 import { isEmpty } from "@/utils/is-empty";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { tagRenderer } from "../deck-tags";
 import { FilterContainer } from "../filters/primitives/filter-container";
 

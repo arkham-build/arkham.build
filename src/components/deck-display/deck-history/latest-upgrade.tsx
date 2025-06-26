@@ -1,3 +1,11 @@
+import {
+  ArrowLeftToLineIcon,
+  FlameIcon,
+  MinusCircleIcon,
+  PlusCircleIcon,
+} from "lucide-react";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { CustomizableDiff } from "@/components/deck-display/deck-history/customizable-diff";
 import { SlotDiff } from "@/components/deck-display/deck-history/slot-diff";
 import { ListCard } from "@/components/list-card/list-card";
@@ -19,14 +27,6 @@ import { cardLimit, isStaticInvestigator } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { useAccentColor } from "@/utils/use-accent-color";
-import {
-  ArrowLeftToLineIcon,
-  FlameIcon,
-  MinusCircleIcon,
-  PlusCircleIcon,
-} from "lucide-react";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import css from "./latest-upgrade.module.css";
 
 type Props = {

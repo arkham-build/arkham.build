@@ -1,6 +1,6 @@
-import { cx } from "@/utils/cx";
 import { ChevronUpIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { cx } from "@/utils/cx";
 import { Button } from "./button";
 import css from "./details.module.css";
 import { Scroller } from "./scroller";

@@ -1,5 +1,7 @@
-import { cx } from "@/utils/cx";
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: not relevant. */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: not relevant. */
 import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
+import { cx } from "@/utils/cx";
 import css from "./collapse-sidebar-button.module.css";
 import { Button } from "./ui/button";
 import { HotkeyTooltip } from "./ui/hotkey";
@@ -22,7 +24,6 @@ export function CollapseSidebarButton(props: Props) {
   } = props;
   return (
     <div className={cx(css["collapse-container"], css[orientation], className)}>
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: not relevant. */}
       <div className={css["collapse-inner"]} onClick={onClick}>
         <div className={cx(css["highlight"])} />
         <HotkeyTooltip keybind={hotkey} description={hotkeyLabel}>

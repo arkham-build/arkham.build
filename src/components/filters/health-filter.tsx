@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectActiveListFilter,
@@ -6,7 +7,6 @@ import {
 } from "@/store/selectors/lists";
 import { isHealthFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
-import { useTranslation } from "react-i18next";
 import type { FilterProps } from "./filters.types";
 import { RangeFilter } from "./primitives/range-filter";
 

@@ -83,8 +83,8 @@ test.describe("quick upgrades", () => {
             .getByTestId(`listcard-${code}`)
             .getByTestId("quantity-value")
             .textContent({ timeout: 1000 });
-          return parseInt(text as string, 10);
-        } catch (err) {
+          return Number.parseInt(text as string, 10);
+        } catch (_) {
           return 0;
         }
       }),

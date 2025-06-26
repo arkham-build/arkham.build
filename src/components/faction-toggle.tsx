@@ -1,6 +1,6 @@
+import { useTranslation } from "react-i18next";
 import type { Faction } from "@/store/services/queries.types";
 import type { MultiselectFilter } from "@/store/slices/lists.types";
-import { useTranslation } from "react-i18next";
 import css from "./faction-toggle.module.css";
 import { FactionIconFancy } from "./icons/faction-icon-fancy";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";

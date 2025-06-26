@@ -1,10 +1,10 @@
+import { createSelector } from "reselect";
 import { resolveDeck } from "@/store/lib/resolve-deck";
 import { time, timeEnd } from "@/utils/time";
-import { createSelector } from "reselect";
 import { applyCardChanges } from "../lib/card-edits";
 import {
-  type ChangeRecord,
   applyDeckEdits,
+  type ChangeRecord,
   getChangeRecord,
 } from "../lib/deck-edits";
 import { groupDeckCards } from "../lib/deck-grouping";

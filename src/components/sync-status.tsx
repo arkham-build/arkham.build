@@ -1,17 +1,15 @@
-import { useStore } from "@/store";
-
-import { cx } from "@/utils/cx";
-import { formatProviderName } from "@/utils/formatting";
-import { isEmpty } from "@/utils/is-empty";
 import { CircleAlertIcon, RefreshCcwIcon } from "lucide-react";
-import { Button } from "./ui/button";
-
-import { useSync } from "@/store/hooks/use-sync";
-import { syncHealthy } from "@/store/selectors/connections";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
+import { useStore } from "@/store";
+import { useSync } from "@/store/hooks/use-sync";
+import { syncHealthy } from "@/store/selectors/connections";
+import { cx } from "@/utils/cx";
+import { formatProviderName } from "@/utils/formatting";
+import { isEmpty } from "@/utils/is-empty";
 import css from "./sync-status.module.css";
+import { Button } from "./ui/button";
 
 export function SyncStatus() {
   const [, navigate] = useLocation();

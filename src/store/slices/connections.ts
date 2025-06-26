@@ -2,7 +2,6 @@ import type { StateCreator } from "zustand";
 
 import { assertCanPublishDeck } from "@/utils/arkhamdb";
 import { assert } from "@/utils/assert";
-import type { StoreState } from ".";
 import { resolveDeck } from "../lib/resolve-deck";
 import { disconnectProviderIfUnauthorized, syncAdapters } from "../lib/sync";
 import { dehydrate } from "../persist";
@@ -12,6 +11,7 @@ import {
   selectMetadata,
 } from "../selectors/shared";
 import { ApiError, getDecks, newDeck, updateDeck } from "../services/queries";
+import type { StoreState } from ".";
 import type {
   ConnectionsSlice,
   Provider,
@@ -41,7 +41,7 @@ export const createConnectionsSlice: StateCreator<
       data: {
         ...state.connections.data,
         [provider]: {
-          createdAt: new Date().valueOf(),
+          createdAt: Date.now(),
           status: "connected" as const,
           user,
           provider,
@@ -54,7 +54,7 @@ export const createConnectionsSlice: StateCreator<
     await dehydrate(get(), "app");
     return connections;
   },
-  async removeConnection(provider) {
+  async unsync(provider) {
     const state = get();
 
     const patch = {

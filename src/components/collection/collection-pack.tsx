@@ -5,8 +5,8 @@ import type { Cycle, Pack } from "@/store/services/queries.types";
 import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { displayPackName } from "@/utils/formatting";
-import { CollectionCount } from "./collection-count";
 import css from "./collection.module.css";
+import { CollectionCount } from "./collection-count";
 
 type Props = {
   canEdit?: boolean;

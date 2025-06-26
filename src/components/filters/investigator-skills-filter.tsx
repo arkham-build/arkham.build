@@ -1,3 +1,5 @@
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectActiveListFilter,
@@ -8,8 +10,6 @@ import { isInvestigatorSkillsFilterObject } from "@/store/slices/lists.type-guar
 import type { InvestigatorSkillsFilter as InvestigatorSkillsFilterType } from "@/store/slices/lists.types";
 import { assert } from "@/utils/assert";
 import { SKILL_KEYS, type SkillKey } from "@/utils/constants";
-import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { SkillIconFancy } from "../icons/skill-icon-fancy";
 import { RangeSelect } from "../ui/range-select";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";

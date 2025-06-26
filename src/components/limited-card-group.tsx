@@ -1,7 +1,7 @@
+import { useTranslation } from "react-i18next";
 import type { Card } from "@/store/services/queries.types";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
-import { useTranslation } from "react-i18next";
 import css from "./limited-card-group.module.css";
 
 type Entry = {

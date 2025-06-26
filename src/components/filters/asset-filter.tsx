@@ -1,14 +1,14 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectActiveListFilter,
+  selectAssetOptions,
   selectFilterChanges,
 } from "@/store/selectors/lists";
-import { selectAssetOptions } from "@/store/selectors/lists";
 import { isAssetFilterObject } from "@/store/slices/lists.type-guards";
 import type { AssetFilter as AssetFilterType } from "@/store/slices/lists.types";
 import { assert } from "@/utils/assert";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { SkillIcon } from "../icons/skill-icon";
 import SlotIcon from "../icons/slot-icon";
 import { Checkbox } from "../ui/checkbox";

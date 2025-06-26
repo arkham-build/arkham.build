@@ -1,7 +1,7 @@
+import { useMemo } from "react";
 import type { Card, Recommendation } from "@/store/services/queries.types";
 import { getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
-import { useMemo } from "react";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./card-recommender.module.css";
 

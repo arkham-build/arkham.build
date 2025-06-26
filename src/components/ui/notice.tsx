@@ -1,5 +1,5 @@
-import { cx } from "@/utils/cx";
 import { InfoIcon } from "lucide-react";
+import { cx } from "@/utils/cx";
 import css from "./notice.module.css";
 
 type Variant = "info";

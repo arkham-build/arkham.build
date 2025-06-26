@@ -1,6 +1,6 @@
 import path from "node:path";
+import { expect, type Locator, type Page } from "@playwright/test";
 import { assert } from "@/utils/assert";
-import { type Locator, type Page, expect } from "@playwright/test";
 
 export async function importDeck(page: Page) {
   await page.goto("/");

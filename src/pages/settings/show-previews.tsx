@@ -1,7 +1,7 @@
-import { Checkbox } from "@/components/ui/checkbox";
-import { Field } from "@/components/ui/field";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Field } from "@/components/ui/field";
 import type { SettingProps } from "./types";
 
 export function ShowPreviewsSetting(props: SettingProps) {

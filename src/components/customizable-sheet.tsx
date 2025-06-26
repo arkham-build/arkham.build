@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectMetadata } from "@/store/selectors/shared";
@@ -5,8 +7,6 @@ import type { Card } from "@/store/services/queries.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { displayAttribute } from "@/utils/card-utils";
 import { isEmpty } from "@/utils/is-empty";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { useCardModalContextChecked } from "./card-modal/card-modal-context";
 import { CardScanInner } from "./card-scan";
 

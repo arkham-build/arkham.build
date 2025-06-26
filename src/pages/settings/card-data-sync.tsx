@@ -1,3 +1,6 @@
+import { CheckIcon, FileDownIcon } from "lucide-react";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { useToast } from "@/components/ui/toast.hooks";
@@ -9,9 +12,6 @@ import {
 } from "@/store/services/queries";
 import { cx } from "@/utils/cx";
 import { useMutate, useQuery } from "@/utils/use-query";
-import { CheckIcon, FileDownIcon } from "lucide-react";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import css from "./card-data-sync.module.css";
 
 type Props = {

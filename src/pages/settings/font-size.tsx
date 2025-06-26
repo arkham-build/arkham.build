@@ -1,8 +1,8 @@
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Slider } from "@/components/ui/slider";
 import { ALargeSmallIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Slider } from "@/components/ui/slider";
 import css from "./font-size.module.css";
 import type { SettingProps } from "./types";
 

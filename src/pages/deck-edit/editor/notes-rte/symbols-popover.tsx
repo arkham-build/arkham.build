@@ -1,10 +1,10 @@
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Combobox } from "@/components/ui/combobox/combobox";
 import { Field, FieldLabel } from "@/components/ui/field";
 import type { ResolvedDeck } from "@/store/lib/types";
-import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { useNotesRichTextEditorContext } from "./notes-rte-context";
 import css from "./notes-rte.module.css";
+import { useNotesRichTextEditorContext } from "./notes-rte-context";
 
 type Props = {
   deck: ResolvedDeck;

@@ -1,4 +1,3 @@
-import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import {
   FloatingFocusManager,
   FloatingOverlay,
@@ -7,6 +6,7 @@ import {
   useTransitionStyles,
 } from "@floating-ui/react";
 import { cloneElement, forwardRef, isValidElement } from "react";
+import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import type { DialogOptions } from "./dialog.hooks";
 import {
   DialogContext,
@@ -88,7 +88,6 @@ export const DialogContent = forwardRef<
           <div
             {...context.getFloatingProps(props)}
             aria-describedby={context.descriptionId}
-            aria-labelledby={context.labelId}
             ref={ref}
           >
             <div style={styles}>{props.children}</div>

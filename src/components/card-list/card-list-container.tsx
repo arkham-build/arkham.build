@@ -1,3 +1,4 @@
+import { forwardRef, useCallback } from "react";
 import { CenterLayout } from "@/layouts/center-layout";
 import { useStore } from "@/store";
 import {
@@ -7,7 +8,6 @@ import {
 } from "@/store/selectors/lists";
 import { selectMetadata } from "@/store/selectors/shared";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
-import { forwardRef, useCallback } from "react";
 import { Footer } from "../footer";
 import { CardGrid } from "./card-grid";
 import { CardList } from "./card-list";

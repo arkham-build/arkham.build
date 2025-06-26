@@ -1,3 +1,8 @@
+import { BookLockIcon, XIcon } from "lucide-react";
+import { useCallback, useMemo } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { createSelector } from "reselect";
+import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
 import type { SealedDeck } from "@/store/lib/types";
 import {
@@ -12,11 +17,6 @@ import { displayPackName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { parseCsv } from "@/utils/parse-csv";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
-import { BookLockIcon, XIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
-import { Trans, useTranslation } from "react-i18next";
-import { createSelector } from "reselect";
-import { useShallow } from "zustand/react/shallow";
 import { ListCardInner } from "../list-card/list-card-inner";
 import { PackName } from "../pack-name";
 import { Button } from "../ui/button";

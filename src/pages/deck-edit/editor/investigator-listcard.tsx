@@ -1,3 +1,4 @@
+import { useCallback, useEffect } from "react";
 import { useCardModalContextChecked } from "@/components/card-modal/card-modal-context";
 import { DeckInvestigator } from "@/components/deck-investigator/deck-investigator";
 import { DeckInvestigatorModal } from "@/components/deck-investigator/deck-investigator-modal";
@@ -5,7 +6,6 @@ import { ListCard } from "@/components/list-card/list-card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useDialogContextChecked } from "@/components/ui/dialog.hooks";
 import type { ResolvedDeck } from "@/store/lib/types";
-import { useCallback, useEffect } from "react";
 import css from "./investigator-listcard.module.css";
 
 type Props = {

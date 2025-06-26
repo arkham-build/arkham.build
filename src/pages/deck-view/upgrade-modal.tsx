@@ -1,3 +1,6 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocation, useSearch } from "wouter";
 import { ListCard } from "@/components/list-card/list-card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,9 +20,6 @@ import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";
 import { useAccentColor } from "@/utils/use-accent-color";
 import { useHotkey } from "@/utils/use-hotkey";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useLocation, useSearch } from "wouter";
 import css from "./upgrade-modal.module.css";
 
 type Props = {

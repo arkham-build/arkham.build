@@ -1,3 +1,5 @@
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import PackIcon from "@/components/icons/pack-icon";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { useStore } from "@/store";
@@ -7,13 +9,11 @@ import type { SettingsState } from "@/store/slices/settings.types";
 import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
 import { displayPackName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
-import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { MediaCard } from "../ui/media-card";
+import css from "./collection.module.css";
 import { CollectionCount } from "./collection-count";
 import { CollectionCycleActions } from "./collection-cycle-actions";
 import { CollectionPack } from "./collection-pack";
-import css from "./collection.module.css";
 
 type Props = {
   canShowCounts?: boolean;

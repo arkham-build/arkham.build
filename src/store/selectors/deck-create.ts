@@ -1,8 +1,8 @@
+import { createSelector } from "reselect";
 import { assert } from "@/utils/assert";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { formatRelationTitle } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
-import { createSelector } from "reselect";
 import { resolveCardWithRelations } from "../lib/resolve-card";
 import type { CardSet, CardWithRelations, ResolvedCard } from "../lib/types";
 import type { StoreState } from "../slices";

@@ -1,7 +1,7 @@
-import { Checkbox } from "@/components/ui/checkbox";
-import { useStore } from "@/store";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useStore } from "@/store";
 import css from "./card-recommender.module.css";
 
 export function IncludeSideDeckToggle() {

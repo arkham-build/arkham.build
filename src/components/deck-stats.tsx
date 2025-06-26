@@ -1,5 +1,5 @@
-import type { ResolvedDeck } from "@/store/lib/types";
 import { useTranslation } from "react-i18next";
+import type { ResolvedDeck } from "@/store/lib/types";
 import css from "./deck-stats.module.css";
 import { DefaultTooltip } from "./ui/tooltip";
 

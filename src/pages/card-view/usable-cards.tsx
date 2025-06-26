@@ -1,3 +1,6 @@
+import { useCallback, useEffect } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { useParams } from "wouter";
 import {
   CardModalProvider,
   useCardModalContextChecked,
@@ -11,9 +14,6 @@ import { selectMetadata } from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
 import { displayAttribute } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";
-import { useCallback, useEffect } from "react";
-import { Trans, useTranslation } from "react-i18next";
-import { useParams } from "wouter";
 import { Error404 } from "../errors/404";
 import css from "./usable-cards.module.css";
 
@@ -93,7 +93,10 @@ function UsableCardsList(props: { card: Card }) {
 function CardLink({
   children,
   card,
-}: { children?: React.ReactNode; card: Card }) {
+}: {
+  children?: React.ReactNode;
+  card: Card;
+}) {
   const accentColor = useAccentColor(card.faction_code);
 
   const cardModalContext = useCardModalContextChecked();

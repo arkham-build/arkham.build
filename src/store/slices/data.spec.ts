@@ -1,7 +1,7 @@
 import { afterEach } from "node:test";
-import { getMockStore } from "@/test/get-mock-store";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
+import { getMockStore } from "@/test/get-mock-store";
 import type { StoreState } from ".";
 import type { Deck } from "./data.types";
 

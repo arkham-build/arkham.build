@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { selectActiveListSearch } from "@/store/selectors/lists";
 import { assert } from "@/utils/assert";
@@ -5,8 +7,6 @@ import { cx } from "@/utils/cx";
 import { debounce } from "@/utils/debounce";
 import { useAgathaEasterEggTrigger } from "@/utils/easter-egg-agatha";
 import { useHotkey } from "@/utils/use-hotkey";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Checkbox } from "../ui/checkbox";
 import { SearchInput } from "../ui/search-input";
 import css from "./card-search.module.css";

@@ -1,14 +1,14 @@
+import { useMemo, useState } from "react";
 import type { ResolvedCard } from "@/store/lib/types";
 import type { Card as CardType } from "@/store/services/queries.types";
 import { displayAttribute, sideways } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
-import { useMemo, useState } from "react";
 import { CardScan } from "../card-scan";
 import { CardThumbnail } from "../card-thumbnail";
+import css from "./card.module.css";
 import { CardHeader } from "./card-header";
 import { CardMetaBack } from "./card-meta";
 import { CardText } from "./card-text";
-import css from "./card.module.css";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;

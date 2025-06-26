@@ -1,4 +1,3 @@
-import { cx } from "@/utils/cx";
 import type {
   CollapsibleContentProps,
   CollapsibleProps,
@@ -6,6 +5,7 @@ import type {
 import { Content, Root, Trigger } from "@radix-ui/react-collapsible";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { cx } from "@/utils/cx";
 import { Button } from "./button";
 import css from "./collapsible.module.css";
 

@@ -1,7 +1,7 @@
-import { capitalize, formatProviderName } from "@/utils/formatting";
 import type { TFunction } from "i18next";
 import { LockKeyholeIcon, ShareIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { capitalize, formatProviderName } from "@/utils/formatting";
 import css from "./deck-tags.module.css";
 import { Tag } from "./ui/tag";
 

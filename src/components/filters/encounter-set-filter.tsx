@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectActiveListFilter,
@@ -7,8 +9,6 @@ import {
 import type { EncounterSet } from "@/store/services/queries.types";
 import { isEncounterSetFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import EncounterIcon from "../icons/encounter-icon";
 import type { FilterProps } from "./filters.types";
 import { MultiselectFilter } from "./primitives/multiselect-filter";

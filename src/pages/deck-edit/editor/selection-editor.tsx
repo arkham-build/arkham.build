@@ -1,8 +1,8 @@
+import { useTranslation } from "react-i18next";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Select } from "@/components/ui/select";
 import type { Selections } from "@/store/lib/types";
 import { formatDeckOptionString } from "@/utils/formatting";
-import { useTranslation } from "react-i18next";
 
 type Props = {
   onSelectionChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;

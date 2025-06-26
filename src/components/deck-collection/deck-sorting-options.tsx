@@ -1,12 +1,12 @@
+import { ArrowDownNarrowWideIcon } from "lucide-react";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type {
   DeckSortPayload,
   SortCriteria,
   SortOrder,
 } from "@/store/slices/deck-collection-filters.types";
-import { ArrowDownNarrowWideIcon } from "lucide-react";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { Select } from "../ui/select";
 import css from "./deck-sorting-options.module.css";
 

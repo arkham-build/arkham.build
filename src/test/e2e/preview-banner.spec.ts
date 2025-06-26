@@ -1,4 +1,5 @@
-import { Page, expect, test } from "@playwright/test";
+/** biome-ignore-all lint/suspicious/noExplicitAny: test code */
+import { expect, test } from "@playwright/test";
 import { fillSearch } from "./actions";
 import { mockApiCalls } from "./mocks";
 

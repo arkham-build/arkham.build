@@ -1,16 +1,16 @@
+import { useState } from "react";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
 import { displayAttribute, sideways } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
-import { useState } from "react";
 import { CardScan } from "../card-scan";
 import { CardThumbnail } from "../card-thumbnail";
+import css from "./card.module.css";
 import { CardDetails } from "./card-details";
 import { CardHeader } from "./card-header";
 import { CardIcons } from "./card-icons";
 import { CardMeta } from "./card-meta";
 import { CardTabooText } from "./card-taboo-text";
 import { CardText } from "./card-text";
-import css from "./card.module.css";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;

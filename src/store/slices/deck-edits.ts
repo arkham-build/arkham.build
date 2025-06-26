@@ -1,16 +1,16 @@
+import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { capitalize } from "@/utils/formatting";
 import { range } from "@/utils/range";
-import type { StateCreator } from "zustand";
-import type { StoreState } from ".";
 import { clampAttachmentQuantity } from "../lib/attachments";
 import { randomBasicWeaknessForDeck } from "../lib/random-basic-weakness";
 import { getDeckLimitOverride } from "../lib/resolve-deck";
 import { dehydrate } from "../persist";
 import { selectResolvedDeckById } from "../selectors/decks";
 import { selectLookupTables, selectMetadata } from "../selectors/shared";
+import type { StoreState } from ".";
 import type { Id } from "./data.types";
 import { type DeckEditsSlice, mapTabToSlot } from "./deck-edits.types";
 

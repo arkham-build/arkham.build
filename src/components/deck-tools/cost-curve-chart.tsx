@@ -1,6 +1,3 @@
-import type { ChartableData } from "@/store/lib/deck-charts";
-import { cx } from "@/utils/cx";
-import { range } from "@/utils/range";
 import type { TFunction } from "i18next";
 import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -13,6 +10,9 @@ import {
   VictoryScatter,
   VictoryTooltip,
 } from "victory";
+import type { ChartableData } from "@/store/lib/deck-charts";
+import { cx } from "@/utils/cx";
+import { range } from "@/utils/range";
 import { useElementSize } from "../../utils/use-element-size";
 import { chartsTheme, containerTheme } from "./chart-theme";
 import css from "./deck-tools.module.css";

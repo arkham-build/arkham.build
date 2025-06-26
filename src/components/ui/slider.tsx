@@ -1,7 +1,7 @@
-import { cx } from "@/utils/cx";
-import { range } from "@/utils/range";
 import type { SliderProps } from "@radix-ui/react-slider";
 import { Range, Root, Thumb, Track } from "@radix-ui/react-slider";
+import { cx } from "@/utils/cx";
+import { range } from "@/utils/range";
 import css from "./slider.module.css";
 
 export interface Props extends SliderProps {

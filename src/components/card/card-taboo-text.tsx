@@ -1,7 +1,7 @@
+import { useTranslation } from "react-i18next";
 import type { Card } from "@/store/services/queries.types";
 import { displayAttribute, parseCardTextHtml } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
-import { useTranslation } from "react-i18next";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./card.module.css";
 
@@ -44,7 +44,7 @@ export function CardTabooText(props: Props) {
         </DefaultTooltip>
       )}
       {taboo_xp != null && (
-        <p>
+        <p className={css["taboo-chain"]}>
           <i className="icon-tablet color-taboo icon-text" />
           {taboo_xp > 0
             ? t("common.taboo_chained", { xp: taboo_xp })

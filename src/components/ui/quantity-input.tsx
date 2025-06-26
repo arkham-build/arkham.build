@@ -1,5 +1,5 @@
-import { cx } from "@/utils/cx";
 import { MinusIcon, PlusIcon } from "lucide-react";
+import { cx } from "@/utils/cx";
 import { Button } from "./button";
 import css from "./quantity-input.module.css";
 

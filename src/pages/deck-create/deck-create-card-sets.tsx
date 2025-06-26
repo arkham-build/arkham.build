@@ -1,10 +1,10 @@
+import { useCallback } from "react";
 import { CardSet } from "@/components/cardset";
 import { useStore } from "@/store";
 import {
   selectDeckCreateCardSets,
   selectDeckCreateInvestigators,
 } from "@/store/selectors/deck-create";
-import { useCallback } from "react";
 import { useAccentColor } from "../../utils/use-accent-color";
 import css from "./deck-create.module.css";
 

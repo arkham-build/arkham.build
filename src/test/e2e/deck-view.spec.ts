@@ -1,4 +1,4 @@
-import test, { type Page, expect } from "@playwright/test";
+import test, { expect, type Page } from "@playwright/test";
 import {
   defaultScreenshotMask,
   importDeck,
@@ -152,7 +152,7 @@ test.describe("deck view", () => {
   });
 
   test("render customizable cards with options", async ({ page }) => {
-    await importDeckFromFile(page, "validation/access_customizable.json", {
+    await importDeckFromFile(page, "validation/customizable_level.json", {
       navigate: "view",
     });
 
@@ -367,7 +367,7 @@ test.describe("deck view", () => {
 
   test("prefill upgrade xp from url", async ({ page }) => {
     await importStandardDeck(page);
-    await page.goto(page.url() + `?upgrade_xp=666`);
+    await page.goto(`${page.url()}?upgrade_xp=666`);
     await expect(page.getByTestId("upgrade-xp")).toHaveValue("666");
   });
 
@@ -405,7 +405,7 @@ test.describe("deck view", () => {
   });
 
   test("limited slots in deck investigator", async ({ page }) => {
-    await importDeckFromFile(page, "validation/limit_dunwich.json", {
+    await importDeckFromFile(page, "validation/dunwich.json", {
       navigate: "view",
     });
 
@@ -420,7 +420,7 @@ test.describe("deck view", () => {
   });
 
   test("limited slots in deck tools", async ({ page }) => {
-    await importDeckFromFile(page, "validation/limit_dunwich.json", {
+    await importDeckFromFile(page, "validation/dunwich.json", {
       navigate: "view",
     });
     await page.getByRole("tab", { name: "Tools" }).click();

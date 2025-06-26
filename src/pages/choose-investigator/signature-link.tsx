@@ -1,11 +1,11 @@
+import { FloatingPortal, shift } from "@floating-ui/react";
+import { useCallback } from "react";
 import { useCardModalContextChecked } from "@/components/card-modal/card-modal-context";
 import { CardTooltip } from "@/components/card-tooltip/card-tooltip";
 import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
 import type { Card } from "@/store/services/queries.types";
 import { displayAttribute } from "@/utils/card-utils";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
-import { FloatingPortal, shift } from "@floating-ui/react";
-import { useCallback } from "react";
 import css from "./choose-investigator.module.css";
 
 type Props = {

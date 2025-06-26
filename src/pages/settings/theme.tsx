@@ -1,7 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Select } from "@/components/ui/select";
 import { getAvailableThemes } from "@/utils/use-color-theme";
-import { useTranslation } from "react-i18next";
 
 type Props = {
   setTheme: (value: string) => void;

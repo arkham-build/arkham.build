@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectActiveListFilter,
@@ -7,8 +9,6 @@ import {
 import { isPropertiesFilterObject } from "@/store/slices/lists.type-guards";
 import type { PropertiesFilter as PropertiesFilterType } from "@/store/slices/lists.types";
 import { assert } from "@/utils/assert";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { FactionIconFancy } from "../icons/faction-icon-fancy";
 import { Checkbox } from "../ui/checkbox";
 import { CheckboxGroup } from "../ui/checkboxgroup";

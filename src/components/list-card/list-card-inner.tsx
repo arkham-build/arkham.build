@@ -1,3 +1,7 @@
+import type { ReferenceType } from "@floating-ui/react";
+import { FileWarningIcon, StarIcon } from "lucide-react";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import type { Card } from "@/store/services/queries.types";
 import type { SettingsState } from "@/store/slices/settings.types";
 import {
@@ -11,19 +15,15 @@ import {
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { dataLanguage } from "@/utils/formatting";
-import type { ReferenceType } from "@floating-ui/react";
-import { FileWarningIcon, StarIcon } from "lucide-react";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { AnnotationIndicator } from "../annotation-indicator";
+import { CardDetails } from "../card/card-details";
+import { CardIcons } from "../card/card-icons";
+import { CardText } from "../card/card-text";
 import { CardHealth } from "../card-health";
 import { CardIcon } from "../card-icon";
 import { useCardModalContextChecked } from "../card-modal/card-modal-context";
 import { CardName } from "../card-name";
 import { CardThumbnail } from "../card-thumbnail";
-import { CardDetails } from "../card/card-details";
-import { CardIcons } from "../card/card-icons";
-import { CardText } from "../card/card-text";
 import { MulticlassIcons } from "../icons/multiclass-icons";
 import { SkillIcons } from "../skill-icons/skill-icons";
 import { SkillIconsInvestigator } from "../skill-icons/skill-icons-investigator";

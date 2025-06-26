@@ -1,3 +1,9 @@
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: not relevant. */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: backdrop needs to be clickable. */
+import { CheckCircleIcon } from "lucide-react";
+import { useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "wouter";
 import { useStore } from "@/store";
 import {
   getRelatedCardQuantity,
@@ -14,10 +20,6 @@ import { formatRelationTitle } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useMedia } from "@/utils/use-media";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
-import { CheckCircleIcon } from "lucide-react";
-import { useCallback, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import { Link } from "wouter";
 import { Annotation } from "../annotations/annotation";
 import { Card } from "../card/card";
 import { CardSet } from "../cardset";
@@ -29,11 +31,11 @@ import { Button } from "../ui/button";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { Modal } from "../ui/modal";
 import { CardReviewsLink } from "./card-arkhamdb-links";
+import css from "./card-modal.module.css";
 import { AnnotationEdit } from "./card-modal-annotation-edit";
 import { CardModalAttachmentQuantities } from "./card-modal-attachment-quantities";
 import { useCardModalContextChecked } from "./card-modal-context";
 import { CardModalQuantities } from "./card-modal-quantities";
-import css from "./card-modal.module.css";
 import { CardPageLink } from "./card-page-link";
 import { SpecialistAccess, SpecialistInvestigators } from "./specialist";
 
@@ -234,7 +236,6 @@ export function CardModal(props: Props) {
       {showQuantities ? (
         <div className={css["container"]}>
           <div className={css["card"]}>{cardNode}</div>
-          {/* biome-ignore lint/a11y/useKeyWithClickEvents: not relevant. */}
           <div
             className={css["quantities"]}
             onClick={onClickBackdrop}

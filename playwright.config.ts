@@ -1,7 +1,7 @@
 import {
-  type PlaywrightTestConfig,
   defineConfig,
   devices,
+  type PlaywrightTestConfig,
 } from "@playwright/test";
 
 /**
@@ -9,6 +9,7 @@ import {
  * https://github.com/motdotla/dotenv
  */
 import dotenv from "dotenv";
+
 dotenv.config();
 
 /**

@@ -1,10 +1,10 @@
+import { ArrowLeftToLineIcon } from "lucide-react";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Card } from "@/store/services/queries.types";
-import { ArrowLeftToLineIcon } from "lucide-react";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 
 type Props = {
   card: Card;

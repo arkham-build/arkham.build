@@ -1,5 +1,5 @@
-import type { Counts } from "@/store/selectors/collection";
 import { useTranslation } from "react-i18next";
+import type { Counts } from "@/store/selectors/collection";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./collection.module.css";
 

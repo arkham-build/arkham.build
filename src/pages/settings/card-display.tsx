@@ -1,3 +1,5 @@
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ListCardInner } from "@/components/list-card/list-card-inner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -5,8 +7,6 @@ import { Select } from "@/components/ui/select";
 import { useStore } from "@/store";
 import { selectMetadata } from "@/store/selectors/shared";
 import type { SettingsState } from "@/store/slices/settings.types";
-import { useCallback, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import css from "./card-display.module.css";
 import type { SettingProps } from "./types";
 

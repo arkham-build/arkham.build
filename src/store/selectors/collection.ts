@@ -1,6 +1,6 @@
+import { createSelector } from "reselect";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { and } from "@/utils/fp";
-import { createSelector } from "reselect";
 import { ownedCardCount } from "../lib/card-ownership";
 import {
   filterBacksides,

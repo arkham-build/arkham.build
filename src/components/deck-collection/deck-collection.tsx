@@ -1,3 +1,8 @@
+import { EllipsisIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
+import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Virtuoso } from "react-virtuoso";
+import { Link, useLocation } from "wouter";
 import { DeckSummary } from "@/components/deck-collection/deck-summary";
 import {
   useDeleteDeck,
@@ -21,16 +26,11 @@ import { selectConnectionsData } from "@/store/selectors/connections";
 import { selectDecksDisplayList } from "@/store/selectors/deck-filters";
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
-import { EllipsisIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
-import { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Virtuoso } from "react-virtuoso";
-import { Link, useLocation } from "wouter";
 import { FileInput } from "../ui/file-input";
 import { HotkeyTooltip } from "../ui/hotkey";
+import css from "./deck-collection.module.css";
 import { DeckCollectionFilters } from "./deck-collection-filters";
 import { DeckCollectionImport } from "./deck-collection-import";
-import css from "./deck-collection.module.css";
 
 export function DeckCollection() {
   const { t } = useTranslation();

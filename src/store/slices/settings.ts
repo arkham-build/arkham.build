@@ -1,12 +1,12 @@
-import { changeLanguage } from "@/utils/i18n";
 import type { StateCreator } from "zustand";
-import type { StoreState } from ".";
+import { changeLanguage } from "@/utils/i18n";
 import { dehydrate } from "../persist";
 import {
   queryCards,
   queryDataVersion,
   queryMetadata,
 } from "../services/queries";
+import type { StoreState } from ".";
 import { makeLists } from "./lists";
 import type {
   DecklistConfig,

@@ -1,10 +1,10 @@
+import { Trans, useTranslation } from "react-i18next";
+import { Link } from "wouter";
 import { CollectionSettings } from "@/components/collection/collection";
 import { AppLayout } from "@/layouts/app-layout";
 import { useStore } from "@/store";
 import { selectTotalOwned } from "@/store/selectors/collection";
 import { cx } from "@/utils/cx";
-import { Trans, useTranslation } from "react-i18next";
-import { Link } from "wouter";
 import css from "./collection-stats.module.css";
 
 function CollectionStats() {

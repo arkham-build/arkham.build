@@ -1,7 +1,7 @@
+import { useTranslation } from "react-i18next";
 import type { Card } from "@/store/services/queries.types";
 import { displayAttribute } from "@/utils/card-utils";
 import { formatSlots } from "@/utils/formatting";
-import { useTranslation } from "react-i18next";
 import { CardSlots } from "../card-slots";
 import css from "./card.module.css";
 

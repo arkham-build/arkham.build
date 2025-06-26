@@ -1,14 +1,13 @@
+import { beforeEach, describe, expect, it } from "vitest";
+import type { StoreApi } from "zustand";
 import { getMockStore } from "@/test/get-mock-store";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { StoreApi } from "zustand";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
 } from "../selectors/shared";
-import { StoreState } from "../slices";
-import { Deck } from "../slices/data.types";
-import { SettingsState } from "../slices/settings.types";
-import { applyDeckEdits } from "./deck-edits";
+import type { StoreState } from "../slices";
+import type { Deck } from "../slices/data.types";
+import type { SettingsState } from "../slices/settings.types";
 import { randomBasicWeaknessForDeck } from "./random-basic-weakness";
 import { resolveDeck } from "./resolve-deck";
 

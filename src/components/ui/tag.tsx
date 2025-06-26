@@ -1,5 +1,5 @@
-import { cx } from "@/utils/cx";
 import { forwardRef } from "react";
+import { cx } from "@/utils/cx";
 import css from "./tag.module.css";
 
 type Props<T extends React.ElementType> = {

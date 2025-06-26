@@ -1,3 +1,5 @@
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -7,8 +9,6 @@ import {
 } from "@/store/selectors/shared";
 import type { Attachments, Card } from "@/store/services/queries.types";
 import { getCardColor } from "@/utils/card-utils";
-import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { AttachmentIcon } from "../attachments/attachments";
 import {
   attachmentDefinitionLimit,

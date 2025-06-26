@@ -1,9 +1,9 @@
+import { useTranslation } from "react-i18next";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Select } from "@/components/ui/select";
 import { useStore } from "@/store";
 import { selectTabooSetOptions } from "@/store/selectors/lists";
 import { formatTabooSet } from "@/utils/formatting";
-import { useTranslation } from "react-i18next";
 import type { SettingProps } from "./types";
 
 export function TabooSetSetting(props: SettingProps) {

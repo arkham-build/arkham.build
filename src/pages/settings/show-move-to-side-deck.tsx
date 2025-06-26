@@ -1,6 +1,6 @@
+import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
-import { useTranslation } from "react-i18next";
 import type { SettingProps } from "./types";
 
 export function ShowMoveToSideDeckSetting(props: SettingProps) {

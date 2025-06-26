@@ -42,7 +42,7 @@ export type ConnectionsSlice = {
     provider: Provider,
     user: ConnectionUser,
   ): Promise<ConnectionsState>;
-  removeConnection(provider: Provider): Promise<void>;
+  unsync(provider: Provider): Promise<void>;
 
   sync(): Promise<void>;
   syncProvider(provider: Provider): Promise<void>;

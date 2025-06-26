@@ -1,11 +1,11 @@
-import { getMockStore } from "@/test/get-mock-store";
 import { beforeAll, describe, expect, it } from "vitest";
-import { StoreApi } from "zustand";
+import type { StoreApi } from "zustand";
+import { getMockStore } from "@/test/get-mock-store";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
 } from "../selectors/shared";
-import { StoreState } from "../slices";
+import type { StoreState } from "../slices";
 import { getChangeStats } from "./deck-upgrades";
 import { resolveDeck } from "./resolve-deck";
 
@@ -112,6 +112,10 @@ const tests = [
   [
     "Does not error with negative quantity of cards in deck",
     "negative_quantity",
+  ],
+  [
+    "Upgrade a card with subname x to two cards with subnames y and z",
+    "one_to_many_subnames",
   ],
 ];
 

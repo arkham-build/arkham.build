@@ -1,8 +1,8 @@
+import { forwardRef, lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { cx } from "@/utils/cx";
 import { retryFailedDynamicImport } from "@/utils/retry-failed-dynamic-import";
-import { Suspense, forwardRef, lazy } from "react";
-import { useTranslation } from "react-i18next";
 import { Loader } from "../ui/loader";
 import { Scroller } from "../ui/scroller";
 import { AllAttachables } from "./all-attachables";

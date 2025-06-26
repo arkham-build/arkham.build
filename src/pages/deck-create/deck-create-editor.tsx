@@ -1,3 +1,8 @@
+import type { TFunction } from "i18next";
+import { ArrowRightLeftIcon } from "lucide-react";
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocation } from "wouter";
 import { ListCard } from "@/components/list-card/list-card";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -19,15 +24,10 @@ import type { DeckStorageProvider } from "@/store/slices/settings.types";
 import { formatProviderName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useGoBack } from "@/utils/use-go-back";
-import type { TFunction } from "i18next";
-import { ArrowRightLeftIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { useLocation } from "wouter";
 import { useAccentColor } from "../../utils/use-accent-color";
 import { SelectionEditor } from "../deck-edit/editor/selection-editor";
-import { DeckCreateCardPool } from "./deck-create-card-pool";
 import css from "./deck-create.module.css";
+import { DeckCreateCardPool } from "./deck-create-card-pool";
 
 export function DeckCreateEditor() {
   const { t } = useTranslation();

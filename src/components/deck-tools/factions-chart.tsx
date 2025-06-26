@@ -1,6 +1,3 @@
-import type { ChartableData } from "@/store/lib/deck-charts";
-import type { FactionName } from "@/utils/constants";
-import { cx } from "@/utils/cx";
 import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -9,6 +6,9 @@ import {
   VictoryPie,
   VictoryTooltip,
 } from "victory";
+import type { ChartableData } from "@/store/lib/deck-charts";
+import type { FactionName } from "@/utils/constants";
+import { cx } from "@/utils/cx";
 import { useElementSize } from "../../utils/use-element-size";
 import { chartsTheme, containerTheme } from "./chart-theme";
 import css from "./deck-tools.module.css";

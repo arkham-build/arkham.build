@@ -3,8 +3,8 @@ import { getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { CardIcon } from "../card-icon";
 import { MulticlassIcons } from "../icons/multiclass-icons";
-import { CardNames } from "./card-names";
 import css from "./card.module.css";
+import { CardNames } from "./card-names";
 
 type Props = {
   card: Card;

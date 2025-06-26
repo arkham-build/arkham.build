@@ -1,17 +1,22 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: test code */
 import type { Page } from "@playwright/test";
-import allCardsResponse from "../fixtures/stubs/all_card.json" assert {
+import allCardsResponse from "../fixtures/stubs/all_card.json" with {
   type: "json",
 };
-import versionsResponse from "../fixtures/stubs/data_version.json" assert {
+
+import versionsResponse from "../fixtures/stubs/data_version.json" with {
   type: "json",
 };
-import fanMadeInvestigatorProject from "../fixtures/stubs/fan_made_investigator_project.json" assert {
+
+import fanMadeInvestigatorProject from "../fixtures/stubs/fan_made_investigator_project.json" with {
   type: "json",
 };
-import deckResponse from "../fixtures/stubs/get_deck.json" assert {
+
+import deckResponse from "../fixtures/stubs/get_deck.json" with {
   type: "json",
 };
-import metadataResponse from "../fixtures/stubs/metadata.json" assert {
+
+import metadataResponse from "../fixtures/stubs/metadata.json" with {
   type: "json",
 };
 
@@ -22,7 +27,6 @@ export async function mockApiCalls(page: Page) {
 
   await Promise.all([
     page.route(`${baseUrl}/cache/cards/en`, async (route) => {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       const json: any = structuredClone(allCardsResponse);
       json.data.all_card.push({
         code: "99999",

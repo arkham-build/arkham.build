@@ -1,9 +1,9 @@
+import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import type { Card } from "@/store/services/queries.types";
 import { getCardColor, thumbnailUrl } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { useAgathaEasterEggTransform } from "@/utils/easter-egg-agatha";
-import { memo } from "react";
-import { useTranslation } from "react-i18next";
 import css from "./card-thumbnail.module.css";
 
 type Props = {

@@ -1,4 +1,4 @@
-import { NONE, getGroupingKeyLabel } from "@/store/lib/grouping";
+import { getGroupingKeyLabel, NONE } from "@/store/lib/grouping";
 import type { CardGroup } from "@/store/selectors/lists";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { splitMultiValue } from "@/utils/card-utils";

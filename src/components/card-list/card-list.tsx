@@ -1,3 +1,6 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { GroupedVirtuosoHandle, ListRange } from "react-virtuoso";
+import { GroupedVirtuoso, Virtuoso } from "react-virtuoso";
 import { useStore } from "@/store";
 import { getDeckLimitOverride } from "@/store/lib/resolve-deck";
 import type { ListState } from "@/store/selectors/lists";
@@ -7,13 +10,10 @@ import {
   selectLookupTables,
 } from "@/store/selectors/shared";
 import { range } from "@/utils/range";
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { GroupedVirtuosoHandle, ListRange } from "react-virtuoso";
-import { GroupedVirtuoso, Virtuoso } from "react-virtuoso";
 import { useCardModalContextChecked } from "../card-modal/card-modal-context";
 import { Scroller } from "../ui/scroller";
-import { CardListItemCompact, CardListItemFull } from "./card-list-items";
 import css from "./card-list.module.css";
+import { CardListItemCompact, CardListItemFull } from "./card-list-items";
 import { Grouphead } from "./grouphead";
 import type { CardListImplementationProps } from "./types";
 

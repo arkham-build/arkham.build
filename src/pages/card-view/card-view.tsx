@@ -1,3 +1,6 @@
+import { GlobeIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Link, useParams } from "wouter";
 import {
   CardArkhamDBLink,
   CardReviewsLink,
@@ -13,9 +16,6 @@ import { selectCardWithRelations } from "@/store/selectors/card-view";
 import { displayAttribute, isStaticInvestigator } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { useDocumentTitle } from "@/utils/use-document-title";
-import { GlobeIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { Link, useParams } from "wouter";
 import { Error404 } from "../errors/404";
 import css from "./card-view.module.css";
 import { Faq } from "./faq";
@@ -140,10 +140,7 @@ function CardView() {
   );
 }
 
-function SidebarSection(props: {
-  title: string;
-  children: React.ReactNode;
-}) {
+function SidebarSection(props: { title: string; children: React.ReactNode }) {
   return (
     <section className={css["sidebar-section"]}>
       <header className={css["sidebar-section-header"]}>

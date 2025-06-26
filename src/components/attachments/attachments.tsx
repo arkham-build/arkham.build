@@ -1,11 +1,11 @@
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type {
   Card,
   Attachments as IAttachments,
 } from "@/store/services/queries.types";
 import { cx } from "@/utils/cx";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { Button } from "../ui/button";
 import {
   canUpdateAttachment,

@@ -1,12 +1,12 @@
+import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { createSelector } from "reselect";
 import { useStore } from "@/store";
 import type { StoreState } from "@/store/slices";
 import type { Id } from "@/store/slices/data.types";
 import { cx } from "@/utils/cx";
 import { debounce } from "@/utils/debounce";
 import { useHotkey } from "@/utils/use-hotkey";
-import { useCallback, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { createSelector } from "reselect";
 import { AnnotationContainer } from "../annotations/annotation";
 import { AutoSizingTextarea } from "../ui/auto-sizing-textarea";
 import { Button } from "../ui/button";

@@ -1,3 +1,13 @@
+import { featherText } from "@lucide/lab";
+import {
+  DatabaseBackupIcon,
+  Icon,
+  LibraryIcon,
+  SlidersVerticalIcon,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useSearch } from "wouter";
 import { CollectionSettings } from "@/components/collection/collection";
 import { FanMadeContent } from "@/components/fan-made-content/fan-made-content";
 import { Button } from "@/components/ui/button";
@@ -13,16 +23,6 @@ import { AppLayout } from "@/layouts/app-layout";
 import { useStore } from "@/store";
 import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
-import { featherText } from "@lucide/lab";
-import {
-  DatabaseBackupIcon,
-  Icon,
-  LibraryIcon,
-  SlidersVerticalIcon,
-} from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useSearch } from "wouter";
 import { BackupRestore } from "./backup-restore";
 import { CardDataSync } from "./card-data-sync";
 import { CardDisplaySettings } from "./card-display";

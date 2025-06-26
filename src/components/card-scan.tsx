@@ -1,3 +1,6 @@
+import { RotateCcwIcon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { selectBackCard } from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
@@ -9,9 +12,6 @@ import {
 } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { useAgathaEasterEggTransform } from "@/utils/easter-egg-agatha";
-import { RotateCcwIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import css from "./card-scan.module.css";
 import { Button } from "./ui/button";
 

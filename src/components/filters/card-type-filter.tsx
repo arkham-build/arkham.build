@@ -1,8 +1,8 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { selectActiveList } from "@/store/selectors/lists";
 import { useHotkey } from "@/utils/use-hotkey";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { HotkeyTooltip } from "../ui/hotkey";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 

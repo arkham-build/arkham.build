@@ -1,5 +1,3 @@
-import { cx } from "@/utils/cx";
-import { useHotkey } from "@/utils/use-hotkey";
 import type {
   TabsProps as RootProps,
   TabsContentProps,
@@ -8,6 +6,8 @@ import type {
 } from "@radix-ui/react-tabs";
 import { Content, List, Root, Trigger } from "@radix-ui/react-tabs";
 import { forwardRef, useCallback, useState } from "react";
+import { cx } from "@/utils/cx";
+import { useHotkey } from "@/utils/use-hotkey";
 import { Button } from "./button";
 import { HotkeyTooltip } from "./hotkey";
 import css from "./tabs.module.css";

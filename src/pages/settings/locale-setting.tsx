@@ -1,9 +1,9 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Select } from "@/components/ui/select";
 import type { Locale } from "@/store/slices/settings.types";
 import { LOCALES } from "@/utils/constants";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import type { SettingProps } from "./types";
 
 export function LocaleSetting(props: SettingProps) {

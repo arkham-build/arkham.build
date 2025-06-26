@@ -1,4 +1,4 @@
-import test, { type Page, expect } from "@playwright/test";
+import test, { expect, type Page } from "@playwright/test";
 import {
   adjustDeckCardQuantity,
   adjustListCardQuantity,
@@ -131,7 +131,7 @@ test.describe("deck edit", () => {
   });
 
   test("move card to main deck", async ({ page }) => {
-    await importDeckFromFile(page, "validation/honed_instinct_valid.json", {
+    await importDeckFromFile(page, "validation/honed_instinct.json", {
       navigate: "edit",
     });
 
@@ -170,7 +170,7 @@ test.describe("deck edit", () => {
     await page.getByTestId("show-move-to-side-deck").click();
     await page.getByTestId("settings-save").click();
 
-    await importDeckFromFile(page, "validation/honed_instinct_valid.json", {
+    await importDeckFromFile(page, "validation/honed_instinct.json", {
       navigate: "edit",
     });
 
@@ -234,7 +234,7 @@ test.describe("deck edit", () => {
   });
 
   test("customizable deck limits (honed instinct)", async ({ page }) => {
-    await importDeckFromFile(page, "validation/honed_instinct_valid.json", {
+    await importDeckFromFile(page, "validation/honed_instinct.json", {
       navigate: "edit",
     });
 
@@ -296,7 +296,7 @@ test.describe("deck edit", () => {
   });
 
   test("add campaign card", async ({ page }) => {
-    await importDeckFromFile(page, "validation/honed_instinct_valid.json", {
+    await importDeckFromFile(page, "validation/honed_instinct.json", {
       navigate: "edit",
     });
     await page.getByTestId("card-type-encounter").click();
@@ -313,7 +313,7 @@ test.describe("deck edit", () => {
   });
 
   test("add advanced signature", async ({ page }) => {
-    await importDeckFromFile(page, "validation/honed_instinct_valid.json", {
+    await importDeckFromFile(page, "validation/honed_instinct.json", {
       navigate: "edit",
     });
 
@@ -348,7 +348,7 @@ test.describe("deck edit", () => {
   });
 
   test("signature -> signature relation", async ({ page }) => {
-    await importDeckFromFile(page, "validation/honed_instinct_valid.json", {
+    await importDeckFromFile(page, "validation/honed_instinct.json", {
       navigate: "edit",
     });
 

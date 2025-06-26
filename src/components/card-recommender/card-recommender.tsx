@@ -1,3 +1,5 @@
+import { forwardRef, type MutableRefObject, useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { ErrorDisplay } from "@/pages/errors/error-display";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -14,8 +16,6 @@ import { cx } from "@/utils/cx";
 import { useResolvedColorTheme } from "@/utils/use-color-theme";
 import { useQuery } from "@/utils/use-query";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
-import { type MutableRefObject, forwardRef, useCallback, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import { CardList } from "../card-list/card-list";
 import { CardSearch } from "../card-list/card-search";
 import type { CardListProps } from "../card-list/types";

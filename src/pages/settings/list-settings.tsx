@@ -1,3 +1,6 @@
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sortable } from "@/components/ui/sortable";
@@ -15,9 +18,6 @@ import {
 } from "@/store/slices/settings";
 import type { SettingsState } from "@/store/slices/settings.types";
 import { formatGroupingType } from "@/utils/formatting";
-import type React from "react";
-import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import css from "./settings.module.css";
 import type { SettingProps } from "./types";
 

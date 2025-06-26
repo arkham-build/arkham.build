@@ -1,7 +1,7 @@
-import type { Card } from "@/store/services/queries.types";
-import { displayAttribute } from "@/utils/card-utils";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import type { Card } from "@/store/services/queries.types";
+import { displayAttribute } from "@/utils/card-utils";
 import { ListCard } from "./list-card/list-card";
 import { ListCardInner } from "./list-card/list-card-inner";
 import { Combobox, type Props as ComboboxProps } from "./ui/combobox/combobox";

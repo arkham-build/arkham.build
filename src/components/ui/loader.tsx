@@ -1,5 +1,5 @@
-import { cx } from "@/utils/cx";
 import { useEffect, useState } from "react";
+import { cx } from "@/utils/cx";
 import css from "./loader.module.css";
 
 type Props = {

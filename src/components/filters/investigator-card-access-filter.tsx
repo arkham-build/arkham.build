@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectActiveListFilter,
@@ -6,8 +8,6 @@ import {
 } from "@/store/selectors/lists";
 import { isInvestigatorCardAccessFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
-import { useMemo } from "react";
-import { Trans, useTranslation } from "react-i18next";
 import { CardsCombobox } from "../cards-combobox";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";

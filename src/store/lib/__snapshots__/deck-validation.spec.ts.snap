@@ -1,0 +1,732 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Deck Validation > invalid: 'at least x cards of y factions' requirement 1`] = `
+[
+  {
+    "details": {
+      "count": "(2 / 3)",
+      "error": "You must have at least 7 cards from 3 different factions",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: || Agnes with card over deck_limit 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "06201",
+        "limit": 2,
+        "quantity": 3,
+      },
+    ],
+    "type": "INVALID_CARD_COUNT",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: || Jenny Barnes with more than 10 off-class Talents 1`] = `
+[
+  {
+    "details": {
+      "count": "(11 / 10)",
+      "error": "Too many off-class cards.",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: || Jenny Barnes with permanent Talents 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "60531",
+        "real_name": "Déjà Vu",
+        "target": "slots",
+      },
+    ],
+    "type": "FORBIDDEN",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: || Roland (front) with too many Directives 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "90025",
+        "quantity": 4,
+        "required": 3,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: || Wendy (back) invalid for selected option 1`] = `
+[
+  {
+    "details": {
+      "count": 35,
+      "countRequired": 30,
+      "target": "slots",
+    },
+    "type": "TOO_MANY_CARDS",
+  },
+  {
+    "details": [
+      {
+        "code": "07028",
+        "real_name": "Faustian Bargain",
+        "target": "slots",
+      },
+      {
+        "code": "07032",
+        "real_name": "Promise of Power",
+        "target": "slots",
+      },
+      {
+        "code": "07112",
+        "real_name": "Stirring Up Trouble",
+        "target": "slots",
+      },
+      {
+        "code": "07113",
+        "real_name": "Blasphemous Covenant",
+        "target": "slots",
+      },
+      {
+        "code": "07226",
+        "real_name": "Armageddon",
+        "target": "slots",
+      },
+      {
+        "code": "07227",
+        "real_name": "Eye of Chaos",
+        "target": "slots",
+      },
+    ],
+    "type": "FORBIDDEN",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: || Wendy (front) without Tidal Memento 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "90038",
+        "quantity": 0,
+        "required": 1,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Ancestral Knowledge with less than 10 skill cards 1`] = `
+[
+  {
+    "details": {
+      "count": "(8 / 10)",
+      "error": "Deck must have at least 10 skill cards.",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Eldritch Brand with too many copies of an attachment 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "05322",
+        "limit": 1,
+        "quantity": 2,
+      },
+    ],
+    "type": "INVALID_CARD_COUNT",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Lily Chen with too few weaknesses 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "08015",
+        "quantity": 1,
+        "required": 2,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Lily Chen with too many weaknesses 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "08015",
+        "quantity": 2,
+        "required": 1,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Mandy Thompson with too few cards 1`] = `
+[
+  {
+    "details": {
+      "count": 39,
+      "countRequired": 40,
+      "target": "slots",
+    },
+    "type": "TOO_FEW_CARDS",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Mandy Thompson with too few signatures for deck size 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "06008",
+        "quantity": 3,
+        "required": 2,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Mandy Thompson with too many cards 1`] = `
+[
+  {
+    "details": {
+      "count": 41,
+      "countRequired": 40,
+      "target": "slots",
+    },
+    "type": "TOO_MANY_CARDS",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Marie (promo) with missing signature 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "05018",
+        "quantity": 0,
+        "required": 1,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: On Your Own with Summoned Servitor occupying an ally slot 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "09080",
+        "real_name": "Summoned Servitor",
+        "target": "slots",
+      },
+    ],
+    "type": "FORBIDDEN",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: On Your Own with ally in deck 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "03198",
+        "real_name": "Madame Labranche",
+        "target": "slots",
+      },
+    ],
+    "type": "FORBIDDEN",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Suzi with invalid 'at_least' constraint and forbidden card 1`] = `
+[
+  {
+    "details": {
+      "count": "(4 / 5)",
+      "error": "You must have at least 7 cards from each class",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+  {
+    "details": [
+      {
+        "code": "02158",
+        "real_name": "Charisma",
+        "target": "slots",
+      },
+    ],
+    "type": "FORBIDDEN",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Too many copies of a Precious Memento 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "08114",
+        "limit": 1,
+        "quantity": 2,
+      },
+    ],
+    "type": "INVALID_CARD_COUNT",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Underworld Support invalid deck size 1`] = `
+[
+  {
+    "details": {
+      "count": 29,
+      "countRequired": 28,
+      "target": "slots",
+    },
+    "type": "TOO_MANY_CARDS",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Underworld Support with more than one copy of a card 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "06117",
+        "limit": 1,
+        "quantity": 2,
+      },
+    ],
+    "type": "INVALID_CARD_COUNT",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: Versatile with too many off-class cards 1`] = `
+[
+  {
+    "details": {
+      "count": "(2 / 1)",
+      "error": "Too many off-class cards for Versatile.",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: customizable level below investigator range 1`] = `
+[
+  {
+    "details": {
+      "count": "(7 / 5)",
+      "error": "You cannot have more than 5 level 0 Guardian cards",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: customizable level exceeded 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "09021",
+        "real_name": "Hunter's Armor",
+        "target": "slots",
+      },
+      {
+        "code": "09022",
+        "real_name": "Runic Axe",
+        "target": "slots",
+      },
+      {
+        "code": "09040",
+        "real_name": "Alchemical Distillation",
+        "target": "slots",
+      },
+    ],
+    "type": "FORBIDDEN",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: extra deck with forbidden cards 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "06285",
+        "real_name": "The Black Cat",
+        "target": "extraSlots",
+      },
+    ],
+    "type": "FORBIDDEN",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: extra deck with too few cards 1`] = `
+[
+  {
+    "details": {
+      "count": 9,
+      "countRequired": 10,
+      "target": "extraSlots",
+    },
+    "type": "TOO_FEW_CARDS",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: extra deck with too many cards 1`] = `
+[
+  {
+    "details": {
+      "count": 11,
+      "countRequired": 10,
+      "target": "extraSlots",
+    },
+    "type": "TOO_MANY_CARDS",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: extra deck with too many copies of a card 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "01018",
+        "limit": 1,
+        "quantity": 2,
+      },
+    ],
+    "type": "INVALID_CARD_COUNT",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: missing advanced signature 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "01007",
+        "quantity": 0,
+        "required": 1,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: missing random basic weakness 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "01000",
+        "quantity": 0,
+        "required": 1,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: missing replacement signature 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "01006",
+        "quantity": 0,
+        "required": 1,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: more than one Covenant 1`] = `
+[
+  {
+    "details": {
+      "count": "(2 / 1)",
+      "error": "You cannot have more than one Covenant in your deck.",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: myriad cards with different subnames 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "06243",
+        "limit": 3,
+        "quantity": 4,
+      },
+    ],
+    "type": "INVALID_CARD_COUNT",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: no signature 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "01006",
+        "quantity": 0,
+        "required": 1,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: no signature weakness 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "01007",
+        "quantity": 0,
+        "required": 1,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: off-class access with faction selection 1`] = `
+[
+  {
+    "details": {
+      "count": "(11 / 10)",
+      "error": "Too many off-class cards.",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: signatures with incorrect quantity 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "89003",
+        "quantity": 2,
+        "required": 3,
+      },
+    ],
+    "type": "DECK_REQUIREMENTS_NOT_MET",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: tag-based access and versatile overlap 1`] = `
+[
+  {
+    "details": {
+      "count": "(2 / 1)",
+      "error": "Too many off-class cards for Versatile.",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: tag-based off-class access 1`] = `
+[
+  {
+    "details": {
+      "count": "(16 / 15)",
+      "error": "You cannot have more than 15 level 0-1 Seeker and/or Mystic cards",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: three copies Honed Instinct with Impulse Control not unlocked 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "09061",
+        "limit": 2,
+        "quantity": 3,
+      },
+    ],
+    "type": "INVALID_CARD_COUNT",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: too few cards 1`] = `
+[
+  {
+    "details": {
+      "count": 41,
+      "countRequired": 42,
+      "target": "slots",
+    },
+    "type": "TOO_FEW_CARDS",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: too many cards 1`] = `
+[
+  {
+    "details": {
+      "count": 43,
+      "countRequired": 42,
+      "target": "slots",
+    },
+    "type": "TOO_MANY_CARDS",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: too many copies of a card 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "01047",
+        "limit": 2,
+        "quantity": 3,
+      },
+      {
+        "code": "07224",
+        "limit": 1,
+        "quantity": 2,
+      },
+    ],
+    "type": "INVALID_CARD_COUNT",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: too many copies of a card by name 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "09095",
+        "limit": 2,
+        "quantity": 4,
+      },
+    ],
+    "type": "INVALID_CARD_COUNT",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: too many copies of a card by subname 1`] = `
+[
+  {
+    "details": {
+      "count": 8,
+      "countRequired": 30,
+      "target": "slots",
+    },
+    "type": "TOO_FEW_CARDS",
+  },
+  {
+    "details": [
+      {
+        "code": "10059",
+        "limit": 1,
+        "quantity": 2,
+      },
+      {
+        "code": "04022",
+        "limit": 2,
+        "quantity": 3,
+      },
+      {
+        "code": "08041",
+        "limit": 1,
+        "quantity": 2,
+      },
+    ],
+    "type": "INVALID_CARD_COUNT",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: too many dunwich off-class cards 1`] = `
+[
+  {
+    "details": {
+      "count": "(6 / 5)",
+      "error": "You cannot have more than 5 cards that are not Guardian or Neutral",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: trait-based off-class access 1`] = `
+[
+  {
+    "details": {
+      "count": "(11 / 10)",
+      "error": "Too many off-class cards.",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;

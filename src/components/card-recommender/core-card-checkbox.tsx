@@ -1,9 +1,9 @@
+import { useCallback, useId } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Card } from "@/store/services/queries.types";
 import { cx } from "@/utils/cx";
-import { useCallback, useId } from "react";
-import { useTranslation } from "react-i18next";
 import { Checkbox } from "../ui/checkbox";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./card-recommender.module.css";

@@ -8,9 +8,13 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("Limited card slots", () => {
   test("shows cards that occupy limited card slots", async ({ page }) => {
-    await importDeckFromFile(page, "validation/limit_carolyn_versatile.json", {
-      navigate: "edit",
-    });
+    await importDeckFromFile(
+      page,
+      "validation/tag_based_access_versatile.json",
+      {
+        navigate: "edit",
+      },
+    );
     await page
       .getByTestId("listcard-05001")
       .getByTestId("listcard-title")
@@ -26,9 +30,13 @@ test.describe("Limited card slots", () => {
   });
 
   test("handles customizable cards", async ({ page }) => {
-    await importDeckFromFile(page, "validation/limit_carolyn_versatile.json", {
-      navigate: "edit",
-    });
+    await importDeckFromFile(
+      page,
+      "validation/tag_based_access_versatile.json",
+      {
+        navigate: "edit",
+      },
+    );
 
     await page
       .getByTestId("editor-tabs-slots")

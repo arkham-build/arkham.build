@@ -1,7 +1,7 @@
 import { time, timeEnd } from "@/utils/time";
 import type { StoreState } from "../slices";
 import { migrate } from "./migrate";
-import { VERSION, makeStorageAdapter } from "./storage";
+import { makeStorageAdapter, VERSION } from "./storage";
 import { TabSync } from "./sync";
 
 type AppState = Pick<

@@ -1,6 +1,6 @@
-import { getMockStore } from "@/test/get-mock-store";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
+import { getMockStore } from "@/test/get-mock-store";
 import type { StoreState } from "../slices";
 import { applyCardChanges } from "./card-edits";
 

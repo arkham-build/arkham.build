@@ -1,4 +1,3 @@
-import { useHotkey } from "@/utils/use-hotkey";
 import {
   BarChart3Icon,
   BookOpenIcon,
@@ -9,6 +8,7 @@ import {
 import { Fragment, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
+import { useHotkey } from "@/utils/use-hotkey";
 import css from "./help-menu.module.css";
 import { Socials } from "./socials";
 import { Button } from "./ui/button";

@@ -1,6 +1,6 @@
-import { getMockStore } from "@/test/get-mock-store";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
+import { getMockStore } from "@/test/get-mock-store";
 import { selectLocaleSortingCollator } from "../selectors/shared";
 import type { Card } from "../services/queries.types";
 import type { StoreState } from "../slices";
@@ -106,7 +106,7 @@ describe("getGroupedCards", () => {
     ] as Card[];
 
     const state = store.getState();
-    const { metadata, settings } = state;
+    const { metadata } = state;
 
     const result = getGroupedCards(
       groupings,
@@ -180,7 +180,7 @@ describe("getGroupedCards", () => {
     ] as Card[];
 
     const state = store.getState();
-    const { metadata, settings } = state;
+    const { metadata } = state;
 
     const result = getGroupedCards(
       groupings,
@@ -256,7 +256,7 @@ describe("getGroupedCards", () => {
     ] as Card[];
 
     const state = store.getState();
-    const { metadata, settings } = state;
+    const { metadata } = state;
 
     const result = getGroupedCards(
       groupings,
@@ -353,7 +353,7 @@ describe("getGroupedCards", () => {
     ] as Card[];
 
     const state = store.getState();
-    const { metadata, settings } = state;
+    const { metadata } = state;
 
     const result = getGroupedCards(
       groupings,
@@ -448,7 +448,7 @@ describe("getGroupedCards", () => {
     ] as Card[];
 
     const state = store.getState();
-    const { metadata, settings } = state;
+    const { metadata } = state;
 
     const result = getGroupedCards(
       groupings,
@@ -570,7 +570,7 @@ describe("getGroupedCards", () => {
     ] as Card[];
 
     const state = store.getState();
-    const { metadata, settings } = state;
+    const { metadata } = state;
 
     const result = getGroupedCards(
       groupings,
@@ -664,7 +664,7 @@ describe("getGroupedCards", () => {
     ] as Card[];
 
     const state = store.getState();
-    const { metadata, settings } = state;
+    const { metadata } = state;
 
     const result = getGroupedCards(
       groupings,
@@ -741,7 +741,7 @@ describe("getGroupedCards", () => {
     ] as Card[];
 
     const state = store.getState();
-    const { metadata, settings } = state;
+    const { metadata } = state;
 
     const result = getGroupedCards(
       groupings,
@@ -871,7 +871,7 @@ describe("getGroupedCards", () => {
     ] as Card[];
 
     const state = store.getState();
-    const { metadata, settings } = state;
+    const { metadata } = state;
 
     const result = getGroupedCards(
       groupings,

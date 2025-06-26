@@ -1,8 +1,8 @@
+import { Link } from "wouter";
 import { useStore } from "@/store";
 import type { Card } from "@/store/services/queries.types";
 import { displayAttribute, parseCardTitle } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
-import { Link } from "wouter";
 import { useCardModalContextChecked } from "../card-modal/card-modal-context";
 import { CardName } from "../card-name";
 import { UniqueIcon } from "../icons/unique-icon";

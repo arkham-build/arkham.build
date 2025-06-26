@@ -1,8 +1,8 @@
-import { cx } from "@/utils/cx";
 import type { CheckboxProps } from "@radix-ui/react-checkbox";
 import { Indicator, Root } from "@radix-ui/react-checkbox";
 import { CheckIcon } from "lucide-react";
 import { forwardRef, useCallback, useRef } from "react";
+import { cx } from "@/utils/cx";
 import css from "./checkbox.module.css";
 
 interface Props extends Omit<CheckboxProps, "label"> {

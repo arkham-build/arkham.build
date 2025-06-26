@@ -1,3 +1,15 @@
+import {
+  CopyIcon,
+  DownloadIcon,
+  EllipsisIcon,
+  ImportIcon,
+  PencilIcon,
+  ShareIcon,
+  Trash2Icon,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { Link, useLocation, useSearch } from "wouter";
 import { DeckInvestigator } from "@/components/deck-investigator/deck-investigator";
 import { FactionIcon } from "@/components/icons/faction-icon";
 import { Button } from "@/components/ui/button";
@@ -27,18 +39,6 @@ import {
 } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
-import {
-  CopyIcon,
-  DownloadIcon,
-  EllipsisIcon,
-  ImportIcon,
-  PencilIcon,
-  ShareIcon,
-  Trash2Icon,
-} from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
-import { Link, useLocation, useSearch } from "wouter";
 import { useCardModalContextChecked } from "../card-modal/card-modal-context";
 import { DeckInvestigatorModal } from "../deck-investigator/deck-investigator-modal";
 import { CopyToClipboard } from "../ui/copy-to-clipboard";
@@ -61,6 +61,7 @@ type Props = {
   origin: DeckOrigin;
   deck: ResolvedDeck;
 };
+
 import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 
 export function Sidebar(props: Props) {

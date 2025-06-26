@@ -1,5 +1,5 @@
-import { useToast } from "@/components/ui/toast.hooks";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useToast } from "@/components/ui/toast.hooks";
 
 export function useCopyToClipboard() {
   const toast = useToast();

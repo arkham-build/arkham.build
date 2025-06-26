@@ -1,5 +1,5 @@
 import path from "node:path";
-import test, { Page, expect } from "@playwright/test";
+import test, { expect, type Page } from "@playwright/test";
 import { fillSearch, importPackFromFile } from "./actions";
 import { mockApiCalls } from "./mocks";
 

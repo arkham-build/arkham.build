@@ -1,9 +1,11 @@
-import type { Coded } from "@/store/services/queries.types";
-import { cx } from "@/utils/cx";
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: TODO: implement. */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: item might nest button elements. */
 import { CheckIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { GroupedVirtuosoHandle } from "react-virtuoso";
 import { Virtuoso } from "react-virtuoso";
+import type { Coded } from "@/store/services/queries.types";
+import { cx } from "@/utils/cx";
 import { Scroller } from "../scroller";
 import css from "./combobox.module.css";
 
@@ -61,7 +63,6 @@ export function ComboboxMenu<T extends Coded>(props: Props<T>) {
         itemContent={(index, item) => {
           const active = activeIndex === index;
           return (
-            // biome-ignore lint/a11y/useKeyWithClickEvents: TODO.
             <div
               className={cx(
                 css["menu-item"],

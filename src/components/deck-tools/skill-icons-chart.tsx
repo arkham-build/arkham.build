@@ -1,5 +1,3 @@
-import type { ChartableData } from "@/store/lib/deck-charts";
-import { cx } from "@/utils/cx";
 import type { TFunction } from "i18next";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,6 +9,8 @@ import {
   VictoryScatter,
   VictoryTooltip,
 } from "victory";
+import type { ChartableData } from "@/store/lib/deck-charts";
+import { cx } from "@/utils/cx";
 import { useElementSize } from "../../utils/use-element-size";
 import { SkillIconFancy } from "../icons/skill-icon-fancy";
 import { chartsTheme, containerTheme } from "./chart-theme";
@@ -79,11 +79,7 @@ function formatTooltips(t: TFunction) {
   };
 }
 
-function SkillIconLabel(props: {
-  text?: string;
-  x?: number;
-  y?: number;
-}) {
+function SkillIconLabel(props: { text?: string; x?: number; y?: number }) {
   const { text, x, y } = props;
   const SKILL_ICON_SIZE = 24;
 

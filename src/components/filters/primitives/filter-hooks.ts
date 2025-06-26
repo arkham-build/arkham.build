@@ -1,5 +1,5 @@
-import { useStore } from "@/store";
 import { useCallback } from "react";
+import { useStore } from "@/store";
 
 export function useFilterCallbacks<T>(id: number) {
   const setFilterValue = useStore((state) => state.setFilterValue);

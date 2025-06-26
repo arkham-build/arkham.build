@@ -1,3 +1,6 @@
+import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocation, useSearch } from "wouter";
 import { Loader } from "@/components/ui/loader";
 import { useToast } from "@/components/ui/toast.hooks";
 import { AppLayout } from "@/layouts/app-layout";
@@ -5,9 +8,6 @@ import { useStore } from "@/store";
 import { useSync } from "@/store/hooks/use-sync";
 import type { Provider } from "@/store/slices/connections.types";
 import { formatProviderName } from "@/utils/formatting";
-import { useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import { useLocation, useSearch } from "wouter";
 
 export function Connect() {
   const [, navigate] = useLocation();

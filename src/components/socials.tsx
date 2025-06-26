@@ -1,11 +1,10 @@
 import { BoardGameGeekIcon } from "./icons/boardgamegeek-icon";
 import { DiscordIcon } from "./icons/discord-icon";
 import { GithubIcon } from "./icons/github-icon";
+import { PatreonIcon } from "./icons/patreon-icon";
 import { Button } from "./ui/button";
 
-export function Socials(props: {
-  className?: string;
-}) {
+export function Socials(props: { className?: string }) {
   return (
     <div className={props.className}>
       <Button
@@ -18,6 +17,17 @@ export function Socials(props: {
         size="lg"
       >
         <GithubIcon />
+      </Button>
+      <Button
+        as="a"
+        href="https://www.patreon.com/c/arkhambuild"
+        target="_blank"
+        rel="noreferrer"
+        variant="bare"
+        iconOnly
+        size="lg"
+      >
+        <PatreonIcon />
       </Button>
       <Button
         as="a"

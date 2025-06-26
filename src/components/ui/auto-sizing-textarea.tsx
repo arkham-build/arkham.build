@@ -1,7 +1,7 @@
+import { forwardRef, useCallback, useEffect, useRef } from "react";
 import { cx } from "@/utils/cx";
 import { mergeRefs } from "@/utils/merge-refs";
 import { getScrollParent } from "@/utils/scroll-parent";
-import { forwardRef, useCallback, useEffect, useRef } from "react";
 import css from "./auto-sizing-textarea.module.css";
 
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;

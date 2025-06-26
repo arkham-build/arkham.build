@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { CardListContainer } from "@/components/card-list/card-list-container";
 import { CardModalProvider } from "@/components/card-modal/card-modal-context";
 import { DeckCollection } from "@/components/deck-collection/deck-collection";
@@ -7,8 +9,6 @@ import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provide
 import { useStore } from "@/store";
 import { selectIsInitialized } from "@/store/selectors/shared";
 import { useDocumentTitle } from "@/utils/use-document-title";
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 
 function Browse() {
   const { t } = useTranslation();

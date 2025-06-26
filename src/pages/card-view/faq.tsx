@@ -1,3 +1,6 @@
+import DOMPurify from "dompurify";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Details } from "@/components/ui/details";
 import { useStore } from "@/store";
 import type { ResolvedCard } from "@/store/lib/types";
@@ -6,9 +9,6 @@ import { queryFaq } from "@/store/services/queries";
 import { redirectArkhamDBLinks } from "@/utils/arkhamdb";
 import { isEmpty } from "@/utils/is-empty";
 import { useQuery } from "@/utils/use-query";
-import DOMPurify from "dompurify";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 
 type Props = {
   card: ResolvedCard["card"];
@@ -35,7 +35,7 @@ export function Faq(props: Props) {
       title={t("card_view.actions.faq")}
       scrollHeight="20rem"
     >
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: not relevant. */}
+      {/* biome-ignore lint/a11y: not relevant. */}
       <div onClick={redirectArkhamDBLinks}>
         {(response.state === "initial" || response.state === "loading") &&
           t("card_view.faq.loading")}

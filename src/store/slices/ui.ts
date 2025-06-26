@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
-import type { StoreState } from ".";
 import { buildCacheFromDecks } from "../lib/fan-made-content";
+import type { StoreState } from ".";
 import type { UISlice, UIState } from "./ui.types";
 
 function getInitialUIState(): UIState {

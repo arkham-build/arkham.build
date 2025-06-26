@@ -1,17 +1,19 @@
-import { redirectArkhamDBLinks } from "@/utils/arkhamdb";
-import { FLOATING_PORTAL_ID } from "@/utils/constants";
-import { cx } from "@/utils/cx";
-import { parseMarkdown } from "@/utils/markdown";
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: not relevant. */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: catches onclick bubbles up from content. */
 import {
-  FloatingPortal,
   autoPlacement,
   autoUpdate,
+  FloatingPortal,
   offset,
   shift,
   useFloating,
   useTransitionStyles,
 } from "@floating-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { redirectArkhamDBLinks } from "@/utils/arkhamdb";
+import { FLOATING_PORTAL_ID } from "@/utils/constants";
+import { cx } from "@/utils/cx";
+import { parseMarkdown } from "@/utils/markdown";
 import { useCardModalContext } from "./card-modal/card-modal-context";
 import { CardTooltip } from "./card-tooltip/card-tooltip";
 import css from "./deck-description.module.css";
@@ -133,7 +135,6 @@ function DeckDescription(props: Props) {
 
   return (
     <>
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents:  not relevant. */}
       <div
         className={cx(
           css["description"],

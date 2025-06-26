@@ -1,3 +1,5 @@
+import { InfoIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   type DeckValidationResult,
@@ -12,8 +14,6 @@ import {
 import { selectMetadata } from "@/store/selectors/shared";
 import { displayAttribute } from "@/utils/card-utils";
 import { formatDeckOptionString } from "@/utils/formatting";
-import { InfoIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { Collapsible, CollapsibleContent } from "../ui/collapsible";
 import { Scroller } from "../ui/scroller";
 import css from "./decklist-validation.module.css";

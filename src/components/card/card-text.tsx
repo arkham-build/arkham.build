@@ -1,5 +1,5 @@
-import { parseCardTextHtml } from "@/utils/card-utils";
 import { useTranslation } from "react-i18next";
+import { parseCardTextHtml } from "@/utils/card-utils";
 import css from "./card.module.css";
 
 type Props = {

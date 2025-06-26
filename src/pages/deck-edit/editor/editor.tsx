@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { FilteredListCardPropsGetter } from "@/components/card-list/types";
 import { DeckStats } from "@/components/deck-stats";
 import { DecklistGroup } from "@/components/decklist/decklist-groups";
@@ -15,10 +16,9 @@ import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { useAccentColor } from "@/utils/use-accent-color";
 import { useResolvedDeckChecked } from "@/utils/use-resolved-deck";
-import { useTranslation } from "react-i18next";
 import { MetaEditor } from "./config-editor";
-import { EditorActions } from "./editor-actions";
 import css from "./editor.module.css";
+import { EditorActions } from "./editor-actions";
 import { InvestigatorListcard } from "./investigator-listcard";
 
 type TabDefinition = {

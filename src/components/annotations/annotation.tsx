@@ -1,6 +1,6 @@
-import { cx } from "@/utils/cx";
 import { MessageCircleIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { cx } from "@/utils/cx";
 import DeckDescription from "../deck-description";
 import css from "./annotation.module.css";
 

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { DeckHistoryEntry } from "@/components/deck-display/deck-history/deck-history";
 import { Plane } from "@/components/ui/plane";
 import { Scroller } from "@/components/ui/scroller";
@@ -5,7 +6,6 @@ import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectUndoHistory } from "@/store/selectors/decks";
 import { formatDateTime } from "@/utils/formatting";
-import { useTranslation } from "react-i18next";
 import css from "./undo-history.module.css";
 
 type Props = {

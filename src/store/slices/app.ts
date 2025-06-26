@@ -1,6 +1,11 @@
+import type { StateCreator } from "zustand";
 import { applyDeckEdits, getChangeRecord } from "@/store/lib/deck-edits";
 import { createDeck } from "@/store/lib/deck-factory";
+import factions from "@/store/services/data/factions.json";
+import subTypes from "@/store/services/data/subtypes.json";
+import types from "@/store/services/data/types.json";
 import type { Card } from "@/store/services/queries.types";
+import { assertCanPublishDeck, incrementVersion } from "@/utils/arkhamdb";
 import { assert } from "@/utils/assert";
 import { decodeExileSlots } from "@/utils/card-utils";
 import {
@@ -11,23 +16,33 @@ import { randomId } from "@/utils/crypto";
 import { download } from "@/utils/download";
 import { tryEnablePersistence } from "@/utils/persistence";
 import { time, timeEnd } from "@/utils/time";
-import type { StateCreator } from "zustand";
-import type { StoreState } from ".";
 import { prepareBackup, restoreBackup } from "../lib/backup";
+import { applyCardChanges } from "../lib/card-edits";
 import { mapValidationToProblem } from "../lib/deck-io";
 import {
   decodeDeckMeta,
   encodeCardPool,
   encodeSealedDeck,
 } from "../lib/deck-meta";
+import { buildCacheFromDecks } from "../lib/fan-made-content";
+import { applyLocalData } from "../lib/local-data";
 import { mappedByCode, mappedById } from "../lib/metadata-utils";
 import { resolveDeck } from "../lib/resolve-deck";
 import { decodeExtraSlots, encodeExtraSlots } from "../lib/slots";
 import { disconnectProviderIfUnauthorized, syncAdapters } from "../lib/sync";
 import type { DeckMeta } from "../lib/types";
+import { dehydrate, hydrate } from "../persist";
 import { selectDeckCreateCardSets } from "../selectors/deck-create";
-import { selectDeckHistory, selectDeckValid } from "../selectors/decks";
-import { selectLatestUpgrade } from "../selectors/decks";
+import {
+  selectDeckHistory,
+  selectDeckValid,
+  selectLatestUpgrade,
+} from "../selectors/decks";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
+} from "../selectors/shared";
 import {
   createShare,
   deleteDeck,
@@ -35,25 +50,12 @@ import {
   updateDeck,
   upgradeDeck,
 } from "../services/queries";
+import type { StoreState } from ".";
 import type { AppSlice } from "./app.types";
 import type { Deck } from "./data.types";
 import { makeLists } from "./lists";
 import { getInitialMetadata } from "./metadata";
 import type { Metadata } from "./metadata.types";
-
-import factions from "@/store/services/data/factions.json";
-import subTypes from "@/store/services/data/subtypes.json";
-import types from "@/store/services/data/types.json";
-import { assertCanPublishDeck, incrementVersion } from "@/utils/arkhamdb";
-import { applyCardChanges } from "../lib/card-edits";
-import { buildCacheFromDecks } from "../lib/fan-made-content";
-import { applyLocalData } from "../lib/local-data";
-import { dehydrate, hydrate } from "../persist";
-import {
-  selectLocaleSortingCollator,
-  selectLookupTables,
-  selectMetadata,
-} from "../selectors/shared";
 
 export function getInitialAppState() {
   return {

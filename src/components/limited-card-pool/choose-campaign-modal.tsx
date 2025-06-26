@@ -1,3 +1,6 @@
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { createSelector } from "reselect";
 import { useStore } from "@/store";
 import { selectCyclesAndPacks } from "@/store/selectors/lists";
 import type { Cycle } from "@/store/services/queries.types";
@@ -7,9 +10,6 @@ import {
 } from "@/utils/campaign-playalong";
 import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
 import { displayPackName } from "@/utils/formatting";
-import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { createSelector } from "reselect";
 import { PackName } from "../pack-name";
 import { Combobox } from "../ui/combobox/combobox";
 import { useDialogContextChecked } from "../ui/dialog.hooks";

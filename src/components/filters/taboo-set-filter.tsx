@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectActiveListFilter,
@@ -7,7 +8,6 @@ import {
 import { isTabooSetFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
 import { formatTabooSet } from "@/utils/formatting";
-import { useTranslation } from "react-i18next";
 import type { FilterProps } from "./filters.types";
 import { SelectFilter } from "./primitives/select-filter";
 

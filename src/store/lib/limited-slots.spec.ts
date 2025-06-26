@@ -1,20 +1,22 @@
 import { beforeAll, describe, expect, it } from "vitest";
-
-import limitCarolyn from "@/test/fixtures/decks/validation/limit_carolyn.json";
-import limitCarolynInvalid from "@/test/fixtures/decks/validation/limit_carolyn_invalid.json";
-import limitCarolynVersatile from "@/test/fixtures/decks/validation/limit_carolyn_versatile.json";
-import limitCarolynVersatileInvalid from "@/test/fixtures/decks/validation/limit_carolyn_versatile_invalid.json";
-import limitCustomizableLevel0 from "@/test/fixtures/decks/validation/limit_customizable_level_0.json";
+import type { StoreApi } from "zustand";
+import limitCustomizableLevel0 from "@/test/fixtures/decks/validation/customizable_level_below.json";
+import limitCarolyn from "@/test/fixtures/decks/validation/tag_based_access.json";
+import limitCarolynInvalid from "@/test/fixtures/decks/validation/tag_based_access_invalid.json";
+import limitCarolynVersatile from "@/test/fixtures/decks/validation/tag_based_access_versatile.json";
+import limitCarolynVersatileInvalid from "@/test/fixtures/decks/validation/tag_based_access_versatile_invalid.json";
 import { getMockStore } from "@/test/get-mock-store";
-import { StoreApi } from "zustand";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
 } from "../selectors/shared";
-import { StoreState } from "../slices";
-import { Deck } from "../slices/data.types";
-import { LimitedSlotOccupation, limitedSlotOccupation } from "./limited-slots";
+import type { StoreState } from "../slices";
+import type { Deck } from "../slices/data.types";
+import {
+  type LimitedSlotOccupation,
+  limitedSlotOccupation,
+} from "./limited-slots";
 import { resolveDeck } from "./resolve-deck";
 
 function toSnapShot(value: LimitedSlotOccupation) {
@@ -69,9 +71,6 @@ describe("limitedSlotOccupation()", () => {
 
   it("handles presence of dynamic limit deck building (versatile)", () => {
     const state = store.getState();
-    const metadata = selectMetadata(state);
-    const lookupTables = selectLookupTables(state);
-    const sharing = state.sharing;
 
     expect(snapshotResult(state, limitCarolynVersatile)).toMatchInlineSnapshot(`
       [

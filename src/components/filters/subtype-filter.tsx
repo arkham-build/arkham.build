@@ -1,14 +1,14 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectActiveListFilter,
   selectFilterChanges,
+  selectSubtypeOptions,
 } from "@/store/selectors/lists";
-import { selectSubtypeOptions } from "@/store/selectors/lists";
 import { isSubtypeFilterObject } from "@/store/slices/lists.type-guards";
 import type { SubtypeFilter as SubtypeFilterType } from "@/store/slices/lists.types";
 import { assert } from "@/utils/assert";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { Checkbox } from "../ui/checkbox";
 import { CheckboxGroup } from "../ui/checkboxgroup";
 import type { FilterProps } from "./filters.types";

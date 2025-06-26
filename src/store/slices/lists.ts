@@ -1,8 +1,7 @@
+import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import type { Filter } from "@/utils/fp";
 import { and, not } from "@/utils/fp";
-import type { StateCreator } from "zustand";
-import type { StoreState } from ".";
 import {
   filterBacksides,
   filterDuplicates,
@@ -12,6 +11,7 @@ import {
   filterType,
 } from "../lib/filtering";
 import type { Card } from "../services/queries.types";
+import type { StoreState } from ".";
 import {
   isAssetFilter,
   isCostFilter,
@@ -26,21 +26,19 @@ import {
   isSubtypeFilter,
 } from "./lists.type-guards";
 import type {
+  AssetFilter,
+  CostFilter,
   FanMadeContentFilter,
   FilterKey,
   FilterMapping,
-  List,
-  OwnershipFilter,
-  Search,
-  SubtypeFilter,
-} from "./lists.types";
-import type {
-  AssetFilter,
-  CostFilter,
   LevelFilter,
+  List,
   ListsSlice,
+  OwnershipFilter,
   PropertiesFilter,
+  Search,
   SkillIconsFilter,
+  SubtypeFilter,
 } from "./lists.types";
 import type { SettingsState } from "./settings.types";
 

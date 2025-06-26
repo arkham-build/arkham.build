@@ -1,3 +1,7 @@
+import { EyeIcon, PilcrowIcon } from "lucide-react";
+import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { createSelector } from "reselect";
 import DeckDescription from "@/components/deck-description";
 import { Button } from "@/components/ui/button";
 import { Hotkey } from "@/components/ui/hotkey";
@@ -11,13 +15,9 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import type { StoreState } from "@/store/slices";
 import { debounce } from "@/utils/debounce";
 import { useAccentColor } from "@/utils/use-accent-color";
-import { EyeIcon, PilcrowIcon } from "lucide-react";
-import { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { createSelector } from "reselect";
 import { CardsPopover } from "./cards-popover";
-import { useNotesRichTextEditorContext } from "./notes-rte-context";
 import css from "./notes-rte.module.css";
+import { useNotesRichTextEditorContext } from "./notes-rte-context";
 import { SymbolsPopover } from "./symbols-popover";
 
 const selectUpdateDescription = createSelector(

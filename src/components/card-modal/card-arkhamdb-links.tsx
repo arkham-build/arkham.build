@@ -1,7 +1,7 @@
-import type { Card } from "@/store/services/queries.types";
-import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 import { MessagesSquareIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import type { Card } from "@/store/services/queries.types";
+import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 import { Button, type Props as ButtonProps } from "../ui/button";
 
 type Props = {

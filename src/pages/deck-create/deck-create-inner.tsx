@@ -1,10 +1,10 @@
 import { Footer } from "@/components/footer";
 import { Masthead } from "@/components/masthead";
 import { cx } from "@/utils/cx";
+import css from "./deck-create.module.css";
 import { DeckCreateCardSets } from "./deck-create-card-sets";
 import { DeckCreateEditor } from "./deck-create-editor";
 import { DeckCreateInvestigator } from "./deck-create-investigator";
-import css from "./deck-create.module.css";
 
 export function DeckCreateInner() {
   return (

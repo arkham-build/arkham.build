@@ -1,4 +1,3 @@
-import { parseHotkey } from "@/utils/use-hotkey";
 import {
   ArrowBigUp,
   CommandIcon,
@@ -11,6 +10,7 @@ import {
   SquareArrowUpIcon,
 } from "lucide-react";
 import { cloneElement } from "react";
+import { parseHotkey } from "@/utils/use-hotkey";
 import css from "./hotkey.module.css";
 import { DefaultTooltip, type DefaultTooltipProps } from "./tooltip";
 

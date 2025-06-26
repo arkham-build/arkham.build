@@ -1,7 +1,7 @@
-import { cx } from "@/utils/cx";
 import { SettingsIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
+import { cx } from "@/utils/cx";
 import { HelpMenu } from "./help-menu";
 import { Logo } from "./icons/logo";
 import css from "./masthead.module.css";

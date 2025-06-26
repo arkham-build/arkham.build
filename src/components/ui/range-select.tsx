@@ -1,5 +1,5 @@
-import { cx } from "@/utils/cx";
 import { useCallback, useEffect, useState } from "react";
+import { cx } from "@/utils/cx";
 import css from "./range-select.module.css";
 import type { Props as SliderProps } from "./slider";
 import { Slider } from "./slider";

@@ -1,3 +1,5 @@
+import { Fragment, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   type DeckGrouping,
@@ -20,16 +22,14 @@ import type { Card } from "@/store/services/queries.types";
 import type { Slots } from "@/store/slices/data.types";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";
-import { Fragment, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { CardGridItem } from "../card-list/card-grid";
 import { GroupLabel } from "../card-list/grouphead";
 import type { FilteredListCardPropsGetter } from "../card-list/types";
 import { CardScan } from "../card-scan";
 import { CustomizableSheet } from "../customizable-sheet";
 import { ListCard } from "../list-card/list-card";
-import css from "./decklist-groups.module.css";
 import type { ViewMode } from "./decklist.types";
+import css from "./decklist-groups.module.css";
 
 type DecklistGroupsProps = {
   deck: ResolvedDeck;

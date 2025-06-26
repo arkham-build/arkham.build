@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ResolvedCard } from "@/store/lib/types";
 import {
   displayAttribute,
@@ -5,7 +6,6 @@ import {
   parseCardTextHtml,
 } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
-import { useTranslation } from "react-i18next";
 import css from "./customizations.module.css";
 
 type Props = {

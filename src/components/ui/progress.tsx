@@ -1,5 +1,5 @@
-import { cx } from "@/utils/cx";
 import { useMemo } from "react";
+import { cx } from "@/utils/cx";
 import css from "./progress.module.css";
 
 type Props = {

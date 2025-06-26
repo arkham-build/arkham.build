@@ -1,3 +1,6 @@
+import { PencilLine } from "lucide-react";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   cardFormatDefinition,
@@ -7,9 +10,6 @@ import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import type { Card } from "@/store/services/queries.types";
-import { PencilLine } from "lucide-react";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { useNotesRichTextEditorContext } from "./notes-rte/notes-rte-context";
 
 type Props = {

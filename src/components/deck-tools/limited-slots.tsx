@@ -1,7 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLimitedSlotOccupation } from "@/store/selectors/decks";
-import { useTranslation } from "react-i18next";
 import { LimitedCardGroup } from "../limited-card-group";
 import { ListCard } from "../list-card/list-card";
 

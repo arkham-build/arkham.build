@@ -1,9 +1,9 @@
-import { cx } from "@/utils/cx";
 import type {
   RadioGroupItemProps,
   RadioGroupProps,
 } from "@radix-ui/react-radio-group";
 import { Item, Root } from "@radix-ui/react-radio-group";
+import { cx } from "@/utils/cx";
 import css from "./radio-button-group.module.css";
 import { DefaultTooltip } from "./tooltip";
 

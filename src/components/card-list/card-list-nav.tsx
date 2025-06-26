@@ -1,13 +1,13 @@
+import { SlidersVerticalIcon } from "lucide-react";
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { CardlistCount } from "@/components/card-list/card-list-count";
-import { NONE, getGroupingKeyLabel } from "@/store/lib/grouping";
+import { getGroupingKeyLabel, NONE } from "@/store/lib/grouping";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { ListState } from "@/store/selectors/lists";
 import type { ViewMode } from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { useHotkey } from "@/utils/use-hotkey";
-import { SlidersVerticalIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import {
   LimitedCardPoolTag,
   SealedDeckTag,

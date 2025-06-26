@@ -1,5 +1,5 @@
-import type { ResolvedDeck } from "@/store/lib/types";
 import { Fragment } from "react/jsx-runtime";
+import type { ResolvedDeck } from "@/store/lib/types";
 import { AttachableCards } from "./attachable-cards";
 
 type Props = {

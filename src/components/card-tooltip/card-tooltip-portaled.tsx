@@ -1,7 +1,7 @@
-import type { Card } from "@/store/services/queries.types";
-import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { FloatingPortal } from "@floating-ui/react";
 import { forwardRef } from "react";
+import type { Card } from "@/store/services/queries.types";
+import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { CardTooltip } from "./card-tooltip";
 
 type Props = {

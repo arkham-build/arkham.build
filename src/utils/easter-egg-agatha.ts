@@ -1,5 +1,5 @@
-import { useStore } from "@/store";
 import { useCallback, useEffect, useRef } from "react";
+import { useStore } from "@/store";
 
 const FLAG = "easter_egg_agatha";
 const TRIGGER = "agathaallalong";

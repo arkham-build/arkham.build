@@ -1,9 +1,9 @@
-import { cx } from "@/utils/cx";
-import { useMedia } from "@/utils/use-media";
 /* eslint-disable react/display-name */
 import type { ScrollAreaProps } from "@radix-ui/react-scroll-area";
 import { Root, Scrollbar, Thumb, Viewport } from "@radix-ui/react-scroll-area";
 import { forwardRef } from "react";
+import { cx } from "@/utils/cx";
+import { useMedia } from "@/utils/use-media";
 import css from "./scroller.module.css";
 
 interface Props extends ScrollAreaProps {

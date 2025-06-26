@@ -1,11 +1,12 @@
 // Currently unused, functionality preserved for 'My Decks' dedicated page.
+
+import { useCallback } from "react";
 import { useStore } from "@/store";
 import {
   selectDeckFilterValue,
   selectDecksMinMaxExpCost,
   selectExpCostChanges,
 } from "@/store/selectors/deck-filters";
-import { useCallback } from "react";
 import { FilterContainer } from "../filters/primitives/filter-container";
 import { RangeSelect } from "../ui/range-select";
 

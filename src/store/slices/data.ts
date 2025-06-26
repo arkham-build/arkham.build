@@ -1,12 +1,12 @@
-import { assert } from "@/utils/assert";
 import type { StateCreator } from "zustand";
-import type { StoreState } from ".";
+import { assert } from "@/utils/assert";
 import { applyDeckEdits } from "../lib/deck-edits";
 import { cloneDeck } from "../lib/deck-factory";
 import { formatDeckImport } from "../lib/deck-io";
 import { dehydrate } from "../persist";
 import { selectClientId, selectMetadata } from "../selectors/shared";
 import { importDeck } from "../services/queries";
+import type { StoreState } from ".";
 import { type DataSlice, type Deck, type Id, isDeck } from "./data.types";
 
 export function getInitialDataState() {

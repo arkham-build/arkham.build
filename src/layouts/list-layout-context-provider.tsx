@@ -1,5 +1,5 @@
-import { MQ_FLOATING_FILTERS, MQ_FLOATING_SIDEBAR } from "@/utils/constants";
 import { useMemo, useState } from "react";
+import { MQ_FLOATING_FILTERS, MQ_FLOATING_SIDEBAR } from "@/utils/constants";
 import { ListLayoutContext } from "./list-layout-context";
 
 export function ListLayoutContextProvider({

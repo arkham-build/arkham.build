@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { createSelector } from "reselect";
 import { useStore } from "@/store";
 import { makeSortFunction } from "@/store/lib/sorting";
 import {
@@ -5,13 +7,13 @@ import {
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
-import type { Card } from "@/store/services/queries.types";
-import type { CustomizationOption as CustomizationOptionType } from "@/store/services/queries.types";
+import type {
+  Card,
+  CustomizationOption as CustomizationOptionType,
+} from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
 import { displayAttribute } from "@/utils/card-utils";
 import { time, timeEnd } from "@/utils/time";
-import { useTranslation } from "react-i18next";
-import { createSelector } from "reselect";
 import { CardsCombobox } from "../cards-combobox";
 
 const selectPlayerCardsForCustomizationOptions = createSelector(

@@ -116,7 +116,9 @@
   visibility: hidden;
   background: rgba(0, 0, 0, 0.2);
   text-align: right;
-  transition: 0.2s ease-in-out opacity, 0.2s visibility;
+  transition:
+    0.2s ease-in-out opacity,
+    0.2s visibility;
   transition-behavior: allow-discrete;
 }
 

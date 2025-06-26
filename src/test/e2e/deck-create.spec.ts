@@ -1,4 +1,4 @@
-import { Locator, Page, expect, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 import { fillSearch, locateCardInSlots } from "./actions";
 import { mockApiCalls } from "./mocks";
 

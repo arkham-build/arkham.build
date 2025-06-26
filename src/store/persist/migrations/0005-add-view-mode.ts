@@ -6,7 +6,6 @@ function migrate(_state: unknown, version: number) {
 
   if (version < 6) {
     for (const key of Object.keys(state.settings.lists)) {
-      // biome-ignore lint/performance/noDelete: safe.
       delete (
         state.settings.lists[
           key as keyof StoreState["settings"]["lists"]

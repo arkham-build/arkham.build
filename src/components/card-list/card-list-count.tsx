@@ -1,16 +1,14 @@
+import { Fragment, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   type ListState,
   selectActiveListChanges,
 } from "@/store/selectors/lists";
-import { Fragment, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./card-list-count.module.css";
 
-export function CardlistCount(props: {
-  data: ListState | undefined;
-}) {
+export function CardlistCount(props: { data: ListState | undefined }) {
   const { data } = props;
   const { t } = useTranslation();
 

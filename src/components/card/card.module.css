@@ -406,6 +406,10 @@
   flex: 0 0 auto;
 }
 
+.taboo-chain i {
+  margin-right: 0.25rem;
+}
+
 :lang(ko, zh, zh-Hant, zh-Hans) :where(.sub) {
   font-style: normal;
 }

@@ -1,11 +1,11 @@
+import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { useParams, useSearch } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-context";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import { querySealedDeck } from "@/store/services/queries";
 import { useDocumentTitle } from "@/utils/use-document-title";
-import { useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import { useParams, useSearch } from "wouter";
 import { DeckCreateInner } from "./deck-create-inner";
 
 function DeckCreate() {

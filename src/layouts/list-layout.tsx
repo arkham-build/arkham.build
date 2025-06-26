@@ -1,3 +1,6 @@
+import { FilterIcon } from "lucide-react";
+import type React from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { CollapseSidebarButton } from "@/components/collapse-sidebar-button";
 import { Masthead } from "@/components/masthead";
 import { Button } from "@/components/ui/button";
@@ -6,11 +9,8 @@ import { MQ_FLOATING_FILTERS, MQ_FLOATING_SIDEBAR } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { useHotkey } from "@/utils/use-hotkey";
 import { useMedia } from "@/utils/use-media";
-import { FilterIcon } from "lucide-react";
-import type React from "react";
-import { useCallback, useEffect, useRef } from "react";
-import { useListLayoutContext } from "./list-layout-context";
 import css from "./list-layout.module.css";
+import { useListLayoutContext } from "./list-layout-context";
 
 type Props = {
   children: (props: {

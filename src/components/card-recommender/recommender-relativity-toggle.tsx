@@ -1,6 +1,6 @@
-import { useStore } from "@/store";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useStore } from "@/store";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 
 type RecommenderRelativityToggleProps = {

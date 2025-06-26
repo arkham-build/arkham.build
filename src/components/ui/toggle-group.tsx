@@ -1,4 +1,3 @@
-import { cx } from "@/utils/cx";
 import type {
   ToggleGroupItemProps,
   ToggleGroupMultipleProps,
@@ -6,6 +5,7 @@ import type {
 } from "@radix-ui/react-toggle-group";
 import { Item, Root } from "@radix-ui/react-toggle-group";
 import { forwardRef, useCallback, useEffect, useRef } from "react";
+import { cx } from "@/utils/cx";
 import css from "./toggle-group.module.css";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 

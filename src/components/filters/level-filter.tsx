@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   levelToString,
@@ -6,8 +8,6 @@ import {
 } from "@/store/selectors/lists";
 import { isLevelFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { Checkbox } from "../ui/checkbox";
 import { CheckboxGroup } from "../ui/checkboxgroup";
 import { RangeSelect } from "../ui/range-select";

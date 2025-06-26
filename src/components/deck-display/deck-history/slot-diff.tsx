@@ -1,8 +1,8 @@
+import { useTranslation } from "react-i18next";
 import { ListCard } from "@/components/list-card/list-card";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { SlotUpgrade } from "@/store/selectors/decks";
 import { cx } from "@/utils/cx";
-import { useTranslation } from "react-i18next";
 import css from "./diffs.module.css";
 
 export function SlotDiff(props: {

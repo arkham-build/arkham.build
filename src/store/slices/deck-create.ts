@@ -1,10 +1,10 @@
+import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import { displayAttribute, getCanonicalCardCode } from "@/utils/card-utils";
-import type { StateCreator } from "zustand";
-import type { StoreState } from ".";
 import { getDefaultDeckName } from "../lib/deck-factory";
 import { selectConnectionsData } from "../selectors/connections";
 import { selectMetadata } from "../selectors/shared";
+import type { StoreState } from ".";
 import type { CardSet, DeckCreateSlice } from "./deck-create.types";
 
 export const createDeckCreateSlice: StateCreator<

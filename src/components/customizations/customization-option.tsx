@@ -1,3 +1,4 @@
+import { useCallback, useId, useMemo } from "react";
 import type { Customization } from "@/store/lib/types";
 import type {
   Card,
@@ -6,7 +7,6 @@ import type {
 import type { CustomizationEdit } from "@/store/slices/deck-edits.types";
 import { parseCustomizationTextHtml } from "@/utils/card-utils";
 import { range } from "@/utils/range";
-import { useCallback, useId, useMemo } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { CustomizationChooseCards } from "./customization-choose-cards";
 import { CustomizationChooseSkill } from "./customization-choose-skill";

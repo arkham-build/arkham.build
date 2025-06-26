@@ -1,3 +1,7 @@
+import { SaveIcon, TriangleAlertIcon, Undo2Icon } from "lucide-react";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocation } from "wouter";
 import { DecklistValidation } from "@/components/decklist/decklist-validation";
 import { Button } from "@/components/ui/button";
 import { HotkeyTooltip } from "@/components/ui/hotkey";
@@ -13,10 +17,6 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckValid } from "@/store/selectors/decks";
 import { selectConnectionLockForDeck } from "@/store/selectors/shared";
 import { useHotkey } from "@/utils/use-hotkey";
-import { SaveIcon, TriangleAlertIcon, Undo2Icon } from "lucide-react";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { useLocation } from "wouter";
 import { LatestUpgrade } from "../../../components/deck-display/deck-history/latest-upgrade";
 import css from "./editor.module.css";
 

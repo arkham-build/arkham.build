@@ -1,10 +1,10 @@
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import type { StoreApi } from "zustand";
 import deckAttachments from "@/test/fixtures/decks/deck_attachments.json";
 import deckExtraSlots from "@/test/fixtures/decks/extra_slots.json";
 import { getMockStore } from "@/test/get-mock-store";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
-import type { StoreApi } from "zustand";
-import type { StoreState } from ".";
 import { selectResolvedDeckById } from "../selectors/decks";
+import type { StoreState } from ".";
 
 describe("deck-view slice", () => {
   let store: StoreApi<StoreState>;

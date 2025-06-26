@@ -1,11 +1,11 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   deckDateTickRange,
   deckTickToString,
 } from "@/store/slices/recommender";
 import { cx } from "@/utils/cx";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { RangeSelect } from "../ui/range-select";
 import css from "./card-recommender.module.css";
 

@@ -1,11 +1,13 @@
+/** biome-ignore-all lint/a11y/noNoninteractiveTabindex: needs tabIndex to avoid list jumping on modal close */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: nested button elements */
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ListRange, Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import type {
   CardGroup as CardGroupType,
   ListState,
 } from "@/store/selectors/lists";
 import type { Card } from "@/store/services/queries.types";
 import type { Metadata } from "@/store/slices/metadata.types";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { type ListRange, Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import { useCardModalContextChecked } from "../card-modal/card-modal-context";
 import { CardScan } from "../card-scan";
 import { Scroller } from "../ui/scroller";
@@ -208,7 +210,6 @@ export function CardGridItem(
         className={css["group-item-scan"]}
         onClick={openModal}
         onKeyUp={onPressEnter}
-        // biome-ignore lint/a11y/noNoninteractiveTabindex: needs a tabIndex to avoid focus jumping to parent when modal opened.
         tabIndex={0}
       >
         <CardScan card={card} lazy />

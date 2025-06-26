@@ -1,12 +1,12 @@
+import { AlertTriangleIcon } from "lucide-react";
+import { useCallback } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { FileInput } from "@/components/ui/file-input";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import { assert } from "@/utils/assert";
-import { AlertTriangleIcon } from "lucide-react";
-import { useCallback } from "react";
-import { Trans, useTranslation } from "react-i18next";
 import css from "./backup-restore.module.css";
 
 export function BackupRestore() {

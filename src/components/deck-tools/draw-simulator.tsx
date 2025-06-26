@@ -1,20 +1,18 @@
-import { Button } from "../ui/button";
-import { Plane } from "../ui/plane";
-
+import { ShuffleIcon } from "lucide-react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
+import type { Card } from "@/store/services/queries.types";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";
 import { shuffle } from "@/utils/shuffle";
-import { ShuffleIcon } from "lucide-react";
-import { useCallback, useEffect, useReducer, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import { CardScan } from "../card-scan";
-import css from "./draw-simulator.module.css";
-
-import type { Card } from "@/store/services/queries.types";
 import { PortaledCardTooltip } from "../card-tooltip/card-tooltip-portaled";
+import { Button } from "../ui/button";
+import { Plane } from "../ui/plane";
 import { useRestingTooltip } from "../ui/tooltip.hooks";
+import css from "./draw-simulator.module.css";
 
 type Props = {
   deck: ResolvedDeck;

@@ -1,3 +1,6 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocation } from "wouter";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import { formatDeckAsText, formatDeckShare } from "@/store/lib/deck-io";
@@ -5,9 +8,6 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import type { Deck, Id } from "@/store/slices/data.types";
 import { download } from "@/utils/download";
 import { formatProviderName } from "@/utils/formatting";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { useLocation } from "wouter";
 
 export function useDeleteDeck() {
   const toast = useToast();

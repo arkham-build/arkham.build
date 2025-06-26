@@ -1,3 +1,7 @@
+import { PlusIcon } from "lucide-react";
+import { useCallback, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-context";
 import { Button } from "@/components/ui/button";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
@@ -12,10 +16,6 @@ import type { Card } from "@/store/services/queries.types";
 import { displayAttribute } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";
 import { useDocumentTitle } from "@/utils/use-document-title";
-import { PlusIcon } from "lucide-react";
-import { useCallback, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import { Link } from "wouter";
 import css from "./choose-investigator.module.css";
 import { SignatureLink } from "./signature-link";
 

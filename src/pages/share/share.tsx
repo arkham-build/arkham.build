@@ -1,3 +1,6 @@
+import { useCallback } from "react";
+import { createSelector } from "reselect";
+import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-context";
 import { DeckDisplay } from "@/components/deck-display/deck-display";
 import { Loader } from "@/components/ui/loader";
@@ -14,9 +17,6 @@ import type { StoreState } from "@/store/slices";
 import type { Deck } from "@/store/slices/data.types";
 import { useQuery } from "@/utils/use-query";
 import { ResolvedDeckProvider } from "@/utils/use-resolved-deck";
-import { useCallback } from "react";
-import { createSelector } from "reselect";
-import { useParams } from "wouter";
 import { Error404 } from "../errors/404";
 
 const selectResolvedShare = createSelector(

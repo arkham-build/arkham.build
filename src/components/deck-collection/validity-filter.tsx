@@ -1,10 +1,11 @@
 // Currently unused, functionality preserved for 'My Decks' dedicated page.
+
+import { TicketCheckIcon, TicketsIcon, TicketXIcon } from "lucide-react";
+import { useCallback } from "react";
 import { useStore } from "@/store";
 import { selectDeckFilterValue } from "@/store/selectors/deck-filters";
 import type { DeckValidity } from "@/store/slices/deck-collection-filters.types";
 import { capitalize } from "@/utils/formatting";
-import { TicketCheckIcon, TicketXIcon, TicketsIcon } from "lucide-react";
-import { useCallback } from "react";
 import { FilterContainer } from "../filters/primitives/filter-container";
 import {
   RadioButtonGroup,

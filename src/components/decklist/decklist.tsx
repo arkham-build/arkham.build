@@ -1,14 +1,14 @@
+import { LayoutGridIcon, LayoutListIcon } from "lucide-react";
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import { type DeckGrouping, countGroupRows } from "@/store/lib/deck-grouping";
+import { countGroupRows, type DeckGrouping } from "@/store/lib/deck-grouping";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckGroups } from "@/store/selectors/decks";
 import type { Card } from "@/store/services/queries.types";
 import { countExperience } from "@/utils/card-utils";
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
-import { LayoutGridIcon, LayoutListIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { AnnotationIndicator } from "../annotation-indicator";
 import { Attachments } from "../attachments/attachments";
 import { getMatchingAttachables } from "../attachments/attachments.helpers";
@@ -16,10 +16,10 @@ import { AllAttachables } from "../deck-tools/all-attachables";
 import { LimitedSlots } from "../deck-tools/limited-slots";
 import { HotkeyTooltip } from "../ui/hotkey";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
-import { DecklistGroup } from "./decklist-groups";
-import { DecklistSection } from "./decklist-section";
 import css from "./decklist.module.css";
 import type { ViewMode } from "./decklist.types";
+import { DecklistGroup } from "./decklist-groups";
+import { DecklistSection } from "./decklist-section";
 
 type Props = {
   deck: ResolvedDeck;

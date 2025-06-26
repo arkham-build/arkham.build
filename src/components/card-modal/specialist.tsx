@@ -1,3 +1,4 @@
+import { createSelector } from "reselect";
 import { useStore } from "@/store";
 import {
   filterInvestigatorAccess,
@@ -15,7 +16,6 @@ import type { StoreState } from "@/store/slices";
 import { isSpecialist } from "@/utils/card-utils";
 import { formatRelationTitle } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
-import { createSelector } from "reselect";
 import { CardSet } from "../cardset";
 
 type Props = {

@@ -1,5 +1,5 @@
-import { not, or } from "@/utils/fp";
 import { createSelector } from "reselect";
+import { not, or } from "@/utils/fp";
 import {
   filterAlternates,
   filterEncounterCards,

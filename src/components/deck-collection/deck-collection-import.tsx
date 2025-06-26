@@ -1,3 +1,7 @@
+import { CloudDownloadIcon, LoaderCircleIcon } from "lucide-react";
+import { useCallback, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import {
@@ -7,10 +11,6 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
-import { CloudDownloadIcon, LoaderCircleIcon } from "lucide-react";
-import { useCallback, useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
-import { Link } from "wouter";
 import css from "./deck-collection.module.css";
 
 export function DeckCollectionImport() {

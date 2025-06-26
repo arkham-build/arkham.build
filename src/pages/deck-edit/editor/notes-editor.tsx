@@ -1,3 +1,6 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { createSelector } from "reselect";
 import { AutoSizingTextarea } from "@/components/ui/auto-sizing-textarea";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Scroller } from "@/components/ui/scroller";
@@ -5,9 +8,6 @@ import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { StoreState } from "@/store/slices";
 import { debounce } from "@/utils/debounce";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { createSelector } from "reselect";
 import css from "./notes-editor.module.css";
 import { NotesRichTextEditor } from "./notes-rte/notes-rte";
 

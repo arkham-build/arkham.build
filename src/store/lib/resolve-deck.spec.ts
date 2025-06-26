@@ -1,3 +1,5 @@
+import { beforeAll, describe, expect, it } from "vitest";
+import type { StoreApi } from "zustand";
 import deckCustomizable from "@/test/fixtures/decks/customizable.json";
 import deckSizeAllSpecials from "@/test/fixtures/decks/deck_size_all_specials.json";
 import deckSizeParallelAgnes from "@/test/fixtures/decks/deck_size_parallel_agnes.json";
@@ -12,8 +14,6 @@ import deckMultiFactionSelected from "@/test/fixtures/decks/multi_faction_select
 import deckMyriadDifferentNames from "@/test/fixtures/decks/upgrades/dtrh_penalty_myriad_2.json";
 import deckXpRequired from "@/test/fixtures/decks/xp_required.json";
 import { getMockStore } from "@/test/get-mock-store";
-import { beforeAll, describe, expect, it } from "vitest";
-import type { StoreApi } from "zustand";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,

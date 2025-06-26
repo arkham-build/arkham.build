@@ -1,7 +1,7 @@
-import { useToast } from "@/components/ui/toast.hooks";
-import { isEmpty } from "@/utils/is-empty";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useToast } from "@/components/ui/toast.hooks";
+import { isEmpty } from "@/utils/is-empty";
 import { useStore } from "..";
 import { syncHealthy } from "../selectors/connections";
 import type { ConnectionsState } from "../slices/connections.types";
