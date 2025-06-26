@@ -12,7 +12,7 @@ import { CardDataSync } from "./pages/settings/card-data-sync";
 import { useStore } from "./store";
 import { useSync } from "./store/hooks/use-sync";
 import { tabSync } from "./store/persist";
-import type { TabSyncEvent } from "./store/persist/sync";
+import type { TabSyncEvent } from "./store/persist/tab-sync";
 import { selectIsInitialized } from "./store/selectors/shared";
 import {
   queryCards,

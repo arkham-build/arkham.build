@@ -19,6 +19,8 @@ export class TabSync {
     assert(this.broadcastChannel, "BroadcastChannel is not initialized");
 
     try {
+      console.debug("[tab-sync] sending state");
+
       this.broadcastChannel.postMessage({
         state,
       });
@@ -27,7 +29,7 @@ export class TabSync {
         this.connect();
         this.send(state, retry + 1);
       } else {
-        console.error("TabSync: failed to send message", err);
+        throw err;
       }
     }
   }

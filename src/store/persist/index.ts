@@ -2,7 +2,7 @@ import { time, timeEnd } from "@/utils/time";
 import type { StoreState } from "../slices";
 import { migrate } from "./migrate";
 import { makeStorageAdapter, VERSION } from "./storage";
-import { TabSync } from "./sync";
+import { TabSync } from "./tab-sync";
 
 type AppState = Pick<
   StoreState,
@@ -106,7 +106,11 @@ export async function dehydrate(
       ),
     );
 
-    tabSync.send(Object.assign({}, ...partials));
+    try {
+      tabSync.send(Object.assign({}, ...partials));
+    } catch (err) {
+      console.error("[tab-sync] failed:", err);
+    }
 
     timeEnd("dehydration");
   } catch (err) {
