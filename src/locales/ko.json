@@ -7,6 +7,7 @@
         "card_design": "사용자 지정 카드 디자인.",
         "code": "코드 기반에 대한 상당한 기여.",
         "customization_api": "맞춤형 카드 요소 시트를 위한 API 접근.",
+        "qa": "QA 테스트.",
         "testing": "초기 버전 개발 중 환자 피드백 및 테스트, 디자인 컨셉.",
         "title": "명예의 전당",
         "translation": {
@@ -872,6 +873,7 @@
         "taboo": "금기 목록",
         "tags": "태그",
         "tags_help": "스페이스로 구분된 태그 입력",
+        "title_and_tags": "제목과 태그 편집",
         "version": {
           "switch": "전환",
           "title": "다른 버전"
@@ -1238,8 +1240,9 @@
       },
       "group_by": "분류 방법",
       "nav": {
-        "card_count": "{{count}}장",
         "card_count_hidden": "(필터로 {{count}}장 숨겨짐)",
+        "card_count_one": "카드 {{count}}장",
+        "card_count_other": "카드 {{count}}장",
         "display": "화면",
         "display_as_detailed": "카드 상세 내용 표기",
         "display_as_list": "목록",
