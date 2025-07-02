@@ -1,4 +1,4 @@
-import { DicesIcon } from "lucide-react";
+import { DicesIcon, ExternalLinkIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
@@ -142,14 +142,14 @@ function DraftBasicWeaknessModal(props: Props) {
                 isMounted,
                 floatingStyles,
                 transitionStyles
-              } = useRestingTooltip({ delay: 350 });
+              } = useRestingTooltip({ delay: 200 });
 
               return (
                 <li key={weakness.code}
-                  className={`${css['list-item']} ${isSelected ? css['selected'] : ''}`}
-                  onClick={() => setSelectedWeakness(weakness.code)} >
+                  className={`${css['list-item']} ${isSelected ? css['selected'] : ''}`} >
 
-                  <div className={css['card-container']}>
+                  <div className={css['card-container']}
+                    onClick={() => setSelectedWeakness(weakness.code)}>
                     {isSelected && <div className={css['overlay']}></div>}
                     <CardScan
                       className={css['draft-weakness']}
@@ -162,6 +162,19 @@ function DraftBasicWeaknessModal(props: Props) {
                     <span ref={refs.setReference} {...referenceProps}>
                       {displayAttribute(weakness, "name")}
                     </span>
+
+                    <Button
+                      as="a"
+                      href={`/card/${weakness.code}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="link"
+                      size="sm"
+                      className={css['title-button']}
+                    >
+                      <ExternalLinkIcon className="h-4 w-4 mr-2" />
+                      {t("card_modal.actions.open_card_page")}
+                    </Button>
                   </div>
 
                   {isMounted && (
