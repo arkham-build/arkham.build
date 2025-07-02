@@ -97,6 +97,7 @@ function DraftBasicWeaknessModal(props: Props) {
                   className={`${css['list-item']} ${isSelected ? css['selected'] : ''}`}
                   onClick={() => setSelectedWeakness(weakness.code)}
                 >
+                  {isSelected && <div className={css['overlay']}></div>}
                   <CardScan className={css["draft-weakness"]} card={weakness} preventFlip />
                 </li>
               );

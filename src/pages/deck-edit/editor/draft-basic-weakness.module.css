@@ -7,6 +7,12 @@
   margin: 1.5rem 0;
 }
 
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
 .list-item {
   flex: 1;
   min-width: 0;
@@ -24,10 +30,10 @@
   left: 5%;
   width: 90%;
   height: 0.75rem;
-  background: #D32F2FDD;
+  background: #f53c3cdd;
   border-radius: 0.5rem;
   transform: translateY(-50%) rotate(50deg);
-  z-index: 1;
+  z-index: 2;
 }
 .list-item.selected::after {
   content: '';
@@ -36,10 +42,10 @@
   left: 5%;
   width: 90%;
   height: 0.75rem;
-  background: #D32F2FDD;
+  background: #f53c3cdd;
   border-radius: 0.5rem;
   transform: translateY(-50%) rotate(-50deg);
-  z-index: 1;
+  z-index: 2;
 }
 
 .draft-weakness {
