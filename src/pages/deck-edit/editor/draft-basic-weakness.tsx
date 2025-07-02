@@ -14,6 +14,8 @@ import type { StoreState } from "@/store/slices";
 import { CardScan } from "@/components/card-scan";
 import css from "./draft-basic-weakness.module.css";
 import { Slots } from "@/store/slices/data.types";
+import { SPECIAL_CARD_CODES } from "@/utils/constants";
+import { useDialogContext } from "@/components/ui/dialog.hooks";
 
 type Props = {
   deck: ResolvedDeck;
@@ -66,13 +68,23 @@ function DraftBasicWeaknessModal(props: Props) {
 
   const [selectedWeakness, setSelectedWeakness] = useState<string | null>(null);
 
+  const dialogContext = useDialogContext();
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log('Confirmed cancellation for weakness code:', selectedWeakness);
+    // Close the modal
+    dialogContext?.setOpen(false);
+
+    // Decrease RBW count by 1
+
+    // Add chosen card to deck
+
+    // Display toast with resulting card
   };
 
   return (
-    <Modal size="60rem">
+    <Modal size="60rem" >
       <ModalContent title="Drafting a basic weakness">
         <form onSubmit={handleSubmit}>
           <h3 className={`${css['h3']}`} >
