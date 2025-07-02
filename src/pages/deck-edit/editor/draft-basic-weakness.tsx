@@ -19,6 +19,8 @@ import { useDialogContext } from "@/components/ui/dialog.hooks";
 import { assert } from "@/utils/assert";
 import { useToast } from "@/components/ui/toast.hooks";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
+import { PortaledCardTooltip } from "@/components/card-tooltip/card-tooltip-portaled";
+import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
 
 type Props = {
   deck: ResolvedDeck;
@@ -135,14 +137,24 @@ function DraftBasicWeaknessModal(props: Props) {
           <ol className={css['list-container']}>
             {weaknesses.map((weakness) => {
               const isSelected = weakness.code === selectedWeakness;
+              const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } = useRestingTooltip({ delay: 350 });
+
               return (
-                <li
-                  key={weakness.code}
+                <li key={weakness.code}
                   className={`${css['list-item']} ${isSelected ? css['selected'] : ''}`}
                   onClick={() => setSelectedWeakness(weakness.code)}
-                >
+                  ref={refs.setReference}
+                  {...referenceProps}>
                   {isSelected && <div className={css['overlay']}></div>}
                   <CardScan className={css["draft-weakness"]} card={weakness} preventFlip />
+                  {isMounted && (
+                    <PortaledCardTooltip
+                      card={weakness}
+                      ref={refs.setFloating}
+                      floatingStyles={floatingStyles}
+                      transitionStyles={transitionStyles}
+                    />
+                  )}
                 </li>
               );
             })}
@@ -152,9 +164,7 @@ function DraftBasicWeaknessModal(props: Props) {
           </p>
           <footer>
             {/* Disable the button if nothing is selected */}
-            <Button type="submit" disabled={!selectedWeakness}>
-              Confirm
-            </Button>
+            <Button type="submit" disabled={!selectedWeakness}>Confirm</Button>
             <Button variant="bare" onClick={() => dialogContext?.setOpen(false)}>Cancel</Button>
           </footer>
         </form>
