@@ -1,5 +1,5 @@
 import { DicesIcon, ExternalLinkIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { CardScan } from "@/components/card-scan";
