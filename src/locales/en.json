@@ -824,6 +824,7 @@
         "cycle_decks": "Cycle deck lists",
         "decrement_quantity": "Decrement deck quantity",
         "decrement_side_quantity": "Decrement side deck quantity",
+        "draft_random_basic_weakness": "Draft random basic weakness",
         "draw_random_basic_weakness": "Draw random basic weakness",
         "draw_random_basic_weakness_success": "<strong>{{name}}</strong> is your random basic weakness.",
         "edit_annotation": "Edit annotation",
