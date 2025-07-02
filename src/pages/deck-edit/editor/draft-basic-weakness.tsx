@@ -197,9 +197,6 @@ function DraftBasicWeaknessModal(props: Props) {
               );
             })}
           </ol>
-          <p className={`${css["p"]}`}>
-            {t("deck_edit.draft_weakness_modal.choice_footer")}
-          </p>
           <footer>
             {/* Disable the button if nothing is selected */}
             <Button type="submit" disabled={!selectedWeakness}>

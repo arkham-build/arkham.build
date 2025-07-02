@@ -891,9 +891,8 @@
       "draft_weakness_modal": {
         "title": "Basisschwäche draften",
         "explanation_title": "Erklärung",
-        "explanation_body": "Dies ist eine gängige Hausregel, um dem Spieler mehr Kontrolle über die Basisschwäche zu geben, anstatt sie vollständig zufällig zu bestimmen.",
-        "choice_title": "Eine Schwäche zum Annullieren wählen",
-        "choice_footer": "Eine der beiden verbleibenden Schwächen wird zufällig deinem Deck hinzugefügt.",
+        "explanation_body": "Dies ist eine gängige Hausregel, um dem Spieler mehr Kontrolle über die Basisschwäche zu geben, anstatt sie vollständig zufällig zu bestimmen. Drei Grundwschwächen werden zufällig bestimmt, der Spieler annuliert eine davon und dann wird zufällig eine der verbleibenden beiden Schwächen dem Deck hinzugefügt.",
+        "choice_title": "Wähle eine Schwäche zum Annullieren",
         "confirm_button": "Bestätigen",
         "cancel_button": "Abbrechen",
         "alert_select_weakness": "Bitte wähle eine Schwäche zum Annullieren aus."

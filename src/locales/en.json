@@ -893,9 +893,8 @@
       "draft_weakness_modal": {
         "title": "Drafting a basic weakness",
         "explanation_title": "Explanation",
-        "explanation_body": "This is a common house rule to give the player more control over the basic weakness in comparison to fully randomizing it.",
+        "explanation_body": "This is a common house rule to give the player more control over the basic weakness in comparison to fully randomizing it. Three basic weaknesses are drawn at random, the player gets to cancel one of them and then one of the remaining two weaknesses is added to the deck at random.",
         "choice_title": "Choose one weakness to cancel",
-        "choice_footer": "One of the two remaining weaknesses will be added to your deck at random.",
         "confirm_button": "Confirm",
         "cancel_button": "Cancel"
       },
