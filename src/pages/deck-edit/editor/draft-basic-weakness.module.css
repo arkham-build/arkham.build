@@ -20,6 +20,7 @@
   text-underline-offset: 0.25rem;
   font-size: 1rem;
 }
+
 .list-container {
   display: flex;
   gap: 1.5rem;
@@ -27,6 +28,10 @@
   list-style: none;
   width: 100%;
   margin: 1rem 0;
+}
+
+.card-container {
+  position: relative;
 }
 
 .overlay {
