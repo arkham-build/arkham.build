@@ -1,6 +1,6 @@
 import { DicesIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -16,6 +16,9 @@ import css from "./draft-basic-weakness.module.css";
 import { Slots } from "@/store/slices/data.types";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { useDialogContext } from "@/components/ui/dialog.hooks";
+import { assert } from "@/utils/assert";
+import { useToast } from "@/components/ui/toast.hooks";
+import { displayAttribute } from "@/utils/card-utils";
 
 type Props = {
   deck: ResolvedDeck;
@@ -48,7 +51,7 @@ export function DraftBasicWeakness(props: Props) {
 
 function DraftBasicWeaknessModal(props: Props) {
   const { t } = useTranslation();
-
+  const toast = useToast();
   const { deck } = props;
 
   const deps = useStore(
@@ -71,16 +74,38 @@ function DraftBasicWeaknessModal(props: Props) {
   const dialogContext = useDialogContext();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log('Confirmed cancellation for weakness code:', selectedWeakness);
-    // Close the modal
-    dialogContext?.setOpen(false);
+    event.preventDefault();    
 
-    // Decrease RBW count by 1
+    // Choose weakness from remaining two
+    const remainingWeaknesses = weaknesses.filter((w) => w.code !== selectedWeakness,);
+    const chosenWeakness = remainingWeaknesses[Math.floor(Math.random() * remainingWeaknesses.length)];
+
+    assert(chosenWeakness, "Could not determine which weakness to add.");
+    console.log("Chosen Weakness:", chosenWeakness);
 
     // Add chosen card to deck
 
+
+    // Decrease RBW count by 1
+
+
+    // Close the modal
+    dialogContext?.setOpen(false);
+
     // Display toast with resulting card
+    toast.show({
+      variant: "success",
+      duration: 3000,
+      children: (
+        <Trans
+          defaults="<strong>{{name}}</strong> is your random basic weakness."
+          i18nKey="deck_edit.actions.draw_random_basic_weakness_success"
+          t={t}
+          values={{ name: displayAttribute(chosenWeakness, "name") }}
+          components={{ strong: <strong /> }}
+        />
+      ),
+    });
   };
 
   return (
