@@ -2,25 +2,25 @@ import { DicesIcon, ExternalLinkIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
+import { CardScan } from "@/components/card-scan";
+import { PortaledCardTooltip } from "@/components/card-tooltip/card-tooltip-portaled";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useDialogContext } from "@/components/ui/dialog.hooks";
 import { Modal, ModalContent } from "@/components/ui/modal";
+import { useToast } from "@/components/ui/toast.hooks";
+import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
 import { useStore } from "@/store";
 import type { LookupTables } from "@/store/lib/lookup-tables.types";
 import { randomBasicWeaknessForDeck } from "@/store/lib/random-basic-weakness";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
-import { CardScan } from "@/components/card-scan";
-import css from "./draft-basic-weakness.module.css";
-import { Slots } from "@/store/slices/data.types";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
-import { useDialogContext } from "@/components/ui/dialog.hooks";
+import type { Slots } from "@/store/slices/data.types";
 import { assert } from "@/utils/assert";
-import { useToast } from "@/components/ui/toast.hooks";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
-import { PortaledCardTooltip } from "@/components/card-tooltip/card-tooltip-portaled";
-import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
+import { SPECIAL_CARD_CODES } from "@/utils/constants";
+import css from "./draft-basic-weakness.module.css";
 
 type Props = {
   deck: ResolvedDeck;
@@ -81,8 +81,13 @@ function DraftBasicWeaknessModal(props: Props) {
     event.preventDefault();
 
     // Choose weakness from remaining two
-    const remainingWeaknesses = weaknesses.filter((w) => w.code !== selectedWeakness,);
-    const chosenWeakness = remainingWeaknesses[Math.floor(Math.random() * remainingWeaknesses.length)];
+    const remainingWeaknesses = weaknesses.filter(
+      (w) => w.code !== selectedWeakness,
+    );
+    const chosenWeakness =
+      remainingWeaknesses[
+        Math.floor(Math.random() * remainingWeaknesses.length)
+      ];
     assert(chosenWeakness, "Could not determine which weakness to add.");
 
     // Add chosen card to deck
@@ -90,7 +95,7 @@ function DraftBasicWeaknessModal(props: Props) {
       deck.id,
       chosenWeakness.code,
       1,
-      cardLimit(deps.metadata.cards[chosenWeakness.code])
+      cardLimit(deps.metadata.cards[chosenWeakness.code]),
     );
 
     // Decrease RBW count by 1
@@ -98,7 +103,7 @@ function DraftBasicWeaknessModal(props: Props) {
       deck.id,
       SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS,
       -1,
-      cardLimit(deps.metadata.cards[SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS])
+      cardLimit(deps.metadata.cards[SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS]),
     );
 
     // Close the modal
@@ -121,19 +126,19 @@ function DraftBasicWeaknessModal(props: Props) {
   };
 
   return (
-    <Modal size="60rem" >
+    <Modal size="60rem">
       <ModalContent title={t("deck_edit.draft_weakness_modal.title")}>
         <form onSubmit={handleSubmit}>
-          <h3 className={`${css['h3']}`} >
+          <h3 className={`${css["h3"]}`}>
             {t("deck_edit.draft_weakness_modal.explanation_title")}
           </h3>
-          <p className={`${css['p']}`} >
+          <p className={`${css["p"]}`}>
             {t("deck_edit.draft_weakness_modal.explanation_body")}
           </p>
-          <h3 className={`${css['h3']}`} >
+          <h3 className={`${css["h3"]}`}>
             {t("deck_edit.draft_weakness_modal.choice_title")}
           </h3>
-          <ol className={css['list-container']}>
+          <ol className={css["list-container"]}>
             {weaknesses.map((weakness) => {
               const isSelected = weakness.code === selectedWeakness;
               const {
@@ -141,24 +146,27 @@ function DraftBasicWeaknessModal(props: Props) {
                 referenceProps,
                 isMounted,
                 floatingStyles,
-                transitionStyles
+                transitionStyles,
               } = useRestingTooltip({ delay: 200 });
 
               return (
-                <li key={weakness.code}
-                  className={`${css['list-item']} ${isSelected ? css['selected'] : ''}`} >
-
-                  <div className={css['card-container']}
-                    onClick={() => setSelectedWeakness(weakness.code)}>
-                    {isSelected && <div className={css['overlay']}></div>}
+                <li
+                  key={weakness.code}
+                  className={`${css["list-item"]} ${isSelected ? css["selected"] : ""}`}
+                >
+                  <div
+                    className={css["card-container"]}
+                    onClick={() => setSelectedWeakness(weakness.code)}
+                  >
+                    {isSelected && <div className={css["overlay"]} />}
                     <CardScan
-                      className={css['draft-weakness']}
+                      className={css["draft-weakness"]}
                       card={weakness}
                       preventFlip
                     />
                   </div>
 
-                  <div className={css['title-container']}>
+                  <div className={css["title-container"]}>
                     <span ref={refs.setReference} {...referenceProps}>
                       {displayAttribute(weakness, "name")}
                     </span>
@@ -170,7 +178,7 @@ function DraftBasicWeaknessModal(props: Props) {
                       rel="noopener noreferrer"
                       variant="link"
                       size="sm"
-                      className={css['title-button']}
+                      className={css["title-button"]}
                     >
                       <ExternalLinkIcon className="h-4 w-4 mr-2" />
                       {t("card_modal.actions.open_card_page")}
@@ -189,7 +197,7 @@ function DraftBasicWeaknessModal(props: Props) {
               );
             })}
           </ol>
-          <p className={`${css['p']}`} >
+          <p className={`${css["p"]}`}>
             {t("deck_edit.draft_weakness_modal.choice_footer")}
           </p>
           <footer>
@@ -197,7 +205,10 @@ function DraftBasicWeaknessModal(props: Props) {
             <Button type="submit" disabled={!selectedWeakness}>
               {t("deck_edit.draft_weakness_modal.confirm_button")}
             </Button>
-            <Button variant="bare" onClick={() => dialogContext?.setOpen(false)}>
+            <Button
+              variant="bare"
+              onClick={() => dialogContext?.setOpen(false)}
+            >
               {t("deck_edit.draft_weakness_modal.cancel_button")}
             </Button>
           </footer>
@@ -232,9 +243,9 @@ function selectDraftWeaknesses(
           ...Array.from(drawnWeaknesses).reduce((acc, curr) => {
             acc[curr] = Number.MAX_SAFE_INTEGER;
             return acc;
-          }, {} as Slots)
-        }
-      }
+          }, {} as Slots),
+        },
+      },
     );
 
     if (weaknessCode) {

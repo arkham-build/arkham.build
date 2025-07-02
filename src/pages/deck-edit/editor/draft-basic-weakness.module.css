@@ -62,7 +62,7 @@
 }
 
 .list-item.selected .card-container::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 5%;
@@ -75,7 +75,7 @@
 }
 
 .list-item.selected .card-container::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 5%;
