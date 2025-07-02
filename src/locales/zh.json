@@ -7,6 +7,7 @@
         "card_design": "定制卡牌设计。",
         "code": "对代码库的重大贡献。",
         "customization_api": "用于生成定制卡牌升级的API接口。",
+        "qa": "程序测试。",
         "testing": "在初期版本开发中给予耐心反馈与测试，贡献设计理念。",
         "title": "荣誉殿堂",
         "translation": {
@@ -667,7 +668,7 @@
         "wishes": "愿望"
       },
       "victory": "胜利",
-      "xp": "经验值"
+      "xp": "XP"
     },
     "connect": {
       "error": "连接{{provider}}失败：{{error}}",
