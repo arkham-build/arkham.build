@@ -86,7 +86,7 @@ function DraftBasicWeaknessModal(props: Props) {
     );
     const chosenWeakness =
       remainingWeaknesses[
-        Math.floor(Math.random() * remainingWeaknesses.length)
+      Math.floor(Math.random() * remainingWeaknesses.length)
       ];
     assert(chosenWeakness, "Could not determine which weakness to add.");
 
@@ -156,7 +156,7 @@ function DraftBasicWeaknessModal(props: Props) {
                 >
                   <div
                     className={css["card-container"]}
-                    onClick={() => setSelectedWeakness(weakness.code)}
+                    onClick={() => { setSelectedWeakness(selectedWeakness === weakness.code ? null : weakness.code); }}
                   >
                     {isSelected && <div className={css["overlay"]} />}
                     {isSelected && <XIcon className={css['cancel-icon']} />}
