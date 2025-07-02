@@ -60,7 +60,7 @@ export function CardExtras(props: Props) {
           targetDeck={mapTabToSlot(currentTab)}
         />
         <DraftBasicWeakness
-          deckId={deck.id}
+          deck={deck}
           quantity={quantity}
           targetDeck={mapTabToSlot(currentTab)}
         />
