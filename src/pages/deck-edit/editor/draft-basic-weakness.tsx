@@ -75,19 +75,19 @@ function DraftBasicWeaknessModal(props: Props) {
 
 
   return (
-    <Modal size="52rem">
+    <Modal size="60rem">
       <ModalContent title="Drafting a basic weakness">
         <form onSubmit={handleSubmit}>
-          <div>
-            <p>
-              This is a common house rule to give the player more control over
-              the basic weakness in comparison to fully randomizing it.
-            </p>
-            <p>
-              Choose one weakness to cancel. One of the two remaining weaknesses
-              will be added to your deck at random.
-            </p>
-          </div>
+          <h3 className={`${css['h3']}`} >
+            Explanation
+          </h3>
+          <p className={`${css['p']}`} >
+            This is a common house rule to give the player more control over
+            the basic weakness in comparison to fully randomizing it.
+          </p>
+          <h3 className={`${css['h3']}`} >
+            Choose one weakness to cancel
+          </h3>
           <ol className={css['list-container']}>
             {weaknesses.map((weakness) => {
               const isSelected = weakness.code === selectedWeakness;
@@ -103,6 +103,9 @@ function DraftBasicWeaknessModal(props: Props) {
               );
             })}
           </ol>
+          <p className={`${css['p']}`} >
+            One of the two remaining weaknesses will be added to your deck at random.
+          </p>
           <footer>
             {/* Disable the button if nothing is selected */}
             <Button type="submit" disabled={!selectedWeakness}>
