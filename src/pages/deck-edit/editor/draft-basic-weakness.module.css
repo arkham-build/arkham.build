@@ -11,6 +11,18 @@
   transition: transform 0.2s ease;
 }
 
+.cancel-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10rem;
+  height: 10rem;
+  color: #f53c3c;
+  stroke-width: 3;
+  z-index: 2;
+}
+
 .title-container {
   display: flex;
   margin: 0.5rem 0;
@@ -21,6 +33,7 @@
 
 .title-container span {
   cursor: help;
+  text-align: center;
   text-decoration: underline;
   text-decoration-style: dotted;
   text-underline-offset: 0.25rem;
@@ -59,32 +72,6 @@
   cursor: pointer;
   transform: translateY(-0.6rem);
   transition: transform 0.2s ease;
-}
-
-.list-item.selected .card-container::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 5%;
-  width: 90%;
-  height: 0.75rem;
-  background: #f53c3cdd;
-  border-radius: 0.5rem;
-  transform: translateY(-50%) rotate(50deg);
-  z-index: 2;
-}
-
-.list-item.selected .card-container::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 5%;
-  width: 90%;
-  height: 0.75rem;
-  background: #f53c3cdd;
-  border-radius: 0.5rem;
-  transform: translateY(-50%) rotate(-50deg);
-  z-index: 2;
 }
 
 .draft-weakness {

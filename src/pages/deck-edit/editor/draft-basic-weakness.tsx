@@ -1,4 +1,4 @@
-import { DicesIcon, ExternalLinkIcon } from "lucide-react";
+import { DicesIcon, ExternalLinkIcon, XIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
@@ -159,6 +159,7 @@ function DraftBasicWeaknessModal(props: Props) {
                     onClick={() => setSelectedWeakness(weakness.code)}
                   >
                     {isSelected && <div className={css["overlay"]} />}
+                    {isSelected && <XIcon className={css['cancel-icon']} />}
                     <CardScan
                       className={css["draft-weakness"]}
                       card={weakness}
