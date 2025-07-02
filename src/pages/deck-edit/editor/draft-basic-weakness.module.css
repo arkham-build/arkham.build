@@ -37,11 +37,13 @@
 
 .card-container {
   position: relative;
+  will-change: transform;
 }
 
 .overlay {
   position: absolute;
   inset: 0;
+  border-radius: 0.5rem;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1;
 }
