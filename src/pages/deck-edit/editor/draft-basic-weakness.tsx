@@ -11,6 +11,7 @@ import { randomBasicWeaknessForDeck } from "@/store/lib/random-basic-weakness";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
+import { CardScan } from "@/components/card-scan";
 
 type Props = {
   deck: ResolvedDeck;
@@ -73,6 +74,13 @@ function DraftBasicWeaknessModal(props: Props) {
               will be added to your deck at random.
             </p>
           </div>
+          <ol>
+            {weaknesses.map((weakness) => (
+              <li key={weakness.code}>
+                <CardScan card={weakness} preventFlip />
+              </li>
+            )}
+          </ol>
           <footer>
             <Button type="submit">Confirm</Button>
             <Button variant="bare">Cancel</Button>
