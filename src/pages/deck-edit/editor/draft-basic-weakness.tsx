@@ -1,5 +1,5 @@
 import { DicesIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { Button } from "@/components/ui/button";
@@ -155,7 +155,7 @@ function DraftBasicWeaknessModal(props: Props) {
             <Button type="submit" disabled={!selectedWeakness}>
               Confirm
             </Button>
-            <Button variant="bare">Cancel</Button>
+            <Button variant="bare" onClick={() => dialogContext?.setOpen(false)}>Cancel</Button>
           </footer>
         </form>
       </ModalContent>
