@@ -1,5 +1,5 @@
 import { DicesIcon } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { Button } from "@/components/ui/button";
@@ -60,12 +60,24 @@ function DraftBasicWeaknessModal(props: Props) {
     [deps, deck],
   );
 
-  if (!weaknesses) return null; // Return an error
+  if (!weaknesses) return null;
+
+  const [selectedWeakness, setSelectedWeakness] = useState(null);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!selectedWeakness) {
+      alert('Please select a weakness to cancel.');
+      return;
+    }
+    console.log('Confirmed cancellation for weakness code:', selectedWeakness);
+  };
+
 
   return (
     <Modal size="52rem">
       <ModalContent title="Drafting a basic weakness">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div>
             <p>
               This is a common house rule to give the player more control over
@@ -77,14 +89,24 @@ function DraftBasicWeaknessModal(props: Props) {
             </p>
           </div>
           <ol className={css['list-container']}>
-            {weaknesses.map((weakness) => (
-              <li key={weakness.code} className={css['list-item']}>
-                <CardScan className={css["draft-weakness"]} card={weakness} preventFlip />
-              </li>
-            ))}
+            {weaknesses.map((weakness) => {
+              const isSelected = weakness.code === selectedWeakness;
+              return (
+                <li
+                  key={weakness.code}
+                  className={`${css['list-item']} ${isSelected ? css['selected'] : ''}`}
+                  onClick={() => setSelectedWeakness(weakness.code)}
+                >
+                  <CardScan className={css["draft-weakness"]} card={weakness} preventFlip />
+                </li>
+              );
+            })}
           </ol>
           <footer>
-            <Button type="submit">Confirm</Button>
+            {/* Disable the button if nothing is selected */}
+            <Button type="submit" disabled={!selectedWeakness}>
+              Confirm
+            </Button>
             <Button variant="bare">Cancel</Button>
           </footer>
         </form>

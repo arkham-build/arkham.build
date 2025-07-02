@@ -8,9 +8,48 @@
   margin-bottom: 1.5rem;
 }
 
+/* Make the list items look clickable */
 .list-item {
   flex: 1;
   min-width: 0;
+  cursor: pointer;
+    position: relative;
+    transition: transform 0.2s ease;
+  }
+  
+  /* Add a subtle hover effect */
+  .list-item:hover {
+    transform: translateY(-0.5rem);
+  }
+  
+  .selected::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 80%;
+    height: 0.5rem;
+    background: #D32F2F;
+    border-radius: 0.25rem;
+    transform: translateY(-50%) rotate(45deg);
+  }
+  
+  /* Second diagonal line of the cross */
+  .selected::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 80%;
+    height: 0.5rem;
+    background: #D32F2F;
+    border-radius: 0.25rem;
+    transform: translateY(-50%) rotate(-45deg);
+  }
+  
+  /* Optional: Darken the card behind the cross */
+  .selected .draft-weakness {
+    opacity: 0.8;
 }
 
 .draft-weakness {
