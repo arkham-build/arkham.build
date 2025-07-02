@@ -110,8 +110,8 @@ function DraftBasicWeaknessModal(props: Props) {
       duration: 3000,
       children: (
         <Trans
-          defaults="<strong>{{name}}</strong> is your random basic weakness."
-          i18nKey="deck_edit.actions.draw_random_basic_weakness_success"
+          defaults="<strong>{{name}}</strong> was added to your deck."
+          i18nKey="deck_edit.actions.draft_random_basic_weakness_success"
           t={t}
           values={{ name: displayAttribute(chosenWeakness, "name") }}
           components={{ strong: <strong /> }}
@@ -122,17 +122,16 @@ function DraftBasicWeaknessModal(props: Props) {
 
   return (
     <Modal size="60rem" >
-      <ModalContent title="Drafting a basic weakness">
+      <ModalContent title={t("deck_edit.draft_weakness_modal.title")}>
         <form onSubmit={handleSubmit}>
           <h3 className={`${css['h3']}`} >
-            Explanation
+            {t("deck_edit.draft_weakness_modal.explanation_title")}
           </h3>
           <p className={`${css['p']}`} >
-            This is a common house rule to give the player more control over
-            the basic weakness in comparison to fully randomizing it.
+            {t("deck_edit.draft_weakness_modal.explanation_body")}
           </p>
           <h3 className={`${css['h3']}`} >
-            Choose one weakness to cancel
+            {t("deck_edit.draft_weakness_modal.choice_title")}
           </h3>
           <ol className={css['list-container']}>
             {weaknesses.map((weakness) => {
@@ -178,12 +177,16 @@ function DraftBasicWeaknessModal(props: Props) {
             })}
           </ol>
           <p className={`${css['p']}`} >
-            One of the two remaining weaknesses will be added to your deck at random.
+            {t("deck_edit.draft_weakness_modal.choice_footer")}
           </p>
           <footer>
             {/* Disable the button if nothing is selected */}
-            <Button type="submit" disabled={!selectedWeakness}>Confirm</Button>
-            <Button variant="bare" onClick={() => dialogContext?.setOpen(false)}>Cancel</Button>
+            <Button type="submit" disabled={!selectedWeakness}>
+              {t("deck_edit.draft_weakness_modal.confirm_button")}
+            </Button>
+            <Button variant="bare" onClick={() => dialogContext?.setOpen(false)}>
+              {t("deck_edit.draft_weakness_modal.cancel_button")}
+            </Button>
           </footer>
         </form>
       </ModalContent>

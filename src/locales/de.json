@@ -823,6 +823,8 @@
         "cycle_decks": "Deckliste wechseln",
         "decrement_quantity": "Anzahl im Deck verringern",
         "decrement_side_quantity": "Anzahl im Nebendeck verringern",
+        "draft_random_basic_weakness": "Eine zufällige Basisschwäche draften",
+        "draft_random_basic_weakness_success": "<strong>{{name}}</strong> wurde deinem Deck hinzugefügt.",
         "draw_random_basic_weakness": "Zufällige Grundschwäche ziehen",
         "draw_random_basic_weakness_success": "<strong>{{name}}</strong> ist deine zufällige Grundschwäche.",
         "edit_annotation": "Anmerkung bearbeiten",
@@ -886,6 +888,16 @@
       },
       "discard": "Verwerfen",
       "discard_confirm": "Bist du sicher, dass du die Änderungen verwerfen möchtest?",
+      "draft_weakness_modal": {
+        "title": "Basisschwäche draften",
+        "explanation_title": "Erklärung",
+        "explanation_body": "Dies ist eine gängige Hausregel, um dem Spieler mehr Kontrolle über die Basisschwäche zu geben, anstatt sie vollständig zufällig zu bestimmen.",
+        "choice_title": "Eine Schwäche zum Annullieren wählen",
+        "choice_footer": "Eine der beiden verbleibenden Schwächen wird zufällig deinem Deck hinzugefügt.",
+        "confirm_button": "Bestätigen",
+        "cancel_button": "Abbrechen",
+        "alert_select_weakness": "Bitte wähle eine Schwäche zum Annullieren aus."
+      },
       "notes": {
         "banner_url": "Titelbild URL",
         "banner_url_help": "Titelbild für das Deck, das in der Deckansicht und Linkvorschau angezeigt wird. Für beste Ergebnisse das Seitenformat 4:1 und eine Breite von mind. 1440px verwenden.",

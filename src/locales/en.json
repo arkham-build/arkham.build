@@ -825,6 +825,7 @@
         "decrement_quantity": "Decrement deck quantity",
         "decrement_side_quantity": "Decrement side deck quantity",
         "draft_random_basic_weakness": "Draft random basic weakness",
+        "draft_random_basic_weakness_success": "<strong>{{name}}</strong> was added to your deck.",
         "draw_random_basic_weakness": "Draw random basic weakness",
         "draw_random_basic_weakness_success": "<strong>{{name}}</strong> is your random basic weakness.",
         "edit_annotation": "Edit annotation",
@@ -889,6 +890,15 @@
       },
       "discard": "Discard changes",
       "discard_confirm": "Are you sure you want to discard your changes?",
+      "draft_weakness_modal": {
+        "title": "Drafting a basic weakness",
+        "explanation_title": "Explanation",
+        "explanation_body": "This is a common house rule to give the player more control over the basic weakness in comparison to fully randomizing it.",
+        "choice_title": "Choose one weakness to cancel",
+        "choice_footer": "One of the two remaining weaknesses will be added to your deck at random.",
+        "confirm_button": "Confirm",
+        "cancel_button": "Cancel"
+      },
       "notes": {
         "banner_url": "Banner URL",
         "banner_url_help": "Banner image for the deck. Will be displayed on the deck view and in social media previews. Aspect ratio is 4:1, optimal width is 1440px.",
