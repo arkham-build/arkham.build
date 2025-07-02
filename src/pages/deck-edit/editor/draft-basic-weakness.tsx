@@ -18,7 +18,7 @@ import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { useDialogContext } from "@/components/ui/dialog.hooks";
 import { assert } from "@/utils/assert";
 import { useToast } from "@/components/ui/toast.hooks";
-import { displayAttribute } from "@/utils/card-utils";
+import { cardLimit, displayAttribute } from "@/utils/card-utils";
 
 type Props = {
   deck: ResolvedDeck;
@@ -71,23 +71,33 @@ function DraftBasicWeaknessModal(props: Props) {
 
   const [selectedWeakness, setSelectedWeakness] = useState<string | null>(null);
 
+  const updateCardQuantity = useStore((state) => state.updateCardQuantity);
+
   const dialogContext = useDialogContext();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();    
+    event.preventDefault();
 
     // Choose weakness from remaining two
     const remainingWeaknesses = weaknesses.filter((w) => w.code !== selectedWeakness,);
     const chosenWeakness = remainingWeaknesses[Math.floor(Math.random() * remainingWeaknesses.length)];
-
     assert(chosenWeakness, "Could not determine which weakness to add.");
-    console.log("Chosen Weakness:", chosenWeakness);
 
     // Add chosen card to deck
-
+    updateCardQuantity(
+      deck.id,
+      chosenWeakness.code,
+      1,
+      cardLimit(deps.metadata.cards[chosenWeakness.code])
+    );
 
     // Decrease RBW count by 1
-
+    updateCardQuantity(
+      deck.id,
+      SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS,
+      -1,
+      cardLimit(deps.metadata.cards[SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS])
+    );
 
     // Close the modal
     dialogContext?.setOpen(false);
