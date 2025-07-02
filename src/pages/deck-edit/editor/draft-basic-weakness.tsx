@@ -12,6 +12,8 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { CardScan } from "@/components/card-scan";
+import css from "./draft-basic-weakness.module.css";
+import { Slots } from "@/store/slices/data.types";
 
 type Props = {
   deck: ResolvedDeck;
@@ -74,12 +76,12 @@ function DraftBasicWeaknessModal(props: Props) {
               will be added to your deck at random.
             </p>
           </div>
-          <ol>
+          <ol className={css['list-container']}>
             {weaknesses.map((weakness) => (
-              <li key={weakness.code}>
-                <CardScan card={weakness} preventFlip />
+              <li key={weakness.code} className={css['list-item']}>
+                <CardScan className={css["draft-weakness"]} card={weakness} preventFlip />
               </li>
-            )}
+            ))}
           </ol>
           <footer>
             <Button type="submit">Confirm</Button>
@@ -101,22 +103,32 @@ function selectDraftWeaknesses(
 ) {
   const { lookupTables, metadata, settings } = deps;
 
-  const drawnWeaknesses = new Set();
+  const drawnWeaknesses = new Set<string>();
 
   while (drawnWeaknesses.size < 3) {
-    const weakness = randomBasicWeaknessForDeck(
+    const weaknessCode = randomBasicWeaknessForDeck(
       metadata,
       lookupTables,
       settings,
-      deck,
+      {
+        ...deck,
+        slots: {
+          ...deck.slots,
+          // Make sure we don't draw the same weakness multiple times
+          ...Array.from(drawnWeaknesses).reduce((acc, curr) => {
+            acc[curr] = Number.MAX_SAFE_INTEGER;
+            return acc;
+          }, {} as Slots)
+        }
+      }
     );
 
-    if (weakness) {
-      drawnWeaknesses.add(weakness);
+    if (weaknessCode) {
+      drawnWeaknesses.add(weaknessCode);
     } else {
-      break;
+      return undefined;
     }
   }
 
-  return Array.from(drawnWeaknesses);
+  return Array.from(drawnWeaknesses).map((code) => metadata.cards[code]);
 }
