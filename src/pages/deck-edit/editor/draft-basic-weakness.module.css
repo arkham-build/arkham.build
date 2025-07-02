@@ -21,24 +21,24 @@
   content: '';
   position: absolute;
   top: 50%;
-  left: 10%;
+  left: 5%;
   width: 90%;
-  height: 0.5rem;
-  background: #D32F2F;
-  border-radius: 0.25rem;
-  transform: translateY(-50%) rotate(45deg);
+  height: 0.75rem;
+  background: #D32F2FDD;
+  border-radius: 0.5rem;
+  transform: translateY(-50%) rotate(50deg);
   z-index: 1;
 }
 .list-item.selected::after {
   content: '';
   position: absolute;
   top: 50%;
-  left: 10%;
-  width: 80%;
-  height: 0.5rem;
-  background: #D32F2F;
-  border-radius: 0.25rem;
-  transform: translateY(-50%) rotate(-45deg);
+  left: 5%;
+  width: 90%;
+  height: 0.75rem;
+  background: #D32F2FDD;
+  border-radius: 0.5rem;
+  transform: translateY(-50%) rotate(-50deg);
   z-index: 1;
 }
 
