@@ -6,25 +6,29 @@ import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Modal, ModalContent } from "@/components/ui/modal";
 import { randomBasicWeaknessForDeck } from "@/store/lib/random-basic-weakness";
 import { selectMetadata, selectLookupTables } from "@/store/selectors/shared";
-import { ResolvedDeck } from "@/store/lib/types";
 import { StoreState } from "@/store/slices";
 import { useStore } from "@/store";
+import { useShallow } from "zustand/react/shallow";
+import { selectResolvedDeckById } from "@/store/selectors/decks";
+import { assert } from "@/utils/assert";
 
 type Props = {
-  deck: ResolvedDeck;
   deckId: Id;
   quantity?: number;
   targetDeck: string;
 };
 
-function selectDraftWeaknesses(state: StoreState, deck: ResolvedDeck) {
+function selectDraftWeaknesses(state: StoreState, deckId: Id) {
   const metadata = selectMetadata(state);
+  const resolvedDeck = selectResolvedDeckById(state, deckId, true);
   const lookupTables = selectLookupTables(state);
   const settings = state.settings;
   const drawnWeaknesses = new Set();
 
+  assert(resolvedDeck, "Tried to draft random basic weaknesses for a deck that does not exist.");
+
   while (drawnWeaknesses.size < 3) {
-    const weakness = randomBasicWeaknessForDeck(metadata, lookupTables, settings, deck);
+    const weakness = randomBasicWeaknessForDeck(metadata, lookupTables, settings, resolvedDeck);
     if (weakness) {
       drawnWeaknesses.add(weakness);
     } else {
@@ -40,10 +44,8 @@ function selectDraftWeaknesses(state: StoreState, deck: ResolvedDeck) {
 export function DraftBasicWeakness(props: Props) {
   const { t } = useTranslation();
 
-  const { deck } = props;
-
   const weaknesses = useStore(
-    (state: StoreState) => selectDraftWeaknesses(state, deck)
+    useShallow((state: StoreState) => selectDraftWeaknesses(state, props.deckId))
   );
 
   if (!weaknesses) return null; // Return an error
