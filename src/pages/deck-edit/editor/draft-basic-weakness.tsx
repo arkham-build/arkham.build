@@ -45,6 +45,8 @@ export function DraftBasicWeakness(props: Props) {
 }
 
 function DraftBasicWeaknessModal(props: Props) {
+  const { t } = useTranslation();
+
   const { deck } = props;
 
   const deps = useStore(
@@ -62,17 +64,12 @@ function DraftBasicWeaknessModal(props: Props) {
 
   if (!weaknesses) return null;
 
-  const [selectedWeakness, setSelectedWeakness] = useState(null);
+  const [selectedWeakness, setSelectedWeakness] = useState<string | null>(null);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!selectedWeakness) {
-      alert('Please select a weakness to cancel.');
-      return;
-    }
     console.log('Confirmed cancellation for weakness code:', selectedWeakness);
   };
-
 
   return (
     <Modal size="60rem">
