@@ -59,7 +59,8 @@
   flex-flow: row nowrap;
   align-items: center;
   line-height: 1;
-  gap: 0.125rem;
+  column-gap: 0.125rem;
+    row-gap: 0.25rem;
   margin-top: 0.125rem;
 
   &.wrap {
