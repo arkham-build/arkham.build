@@ -1,5 +1,5 @@
 import { DicesIcon, ExternalLinkIcon, XIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { CardScan } from "@/components/card-scan";
@@ -15,11 +15,13 @@ import type { LookupTables } from "@/store/lib/lookup-tables.types";
 import { randomBasicWeaknessForDeck } from "@/store/lib/random-basic-weakness";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
+import type { Card } from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
 import type { Slots } from "@/store/slices/data.types";
 import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
+import { useAccentColor } from "@/utils/use-accent-color";
 import css from "./draft-basic-weakness.module.css";
 
 type Props = {
@@ -69,138 +71,112 @@ function DraftBasicWeaknessModal(props: Props) {
     [deps, deck],
   );
 
-  if (!weaknesses) return null;
-
-  const [selectedWeakness, setSelectedWeakness] = useState<string | null>(null);
+  const [selectedWeakness, setSelectedWeakness] = useState<
+    string | undefined
+  >();
 
   const updateCardQuantity = useStore((state) => state.updateCardQuantity);
 
+  const accentColor = useAccentColor(deck.investigatorBack.card.faction_code);
+
   const dialogContext = useDialogContext();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (evt: React.FormEvent<HTMLFormElement>) => {
+      assert(weaknesses, "Submit called before draft initialized.");
 
-    // Choose weakness from remaining two
-    const remainingWeaknesses = weaknesses.filter(
-      (w) => w.code !== selectedWeakness,
-    );
-    const chosenWeakness =
-      remainingWeaknesses[
-      Math.floor(Math.random() * remainingWeaknesses.length)
-      ];
-    assert(chosenWeakness, "Could not determine which weakness to add.");
+      evt.preventDefault();
 
-    // Add chosen card to deck
-    updateCardQuantity(
+      const remainingWeaknesses = weaknesses.filter(
+        (w) => w.code !== selectedWeakness,
+      );
+
+      const chosenWeakness =
+        remainingWeaknesses[
+          Math.floor(Math.random() * remainingWeaknesses.length)
+        ];
+
+      assert(chosenWeakness, "Could not determine which weakness to add.");
+
+      updateCardQuantity(
+        deck.id,
+        chosenWeakness.code,
+        1,
+        cardLimit(deps.metadata.cards[chosenWeakness.code]),
+      );
+
+      updateCardQuantity(
+        deck.id,
+        SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS,
+        -1,
+        cardLimit(
+          deps.metadata.cards[SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS],
+        ),
+      );
+
+      dialogContext?.setOpen(false);
+
+      toast.show({
+        variant: "success",
+        duration: 3000,
+        children: (
+          <Trans
+            defaults="<strong>{{name}}</strong> was added to your deck."
+            i18nKey="deck_edit.actions.draft_random_basic_weakness_success"
+            t={t}
+            values={{ name: displayAttribute(chosenWeakness, "name") }}
+            components={{ strong: <strong /> }}
+          />
+        ),
+      });
+    },
+    [
+      weaknesses,
+      selectedWeakness,
+      updateCardQuantity,
       deck.id,
-      chosenWeakness.code,
-      1,
-      cardLimit(deps.metadata.cards[chosenWeakness.code]),
-    );
+      deps.metadata.cards,
+      dialogContext,
+      toast,
+      t,
+    ],
+  );
 
-    // Decrease RBW count by 1
-    updateCardQuantity(
-      deck.id,
-      SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS,
-      -1,
-      cardLimit(deps.metadata.cards[SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS]),
-    );
-
-    // Close the modal
-    dialogContext?.setOpen(false);
-
-    // Display toast with resulting card
-    toast.show({
-      variant: "success",
-      duration: 3000,
-      children: (
-        <Trans
-          defaults="<strong>{{name}}</strong> was added to your deck."
-          i18nKey="deck_edit.actions.draft_random_basic_weakness_success"
-          t={t}
-          values={{ name: displayAttribute(chosenWeakness, "name") }}
-          components={{ strong: <strong /> }}
-        />
-      ),
-    });
-  };
+  if (!weaknesses) return null;
 
   return (
-    <Modal size="60rem">
-      <ModalContent title={t("deck_edit.draft_weakness_modal.title")}>
-        <form onSubmit={handleSubmit}>
-          <h3 className={`${css["h3"]}`}>
-            {t("deck_edit.draft_weakness_modal.explanation_title")}
-          </h3>
+    <Modal size="54rem">
+      <ModalContent
+        title={
+          <span className={css["modal-title"]}>
+            <DicesIcon />
+            {t("deck_edit.draft_weakness_modal.title")}
+          </span>
+        }
+      >
+        <form className={css["container"]} onSubmit={handleSubmit}>
+          <h3>{t("deck_edit.draft_weakness_modal.explanation_title")}</h3>
           <p className={`${css["p"]}`}>
             {t("deck_edit.draft_weakness_modal.explanation_body")}
           </p>
-          <h3 className={`${css["h3"]}`}>
-            {t("deck_edit.draft_weakness_modal.choice_title")}
-          </h3>
+          <h3>{t("deck_edit.draft_weakness_modal.choice_title")}</h3>
           <ol className={css["list-container"]}>
-            {weaknesses.map((weakness) => {
-              const isSelected = weakness.code === selectedWeakness;
-              const {
-                refs,
-                referenceProps,
-                isMounted,
-                floatingStyles,
-                transitionStyles,
-              } = useRestingTooltip({ delay: 200 });
-
-              return (
-                <li
-                  key={weakness.code}
-                  className={`${css["list-item"]} ${isSelected ? css["selected"] : ""}`}
-                >
-                  <div
-                    className={css["card-container"]}
-                    onClick={() => { setSelectedWeakness(selectedWeakness === weakness.code ? null : weakness.code); }}
-                  >
-                    {isSelected && <div className={css["overlay"]} />}
-                    {isSelected && <XIcon className={css['cancel-icon']} />}
-                    <CardScan
-                      className={css["draft-weakness"]}
-                      card={weakness}
-                      preventFlip
-                    />
-                  </div>
-
-                  <div className={css["title-container"]}>
-                    <span ref={refs.setReference} {...referenceProps}>
-                      {displayAttribute(weakness, "name")}
-                    </span>
-
-                    <Button
-                      as="a"
-                      href={`/card/${weakness.code}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      variant="link"
-                      size="sm"
-                      className={css["title-button"]}
-                    >
-                      <ExternalLinkIcon className="h-4 w-4 mr-2" />
-                      {t("card_modal.actions.open_card_page")}
-                    </Button>
-                  </div>
-
-                  {isMounted && (
-                    <PortaledCardTooltip
-                      card={weakness}
-                      ref={refs.setFloating}
-                      floatingStyles={floatingStyles}
-                      transitionStyles={transitionStyles}
-                    />
-                  )}
-                </li>
-              );
-            })}
+            {weaknesses.map((weakness) => (
+              <WeaknessCard
+                key={weakness.code}
+                card={weakness}
+                selectedCode={selectedWeakness}
+                setSelectedCode={setSelectedWeakness}
+              />
+            ))}
           </ol>
-          <footer>
-            {/* Disable the button if nothing is selected */}
-            <Button type="submit" disabled={!selectedWeakness}>
+          <footer style={accentColor}>
+            <Button
+              type="submit"
+              disabled={!selectedWeakness}
+              style={accentColor}
+              variant="primary"
+            >
               {t("deck_edit.draft_weakness_modal.confirm_button")}
             </Button>
             <Button
@@ -213,6 +189,75 @@ function DraftBasicWeaknessModal(props: Props) {
         </form>
       </ModalContent>
     </Modal>
+  );
+}
+
+type WeaknessCardProps = {
+  card: Card;
+  setSelectedCode: (code: string | undefined) => void;
+  selectedCode?: string;
+};
+
+function WeaknessCard(props: WeaknessCardProps) {
+  const { card, selectedCode, setSelectedCode } = props;
+
+  const { t } = useTranslation();
+
+  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
+    useRestingTooltip();
+
+  const isSelected = card.code === selectedCode;
+
+  return (
+    <li
+      key={card.code}
+      className={`${css["list-item"]} ${isSelected ? css["selected"] : ""}`}
+    >
+      {/** biome-ignore lint/a11y/noStaticElementInteractions: CardScan has nested buttons. */}
+      {/** biome-ignore lint/a11y/useKeyWithClickEvents: TODO */}
+      <div
+        className={css["card-container"]}
+        onClick={() => {
+          setSelectedCode(selectedCode === card.code ? undefined : card.code);
+        }}
+      >
+        {isSelected && (
+          <>
+            <div className={css["overlay"]} />
+            <XIcon className={css["cancel-icon"]} />
+          </>
+        )}
+        <CardScan card={card} preventFlip />
+      </div>
+
+      <div className={css["title-container"]}>
+        <span ref={refs.setReference} {...referenceProps}>
+          {displayAttribute(card, "name")}
+        </span>
+
+        <Button
+          as="a"
+          href={`/card/${card.code}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="link"
+          size="sm"
+          className={css["title-button"]}
+        >
+          <ExternalLinkIcon className="h-4 w-4 mr-2" />
+          {t("card_modal.actions.open_card_page")}
+        </Button>
+      </div>
+
+      {isMounted && (
+        <PortaledCardTooltip
+          card={card}
+          ref={refs.setFloating}
+          floatingStyles={floatingStyles}
+          transitionStyles={transitionStyles}
+        />
+      )}
+    </li>
   );
 }
 
