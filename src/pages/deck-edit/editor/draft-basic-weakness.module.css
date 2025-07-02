@@ -6,6 +6,20 @@
   margin: 1rem 0;
 }
 
+.title-container {
+  text-align: center;
+  margin-bottom: 0.75rem;
+  padding: 0 0.25rem;
+  font-weight: 500;
+}
+
+.title-container span {
+  cursor: help;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 0.25rem;
+  font-size: 1rem;
+}
 .list-container {
   display: flex;
   gap: 1.5rem;

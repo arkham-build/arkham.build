@@ -137,16 +137,32 @@ function DraftBasicWeaknessModal(props: Props) {
           <ol className={css['list-container']}>
             {weaknesses.map((weakness) => {
               const isSelected = weakness.code === selectedWeakness;
-              const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } = useRestingTooltip({ delay: 350 });
+              const {
+                refs,
+                referenceProps,
+                isMounted,
+                floatingStyles,
+                transitionStyles
+              } = useRestingTooltip({ delay: 350 });
 
               return (
                 <li key={weakness.code}
                   className={`${css['list-item']} ${isSelected ? css['selected'] : ''}`}
-                  onClick={() => setSelectedWeakness(weakness.code)}
-                  ref={refs.setReference}
-                  {...referenceProps}>
+                  onClick={() => setSelectedWeakness(weakness.code)} >
                   {isSelected && <div className={css['overlay']}></div>}
-                  <CardScan className={css["draft-weakness"]} card={weakness} preventFlip />
+
+                  <div className={css['title-container']}>
+                    <span ref={refs.setReference} {...referenceProps}>
+                      {displayAttribute(weakness, "name")}
+                    </span>
+                  </div>
+
+                  <CardScan
+                    className={css["draft-weakness"]}
+                    card={weakness}
+                    preventFlip
+                  />
+
                   {isMounted && (
                     <PortaledCardTooltip
                       card={weakness}
