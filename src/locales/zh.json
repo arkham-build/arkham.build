@@ -824,6 +824,8 @@
         "cycle_decks": "切换卡组列表",
         "decrement_quantity": "减少数量（卡组）",
         "decrement_side_quantity": "减少数量（副卡组）",
+        "draft_random_basic_weakness": "抽取随机基础弱点（3禁1）",
+        "draft_random_basic_weakness_success": "<strong>{{name}}</strong> 已加入你的卡组。",
         "draw_random_basic_weakness": "抽取随机基础弱点",
         "draw_random_basic_weakness_success": "<strong>{{name}}</strong> 是你抽到的随机基础弱点卡。",
         "edit_annotation": "编辑注释",
@@ -888,6 +890,15 @@
       },
       "discard": "放弃更改",
       "discard_confirm": "你确定要放弃你的修改吗？",
+      "draft_weakness_modal": {
+        "cancel_button": "取消",
+        "choice_title": "选择并禁用一个弱点",
+        "confirm_button": "确认",
+        "explanation_body": "这是一条常用村规，相较于完全随机地抽取基本弱点，玩家会拥有更多的控制权。首先随机抽取三个基本弱点，玩家可以禁用其中一个，然后从剩下的两个弱点中随机选择一个加入卡组。",
+        "explanation_title": "说明",
+        "title": "抽取随机基础弱点（3禁1）",
+        "too_few_rbw": "用于随机抽取的基础弱点数量太少。"
+      },
       "notes": {
         "banner_url": "横幅网址",
         "banner_url_help": "卡组横幅图片。将在卡组视图和社交媒体预览中显示。宽高比为4:1，最佳宽度为1440像素。",
