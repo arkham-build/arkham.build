@@ -854,15 +854,23 @@ class DeckOptionsValidator implements SlotValidator {
      * This allows us to keep track of whether any cards remain unmatched,
      * which means that they violate the deck_building restrictions.
      * Invariants:
-     *  - `option.not` and `option.atleast` do not count.
-     *  - `option.virtual` (used for covenants) etc. does not count.
+     *  - `option.atleast` are ignored.
+     *  - `option.virtual` (used for covenants) etc. are validated separately.
      *  - deck_options are sorted from "unlimited > limited".
+     * TECH DEBT: move Covenant validation to a separate validator.
      */
-    const optionMatched: Map<string, number> = new Map();
+    const optionMatched = new Map<string, number>();
+
+    /**
+     * Once a card matches a `not` deck option, no further options can match it.
+     * This is relevant when a limit option precedes a `not` option and a later filter would match it as well.
+     * This does not occur in official content, but it does occur in fan-made content.
+     */
+    const exclusions = new Set<string>();
 
     for (let i = 0; i < options.length; i += 1) {
       const option = options[i];
-      if (option.not || (option.atleast && option.virtual)) continue;
+      if (option.atleast && option.virtual) continue;
 
       const filter = makeOptionFilter(option as DeckOption, this.config);
 
@@ -872,6 +880,8 @@ class DeckOptionsValidator implements SlotValidator {
 
       if (filter) {
         for (const card of this.cards) {
+          if (exclusions.has(card.code)) continue;
+
           const quantity = this.quantities[card.code];
 
           // all copies of the card fulfill a previous deck option.
@@ -880,6 +890,11 @@ class DeckOptionsValidator implements SlotValidator {
           const matches = filter(card);
           // card access not given by deck_option.
           if (!matches) continue;
+
+          if (matches && option.not) {
+            exclusions.add(card.code);
+            continue;
+          }
 
           for (let j = 0; j < quantity; j++) {
             const matchedQuantity = optionMatched.get(card.code) ?? 0;
@@ -931,7 +946,6 @@ class DeckOptionsValidator implements SlotValidator {
       );
 
     if (unmatchedCardCount > 0) {
-      // find the last limit option and
       const lastLimitOptionIndex = findIndexReversed(
         options,
         (o) => o.limit != null && !o.virtual && !o.atleast,
