@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Attachments, Card } from "@/store/services/queries.types";
+import type { Attachments, Card } from "@/store/schemas/card.schema";
 import { AttachmentIcon } from "../attachments/attachments";
 import {
   attachmentDefinitionLimit,

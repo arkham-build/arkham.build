@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { displayAttribute } from "@/utils/card-utils";
 import { ListCard } from "./list-card/list-card";
 import { ListCardInner } from "./list-card/list-card-inner";

@@ -9,8 +9,8 @@ import {
 import { useStore } from "@/store";
 import type { CardFormat } from "./cards-to-markdown";
 
-export type ToolbarPopover = "symbols" | "cards";
 export type CardOrigin = "deck" | "usable" | "player" | "campaign";
+type ToolbarPopover = "symbols" | "cards";
 
 interface TextareaContextType {
   textareaRef: React.RefObject<HTMLTextAreaElement>;

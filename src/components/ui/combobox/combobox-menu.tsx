@@ -4,7 +4,7 @@ import { CheckIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { GroupedVirtuosoHandle } from "react-virtuoso";
 import { Virtuoso } from "react-virtuoso";
-import type { Coded } from "@/store/services/queries.types";
+import type { Coded } from "@/store/lib/types";
 import { cx } from "@/utils/cx";
 import { Scroller } from "../scroller";
 import css from "./combobox.module.css";

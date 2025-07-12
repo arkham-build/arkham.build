@@ -1,5 +1,5 @@
 import type { SealedDeck } from "../lib/types";
-import type { Card } from "../services/queries.types";
+import type { Card } from "../schemas/card.schema";
 
 export type CardSet = "requiredCards" | "advanced" | "replacement";
 

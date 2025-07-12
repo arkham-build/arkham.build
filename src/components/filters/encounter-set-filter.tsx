@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
+import type { EncounterSet } from "@/store/schemas/encounter-set.schema";
 import {
   selectActiveListFilter,
   selectEncounterSetOptions,
   selectFilterChanges,
 } from "@/store/selectors/lists";
-import type { EncounterSet } from "@/store/services/queries.types";
 import { isEncounterSetFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
 import EncounterIcon from "../icons/encounter-icon";

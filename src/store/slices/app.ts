@@ -4,7 +4,6 @@ import { createDeck } from "@/store/lib/deck-factory";
 import factions from "@/store/services/data/factions.json";
 import subTypes from "@/store/services/data/subtypes.json";
 import types from "@/store/services/data/types.json";
-import type { Card } from "@/store/services/queries.types";
 import { assertCanPublishDeck, incrementVersion } from "@/utils/arkhamdb";
 import { assert } from "@/utils/assert";
 import { decodeExileSlots } from "@/utils/card-utils";
@@ -31,6 +30,7 @@ import { decodeExtraSlots, encodeExtraSlots } from "../lib/slots";
 import { disconnectProviderIfUnauthorized, syncAdapters } from "../lib/sync";
 import type { DeckMeta } from "../lib/types";
 import { dehydrate, hydrate } from "../persist";
+import type { Card } from "../schemas/card.schema";
 import { selectDeckCreateCardSets } from "../selectors/deck-create";
 import {
   selectDeckHistory,
@@ -56,7 +56,7 @@ import { makeLists } from "./lists";
 import { getInitialMetadata } from "./metadata";
 import type { Metadata } from "./metadata.types";
 
-export function getInitialAppState() {
+function getInitialAppState() {
   return {
     clientId: "",
   };

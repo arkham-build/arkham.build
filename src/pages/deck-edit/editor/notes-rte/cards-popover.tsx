@@ -15,13 +15,13 @@ import { useStore } from "@/store";
 import { filterEncounterCards } from "@/store/lib/filtering";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedDeck } from "@/store/lib/types";
+import type { Card } from "@/store/schemas/card.schema";
 import { selectListCards } from "@/store/selectors/lists";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
-import type { Card } from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
 import { and, not } from "@/utils/fp";
 import css from "./notes-rte.module.css";

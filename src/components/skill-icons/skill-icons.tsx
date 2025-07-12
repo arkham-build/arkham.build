@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { SKILL_KEYS } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";

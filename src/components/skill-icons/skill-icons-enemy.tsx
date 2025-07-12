@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { cx } from "@/utils/cx";
 import { CostIcon } from "../icons/cost-icon";
 import { SkillIconFancy } from "../icons/skill-icon-fancy";

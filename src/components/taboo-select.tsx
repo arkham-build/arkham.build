@@ -12,7 +12,7 @@ type Props = Omit<SelectProps, "id" | "value" | "options"> & {
 };
 
 export function TabooSelect(props: Props) {
-  const { id, value, ...rest } = props;
+  const { id, includeLatest, value, ...rest } = props;
 
   const { t } = useTranslation();
 
@@ -23,8 +23,12 @@ export function TabooSelect(props: Props) {
       return { label: formatTabooSet(set), value: set.id };
     });
 
+    if (!includeLatest) {
+      return sets;
+    }
+
     return [{ label: t("common.latest"), value: "latest" }, ...sets];
-  }, [tabooSets, t]);
+  }, [tabooSets, t, includeLatest]);
 
   return (
     <Select

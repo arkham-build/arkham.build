@@ -1,4 +1,4 @@
-import type { Attachments } from "../services/queries.types";
+import type { Attachments } from "../schemas/card.schema";
 import type { Deck } from "../slices/data.types";
 import type { AttachmentQuantities } from "../slices/deck-edits.types";
 import type { Metadata } from "../slices/metadata.types";

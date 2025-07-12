@@ -1,7 +1,8 @@
 import PackIcon from "@/components/icons/pack-icon";
 import { Checkbox } from "@/components/ui/checkbox";
+import type { Cycle } from "@/store/schemas/cycle.schema";
+import type { Pack } from "@/store/schemas/pack.schema";
 import type { CollectionCounts } from "@/store/selectors/collection";
-import type { Cycle, Pack } from "@/store/services/queries.types";
 import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { displayPackName } from "@/utils/formatting";

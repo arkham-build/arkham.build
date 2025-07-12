@@ -14,7 +14,7 @@ import type { StoreState } from ".";
 import { type Deck, isDeck } from "./data.types";
 import type { SharingSlice } from "./sharing.types";
 
-export function getInitialSharingState() {
+function getInitialSharingState() {
   return {
     decks: {},
   };

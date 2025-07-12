@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import css from "./limited-card-group.module.css";

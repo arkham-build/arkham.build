@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import type { Card, Recommendation } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
+import type { Recommendation } from "@/store/schemas/recommendations.schema";
 import { getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { DefaultTooltip } from "../ui/tooltip";

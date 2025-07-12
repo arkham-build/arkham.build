@@ -2,8 +2,8 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import { getMockStore } from "@/test/get-mock-store";
+import type { Card } from "../schemas/card.schema";
 import { selectLookupTables } from "../selectors/shared";
-import type { Card } from "../services/queries.types";
 import type { StoreState } from "../slices";
 import type {
   AssetFilter,

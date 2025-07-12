@@ -1,4 +1,4 @@
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { CardIcon } from "../card-icon";

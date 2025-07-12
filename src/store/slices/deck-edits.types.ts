@@ -1,8 +1,5 @@
-import type {
-  Card,
-  DeckOptionSelectType,
-} from "@/store/services/queries.types";
 import type { Annotations, DeckMeta, ResolvedDeck } from "../lib/types";
+import type { Card, DeckOptionSelectType } from "../schemas/card.schema";
 import type { AvailableUpgrades } from "../selectors/lists";
 import type { Id } from "./data.types";
 
@@ -11,8 +8,6 @@ export type Slot =
   | "sideSlots"
   | "extraSlots"
   | "ignoreDeckLimitSlots";
-
-export type Tab = Slot | "config";
 
 export function mapTabToSlot(tab: string): Slot {
   switch (tab) {
@@ -62,7 +57,7 @@ export type EditState = {
   xpAdjustment?: number | null;
 };
 
-export type EditsState = {
+type EditsState = {
   [id: Id]: EditState;
 };
 

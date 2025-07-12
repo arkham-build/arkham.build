@@ -1,7 +1,7 @@
 import type { ResolvedDeck } from "../lib/types";
 import type { Deck, Id } from "./data.types";
 
-export type SharingState = {
+type SharingState = {
   decks: Record<string, string>; // <id, date_update>
 };
 

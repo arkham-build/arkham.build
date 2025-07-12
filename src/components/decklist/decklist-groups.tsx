@@ -11,6 +11,7 @@ import {
 import type { GroupingResult } from "@/store/lib/grouping";
 import { getDeckLimitOverride } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
+import type { Card } from "@/store/schemas/card.schema";
 import { selectForbiddenCards } from "@/store/selectors/decks";
 import {
   selectCanCheckOwnership,
@@ -18,7 +19,6 @@ import {
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
-import type { Card } from "@/store/services/queries.types";
 import type { Slots } from "@/store/slices/data.types";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";

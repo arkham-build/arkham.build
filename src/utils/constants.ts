@@ -118,7 +118,7 @@ export const ASSET_SLOT_ORDER = [
   // - Other
 ];
 
-export const SKILL_ICONS = [
+const SKILL_ICONS = [
   "skill_agility",
   "skill_combat",
   "skill_intellect",

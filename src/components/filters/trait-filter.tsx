@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
+import type { Coded } from "@/store/lib/types";
 import {
   selectActiveListFilter,
   selectFilterChanges,
   selectTraitOptions,
 } from "@/store/selectors/lists";
-import type { Coded } from "@/store/services/queries.types";
 import { isTraitFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
 import type { FilterProps } from "./filters.types";

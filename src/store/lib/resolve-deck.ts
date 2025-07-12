@@ -4,7 +4,7 @@ import {
   SPECIAL_CARD_CODES,
 } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
-import type { Attachments, Card } from "../services/queries.types";
+import type { Attachments, Card } from "../schemas/card.schema";
 import type { StoreState } from "../slices";
 import type { Deck } from "../slices/data.types";
 import { getAttachableCards } from "./attachments";

@@ -20,7 +20,7 @@ import type {
 } from "./connections.types";
 import type { Id } from "./data.types";
 
-export function getInitialConnectionsState() {
+function getInitialConnectionsState() {
   return {
     data: {},
   };

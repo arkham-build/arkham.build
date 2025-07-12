@@ -6,12 +6,12 @@ import {
 } from "@/store/lib/filtering";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedCard } from "@/store/lib/types";
+import type { Card } from "@/store/schemas/card.schema";
 import { selectUsableByInvestigators } from "@/store/selectors/card-view";
 import {
   selectLocaleSortingCollator,
   selectMetadata,
 } from "@/store/selectors/shared";
-import type { Card } from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
 import { isSpecialist } from "@/utils/card-utils";
 import { formatRelationTitle } from "@/utils/formatting";

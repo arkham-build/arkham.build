@@ -10,7 +10,7 @@ import {
   filterPreviews,
   filterType,
 } from "../lib/filtering";
-import type { Card } from "../services/queries.types";
+import type { Card } from "../schemas/card.schema";
 import type { StoreState } from ".";
 import {
   isAssetFilter,

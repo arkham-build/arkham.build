@@ -13,7 +13,7 @@ import {
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { instantiateSearchFromLocale } from "@/store/lib/searching";
-import type { Coded } from "@/store/services/queries.types";
+import type { Coded } from "@/store/lib/types";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";

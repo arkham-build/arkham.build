@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Combobox } from "@/components/ui/combobox/combobox";
 import { useStore } from "@/store";
-import type { Coded } from "@/store/services/queries.types";
+import type { Coded } from "@/store/lib/types";
 import { SKILL_KEYS } from "@/utils/constants";
 
 type Props = {

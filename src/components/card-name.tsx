@@ -1,6 +1,6 @@
 import { useStore } from "@/store";
+import type { Card } from "@/store/schemas/card.schema";
 import { selectMetadata } from "@/store/selectors/shared";
-import type { Card } from "@/store/services/queries.types";
 import {
   cardLevel,
   cycleOrPack,

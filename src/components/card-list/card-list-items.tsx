@@ -1,7 +1,7 @@
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
+import type { Card } from "@/store/schemas/card.schema";
 import { selectResolvedCardById } from "@/store/selectors/lists";
-import type { Card } from "@/store/services/queries.types";
 import type { ViewMode } from "@/store/slices/lists.types";
 import { Card as CardComponent } from "../card/card";
 import { ListCard } from "../list-card/list-card";

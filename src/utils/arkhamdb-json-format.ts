@@ -1,11 +1,11 @@
 import type {
-  APICard,
-  APIRestrictions,
-  DeckRequirements,
+  ApiCard,
+  ApiDeckRequirements,
+  ApiRestrictions,
   JsonDataCard,
-  JsonDataCycle,
-  JsonDataPack,
-} from "@/store/services/queries.types";
+} from "@/store/schemas/card.schema";
+import type { JSONDataCycle } from "@/store/schemas/cycle.schema";
+import type { JsonDataPack } from "@/store/schemas/pack.schema";
 
 export function packToApiFormat(pack: JsonDataPack & { official?: boolean }) {
   return {
@@ -15,7 +15,7 @@ export function packToApiFormat(pack: JsonDataPack & { official?: boolean }) {
 }
 
 export function cycleToApiFormat(
-  cycle: JsonDataCycle & { official?: boolean },
+  cycle: JSONDataCycle & { official?: boolean },
 ) {
   return {
     ...cycle,
@@ -27,8 +27,8 @@ export function cycleToApiFormat(
 export function cardToApiFormat(
   card: JsonDataCard & { official?: boolean },
   mode = "card",
-): APICard {
-  const fullCard: APICard = {
+): ApiCard {
+  const fullCard: ApiCard = {
     ...card,
     alternate_of_code: card.alternate_of,
     back_link_id: card.back_link,
@@ -57,11 +57,11 @@ export function cardToApiFormat(
   return mode === "patch"
     ? (Object.fromEntries(
         Object.entries(fullCard).filter(([_, value]) => value != null),
-      ) as APICard)
+      ) as ApiCard)
     : fullCard;
 }
 
-type Restrictions = APIRestrictions;
+type Restrictions = ApiRestrictions;
 
 function decodeRestrictions(str?: string): Restrictions | undefined {
   return str?.split(", ").reduce((acc: Restrictions, curr: string) => {
@@ -87,8 +87,8 @@ function decodeRestrictions(str?: string): Restrictions | undefined {
 
 function decodeDeckRequirements(
   str?: string | null,
-): DeckRequirements | undefined {
-  return str?.split(", ").reduce((acc: DeckRequirements, curr: string) => {
+): ApiDeckRequirements | undefined {
+  return str?.split(", ").reduce((acc: ApiDeckRequirements, curr: string) => {
     const key = curr.substring(0, curr.indexOf(":"));
     const val = curr.substring(curr.indexOf(":") + 1);
 
@@ -117,5 +117,5 @@ function decodeDeckRequirements(
     }
 
     return acc;
-  }, {} as DeckRequirements);
+  }, {} as ApiDeckRequirements);
 }

@@ -9,10 +9,10 @@ import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { range } from "@/utils/range";
 import { time, timeEnd } from "@/utils/time";
 import type {
+  ApiDeckRequirements,
   Card,
   DeckOption,
-  DeckRequirements,
-} from "../services/queries.types";
+} from "../schemas/card.schema";
 import type { Metadata } from "../slices/metadata.types";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {
@@ -454,7 +454,7 @@ class DeckLimitsValidator implements SlotValidator {
 }
 
 class DeckRequiredCardsValidator implements SlotValidator {
-  requirements: DeckRequirements;
+  requirements: ApiDeckRequirements;
   cards: Record<string, Card> = {};
   investigatorFront: Card;
   quantities: Record<string, number> = {};
@@ -468,7 +468,7 @@ class DeckRequiredCardsValidator implements SlotValidator {
     const accessor =
       mode === "slots" ? "deck_requirements" : "side_deck_requirements";
 
-    this.requirements = investigatorBack[accessor] as DeckRequirements;
+    this.requirements = investigatorBack[accessor] as ApiDeckRequirements;
 
     const hasDeckSizeSelect = deck.investigatorBack.card.deck_options?.some(
       (o) => o.deck_size_select,

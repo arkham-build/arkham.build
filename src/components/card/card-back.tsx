@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { ResolvedCard } from "@/store/lib/types";
-import type { Card as CardType } from "@/store/services/queries.types";
+import type { Card as CardType } from "@/store/schemas/card.schema";
 import { displayAttribute, sideways } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { CardScan } from "../card-scan";

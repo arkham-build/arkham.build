@@ -53,7 +53,7 @@ type UndoEntry = {
   version: string;
 };
 
-export type DataState = {
+type DataState = {
   decks: Record<string, Deck>;
   history: {
     [id: Id]: Id[];

@@ -1,7 +1,7 @@
 import { countExperience, realCardLevel } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { range } from "@/utils/range";
-import type { Card } from "../services/queries.types";
+import type { Card } from "../schemas/card.schema";
 import type { Customization, ResolvedDeck } from "./types";
 
 type DeckChanges = {

@@ -3,7 +3,7 @@ import { promises as fs } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { applyLocalData } from "../src/store/lib/local-data";
-import type { Card } from "../src/store/services/queries.types";
+import type { Card } from "../src/store/schemas/card.schema";
 import { cardUses } from "../src/utils/card-utils";
 import { capitalize } from "../src/utils/formatting";
 

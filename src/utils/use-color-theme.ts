@@ -12,7 +12,7 @@ export function getAvailableThemes(): Record<string, string> {
 
 const DEFAULT_THEME = "dark";
 
-export function getColorThemePreference() {
+function getColorThemePreference() {
   const pref = localStorage.getItem("color-scheme-preference");
   if (pref && getAvailableThemes()[pref]) return pref;
   return DEFAULT_THEME;

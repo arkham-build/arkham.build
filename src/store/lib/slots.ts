@@ -5,7 +5,7 @@ import {
   isSpecialCard,
 } from "@/utils/card-utils";
 import { range } from "@/utils/range";
-import type { Card } from "../services/queries.types";
+import type { Card } from "../schemas/card.schema";
 import type { StoreState } from "../slices";
 import { addCardToDeckCharts, emptyDeckCharts } from "./deck-charts";
 import type { LookupTables } from "./lookup-tables.types";

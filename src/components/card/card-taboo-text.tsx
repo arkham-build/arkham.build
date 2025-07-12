@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { displayAttribute, parseCardTextHtml } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { DefaultTooltip } from "../ui/tooltip";

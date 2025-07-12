@@ -2,8 +2,8 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useStore } from "@/store";
+import type { Cycle } from "@/store/schemas/cycle.schema";
 import { selectCyclesAndPacks } from "@/store/selectors/lists";
-import type { Cycle } from "@/store/services/queries.types";
 import {
   CAMPAIGN_PLAYALONG_PROJECT_ID,
   campaignPlayalongPacks,

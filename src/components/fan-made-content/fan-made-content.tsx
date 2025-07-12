@@ -17,9 +17,10 @@ import {
   addProjectToMetadata,
   cloneMetadata,
 } from "@/store/lib/fan-made-content";
-import type { FanMadeProject } from "@/store/lib/fan-made-content.schemas";
 import { getGroupedCards } from "@/store/lib/grouping";
 import { makeSortFunction } from "@/store/lib/sorting";
+import type { Card } from "@/store/schemas/card.schema";
+import type { FanMadeProject } from "@/store/schemas/fan-made-project.schema";
 import { selectOwnedFanMadeProjects } from "@/store/selectors/fan-made-content";
 import {
   selectLocaleSortingCollator,
@@ -30,7 +31,6 @@ import {
   queryFanMadeProjectData,
   queryFanMadeProjects,
 } from "@/store/services/queries";
-import type { Card } from "@/store/services/queries.types";
 import type { FanMadeContentFilter } from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { assert } from "@/utils/assert";

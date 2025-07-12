@@ -1,8 +1,8 @@
 import uFuzzy from "@leeoniya/ufuzzy";
-import type { Card } from "@/store/services/queries.types";
 import { displayAttribute } from "@/utils/card-utils";
 import { LOCALES } from "@/utils/constants";
 import { normalizeDiacritics } from "@/utils/normalize-diacritics";
+import type { Card } from "../schemas/card.schema";
 import type { Search } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
 

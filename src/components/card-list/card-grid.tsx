@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type ListRange, Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import { Link } from "wouter";
+import type { Card } from "@/store/schemas/card.schema";
 import type {
   CardGroup as CardGroupType,
   ListState,
 } from "@/store/selectors/lists";
-import type { Card } from "@/store/services/queries.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { preventLeftClick } from "@/utils/prevent-links";
 import { useCardModalContextChecked } from "../card-modal/card-modal-context";

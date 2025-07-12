@@ -3,7 +3,7 @@ import { FileWarningIcon, StarIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import type { SettingsState } from "@/store/slices/settings.types";
 import {
   cardLimit,

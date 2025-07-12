@@ -9,7 +9,7 @@ import { importDeck } from "../services/queries";
 import type { StoreState } from ".";
 import { type DataSlice, type Deck, type Id, isDeck } from "./data.types";
 
-export function getInitialDataState() {
+function getInitialDataState() {
   return {
     data: {
       decks: {},

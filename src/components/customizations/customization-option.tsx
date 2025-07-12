@@ -3,7 +3,7 @@ import type { Customization } from "@/store/lib/types";
 import type {
   Card,
   CustomizationOption as CustomizationOptionType,
-} from "@/store/services/queries.types";
+} from "@/store/schemas/card.schema";
 import type { CustomizationEdit } from "@/store/slices/deck-edits.types";
 import { parseCustomizationTextHtml } from "@/utils/card-utils";
 import { range } from "@/utils/range";

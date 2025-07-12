@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { useCardModalContextChecked } from "@/components/card-modal/card-modal-context";
 import { CardTooltip } from "@/components/card-tooltip/card-tooltip";
 import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { displayAttribute } from "@/utils/card-utils";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import css from "./choose-investigator.module.css";

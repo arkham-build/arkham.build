@@ -1,4 +1,4 @@
-import type { Card } from "../services/queries.types";
+import type { Card } from "../schemas/card.schema";
 import type { Metadata } from "../slices/metadata.types";
 import type { LookupTables } from "./lookup-tables.types";
 

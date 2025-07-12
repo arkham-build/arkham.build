@@ -1,5 +1,5 @@
 import type { LookupTables } from "@/store/lib/lookup-tables.types";
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { cardLevel, cycleOrPack, displayAttribute } from "@/utils/card-utils";
 import { displayPackName } from "@/utils/formatting";
@@ -14,7 +14,7 @@ type Padding = "left" | "right" | "both" | false;
 
 type TemplateStringPlaceholders = "class" | "name" | "code" | "set";
 
-export type CardFormatDefinition = {
+type CardFormatDefinition = {
   templateString: string;
   placeholderOptions: {
     class: {

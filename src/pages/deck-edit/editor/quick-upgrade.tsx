@@ -11,11 +11,11 @@ import { Modal, ModalContent } from "@/components/ui/modal";
 import { QuantityInput } from "@/components/ui/quantity-input";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
+import type { Card as CardT } from "@/store/schemas/card.schema";
 import {
   type AvailableUpgrades,
   selectResolvedCardById,
 } from "@/store/selectors/lists";
-import type { Card as CardT } from "@/store/services/queries.types";
 import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";

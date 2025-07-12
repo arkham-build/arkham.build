@@ -14,7 +14,7 @@ import { limitedSlotOccupation } from "../lib/limited-slots";
 import type { LookupTables } from "../lib/lookup-tables.types";
 import { makeSortFunction, sortAlphabeticalLatin } from "../lib/sorting";
 import type { Customization, ResolvedDeck } from "../lib/types";
-import type { Card } from "../services/queries.types";
+import type { Card } from "../schemas/card.schema";
 import type { StoreState } from "../slices";
 import type { Deck, Id } from "../slices/data.types";
 import {
@@ -107,27 +107,6 @@ export const selectForbiddenCards = createSelector(
     const forbidden = deckValidation.errors.find((x) => x.type === "FORBIDDEN");
     if (!forbidden) return [];
     return (forbidden as ForbiddenCardError).details;
-  },
-);
-
-export const selectLimitOverride = createSelector(
-  selectLookupTables,
-  (_: StoreState, deck: ResolvedDeck) => deck,
-  (_: StoreState, __: ResolvedDeck, code: string) => code,
-  (lookupTables, deck, code) => {
-    const sealed = deck?.sealedDeck?.cards;
-    if (!sealed) return undefined;
-
-    if (sealed[code] != null) return sealed[code];
-
-    const duplicates = lookupTables.relations.duplicates[code];
-    if (!duplicates) return undefined;
-
-    for (const duplicateCode of Object.keys(duplicates)) {
-      if (sealed[duplicateCode] != null) return sealed[duplicateCode];
-    }
-
-    return undefined;
   },
 );
 

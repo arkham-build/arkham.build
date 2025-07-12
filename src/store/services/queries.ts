@@ -4,22 +4,20 @@ import { packToApiFormat } from "@/utils/arkhamdb-json-format";
 import { assert } from "@/utils/assert";
 import { displayPackName } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
-import type { FanMadeProject } from "../lib/fan-made-content.schemas";
 import type { SealedDeck } from "../lib/types";
+import type { ApiCard } from "../schemas/card.schema";
+import type { Cycle } from "../schemas/cycle.schema";
+import type { DataVersion } from "../schemas/data-version.schema";
+import type { JsonDataEncounterSet } from "../schemas/encounter-set.schema";
+import type { FanMadeProject } from "../schemas/fan-made-project.schema";
+import type { Pack } from "../schemas/pack.schema";
+import type { Recommendations } from "../schemas/recommendations.schema";
+import type { TabooSet } from "../schemas/taboo-set.schema";
 import type { History } from "../selectors/decks";
 import type { Deck, Id } from "../slices/data.types";
 import { isDeck } from "../slices/data.types";
 import type { Locale } from "../slices/settings.types";
 import reprintPacks from "./data/reprint_packs.json";
-import type {
-  APICard,
-  Cycle,
-  DataVersion,
-  JsonDataEncounterSet,
-  Pack,
-  Recommendations,
-  TabooSet,
-} from "./queries.types";
 
 export type MetadataApiResponse = {
   data: Omit<MetadataResponse, "faction" | "reprint_pack" | "type" | "subtype">;
@@ -43,11 +41,11 @@ export type DataVersionResponse = DataVersion;
 
 export type AllCardApiResponse = {
   data: {
-    all_card: APICard[];
+    all_card: ApiCard[];
   };
 };
 
-export type AllCardResponse = APICard[];
+export type AllCardResponse = ApiCard[];
 
 type FaqResponse = {
   code: string;
@@ -118,7 +116,7 @@ export async function queryDataVersion(
   return data.all_card_updated[0];
 }
 
-export async function queryCards(locale: Locale = "en"): Promise<APICard[]> {
+export async function queryCards(locale: Locale = "en"): Promise<ApiCard[]> {
   const res = await request(`/cache/cards/${locale}`);
   const { data }: AllCardApiResponse = await res.json();
   return data.all_card;

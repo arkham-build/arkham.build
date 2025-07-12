@@ -1,5 +1,5 @@
 import * as z from "zod/v4-mini";
-import { FanMadeProjectSchema } from "../src/store/lib/fan-made-content.schemas";
+import { FanMadeProjectSchema } from "../src/store/schemas/fan-made-project.schema";
 
 console.log(
   JSON.stringify(

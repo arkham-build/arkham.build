@@ -29,12 +29,12 @@ import { useToast } from "@/components/ui/toast.hooks";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { useStore } from "@/store";
 import { getDeckLimitOverride } from "@/store/lib/resolve-deck";
+import type { Card } from "@/store/schemas/card.schema";
 import {
   selectDeckValid,
   selectResolvedDeckById,
 } from "@/store/selectors/decks";
 import { selectLookupTables } from "@/store/selectors/shared";
-import type { Card } from "@/store/services/queries.types";
 import { mapTabToSlot } from "@/store/slices/deck-edits.types";
 import { isStaticInvestigator } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";

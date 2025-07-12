@@ -7,7 +7,7 @@ import { ownedCardCount } from "../lib/card-ownership";
 import { addProjectToMetadata, cloneMetadata } from "../lib/fan-made-content";
 import { createLookupTables } from "../lib/lookup-tables";
 import type { ResolvedDeck } from "../lib/types";
-import type { Card } from "../services/queries.types";
+import type { Card } from "../schemas/card.schema";
 import type { StoreState } from "../slices";
 import type { Metadata } from "../slices/metadata.types";
 

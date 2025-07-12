@@ -4,16 +4,16 @@ import {
   cycleToApiFormat,
   packToApiFormat,
 } from "@/utils/arkhamdb-json-format";
-import type { EncounterSet } from "../services/queries.types";
+import type { FanMadeCard } from "../schemas/card.schema";
+import type { EncounterSet } from "../schemas/encounter-set.schema";
+import {
+  type FanMadeProject,
+  FanMadeProjectSchema,
+} from "../schemas/fan-made-project.schema";
 import type { StoreState } from "../slices";
 import type { Deck } from "../slices/data.types";
 import type { Metadata } from "../slices/metadata.types";
 import { decodeDeckMeta } from "./deck-meta";
-import {
-  type FanMadeCard,
-  type FanMadeProject,
-  FanMadeProjectSchema,
-} from "./fan-made-content.schemas";
 import type { DeckFanMadeContent } from "./types";
 
 export function parseFanMadeProject(data: unknown): FanMadeProject {
@@ -87,7 +87,7 @@ export function cloneMetadata(metadata: StoreState["metadata"]) {
 export function addProjectToMetadata(meta: Metadata, project: FanMadeProject) {
   const encounterSets = project.data.encounter_sets.reduce(
     (acc, curr) => {
-      acc[curr.code] = curr as EncounterSet;
+      acc[curr.code] = curr as unknown as EncounterSet;
       return acc;
     },
     {} as Record<string, EncounterSet>,

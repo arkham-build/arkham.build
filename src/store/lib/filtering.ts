@@ -17,11 +17,7 @@ import type { Filter } from "@/utils/fp";
 import { and, not, notUnless, or } from "@/utils/fp";
 import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";
-import type {
-  AttributeFilter,
-  Card,
-  DeckOption,
-} from "../services/queries.types";
+import type { AttributeFilter, Card, DeckOption } from "../schemas/card.schema";
 import type {
   AssetFilter,
   CostFilter,
@@ -521,7 +517,7 @@ function filterSucceedBy(
   return (card: Card) => !!succeedByTable[card.code];
 }
 
-export function filterTag(tag: string, checkUnselectedCustomizations: boolean) {
+function filterTag(tag: string, checkUnselectedCustomizations: boolean) {
   return (card: Card) => {
     if (!card.official) {
       return filterTagFallback(tag, checkUnselectedCustomizations)(card);

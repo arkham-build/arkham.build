@@ -6,11 +6,11 @@ import { useStore } from "@/store";
 import type { ChartableData } from "@/store/lib/deck-charts";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedDeck } from "@/store/lib/types";
+import type { Card } from "@/store/schemas/card.schema";
 import {
   selectLocaleSortingCollator,
   selectMetadata,
 } from "@/store/selectors/shared";
-import type { Card } from "@/store/services/queries.types";
 import { cx } from "@/utils/cx";
 import { ListCard } from "../list-card/list-card";
 import { ListCardInner } from "../list-card/list-card-inner";

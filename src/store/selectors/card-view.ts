@@ -9,7 +9,7 @@ import {
 import { resolveCardWithRelations } from "../lib/resolve-card";
 import { makeSortFunction } from "../lib/sorting";
 import type { ResolvedDeck } from "../lib/types";
-import type { Card } from "../services/queries.types";
+import type { Card } from "../schemas/card.schema";
 import type { StoreState } from "../slices";
 import { selectCanonicalTabooSetId } from "./lists";
 import {

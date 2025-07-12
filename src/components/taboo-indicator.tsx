@@ -1,4 +1,4 @@
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { cx } from "@/utils/cx";
 import { ExperienceDots } from "./experience-dots";
 import css from "./taboo-indicator.module.css";

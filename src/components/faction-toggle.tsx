@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import type { Faction } from "@/store/services/queries.types";
+import type { Faction } from "@/store/schemas/metadata.schema";
 import type { MultiselectFilter } from "@/store/slices/lists.types";
 import css from "./faction-toggle.module.css";
 import { FactionIconFancy } from "./icons/faction-icon-fancy";

@@ -78,7 +78,7 @@ export const selectTagsChanges = createSelector(
 );
 
 // Properties
-export const selectDeckPropertiesFilter = (state: StoreState) =>
+const selectDeckPropertiesFilter = (state: StoreState) =>
   state.deckFilters.filters.properties;
 
 export const selectDeckProperties = createSelector(
@@ -161,7 +161,7 @@ export const selectExpCostChanges = createSelector(
   },
 );
 
-export const makeDeckExpCostFilter = (minmax: [number, number]) => {
+const makeDeckExpCostFilter = (minmax: [number, number]) => {
   return (deck: ResolvedDeck) => {
     return (
       deck.stats.xpRequired >= minmax[0] && deck.stats.xpRequired <= minmax[1]

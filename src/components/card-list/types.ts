@@ -1,6 +1,6 @@
 import type { ResolvedDeck } from "@/store/lib/types";
+import type { Card } from "@/store/schemas/card.schema";
 import type { ListState } from "@/store/selectors/lists";
-import type { Card } from "@/store/services/queries.types";
 import type { Slots } from "@/store/slices/data.types";
 import type { Search, ViewMode } from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";

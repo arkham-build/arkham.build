@@ -5,7 +5,7 @@ import {
   FACTION_ORDER,
   PLAYER_TYPE_ORDER,
 } from "@/utils/constants";
-import type { Card } from "../services/queries.types";
+import type { Card } from "../schemas/card.schema";
 import type { SortingType } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
 

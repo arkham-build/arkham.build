@@ -5,12 +5,12 @@ import { createSelector } from "reselect";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
 import type { SealedDeck } from "@/store/lib/types";
+import type { Pack } from "@/store/schemas/pack.schema";
 import {
   selectLimitedPoolPackOptions,
   selectPackOptions,
 } from "@/store/selectors/lists";
 import { selectMetadata } from "@/store/selectors/shared";
-import type { Pack } from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";
 import { displayPackName } from "@/utils/formatting";

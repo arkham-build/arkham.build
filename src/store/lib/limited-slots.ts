@@ -1,4 +1,4 @@
-import type { Card, DeckOption } from "../services/queries.types";
+import type { Card, DeckOption } from "../schemas/card.schema";
 import { getAdditionalDeckOptions } from "./deck-validation";
 import { makeOptionFilter } from "./filtering";
 import type { ResolvedDeck } from "./types";

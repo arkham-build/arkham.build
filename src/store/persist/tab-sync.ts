@@ -62,5 +62,3 @@ export class TabSync {
     return typeof message === "object" && message != null && "state" in message;
   }
 }
-
-export const tabSync = new TabSync();

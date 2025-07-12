@@ -60,7 +60,9 @@ import {
   sortByName,
 } from "../lib/sorting";
 import { isResolvedDeck, type ResolvedDeck } from "../lib/types";
-import type { Card, Cycle, Pack } from "../services/queries.types";
+import type { Card } from "../schemas/card.schema";
+import type { Cycle } from "../schemas/cycle.schema";
+import type { Pack } from "../schemas/pack.schema";
 import type { StoreState } from "../slices";
 import type {
   AssetFilter,
@@ -1237,15 +1239,6 @@ export const selectTabooSetOptions = createSelector(
     sets.sort((a, b) => collator.compare(b.date, a.date));
     return sets;
   },
-);
-
-export const selectTabooSetSelectOptions = createSelector(
-  selectTabooSetOptions,
-  (sets) =>
-    sets.map((s) => ({
-      label: formatTabooSet(s),
-      value: s.id,
-    })),
 );
 
 /**

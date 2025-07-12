@@ -1,13 +1,13 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
+import type { Type } from "@/store/schemas/metadata.schema";
 import {
   selectActiveList,
   selectActiveListFilter,
   selectFilterChanges,
   selectTypeOptions,
 } from "@/store/selectors/lists";
-import type { Type } from "@/store/services/queries.types";
 import { isTypeFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";

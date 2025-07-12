@@ -1,4 +1,4 @@
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { cx } from "@/utils/cx";
 import { FactionIcon } from "./faction-icon";
 import css from "./multiclass-icons.module.css";

@@ -1,4 +1,4 @@
-import type { FanMadeProject } from "../lib/fan-made-content.schemas";
+import type { FanMadeProject } from "../schemas/fan-made-project.schema";
 
 export type FanMadeDataState = {
   projects: Record<string, FanMadeProject>;

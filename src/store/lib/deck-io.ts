@@ -6,7 +6,7 @@ import type {
   Card,
   CustomizationOption,
   OptionSelect,
-} from "@/store/services/queries.types";
+} from "@/store/schemas/card.schema";
 import type { StoreState } from "@/store/slices";
 import type { Deck, DeckProblem, Id } from "@/store/slices/data.types";
 import { displayAttribute, splitMultiValue } from "@/utils/card-utils";

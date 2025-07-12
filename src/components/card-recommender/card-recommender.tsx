@@ -3,14 +3,14 @@ import { useTranslation } from "react-i18next";
 import { ErrorDisplay } from "@/pages/errors/error-display";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
+import type { Card } from "@/store/schemas/card.schema";
+import type {
+  Recommendation,
+  Recommendations,
+} from "@/store/schemas/recommendations.schema";
 import { type ListState, selectListCards } from "@/store/selectors/lists";
 import { selectMetadata } from "@/store/selectors/shared";
 import { getRecommendations } from "@/store/services/queries";
-import type {
-  Card,
-  Recommendation,
-  Recommendations,
-} from "@/store/services/queries.types";
 import { deckTickToString } from "@/store/slices/recommender";
 import { cx } from "@/utils/cx";
 import { useResolvedColorTheme } from "@/utils/use-color-theme";

@@ -8,8 +8,8 @@ import {
 } from "@/pages/deck-edit/editor/notes-rte/cards-to-markdown";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
+import type { Card } from "@/store/schemas/card.schema";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
-import type { Card } from "@/store/services/queries.types";
 import { useNotesRichTextEditorContext } from "./notes-rte/notes-rte-context";
 
 type Props = {

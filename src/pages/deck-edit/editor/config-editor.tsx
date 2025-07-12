@@ -18,7 +18,7 @@ import type {
   ResolvedDeck,
   SealedDeck,
 } from "@/store/lib/types";
-import type { DeckOptionSelectType } from "@/store/services/queries.types";
+import type { DeckOptionSelectType } from "@/store/schemas/card.schema";
 import type { StoreState } from "@/store/slices";
 import { debounce } from "@/utils/debounce";
 import css from "./editor.module.css";

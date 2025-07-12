@@ -1,4 +1,4 @@
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { isEnemyLike } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";

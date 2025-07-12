@@ -1,5 +1,4 @@
 import { applyTaboo } from "@/store/lib/card-edits";
-import type { Card } from "@/store/services/queries.types";
 import { cardLimit, cardUses, splitMultiValue } from "@/utils/card-utils";
 import {
   ACTION_TEXT_ENTRIES,
@@ -8,6 +7,7 @@ import {
   REGEX_SUCCEED_BY,
 } from "@/utils/constants";
 import { time, timeEnd } from "@/utils/time";
+import type { Card } from "../schemas/card.schema";
 import { selectSettingsTabooId } from "../selectors/shared";
 import type { Metadata } from "../slices/metadata.types";
 import type { SettingsState } from "../slices/settings.types";
@@ -197,7 +197,7 @@ function indexBySucceedsBy(tables: LookupTables, card: Card) {
   }
 }
 
-export function createRelations(metadata: Metadata, tables: LookupTables) {
+function createRelations(metadata: Metadata, tables: LookupTables) {
   time("create_relations");
   const cards = Object.values(metadata.cards);
 

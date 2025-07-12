@@ -1,7 +1,7 @@
-import type { Card } from "@/store/services/queries.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { displayAttribute, splitMultiValue } from "@/utils/card-utils";
 import i18n from "@/utils/i18n";
+import type { Card } from "../schemas/card.schema";
 import type { Customizations } from "./types";
 
 type Insert = {

@@ -38,7 +38,7 @@ export const createUISlice: StateCreator<StoreState, [], [], UISlice> = (
   },
 });
 
-export function mergeFanMadeContent(
+function mergeFanMadeContent(
   a: Partial<DeckFanMadeContent> | undefined,
   b: Partial<DeckFanMadeContent> | undefined,
 ) {

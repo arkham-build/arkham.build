@@ -1,6 +1,6 @@
 import { MessagesSquareIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 import { Button, type Props as ButtonProps } from "../ui/button";
 

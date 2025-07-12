@@ -7,7 +7,7 @@ import {
   cycleToApiFormat,
   packToApiFormat,
 } from "@/utils/arkhamdb-json-format";
-import type { JsonDataCard } from "../services/queries.types";
+import type { JsonDataCard } from "../schemas/card.schema";
 import type { Metadata } from "../slices/metadata.types";
 
 export function applyLocalData(_metadata: Metadata) {

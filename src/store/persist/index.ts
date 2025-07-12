@@ -10,7 +10,7 @@ type AppState = Pick<
   "app" | "connections" | "data" | "settings" | "sharing" | "fanMadeData"
 >;
 
-export type StorageType = "app" | "edits" | "metadata";
+type StorageType = "app" | "edits" | "metadata";
 
 type EditsState = Pick<StoreState, "deckEdits">;
 
@@ -37,7 +37,7 @@ export const appStorage = makeStorageAdapter<AppState>(
   }),
 );
 
-export const editsStorage = makeStorageAdapter<EditsState>(
+const editsStorage = makeStorageAdapter<EditsState>(
   "deckbuilder-edits",
   (state) => ({
     deckEdits: state.deckEdits,

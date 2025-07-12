@@ -2,8 +2,8 @@ import { RotateCcwIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
+import type { Card } from "@/store/schemas/card.schema";
 import { selectBackCard } from "@/store/selectors/shared";
-import type { Card } from "@/store/services/queries.types";
 import {
   cardBackType,
   cardBackTypeUrl,

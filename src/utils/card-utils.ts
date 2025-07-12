@@ -1,4 +1,6 @@
-import type { Card, Cycle, Pack } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
+import type { Cycle } from "@/store/schemas/cycle.schema";
+import type { Pack } from "@/store/schemas/pack.schema";
 import {
   CYCLES_WITH_STANDALONE_PACKS,
   ORIENTATION_CHANGED_CARDS,

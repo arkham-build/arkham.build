@@ -1,11 +1,11 @@
 import { CircleHelpIcon } from "lucide-react";
 import { useStore } from "@/store";
 import type { CardSet as CardSetType } from "@/store/lib/types";
+import type { Card } from "@/store/schemas/card.schema";
 import {
   selectCanCheckOwnership,
   selectCardOwnedCount,
 } from "@/store/selectors/shared";
-import type { Card } from "@/store/services/queries.types";
 import { cx } from "@/utils/cx";
 import css from "./cardset.module.css";
 import { ListCard } from "./list-card/list-card";

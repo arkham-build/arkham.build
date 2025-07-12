@@ -1,15 +1,11 @@
-import type {
-  Card,
-  Cycle,
-  DataVersion,
-  EncounterSet,
-  Faction,
-  Pack,
-  SubType,
-  Taboo,
-  TabooSet,
-  Type,
-} from "@/store/services/queries.types";
+import type { Card } from "../schemas/card.schema";
+import type { Cycle } from "../schemas/cycle.schema";
+import type { DataVersion } from "../schemas/data-version.schema";
+import type { EncounterSet } from "../schemas/encounter-set.schema";
+import type { Faction, SubType, Type } from "../schemas/metadata.schema";
+import type { Pack } from "../schemas/pack.schema";
+import type { Taboo } from "../schemas/taboo.schema";
+import type { TabooSet } from "../schemas/taboo-set.schema";
 
 export type Metadata = {
   cards: Record<string, Card>;

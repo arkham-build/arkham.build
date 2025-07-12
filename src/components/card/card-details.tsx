@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import type { Card } from "@/store/services/queries.types";
+import type { Card } from "@/store/schemas/card.schema";
 import { displayAttribute } from "@/utils/card-utils";
 import { formatSlots } from "@/utils/formatting";
 import { CardSlots } from "../card-slots";

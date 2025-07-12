@@ -2,15 +2,15 @@ import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useStore } from "@/store";
 import { makeSortFunction } from "@/store/lib/sorting";
+import type {
+  Card,
+  CustomizationOption as CustomizationOptionType,
+} from "@/store/schemas/card.schema";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
-import type {
-  Card,
-  CustomizationOption as CustomizationOptionType,
-} from "@/store/services/queries.types";
 import type { StoreState } from "@/store/slices";
 import { displayAttribute } from "@/utils/card-utils";
 import { time, timeEnd } from "@/utils/time";
@@ -32,8 +32,8 @@ const selectPlayerCardsForCustomizationOptions = createSelector(
     const traitTable = lookupTables.traits;
     const typeTable = lookupTables.typeCode;
 
-    const traitTables = config.trait.map((trait) => traitTable[trait]);
-    const typeTables = config.type.map((type) => typeTable[type]);
+    const traitTables = config.trait?.map((trait) => traitTable[trait]) ?? [];
+    const typeTables = config.type?.map((type) => typeTable[type]) ?? [];
 
     const codes = [
       ...traitTables.flatMap(Object.keys),

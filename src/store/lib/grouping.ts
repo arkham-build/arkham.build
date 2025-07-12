@@ -4,7 +4,7 @@ import {
   shortenPackName,
 } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
-import type { Card } from "../services/queries.types";
+import type { Card } from "../schemas/card.schema";
 import type { GroupingType } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
 import {

@@ -4,7 +4,7 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import type {
   Card,
   Attachments as IAttachments,
-} from "@/store/services/queries.types";
+} from "@/store/schemas/card.schema";
 import { cx } from "@/utils/cx";
 import { Button } from "../ui/button";
 import {

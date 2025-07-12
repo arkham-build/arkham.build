@@ -7,7 +7,7 @@ import type { StoreState } from ".";
 import type { Deck, Id } from "./data.types";
 import type { Locale } from "./settings.types";
 
-export type AppState = {
+type AppState = {
   clientId: string;
   bannersDismissed?: string[];
 };
