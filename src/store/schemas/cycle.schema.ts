@@ -9,10 +9,10 @@ const JSONDataCycleSchema = z.object({
 export type JSONDataCycle = z.infer<typeof JSONDataCycleSchema>;
 
 const CycleSchema = z.extend(JSONDataCycleSchema, {
-  name: z.optional(z.string()),
-  real_name: z.string(),
   image_url: z.optional(z.string()),
+  name: z.optional(z.string()),
   official: z.optional(z.boolean()),
+  real_name: z.string(),
 });
 
 export type Cycle = z.infer<typeof CycleSchema>;

@@ -2,8 +2,8 @@ import * as z from "zod/v4-mini";
 
 const FactionSchema = z.object({
   code: z.string(),
-  name: z.string(),
   is_primary: z.boolean(),
+  name: z.string(),
 });
 
 const SubTypeSchema = z.object({

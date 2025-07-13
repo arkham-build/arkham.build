@@ -93,19 +93,19 @@ export type CustomizationOption = z.infer<typeof CustomizationOptionSchema>;
 /* Deck Options */
 
 const AtLeastSchema = z.object({
-  min: z.number(),
   factions: z.optional(z.number()),
+  min: z.number(),
   types: z.optional(z.number()),
 });
 
 const OptionSelectSchema = z.object({
-  name: z.string(),
   id: z.string(),
-  size: z.optional(z.number()),
   level: z.object({
     min: z.number(),
     max: z.number(),
   }),
+  name: z.string(),
+  size: z.optional(z.number()),
   trait: z.optional(z.array(z.string())),
   type: z.optional(z.array(z.string())),
 });
@@ -114,26 +114,26 @@ export type OptionSelect = z.infer<typeof OptionSelectSchema>;
 
 const DeckOptionSchema = z.object({
   atleast: z.optional(AtLeastSchema),
+  base_level: z.optional(z.object({ min: z.number(), max: z.number() })),
   deck_size_select: z.optional(z.union([z.number(), z.array(z.number())])),
+  error: z.optional(z.string()),
   faction_select: z.optional(z.array(z.string())),
   faction: z.optional(z.array(z.string())),
   id: z.optional(z.string()),
   level: z.optional(z.object({ min: z.number(), max: z.number() })),
-  base_level: z.optional(z.object({ min: z.number(), max: z.number() })),
   limit: z.optional(z.number()),
   name: z.optional(z.string()),
   not: z.optional(z.boolean()),
-  permanent: z.optional(z.boolean()),
   option_select: z.optional(z.array(OptionSelectSchema)),
+  permanent: z.optional(z.boolean()),
+  slot: z.optional(z.array(z.string())),
   tag: z.optional(z.array(z.string())),
+  text_exact: z.optional(z.array(z.string())),
   text: z.optional(z.array(z.string())),
   trait: z.optional(z.array(z.string())),
   type: z.optional(z.array(z.string())),
   uses: z.optional(z.array(z.string())),
-  error: z.optional(z.string()),
-  slot: z.optional(z.array(z.string())),
   virtual: z.optional(z.boolean()),
-  text_exact: z.optional(z.array(z.string())),
 });
 
 export type DeckOption = z.infer<typeof DeckOptionSchema>;
@@ -156,34 +156,34 @@ const JsonDataCardSchema = z.object({
   back_traits: z.optional(z.string()),
   bonded_count: z.optional(z.number()),
   bonded_to: z.optional(z.string()),
-  clues: z.optional(z.number()),
   clues_fixed: z.optional(z.boolean()),
+  clues: z.optional(z.number()),
   code: z.string(),
   cost: z.optional(z.nullable(z.number())),
   customization_change: z.optional(z.string()),
   customization_options: z.optional(z.array(CustomizationOptionSchema)),
   customization_text: z.optional(z.string()),
+  deck_limit: z.optional(z.number()),
   deck_options: z.optional(z.array(DeckOptionSchema)),
   deck_requirements: z.optional(z.nullable(z.string())),
-  deck_limit: z.optional(z.number()),
   doom: z.optional(z.nullable(z.number())),
   double_sided: z.optional(z.boolean()),
   duplicate_of: z.optional(z.string()),
   encounter_code: z.optional(z.string()),
   encounter_position: z.optional(z.number()),
-  errata_date: z.optional(z.string()),
   enemy_damage: z.optional(z.number()),
   enemy_evade: z.optional(z.nullable(z.number())),
   enemy_fight: z.optional(z.nullable(z.number())),
   enemy_horror: z.optional(z.number()),
+  errata_date: z.optional(z.string()),
   exceptional: z.optional(z.boolean()),
   exile: z.optional(z.boolean()),
   faction_code: Faction,
   faction2_code: z.optional(Faction),
   faction3_code: z.optional(Faction),
   flavor: z.optional(z.string()),
-  health: z.optional(z.nullable(z.number())),
   health_per_investigator: z.optional(z.boolean()),
+  health: z.optional(z.nullable(z.number())),
   hidden: z.optional(z.boolean()),
   illustrator: z.optional(z.string()),
   is_unique: z.optional(z.boolean()),
@@ -201,8 +201,8 @@ const JsonDataCardSchema = z.object({
   skill_agility: z.optional(z.number()),
   skill_combat: z.optional(z.number()),
   skill_intellect: z.optional(z.number()),
-  skill_willpower: z.optional(z.number()),
   skill_wild: z.optional(z.number()),
+  skill_willpower: z.optional(z.number()),
   slot: z.optional(z.string()),
   stage: z.optional(z.number()),
   subname: z.optional(z.string()),
@@ -236,46 +236,47 @@ const ApiRestrictionsSchema = z.object({
 export type ApiRestrictions = z.infer<typeof ApiRestrictionsSchema>;
 export type ApiDeckRequirements = z.infer<typeof ApiDeckRequirementsSchema>;
 
-const JsonDataReduxSchema = z.omit(JsonDataCardSchema, {
-  deck_requirements: true,
-  alternate_of: true,
-  back_link: true,
-  duplicate_of: true,
-  side_deck_requirements: true,
-  tags: true,
-  restrictions: true,
-});
-
-export const ApiCardSchema = z.extend(JsonDataReduxSchema, {
-  alt_art_investigator: z.optional(z.boolean()),
-  alternate_of_code: z.optional(z.string()),
-  back_link_id: z.optional(z.string()),
-  deck_requirements: z.optional(ApiDeckRequirementsSchema),
-  duplicate_of_code: z.optional(z.string()),
-  id: z.string(), // {code} or {code}-{taboo_set_id}
-  linked: z.optional(z.boolean()),
-  locale: z.optional(z.string()),
-  preview: z.optional(z.boolean()),
-  real_back_flavor: z.optional(z.string()),
-  real_back_name: z.optional(z.string()),
-  real_back_text: z.optional(z.string()),
-  real_back_traits: z.optional(z.string()),
-  real_customization_change: z.optional(z.string()),
-  real_customization_text: z.optional(z.string()),
-  real_flavor: z.optional(z.string()),
-  real_name: z.string(),
-  real_slot: z.optional(z.string()),
-  real_subname: z.optional(z.string()),
-  real_taboo_text_change: z.optional(z.string()),
-  real_text: z.optional(z.string()),
-  real_traits: z.optional(z.string()),
-  restrictions: z.optional(ApiRestrictionsSchema),
-  side_deck_requirements: z.optional(ApiDeckRequirementsSchema),
-  taboo_xp: z.optional(z.number()),
-  taboo_set_id: z.optional(z.number()),
-  taboo_text_change: z.optional(z.string()),
-  tags: z.optional(z.array(z.string())),
-});
+export const ApiCardSchema = z.extend(
+  z.omit(JsonDataCardSchema, {
+    alternate_of: true,
+    back_link: true,
+    deck_requirements: true,
+    duplicate_of: true,
+    restrictions: true,
+    side_deck_requirements: true,
+    tags: true,
+  }),
+  {
+    alt_art_investigator: z.optional(z.boolean()),
+    alternate_of_code: z.optional(z.string()),
+    back_link_id: z.optional(z.string()),
+    deck_requirements: z.optional(ApiDeckRequirementsSchema),
+    duplicate_of_code: z.optional(z.string()),
+    id: z.string(), // {code} or {code}-{taboo_set_id}
+    linked: z.optional(z.boolean()),
+    locale: z.optional(z.string()),
+    preview: z.optional(z.boolean()),
+    real_back_flavor: z.optional(z.string()),
+    real_back_name: z.optional(z.string()),
+    real_back_text: z.optional(z.string()),
+    real_back_traits: z.optional(z.string()),
+    real_customization_change: z.optional(z.string()),
+    real_customization_text: z.optional(z.string()),
+    real_flavor: z.optional(z.string()),
+    real_name: z.string(),
+    real_slot: z.optional(z.string()),
+    real_subname: z.optional(z.string()),
+    real_taboo_text_change: z.optional(z.string()),
+    real_text: z.optional(z.string()),
+    real_traits: z.optional(z.string()),
+    restrictions: z.optional(ApiRestrictionsSchema),
+    side_deck_requirements: z.optional(ApiDeckRequirementsSchema),
+    taboo_set_id: z.optional(z.number()),
+    taboo_text_change: z.optional(z.string()),
+    taboo_xp: z.optional(z.number()),
+    tags: z.optional(z.array(z.string())),
+  },
+);
 
 export type ApiCard = z.infer<typeof ApiCardSchema>;
 
@@ -290,8 +291,8 @@ const CardPoolExtensionSchema = z.object({
 const AdditionalAttributes = {
   attachments: z.optional(AttachmentsSchema),
   back_image_url: z.optional(z.url()),
-  card_pool_extension: z.optional(CardPoolExtensionSchema),
   back_thumbnail_url: z.optional(z.url()),
+  card_pool_extension: z.optional(CardPoolExtensionSchema),
   image_url: z.optional(z.url()),
   thumbnail_url: z.optional(z.url()),
 };
@@ -308,14 +309,14 @@ export type FanMadeCard = z.infer<typeof FanMadeCardSchema>;
  */
 
 const CardRuntimeAttributes = {
-  /* indicates whether a card is part of a parallel investigator pack. */
-  parallel: z.optional(z.boolean()),
   /* indicates the amount of xp spent on customizations for a card. only relevant in deckbuilder mode. */
   customization_xp: z.optional(z.number()),
-  /* copy of real slot, can be changed by customizable. */
-  original_slot: z.optional(z.string()),
   /** marks fan-made cards */
   official: z.optional(z.boolean()),
+  /* copy of real slot, can be changed by customizable. */
+  original_slot: z.optional(z.string()),
+  /* indicates whether a card is part of a parallel investigator pack. */
+  parallel: z.optional(z.boolean()),
 };
 
 const CardSchema = z.extend(ApiCardSchema, {

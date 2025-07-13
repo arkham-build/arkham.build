@@ -9,8 +9,8 @@ const JsonDataEncounterSetSchema = z.object({
 export type JsonDataEncounterSet = z.infer<typeof JsonDataEncounterSetSchema>;
 
 const EncounterSetSchema = z.extend(JsonDataEncounterSetSchema, {
-  pack_code: z.string(),
   icon_url: z.optional(z.string()),
+  pack_code: z.string(),
 });
 
 export type EncounterSet = z.infer<typeof EncounterSetSchema>;

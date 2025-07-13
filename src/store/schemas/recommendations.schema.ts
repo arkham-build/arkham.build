@@ -2,9 +2,9 @@ import * as z from "zod/v4-mini";
 
 const RecommendationSchema = z.object({
   card_code: z.string(),
-  recommendation: z.number(),
-  ordering: z.number(),
   explanation: z.string(),
+  ordering: z.number(),
+  recommendation: z.number(),
 });
 
 const RecommendationsSchema = z.object({
