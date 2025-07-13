@@ -855,6 +855,14 @@ svg {
   filter: invert(0.25);
 }
 
+.blurred-background {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(0.125rem);
+  background-blend-mode: lighten;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+  color: var(--nord-5);
+}
+
 /**
  Locale-specific styles
 */

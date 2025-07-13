@@ -101,7 +101,7 @@ export function CardDataSync(props: Props) {
         {showDetails && dataVersion && (
           <dl className={css["info"]}>
             <dt>{t("settings.card_data.data_version")}:</dt>
-            <dd>{dataVersion.cards_updated_at}</dd>
+            <dd>{dataVersion.cards_updated_at.split(".")[0]}</dd>
             <dt>{t("settings.card_data.card_count")}:</dt>
             <dd>{dataVersion.card_count}</dd>
             <dt>{t("settings.card_data.locale")}:</dt>

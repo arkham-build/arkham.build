@@ -26,12 +26,7 @@
 .title {
   display: flex;
   width: 100%;
-  background: rgba(0, 0, 0, 0.4);
   padding: 0.5rem 0.5rem;
-  backdrop-filter: blur(0.125rem);
-  background-blend-mode: lighten;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
-  color: var(--nord-5);
 }
 
 .backdrop {

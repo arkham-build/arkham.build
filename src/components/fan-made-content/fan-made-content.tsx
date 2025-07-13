@@ -164,7 +164,8 @@ type RegistryProps = {
 function Collection({ onAddProject, listingsQuery }: RegistryProps) {
   const { t } = useTranslation();
 
-  const { onAddFromRegistry } = useProjectRegistry(onAddProject);
+  const { onAddFromRegistry, onAddFromUrl, onAddLocalProject } =
+    useProjectRegistry(onAddProject);
 
   const owned = useStore(selectOwnedFanMadeProjects);
 
@@ -177,6 +178,54 @@ function Collection({ onAddProject, listingsQuery }: RegistryProps) {
           {t("fan_made_content.installed_content")}
         </h2>
       </header>
+
+      <nav className={css["actions"]}>
+        <FileInput
+          accept="application/json"
+          id="collection-import"
+          onChange={onAddLocalProject}
+        >
+          <FileJson2Icon /> {t("fan_made_content.actions.import_file")}
+        </FileInput>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button data-testid="collection-import-url">
+              <LinkIcon /> {t("fan_made_content.actions.import_url")}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <Plane
+              className={css["import-popover"]}
+              as="form"
+              onClick={(evt: React.MouseEvent) => {
+                evt.stopPropagation();
+              }}
+              onSubmit={onAddFromUrl}
+            >
+              <Field>
+                <FieldLabel htmlFor="url">
+                  {t("fan_made_content.import_url.label")}
+                </FieldLabel>
+                <input
+                  className={css["import-popover-input"]}
+                  data-testid="collection-import-url-input"
+                  type="url"
+                  id="url"
+                  name="url"
+                  placeholder={t("fan_made_content.import_url.placeholder")}
+                />
+              </Field>
+              <Button
+                size="sm"
+                type="submit"
+                data-testid="collection-import-url-submit"
+              >
+                {t("fan_made_content.import_url.submit")}
+              </Button>
+            </Plane>
+          </PopoverContent>
+        </Popover>
+      </nav>
 
       {isEmpty(owned) && (
         <div className={css["empty"]} data-testid="collection-placeholder">
@@ -231,8 +280,7 @@ function Collection({ onAddProject, listingsQuery }: RegistryProps) {
 
 function Registry({ onAddProject, listingsQuery }: RegistryProps) {
   const { t } = useTranslation();
-  const { onAddLocalProject, onAddFromUrl, onAddFromRegistry } =
-    useProjectRegistry(onAddProject);
+  const { onAddFromRegistry } = useProjectRegistry(onAddProject);
 
   const owned = useStore((state) => state.fanMadeData.projects);
 
@@ -245,54 +293,6 @@ function Registry({ onAddProject, listingsQuery }: RegistryProps) {
           {t("fan_made_content.available_content")}
         </h2>
       </header>
-
-      <nav className={css["actions"]}>
-        <FileInput
-          accept="application/json"
-          id="collection-import"
-          onChange={onAddLocalProject}
-        >
-          <FileJson2Icon /> {t("fan_made_content.actions.import_file")}
-        </FileInput>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button data-testid="collection-import-url">
-              <LinkIcon /> {t("fan_made_content.actions.import_url")}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <Plane
-              className={css["import-popover"]}
-              as="form"
-              onClick={(evt: React.MouseEvent) => {
-                evt.stopPropagation();
-              }}
-              onSubmit={onAddFromUrl}
-            >
-              <Field>
-                <FieldLabel htmlFor="url">
-                  {t("fan_made_content.import_url.label")}
-                </FieldLabel>
-                <input
-                  className={css["import-popover-input"]}
-                  data-testid="collection-import-url-input"
-                  type="url"
-                  id="url"
-                  name="url"
-                  placeholder={t("fan_made_content.import_url.placeholder")}
-                />
-              </Field>
-              <Button
-                size="sm"
-                type="submit"
-                data-testid="collection-import-url-submit"
-              >
-                {t("fan_made_content.import_url.submit")}
-              </Button>
-            </Plane>
-          </PopoverContent>
-        </Popover>
-      </nav>
 
       {!!listingsQuery.error && (
         <div className={css["error"]}>
@@ -401,7 +401,18 @@ function ProjectCard(props: {
       classNames={classNames}
       data-testid="collection-project"
       key={meta.code}
-      headerSlot={headerSlot}
+      headerSlot={
+        <>
+          {headerSlot}
+          {meta.banner_credit && (
+            <p className={cx(css["banner-credit"], "blurred-background")}>
+              {t("fan_made_content.banner_credit", {
+                credit: meta.banner_credit,
+              })}
+            </p>
+          )}
+        </>
+      }
       footerSlot={
         <div className={css["project-footer-row"]}>
           {!isEmpty(project.meta.types) && (

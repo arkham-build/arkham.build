@@ -1061,6 +1061,7 @@
         "view_external": "Learn more"
       },
       "available_content": "Available content",
+      "banner_credit": "Illus. {{credit}}",
       "content_types": "Content types",
       "content_version": "Content version",
       "empty": "No content installed",

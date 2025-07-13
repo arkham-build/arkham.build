@@ -18,6 +18,9 @@ const ProjectMetaSchema = z.object({
   banner_url: z.optional(z.string()).register(z.globalRegistry, {
     description: "URL to a banner image. Ideal dimensions: 1180x500.",
   }),
+  banner_credit: z.optional(z.string()).register(z.globalRegistry, {
+    description: "Credit for the banner image.",
+  }),
   code: z.string().check(z.minLength(3)).register(z.globalRegistry, {
     description:
       " Unique identifier for the project. a UUID when created by Zoop.",

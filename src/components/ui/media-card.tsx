@@ -38,7 +38,7 @@ export function MediaCard(props: Props) {
             src={bannerUrl}
           />
         )}
-        <div className={css["title"]}>{title}</div>
+        <div className={cx("blurred-background", css["title"])}>{title}</div>
         {headerSlot}
       </header>
       <div className={cx(css["content"], classNames?.content)}>{children}</div>

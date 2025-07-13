@@ -109,6 +109,11 @@ function getSlotChanges(
     ...Object.keys(prev[slotKey] ?? {}),
     ...Object.keys(next[slotKey] ?? {}),
   ])) {
+    // SAFEGUARD: If the card is not in either deck, skip it.
+    if (!prev.cards[slotKey][code] && !next.cards[slotKey][code]) {
+      continue;
+    }
+
     const nextQuantity = next?.[slotKey]?.[code] ?? 0;
     const prevQuantity = prev?.[slotKey]?.[code] ?? 0;
 
@@ -428,7 +433,14 @@ function getSlotDiff(
 
       const target = isAdd ? next : prev;
 
-      const entry: SlotDiff = [target.cards[slotKey][code].card, quantity];
+      const targetCard = target.cards[slotKey][code]?.card;
+
+      if (!targetCard) {
+        // This can happen when a fan-made card was added to the deck, the deck not saved, and the pack then uninstalled.
+        return acc;
+      }
+
+      const entry: SlotDiff = [targetCard, quantity];
 
       if (isAdd) {
         acc.adds.push(entry);
