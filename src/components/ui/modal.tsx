@@ -1,72 +1,49 @@
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: escape handler is defined higher up. */
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: backdrop needs to be clickable. */
 import { XIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { cx } from "@/utils/cx";
 import { Button } from "./button";
-import { useDialogContext } from "./dialog.hooks";
+import { useDialogContextChecked } from "./dialog.hooks";
 import css from "./modal.module.css";
 import { Scroller } from "./scroller";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  centerContent?: boolean;
   children: React.ReactNode;
   className?: string;
-  actionsClassName?: string;
-  innerClassName?: string;
-  actions?: React.ReactNode;
-  onClose?: () => void;
-  open?: boolean;
   size?: string;
 }
 
 export function Modal(props: Props) {
-  const {
-    actions,
-    actionsClassName,
-    centerContent,
-    children,
-    className,
-    innerClassName,
-    onClose,
-    open,
-    size = "100%",
-    ...rest
-  } = props;
+  const { children, className, ...rest } = props;
+
+  const closeModal = useCloseModal();
 
   const modalRef = useRef<HTMLDivElement>(null);
-  const actionRef = useRef<HTMLDivElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
-  const hasReset = useRef(false);
-  const dialogContext = useDialogContext();
 
-  const closeModal = useCallback(() => {
-    if (onClose) {
-      onClose();
-    } else if (dialogContext?.setOpen) {
-      dialogContext.setOpen(false);
-    }
-  }, [onClose, dialogContext?.setOpen]);
-
-  useEffect(() => {
-    if (open && !hasReset.current) {
-      hasReset.current = true;
-      modalRef.current?.scrollTo(0, 0);
-    }
-  }, [open]);
-
-  const onCloseModalOutside = useCallback(
-    (evt: React.MouseEvent) => {
-      if (
-        evt.target instanceof HTMLElement &&
-        modalRef.current?.contains(evt.target) &&
-        !innerRef.current?.contains(evt.target)
-      ) {
-        closeModal();
-      }
-    },
-    [closeModal],
+  return (
+    <div
+      {...rest}
+      className={cx(css["modal"], className)}
+      onMouseDown={closeModal}
+      ref={modalRef}
+    >
+      {children}
+    </div>
   );
+}
+
+type ModalActionProps = {
+  children?: React.ReactNode;
+  className?: string;
+};
+
+export function ModalActions(props: ModalActionProps) {
+  const { children, className } = props;
+
+  const closeModal = useCloseModal();
+
+  const actionRef = useRef<HTMLDivElement>(null);
 
   const onCloseActions = useCallback(
     (evt: React.MouseEvent) => {
@@ -74,6 +51,33 @@ export function Modal(props: Props) {
     },
     [closeModal],
   );
+
+  return (
+    <div
+      className={cx(css["actions"], children && css["has-custom"], className)}
+      onClick={onCloseActions}
+      ref={actionRef}
+    >
+      <nav className={css["actions-row"]}>{children}</nav>
+      <Button className={css["close"]} iconOnly onClick={closeModal}>
+        <XIcon />
+      </Button>
+    </div>
+  );
+}
+
+type ModalInnerProps = {
+  className?: string;
+  children: React.ReactNode;
+  size?: string;
+};
+
+export function ModalInner(props: ModalInnerProps) {
+  const { className, children, size } = props;
+
+  const stopPropagation = useCallback((evt: React.MouseEvent) => {
+    evt.stopPropagation();
+  }, []);
 
   const cssVariables = useMemo(
     () => ({
@@ -83,44 +87,35 @@ export function Modal(props: Props) {
   );
 
   return (
-    <div
-      {...rest}
-      className={cx(css["modal"], centerContent && css["center"], className)}
-      onMouseDown={onCloseModalOutside}
-      ref={modalRef}
-      style={cssVariables as React.CSSProperties}
-    >
-      <Scroller type="always">
-        <div className={cx(css["inner"], innerClassName)} ref={innerRef}>
-          <div
-            className={cx(
-              css["actions"],
-              actions && css["has-custom"],
-              actionsClassName,
-            )}
-            onClick={onCloseActions}
-            ref={actionRef}
-          >
-            <nav className={css["actions-row"]}>{actions}</nav>
-            <Button className={css["close"]} iconOnly onClick={closeModal}>
-              <XIcon />
-            </Button>
-          </div>
-          {children}
-        </div>
-      </Scroller>
-    </div>
+    <Scroller type="always">
+      <div
+        className={cx(css["inner"], className)}
+        onMouseDown={stopPropagation}
+        style={cssVariables as React.CSSProperties}
+      >
+        {children}
+      </div>
+    </Scroller>
   );
 }
 
-type ModalContentProps = {
+type ModalBackdropProps = {
+  className?: string;
+};
+
+export function ModalBackdrop(props: ModalBackdropProps) {
+  const { className } = props;
+  return <div className={cx(css["backdrop"], className)} />;
+}
+
+type DefaultModalContentProps = {
   children: React.ReactNode;
   mainClassName?: string;
   footer?: React.ReactNode;
   title?: React.ReactNode;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, "title">;
 
-export function ModalContent(props: ModalContentProps) {
+export function DefaultModalContent(props: DefaultModalContentProps) {
   const { children, className, footer, mainClassName, title, ...rest } = props;
 
   return (
@@ -134,4 +129,14 @@ export function ModalContent(props: ModalContentProps) {
       {footer && <footer className={css["content-footer"]}>{footer}</footer>}
     </section>
   );
+}
+
+function useCloseModal() {
+  const modalContext = useDialogContextChecked();
+
+  const onCloseModal = useCallback(() => {
+    modalContext.setOpen(false);
+  }, [modalContext]);
+
+  return onCloseModal;
 }

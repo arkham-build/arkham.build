@@ -14,7 +14,13 @@ import { PackName } from "../pack-name";
 import { Combobox } from "../ui/combobox/combobox";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { Field } from "../ui/field";
-import { Modal, ModalContent } from "../ui/modal";
+import {
+  DefaultModalContent,
+  Modal,
+  ModalActions,
+  ModalBackdrop,
+  ModalInner,
+} from "../ui/modal";
 
 const selectCampaignCycles = createSelector(selectCyclesAndPacks, (cycles) =>
   cycles.filter(
@@ -72,33 +78,39 @@ export function ChooseCampaignModal(props: {
   const selectedItems = useMemo(() => [], []);
 
   return (
-    <Modal size="60rem">
-      <ModalContent title={t("deck_edit.config.card_pool.choose_campaign")}>
-        <Field
-          full
-          padded
-          bordered
-          helpText={t("deck_edit.config.card_pool.cpa_help")}
+    <Modal>
+      <ModalBackdrop />
+      <ModalInner size="52rem">
+        <ModalActions />
+        <DefaultModalContent
+          title={t("deck_edit.config.card_pool.choose_campaign")}
         >
-          <Combobox
-            autoFocus
-            id="campaign-playalong-combobox"
-            limit={1}
-            locale={locale}
-            placeholder={t(
-              "deck_edit.config.card_pool.choose_campaign_placeholder",
-            )}
-            renderItem={packRenderer}
-            renderResult={packRenderer}
-            itemToString={packToString}
-            onValueChange={selectCampaign}
-            items={cycles}
-            label={t("deck_edit.config.card_pool.campaign")}
-            showLabel
-            selectedItems={selectedItems}
-          />
-        </Field>
-      </ModalContent>
+          <Field
+            full
+            padded
+            bordered
+            helpText={t("deck_edit.config.card_pool.cpa_help")}
+          >
+            <Combobox
+              autoFocus
+              id="campaign-playalong-combobox"
+              limit={1}
+              locale={locale}
+              placeholder={t(
+                "deck_edit.config.card_pool.choose_campaign_placeholder",
+              )}
+              renderItem={packRenderer}
+              renderResult={packRenderer}
+              itemToString={packToString}
+              onValueChange={selectCampaign}
+              items={cycles}
+              label={t("deck_edit.config.card_pool.campaign")}
+              showLabel
+              selectedItems={selectedItems}
+            />
+          </Field>
+        </DefaultModalContent>
+      </ModalInner>
     </Modal>
   );
 }

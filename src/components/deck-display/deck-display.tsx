@@ -28,7 +28,13 @@ import {
 } from "../limited-card-pool/limited-card-pool";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
-import { Modal, ModalContent } from "../ui/modal";
+import {
+  DefaultModalContent,
+  Modal,
+  ModalActions,
+  ModalBackdrop,
+  ModalInner,
+} from "../ui/modal";
 import { Plane } from "../ui/plane";
 import {
   Tabs,
@@ -280,48 +286,52 @@ function TitleEditModal(props: TitleEditModalProps) {
 
   return (
     <DialogContent>
-      <Modal size="45rem" onClose={onCloseModal}>
-        <ModalContent
-          title={t("deck_edit.config.title_and_tags")}
-          style={cssVariables}
-        >
-          <form onSubmit={handleSubmit}>
-            <Field full padded>
-              <FieldLabel>{t("deck_edit.config.name")}</FieldLabel>
-              <input
-                data-testid="name-edit-name"
-                autoComplete="off"
-                type="text"
-                name="name"
-                required
-                defaultValue={deck.name}
-              />
-            </Field>
-            <Field full padded helpText={t("deck_edit.config.tags_help")}>
-              <FieldLabel>{t("deck_edit.config.tags")}</FieldLabel>
-              <input
-                autoComplete="off"
-                data-testid="name-edit-tags"
-                type="text"
-                name="tags"
-                defaultValue={deck.tags}
-              />
-            </Field>
-            <div className={css["name-modal-footer"]}>
-              <Button
-                disabled={loading}
-                variant="primary"
-                type="submit"
-                data-testid="name-edit-submit"
-              >
-                {t("deck_edit.save_short")}
-              </Button>
-              <Button onClick={onCloseModal} variant="bare">
-                {t("common.cancel")}
-              </Button>
-            </div>
-          </form>
-        </ModalContent>
+      <Modal>
+        <ModalBackdrop />
+        <ModalInner size="45rem">
+          <ModalActions />
+          <DefaultModalContent
+            title={t("deck_edit.config.title_and_tags")}
+            style={cssVariables}
+          >
+            <form onSubmit={handleSubmit}>
+              <Field full padded>
+                <FieldLabel>{t("deck_edit.config.name")}</FieldLabel>
+                <input
+                  data-testid="name-edit-name"
+                  autoComplete="off"
+                  type="text"
+                  name="name"
+                  required
+                  defaultValue={deck.name}
+                />
+              </Field>
+              <Field full padded helpText={t("deck_edit.config.tags_help")}>
+                <FieldLabel>{t("deck_edit.config.tags")}</FieldLabel>
+                <input
+                  autoComplete="off"
+                  data-testid="name-edit-tags"
+                  type="text"
+                  name="tags"
+                  defaultValue={deck.tags}
+                />
+              </Field>
+              <div className={css["name-modal-footer"]}>
+                <Button
+                  disabled={loading}
+                  variant="primary"
+                  type="submit"
+                  data-testid="name-edit-submit"
+                >
+                  {t("deck_edit.save_short")}
+                </Button>
+                <Button onClick={onCloseModal} variant="bare">
+                  {t("common.cancel")}
+                </Button>
+              </div>
+            </form>
+          </DefaultModalContent>
+        </ModalInner>
       </Modal>
     </DialogContent>
   );

@@ -12,7 +12,13 @@ import { PortaledCardTooltip } from "@/components/card-tooltip/card-tooltip-port
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useDialogContext } from "@/components/ui/dialog.hooks";
-import { Modal, ModalContent } from "@/components/ui/modal";
+import {
+  DefaultModalContent,
+  Modal,
+  ModalActions,
+  ModalBackdrop,
+  ModalInner,
+} from "@/components/ui/modal";
 import { Plane } from "@/components/ui/plane";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
@@ -148,55 +154,59 @@ function DraftBasicWeaknessModal(props: Props) {
   );
 
   return (
-    <Modal size="54rem">
-      <ModalContent
-        title={
-          <span className={css["modal-title"]}>
-            <DicesIcon />
-            {t("deck_edit.draft_weakness_modal.title")}
-          </span>
-        }
-      >
-        {weaknesses ? (
-          <form className={css["container"]} onSubmit={handleSubmit}>
-            <h3>{t("deck_edit.draft_weakness_modal.explanation_title")}</h3>
-            <p>{t("deck_edit.draft_weakness_modal.explanation_body")}</p>
-            <h3>{t("deck_edit.draft_weakness_modal.choice_title")}</h3>
-            <ol className={css["list-container"]}>
-              {weaknesses.map((weakness) => (
-                <WeaknessCard
-                  key={weakness.code}
-                  card={weakness}
-                  selectedCode={selectedWeakness}
-                  setSelectedCode={setSelectedWeakness}
-                />
-              ))}
-            </ol>
-            <footer className={css["actions"]} style={accentColor}>
-              <Button
-                type="submit"
-                data-testid="draft-basic-weakness-confirm"
-                disabled={!selectedWeakness}
-                style={accentColor}
-                variant="primary"
-              >
-                {t("deck_edit.draft_weakness_modal.confirm_button")}
-              </Button>
-              <Button
-                variant="bare"
-                onClick={() => dialogContext?.setOpen(false)}
-              >
-                {t("deck_edit.draft_weakness_modal.cancel_button")}
-              </Button>
-            </footer>
-          </form>
-        ) : (
-          <Plane className={css["error"]}>
-            <TriangleAlertIcon />
-            {t("deck_edit.draft_weakness_modal.too_few_rbw")}
-          </Plane>
-        )}
-      </ModalContent>
+    <Modal>
+      <ModalBackdrop />
+      <ModalInner size="52rem">
+        <ModalActions />
+        <DefaultModalContent
+          title={
+            <span className={css["modal-title"]}>
+              <DicesIcon />
+              {t("deck_edit.draft_weakness_modal.title")}
+            </span>
+          }
+        >
+          {weaknesses ? (
+            <form className={css["container"]} onSubmit={handleSubmit}>
+              <h3>{t("deck_edit.draft_weakness_modal.explanation_title")}</h3>
+              <p>{t("deck_edit.draft_weakness_modal.explanation_body")}</p>
+              <h3>{t("deck_edit.draft_weakness_modal.choice_title")}</h3>
+              <ol className={css["list-container"]}>
+                {weaknesses.map((weakness) => (
+                  <WeaknessCard
+                    key={weakness.code}
+                    card={weakness}
+                    selectedCode={selectedWeakness}
+                    setSelectedCode={setSelectedWeakness}
+                  />
+                ))}
+              </ol>
+              <footer className={css["actions"]} style={accentColor}>
+                <Button
+                  type="submit"
+                  data-testid="draft-basic-weakness-confirm"
+                  disabled={!selectedWeakness}
+                  style={accentColor}
+                  variant="primary"
+                >
+                  {t("deck_edit.draft_weakness_modal.confirm_button")}
+                </Button>
+                <Button
+                  variant="bare"
+                  onClick={() => dialogContext?.setOpen(false)}
+                >
+                  {t("deck_edit.draft_weakness_modal.cancel_button")}
+                </Button>
+              </footer>
+            </form>
+          ) : (
+            <Plane className={css["error"]}>
+              <TriangleAlertIcon />
+              {t("deck_edit.draft_weakness_modal.too_few_rbw")}
+            </Plane>
+          )}
+        </DefaultModalContent>
+      </ModalInner>
     </Modal>
   );
 }

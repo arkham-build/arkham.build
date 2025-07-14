@@ -15,7 +15,13 @@ import { Button } from "./ui/button";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { DropdownButton, DropdownMenu } from "./ui/dropdown-menu";
 import { Keybind } from "./ui/hotkey";
-import { Modal, ModalContent } from "./ui/modal";
+import {
+  DefaultModalContent,
+  Modal,
+  ModalActions,
+  ModalBackdrop,
+  ModalInner,
+} from "./ui/modal";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 export function HelpMenu() {
@@ -230,11 +236,6 @@ export function HelpMenu() {
     [],
   );
 
-  const closeKeyboardShortcuts = useCallback(
-    () => setKeyboardShortcutsOpen(false),
-    [],
-  );
-
   useHotkey("?", toggleKeyboardShortcuts);
 
   return (
@@ -285,34 +286,34 @@ export function HelpMenu() {
         onOpenChange={toggleKeyboardShortcuts}
       >
         <DialogContent>
-          <Modal
-            onClose={closeKeyboardShortcuts}
-            open={keyboardShortcutsOpen}
-            size="60rem"
-          >
-            <ModalContent title={t("help.shortcuts.title")}>
-              <div className={css["groups"]}>
-                {shortcuts.map(([category, shortcuts]) => (
-                  <article className={css["group"]} key={category}>
-                    <header className={css["group-header"]}>
-                      <h2 className={css["group-title"]}>{category}</h2>
-                    </header>
-                    <dl className={css["shortcuts"]}>
-                      {shortcuts.map(({ keybind, description }) => (
-                        <Fragment key={keybind}>
-                          <dt className={css["shortcut-keybind"]}>
-                            <Keybind keybind={keybind} />
-                          </dt>
-                          <dd className={css["shortcut-description"]}>
-                            {description}
-                          </dd>
-                        </Fragment>
-                      ))}
-                    </dl>
-                  </article>
-                ))}
-              </div>
-            </ModalContent>
+          <Modal>
+            <ModalBackdrop />
+            <ModalInner size="52rem">
+              <ModalActions />
+              <DefaultModalContent title={t("help.shortcuts.title")}>
+                <div className={css["groups"]}>
+                  {shortcuts.map(([category, shortcuts]) => (
+                    <article className={css["group"]} key={category}>
+                      <header className={css["group-header"]}>
+                        <h2 className={css["group-title"]}>{category}</h2>
+                      </header>
+                      <dl className={css["shortcuts"]}>
+                        {shortcuts.map(({ keybind, description }) => (
+                          <Fragment key={keybind}>
+                            <dt className={css["shortcut-keybind"]}>
+                              <Keybind keybind={keybind} />
+                            </dt>
+                            <dd className={css["shortcut-description"]}>
+                              {description}
+                            </dd>
+                          </Fragment>
+                        ))}
+                      </dl>
+                    </article>
+                  ))}
+                </div>
+              </DefaultModalContent>
+            </ModalInner>
           </Modal>
         </DialogContent>
       </Dialog>

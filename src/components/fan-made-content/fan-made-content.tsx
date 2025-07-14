@@ -46,7 +46,13 @@ import { Field, FieldLabel } from "../ui/field";
 import { FileInput } from "../ui/file-input";
 import { Loader } from "../ui/loader";
 import { MediaCard } from "../ui/media-card";
-import { Modal, ModalContent } from "../ui/modal";
+import {
+  DefaultModalContent,
+  Modal,
+  ModalActions,
+  ModalBackdrop,
+  ModalInner,
+} from "../ui/modal";
 import { Plane } from "../ui/plane";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Select } from "../ui/select";
@@ -522,28 +528,28 @@ function PreviewModal({ project }: { project: FanMadeProject }) {
   }
 
   return (
-    <Modal
-      size="90%"
-      actionsClassName={css["modal-actions"]}
-      innerClassName={css["modal-inner"]}
-    >
-      <ModalContent
-        className={css["modal-content"]}
-        mainClassName={css["modal-content-main"]}
-      >
-        <CardGrid
-          data={{
-            cards,
-            totalCardCount: cards.length,
-            key: project.meta.code,
-            groups,
-            groupCounts,
-          }}
-          listMode="grouped"
-          metadata={metadata}
-          viewMode="scans"
-        />
-      </ModalContent>
+    <Modal>
+      <ModalBackdrop />
+      <ModalInner className={css["modal-inner"]} size="90%">
+        <ModalActions className={css["modal-actions"]} />
+        <DefaultModalContent
+          className={css["modal-content"]}
+          mainClassName={css["modal-content-main"]}
+        >
+          <CardGrid
+            data={{
+              cards,
+              totalCardCount: cards.length,
+              key: project.meta.code,
+              groups,
+              groupCounts,
+            }}
+            listMode="grouped"
+            metadata={metadata}
+            viewMode="scans"
+          />
+        </DefaultModalContent>
+      </ModalInner>
     </Modal>
   );
 }

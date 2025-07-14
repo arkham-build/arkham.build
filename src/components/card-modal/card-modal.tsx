@@ -29,7 +29,7 @@ import { AttachableCards } from "../deck-tools/attachable-cards";
 import { CardPoolExtension } from "../limited-card-pool/card-pool-extension";
 import { Button } from "../ui/button";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
-import { Modal } from "../ui/modal";
+import { Modal, ModalActions, ModalBackdrop, ModalInner } from "../ui/modal";
 import { CardReviewsLink } from "./card-arkhamdb-links";
 import css from "./card-modal.module.css";
 import { AnnotationEdit } from "./card-modal-annotation-edit";
@@ -196,10 +196,10 @@ export function CardModal(props: Props) {
   const deckQuantity = ctx.resolvedDeck?.slots[canonicalCode] ?? 0;
 
   return (
-    <Modal
-      key={cardWithRelations.card.code}
-      actions={
-        <>
+    <Modal key={cardWithRelations.card.code} data-testid="card-modal">
+      <ModalBackdrop />
+      <ModalInner size={showQuantities ? "60rem" : "52rem"}>
+        <ModalActions>
           {cardWithRelations.card.type_code === "investigator" &&
             !isStaticInvestigator(cardWithRelations.card) && (
               <Link
@@ -227,40 +227,36 @@ export function CardModal(props: Props) {
                 {t("card_modal.actions.complete_task")}
               </Button>
             )}
-        </>
-      }
-      data-testid="card-modal"
-      onClose={onCloseModal}
-      size={showQuantities ? "60rem" : "52rem"}
-    >
-      {showQuantities ? (
-        <div className={css["container"]}>
-          <div className={css["card"]}>{cardNode}</div>
-          <div
-            className={css["quantities"]}
-            onClick={onClickBackdrop}
-            ref={quantitiesRef}
-          >
-            {showQuantities && (
-              <CardModalQuantities
-                canEdit={canEdit}
-                card={cardWithRelations.card}
-                deck={ctx.resolvedDeck}
-                onCloseModal={onCloseModal}
-                showExtraQuantities={showExtraQuantities}
-              />
-            )}
-            {!isEmpty(ctx.resolvedDeck?.availableAttachments) && (
-              <CardModalAttachmentQuantities
-                card={cardWithRelations.card}
-                resolvedDeck={ctx.resolvedDeck}
-              />
-            )}
+        </ModalActions>
+        {showQuantities ? (
+          <div className={css["container"]}>
+            <div className={css["card"]}>{cardNode}</div>
+            <div
+              className={css["quantities"]}
+              onClick={onClickBackdrop}
+              ref={quantitiesRef}
+            >
+              {showQuantities && (
+                <CardModalQuantities
+                  canEdit={canEdit}
+                  card={cardWithRelations.card}
+                  deck={ctx.resolvedDeck}
+                  onCloseModal={onCloseModal}
+                  showExtraQuantities={showExtraQuantities}
+                />
+              )}
+              {!isEmpty(ctx.resolvedDeck?.availableAttachments) && (
+                <CardModalAttachmentQuantities
+                  card={cardWithRelations.card}
+                  resolvedDeck={ctx.resolvedDeck}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      ) : (
-        cardNode
-      )}
+        ) : (
+          cardNode
+        )}
+      </ModalInner>
     </Modal>
   );
 }

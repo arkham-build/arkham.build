@@ -7,7 +7,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useDialogContextChecked } from "@/components/ui/dialog.hooks";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { HotkeyTooltip } from "@/components/ui/hotkey";
-import { Modal, ModalContent } from "@/components/ui/modal";
+import {
+  DefaultModalContent,
+  Modal,
+  ModalActions,
+  ModalBackdrop,
+  ModalInner,
+} from "@/components/ui/modal";
 import { Scroller } from "@/components/ui/scroller";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
@@ -207,148 +213,152 @@ export function UpgradeModal(props: Props) {
   });
 
   return (
-    <Modal data-testid="upgrade-modal" onClose={onCloseModal} size="45rem">
-      <ModalContent
-        className={css["content"]}
-        title={
-          <>
-            <i className="icon-xp-bold" />
-            {t("deck_view.upgrade_modal.title")}
-          </>
-        }
-        footer={
-          <div className={css["footer"]}>
-            <div className={css["footer-row"]}>
-              <HotkeyTooltip
-                keybind="cmd+enter"
-                description={
-                  connectionLock ?? t("deck_view.actions.save_upgrade")
-                }
-              >
-                <Button
-                  data-testid="upgrade-save"
-                  disabled={disabled}
-                  onClick={onSave}
-                  variant="primary"
+    <Modal data-testid="upgrade-modal">
+      <ModalBackdrop />
+      <ModalInner size="45rem">
+        <ModalActions />
+        <DefaultModalContent
+          className={css["content"]}
+          title={
+            <>
+              <i className="icon-xp-bold" />
+              {t("deck_view.upgrade_modal.title")}
+            </>
+          }
+          footer={
+            <div className={css["footer"]}>
+              <div className={css["footer-row"]}>
+                <HotkeyTooltip
+                  keybind="cmd+enter"
+                  description={
+                    connectionLock ?? t("deck_view.actions.save_upgrade")
+                  }
                 >
-                  {t("deck_view.actions.save_upgrade_short")}
-                </Button>
-              </HotkeyTooltip>
-              <HotkeyTooltip
-                keybind="cmd+shift+enter"
-                description={
-                  connectionLock ?? t("deck_view.actions.save_upgrade_close")
-                }
-              >
-                <Button
-                  data-testid="upgrade-save-close"
-                  disabled={disabled}
-                  onClick={onSaveClose}
-                  variant="bare"
+                  <Button
+                    data-testid="upgrade-save"
+                    disabled={disabled}
+                    onClick={onSave}
+                    variant="primary"
+                  >
+                    {t("deck_view.actions.save_upgrade_short")}
+                  </Button>
+                </HotkeyTooltip>
+                <HotkeyTooltip
+                  keybind="cmd+shift+enter"
+                  description={
+                    connectionLock ?? t("deck_view.actions.save_upgrade_close")
+                  }
                 >
-                  {t("deck_view.actions.save_upgrade_close_short")}
-                </Button>
-              </HotkeyTooltip>
+                  <Button
+                    data-testid="upgrade-save-close"
+                    disabled={disabled}
+                    onClick={onSaveClose}
+                    variant="bare"
+                  >
+                    {t("deck_view.actions.save_upgrade_close_short")}
+                  </Button>
+                </HotkeyTooltip>
+              </div>
+              <Button onClick={onCloseModal} variant="bare">
+                {t("common.cancel")}
+              </Button>
             </div>
-            <Button onClick={onCloseModal} variant="bare">
-              {t("common.cancel")}
-            </Button>
-          </div>
-        }
-        style={cssVariables}
-      >
-        <div className={css["content"]}>
-          <Field bordered full>
-            <FieldLabel htmlFor="xp-gained">
-              {t("deck_view.upgrade_modal.xp_gained")}
-            </FieldLabel>
-            <input
-              // biome-ignore lint/a11y/noAutofocus: this is a modal.
-              autoFocus
-              onChange={onXpChange}
-              min="0"
-              required
-              type="number"
-              data-testid="upgrade-xp"
-              name="xp-gained"
-              value={xp}
-            />
-          </Field>
-          {hasGreatWork && (
-            <Field
-              bordered
-              helpText={
-                usurped ? (
-                  <i>
-                    {t("deck_view.upgrade_modal.great_work_status_usurped")}
-                  </i>
-                ) : (
-                  <i>
-                    {t("deck_view.upgrade_modal.automatic_xp_gain", {
-                      count: 1,
-                    })}
-                  </i>
-                )
-              }
-            >
+          }
+          style={cssVariables}
+        >
+          <div className={css["content"]}>
+            <Field bordered full>
               <FieldLabel htmlFor="xp-gained">
-                {displayAttribute(
-                  deck.cards.slots[SPECIAL_CARD_CODES.THE_GREAT_WORK].card,
-                  "name",
-                )}
+                {t("deck_view.upgrade_modal.xp_gained")}
               </FieldLabel>
-              <Checkbox
-                label={t("deck_view.upgrade_modal.great_work_label")}
-                id="the-great-work"
-                checked={usurped}
-                onCheckedChange={onUsurpedChange}
+              <input
+                // biome-ignore lint/a11y/noAutofocus: this is a modal.
+                autoFocus
+                onChange={onXpChange}
+                min="0"
+                required
+                type="number"
+                data-testid="upgrade-xp"
+                name="xp-gained"
+                value={xp}
               />
             </Field>
-          )}
-          {hasCharonsObol && (
-            <Field bordered>
-              <FieldLabel>
-                {displayAttribute(
-                  deck.cards.slots[SPECIAL_CARD_CODES.CHARONS_OBOL].card,
-                  "name",
-                )}
-              </FieldLabel>
-              <p>
-                <small>
-                  <em>
-                    {t("deck_view.upgrade_modal.automatic_xp_gain", {
-                      count: 2,
-                    })}
-                  </em>
-                </small>
-              </p>
-            </Field>
-          )}
-          {!isEmpty(exilableCards) && (
-            <Field bordered>
-              <FieldLabel htmlFor="xp-gained">
-                {t("common.exiled_cards")}
-              </FieldLabel>
-              <Scroller className={css["exile"]}>
-                <ul>
-                  {exilableCards.map(({ card, limit }) => (
-                    <ListCard
-                      annotation={deck.annotations[card.code]}
-                      as="li"
-                      key={card.code}
-                      card={card}
-                      limitOverride={limit}
-                      onChangeCardQuantity={onExileChange}
-                      quantity={exiledQuantities[card.code] ?? 0}
-                      size="sm"
-                    />
-                  ))}
-                </ul>
-              </Scroller>
-            </Field>
-          )}
-        </div>
-      </ModalContent>
+            {hasGreatWork && (
+              <Field
+                bordered
+                helpText={
+                  usurped ? (
+                    <i>
+                      {t("deck_view.upgrade_modal.great_work_status_usurped")}
+                    </i>
+                  ) : (
+                    <i>
+                      {t("deck_view.upgrade_modal.automatic_xp_gain", {
+                        count: 1,
+                      })}
+                    </i>
+                  )
+                }
+              >
+                <FieldLabel htmlFor="xp-gained">
+                  {displayAttribute(
+                    deck.cards.slots[SPECIAL_CARD_CODES.THE_GREAT_WORK].card,
+                    "name",
+                  )}
+                </FieldLabel>
+                <Checkbox
+                  label={t("deck_view.upgrade_modal.great_work_label")}
+                  id="the-great-work"
+                  checked={usurped}
+                  onCheckedChange={onUsurpedChange}
+                />
+              </Field>
+            )}
+            {hasCharonsObol && (
+              <Field bordered>
+                <FieldLabel>
+                  {displayAttribute(
+                    deck.cards.slots[SPECIAL_CARD_CODES.CHARONS_OBOL].card,
+                    "name",
+                  )}
+                </FieldLabel>
+                <p>
+                  <small>
+                    <em>
+                      {t("deck_view.upgrade_modal.automatic_xp_gain", {
+                        count: 2,
+                      })}
+                    </em>
+                  </small>
+                </p>
+              </Field>
+            )}
+            {!isEmpty(exilableCards) && (
+              <Field bordered>
+                <FieldLabel htmlFor="xp-gained">
+                  {t("common.exiled_cards")}
+                </FieldLabel>
+                <Scroller className={css["exile"]}>
+                  <ul>
+                    {exilableCards.map(({ card, limit }) => (
+                      <ListCard
+                        annotation={deck.annotations[card.code]}
+                        as="li"
+                        key={card.code}
+                        card={card}
+                        limitOverride={limit}
+                        onChangeCardQuantity={onExileChange}
+                        quantity={exiledQuantities[card.code] ?? 0}
+                        size="sm"
+                      />
+                    ))}
+                  </ul>
+                </Scroller>
+              </Field>
+            )}
+          </div>
+        </DefaultModalContent>
+      </ModalInner>
     </Modal>
   );
 }

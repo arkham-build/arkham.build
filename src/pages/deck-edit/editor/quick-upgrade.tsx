@@ -7,7 +7,13 @@ import { Card } from "@/components/card/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
-import { Modal, ModalContent } from "@/components/ui/modal";
+import {
+  DefaultModalContent,
+  Modal,
+  ModalActions,
+  ModalBackdrop,
+  ModalInner,
+} from "@/components/ui/modal";
 import { QuantityInput } from "@/components/ui/quantity-input";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -158,94 +164,93 @@ function QuickUpgradeDialog(
     <FloatingPortal id={FLOATING_PORTAL_ID}>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
-          <Modal
-            size="60rem"
-            onClose={() => onOpenChange(false)}
-            open={open}
-            data-testid="quick-upgrade-modal"
-          >
-            <ModalContent
-              title={
-                <>
-                  <i className="icon icon-upgrade" />
-                  <span>
-                    {t("deck_edit.quick_upgrade.title", {
-                      name: displayAttribute(card, "name"),
-                    })}
-                  </span>
-                </>
-              }
-            >
-              <div className={css["container"]} style={accentColor}>
-                <article>
-                  {shrewdAnalysisPossible && (
-                    <Field
-                      helpText={t(
-                        "deck_edit.quick_upgrade.shrewd_analysis_help",
-                      )}
-                    >
-                      <Button
-                        variant="primary"
-                        onClick={onUseShrewdAnalysis}
-                        data-testid="quick-upgrade-shrewd-analysis"
+          <Modal data-testid="quick-upgrade-modal">
+            <ModalBackdrop />
+            <ModalInner size="52rem">
+              <ModalActions />
+              <DefaultModalContent
+                title={
+                  <>
+                    <i className="icon icon-upgrade" />
+                    <span>
+                      {t("deck_edit.quick_upgrade.title", {
+                        name: displayAttribute(card, "name"),
+                      })}
+                    </span>
+                  </>
+                }
+              >
+                <div className={css["container"]} style={accentColor}>
+                  <article>
+                    {shrewdAnalysisPossible && (
+                      <Field
+                        helpText={t(
+                          "deck_edit.quick_upgrade.shrewd_analysis_help",
+                        )}
                       >
-                        <DicesIcon />
-                        {t("deck_edit.quick_upgrade.shrewd_analysis")}
-                      </Button>
-                    </Field>
-                  )}
-                </article>
-                <article>
-                  <Card
-                    slotHeaderActions={
-                      <QuantityInput
-                        className={css["quantity"]}
-                        date-testid={`quick-upgrade-${card.code}-quantity`}
-                        disabled
-                        limit={cardLimit(card)}
-                        value={deck[slots]?.[card.code] ?? 0}
-                      />
-                    }
-                    resolvedCard={resolvedCard}
-                    size="compact"
-                  />
-                </article>
-                <article>
-                  <header className={css["header"]}>
-                    <h3 className={css["title"]}>
-                      {t("deck_edit.quick_upgrade.available_upgrades")}
-                    </h3>
-                  </header>
-                  <ol className={css["upgrades"]}>
-                    {resolvedUpgrades.map((upgrade) => {
-                      if (!upgrade) return null;
-                      return (
-                        <li key={upgrade.card.code}>
-                          <Card
-                            resolvedCard={upgrade}
-                            size="compact"
-                            slotHeaderActions={
-                              <QuantityInput
-                                className={css["quantity"]}
-                                date-testid={`quick-upgrade-${upgrade.card.code}-quantity`}
-                                limit={cardLimit(upgrade.card)}
-                                onValueChange={(delta) => {
-                                  onChangeUpgradeQuantity(
-                                    upgrade.card.code,
-                                    delta,
-                                  );
-                                }}
-                                value={deck[slots]?.[upgrade.card.code] ?? 0}
-                              />
-                            }
-                          />
-                        </li>
-                      );
-                    })}
-                  </ol>
-                </article>
-              </div>
-            </ModalContent>
+                        <Button
+                          variant="primary"
+                          onClick={onUseShrewdAnalysis}
+                          data-testid="quick-upgrade-shrewd-analysis"
+                        >
+                          <DicesIcon />
+                          {t("deck_edit.quick_upgrade.shrewd_analysis")}
+                        </Button>
+                      </Field>
+                    )}
+                  </article>
+                  <article>
+                    <Card
+                      slotHeaderActions={
+                        <QuantityInput
+                          className={css["quantity"]}
+                          date-testid={`quick-upgrade-${card.code}-quantity`}
+                          disabled
+                          limit={cardLimit(card)}
+                          value={deck[slots]?.[card.code] ?? 0}
+                        />
+                      }
+                      resolvedCard={resolvedCard}
+                      size="compact"
+                    />
+                  </article>
+                  <article>
+                    <header className={css["header"]}>
+                      <h3 className={css["title"]}>
+                        {t("deck_edit.quick_upgrade.available_upgrades")}
+                      </h3>
+                    </header>
+                    <ol className={css["upgrades"]}>
+                      {resolvedUpgrades.map((upgrade) => {
+                        if (!upgrade) return null;
+                        return (
+                          <li key={upgrade.card.code}>
+                            <Card
+                              resolvedCard={upgrade}
+                              size="compact"
+                              slotHeaderActions={
+                                <QuantityInput
+                                  className={css["quantity"]}
+                                  date-testid={`quick-upgrade-${upgrade.card.code}-quantity`}
+                                  limit={cardLimit(upgrade.card)}
+                                  onValueChange={(delta) => {
+                                    onChangeUpgradeQuantity(
+                                      upgrade.card.code,
+                                      delta,
+                                    );
+                                  }}
+                                  value={deck[slots]?.[upgrade.card.code] ?? 0}
+                                />
+                              }
+                            />
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  </article>
+                </div>
+              </DefaultModalContent>
+            </ModalInner>
           </Modal>
         </DialogContent>
       </Dialog>

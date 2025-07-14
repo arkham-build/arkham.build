@@ -97,11 +97,7 @@ export function Sidebar(props: Props) {
     <div className={cx(css["container"], className)}>
       <DeckInvestigator deck={deck} size="tooltip" titleLinks="dialog" />
       <DialogContent>
-        <DeckInvestigatorModal
-          deck={deck}
-          onCloseModal={() => dialogContext?.setOpen(false)}
-          readonly
-        />
+        <DeckInvestigatorModal deck={deck} readonly />
       </DialogContent>
 
       <SidebarActions
