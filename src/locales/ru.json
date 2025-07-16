@@ -697,11 +697,13 @@
         "cards": "Кол-во карт",
         "count": "Кол-во",
         "factions": "Классы",
+        "factions_tooltip": "{{faction}} — {{count}} {{cards}}",
         "loading": "Загрузка утилит…",
         "resource_cost": "Цены карт",
         "resource_cost_tooltip": "{{count}} {{cards}} ценой {{cost}}",
         "resource_costs": "Цены карт",
         "skill_icons": "Символы навыков",
+        "skill_icons_tooltip": "{{skill}} — {{count}} {{icons}}",
         "title": "Утилиты"
       },
       "validation": {
