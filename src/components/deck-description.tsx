@@ -95,7 +95,7 @@ function DeckDescription(props: Props) {
     return () => {
       for (const link of links) {
         link.removeEventListener("pointermove", onMouseMove);
-        link.addEventListener("pointerleave", onMouseLeave);
+        link.removeEventListener("pointerleave", onMouseLeave);
         link.removeEventListener("mouseleave", onMouseLeave);
       }
     };

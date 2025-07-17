@@ -37,9 +37,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <FloatingPortal id={FLOATING_PORTAL_ID}>
-      <ToastContext.Provider value={ctx}>
-        {children}
+    <ToastContext.Provider value={ctx}>
+      {children}
+      <FloatingPortal id={FLOATING_PORTAL_ID}>
         <section className={css["toast-container"]}>
           {toasts.map((toast) => (
             <Toast
@@ -50,8 +50,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             />
           ))}
         </section>
-      </ToastContext.Provider>
-    </FloatingPortal>
+      </FloatingPortal>
+    </ToastContext.Provider>
   );
 }
 
