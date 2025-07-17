@@ -16,9 +16,7 @@
 }
 
 .viewport > div[style] {
-  display: grid !important;
-  height: min-content;
-  width: min-content;
+  display: block !important;
 }
 
 .scrollbar {
