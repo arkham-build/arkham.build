@@ -15,6 +15,12 @@
   border-radius: inherit;
 }
 
+.viewport > div[style] {
+  display: grid !important;
+  height: min-content;
+  width: min-content;
+}
+
 .scrollbar {
   display: flex;
   user-select: none;
