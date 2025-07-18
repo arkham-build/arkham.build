@@ -28,10 +28,7 @@ export type AppSlice = {
 
   saveDeck(deckId: Id): Promise<Id>;
 
-  updateNameAndTag(
-    deckId: Id,
-    edit: { name: string; tags: string },
-  ): Promise<Id>;
+  updateDeckProperties(deckId: Id, properties: Partial<Deck>): Promise<Deck>;
 
   upgradeDeck(payload: {
     id: Id;

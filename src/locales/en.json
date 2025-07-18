@@ -221,6 +221,7 @@
         "specialist": "Specialist",
         "specialist_investigators": "Specialist Investigators"
       },
+      "proceed": "Proceed",
       "reset": "Reset",
       "seal": "Seal",
       "set_as_default": "Set as default",
@@ -1391,6 +1392,18 @@
       "saving": "Saving settings...",
       "success": "Settings saved successfully.",
       "title": "Settings"
+    },
+    "suzi_standalone_setup": {
+      "description": "FAQ 2.4 defines how standalone decks for Suzi may be built. Random cards between level 1-5 from your collection are drawn until your desired amount of XP is reached. Afterwards, an equivalent number of cards have to be removed from the deck.",
+      "draw_cards": "Draw cards",
+      "limit_collection": "Use only cards from my collection",
+      "limit_exile": "Use \"Ultimatum of Exile\" (disallow exile cards)",
+      "limit_fan_made": "Use fan-made content",
+      "results": "Results",
+      "reveal_all": "Reveal all",
+      "title_short": "Standalone setup",
+      "title": "Subject 5U-21 / \"Suzi\" standalone setup",
+      "xp": "Target XP"
     },
     "ui": {
       "cards_combobox": {

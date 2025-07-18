@@ -465,8 +465,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       await get().deleteAllShares().catch(console.error);
     }
   },
-  // TECH DEBT: Generalize.
-  async updateNameAndTag(deckId, edit) {
+  async updateDeckProperties(deckId, properties) {
     const state = get();
 
     const deck = state.data.decks[deckId];
@@ -474,7 +473,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
 
     let nextDeck = {
       ...deck,
-      ...edit,
+      ...properties,
     };
 
     nextDeck.date_update = new Date().toISOString();
@@ -497,12 +496,19 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     }
 
     set((prev) => {
-      const edit = prev.deckEdits[deckId];
       const nextEdits = { ...prev.deckEdits };
 
+      const edit = prev.deckEdits[deckId];
+
       if (edit) {
-        const { name: _, tags: __, ...rest } = edit;
-        nextEdits[deckId] = rest;
+        if (properties.slots || properties.sideSlots || properties.meta) {
+          delete nextEdits[deckId];
+        } else {
+          const nextEdit = structuredClone(edit);
+          if (properties.name) delete nextEdit.name;
+          if (properties.tags) delete nextEdit.tags;
+          nextEdits[deckId] = nextEdit;
+        }
       }
 
       return {
@@ -519,7 +525,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
 
     await dehydrate(get(), "app", "edits");
 
-    return nextDeck.id;
+    return nextDeck;
   },
   async saveDeck(deckId) {
     const state = get();

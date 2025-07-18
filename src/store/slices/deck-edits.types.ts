@@ -55,6 +55,8 @@ export type EditState = {
   tabooId?: number | null;
   tags?: string | null;
   xpAdjustment?: number | null;
+  /** The type of an edit determines whether a notification is shown on load. */
+  type?: "system" | "user";
 };
 
 type EditsState = {
@@ -63,6 +65,8 @@ type EditsState = {
 
 export type DeckEditsSlice = {
   deckEdits: EditsState;
+
+  createEdit(deckId: Id, edit: Partial<EditState>): void;
 
   discardEdits(deckId: Id): void;
 

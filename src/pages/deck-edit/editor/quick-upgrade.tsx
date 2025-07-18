@@ -106,7 +106,7 @@ function QuickUpgradeDialog(
   const { availableUpgrades, card, deck, onOpenChange, open, slots } = props;
   const { t } = useTranslation();
 
-  const accentColor = useAccentColor(card.faction_code);
+  const accentColor = useAccentColor(card);
 
   const resolvedCard = useStore((state) =>
     selectResolvedCardById(state, card.code, deck),

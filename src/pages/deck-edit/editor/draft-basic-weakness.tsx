@@ -88,7 +88,7 @@ function DraftBasicWeaknessModal(props: Props) {
 
   const updateCardQuantity = useStore((state) => state.updateCardQuantity);
 
-  const accentColor = useAccentColor(deck.investigatorBack.card.faction_code);
+  const accentColor = useAccentColor(deck.investigatorBack.card);
 
   const dialogContext = useDialogContext();
 
@@ -251,7 +251,7 @@ function WeaknessCard(props: WeaknessCardProps) {
             <XIcon className={css["cancel-icon"]} />
           </>
         )}
-        <CardScan card={card} preventFlip />
+        <CardScan card={card} preventFlip draggable={false} />
       </button>
 
       <Button

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
 import { displayAttribute, sideways } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
@@ -36,6 +36,10 @@ export function CardFace(props: Props) {
   const [isSideways, setSideways] = useState(sideways(card));
 
   const showImage = size === "full" || card.type_code !== "story";
+
+  const onFlip = useCallback((_: boolean, sideways: boolean) => {
+    setSideways(sideways);
+  }, []);
 
   return (
     <article
@@ -76,7 +80,7 @@ export function CardFace(props: Props) {
       {showImage &&
         (size === "full" ? (
           <div className={css["image"]}>
-            <CardScan card={card} onFlip={setSideways} />
+            <CardScan card={card} onFlip={onFlip} />
           </div>
         ) : (
           <div className={css["image"]}>

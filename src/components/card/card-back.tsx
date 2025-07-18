@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { ResolvedCard } from "@/store/lib/types";
 import type { Card as CardType } from "@/store/schemas/card.schema";
 import { displayAttribute, sideways } from "@/utils/card-utils";
@@ -45,6 +45,10 @@ export function CardBack(props: Props) {
     backCard.illustrator &&
     backCard.illustrator !== card.illustrator;
 
+  const onFlip = useCallback((_: boolean, sideways: boolean) => {
+    setSideways(sideways);
+  }, []);
+
   return (
     <article
       className={cx(
@@ -74,7 +78,7 @@ export function CardBack(props: Props) {
       {showImage &&
         (size === "full" ? (
           <div className={css["image"]}>
-            <CardScan card={card} suffix="b" onFlip={setSideways} />
+            <CardScan card={card} suffix="b" onFlip={onFlip} />
           </div>
         ) : (
           <div className={css["image"]}>

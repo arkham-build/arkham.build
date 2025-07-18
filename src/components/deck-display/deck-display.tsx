@@ -14,6 +14,7 @@ import type { DeckValidationResult } from "@/store/lib/deck-validation";
 import { deckTags, extendedDeckTags } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { History } from "@/store/selectors/decks";
+import { selectConnectionLockForDeck } from "@/store/selectors/shared";
 import { isEmpty } from "@/utils/is-empty";
 import { useAccentColor } from "@/utils/use-accent-color";
 import DeckDescription from "../deck-description";
@@ -65,7 +66,7 @@ export function DeckDisplay(props: DeckDisplayProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const { t } = useTranslation();
-  const cssVariables = useAccentColor(deck.investigatorBack.card.faction_code);
+  const cssVariables = useAccentColor(deck.investigatorBack.card);
   const hasHistory = !isEmpty(history);
 
   const onTabChange = useCallback(
@@ -232,12 +233,16 @@ function TitleEditModal(props: TitleEditModalProps) {
 
   const [loading, setLoading] = useState(false);
 
+  const connectionLock = useStore((state) =>
+    selectConnectionLockForDeck(state, deck),
+  );
+
   const { t } = useTranslation();
   const toast = useToast();
   const modalContext = useDialogContextChecked();
-  const cssVariables = useAccentColor(deck.investigatorBack.card.faction_code);
+  const cssVariables = useAccentColor(deck.investigatorBack.card);
 
-  const updateNameAndTag = useStore((state) => state.updateNameAndTag);
+  const updateDeckProperties = useStore((state) => state.updateDeckProperties);
 
   const onCloseModal = useCallback(() => {
     modalContext?.setOpen(false);
@@ -257,7 +262,7 @@ function TitleEditModal(props: TitleEditModalProps) {
       try {
         const values = new FormData(evt.target as HTMLFormElement);
 
-        await updateNameAndTag(deck.id, {
+        await updateDeckProperties(deck.id, {
           name: values.get("name")?.toString() || "",
           tags: values.get("tags")?.toString() || "",
         });
@@ -272,7 +277,7 @@ function TitleEditModal(props: TitleEditModalProps) {
       } catch (err) {
         toast.show({
           children: t("deck_edit.save_error", {
-            message: (err as Error).message,
+            error: (err as Error).message,
           }),
           variant: "error",
         });
@@ -281,7 +286,7 @@ function TitleEditModal(props: TitleEditModalProps) {
         setLoading(false);
       }
     },
-    [deck.id, updateNameAndTag, onCloseModal, toast, t],
+    [deck.id, updateDeckProperties, onCloseModal, toast, t],
   );
 
   return (
@@ -318,10 +323,11 @@ function TitleEditModal(props: TitleEditModalProps) {
               </Field>
               <div className={css["name-modal-footer"]}>
                 <Button
-                  disabled={loading}
+                  disabled={!!connectionLock || loading}
                   variant="primary"
                   type="submit"
                   data-testid="name-edit-submit"
+                  tooltip={connectionLock}
                 >
                   {t("deck_edit.save_short")}
                 </Button>

@@ -28,9 +28,7 @@ const selectUpdateDescription = createSelector(
 export function NotesRichTextEditor({ deck }: { deck: ResolvedDeck }) {
   const { t } = useTranslation();
   const { textareaRef, setPopoverOpen } = useNotesRichTextEditorContext();
-  const accentColorStyles = useAccentColor(
-    deck.investigatorFront.card.faction_code,
-  );
+  const accentColorStyles = useAccentColor(deck.investigatorFront.card);
 
   const [previewing, setPreviewing] = useState(false);
 

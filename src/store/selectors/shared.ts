@@ -62,7 +62,7 @@ export const selectMetadata = createSelector(
 
     timeEnd("select_custom_data");
 
-    return meta;
+    return meta as Metadata;
   },
 );
 

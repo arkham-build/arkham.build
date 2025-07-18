@@ -31,6 +31,19 @@ export const createDeckEditsSlice: StateCreator<
 > = (set, get) => ({
   deckEdits: {},
 
+  createEdit(deckId, edit) {
+    set((state) => {
+      return {
+        deckEdits: {
+          ...state.deckEdits,
+          [deckId]: edit,
+        },
+      };
+    });
+
+    dehydrate(get(), "edits").catch(console.error);
+  },
+
   discardEdits(deckId) {
     set((state) => {
       const deckEdits = { ...state.deckEdits };
@@ -53,6 +66,7 @@ export const createDeckEditsSlice: StateCreator<
         [deckId]: {
           ...currentEdits(state, deckId),
           tabooId: value,
+          type: "user" as const,
         },
       },
     }));
@@ -66,6 +80,7 @@ export const createDeckEditsSlice: StateCreator<
         [deckId]: {
           ...currentEdits(state, deckId),
           description_md: value,
+          type: "user" as const,
         },
       },
     }));
@@ -79,6 +94,7 @@ export const createDeckEditsSlice: StateCreator<
         [deckId]: {
           ...currentEdits(state, deckId),
           name: value,
+          type: "user" as const,
         },
       },
     }));
@@ -97,6 +113,7 @@ export const createDeckEditsSlice: StateCreator<
               ...edits.meta,
               [key]: value || null,
             },
+            type: "user" as const,
           },
         },
       };
@@ -111,6 +128,7 @@ export const createDeckEditsSlice: StateCreator<
         [deckId]: {
           ...currentEdits(state, deckId),
           [`investigator${capitalize(side)}`]: code,
+          type: "user" as const,
         },
       },
     }));
@@ -135,6 +153,7 @@ export const createDeckEditsSlice: StateCreator<
                 },
               },
             },
+            type: "user" as const,
           },
         },
       };
@@ -149,6 +168,7 @@ export const createDeckEditsSlice: StateCreator<
         [deckId]: {
           ...currentEdits(state, deckId),
           tags: value,
+          type: "user" as const,
         },
       },
     }));
@@ -162,6 +182,7 @@ export const createDeckEditsSlice: StateCreator<
         [deckId]: {
           ...currentEdits(state, deckId),
           xpAdjustment: value,
+          type: "user" as const,
         },
       },
     }));
@@ -212,6 +233,7 @@ export const createDeckEditsSlice: StateCreator<
                 [weakness]: weaknessQuantity + 1,
               },
             },
+            type: "user" as const,
           },
         },
       };
@@ -245,6 +267,7 @@ export const createDeckEditsSlice: StateCreator<
           [deck.id]: {
             ...state.deckEdits[deck.id],
             attachments,
+            type: "user" as const,
           },
         },
       };
@@ -294,6 +317,7 @@ export const createDeckEditsSlice: StateCreator<
                 [card.code]: targetQuantity,
               },
             },
+            type: "user" as const,
           },
         },
       };
@@ -313,6 +337,7 @@ export const createDeckEditsSlice: StateCreator<
               ...edits.annotations,
               [code]: value,
             },
+            type: "user" as const,
           },
         },
       };
@@ -407,6 +432,7 @@ function getCardQuantityUpdate(
   limit: number,
   tab?: Slot,
   mode: "increment" | "set" = "increment",
+  type: "system" | "user" = "user",
 ) {
   const edits = currentEdits(state, deckId);
 
@@ -435,6 +461,7 @@ function getCardQuantityUpdate(
             [code]: newValue,
           },
         },
+        type,
       },
     },
   };

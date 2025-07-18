@@ -18,21 +18,47 @@ import { Button } from "./ui/button";
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   card: Card;
   className?: string;
+  defaultFlipped?: boolean;
+  draggable?: boolean;
+  flipped: boolean;
   lazy?: boolean;
   preventFlip?: boolean;
-  onFlip?: (sideways: boolean) => void;
+  hideFlipButton?: boolean;
+  onFlip?: (value: boolean, sideways: boolean) => void;
   suffix?: string;
 }
 
-export function CardScan(props: Props) {
-  const { preventFlip, onFlip, card, lazy, suffix, ...rest } = props;
+export function CardScan(props: Omit<Props, "flipped">) {
+  const [flipped, setFlipped] = useState(false);
+
+  const onFlip = useCallback(
+    (value: boolean, sideways: boolean) => {
+      setFlipped(value);
+      props.onFlip?.(value, sideways);
+    },
+    [props],
+  );
+
+  return <CardScanControlled {...props} flipped={flipped} onFlip={onFlip} />;
+}
+
+export function CardScanControlled(props: Props) {
+  const {
+    draggable,
+    flipped,
+    preventFlip,
+    onFlip,
+    card,
+    hideFlipButton,
+    lazy,
+    suffix,
+    ...rest
+  } = props;
   const { t } = useTranslation();
   const scanRef = useRef<HTMLDivElement>(null);
 
   const backCard = useStore((state) => selectBackCard(state, card.code));
   const backType = backCard ? "card" : cardBackType(card);
-
-  const [flipped, setFlipped] = useState(false);
 
   const code = card.code;
 
@@ -76,8 +102,7 @@ export function CardScan(props: Props) {
       evt.stopPropagation();
 
       const next = !flipped;
-      if (onFlip) onFlip(next ? reverseSideways : isSideways);
-      setFlipped(next);
+      if (onFlip) onFlip(next, next ? reverseSideways : isSideways);
     },
     [flipped, isSideways, reverseSideways, onFlip],
   );
@@ -98,6 +123,7 @@ export function CardScan(props: Props) {
       <div className={css["scan-front"]} data-testid="card-scan" ref={scanRef}>
         <CardScanInner
           alt={t("card_view.scan", { code: imageCode })}
+          draggable={draggable}
           lazy={lazy}
           sideways={isSideways}
           url={frontUrl ? frontUrl : imageUrl(imageCode)}
@@ -109,6 +135,7 @@ export function CardScan(props: Props) {
             {backType === "card" ? (
               <CardScanInner
                 alt={t("card_view.scan", { code: reverseImageCode })}
+                draggable={draggable}
                 hidden={!flipped}
                 lazy={lazy}
                 sideways={backCard ? sideways(backCard) : isSideways}
@@ -117,6 +144,7 @@ export function CardScan(props: Props) {
             ) : (
               <CardScanInner
                 alt={t("card_view.scan", { code: backType })}
+                draggable={draggable}
                 hidden={!flipped}
                 lazy={lazy}
                 sideways={false}
@@ -124,14 +152,16 @@ export function CardScan(props: Props) {
               />
             )}
           </div>
-          <Button
-            className={css["scan-flip-trigger"]}
-            onClick={onToggleFlip}
-            iconOnly
-            round
-          >
-            <RotateCcwIcon />
-          </Button>
+          {!preventFlip && !hideFlipButton && (
+            <Button
+              className={css["scan-flip-trigger"]}
+              onClick={onToggleFlip}
+              iconOnly
+              round
+            >
+              <RotateCcwIcon />
+            </Button>
+          )}
         </>
       )}
     </div>
@@ -139,7 +169,7 @@ export function CardScan(props: Props) {
 }
 
 export function CardScanInner(
-  props: Omit<Props, "card"> & {
+  props: Omit<Props, "card" | "flipped"> & {
     alt: string;
     url: string;
     initialHidden?: boolean;
@@ -147,8 +177,17 @@ export function CardScanInner(
     sideways?: boolean;
   },
 ) {
-  const { alt, crossOrigin, hidden, sideways, lazy, className, url, ...rest } =
-    props;
+  const {
+    alt,
+    crossOrigin,
+    draggable,
+    hidden,
+    sideways,
+    lazy,
+    className,
+    url,
+    ...rest
+  } = props;
 
   const [shown, setShown] = useState(!hidden);
 
@@ -165,6 +204,7 @@ export function CardScanInner(
       {shown && (
         <img
           alt={alt}
+          draggable={draggable}
           crossOrigin={crossOrigin}
           height={sideways ? 300 : 420}
           loading={lazy ? "lazy" : undefined}

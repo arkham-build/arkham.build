@@ -109,7 +109,7 @@ export function DeckCreateEditor() {
     [setInvestigatorCode],
   );
 
-  const onSelectionChange = useCallback(
+  const onChangeSelection = useCallback(
     (evt: React.ChangeEvent<HTMLSelectElement>) => {
       if (evt.target instanceof HTMLSelectElement) {
         const key = evt.target.dataset.field;
@@ -139,7 +139,7 @@ export function DeckCreateEditor() {
   );
 
   const selections = decodeSelections(back, deckCreate.selections);
-  const cssVariables = useAccentColor(investigator.card.faction_code);
+  const cssVariables = useAccentColor(investigator.card);
 
   const storageProviderOptions = useMemo(
     () => [
@@ -247,7 +247,7 @@ export function DeckCreateEditor() {
 
       {selections && (
         <SelectionEditor
-          onSelectionChange={onSelectionChange}
+          onChangeSelection={onChangeSelection}
           selections={selections}
         />
       )}

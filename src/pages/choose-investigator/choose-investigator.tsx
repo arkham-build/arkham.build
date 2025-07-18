@@ -97,7 +97,7 @@ function ListcardExtra({
 
 function ChooseInvestigatorLink(props: { card: Card }) {
   const { t } = useTranslation();
-  const cssVariables = useAccentColor(props.card.faction_code);
+  const cssVariables = useAccentColor(props.card);
 
   return (
     <Link

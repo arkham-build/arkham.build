@@ -19,6 +19,9 @@ test.beforeEach(async ({ page }) => {
     .fill("Good card, upgrades into [Flashlight (2)](09122).");
 
   await page.getByTestId("annotation-edit").press("Escape");
+
+  await page.waitForTimeout(500);
+
   await page.getByTestId("editor-save").click();
 });
 

@@ -191,9 +191,7 @@ export function UpgradeModal(props: Props) {
     [exiledQuantities],
   );
 
-  const cssVariables = useAccentColor(
-    deck.cards.investigator.card.faction_code,
-  );
+  const cssVariables = useAccentColor(deck.cards.investigator.card);
 
   const disabled = xp === "" || !!connectionLock;
 

@@ -1,5 +1,6 @@
 import {
   CopyIcon,
+  DicesIcon,
   DownloadIcon,
   EllipsisIcon,
   ImportIcon,
@@ -63,6 +64,8 @@ type Props = {
 };
 
 import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
+import { SPECIAL_CARD_CODES } from "@/utils/constants";
+import { SuziStandaloneSetupDialog } from "../suzi-standalone-setup/suzi-standalone-setup";
 
 export function Sidebar(props: Props) {
   const { className, origin, deck } = props;
@@ -404,6 +407,7 @@ function SidebarActions(props: {
           </HotkeyTooltip>
         )}
         <Popover
+          modal
           placement="bottom-start"
           open={actionsOpen}
           onOpenChange={setActionsOpen}
@@ -419,6 +423,18 @@ function SidebarActions(props: {
           </PopoverTrigger>
           <PopoverContent>
             <DropdownMenu>
+              {deck.investigatorBack.card.code === SPECIAL_CARD_CODES.SUZI && (
+                <>
+                  <SuziStandaloneSetupDialog deck={deck}>
+                    <DropdownButton data-testid="view-suzi-chaos-mode">
+                      <DicesIcon />
+                      Standalone setup
+                    </DropdownButton>
+                  </SuziStandaloneSetupDialog>
+
+                  <hr />
+                </>
+              )}
               {origin === "local" && (
                 <>
                   <DropdownButton
@@ -661,6 +677,7 @@ function ShareInfo(props: { id: Id; path: string }) {
     </>
   );
 }
+
 function ArkhamDbDetails(props: { deck: ResolvedDeck }) {
   const { deck } = props;
   const { t } = useTranslation();

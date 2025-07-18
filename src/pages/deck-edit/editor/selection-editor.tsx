@@ -5,12 +5,12 @@ import type { Selections } from "@/store/lib/types";
 import { formatDeckOptionString } from "@/utils/formatting";
 
 type Props = {
-  onSelectionChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChangeSelection: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   selections: Selections;
 };
 
 export function SelectionEditor(props: Props) {
-  const { onSelectionChange, selections } = props;
+  const { onChangeSelection, selections } = props;
   const { t } = useTranslation();
 
   return Object.entries(selections).map(([key, value]) => (
@@ -22,7 +22,7 @@ export function SelectionEditor(props: Props) {
           data-field={value.accessor}
           data-type={value.type}
           emptyLabel={t("common.none")}
-          onChange={onSelectionChange}
+          onChange={onChangeSelection}
           options={value.options.map((v) => ({
             value: v,
             label: v.toString(),
@@ -37,7 +37,7 @@ export function SelectionEditor(props: Props) {
           data-field={value.accessor}
           data-type={value.type}
           emptyLabel={t("common.none")}
-          onChange={onSelectionChange}
+          onChange={onChangeSelection}
           options={value.options.map((v) => ({
             value: v,
             label: t(`common.factions.${v}`),
@@ -51,7 +51,7 @@ export function SelectionEditor(props: Props) {
           data-testid={`create-select-${key}`}
           data-type={value.type}
           emptyLabel={t("common.none")}
-          onChange={onSelectionChange}
+          onChange={onChangeSelection}
           options={value.options.map((v) => ({
             value: v.id,
             label: formatDeckOptionString(v.name),

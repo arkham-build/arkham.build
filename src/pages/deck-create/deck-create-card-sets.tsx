@@ -27,7 +27,7 @@ export function DeckCreateCardSets() {
   );
 
   const { investigator } = useStore(selectDeckCreateInvestigators);
-  const cssVariables = useAccentColor(investigator.card.faction_code);
+  const cssVariables = useAccentColor(investigator.card);
 
   return (
     <div className={css["card-selections"]} style={cssVariables}>

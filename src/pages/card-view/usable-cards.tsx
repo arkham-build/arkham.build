@@ -97,7 +97,7 @@ function CardLink({
   children?: React.ReactNode;
   card: Card;
 }) {
-  const accentColor = useAccentColor(card.faction_code);
+  const accentColor = useAccentColor(card);
 
   const cardModalContext = useCardModalContextChecked();
 

@@ -189,7 +189,7 @@ function DeckEditInner() {
   const validation = useStore((state) => selectDeckValid(state, deck));
   const lookupTables = useStore(selectLookupTables);
 
-  const accentColor = useAccentColor(deck.investigatorBack.card.faction_code);
+  const accentColor = useAccentColor(deck.investigatorBack.card);
 
   const onChangeCardQuantity = useMemo(() => {
     return (card: Card, quantity: number, limit: number) => {

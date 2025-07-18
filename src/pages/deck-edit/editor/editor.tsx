@@ -47,7 +47,7 @@ export function Editor(props: Props) {
 
   const groups = useStore((state) => selectDeckGroups(state, deck, "list"));
 
-  const cssVariables = useAccentColor(deck.investigatorBack.card.faction_code);
+  const cssVariables = useAccentColor(deck.investigatorBack.card);
   const backgroundCls = getCardColor(deck.investigatorBack.card, "background");
 
   return (

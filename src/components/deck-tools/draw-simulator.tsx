@@ -43,7 +43,7 @@ function DrawSimulatorCard(props: DrawSimulatorCardProps) {
         onClick={() => dispatch({ type: "select", index })}
         type="button"
       >
-        <CardScan card={card} preventFlip />
+        <CardScan card={card} preventFlip draggable={false} />
       </button>
       {isMounted && (
         <PortaledCardTooltip

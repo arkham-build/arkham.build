@@ -214,7 +214,7 @@ export function MetaEditor(props: Props) {
       )}
       {deck.selections && (
         <SelectionEditor
-          onSelectionChange={onFieldChange}
+          onChangeSelection={onFieldChange}
           selections={deck.selections}
         />
       )}

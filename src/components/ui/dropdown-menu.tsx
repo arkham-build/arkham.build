@@ -1,4 +1,5 @@
 import type { RadioGroupItemProps } from "@radix-ui/react-radio-group";
+import { forwardRef } from "react";
 import { cx } from "@/utils/cx";
 import { Button, type Props as ButtonProps, type ButtonType } from "./button";
 import css from "./dropdown-menu.module.css";
@@ -19,8 +20,11 @@ export function DropdownMenu(props: Props) {
   );
 }
 
-export function DropdownButton<T extends ButtonType>(
+export const DropdownButton = forwardRef(function DropdownButton<
+  T extends ButtonType,
+>(
   props: ButtonProps<T> & { hotkey?: string },
+  ref: React.Ref<HTMLButtonElement>,
 ) {
   const { children, className, hotkey, ...rest } = props;
 
@@ -36,6 +40,7 @@ export function DropdownButton<T extends ButtonType>(
   return (
     <Button
       {...rest}
+      ref={ref}
       className={cx(css["dropdown-button"], className)}
       variant="bare"
       size="full"
@@ -43,7 +48,7 @@ export function DropdownButton<T extends ButtonType>(
       {childNodes}
     </Button>
   );
-}
+});
 
 export function DropdownRadioGroupItem(
   props: RadioGroupItemProps & {

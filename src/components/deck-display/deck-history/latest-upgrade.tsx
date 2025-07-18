@@ -40,7 +40,7 @@ export function LatestUpgrade(props: Props) {
   const { currentTab, overflowScroll, readonly, deck } = props;
   const { t } = useTranslation();
 
-  const accentColor = useAccentColor(deck.investigatorBack.card.faction_code);
+  const accentColor = useAccentColor(deck.investigatorBack.card);
 
   const latestUpgrade = useStore((state) => selectLatestUpgrade(state, deck));
 

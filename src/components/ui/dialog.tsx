@@ -75,7 +75,7 @@ export const DialogContent = forwardRef<
     propRef,
   ] as React.Ref<HTMLDivElement>[]);
 
-  if (!isMounted) return null;
+  if (!isMounted || !floatingContext.open) return null;
 
   return (
     <FloatingPortal id={FLOATING_PORTAL_ID}>

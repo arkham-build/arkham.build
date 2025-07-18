@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import type { ScrollAreaProps } from "@radix-ui/react-scroll-area";
 import { Root, Scrollbar, Thumb, Viewport } from "@radix-ui/react-scroll-area";
-import { forwardRef } from "react";
+import { forwardRef, useCallback } from "react";
 import { cx } from "@/utils/cx";
 import { useMedia } from "@/utils/use-media";
 import css from "./scroller.module.css";
@@ -20,6 +20,13 @@ export const Scroller = forwardRef(
 
     const scrollerType = touchDevice && type === "hover" ? "scroll" : type;
 
+    const stopPropagation = useCallback(
+      (evt: React.MouseEvent<HTMLDivElement>) => {
+        evt.stopPropagation();
+      },
+      [],
+    );
+
     return (
       <Root
         {...rest}
@@ -37,7 +44,11 @@ export const Scroller = forwardRef(
         >
           {children}
         </Viewport>
-        <Scrollbar className={css["scrollbar"]} orientation="vertical">
+        <Scrollbar
+          className={css["scrollbar"]}
+          onMouseDown={stopPropagation}
+          orientation="vertical"
+        >
           <Thumb className={css["scrollbar-thumb"]} />
         </Scrollbar>
       </Root>
