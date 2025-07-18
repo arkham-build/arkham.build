@@ -21,10 +21,10 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   defaultFlipped?: boolean;
   draggable?: boolean;
   flipped: boolean;
-  lazy?: boolean;
-  preventFlip?: boolean;
   hideFlipButton?: boolean;
+  lazy?: boolean;
   onFlip?: (value: boolean, sideways: boolean) => void;
+  preventFlip?: boolean;
   suffix?: string;
 }
 

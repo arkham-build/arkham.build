@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useCardModalContextChecked } from "@/components/card-modal/card-modal-context";
 import { DeckInvestigator } from "@/components/deck-investigator/deck-investigator";
 import { DeckInvestigatorModal } from "@/components/deck-investigator/deck-investigator-modal";
@@ -30,10 +30,6 @@ function InvestigatorListcardInner({ deck }: Props) {
     }
   }, [cardModalContext.isOpen, modalContext.setOpen]);
 
-  const onCloseModal = useCallback(() => {
-    modalContext?.setOpen(false);
-  }, [modalContext]);
-
   const card = {
     ...deck.investigatorFront.card,
     parallel:
@@ -62,7 +58,7 @@ function InvestigatorListcardInner({ deck }: Props) {
         }
       />
       <DialogContent>
-        <DeckInvestigatorModal deck={deck} onCloseModal={onCloseModal} />
+        <DeckInvestigatorModal deck={deck} />
       </DialogContent>
     </div>
   );
