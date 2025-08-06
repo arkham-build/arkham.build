@@ -204,6 +204,7 @@
       "permanent": "영속",
       "player_cards": "플레이어 카드",
       "player_cards_short": "플레이어 카드",
+      "proceed": "계속",
       "relations": {
         "advanced": "강화된 전용 카드",
         "base": "기본 조사자",
@@ -749,11 +750,13 @@
         "cards": "카드",
         "count": "수량",
         "factions": "역할군",
+        "factions_tooltip": "{{faction}} {{cards}} {{count}}장",
         "loading": "덱 도구를 불러오는 중...",
         "resource_cost": "자원 비용",
         "resource_cost_tooltip": "비용 {{cost}}인 {{cards}} {{count}}장",
         "resource_costs": "자원 비용",
         "skill_icons": "능력 아이콘",
+        "skill_icons_tooltip": "{{skill}} {{icons}} 도합 {{count}}개",
         "title": "덱 도구"
       },
       "validation": {
@@ -824,6 +827,8 @@
         "cycle_decks": "사이클 덱 목록",
         "decrement_quantity": "덱 수량 줄이기",
         "decrement_side_quantity": "보조 덱 수량 줄이기",
+        "draft_random_basic_weakness": "무작위 기본 약점 드래프트",
+        "draft_random_basic_weakness_success": "덱에 ‘<strong>{{name}}</strong>’ 카드가 추가되었습니다.",
         "draw_random_basic_weakness": "무작위 기본 약점 뽑기",
         "draw_random_basic_weakness_success": "선택된 무작위 기본 약점은 ‘<strong>{{name}}</strong>’입니다.",
         "edit_annotation": "주석 편집하기",
@@ -888,6 +893,15 @@
       },
       "discard": "변경 사항 폐기",
       "discard_confirm": "변경 사항을 폐기하시겠습니까?",
+      "draft_weakness_modal": {
+        "cancel_button": "취소",
+        "choice_title": "취소할 약점을 한 장 선택",
+        "confirm_button": "확인",
+        "explanation_body": "이것은 기본 약점을 완전히 무작위로 결정하는 것보다 플레이어가 더 많은 통제권을 가질 수 있도록 하는 일반적인 하우스 룰입니다. 세 가지 기본 약점이 무작위로 선택되며, 플레이어는 그 중 하나를 취소할 수 있으며, 남은 두 가지 약점 중 하나가 무작위로 덱에 추가됩니다.",
+        "explanation_title": "설명",
+        "title": "기본 약점 드래프팅",
+        "too_few_rbw": "드래프트를 수행하기 위해 사용가능한 무작위 기본 약점의 수량이 너무 적습니다."
+      },
       "notes": {
         "banner_url": "배너 URL",
         "banner_url_help": "덱의 배너 이미지. 덱 보기와 소셜 미디어 미리 보기에 표시됩니다. 가로 세로 비율은 4:1, 최적 너비는 1440px입니다.",
@@ -938,7 +952,9 @@
         "no_results": "해당 구성에서 추천할 것이 없습니다.",
         "publication_date": "게시일",
         "relative": "상대값",
-        "relative_help": "각 카드가 얼마나 많은 {{name}} 덱에서 사용되는지 다른 조사자와 비교하여 계산합니다."
+        "relative_help": "각 카드가 얼마나 많은 {{name}} 덱에서 사용되는지 다른 조사자와 비교하여 계산합니다.",
+        "tooltip_absolute": "‘{{investigator}}’ 조사자 덱에서 ‘{{name}}’ 카드의 채용률은 {{decksPercentage}}%입니다. ({{decksMatched}}/{{decksAnalyzed}})",
+        "tooltip_relative": "‘{{investigator}}’ 조사자는 ‘{{name}}’ 카드를 모든 조사자 중에서 {{percentile}}%만큼 더 자주 사용합니다."
       },
       "save": "덱 저장",
       "save_error": "덱을 저장하는데 실패함: {{error}}",
@@ -1049,6 +1065,7 @@
         "view_external": "더보기"
       },
       "available_content": "사용가능한 콘텐츠",
+      "banner_credit": "일러스트레이터. {{credit}}",
       "content_types": "콘텐츠 유형",
       "content_version": "콘텐츠 버전",
       "empty": "설치된 콘텐츠 없음",
@@ -1261,6 +1278,12 @@
       },
       "sort_by": "정렬 기준"
     },
+    "popular_decks": {
+      "error": "인기 있는 덱이 로드되지 않았음: {{error}}",
+      "no_results": "덱을 찾을 수 없음",
+      "title_card": "<tooltip>{{name}}</tooltip> 카드를 포함하는 인기 있는 덱",
+      "title_investigator": "<tooltip>{{name}}</tooltip> 조사자의 인기 있는 덱"
+    },
     "preview_banner": {
       "actions": {
         "dismiss": "닫기",
@@ -1338,6 +1361,12 @@
         "card_level_as_text": "카드 아이콘 및 텍스트로 보기",
         "card_level_icon_only": "카드 아이콘으로만 보기",
         "card_show_collection_number": "보유게임 내 번호 보기",
+        "card_show_details": "카드 세부내용 보기",
+        "card_show_icon": "카드 아이콘 보기",
+        "card_show_thumbnail": "카드 썸네일 보기",
+        "card_size": "크기",
+        "card_size_sm": "간결",
+        "card_size_standard": "기본",
         "card_skill_icons": "능력 아이콘",
         "card_skill_icons_as_printed": "인쇄된 대로 보기",
         "card_skill_icons_simple": "간략하게 보기",
@@ -1358,6 +1387,7 @@
       "error": "설정 저장에 실패함: {{error}}",
       "general": {
         "default_taboo": "기본 금기 목록",
+        "latest_taboo": "최신",
         "title": "일반",
         "weakness_limited_card_pool": "무작위 기본 약점 뽑기에 제한된 카드 풀 사용",
         "weakness_limited_card_pool_help": "덱의 제한된 카드 풀이 정의되어 있는 경우, 이 옵션을 선택하면 무작위 기본 약점 뽑기가 해당 제한 내용을 준수합니다."
@@ -1376,6 +1406,18 @@
       "saving": "설정 저장하는 중...",
       "success": "설정 저장이 완료되었습니다.",
       "title": "설정"
+    },
+    "suzi_standalone_setup": {
+      "description": "FAQ 2.4에서는 “수지”용 독립 시나리오 덱을 어떻게 구성할 수 있는지 설명합니다. 컬렉션에서 레벨 1-5 사이의 무작위 카드를 원하는 경험치에 도달할 때까지 뽑습니다. 이후 덱에서 동일한 수의 카드를 제거해야 합니다.",
+      "draw_cards": "카드 뽑기",
+      "limit_collection": "보유게임에 있는 카드만 사용",
+      "limit_exile": "“최후통첩: 추방” 규칙 사용 (추방 키워드가 있는 카드 사용 금지)",
+      "limit_fan_made": "팬 제작 콘텐츠 사용",
+      "results": "결과",
+      "reveal_all": "모두 공개",
+      "title": "실험체 5U-21 / “수지” 독립 시나리오 설정",
+      "title_short": "독립 시나리오 설정",
+      "xp": "목표 경험치"
     },
     "ui": {
       "cards_combobox": {
