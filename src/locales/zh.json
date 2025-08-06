@@ -204,6 +204,7 @@
       "permanent": "永久",
       "player_cards": "玩家卡牌",
       "player_cards_short": "调查员",
+      "proceed": "继续",
       "relations": {
         "advanced": "高级专属卡牌",
         "base": "基础调查员",
@@ -749,11 +750,13 @@
         "cards": "卡牌",
         "count": "计数",
         "factions": "职阶",
+        "factions_tooltip": "{{count}} {{faction}} {{cards}}",
         "loading": "加载卡组工具中...",
         "resource_cost": "费用",
         "resource_cost_tooltip": "{{count}}张费用为{{cost}}的{{cards}}",
         "resource_costs": "资源费用",
         "skill_icons": "技能检定图标",
+        "skill_icons_tooltip": "{{count}} {{skill}} {{icons}}",
         "title": "卡组工具"
       },
       "validation": {
@@ -949,7 +952,9 @@
         "no_results": "此配置暂无推荐内容。",
         "publication_date": "出版日期",
         "relative": "相对",
-        "relative_help": "统计每张卡牌在{{name}}卡组中的使用次数，并与可使用该卡牌的其他调查员进行对比"
+        "relative_help": "统计每张卡牌在{{name}}卡组中的使用次数，并与可使用该卡牌的其他调查员进行对比",
+        "tooltip_absolute": "{{name}}被用于{{investigator}}的{{decksPercentage}}%的卡组中（{{decksMatched}}/{{decksAnalyzed}}）",
+        "tooltip_relative": "{{investigator}}使用{{name}}的频率高于{{percentile}}%的其他调查员"
       },
       "save": "保存卡组",
       "save_error": "保存卡组失败：{{error}}",
@@ -1060,6 +1065,7 @@
         "view_external": "了解更多"
       },
       "available_content": "可用内容",
+      "banner_credit": "插画：{{credit}}",
       "content_types": "内容类型",
       "content_version": "内容版本",
       "empty": "未安装内容",
@@ -1272,6 +1278,12 @@
       },
       "sort_by": "按"
     },
+    "popular_decks": {
+      "error": "热门卡组加载失败：{{error}}",
+      "no_results": "未找到卡组",
+      "title_card": "包含<tooltip>{{name}}</tooltip>的热门卡组",
+      "title_investigator": "<tooltip>{{name}}</tooltip>的热门卡组"
+    },
     "preview_banner": {
       "actions": {
         "dismiss": "关闭",
@@ -1349,6 +1361,12 @@
         "card_level_as_text": "以文字和图标双重显示",
         "card_level_icon_only": "仅在卡牌图标中",
         "card_show_collection_number": "显示收藏编号",
+        "card_show_details": "显示卡牌信息",
+        "card_show_icon": "显示卡牌图标",
+        "card_show_thumbnail": "显示卡牌缩略图",
+        "card_size": "尺寸",
+        "card_size_sm": "紧凑",
+        "card_size_standard": "标准",
         "card_skill_icons": "技能图标",
         "card_skill_icons_as_printed": "印刷样式",
         "card_skill_icons_simple": "简洁",
@@ -1369,6 +1387,7 @@
       "error": "保存设置失败：{{error}}",
       "general": {
         "default_taboo": "默认禁卡表",
+        "latest_taboo": "最新",
         "title": "通用",
         "weakness_limited_card_pool": "随机抽取基础弱点时使用限定牌池",
         "weakness_limited_card_pool_help": "勾选此项后，随机抽取基础弱点时将遵循卡组定义的限定卡池范围（若已设定）。"
@@ -1387,6 +1406,18 @@
       "saving": "正在保存设置...",
       "success": "设置已成功保存。",
       "title": "设置"
+    },
+    "suzi_standalone_setup": {
+      "description": "FAQ 2.4 定义了如何构建 Suzi 的独立卡组。从你的收藏中随机抽取 1-5 级的卡牌，直到达到你所需的经验值。之后，必须从卡组中移除等量的卡牌。",
+      "draw_cards": "抽取卡牌",
+      "limit_collection": "仅使用来自我的收藏的卡牌",
+      "limit_exile": "使用\"放逐终局\"规则（禁止放逐卡牌）",
+      "limit_fan_made": "使用粉丝自制内容",
+      "results": "结果",
+      "reveal_all": "揭示所有卡牌",
+      "title": "Subject 5U-21 / \"Suzi\" 单场冒险模式设置",
+      "title_short": "单场冒险模式设置",
+      "xp": "目标经验值"
     },
     "ui": {
       "cards_combobox": {
