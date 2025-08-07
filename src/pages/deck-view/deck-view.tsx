@@ -1,13 +1,13 @@
 import { useQueries } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
+import { ArkhamdbDecklistMeta } from "@/components/arkhamdb-decklists/arkhamdb-decklist-meta";
 import { CardModalProvider } from "@/components/card-modal/card-modal-context";
 import {
   DeckDisplay,
   type DeckDisplayProps,
   type DeckDisplayType,
 } from "@/components/deck-display/deck-display";
-import { ArkhamdbDecklistMeta } from "@/components/deck-summary/arkhamdb-decklist-meta";
 import { Loader } from "@/components/ui/loader";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";

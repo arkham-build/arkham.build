@@ -34,3 +34,9 @@
   font-size: var(--text-lg);
   font-weight: 400;
 }
+
+.error-image {
+  width: 100%;
+  max-width: 36rem;
+  margin: 0 auto;
+}

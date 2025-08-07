@@ -1,3 +1,5 @@
+import { cx } from "@/utils/cx";
+import { useResolvedColorTheme } from "@/utils/use-color-theme";
 import css from "./error-display.module.css";
 
 type Props = {
@@ -19,5 +21,17 @@ export function ErrorDisplay(props: Props) {
         {props.children}
       </div>
     </article>
+  );
+}
+
+export function ErrorImage({ className }: { className?: string }) {
+  const theme = useResolvedColorTheme();
+
+  return (
+    <img
+      className={cx(className, css["error-image"])}
+      src={theme === "dark" ? "/404-dark.png" : "/404-light.png"}
+      alt="Stylized illustration of the False Lead card"
+    />
   );
 }

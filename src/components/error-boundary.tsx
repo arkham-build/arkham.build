@@ -1,7 +1,7 @@
 import type { ErrorInfo } from "react";
 import { Component } from "react";
 import { Translation } from "react-i18next";
-import { ErrorDisplay } from "@/pages/errors/error-display";
+import { ErrorDisplay } from "@/components/error-display/error-display";
 import { ISSUE_URL } from "@/utils/constants";
 import { Button } from "./ui/button";
 

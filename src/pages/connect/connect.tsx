@@ -7,7 +7,7 @@ import { useSync } from "@/store/hooks/use-sync";
 import type { Provider } from "@/store/slices/connections.types";
 import { cx } from "@/utils/cx";
 import { formatProviderName } from "@/utils/formatting";
-import { ErrorDisplay } from "../errors/error-display";
+import { ErrorDisplay } from "../../components/error-display/error-display";
 import css from "./connect.module.css";
 
 export function Connect() {
