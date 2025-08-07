@@ -2,7 +2,7 @@ import { cx } from "@/utils/cx";
 import css from "./plane.module.css";
 
 type Props<T extends React.ElementType = "div"> = {
-  as?: React.ElementType;
+  as?: T;
   children: React.ReactNode;
   className?: string;
 } & React.ComponentPropsWithoutRef<T>;

@@ -3,13 +3,14 @@ import { cx } from "@/utils/cx";
 import css from "./loader.module.css";
 
 type Props = {
+  className?: string;
   message?: string;
   show?: boolean;
   delay?: number;
 };
 
 export function Loader(props: Props) {
-  const { delay, message, show } = props;
+  const { className, delay, message, show } = props;
 
   const [visible, setVisible] = useState(!delay);
 
@@ -23,7 +24,7 @@ export function Loader(props: Props) {
   if (!visible) return null;
 
   return (
-    <output className={cx(css["loader"], show && css["show"])}>
+    <output className={cx(className, css["loader"], show && css["show"])}>
       <div className={css["loader-inner"]}>
         <div className={css["loader-icon"]}>
           <i className="icon-auto_fail" />

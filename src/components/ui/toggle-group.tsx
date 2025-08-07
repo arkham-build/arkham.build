@@ -9,7 +9,10 @@ import { cx } from "@/utils/cx";
 import css from "./toggle-group.module.css";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
-type ToggleGroupProps = (ToggleGroupSingleProps | ToggleGroupMultipleProps) & {
+export type ToggleGroupProps = (
+  | ToggleGroupSingleProps
+  | ToggleGroupMultipleProps
+) & {
   full?: boolean;
   icons?: boolean;
 };

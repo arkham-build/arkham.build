@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
-import type { Faction } from "@/store/schemas/metadata.schema";
+import type { Coded } from "@/store/lib/types";
 import type { MultiselectFilter } from "@/store/slices/lists.types";
 import css from "./faction-toggle.module.css";
 import { FactionIconFancy } from "./icons/faction-icon-fancy";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 
 type Props = {
-  options: Faction[];
+  options: Coded[];
   value: MultiselectFilter;
   onValueChange: (value: string[]) => void;
 };
