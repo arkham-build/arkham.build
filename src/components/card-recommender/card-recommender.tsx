@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { forwardRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { ErrorDisplay } from "@/pages/errors/error-display";
+import {
+  ErrorDisplay,
+  ErrorImage,
+} from "@/components/error-display/error-display";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Card } from "@/store/schemas/card.schema";
@@ -13,17 +16,15 @@ import { type ListState, selectListCards } from "@/store/selectors/lists";
 import { selectMetadata } from "@/store/selectors/shared";
 import { getRecommendations } from "@/store/services/queries";
 import { ApiError } from "@/store/services/requests/shared";
-import { deckTickToString } from "@/store/slices/recommender";
 import { cx } from "@/utils/cx";
-import { useResolvedColorTheme } from "@/utils/use-color-theme";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { CardList } from "../card-list/card-list";
 import { CardSearch } from "../card-list/card-search";
 import type { CardListProps } from "../card-list/types";
+import { DeckDateRangeFilter } from "../deck-date-range-filter/deck-date-range-filter";
 import { Footer } from "../footer";
 import { Loader } from "../ui/loader";
 import css from "./card-recommender.module.css";
-import { DeckDateRangeFilter } from "./deck-date-range-filter";
 import { IncludeSideDeckToggle } from "./include-side-deck-toggle";
 import { RecommendationBar } from "./recommendation-bar";
 import { RecommenderRelativityToggle } from "./recommender-relativity-toggle";
@@ -36,6 +37,8 @@ export const CardRecommender = forwardRef(function CardRecommender(
 
   const { t } = useTranslation();
   const { resolvedDeck } = useResolvedDeck();
+
+  const setFilterValue = useStore((state) => state.setRecommenderDeckFilter);
 
   const listState = useStore((state) =>
     selectListCards(state, resolvedDeck, "slots"),
@@ -56,11 +59,6 @@ export const CardRecommender = forwardRef(function CardRecommender(
       return Promise.resolve({ recommendations: [], decks_analyzed: 0 });
     }
 
-    const dateRangeStrings = dateRange.map(deckTickToString) as [
-      string,
-      string,
-    ];
-
     const canonicalFrontCode =
       resolvedDeck?.metaParsed.alternate_front ??
       resolvedDeck?.investigator_code;
@@ -76,7 +74,7 @@ export const CardRecommender = forwardRef(function CardRecommender(
       includeSideDeck,
       isRelative,
       coreCards[resolvedDeck.id] || [],
-      dateRangeStrings,
+      dateRange,
     );
   };
 
@@ -88,7 +86,7 @@ export const CardRecommender = forwardRef(function CardRecommender(
       includeSideDeck,
       isRelative,
       coreCards[resolvedDeck?.id ?? ""],
-      dateRange.map(deckTickToString),
+      dateRange,
       resolvedDeck?.metaParsed.alternate_back,
       resolvedDeck?.metaParsed.alternate_front,
     ],
@@ -130,7 +128,10 @@ export const CardRecommender = forwardRef(function CardRecommender(
             slotLeft={slotLeft}
             slotRight={slotRight}
           />
-          <DeckDateRangeFilter />
+          <DeckDateRangeFilter
+            value={dateRange}
+            onValueChange={setFilterValue}
+          />
           <div className={cx(css["toggle-container"])}>
             <IncludeSideDeckToggle />
             {data && <DeckCount decksAnalyzed={data?.decks_analyzed} />}
@@ -198,7 +199,6 @@ function CardRecommenderInner(
   } = props;
 
   const { t } = useTranslation();
-  const theme = useResolvedColorTheme();
 
   const metadata = useStore(selectMetadata);
 
@@ -259,13 +259,7 @@ function CardRecommenderInner(
     return (
       <ErrorDisplay
         message={t("deck_edit.recommendations.no_results")}
-        pre={
-          <img
-            className={css["no-result-image"]}
-            src={theme === "dark" ? "/404-dark.png" : "/404-light.png"}
-            alt={t("deck_edit.recommendations.no_results")}
-          />
-        }
+        pre={<ErrorImage />}
         status={404}
       />
     );

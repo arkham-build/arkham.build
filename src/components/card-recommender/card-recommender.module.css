@@ -91,17 +91,6 @@
   }
 }
 
-.toolbar .date-range-selector div .date-range-output {
-  min-width: calc(7ch + 0.5rem);
-
-  &:first-child {
-    margin-left: 0rem;
-  }
-  &:last-child {
-    margin-right: 0rem;
-  }
-}
-
 .toggle-decks-count {
   display: none;
   @media screen and (min-width: 36rem) {
@@ -147,8 +136,4 @@
 .loader-container {
   position: relative;
   height: 100%;
-}
-
-.no-result-image {
-  max-width: 30rem;
 }

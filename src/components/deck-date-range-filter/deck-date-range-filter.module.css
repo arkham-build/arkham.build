@@ -1,0 +1,10 @@
+.date-range-output {
+  min-width: calc(7ch + 0.5rem);
+
+  &:first-child {
+    margin-left: 0rem;
+  }
+  &:last-child {
+    margin-right: 0rem;
+  }
+}

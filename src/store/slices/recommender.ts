@@ -1,40 +1,15 @@
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
+import { deckDateTickRange, deckTickToString } from "../lib/arkhamdb-decklists";
 import type { StoreState } from ".";
-import type { Id } from "./data.types";
 import type { RecommenderSlice, RecommenderState } from "./recommender.types";
-
-function toStartOfMonth(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth());
-}
-
-function deckDateRange(): [Date, Date] {
-  const minDate = new Date(2016, 8);
-  const maxDate = toStartOfMonth(new Date());
-  return [minDate, maxDate];
-}
-
-export function deckTickToString(tick: number): string {
-  const [min, _] = deckDateRange();
-  const date = new Date(min.getFullYear(), min.getMonth() + tick);
-  return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}`;
-}
-
-export function deckDateTickRange(): [number, number] {
-  const [minDate, maxDate] = deckDateRange();
-  const monthsBetween =
-    (maxDate.getFullYear() - minDate.getFullYear()) * 12 +
-    maxDate.getMonth() -
-    minDate.getMonth();
-  return [0, monthsBetween];
-}
 
 function getInitialRecommenderState(): RecommenderState {
   return {
     recommender: {
       includeSideDeck: true,
       isRelative: false,
-      deckFilter: deckDateTickRange(),
+      deckFilter: deckDateTickRange().map(deckTickToString) as [string, string],
       coreCards: {},
     },
   };
@@ -47,7 +22,7 @@ export const createRecommenderSlice: StateCreator<
   RecommenderSlice
 > = (set) => ({
   ...getInitialRecommenderState(),
-  setIncludeSideDeck(value: boolean) {
+  setIncludeSideDeck(value) {
     set((state) => ({
       recommender: {
         ...state.recommender,
@@ -55,7 +30,7 @@ export const createRecommenderSlice: StateCreator<
       },
     }));
   },
-  setIsRelative(value: boolean) {
+  setIsRelative(value) {
     set((state) => ({
       recommender: {
         ...state.recommender,
@@ -63,7 +38,7 @@ export const createRecommenderSlice: StateCreator<
       },
     }));
   },
-  setRecommenderDeckFilter(value: [number, number]) {
+  setRecommenderDeckFilter(value) {
     set((state) => ({
       recommender: {
         ...state.recommender,
@@ -71,7 +46,7 @@ export const createRecommenderSlice: StateCreator<
       },
     }));
   },
-  addCoreCard(deckId: Id, value: string) {
+  addCoreCard(deckId, value) {
     set((state) => {
       const current = state.recommender.coreCards[deckId] ?? [];
       assert(!current.includes(value), `${value} already is a core card.`);
@@ -87,7 +62,7 @@ export const createRecommenderSlice: StateCreator<
       };
     });
   },
-  removeCoreCard(deckId: Id, value: string) {
+  removeCoreCard(deckId, value) {
     set((state) => {
       const current = state.recommender.coreCards[deckId] ?? [];
       assert(current.includes(value), `${value} is not a core card.`);
