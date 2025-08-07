@@ -1,0 +1,17 @@
+.pagination {
+  display: flex;
+  align-items: stretch;
+  gap: 0.375rem;
+  justify-content: center;
+}
+
+.pagination-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pagination-gap {
+  color: var(--palette-three-point-five);
+  padding: 0 0.25rem;
+}

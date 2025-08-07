@@ -1430,7 +1430,11 @@
         "toggle": "Toggle section"
       },
       "copy_to_clipboard": "Copy to clipboard",
-      "copy_to_clipboard_success": "Copied."
+      "copy_to_clipboard_success": "Copied.",
+      "pagination": {
+        "next": "Next",
+        "previous": "Previous"
+      }
     }
   }
 }
