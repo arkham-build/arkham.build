@@ -1,6 +1,7 @@
 .container {
   padding: 1px;
   position: relative;
+  z-index: 2;
 }
 
 .row {
