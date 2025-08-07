@@ -1,11 +1,11 @@
 import { Redirect } from "wouter";
+import { PopularDecks } from "@/components/arkhamdb-decklists/popular-decks";
 import { Card } from "@/components/card/card";
 import {
   SpecialistAccess,
   SpecialistInvestigators,
 } from "@/components/card-modal/specialist";
 import { CustomizationsEditor } from "@/components/customizations/customizations-editor";
-import { PopularDecks } from "@/components/popular-decks/popular-decks";
 import { getRelatedCards } from "@/store/lib/resolve-card";
 import type { CardWithRelations } from "@/store/lib/types";
 import { isSpecialist } from "@/utils/card-utils";

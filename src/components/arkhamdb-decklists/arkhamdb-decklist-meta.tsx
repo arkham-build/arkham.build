@@ -2,7 +2,7 @@ import { HeartIcon } from "lucide-react";
 import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 import { formatDate } from "@/utils/formatting";
 import { Tag } from "../ui/tag";
-import css from "./deck-summary.module.css";
+import css from "./arkhamdb-decklist-meta.module.css";
 
 type Props = {
   date_creation: string;

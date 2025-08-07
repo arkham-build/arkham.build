@@ -1,0 +1,32 @@
+.deck-meta {
+  display: flex;
+  gap: 0.375rem;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+}
+
+.deck-meta-row {
+  display: flex;
+  gap: 0.375rem;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+* + .deck-meta {
+  margin-top: 0.375rem;
+}
+
+.likes svg {
+  fill: currentColor;
+}
+
+a.author-link {
+  color: currentColor;
+}
+
+.author-link span {
+  color: var(--text);
+}
