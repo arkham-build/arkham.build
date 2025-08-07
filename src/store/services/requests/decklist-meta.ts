@@ -1,6 +1,6 @@
 import { apiV2Request } from "./shared";
 
-type ArkhamDbDecklistMetaResponse = {
+type ArkhamDBDecklistMetaResponse = {
   date_creation: string;
   description_word_count: number;
   like_count: number;
@@ -9,7 +9,7 @@ type ArkhamDbDecklistMetaResponse = {
   user_reputation: string;
 };
 
-export async function fetchArkhamDbDecklistMeta(id: number) {
+export async function fetchArkhamDBDecklistMeta(id: number) {
   const res = await apiV2Request(`/v2/public/arkhamdb-decklists/${id}/meta`);
 
   if (res.status === 404) return undefined;
@@ -18,5 +18,5 @@ export async function fetchArkhamDbDecklistMeta(id: number) {
     throw new Error(`Failed to fetch decklist meta: ${res.statusText}`);
   }
 
-  return (await res.json()) as ArkhamDbDecklistMetaResponse;
+  return (await res.json()) as ArkhamDBDecklistMetaResponse;
 }

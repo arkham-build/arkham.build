@@ -10,6 +10,10 @@
   }
 }
 
+.summary.shadow {
+  box-shadow: var(--shadow);
+}
+
 .summary a {
   text-decoration: none;
 

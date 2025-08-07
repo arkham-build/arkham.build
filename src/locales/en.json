@@ -55,6 +55,35 @@
         "reviews": "Reviews"
       }
     },
+    "decklists": {
+      "browse": {
+        "loading": "Loading decklists...",
+        "title": "Browse decklists",
+        "no_results": "No results",
+        "results_count": "{{count}} results"
+      },
+      "filters": {
+        "author": "Author",
+        "author_placeholder": "Enter author name...",
+        "description_length": "Minimum deck guide length",
+        "description_length_short": "Short",
+        "description_length_medium": "Medium",
+        "description_length_long": "Long",
+        "excluded_cards": "Excluded cards",
+        "investigator_factions": "Investigator classes",
+        "name": "Deck name",
+        "name_placeholder": "Enter name of deck or deck series...",
+        "required_cards": "Required cards",
+        "submit": "Search",
+        "title": "Filter criteria"
+      },
+      "sorting": {
+        "popularity": "Most popular",
+        "date": "Most recent",
+        "likes": "Most likes",
+        "user_reputation": "Highest user reputation"
+      }
+    },
     "card_view": {
       "actions": {
         "faq": "View FAQ",
@@ -245,6 +274,8 @@
         "none": "No Slot",
         "tarot": "Tarot"
       },
+      "sort_asc": "Sort ascending",
+      "sort_desc": "Sort descending",
       "specialist": "Specialist",
       "subtype": {
         "basicweakness": "Basic Weakness",

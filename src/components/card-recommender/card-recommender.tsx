@@ -18,10 +18,10 @@ import { getRecommendations } from "@/store/services/queries";
 import { ApiError } from "@/store/services/requests/shared";
 import { cx } from "@/utils/cx";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
+import { DecklistsDateRangeInput } from "../arkhamdb-decklists/decklists-date-range-input";
 import { CardList } from "../card-list/card-list";
 import { CardSearch } from "../card-list/card-search";
 import type { CardListProps } from "../card-list/types";
-import { DeckDateRangeFilter } from "../deck-date-range-filter/deck-date-range-filter";
 import { Footer } from "../footer";
 import { Loader } from "../ui/loader";
 import css from "./card-recommender.module.css";
@@ -128,7 +128,7 @@ export const CardRecommender = forwardRef(function CardRecommender(
             slotLeft={slotLeft}
             slotRight={slotRight}
           />
-          <DeckDateRangeFilter
+          <DecklistsDateRangeInput
             value={dateRange}
             onValueChange={setFilterValue}
           />

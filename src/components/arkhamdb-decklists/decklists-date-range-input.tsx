@@ -1,14 +1,14 @@
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { RangeSelect } from "../ui/range-select";
-import css from "./deck-date-range-filter.module.css";
+import css from "./decklists-date-range-input.module.css";
 
 type Props = {
   onValueChange: (value: [string, string]) => void;
   value?: [string, string];
 };
 
-export function DeckDateRangeFilter(props: Props) {
+export function DecklistsDateRangeInput(props: Props) {
   const { onValueChange, value } = props;
 
   const { t } = useTranslation();
@@ -32,6 +32,7 @@ export function DeckDateRangeFilter(props: Props) {
 
   return (
     <RangeSelect
+      className={css["date-range"]}
       data-testid="deck-date-range"
       id="deck-date-range-select"
       label={t("deck_edit.recommendations.publication_date")}
@@ -51,13 +52,13 @@ function toStartOfMonth(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth());
 }
 
-export function deckDateRange(): [Date, Date] {
+function deckDateRange(): [Date, Date] {
   const minDate = new Date(2016, 8);
   const maxDate = toStartOfMonth(new Date());
   return [minDate, maxDate];
 }
 
-export function deckDateTickRange(): [number, number] {
+function deckDateTickRange(): [number, number] {
   const [minDate, maxDate] = deckDateRange();
   const monthsBetween =
     (maxDate.getFullYear() - minDate.getFullYear()) * 12 +
@@ -66,7 +67,7 @@ export function deckDateTickRange(): [number, number] {
   return [0, monthsBetween];
 }
 
-export function stringToDeckTick(dateString: string): number {
+function stringToDeckTick(dateString: string): number {
   const [year, month] = dateString.split("-").map(Number);
   const [min, _] = deckDateRange();
   const date = new Date(year, month - 1);
@@ -77,7 +78,7 @@ export function stringToDeckTick(dateString: string): number {
   );
 }
 
-export function deckTickToString(tick: number): string {
+function deckTickToString(tick: number): string {
   const [min, _] = deckDateRange();
   const date = new Date(min.getFullYear(), min.getMonth() + tick);
   return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}`;

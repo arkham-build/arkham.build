@@ -6,19 +6,21 @@ import { FactionIconFancy } from "./icons/faction-icon-fancy";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 
 type Props = {
+  disabled?: boolean;
   options: Coded[];
   value: MultiselectFilter;
   onValueChange: (value: string[]) => void;
 };
 
 export function FactionToggle(props: Props) {
-  const { options, value, onValueChange } = props;
+  const { disabled, options, value, onValueChange } = props;
   const { t } = useTranslation();
 
   return (
     <ToggleGroup
       className={css["toggle"]}
       data-testid="filters-faction"
+      disabled={disabled}
       full
       icons
       onValueChange={onValueChange}

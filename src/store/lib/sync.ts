@@ -17,7 +17,7 @@ interface SyncAdapter {
   out(deck: Deck): Deck;
 }
 
-class ArkhamDbAdapter implements SyncAdapter {
+class ArkhamDBAdapter implements SyncAdapter {
   constructor(public state: StoreState) {}
 
   in(_deck: Deck): Deck {
@@ -64,7 +64,7 @@ class ArkhamDbAdapter implements SyncAdapter {
 }
 
 export const syncAdapters = {
-  arkhamdb: ArkhamDbAdapter,
+  arkhamdb: ArkhamDBAdapter,
 };
 
 export function disconnectProviderIfUnauthorized(

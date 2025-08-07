@@ -1,3 +1,7 @@
+.date-range {
+  width: 100%;
+}
+
 .date-range-output {
   min-width: calc(7ch + 0.5rem);
 

@@ -29,6 +29,7 @@ type DeckSummaryProps = {
   extendedTags?: boolean;
   interactive?: boolean;
   showThumbnail?: boolean;
+  showShadow?: boolean;
   type?: "deck" | "decklist";
   validation?: DeckValidationResult | string | null;
 };
@@ -39,6 +40,7 @@ export function DeckSummary(props: DeckSummaryProps) {
     deck,
     extendedTags,
     interactive,
+    showShadow,
     showThumbnail,
     type = "deck",
     validation,
@@ -72,6 +74,7 @@ export function DeckSummary(props: DeckSummaryProps) {
         css["summary"],
         borderCls,
         interactive && css["interactive"],
+        showShadow && css["shadow"],
       )}
     >
       <Link href={`/${type}/view/${deck.id}`}>

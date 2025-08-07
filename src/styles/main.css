@@ -276,7 +276,7 @@ blockquote {
 hr {
   height: 0;
   margin: 0.5rem 0;
-  border-top: 0;
+  border: 0;
   border-bottom: 1px solid var(--text);
 }
 
@@ -485,7 +485,7 @@ kbd {
 .background-mystic {
   background: var(--mystic-dark);
   &::after {
-    background: rgba(0, 0, 0, 0.075);
+    background: rgba(0, 0, 0, 0.025);
     mask-image: url("../assets/patterns/mystic.svg");
   }
 }
@@ -510,7 +510,7 @@ kbd {
 .background-survivor {
   background: var(--survivor-dark);
   &::after {
-    background: rgba(0, 0, 0, 0.0375);
+    background: rgba(0, 0, 0, 0.025);
     mask-image: url("../assets/patterns/survivor.svg");
   }
 }
@@ -518,7 +518,7 @@ kbd {
 .background-multiclass {
   background: var(--multiclass-dark);
   &::after {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.025);
     mask-image: url("../assets/patterns/multiclass.svg");
   }
 }
