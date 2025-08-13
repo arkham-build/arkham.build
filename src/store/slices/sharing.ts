@@ -139,7 +139,7 @@ export const createSharingSlice: StateCreator<
 
     await dehydrate(get(), "app");
   },
-  async importSharedDeck(importDeck) {
+  async importSharedDeck(importDeck, type) {
     const state = get();
 
     assert(
@@ -147,7 +147,7 @@ export const createSharingSlice: StateCreator<
       `Deck with id ${importDeck.id} already exists.`,
     );
 
-    const deck = formatDeckImport(state, importDeck as Deck, "deck");
+    const deck = formatDeckImport(state, importDeck as Deck, type);
     assert(isDeck(deck), "Invalid deck data.");
 
     set((prev) => ({

@@ -91,8 +91,9 @@ export function SymbolsPopover(props: Props) {
       if (!symbol) return;
 
       insertTextAtCaret(`<span class=\"icon-${symbol.code}\"></span>`);
+      onEscapePress();
     },
-    [insertTextAtCaret, symbols],
+    [insertTextAtCaret, onEscapePress, symbols],
   );
 
   return (

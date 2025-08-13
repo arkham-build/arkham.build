@@ -23,7 +23,7 @@ export function RecommendationBar(props: RecommendationBarProps) {
 
   const recData = recommendations[card.code];
   const recommendation = recData.recommendation;
-  const wholeRec = Math.floor(recommendation);
+  const wholeRec = Math.round(recommendation);
 
   const cssVariables = useMemo(
     () =>
@@ -47,7 +47,7 @@ export function RecommendationBar(props: RecommendationBarProps) {
                 investigator: displayAttribute(investigator, "name"),
                 decksPercentage: wholeRec,
                 decksAnalyzed,
-                decksMatched: Math.round((decksAnalyzed / 100) * wholeRec),
+                decksMatched: recData.decks_matched ?? 0,
                 name: displayAttribute(card, "name"),
               })
         }

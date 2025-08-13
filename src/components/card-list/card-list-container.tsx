@@ -36,9 +36,9 @@ export const CardListContainer = forwardRef(function CardListContainer(
     selectListCards(state, ctx.resolvedDeck, targetDeck),
   );
 
-  const viewMode = useStore(
-    (state) => selectActiveList(state)?.display?.viewMode ?? "compact",
-  );
+  const list = useStore(selectActiveList);
+  const viewMode = list?.display?.viewMode ?? "compact";
+
   const setListViewMode = useStore((state) => state.setListViewMode);
 
   const onSelectGroup = useCallback(
@@ -80,6 +80,7 @@ export const CardListContainer = forwardRef(function CardListContainer(
         <>
           {topContent}
           <CardSearch
+            key={list?.key}
             onInputKeyDown={onKeyboardNavigate}
             slotLeft={slotLeft}
             slotRight={slotRight}

@@ -100,8 +100,9 @@ export function CardsPopover(props: Props) {
           cardFormatDefinition(cardFormat),
         ),
       );
+      onEscapePress();
     },
-    [insertTextAtCaret, metadata, lookupTables, cardFormat],
+    [insertTextAtCaret, metadata, lookupTables, cardFormat, onEscapePress],
   );
 
   return (

@@ -114,9 +114,9 @@ function QuickUpgradeDialog(
 
   const resolvedUpgrades = useStore(
     useShallow((state) =>
-      availableUpgrades.upgrades[card.code].map((upgrade) =>
-        selectResolvedCardById(state, upgrade.code, deck),
-      ),
+      availableUpgrades.upgrades[card.code]
+        .sort((a, b) => (a?.xp ?? 0) - (b?.xp ?? 0))
+        .map((upgrade) => selectResolvedCardById(state, upgrade.code, deck)),
     ),
   );
 

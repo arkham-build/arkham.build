@@ -166,6 +166,7 @@ export function DeckDisplay(props: DeckDisplayProps) {
             deck={deck}
             innerClassName={css["sidebar-inner"]}
             origin={origin}
+            type={type}
           />
         </Dialog>
 

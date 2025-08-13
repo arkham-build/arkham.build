@@ -1,3 +1,4 @@
+import type { DeckDisplayType } from "@/components/deck-display/deck-display";
 import type { ResolvedDeck } from "../lib/types";
 import type { Deck, Id } from "./data.types";
 
@@ -10,6 +11,6 @@ export type SharingSlice = {
   createShare: (id: string) => Promise<void>;
   deleteShare: (id: string) => Promise<void>;
   deleteAllShares: () => Promise<void>;
-  importSharedDeck: (deck: ResolvedDeck) => Promise<Id>;
+  importSharedDeck: (deck: ResolvedDeck, type: DeckDisplayType) => Promise<Id>;
   updateShare: (deck: Deck) => Promise<Id | undefined>;
 };

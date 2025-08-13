@@ -32,6 +32,8 @@ import {
   selectConnectionLockForDeck,
 } from "@/store/selectors/shared";
 import type { Id } from "@/store/slices/data.types";
+import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
+import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import {
   capitalize,
@@ -41,8 +43,10 @@ import {
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
 import { DeckInvestigatorModal } from "../deck-investigator/deck-investigator-modal";
+import { SuziStandaloneSetupDialog } from "../suzi-standalone-setup/suzi-standalone-setup";
 import { CopyToClipboard } from "../ui/copy-to-clipboard";
 import { HotkeyTooltip } from "../ui/hotkey";
+import type { DeckDisplayType } from "./deck-display";
 import { LatestUpgrade } from "./deck-history/latest-upgrade";
 import {
   useDeleteDeck,
@@ -60,14 +64,11 @@ type Props = {
   innerClassName?: string;
   origin: DeckOrigin;
   deck: ResolvedDeck;
+  type: DeckDisplayType;
 };
 
-import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
-import { SuziStandaloneSetupDialog } from "../suzi-standalone-setup/suzi-standalone-setup";
-
 export function Sidebar(props: Props) {
-  const { className, innerClassName, origin, deck } = props;
+  const { className, innerClassName, origin, deck, type } = props;
 
   const connectionsData = useStore(selectConnectionsData);
 
@@ -98,6 +99,7 @@ export function Sidebar(props: Props) {
           onArkhamDBUpload={onArkhamDBUpload}
           deck={deck}
           origin={origin}
+          type={type}
         />
         <SidebarDetails deck={deck} />
         {origin === "local" && <SidebarUpgrade deck={deck} />}
@@ -224,9 +226,10 @@ function SidebarUpgrade(props: { deck: ResolvedDeck }) {
 function SidebarActions(props: {
   origin: DeckOrigin;
   deck: ResolvedDeck;
+  type: DeckDisplayType;
   onArkhamDBUpload?: () => void;
 }) {
-  const { origin, deck, onArkhamDBUpload } = props;
+  const { origin, deck, onArkhamDBUpload, type } = props;
 
   const { t } = useTranslation();
   const [, navigate] = useLocation();
@@ -304,7 +307,7 @@ function SidebarActions(props: {
 
   const onImport = useCallback(async () => {
     try {
-      const id = await importSharedDeck(deck);
+      const id = await importSharedDeck(deck, type);
 
       toast.show({
         children: t("deck_view.import_success"),
@@ -321,7 +324,7 @@ function SidebarActions(props: {
         variant: "error",
       });
     }
-  }, [deck, importSharedDeck, toast.show, navigate, t]);
+  }, [deck, importSharedDeck, toast.show, navigate, t, type]);
 
   const isReadOnly = !!deck.next_deck;
 
