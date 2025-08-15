@@ -114,7 +114,7 @@ export function DeckCollection() {
           <Link to="/decklists" asChild>
             <Button as="a" data-testid="collection-deck-guides" size="sm">
               <BookTextIcon />
-              {t("decklists.browse.title_short")}
+              {t("decklists.browse.title")}
             </Button>
           </Link>
           {!hasConnections && (

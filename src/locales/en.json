@@ -55,36 +55,6 @@
         "reviews": "Reviews"
       }
     },
-    "decklists": {
-      "browse": {
-        "loading": "Loading deck guides...",
-        "title": "Browse deck guides",
-        "title_short": "Deck guides",
-        "no_results": "No results",
-        "results_count": "{{count}} results"
-      },
-      "filters": {
-        "author": "Author",
-        "author_placeholder": "Enter author name...",
-        "description_length": "Minimum deck guide length",
-        "description_length_short": "Short",
-        "description_length_medium": "Medium",
-        "description_length_long": "Long",
-        "excluded_cards": "Excluded cards",
-        "investigator_factions": "Investigator classes",
-        "name": "Deck name",
-        "name_placeholder": "Enter name of deck or deck series...",
-        "required_cards": "Required cards",
-        "submit": "Apply",
-        "title": "Filter criteria"
-      },
-      "sorting": {
-        "popularity": "Most popular",
-        "date": "Most recent",
-        "likes": "Most likes",
-        "user_reputation": "Highest user reputation"
-      }
-    },
     "card_view": {
       "actions": {
         "faq": "View FAQ",
@@ -1066,6 +1036,35 @@
         "success": "Deck upgraded successfully.",
         "title": "Upgrade deck with XP",
         "xp_gained": "XP gained"
+      }
+    },
+    "decklists": {
+      "browse": {
+        "loading": "Loading deck guides...",
+        "no_results": "No results",
+        "results_count": "{{count}} results",
+        "title": "Deck guides"
+      },
+      "filters": {
+        "author": "Author",
+        "author_placeholder": "Enter author name (e.g. Valentin1331)...",
+        "description_length": "Minimum deck guide length",
+        "description_length_long": "Long",
+        "description_length_medium": "Medium",
+        "description_length_short": "Short",
+        "excluded_cards": "Excluded cards",
+        "investigator_factions": "Investigator classes",
+        "name": "Deck guide name",
+        "name_placeholder": "Enter name...",
+        "required_cards": "Required cards",
+        "submit": "Apply",
+        "title": "Filter criteria"
+      },
+      "sorting": {
+        "date": "Most recent",
+        "likes": "Most likes",
+        "popularity": "Most popular",
+        "user_reputation": "Highest user reputation"
       }
     },
     "draw_simulator": {

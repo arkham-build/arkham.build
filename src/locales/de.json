@@ -245,6 +245,8 @@
         "none": "Kein Slot",
         "tarot": "Tarot-Slot"
       },
+      "sort_asc": "Aufsteigend sortieren",
+      "sort_desc": "Absteigend sortieren",
       "specialist": "Spezialist",
       "subtype": {
         "basicweakness": "Grundschwäche",
@@ -947,8 +949,8 @@
         "analyze_side_decks": "Nebendeck analysieren",
         "core": "Pflicht",
         "core_help": "Wenn eine Karte als \"Pflicht\" markiert ist, werden nur Decks, die diese Karte enthalten, in den Empfehlungen berücksichtigt.",
-        "error": "Empfehlungen konnten nicht abgerufen werden.",
-        "loading": "Empfehlungen werden abgerufen...",
+        "error": "Empfehlungen konnten nicht geladen werden.",
+        "loading": "Empfehlungen werden geladen...",
         "no_results": "Keine Empfehlungen für diese Konfiguration.",
         "publication_date": "Veröffentlichungsdatum",
         "relative": "Relativ",
@@ -1034,6 +1036,35 @@
         "success": "Verbesserung wurde erfolgreich gespeichert.",
         "title": "Deck verbessern",
         "xp_gained": "Erhaltene Ehrfahrungspunkte"
+      }
+    },
+    "decklists": {
+      "browse": {
+        "loading": "Deck-Guides werden geladen...",
+        "no_results": "Keine Ergebnisse",
+        "results_count": "{{count}} Ergebnisse",
+        "title": "Deck-Guides"
+      },
+      "filters": {
+        "author": "Autor",
+        "author_placeholder": "Namen des Autors eingeben (z.b. Valentin1331)...",
+        "description_length": "Min. Länge der Deck-Guides",
+        "description_length_long": "Lang",
+        "description_length_medium": "Mittel",
+        "description_length_short": "Kurz",
+        "excluded_cards": "Ausgeschlossene Karten",
+        "investigator_factions": "Ermittlerklasse",
+        "name": "Name",
+        "name_placeholder": "Name eingeben...",
+        "required_cards": "Benötigte Karten",
+        "submit": "Anwenden",
+        "title": "Suchkriterien"
+      },
+      "sorting": {
+        "date": "Most recent",
+        "likes": "Most likes",
+        "popularity": "Most popular",
+        "user_reputation": "Highest user reputation"
       }
     },
     "draw_simulator": {
@@ -1430,7 +1461,11 @@
         "toggle": "Umschalten"
       },
       "copy_to_clipboard": "In die Zwischenablage kopieren",
-      "copy_to_clipboard_success": "Kopiert."
+      "copy_to_clipboard_success": "Kopiert.",
+      "pagination": {
+        "next": "Next",
+        "previous": "Previous"
+      }
     }
   }
 }

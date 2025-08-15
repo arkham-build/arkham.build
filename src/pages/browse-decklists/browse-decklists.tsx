@@ -80,6 +80,7 @@ function BrowseDecklists() {
         mainClassName={css["layout"]}
         title={t("decklists.browse.title")}
       >
+        <h1>{t("decklists.browse.title")}</h1>
         <DecklistsFilters
           filters={state.filters}
           key={JSON.stringify(state.filters)}
