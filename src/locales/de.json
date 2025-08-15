@@ -1310,6 +1310,7 @@
       "sort_by": "Sortierung"
     },
     "popular_decks": {
+      "decklists_link": "Alle Deck-Guides ansehen",
       "error": "Beliebte Decks konnten nicht geladen werden: {{error}}",
       "no_results": "Keine Ergebnisse",
       "title_card": "Beliebte Decks mit <tooltip>{{name}}</tooltip>",

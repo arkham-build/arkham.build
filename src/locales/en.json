@@ -1310,6 +1310,7 @@
       "sort_by": "Sort by"
     },
     "popular_decks": {
+      "decklists_link": "Browse all deck guides",
       "error": "Popular deck guides could not be loaded: {{error}}",
       "no_results": "No deck guides found",
       "title_card": "Popular deck guides containing <tooltip>{{name}}</tooltip>",
