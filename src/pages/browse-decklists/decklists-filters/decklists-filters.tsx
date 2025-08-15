@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { Plane } from "@/components/ui/plane";
-import { useStore } from "@/store";
-import type { SearchFilters } from "@/store/slices/decklists-filters.types";
+import type { DecklistsFiltersState } from "@/store/services/requests/decklist-search";
 import css from "../browser-decklists.module.css";
 import { AnalyzeSideDecks } from "./analyze-side-decks";
 import { Author } from "./author";
@@ -16,18 +15,26 @@ import { InvestigatorFactions } from "./investigator-factions";
 import { PublishDate } from "./publish-date";
 import { RequiredCards } from "./required-cards";
 
-export function DecklistsFilters() {
+type Props = {
+  filters: DecklistsFiltersState["filters"];
+  onFiltersChange: (state: DecklistsFiltersState["filters"]) => void;
+  onFiltersReset: () => void;
+};
+
+export function DecklistsFilters({
+  filters,
+  onFiltersChange,
+  onFiltersReset,
+}: Props) {
   const { t } = useTranslation();
-  const filters = useStore((state) => state.decklistsFilters.filters);
-  const setFilters = useStore((state) => state.setDecklistsFilters);
-  const resetFilters = useStore((state) => state.resetDecklistsFilters);
 
   const [open, setOpen] = useState(true);
-  const [formState, setFormState] = useState<SearchFilters>(filters);
+  const [formState, setFormState] =
+    useState<DecklistsFiltersState["filters"]>(filters);
 
   const handleSubmit = (evt: React.FormEvent) => {
     evt.preventDefault();
-    setFilters(formState);
+    onFiltersChange(formState);
   };
 
   return (
@@ -82,7 +89,7 @@ export function DecklistsFilters() {
               <Button type="submit" variant="primary">
                 {t("decklists.filters.submit")}
               </Button>
-              <Button variant="bare" onClick={resetFilters}>
+              <Button variant="bare" onClick={onFiltersReset}>
                 {t("common.reset")}
               </Button>
             </footer>

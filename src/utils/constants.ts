@@ -260,36 +260,3 @@ export const TAG_REGEX_FALLBACKS: Record<string, RegExp> = {
   pa: /[Pp]arley/,
   se: /[Ss]eal(?! of the)/,
 };
-
-// biome-ignore lint/correctness/noUnusedVariables: tracking only for now.
-const DOWNLOAD_SOURCES = [
-  {
-    locale: "en",
-    url: "https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/#support-section",
-  },
-  {
-    locale: "es",
-    url: "https://www.asmodee.es/product/arkham-horror-el-juego-de-cartas-ed-revisada/#:~:text=Contenido%20descargable",
-  },
-  {
-    locale: "de",
-    url: "https://www.asmodee.de/produkte/arkham-horror-das-kartenspiel#:~:text=Zusatzmaterial",
-  },
-  {
-    locale: "fr",
-    url: "https://www.asmodee.fr/product/h-arkham-jce-edition-revisee/#:~:text=Downloads",
-  },
-  {
-    locale: "it",
-    url: "https://www.asmodee.it/product/arkham-horror-il-gioco-di-carte-lcg/#:~:text=Downloads",
-  },
-  {
-    locale: "pl",
-    url: "https://galakta.pl/gry/gry-karciane/horror-w-arkham-gra-karciana/?postTabs=7",
-  },
-  { locale: "ko", url: "https://arkhamfiles.github.io/rule_reference.html" },
-  {
-    locale: "ru",
-    url: "https://hobbyworld.ru/uzhas-arkhjema-kartochnaja-igra",
-  },
-];

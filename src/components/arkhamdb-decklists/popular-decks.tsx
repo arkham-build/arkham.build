@@ -1,8 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { AlertCircleIcon } from "lucide-react";
+import { AlertCircleIcon, BookTextIcon } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
+import { Link } from "wouter";
 import type { Card } from "@/store/schemas/card.schema";
-import { searchDecklists } from "@/store/services/requests/decklist-search";
+import {
+  deckSearchQuery,
+  searchDecklists,
+} from "@/store/services/requests/decklist-search";
 import { displayAttribute } from "@/utils/card-utils";
 import { getAccentColorsForFaction } from "@/utils/use-accent-color";
 import { CardLink } from "../card-link";
@@ -22,17 +26,19 @@ export function PopularDecks(props: Props) {
 
   const enabled = !scope.encounter_code;
 
+  const scopeParams = {
+    filters: {
+      canonicalInvestigatorCode:
+        scope.type_code === "investigator"
+          ? `${scope.code}-${scope.code}`
+          : undefined,
+      requiredCards: scope.type_code !== "investigator" ? [scope.code] : [],
+    },
+  };
+
   const { data, error, isPending } = useQuery({
     queryKey: ["popular-decks", scope.code],
-    queryFn: () =>
-      searchDecklists({
-        canonicalInvestigatorCode:
-          scope.type_code === "investigator"
-            ? `${scope.code}-${scope.code}`
-            : undefined,
-        requiredCards:
-          scope.type_code !== "investigator" ? [scope.code] : undefined,
-      }),
+    queryFn: () => searchDecklists(deckSearchQuery(scopeParams, 10)),
     enabled,
   });
 
@@ -59,11 +65,19 @@ export function PopularDecks(props: Props) {
       className={css["container"]}
       style={getAccentColorsForFaction(scope)}
     >
-      <header>
+      <header className={css["header"]}>
         <h3 className={css["title"]}>
           <i className="icon-elder_sign" />
           {title}
         </h3>
+        <Link
+          className={css["title-link"]}
+          to={`~/decklists?${deckSearchQuery(scopeParams, 30).toString()}`}
+          target="_blank"
+        >
+          <BookTextIcon />
+          {t("decklists.browse.title")}
+        </Link>
       </header>
 
       {isPending && (

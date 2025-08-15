@@ -4,7 +4,6 @@ import type { DataSlice } from "./data.types";
 import type { DeckFiltersSlice } from "./deck-collection-filters.types";
 import type { DeckCreateSlice } from "./deck-create.types";
 import type { DeckEditsSlice } from "./deck-edits.types";
-import type { DecklistsFiltersSlice } from "./decklists-filters.types";
 import type { FanMadeDataSlice } from "./fan-made-data.types";
 import type { ListsSlice } from "./lists.types";
 import type { MetadataSlice } from "./metadata.types";
@@ -24,7 +23,6 @@ export type StoreState = AppSlice &
   DeckEditsSlice &
   DeckCreateSlice &
   DeckFiltersSlice &
-  DecklistsFiltersSlice &
   ConnectionsSlice &
   SharingSlice &
   RemotingSlice &

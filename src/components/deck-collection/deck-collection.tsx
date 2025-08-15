@@ -1,4 +1,10 @@
-import { EllipsisIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
+import {
+  BookTextIcon,
+  EllipsisIcon,
+  PlusIcon,
+  Trash2Icon,
+  UploadIcon,
+} from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Virtuoso } from "react-virtuoso";
@@ -105,6 +111,12 @@ export function DeckCollection() {
       <header className={css["header"]}>
         <h2 className={css["title"]}>{t("deck_collection.title")}</h2>
         <div className={css["actions"]}>
+          <Link to="/decklists" asChild>
+            <Button as="a" data-testid="collection-deck-guides" size="sm">
+              <BookTextIcon />
+              {t("decklists.browse.title_short")}
+            </Button>
+          </Link>
           {!hasConnections && (
             <Popover>
               <DeckCollectionImport />

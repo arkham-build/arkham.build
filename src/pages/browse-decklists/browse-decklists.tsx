@@ -1,21 +1,22 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ArrowDownWideNarrowIcon, LoaderCircleIcon } from "lucide-react";
-import { useCallback, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { createSelector } from "reselect";
+import { useSearchParams } from "wouter";
 import { ArkhamDBDecklistResult } from "@/components/arkhamdb-decklists/arkhamdb-decklist-result";
 import { CardModalProvider } from "@/components/card-modal/card-modal-context";
 import { Loader } from "@/components/ui/loader";
 import { Pagination } from "@/components/ui/pagination";
 import { Select } from "@/components/ui/select";
 import { AppLayout } from "@/layouts/app-layout";
-import { useStore } from "@/store";
 import {
+  type DecklistsFiltersState,
+  deckSearchQuery,
+  parseDeckSearchQuery,
   type SortType,
   searchDecklists,
 } from "@/store/services/requests/decklist-search";
 import { ApiError } from "@/store/services/requests/shared";
-import type { StoreState } from "@/store/slices";
 import {
   ErrorDisplay,
   ErrorImage,
@@ -23,57 +24,55 @@ import {
 import css from "./browser-decklists.module.css";
 import { DecklistsFilters } from "./decklists-filters/decklists-filters";
 
-const selectQueryFromState = createSelector(
-  (state: StoreState) => state.decklistsFilters,
-  (decklistsFilters) => {
-    const params = {
-      offset: decklistsFilters.offset,
-      limit: 30,
-      sortBy: decklistsFilters.sortBy,
-      analyzeSideDecks: decklistsFilters.filters.analyzeSideDecks,
-      authorName: decklistsFilters.filters.authorName,
-      canonicalInvestigatorCode:
-        decklistsFilters.filters.canonicalInvestigatorCode,
-      description_length: decklistsFilters.filters.description_length,
-      excludedCards: decklistsFilters.filters.excluded_cards,
-      investigatorFactions: decklistsFilters.filters.investigatorFactions,
-      dateRange: decklistsFilters.filters.dateRange,
-      name: decklistsFilters.filters.name,
-      requiredCards: decklistsFilters.filters.requiredCards,
-    };
-
-    return {
-      placeholderData: keepPreviousData,
-      queryFn: () => searchDecklists(params),
-      queryKey: ["decklists", ...Object.values(params)],
-    };
-  },
-);
-
 function BrowseDecklists() {
   const { t } = useTranslation();
 
   const navRef = useRef<HTMLElement>(null);
-  const sortBy = useStore((state) => state.decklistsFilters.sortBy);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const setSortBy = useStore((state) => state.setDecklistsSortBy);
-  const setOffset = useStore((state) => state.setDecklistsOffset);
+  const initialSearchParams = useRef(searchParams);
 
-  const query = useStore(selectQueryFromState);
-  const { data, isPending, error, isPlaceholderData } = useQuery(query);
+  const [state, setState] = useState(parseDeckSearchQuery(searchParams));
 
-  const onOffsetChange = useCallback(
-    (newOffset: number) => {
-      setOffset(newOffset);
-      if (window.scrollY > window.innerHeight) {
-        navRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    },
-    [setOffset],
-  );
+  useEffect(() => {
+    setState(parseDeckSearchQuery(searchParams));
+  }, [searchParams]);
+
+  const { data, isPending, error, isPlaceholderData } = useQuery({
+    placeholderData: keepPreviousData,
+    queryFn: () => searchDecklists(deckSearchQuery(state, 30)),
+    queryKey: ["decklists", deckSearchQuery(state, 30).toString()],
+  });
+
+  const onOffsetChange = (offset: number) => {
+    const nextState = { ...state, offset };
+    setState(nextState);
+    setSearchParams(deckSearchQuery(nextState, 30));
+    if (window.scrollY > window.innerHeight) {
+      navRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
+  const onFiltersChange = (filters: DecklistsFiltersState["filters"]) => {
+    const nextState = { ...state, filters, offset: 0 };
+    setState(nextState);
+    setSearchParams(deckSearchQuery(nextState, 30));
+  };
+
+  const onFiltersReset = () => {
+    const initialState = parseDeckSearchQuery(initialSearchParams.current);
+    setState(initialState);
+    setSearchParams(initialSearchParams.current);
+  };
+
+  const onSortByChange = (sortBy: SortType) => {
+    const nextState = { ...state, sortBy, offset: 0 };
+    setState(nextState);
+    setSearchParams(deckSearchQuery(nextState, 30));
+  };
 
   return (
     <CardModalProvider>
@@ -81,7 +80,12 @@ function BrowseDecklists() {
         mainClassName={css["layout"]}
         title={t("decklists.browse.title")}
       >
-        <DecklistsFilters key={JSON.stringify(query.queryKey)} />
+        <DecklistsFilters
+          filters={state.filters}
+          key={JSON.stringify(state.filters)}
+          onFiltersChange={onFiltersChange}
+          onFiltersReset={onFiltersReset}
+        />
         {data && (
           <>
             <nav className={css["content-nav"]} ref={navRef}>
@@ -99,8 +103,8 @@ function BrowseDecklists() {
               </span>
               <Sorting
                 disabled={isPlaceholderData}
-                onSortByChange={setSortBy}
-                sortBy={sortBy}
+                onSortByChange={onSortByChange}
+                sortBy={state.sortBy}
               />
             </nav>
             <Pagination

@@ -7,11 +7,27 @@
   min-height: 19.5rem;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  gap: 0.375rem;
+}
+
 .title {
   display: flex;
   font-size: var(--text-sm);
   gap: 0.25rem;
   align-items: center;
+}
+
+.title-link {
+  display: inline-flex;
+  align-items: center;
+  color: currentColor;
+  font-size: var(--text-sm);
+  gap: 0.25rem;
 }
 
 .decks {

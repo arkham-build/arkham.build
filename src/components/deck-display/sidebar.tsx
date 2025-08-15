@@ -338,7 +338,7 @@ function SidebarActions(props: {
   useHotkey("cmd+shift+t", onExportText);
 
   const nextDeck = isReadOnly
-    ? `${origin !== "share" ? "/deck/view/" : "/share/"}${deck.next_deck}`
+    ? `${origin !== "share" ? `/${type}/view/` : "/share/"}${deck.next_deck}`
     : undefined;
 
   return (

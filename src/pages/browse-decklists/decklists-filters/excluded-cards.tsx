@@ -22,10 +22,10 @@ export function ExcludedCards({
         onValueChange={(cards) => {
           setFormState((prev) => ({
             ...prev,
-            excluded_cards: cards,
+            excludedCards: cards,
           }));
         }}
-        selectedItems={formState.excluded_cards}
+        selectedItems={formState.excludedCards}
         showLabel
       />
     </Field>
