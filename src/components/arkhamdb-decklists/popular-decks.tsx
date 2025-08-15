@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { AlertCircleIcon, BookTextIcon } from "lucide-react";
+import { AlertCircleIcon, ExternalLinkIcon } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import type { Card } from "@/store/schemas/card.schema";
@@ -75,8 +75,8 @@ export function PopularDecks(props: Props) {
           to={`~/decklists?${deckSearchQuery(scopeParams, 30).toString()}`}
           target="_blank"
         >
-          <BookTextIcon />
-          {t("decklists.browse.title")}
+          <ExternalLinkIcon />
+          {t("popular_decks.decklists_link")}
         </Link>
       </header>
 
