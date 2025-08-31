@@ -656,6 +656,7 @@
         "Stick to the Plan": "Всё по плану",
         "Market deck": "Колода рынка"
       },
+      "cards": "Карты колоды",
       "customization_sheet": "Лист адаптаций для {{name}}",
       "id": "ID колоды",
       "latest_upgrade": {
@@ -962,7 +963,7 @@
         "loading": "Загрузка руководств для колод…",
         "no_results": "Нет результатов",
         "results_count": "{{count}} результатов",
-        "title": "Руковдоства для колод"
+        "title": "Руководства для колод"
       },
       "filters": {
         "author": "Автор",
@@ -973,7 +974,7 @@
         "description_length_short": "Короткое",
         "excluded_cards": "Исключённые карты",
         "investigator_factions": "Классы сыщиков",
-        "name": "Название руководства",
+        "name": "Название колоды",
         "name_placeholder": "Введите название…",
         "required_cards": "Необходимые карты",
         "submit": "Применить",
