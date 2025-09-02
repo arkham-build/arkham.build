@@ -101,6 +101,7 @@
       },
       "back": "이전",
       "cancel": "취소",
+      "card_back": "{{name}} - 뒷면",
       "card_one": "카드",
       "card_other": "카드",
       "clear": "지우기",
@@ -245,6 +246,8 @@
         "none": "슬롯 없음",
         "tarot": "타로"
       },
+      "sort_asc": "오름차순 정렬",
+      "sort_desc": "내림차순 정렬",
       "specialist": "전문화",
       "subtype": {
         "basicweakness": "기본 약점",
@@ -298,6 +301,7 @@
         "Altered": "달라진 - Altered",
         "Ancient": "고대 - Ancient",
         "Ancient One": "고대의 존재 - Ancient One",
+        "Apiary": "Apiary",
         "Arkham": "아컴 - Arkham",
         "Arkham Asylum": "아컴 정신병원 - Arkham Asylum",
         "Armor": "방어구 - Armor",
@@ -354,6 +358,7 @@
         "Crew": "일당 - Crew",
         "Crime Scene": "범죄 현장 - Crime Scene",
         "Criminal": "범죄자 - Criminal",
+        "Cthulhu": "Cthulhu",
         "Cultist": "추종자 - Cultist",
         "Curse": "저주 - Curse",
         "Cursed": "저주받은 - Cursed",
@@ -379,7 +384,9 @@
         "Eldritch": "섬뜩한 - Eldritch",
         "Elite": "정예 - Elite",
         "Emissary": "특사 - Emissary",
+        "Enclave": "Enclave",
         "Endtimes": "종말 - Endtimes",
+        "Enraged": "Enraged",
         "Entrepreneur": "사업가 - Entrepreneur",
         "Evidence": "증거 - Evidence",
         "Exhibit": "전시실 - Exhibit",
@@ -402,6 +409,7 @@
         "Forest": "산림 - Forest",
         "Forgotten": "잊힌 - Forgotten",
         "Fortune": "행운 - Fortune",
+        "Front": "Front",
         "Future": "미래 - Future",
         "Gambit": "도박수 - Gambit",
         "Game": "게임 - Game",
@@ -445,6 +453,7 @@
         "Job": "작업 - Job",
         "Jungle": "밀림 - Jungle",
         "Kadath": "카다스 - Kadath",
+        "Keeper": "Keeper",
         "Key": "열쇠 - Key",
         "Kingsport": "Kingsport",
         "Kuala Lumpur": "쿠알라룸푸르 - Kuala Lumpur",
@@ -453,6 +462,7 @@
         "Lead": "실마리 - Lead",
         "Leader": "Leader",
         "Leng": "렝 - Leng",
+        "Lift": "Lift",
         "Lit": "불 켜진 - Lit",
         "Locus Site": "거점 지역 - Locus Site",
         "Lodge": "집회소 - Lodge",
@@ -479,6 +489,7 @@
         "Mountains": "산맥 - Mountains",
         "Mutated": "변이체 - Mutated",
         "Mystery": "불가사의 - Mystery",
+        "Nest": "Nest",
         "New Orleans": "뉴올리언스 - New Orleans",
         "New York City": "New York City",
         "Nightgaunt": "나이트건트 - Nightgaunt",
@@ -533,8 +544,10 @@
         "Riverside": "강변 - Riverside",
         "Road": "도로 - Road",
         "Role": "역할 - Role",
+        "Rooftop": "Rooftop",
         "Room": "방 - Room",
         "Rot": "부패 - Rot",
+        "Ruined": "Ruined",
         "Ruins": "유적 - Ruins",
         "Salem": "세일럼 - Salem",
         "Sanctum": "성소 - Sanctum",
@@ -544,6 +557,7 @@
         "Scientist": "과학자 - Scientist",
         "Scion": "Scion",
         "Script": "글귀 - Script",
+        "Seafloor": "Seafloor",
         "Second Floor": "2층 - Second Floor",
         "Sentinel Hill": "파수꾼 언덕 - Sentinel Hill",
         "Serpent": "뱀 - Serpent",
@@ -569,6 +583,7 @@
         "Station": "역 - Station",
         "Steps": "계단 - Steps",
         "Stowaway": "Stowaway",
+        "Summit": "Summit",
         "Summon": "소환 - Summon",
         "Sunken": "가라앉은 - Sunken",
         "Supply": "보급 - Supply",
@@ -601,10 +616,12 @@
         "Unstable": "불안정한 - Unstable",
         "Upgrade": "향상 - Upgrade",
         "Vale": "계곡 - Vale",
+        "Vault": "Vault",
         "Vehicle": "탑승물 - Vehicle",
         "Venice": "베네치아 - Venice",
         "Veteran": "참전용사 - Veteran",
         "Void": "공허 - Void",
+        "Walkway": "Walkway",
         "Warden": "파수꾼 - Warden",
         "Wastes": "황무지 - Wastes",
         "Wayfarer": "여행자 - Wayfarer",
@@ -700,6 +717,7 @@
         "Market deck": "거래 덱",
         "Stick to the Plan": "계획 엄수"
       },
+      "cards": "덱 카드",
       "customization_sheet": "{{name}} 향상 요소 시트",
       "id": "덱 ID",
       "latest_upgrade": {
@@ -845,16 +863,22 @@
       "changes_restored": "저장되지 않은 변경 사항이 복원되었습니다.",
       "config": {
         "card_pool": {
-          "campaign": "캠페인",
-          "choose_campaign": "캠페인 선택",
-          "choose_campaign_placeholder": "캠페인 선택하기...",
-          "cpa_help": "캠페인 따르기 사전 설정은 “미소스 버스터즈 (Mythos Busters)” 디스코드 서버에서 진행 중인 이벤트입니다. 아컴호러 카드게임 캠페인을 함께 플레이하고 이야기를 공유하며 공동체 의식을 고취하기 위해 마련된 이벤트입니다.",
+          "apply_environment": "{{environment}} 환경 적용",
+          "campaign_playalong": "캠페인 함께하기",
+          "campaign_playalong_help": "캠페인 함께하기는 ‘미소스 버스터즈 (Mythos Busters)’ 디스코드 서버에서 진행 중인 이벤트입니다. 아컴호러 카드게임 캠페인을 함께 플레이하고, 이야기를 공유하며, 전반적인 공동체 의식을 형성하기 위해 마련되었습니다.",
+          "choose_cycle_placeholder": "사이클 선택...",
+          "configure_environment": "환경 설정",
+          "current": "현행",
+          "current_help": "현행 환경에서 덱을 구성하려면, 플레이어는 기본판과 조사자 확장 5종 및 최근 출시된 조사자 확장 3종으로만 덱을 구성할 수 있습니다.",
           "help": "조사자, 전용 카드 및 이야기 자산 카드는 이 선택에 영향을 받지 않습니다..",
+          "legacy": "유산",
+          "legacy_help": "유산 환경에서 덱을 구성하려면, 플레이어는 아컴호러 카드게임의 모든 제품에서 나온 덱 구성 요소와 조사자, 플레이어 카드 및 약점을 자유롭게 사용할 수 있습니다. 어떠한 제한도 없습니다.",
+          "limited": "제한",
+          "limited_help": "제한 환경에서 덱을 구성하려면, 플레이어는 기본판과 조사자 확장 5종 및 선택한 조사자 확장 3종으로만 덱을 구성할 수 있습니다.",
           "placeholder": "팩 선택하기...",
           "section_title": "카드 풀 설정",
           "selected_cards": "선택된 카드",
-          "title": "제한된 카드 풀",
-          "use_preset": "캠페인 따르기 사전 설정 사용"
+          "title": "제한된 카드 풀"
         },
         "name": "덱 이름",
         "sealed": {
@@ -1034,6 +1058,35 @@
         "success": "덱 향상이 성공하였습니다.",
         "title": "경험치로 덱 향상",
         "xp_gained": "얻은 경험치"
+      }
+    },
+    "decklists": {
+      "browse": {
+        "loading": "덱 가이드 불러오기...",
+        "no_results": "결과 없음",
+        "results_count": "결과 {{count}}개",
+        "title": "덱 가이드"
+      },
+      "filters": {
+        "author": "저자",
+        "author_placeholder": "저자명 입력 (예시. Valentin1331)...",
+        "description_length": "덱 가이드 길이 최소화",
+        "description_length_long": "길게",
+        "description_length_medium": "보통",
+        "description_length_short": "짧게",
+        "excluded_cards": "제외 카드",
+        "investigator_factions": "조사자 역할군",
+        "name": "덱 이름",
+        "name_placeholder": "이름 입력 (예시. Deck Guide)...",
+        "required_cards": "필수 카드",
+        "submit": "적용",
+        "title": "필터 기준"
+      },
+      "sorting": {
+        "date": "최신 날짜 순",
+        "likes": "선호도 높은 순",
+        "popularity": "유명도 높은 순",
+        "user_reputation": "유저 명성 높은 순"
       }
     },
     "draw_simulator": {
@@ -1231,7 +1284,9 @@
         "focus_search": "탐색 결과 활성화",
         "move_down": "아래로 이동",
         "move_up": "위로 이동",
+        "next_card": "다음 카드",
         "open_card_modal": "활성화 카드 정보를 새 창에서 열기",
+        "previous_card": "이전 카드",
         "reset_filters": "필터 초기화",
         "show_limited_access": "제한된 접근 보기",
         "show_limited_access_help": "조사자는 레벨, 직업, 특성, 유형 등 기준에 따라 카드에 대한 선택적 접근 권한이 제한될 수 있습니다. 이 기능을 활성화하면 해당 제한된 접근 권한의 카드가 표시됩니다.",
@@ -1279,6 +1334,7 @@
       "sort_by": "정렬 기준"
     },
     "popular_decks": {
+      "decklists_link": "Browse all deck guides",
       "error": "인기 있는 덱이 로드되지 않았음: {{error}}",
       "no_results": "덱을 찾을 수 없음",
       "title_card": "<tooltip>{{name}}</tooltip> 카드를 포함하는 인기 있는 덱",
@@ -1291,6 +1347,9 @@
       },
       "description": "미리보기를 활성화하면 카드 탐색기에 출시 예정된 카드가 표시됩니다. 이는 설정 내의 보유 게임 항목에서 언제든지 변경할 수 있습니다.",
       "title": "미리보기 시즌이 시작되었습니다!"
+    },
+    "rules": {
+      "title": "참조 안내서"
     },
     "settings": {
       "backup": {
@@ -1386,6 +1445,7 @@
       },
       "error": "설정 저장에 실패함: {{error}}",
       "general": {
+        "default_environment": "기본 환경",
         "default_taboo": "기본 금기 목록",
         "latest_taboo": "최신",
         "title": "일반",
@@ -1430,7 +1490,11 @@
         "toggle": "전환"
       },
       "copy_to_clipboard": "클립보드에 복사",
-      "copy_to_clipboard_success": "복사됨."
+      "copy_to_clipboard_success": "복사됨.",
+      "pagination": {
+        "next": "다음",
+        "previous": "이전"
+      }
     }
   }
 }
