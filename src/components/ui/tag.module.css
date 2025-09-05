@@ -15,7 +15,7 @@
 
 .tag.xs {
   font-size: var(--text-xs);
-  padding: 0.25rem 0.25rem;
+  padding: 0.25rem;
 }
 
 .tag.inverse {

@@ -14,7 +14,10 @@
 }
 
 .collection-entry {
+  margin-left: calc(1px * var(--depth) / var(--depth));
   padding-left: calc(var(--depth) * 1rem);
+  border-left: calc(1px * var(--depth) / var(--depth)) dashed
+    var(--folder-color);
 }
 
 .deck {

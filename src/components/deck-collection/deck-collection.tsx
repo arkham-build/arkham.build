@@ -191,7 +191,12 @@ export function DeckCollection() {
               <div
                 key={entry.type === "deck" ? entry.deck.id : entry.folder.id}
                 className={css["collection-entry"]}
-                style={{ "--depth": entry.depth } as React.CSSProperties}
+                style={
+                  {
+                    "--depth": entry.depth,
+                    "--folder-color": entry.folder?.color,
+                  } as React.CSSProperties
+                }
               >
                 {entry.type === "folder" && (
                   <DeckCollectionFolder

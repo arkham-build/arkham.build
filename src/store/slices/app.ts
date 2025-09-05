@@ -166,8 +166,6 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       // SAFE! Diverging fields are added below.
       const card = c as Card;
 
-      console.log(card);
-
       const pack = metadata.packs[card.pack_code];
       const cycle = metadata.cycles[pack.cycle_code];
 
