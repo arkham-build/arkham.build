@@ -1,5 +1,7 @@
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
+import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
+import i18n from "@/utils/i18n";
 import { applyDeckEdits } from "../lib/deck-edits";
 import { cloneDeck } from "../lib/deck-factory";
 import { formatDeckImport } from "../lib/deck-io";
@@ -15,6 +17,8 @@ function getInitialDataState() {
     data: {
       decks: {},
       history: {},
+      folders: {},
+      deckFolders: {},
     },
   };
 }
@@ -111,4 +115,55 @@ export const createDataSlice: StateCreator<StoreState, [], [], DataSlice> = (
 
     return newDeck.id;
   },
+  async addDeckToArchive(deckId) {
+    set((state) => {
+      const archive = state.data.folders[ARCHIVE_FOLDER_ID];
+
+      const deckFolders = {
+        ...state.data.deckFolders,
+        [deckId]: ARCHIVE_FOLDER_ID,
+      };
+
+      return !archive
+        ? {
+            data: {
+              ...state.data,
+              deckFolders,
+            },
+          }
+        : {
+            data: {
+              ...state.data,
+              folders: {
+                ...state.data.folders,
+                [ARCHIVE_FOLDER_ID]: createArchiveFolder(),
+              },
+              deckFolders,
+            },
+          };
+    });
+
+    await dehydrate(get(), "app");
+  },
+  removeDeckFromFolder(deckId) {
+    set((state) => {
+      const deckFolders = { ...state.data.deckFolders };
+      delete deckFolders[deckId];
+      return {
+        data: {
+          ...state.data,
+          deckFolders,
+        },
+      };
+    });
+  },
 });
+
+function createArchiveFolder() {
+  return {
+    id: ARCHIVE_FOLDER_ID,
+    name: i18n.t("deck_collection.archive"),
+    icon: "lucide://archive",
+    color: "var(--palette-1)",
+  };
+}

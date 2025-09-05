@@ -695,6 +695,7 @@
     },
     "deck": {
       "actions": {
+        "archive": "Archive deck",
         "copy_id": "Copy deck id",
         "create": "Create deck",
         "delete": "Delete deck",
@@ -706,7 +707,8 @@
         "export_json": "Export JSON",
         "export_text": "Export text",
         "upgrade": "Upgrade deck",
-        "upgrade_short": "Upgrade"
+        "upgrade_short": "Upgrade",
+        "unarchive": "Unarchive deck"
       },
       "annotation": "Annotation",
       "annotation_tooltip": "Card has an annotation",
@@ -788,6 +790,7 @@
       }
     },
     "deck_collection": {
+      "archive": "Archive",
       "collection_empty": "Collection empty",
       "connect_arkhamdb": "Connect to ArkhamDB",
       "count": "{{count}} decks",

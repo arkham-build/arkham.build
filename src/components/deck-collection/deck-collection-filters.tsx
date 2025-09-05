@@ -7,7 +7,7 @@ import {
   selectDeckFilterChanges,
   selectDeckSearchTerm,
   selectFactionsInLocalDecks,
-} from "@/store/selectors/deck-filters";
+} from "@/store/selectors/deck-collection";
 import { FactionToggle } from "../faction-toggle";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";

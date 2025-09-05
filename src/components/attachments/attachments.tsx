@@ -5,8 +5,8 @@ import type {
   Card,
   Attachments as IAttachments,
 } from "@/store/schemas/card.schema";
-import { cx } from "@/utils/cx";
 import { Button } from "../ui/button";
+import { ExternalLucideIcon } from "../ui/external-lucide-icon";
 import {
   canUpdateAttachment,
   getAttachedQuantity,
@@ -63,7 +63,7 @@ function Attachment(
 
   const contentNode = (
     <span className={css["attachment-content"]}>
-      <AttachmentIcon url={definition.icon} />
+      <ExternalLucideIcon url={definition.icon} />
       {!!attached && (
         <span className={css["attachment-quantity"]}>×{attached}</span>
       )}
@@ -109,17 +109,5 @@ function Attachment(
         {contentNode}
       </Button>
     </li>
-  );
-}
-
-export function AttachmentIcon(props: { url: string; invert?: boolean }) {
-  const { invert, url } = props;
-
-  const src = url.startsWith("lucide://")
-    ? `/lucide/icons/${url.replace("lucide://", "")}.svg`
-    : url;
-
-  return (
-    <img className={cx("external-icon", invert && "invert")} src={src} alt="" />
   );
 }

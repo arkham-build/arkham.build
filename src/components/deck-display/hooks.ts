@@ -6,6 +6,7 @@ import { useStore } from "@/store";
 import { formatDeckAsText, formatDeckShare } from "@/store/lib/deck-io";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Deck, Id } from "@/store/schemas/deck.schema";
+import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import { download } from "@/utils/download";
 import { formatProviderName } from "@/utils/formatting";
 
@@ -204,4 +205,24 @@ export function useUploadDeck() {
     },
     [toast, uploadDeck, navigate, t],
   );
+}
+
+export function useChangeArchiveStatus(deckId: Id) {
+  const addDeckToArchive = useStore((state) => state.addDeckToArchive);
+  const removeDeckFromFolder = useStore((state) => state.removeDeckFromFolder);
+
+  const isArchived = useStore(
+    (state) => state.data.deckFolders[deckId] === ARCHIVE_FOLDER_ID,
+  );
+
+  return {
+    isArchived,
+    toggleArchived: () => {
+      if (isArchived) {
+        removeDeckFromFolder(deckId);
+      } else {
+        addDeckToArchive(deckId);
+      }
+    },
+  };
 }

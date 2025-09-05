@@ -456,6 +456,10 @@ kbd {
   color: var(--nord-6);
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 
+  & .external-svg-icon {
+    filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.2));
+  }
+
   & > * {
     position: relative;
     z-index: 2;
@@ -844,16 +848,32 @@ svg {
   width: 0.75rem;
   height: auto;
   vertical-align: baseline;
-  filter: invert(0.875);
+  filter: invert(0.925);
   text-align: center;
   text-indent: 100%;
   white-space: nowrap;
   overflow: hidden;
-  font-size: 1rem;
 }
 
 :root[data-theme="light"] .external-icon:not(.invert) {
   filter: invert(0.25);
+}
+
+.external-svg-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: baseline;
+}
+
+.external-svg-icon-icon {
+  display: inline-block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  mask-image: var(--svg-url);
+  mask-repeat: no-repeat;
+  mask-size: 100%;
+  background-color: currentColor;
 }
 
 .blurred-background {

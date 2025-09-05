@@ -30,6 +30,8 @@ describe("randomBasicWeaknessForDeck", () => {
         history: {
           foo: [],
         },
+        folders: {},
+        deckFolders: {},
       },
     };
 
@@ -77,6 +79,8 @@ describe("randomBasicWeaknessForDeck", () => {
         history: {
           foo: [],
         },
+        folders: {},
+        deckFolders: {},
       },
       settings: {
         collection: {
@@ -123,6 +127,8 @@ describe("randomBasicWeaknessForDeck", () => {
         history: {
           foo: [],
         },
+        folders: {},
+        deckFolders: {},
       },
       settings: {
         collection: {
@@ -168,6 +174,8 @@ describe("randomBasicWeaknessForDeck", () => {
         history: {
           foo: [],
         },
+        folders: {},
+        deckFolders: {},
       },
       settings: {
         collection: {
@@ -214,6 +222,8 @@ describe("randomBasicWeaknessForDeck", () => {
         history: {
           foo: [],
         },
+        folders: {},
+        deckFolders: {},
       },
     });
 

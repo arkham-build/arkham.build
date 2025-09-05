@@ -32,13 +32,14 @@ import { Scroller } from "@/components/ui/scroller";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import { selectConnectionsData } from "@/store/selectors/connections";
-import { selectDecksDisplayList } from "@/store/selectors/deck-filters";
+import { selectDecksDisplayList } from "@/store/selectors/deck-collection";
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
 import { FileInput } from "../ui/file-input";
 import { HotkeyTooltip } from "../ui/hotkey";
 import css from "./deck-collection.module.css";
 import { DeckCollectionFilters } from "./deck-collection-filters";
+import { DeckCollectionFolder } from "./deck-collection-folder";
 import { DeckCollectionImport } from "./deck-collection-import";
 
 export function DeckCollection() {
@@ -169,7 +170,7 @@ export function DeckCollection() {
       {deckCollection.total > 1 && (
         <div className={css["filters"]}>
           <DeckCollectionFilters
-            filteredCount={deckCollection.decks.length}
+            filteredCount={deckCollection.deckCount}
             totalCount={deckCollection.total}
           />
         </div>
@@ -182,29 +183,44 @@ export function DeckCollection() {
         >
           <Virtuoso
             customScrollParent={scrollParent}
-            data={deckCollection.decks}
+            data={deckCollection.entries}
             overscan={5}
             totalCount={deckCollection.total}
-            itemContent={(_, deck) => (
+            skipAnimationFrameInResizeObserver
+            itemContent={(_, entry) => (
               <div
-                className={css["deck"]}
-                data-testid="collection-deck"
-                key={deck.id}
+                key={entry.type === "deck" ? entry.deck.id : entry.folder.id}
+                className={css["collection-entry"]}
+                style={{ "--depth": entry.depth } as React.CSSProperties}
               >
-                <DeckSummary
-                  deck={deck}
-                  extendedTags
-                  interactive
-                  showThumbnail
-                  size="sm"
-                  validation={deck.problem}
-                >
-                  <DeckSummaryQuickActions
-                    deck={deck}
-                    onDeleteDeck={deleteDeck}
-                    onDuplicateDeck={duplicateDeck}
+                {entry.type === "folder" && (
+                  <DeckCollectionFolder
+                    expanded={entry.expanded}
+                    folder={entry.folder}
                   />
-                </DeckSummary>
+                )}
+                {entry.type === "deck" && (
+                  <div
+                    className={css["deck"]}
+                    data-testid="collection-deck"
+                    style={{ "--depth": entry.depth } as React.CSSProperties}
+                  >
+                    <DeckSummary
+                      deck={entry.deck}
+                      extendedTags
+                      interactive
+                      showThumbnail
+                      size="sm"
+                      validation={entry.deck.problem}
+                    >
+                      <DeckSummaryQuickActions
+                        deck={entry.deck}
+                        onDeleteDeck={deleteDeck}
+                        onDuplicateDeck={duplicateDeck}
+                      />
+                    </DeckSummary>
+                  </div>
+                )}
               </div>
             )}
           />

@@ -261,3 +261,5 @@ export const TAG_REGEX_FALLBACKS: Record<string, RegExp> = {
 };
 
 export const CURRENT_CYCLE_POSITION = 11;
+
+export const ARCHIVE_FOLDER_ID = "archive";

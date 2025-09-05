@@ -1,4 +1,6 @@
 import {
+  ArchiveIcon,
+  ArchiveRestoreIcon,
   CopyIcon,
   DicesIcon,
   DownloadIcon,
@@ -45,6 +47,7 @@ import { HotkeyTooltip } from "../ui/hotkey";
 import type { DeckDisplayType } from "./deck-display";
 import { LatestUpgrade } from "./deck-history/latest-upgrade";
 import {
+  useChangeArchiveStatus,
   useDeleteDeck,
   useDeleteUpgrade,
   useDuplicateDeck,
@@ -212,6 +215,8 @@ function SidebarActions(props: {
 
   const importSharedDeck = useStore((state) => state.importSharedDeck);
 
+  const { isArchived, toggleArchived } = useChangeArchiveStatus(deck.id);
+
   const onImport = useCallback(async () => {
     try {
       const id = await importSharedDeck(deck, type);
@@ -347,6 +352,22 @@ function SidebarActions(props: {
                     <CopyIcon />
                     {t("deck.actions.duplicate_short")}
                   </DropdownButton>
+                  <DropdownButton
+                    data-testid="view-archive"
+                    onClick={toggleArchived}
+                  >
+                    {isArchived ? (
+                      <>
+                        <ArchiveRestoreIcon />
+                        {t("deck.actions.unarchive")}
+                      </>
+                    ) : (
+                      <>
+                        <ArchiveIcon />
+                        {t("deck.actions.archive")}
+                      </>
+                    )}
+                  </DropdownButton>
                   <hr />
                 </>
               )}
@@ -384,7 +405,6 @@ function SidebarActions(props: {
               </DropdownButton>
               {origin === "local" && (
                 <>
-                  <hr />
                   {!!deck.previous_deck && (
                     <DropdownButton
                       data-testid="view-delete-upgrade"

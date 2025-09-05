@@ -6,7 +6,7 @@ import type {
   DeckSortPayload,
   SortCriteria,
   SortOrder,
-} from "@/store/slices/deck-collection-filters.types";
+} from "@/store/slices/deck-collection.types";
 import { Select } from "../ui/select";
 import css from "./deck-sorting-options.module.css";
 
@@ -20,7 +20,7 @@ export function DeckSortingOptions(props: Props) {
   const { t } = useTranslation();
 
   const setSort = useStore((state) => state.setDeckSort);
-  const sort = useStore((state) => state.deckFilters.sort);
+  const sort = useStore((state) => state.deckCollection.sort);
 
   const sortingOptions: {
     label: string;

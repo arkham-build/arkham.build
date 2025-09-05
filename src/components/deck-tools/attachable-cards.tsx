@@ -9,7 +9,6 @@ import {
   selectMetadata,
 } from "@/store/selectors/shared";
 import { getCardColor } from "@/utils/card-utils";
-import { AttachmentIcon } from "../attachments/attachments";
 import {
   attachmentDefinitionLimit,
   canAttach,
@@ -19,6 +18,7 @@ import {
 } from "../attachments/attachments.helpers";
 import { LimitedCardGroup } from "../limited-card-group";
 import { ListCard } from "../list-card/list-card";
+import { ExternalLucideIcon } from "../ui/external-lucide-icon";
 
 type Props = {
   card: Card;
@@ -113,7 +113,7 @@ export function AttachableCards(props: Props) {
       )}
       title={
         <>
-          <AttachmentIcon invert url={definition.icon} />
+          <ExternalLucideIcon url={definition.icon} />
           {getAttachmentName(definition, i18n, t)}
         </>
       }

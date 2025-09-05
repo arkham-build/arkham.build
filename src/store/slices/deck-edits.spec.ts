@@ -25,6 +25,8 @@ describe("deck-view slice", () => {
           history: {
             "deck-id": [],
           },
+          folders: {},
+          deckFolders: {},
         },
       });
     });
@@ -113,6 +115,8 @@ describe("deck-view slice", () => {
             history: {
               "deck-id": [],
             },
+            folders: {},
+            deckFolders: {},
           },
         });
       });

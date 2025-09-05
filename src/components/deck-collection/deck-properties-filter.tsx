@@ -6,8 +6,8 @@ import {
   selectDeckFilterValue,
   selectDeckProperties,
   selectDeckPropertiesChanges,
-} from "@/store/selectors/deck-filters";
-import type { DeckPropertyName } from "@/store/slices/deck-collection-filters.types";
+} from "@/store/selectors/deck-collection";
+import type { DeckPropertyName } from "@/store/slices/deck-collection.types";
 import { FilterContainer } from "../filters/primitives/filter-container";
 import { Checkbox } from "../ui/checkbox";
 import { CheckboxGroup } from "../ui/checkboxgroup";
@@ -19,7 +19,7 @@ type Props = {
 export function DeckPropertiesFilter({ containerClass }: Props) {
   const { t } = useTranslation();
 
-  const open = useStore((state) => state.deckFilters.open.properties);
+  const open = useStore((state) => state.deckCollection.open.properties);
   const properties = useStore(useShallow(selectDeckProperties));
   const changes = useStore(selectDeckPropertiesChanges);
   const values = useStore((state) =>

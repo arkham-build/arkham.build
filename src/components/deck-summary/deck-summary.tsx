@@ -1,4 +1,6 @@
 import {
+  ArchiveIcon,
+  ArchiveRestoreIcon,
   CircleAlertIcon,
   CopyIcon,
   PencilIcon,
@@ -16,6 +18,7 @@ import { selectConnectionLockForDeck } from "@/store/selectors/shared";
 import { displayAttribute, getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { CardThumbnail } from "../card-thumbnail";
+import { useChangeArchiveStatus } from "../deck-display/hooks";
 import { DeckStats } from "../deck-stats";
 import { DeckTags } from "../deck-tags";
 import { Button } from "../ui/button";
@@ -178,6 +181,16 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
     [deck.id, navigate],
   );
 
+  const { isArchived, toggleArchived } = useChangeArchiveStatus(deck.id);
+
+  const onArchive = useCallback(
+    (evt: React.MouseEvent) => {
+      cancelEvent(evt);
+      toggleArchived();
+    },
+    [toggleArchived],
+  );
+
   return (
     <nav className={css["quick-actions"]}>
       <Button
@@ -195,6 +208,16 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
         onClick={onUpgrade}
       >
         <i className="icon-xp-bold" />
+      </Button>
+      <Button
+        className={css["quick-action"]}
+        iconOnly
+        onClick={onArchive}
+        tooltip={
+          isArchived ? t("deck.actions.unarchive") : t("deck.actions.archive")
+        }
+      >
+        {isArchived ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
       </Button>
       <Button
         className={css["quick-action"]}

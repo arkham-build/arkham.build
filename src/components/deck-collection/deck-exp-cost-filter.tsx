@@ -5,7 +5,7 @@ import {
   selectDeckFilterValue,
   selectDecksMinMaxExpCost,
   selectExpCostChanges,
-} from "@/store/selectors/deck-filters";
+} from "@/store/selectors/deck-collection";
 import { FilterContainer } from "../filters/primitives/filter-container";
 import { RangeSelect } from "../ui/range-select";
 
@@ -20,7 +20,7 @@ export function DeckXPCostFilter({ containerClass }: Props) {
   const [min, max] = useStore(selectDecksMinMaxExpCost);
 
   const value = useStore((state) => selectDeckFilterValue(state, "expCost"));
-  const open = useStore((state) => state.deckFilters.open.expCost);
+  const open = useStore((state) => state.deckCollection.open.expCost);
 
   const setFilterOpen = useStore((state) => state.setDeckFilterOpen);
   const resetFilter = useStore((state) => state.resetDeckFilter);

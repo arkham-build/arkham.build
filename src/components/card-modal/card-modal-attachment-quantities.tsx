@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Attachments, Card } from "@/store/schemas/card.schema";
-import { AttachmentIcon } from "../attachments/attachments";
 import {
   attachmentDefinitionLimit,
   canAttach,
@@ -11,6 +10,7 @@ import {
   getAttachmentName,
   useAttachmentsChangeHandler,
 } from "../attachments/attachments.helpers";
+import { ExternalLucideIcon } from "../ui/external-lucide-icon";
 import { QuantityInput } from "../ui/quantity-input";
 import css from "./card-modal.module.css";
 
@@ -63,7 +63,7 @@ function AttachmentQuantity(
   return (
     <article className={css["quantity"]} key={definition.code}>
       <h3 className={css["quantity-title"]}>
-        <AttachmentIcon url={definition.icon} />{" "}
+        <ExternalLucideIcon url={definition.icon} />{" "}
         {getAttachmentName(definition, i18n, t)}
       </h3>
       <QuantityInput

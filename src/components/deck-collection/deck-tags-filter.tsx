@@ -7,7 +7,7 @@ import {
   selectDeckFilterValue,
   selectTagsChanges,
   selectTagsInLocalDecks,
-} from "@/store/selectors/deck-filters";
+} from "@/store/selectors/deck-collection";
 import { isEmpty } from "@/utils/is-empty";
 import { tagRenderer } from "../deck-tags";
 import { FilterContainer } from "../filters/primitives/filter-container";
@@ -20,7 +20,7 @@ export function DeckTagsFilter({ containerClass }: Props) {
   const { t } = useTranslation();
   const changes = useStore(selectTagsChanges);
   const options = useStore(selectTagsInLocalDecks);
-  const open = useStore((state) => state.deckFilters.open.tags);
+  const open = useStore((state) => state.deckCollection.open.tags);
   const value = useStore((state) => selectDeckFilterValue(state, "tags"));
 
   const locale = useStore((state) => state.settings.locale);

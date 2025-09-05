@@ -9,13 +9,14 @@ import { extendedDeckTags } from "../lib/resolve-deck";
 import { instantiateSearchFromLocale } from "../lib/searching";
 import type { ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";
+import type { Folder } from "../slices/data.types";
 import type {
   DeckFiltersKey,
   DeckPropertyName,
   DeckValidity,
   RangeMinMax,
   SortOrder,
-} from "../slices/deck-collection-filters.types";
+} from "../slices/deck-collection.types";
 import type { MultiselectFilter } from "../slices/lists.types";
 import { selectLocalDecks } from "./decks";
 import { selectLocaleSortingCollator, selectMetadata } from "./shared";
@@ -23,7 +24,7 @@ import { selectLocaleSortingCollator, selectMetadata } from "./shared";
 // Arbitrarily chosen for now
 const MATCHING_MAX_TOKEN_DISTANCE_DECKS = 4;
 
-const selectDeckFilters = (state: StoreState) => state.deckFilters.filters;
+const selectDeckFilters = (state: StoreState) => state.deckCollection.filters;
 
 export const selectDeckFilterValue = createSelector(
   selectDeckFilters,
@@ -33,7 +34,7 @@ export const selectDeckFilterValue = createSelector(
 
 // Search
 export const selectDeckSearchTerm = (state: StoreState) =>
-  state.deckFilters.filters.search;
+  state.deckCollection.filters.search;
 
 const selectSearchableTextInDecks = createSelector(
   selectLocalDecks,
@@ -47,7 +48,7 @@ const selectSearchableTextInDecks = createSelector(
 
 // Faction
 export const selectDeckFactionFilter = (state: StoreState) =>
-  state.deckFilters.filters.faction;
+  state.deckCollection.filters.faction;
 
 const filterDeckByFaction = (faction: string) => {
   return (deck: ResolvedDeck) => {
@@ -82,10 +83,10 @@ export const selectTagsChanges = createSelector(
 
 // Properties
 const selectDeckPropertiesFilter = (state: StoreState) =>
-  state.deckFilters.filters.properties;
+  state.deckCollection.filters.properties;
 
 export const selectDeckProperties = createSelector(
-  (state: StoreState) => state.deckFilters.filters.properties,
+  (state: StoreState) => state.deckCollection.filters.properties,
   (_) => {
     return {
       parallel: i18n.t("common.parallel"),
@@ -310,7 +311,7 @@ const selectDecksFiltered = createSelector(
   },
 );
 
-const selectDecksSorting = (state: StoreState) => state.deckFilters.sort;
+const selectDecksSorting = (state: StoreState) => state.deckCollection.sort;
 
 function genericSort(a: string | number, b: string | number, order: SortOrder) {
   const mod = order === "desc" ? -1 : 1;
@@ -370,13 +371,105 @@ const selectDecksSortingFunc = createSelector(
   },
 );
 
+type DecklistEntry = DeckEntry | FolderEntry;
+
+type DeckEntry = {
+  deck: ResolvedDeck;
+  depth: number;
+  folder?: Folder;
+  type: "deck";
+};
+
+type FolderEntry = {
+  depth: number;
+  expanded: boolean;
+  folder: Folder;
+  type: "folder";
+};
+
 export const selectDecksDisplayList = createSelector(
   selectDecksFiltered,
   selectDecksSortingFunc,
-  (decks, sorting) => {
+  (state: StoreState) => state.data.folders,
+  (state: StoreState) => state.data.deckFolders,
+  (state: StoreState) => state.deckCollection.expandedFolders,
+  (filteredDecks, sorting, folders, deckFolders, expandedFolders) => {
+    const folderHierarchy: Record<string, string[]> = {};
+    const decksByFolderId: Record<string, ResolvedDeck[]> = {};
+    const uncategorizedDecks: ResolvedDeck[] = [];
+
+    for (const deck of filteredDecks.decks) {
+      const folderId = deckFolders[deck.id];
+
+      if (folderId) {
+        const folder = folders[folderId];
+
+        folderHierarchy[folder.id] ??= [];
+
+        decksByFolderId[folder.id] ??= [];
+        decksByFolderId[folder.id].push(deck);
+
+        if (folder.parent_id) {
+          folderHierarchy[folder.parent_id] ??= [];
+          folderHierarchy[folder.parent_id].push(folder.id);
+        }
+      } else {
+        uncategorizedDecks.push(deck);
+      }
+    }
+
+    const sorted: DecklistEntry[] = [];
+
+    const rootFolders = Object.values(folders)
+      .filter((folder) => !folder.parent_id)
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    for (const folder of rootFolders) {
+      const expanded = expandedFolders[folder.id];
+
+      const traverse = (folder: Folder, depth: number) => {
+        sorted.push({
+          expanded,
+          folder,
+          depth,
+          type: "folder",
+        });
+
+        if (folderHierarchy[folder.id]) {
+          const childFolders = folderHierarchy[folder.id]
+            .map((id) => folders[id])
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+          for (const childFolder of childFolders) {
+            if (childFolder) traverse(childFolder, depth + 1);
+          }
+
+          const decksInFolder = decksByFolderId[folder.id] ?? [];
+
+          for (const deck of decksInFolder.sort(sorting)) {
+            if (expanded) {
+              sorted.push({
+                deck,
+                depth: depth + 1,
+                folder,
+                type: "deck",
+              });
+            }
+          }
+        }
+      };
+
+      traverse(folder, 0);
+    }
+
+    for (const deck of uncategorizedDecks.sort(sorting)) {
+      sorted.push({ deck, depth: 0, type: "deck" });
+    }
+
     return {
-      decks: decks.decks.sort(sorting),
-      total: decks.total,
+      entries: sorted,
+      total: filteredDecks.total,
+      deckCount: filteredDecks.decks.length,
     };
   },
 );

@@ -3,8 +3,8 @@
 import { TicketCheckIcon, TicketsIcon, TicketXIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useStore } from "@/store";
-import { selectDeckFilterValue } from "@/store/selectors/deck-filters";
-import type { DeckValidity } from "@/store/slices/deck-collection-filters.types";
+import { selectDeckFilterValue } from "@/store/selectors/deck-collection";
+import type { DeckValidity } from "@/store/slices/deck-collection.types";
 import { capitalize } from "@/utils/formatting";
 import { FilterContainer } from "../filters/primitives/filter-container";
 import {
@@ -17,7 +17,7 @@ type Props = {
 };
 
 export function DeckValidityFilter({ containerClass }: Props) {
-  const open = useStore((state) => state.deckFilters.open.validity);
+  const open = useStore((state) => state.deckCollection.open.validity);
   const value = useStore<DeckValidity>((state) =>
     selectDeckFilterValue(state, "validity"),
   );

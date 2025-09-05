@@ -17,7 +17,8 @@ type CollapsibleFilter = Exclude<DeckFiltersKey, "faction" | "search">;
 
 export type SortOrder = "asc" | "desc";
 
-export type DeckFiltersState = {
+export type DeckCollectionState = {
+  expandedFolders: Record<string, boolean>;
   filters: DeckFiltersType;
   open: Record<CollapsibleFilter, boolean>;
   sort: {
@@ -31,15 +32,17 @@ export type DeckSortPayload = {
   criteria: SortCriteria;
 };
 
-export type DeckFiltersSlice = {
-  deckFilters: DeckFiltersState;
+export type DeckCollectionSlice = {
+  deckCollection: DeckCollectionState;
+
   addDecksFilter<F extends DeckFiltersKey, T extends DeckFiltersValue<F>>(
     type: F,
     value: T,
   ): void;
+  resetDeckFilter(filter: DeckFiltersKey): void;
   setDeckFilterOpen(filter: CollapsibleFilter, status: boolean): void;
   setDeckSort(payload: Partial<DeckSortPayload>): void;
-  resetDeckFilter(filter: DeckFiltersKey): void;
+  toggleFolderExpanded(folderId: string): void;
 };
 
 export type DeckPropertyName = "parallel";
