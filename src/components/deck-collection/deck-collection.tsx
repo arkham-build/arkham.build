@@ -195,6 +195,7 @@ export function DeckCollection() {
               >
                 {entry.type === "folder" && (
                   <DeckCollectionFolder
+                    count={entry.count}
                     expanded={entry.expanded}
                     folder={entry.folder}
                   />

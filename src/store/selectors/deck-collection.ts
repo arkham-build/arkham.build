@@ -381,6 +381,7 @@ type DeckEntry = {
 };
 
 type FolderEntry = {
+  count: number;
   depth: number;
   expanded: boolean;
   folder: Folder;
@@ -428,7 +429,10 @@ export const selectDecksDisplayList = createSelector(
       const expanded = expandedFolders[folder.id];
 
       const traverse = (folder: Folder, depth: number) => {
+        const decksInFolder = decksByFolderId?.[folder.id] ?? [];
+
         sorted.push({
+          count: decksInFolder.length,
           expanded,
           folder,
           depth,
@@ -443,8 +447,6 @@ export const selectDecksDisplayList = createSelector(
           for (const childFolder of childFolders) {
             if (childFolder) traverse(childFolder, depth + 1);
           }
-
-          const decksInFolder = decksByFolderId[folder.id] ?? [];
 
           for (const deck of decksInFolder.sort(sorting)) {
             if (expanded) {

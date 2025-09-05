@@ -14,7 +14,7 @@
 }
 
 .collection-entry {
-  padding-left: calc(var(--depth) * 0.75rem);
+  padding-left: calc(var(--depth) * 1rem);
 }
 
 .deck {
