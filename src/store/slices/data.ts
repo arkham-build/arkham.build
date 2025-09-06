@@ -124,7 +124,7 @@ export const createDataSlice: StateCreator<StoreState, [], [], DataSlice> = (
         [deckId]: ARCHIVE_FOLDER_ID,
       };
 
-      return !archive
+      return archive
         ? {
             data: {
               ...state.data,

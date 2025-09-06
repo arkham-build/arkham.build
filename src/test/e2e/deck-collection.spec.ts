@@ -1,6 +1,6 @@
 import path from "node:path";
 import { expect, test } from "@playwright/test";
-import { importDeck } from "./actions";
+import { importDeck, importDeckFromFile } from "./actions";
 import { mockApiCalls } from "./mocks";
 
 test.beforeEach(async ({ page }) => {
@@ -69,5 +69,46 @@ test.describe("deck collection", () => {
 
     await expect(page.getByText("Collection empty")).toBeVisible();
     await expect(page.getByTestId("collection-deck")).not.toBeVisible();
+  });
+
+  test("archive decks", async ({ page }) => {
+    await importDeckFromFile(page, "hunch_deck.json");
+    await importDeckFromFile(page, "bonded.json");
+
+    await page
+      .getByTestId("collection-deck-Le Diamond")
+      .getByTestId("deck-summary-title")
+      .click();
+    await page.getByTestId("view-more-actions").click();
+    await page.getByTestId("view-archive").click();
+    await page.getByTestId("masthead-logo").click();
+
+    await page
+      .getByTestId("collection-deck-Daisy Walker Investigates")
+      .getByTestId("deck-summary-title")
+      .click();
+
+    await page.getByTestId("view-more-actions").click();
+    await page.getByTestId("view-archive").click();
+    await page.getByTestId("masthead-logo").click();
+
+    await expect(page.getByTestId("collection-folder-Archive")).toHaveText(
+      "Archive2 decks",
+    );
+
+    await page.getByTestId("collection-folder-Archive").click();
+
+    await page
+      .getByTestId("collection-deck-Daisy Walker Investigates")
+      .getByTestId("deck-summary-title")
+      .click();
+
+    await page.getByTestId("view-more-actions").click();
+    await page.getByTestId("view-archive").click();
+    await page.getByTestId("masthead-logo").click();
+
+    await expect(page.getByTestId("collection-folder-Archive")).toHaveText(
+      "Archive1 decks",
+    );
   });
 });

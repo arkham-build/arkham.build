@@ -20,6 +20,7 @@ export function DeckCollectionFolder(props: Props) {
   return (
     <button
       className={css["folder"]}
+      data-testid={`collection-folder-${folder.name}`}
       onClick={() => toggleFolderExpanded(folder.id)}
       style={
         {

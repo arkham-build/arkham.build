@@ -208,7 +208,7 @@ export function DeckCollection() {
                 {entry.type === "deck" && (
                   <div
                     className={css["deck"]}
-                    data-testid="collection-deck"
+                    data-testid={`collection-deck-${entry.deck.name}`}
                     style={{ "--depth": entry.depth } as React.CSSProperties}
                   >
                     <DeckSummary
