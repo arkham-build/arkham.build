@@ -695,6 +695,7 @@
     },
     "deck": {
       "actions": {
+        "archive": "덱 보관",
         "copy_id": "덱 ID 복사",
         "create": "덱 생성하기",
         "delete": "덱 삭제",
@@ -705,6 +706,7 @@
         "edit_short": "편집",
         "export_json": "JSON 형태로 파일 내보내기",
         "export_text": "텍스트 형태로 파일 내보내기",
+        "unarchive": "덱 보관해제",
         "upgrade": "덱 향상",
         "upgrade_short": "향상"
       },
@@ -788,6 +790,7 @@
       }
     },
     "deck_collection": {
+      "archive": "보관하기",
       "collection_empty": "보유 게임이 비어있음",
       "connect_arkhamdb": "아컴디비 사이트에 연결",
       "count": "덱 {{count}}개",
@@ -1423,6 +1426,7 @@
         "card_show_details": "카드 세부내용 보기",
         "card_show_icon": "카드 아이콘 보기",
         "card_show_thumbnail": "카드 썸네일 보기",
+        "card_show_unique_icon": "고유(＊) 아이콘 보기",
         "card_size": "크기",
         "card_size_sm": "간결",
         "card_size_standard": "기본",
@@ -1433,6 +1437,8 @@
         "font_size_preview": "아미티지는 알파벳이 고대부터 내려온 특정 금지된 종파에 의해 비전적으로 사용된 것일 수 있으며, 사라센 세계의 마법사들로부터 많은 형태와 전통을 물려받은 것일지도 모른다는 생각을 했습니다.",
         "hide_weaknesses": "플레이어 카드 목록에서 약점 숨기기",
         "hide_weaknesses_help": "이 옵션을 선택하면 기본적으로 플레이어 카드 목록에서 약점이 숨겨지며, 약점을 보려면 <strong>보조 유형</strong> 필터에서 활성화해야 합니다.",
+        "show_card_modal_popular_decks": "카드 화면에서 인기 있는 덱 표시",
+        "show_card_modal_popular_decks_help": "이 항목이 선택되면, 해당 카드가 포함되어 있는 인기 있는 덱이 카드 화면에 표시됩니다.",
         "show_move_to_side_deck": "“보조 덱으로 옮기기” 버튼 보기",
         "show_move_to_side_deck_help": "덱을 편집할 때 카드를 덱에서 보조 덱으로 이동할 수 있는 버튼이 표시됩니다. 주로 덱을 옵션으로 가득 채운 다음 줄이는 방식으로 덱을 구성하는 경우에 유용합니다.",
         "sort_ignore_punctuation": "문장 부호 무시하고 정렬하기",
