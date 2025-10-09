@@ -1,10 +1,13 @@
+import type { StorageProvider } from "@/utils/constants";
+
 type DeckFiltersType = {
+  xpCost: RangeMinMax;
   faction: string[];
+  properties: Record<DeckPropertyName, boolean>;
+  provider: StorageProvider[];
   search: string;
   tags: string[];
-  properties: Record<DeckPropertyName, boolean>;
   validity: DeckValidity;
-  expCost: RangeMinMax;
 };
 
 export type RangeMinMax = undefined | [number, number];

@@ -8,8 +8,12 @@ import type { ListState } from "@/store/selectors/lists";
 import type { ViewMode } from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { useHotkey } from "@/utils/use-hotkey";
-import { LimitedCardPoolTag } from "../limited-card-pool/limited-card-pool-tag";
-import { SealedDeckTag } from "../limited-card-pool/sealed-deck-tag";
+import { useResolvedDeck } from "@/utils/use-resolved-deck";
+import {
+  DeckTagsContainer,
+  LimitedCardPoolTag,
+  SealedDeckTag,
+} from "../deck-tags/deck-tags";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -33,6 +37,8 @@ type Props = {
 export function CardListNav(props: Props) {
   const { data, metadata, onSelectGroup, onViewModeChange, viewMode } = props;
   const { t } = useTranslation();
+
+  const { resolvedDeck: deck } = useResolvedDeck();
 
   const hasAssetGroup = data?.groups.some((group) =>
     group.key.includes("asset"),
@@ -91,8 +97,10 @@ export function CardListNav(props: Props) {
   return (
     <nav className={css["nav"]}>
       <output className={css["nav-stats"]}>
-        <LimitedCardPoolTag />
-        <SealedDeckTag />
+        <DeckTagsContainer>
+          <LimitedCardPoolTag deck={deck} />
+          <SealedDeckTag deck={deck} />
+        </DeckTagsContainer>
         <CardlistCount data={data} />
       </output>
       <div className={css["nav-row"]}>

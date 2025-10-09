@@ -6,12 +6,12 @@ import {
   PencilIcon,
   Trash2Icon,
 } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
 import { useStore } from "@/store";
 import type { DeckValidationResult } from "@/store/lib/deck-validation";
-import { extendedDeckTags } from "@/store/lib/resolve-deck";
+import { deckTags } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Id } from "@/store/schemas/deck.schema";
 import { selectConnectionLockForDeck } from "@/store/selectors/shared";
@@ -20,7 +20,14 @@ import { cx } from "@/utils/cx";
 import { CardThumbnail } from "../card-thumbnail";
 import { useChangeArchiveStatus } from "../deck-display/hooks";
 import { DeckStats } from "../deck-stats";
-import { DeckTags } from "../deck-tags";
+import {
+  DeckTags,
+  DeckTagsContainer,
+  LimitedCardPoolTag,
+  ProviderTag,
+  SealedDeckTag,
+} from "../deck-tags/deck-tags";
+import { FolderTag } from "../folders/folder-tag";
 import { Button } from "../ui/button";
 import { CopyToClipboard } from "../ui/copy-to-clipboard";
 import { DefaultTooltip } from "../ui/tooltip";
@@ -30,7 +37,6 @@ type DeckSummaryProps = {
   children?: React.ReactNode;
   deck: ResolvedDeck;
   elevation?: "normal" | "elevated";
-  extendedTags?: boolean;
   interactive?: boolean;
   showThumbnail?: boolean;
   showShadow?: boolean;
@@ -45,7 +51,6 @@ export function DeckSummary(props: DeckSummaryProps) {
     children,
     deck,
     elevation,
-    extendedTags,
     interactive,
     showShadow,
     showThumbnail,
@@ -66,16 +71,6 @@ export function DeckSummary(props: DeckSummaryProps) {
       deck.investigatorFront.card.parallel ||
       deck.investigatorBack.card.parallel,
   };
-
-  const tags = useMemo(
-    () =>
-      extendedDeckTags(deck, {
-        includeCardPool: true,
-        includeSource: extendedTags,
-        delimiter: type === "decklist" ? ", " : " ",
-      }),
-    [deck, extendedTags, type],
-  );
 
   return (
     <article
@@ -130,7 +125,13 @@ export function DeckSummary(props: DeckSummaryProps) {
       </Link>
       <div className={css["meta"]}>
         {children}
-        <DeckTags tags={tags} />
+        <DeckTagsContainer>
+          <ProviderTag deck={deck} />
+          <FolderTag deckId={deck.id} />
+          <LimitedCardPoolTag deck={deck} />
+          <SealedDeckTag deck={deck} />
+          <DeckTags tags={deckTags(deck, type === "decklist" ? ", " : " ")} />
+        </DeckTagsContainer>
       </div>
     </article>
   );

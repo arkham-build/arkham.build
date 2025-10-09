@@ -262,4 +262,10 @@ export const TAG_REGEX_FALLBACKS: Record<string, RegExp> = {
 
 export const CURRENT_CYCLE_POSITION = 11;
 
+export const EVERGREEN_CYCLES = ["core", "investigator", "return"];
+
 export const ARCHIVE_FOLDER_ID = "archive";
+
+export type StorageProvider = "local" | "shared" | "arkhamdb";
+
+export const STORAGE_PROVIDERS = ["local", "shared", "arkhamdb"] as const;

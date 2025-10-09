@@ -1,11 +1,16 @@
 import { createSelector } from "reselect";
 import { assert } from "@/utils/assert";
 import { displayAttribute } from "@/utils/card-utils";
-import { FACTION_ORDER, type FactionName } from "@/utils/constants";
+import {
+  FACTION_ORDER,
+  type FactionName,
+  type StorageProvider,
+} from "@/utils/constants";
+import { formatProviderName } from "@/utils/formatting";
 import { and, or } from "@/utils/fp";
 import i18n from "@/utils/i18n";
 import { normalizeDiacritics } from "@/utils/normalize-diacritics";
-import { extendedDeckTags } from "../lib/resolve-deck";
+import { deckTags } from "../lib/resolve-deck";
 import { instantiateSearchFromLocale } from "../lib/searching";
 import type { ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";
@@ -51,9 +56,8 @@ export const selectDeckFactionFilter = (state: StoreState) =>
   state.deckCollection.filters.faction;
 
 const filterDeckByFaction = (faction: string) => {
-  return (deck: ResolvedDeck) => {
-    return deck.cards.investigator.card.faction_code === faction;
-  };
+  return (deck: ResolvedDeck) =>
+    deck.cards.investigator.card.faction_code === faction;
 };
 
 const makeDeckFactionFilter = (values: MultiselectFilter) => {
@@ -62,10 +66,7 @@ const makeDeckFactionFilter = (values: MultiselectFilter) => {
 
 // Tag
 const filterDeckByTag = (tag: string) => {
-  return (deck: ResolvedDeck) =>
-    extendedDeckTags(deck, {
-      includeCardPool: true,
-    }).includes(tag);
+  return (deck: ResolvedDeck) => deckTags(deck).includes(tag);
 };
 
 const makeDeckTagsFilter = (values: MultiselectFilter) => {
@@ -139,7 +140,7 @@ const makeDeckValidityFilter = (value: Omit<DeckValidity, "all">) => {
 };
 
 // Exp Cost
-export const selectDecksMinMaxExpCost = createSelector(
+export const selectDecksMinMaxXpCost = createSelector(
   selectLocalDecks,
   (decks) => {
     const minmax: RangeMinMax = decks.reduce<[number, number]>(
@@ -155,20 +156,35 @@ export const selectDecksMinMaxExpCost = createSelector(
   },
 );
 
-export const selectExpCostChanges = createSelector(
+export const selectXpCostChanges = createSelector(
   selectDeckFilters,
   (filters) => {
-    const expMinMax = filters.expCost;
-    return expMinMax
-      ? `${expMinMax[0]}-${expMinMax[1]} ${i18n.t("common.xp", { count: 2 })}`
+    const xpMinMax = filters.xpCost;
+    return xpMinMax
+      ? `${xpMinMax[0]}-${xpMinMax[1]} ${i18n.t("common.xp", { count: 2 })}`
       : "";
   },
 );
 
-const makeDeckExpCostFilter = (minmax: [number, number]) => {
+const makeDeckXpCostFilter = (minmax: [number, number]) => {
   return (deck: ResolvedDeck) => {
     return (
       deck.stats.xpRequired >= minmax[0] && deck.stats.xpRequired <= minmax[1]
+    );
+  };
+};
+
+const makeDeckProviderFilter = (values: StorageProvider[]) => {
+  return (deck: ResolvedDeck) => {
+    return (
+      !values.length ||
+      values.some((val) => {
+        return (
+          (val === "shared" && deck.shared) ||
+          (val === "arkhamdb" && deck.source === "arkhamdb") ||
+          (val === "local" && !deck.shared && !deck.source)
+        );
+      })
     );
   };
 };
@@ -184,6 +200,7 @@ const selectFilteringFunc = createSelector(selectDeckFilters, (filters) => {
         }
         break;
       }
+
       case "tags": {
         const currentFilter = filters[filter];
         if (currentFilter.length) {
@@ -191,11 +208,13 @@ const selectFilteringFunc = createSelector(selectDeckFilters, (filters) => {
         }
         break;
       }
+
       case "properties": {
         const currentFilter = filters[filter];
         filterFuncs.push(makeDeckPropertiesFilter(currentFilter));
         break;
       }
+
       case "validity": {
         const currentFilter = filters[filter];
         if (currentFilter !== "all") {
@@ -203,12 +222,21 @@ const selectFilteringFunc = createSelector(selectDeckFilters, (filters) => {
         }
         break;
       }
-      case "expCost": {
+
+      case "xpCost": {
         const currentFilter = filters[filter];
         if (currentFilter) {
-          filterFuncs.push(makeDeckExpCostFilter(currentFilter));
-          break;
+          filterFuncs.push(makeDeckXpCostFilter(currentFilter));
         }
+        break;
+      }
+
+      case "provider": {
+        const currentFilter = filters[filter];
+        if (currentFilter) {
+          filterFuncs.push(makeDeckProviderFilter(currentFilter));
+        }
+        break;
       }
     }
   }
@@ -243,27 +271,10 @@ export const selectFactionsInLocalDecks = createSelector(
 export const selectTagsInLocalDecks = createSelector(
   selectLocalDecks,
   selectLocaleSortingCollator,
-  (decks, collator) => {
-    const tags: string[] = [];
-
-    for (const deck of decks) {
-      tags.push(
-        ...extendedDeckTags(deck, {
-          includeCardPool: true,
-        }),
-      );
-    }
-
-    const uniqueTags = [...new Set(tags)].map((tag) => {
-      return {
-        code: tag,
-      };
-    });
-
-    return uniqueTags.sort((a, b) =>
-      collator.compare(a.code.toLowerCase(), b.code.toLowerCase()),
-    );
-  },
+  (decks, collator) =>
+    Array.from(new Set(decks.flatMap((deck) => deckTags(deck))))
+      .sort((a, b) => collator.compare(a.toLowerCase(), b.toLowerCase()))
+      .map((code) => ({ code })),
 );
 
 const selectDecksFiltered = createSelector(
@@ -485,8 +496,20 @@ const selectDeckFactionChanges = createSelector(
   },
 );
 
+export const selectProviderChanges = createSelector(
+  selectDeckFilters,
+  (filters) => {
+    const providerFilters = filters.provider;
+    if (!providerFilters.length) return "";
+
+    return providerFilters
+      .map((val) => formatProviderName(val))
+      .join(` ${i18n.t("filters.or")} `);
+  },
+);
+
 export const selectDeckFilterChanges = createSelector(
-  selectExpCostChanges,
+  selectXpCostChanges,
   selectDeckPropertiesChanges,
   selectTagsChanges,
   selectDeckFactionChanges,

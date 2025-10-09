@@ -173,6 +173,11 @@ test.describe("environments", () => {
     await expect(
       page.getByTestId("limited-card-pool-field"),
     ).toHaveScreenshot();
+
+    await page.getByTestId("create-save").click();
+    await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
+    await page.getByTestId("editor-save").click();
+    await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
   });
 
   test("applies the legacy environment", async ({ page }) => {
@@ -186,10 +191,12 @@ test.describe("environments", () => {
     await page
       .getByTestId("limited-card-pool-environment-legacy-apply")
       .click();
-
     await expect(
       page.getByTestId("limited-card-pool-field"),
     ).toHaveScreenshot();
+    await page.getByTestId("create-save").click();
+    await page.getByTestId("editor-save").click();
+    await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
   });
 
   test("applies a limited environment", async ({ page }) => {
@@ -221,6 +228,10 @@ test.describe("environments", () => {
     await expect(
       page.getByTestId("limited-card-pool-field"),
     ).toHaveScreenshot();
+    await page.getByTestId("create-save").click();
+    await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
+    await page.getByTestId("editor-save").click();
+    await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
   });
 
   test("applies a campaign play-along environment", async ({ page }) => {
@@ -244,6 +255,10 @@ test.describe("environments", () => {
     await expect(
       page.getByTestId("limited-card-pool-field"),
     ).toHaveScreenshot();
+    await page.getByTestId("create-save").click();
+    await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
+    await page.getByTestId("editor-save").click();
+    await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
   });
 });
 

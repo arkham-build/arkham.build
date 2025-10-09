@@ -8,8 +8,8 @@ import {
   selectTagsChanges,
   selectTagsInLocalDecks,
 } from "@/store/selectors/deck-collection";
+import { capitalize } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
-import { tagRenderer } from "../deck-tags";
 import { FilterContainer } from "../filters/primitives/filter-container";
 
 type Props = {
@@ -48,8 +48,8 @@ export function DeckTagsFilter({ containerClass }: Props) {
   );
 
   const renderResult = useCallback(
-    (tag: Coded) => tagRenderer(tag.code, t),
-    [t],
+    (tag: Coded) => capitalize(tag.code.trim()),
+    [],
   );
 
   return (

@@ -20,7 +20,7 @@ import {
   selectDeckCreateInvestigators,
 } from "@/store/selectors/deck-create";
 import { selectConnectionLock } from "@/store/selectors/shared";
-import type { DeckStorageProvider } from "@/store/slices/settings.types";
+import type { StorageProvider } from "@/utils/constants";
 import { formatProviderName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useDocumentTitle } from "@/utils/use-document-title";
@@ -127,7 +127,7 @@ export function DeckCreateEditor() {
     const state = useStore.getState();
 
     state.setSettings({
-      defaultStorageProvider: deckCreate.provider as DeckStorageProvider,
+      defaultStorageProvider: deckCreate.provider as StorageProvider,
     });
 
     toast.show({

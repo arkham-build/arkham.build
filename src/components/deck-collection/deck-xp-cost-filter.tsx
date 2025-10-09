@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   selectDeckFilterValue,
-  selectDecksMinMaxExpCost,
-  selectExpCostChanges,
+  selectDecksMinMaxXpCost,
+  selectXpCostChanges,
 } from "@/store/selectors/deck-collection";
 import { FilterContainer } from "../filters/primitives/filter-container";
 import { RangeSelect } from "../ui/range-select";
@@ -16,30 +16,30 @@ type Props = {
 export function DeckXPCostFilter({ containerClass }: Props) {
   const { t } = useTranslation();
 
-  const changes = useStore(selectExpCostChanges);
-  const [min, max] = useStore(selectDecksMinMaxExpCost);
+  const changes = useStore(selectXpCostChanges);
+  const [min, max] = useStore(selectDecksMinMaxXpCost);
 
-  const value = useStore((state) => selectDeckFilterValue(state, "expCost"));
-  const open = useStore((state) => state.deckCollection.open.expCost);
+  const value = useStore((state) => selectDeckFilterValue(state, "xpCost"));
+  const open = useStore((state) => state.deckCollection.open.xpCost);
 
   const setFilterOpen = useStore((state) => state.setDeckFilterOpen);
   const resetFilter = useStore((state) => state.resetDeckFilter);
   const setFilterValue = useStore((state) => state.addDecksFilter);
 
   const onReset = useCallback(() => {
-    resetFilter("expCost");
+    resetFilter("xpCost");
   }, [resetFilter]);
 
   const onOpenChange = useCallback(
     (val: boolean) => {
-      setFilterOpen("expCost", val);
+      setFilterOpen("xpCost", val);
     },
     [setFilterOpen],
   );
 
   const onValueCommit = useCallback(
     (value: [number, number]) => {
-      setFilterValue("expCost", value);
+      setFilterValue("xpCost", value);
     },
     [setFilterValue],
   );

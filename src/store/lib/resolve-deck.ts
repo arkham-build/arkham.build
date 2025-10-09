@@ -228,33 +228,3 @@ export function deckTags(deck: ResolvedDeck, delimiter = " ") {
       .filter((x) => x) ?? []
   );
 }
-
-export function extendedDeckTags(
-  deck: ResolvedDeck,
-  { includeCardPool = false, includeSource = true, delimiter = " " },
-) {
-  const tags = [];
-
-  if (includeSource) {
-    if (deck.source === "arkhamdb") {
-      tags.push("arkhamdb");
-    } else if (deck.shared) {
-      tags.push("shared");
-    } else {
-      tags.push("private");
-    }
-  }
-
-  if (includeCardPool) {
-    if (deck.cardPool) {
-      tags.push("limited pool");
-    }
-
-    if (deck.sealedDeck) {
-      tags.push("sealed");
-    }
-  }
-
-  tags.push(...deckTags(deck, delimiter));
-  return tags;
-}

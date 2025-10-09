@@ -30,7 +30,7 @@
   box-shadow: var(--shadow-lg);
   border-radius: var(--rounded);
   max-height: 95dvh;
-  min-width: 15rem;
+  min-width: 18rem;
 }
 
 .expand-filters {

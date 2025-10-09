@@ -873,6 +873,7 @@
           "configure_environment": "Configure environment",
           "current": "Current",
           "current_help": "When deckbuilding in the Current Environment, players may only deckbuild with core cards, the five starter decks and the three most recent investigator expansions.",
+          "custom": "Custom pool",
           "help": "Investigators, signature cards and story assets are not affected by this selection.",
           "legacy": "Legacy",
           "legacy_help": "When deckbuilding in the Legacy Environment, players may build their decks and use investigators, player cards, and weaknesses from any Arkham Horror: The Card Game™ product. There are no restrictions whatsoever.",
@@ -1181,6 +1182,9 @@
       "encounter_set": {
         "placeholder": "Select encounter sets...",
         "title": "Encounter set"
+      },
+      "environment": {
+        "title": "Environment"
       },
       "fan_made_content": {
         "all": "Show everything",

@@ -14,10 +14,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Scroller } from "../ui/scroller";
 import { SearchInput } from "../ui/search-input";
 import css from "./deck-collection-filters.module.css";
-import { DeckXPCostFilter } from "./deck-exp-cost-filter";
 import { DeckPropertiesFilter } from "./deck-properties-filter";
+import { DeckProviderFilter } from "./deck-provider-filter";
 import { DeckSortingOptions } from "./deck-sorting-options";
 import { DeckTagsFilter } from "./deck-tags-filter";
+import { DeckXPCostFilter } from "./deck-xp-cost-filter";
 
 type Props = {
   filteredCount: number;
@@ -88,6 +89,7 @@ export function DeckCollectionFilters(props: Props) {
               )}
               <DeckTagsFilter containerClass={css["filter"]} />
               <DeckXPCostFilter containerClass={css["filter"]} />
+              <DeckProviderFilter containerClass={css["filter"]} />
               <DeckPropertiesFilter containerClass={css["filter"]} />
             </Scroller>
           </PopoverContent>

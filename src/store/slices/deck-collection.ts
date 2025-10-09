@@ -10,23 +10,25 @@ function getInitialUIState(): DeckCollectionState {
     expandedFolders: {},
     filters: {
       faction: [],
-      search: "",
-      tags: [],
       properties: {
         parallel: false,
       },
+      provider: [],
+      search: "",
+      tags: [],
       validity: "all",
-      expCost: undefined,
+      xpCost: undefined,
     },
     open: {
-      tags: false,
       properties: true,
+      provider: true,
+      tags: false,
       validity: false,
-      expCost: false,
+      xpCost: false,
     },
     sort: {
-      order: "desc",
       criteria: "date_updated",
+      order: "desc",
     },
   };
 }

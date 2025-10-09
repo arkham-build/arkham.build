@@ -17,7 +17,7 @@ export function FolderTag({ deckId }: Props) {
   if (!folder) return null;
 
   return (
-    <Tag size="xs">
+    <Tag as="li" size="xs">
       <FolderIcon folder={folder} />
       {folder.name}
     </Tag>

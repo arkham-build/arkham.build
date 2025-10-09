@@ -12,7 +12,7 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { AppLayout } from "@/layouts/app-layout";
 import { useStore } from "@/store";
 import type { DeckValidationResult } from "@/store/lib/deck-validation";
-import { deckTags, extendedDeckTags } from "@/store/lib/resolve-deck";
+import { deckTags } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { History } from "@/store/selectors/decks";
 import { selectConnectionLockForDeck } from "@/store/selectors/shared";
@@ -20,14 +20,18 @@ import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { useAccentColor } from "@/utils/use-accent-color";
 import DeckDescription from "../deck-description";
-import { DeckTags } from "../deck-tags";
+import {
+  DeckTags,
+  DeckTagsContainer,
+  LimitedCardPoolTag,
+  ProviderTag,
+  SealedDeckTag,
+} from "../deck-tags/deck-tags";
 import { DeckTools } from "../deck-tools/deck-tools";
 import { Decklist } from "../decklist/decklist";
 import type { ViewMode } from "../decklist/decklist.types";
 import { DecklistValidation } from "../decklist/decklist-validation";
 import { FolderTag } from "../folders/folder-tag";
-import { LimitedCardPoolTag } from "../limited-card-pool/limited-card-pool-tag";
-import { SealedDeckTag } from "../limited-card-pool/sealed-deck-tag";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import {
@@ -135,19 +139,13 @@ export function DeckDisplay(props: DeckDisplayProps) {
             titleNode
           )}
           <div className={css["tags"]} data-testid="view-tags">
-            <DeckTags
-              tags={
-                origin === "local"
-                  ? extendedDeckTags(deck, {
-                      includeCardPool: false,
-                      delimiter: type === "deck" ? " " : ", ",
-                    })
-                  : deckTags(deck, type === "deck" ? " " : ", ")
-              }
-            />
-            <FolderTag deckId={deck.id} />
-            <LimitedCardPoolTag />
-            <SealedDeckTag />
+            <DeckTagsContainer>
+              <ProviderTag deck={deck} />
+              <FolderTag deckId={deck.id} />
+              <LimitedCardPoolTag deck={deck} />
+              <SealedDeckTag deck={deck} />
+              <DeckTags tags={deckTags(deck, type === "deck" ? " " : ", ")} />
+            </DeckTagsContainer>
           </div>
           {headerSlot && <div>{headerSlot}</div>}
           {deck.metaParsed?.banner_url && (

@@ -214,7 +214,6 @@ export function DeckCollection() {
                     <DeckSummary
                       data-testid="collection-deck"
                       deck={entry.deck}
-                      extendedTags
                       interactive
                       showThumbnail
                       size="sm"

@@ -1,5 +1,6 @@
 import type { CardFormat } from "@/pages/deck-edit/editor/notes-rte/cards-to-markdown";
 import type { CardOrigin } from "@/pages/deck-edit/editor/notes-rte/notes-rte-context";
+import type { StorageProvider } from "@/utils/constants";
 import type {
   FanMadeContentFilter,
   GroupingType,
@@ -20,8 +21,6 @@ export type DecklistConfig = {
 
 export type Locale = string;
 
-export type DeckStorageProvider = "local" | "shared" | "arkhamdb";
-
 export type SettingsState = {
   cardLevelDisplay: "icon-only" | "dots" | "text";
   cardListsDefaultContentType: FanMadeContentFilter;
@@ -34,7 +33,7 @@ export type SettingsState = {
   cardSkillIconsDisplay: "simple" | "as_printed";
   collection: Record<string, number>; // track as "quantity" owned to accomodate the core set.
   defaultEnvironment: "current" | "legacy";
-  defaultStorageProvider: DeckStorageProvider;
+  defaultStorageProvider: StorageProvider;
   flags?: Record<string, boolean>;
   fontSize: number;
   hideWeaknessesByDefault: boolean;
