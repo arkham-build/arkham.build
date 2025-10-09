@@ -695,6 +695,7 @@
     },
     "deck": {
       "actions": {
+        "archive": "Deck archivieren",
         "copy_id": "Deck Id kopieren",
         "create": "Deck erstellen",
         "delete": "Deck löschen",
@@ -705,6 +706,7 @@
         "edit_short": "Bearbeiten",
         "export_json": "Deck als JSON exportieren",
         "export_text": "Deck als Text exportieren",
+        "unarchive": "Deck wiederherstellen",
         "upgrade": "Deck verbessern",
         "upgrade_short": "Verbessern"
       },
@@ -717,6 +719,7 @@
         "Market deck": "Marktdeck",
         "Stick to the Plan": "Sich an den Plan halten"
       },
+      "cards": "Karten im Deck",
       "customization_sheet": "Individualisierungen für {{name}}",
       "id": "Deck Id",
       "latest_upgrade": {
@@ -787,6 +790,7 @@
       }
     },
     "deck_collection": {
+      "archive": "Archiv",
       "collection_empty": "Keine Decks",
       "connect_arkhamdb": "ArkhamDB verbinden",
       "count": "{{count}} Decks",
@@ -862,13 +866,14 @@
       "changes_restored": "Ungespeicherte Änderungen wurden wiederhergestellt.",
       "config": {
         "card_pool": {
-          "apply_environment": "Apply {{environment}} environment",
+          "apply_environment": "{{environment}} Umgebung anwenden",
           "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "\"Campaign Play-Along\" ist ein regelmäßiges Event, das auf dem Mythos Busters Discord-Server stattfindet. Während des jeweiligen Events wird eine Kampagne zusammen, mit einem eingeschränkten Kartenpool, gespielt.",
           "choose_cycle_placeholder": "Zyklus auswählen...",
           "configure_environment": "Umgebung auswählen",
           "current": "Current",
           "current_help": "In der \"Current\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und den drei neuesten Ermittlererweiterungen verwenden.",
+          "custom": "Benutzerdefinierte Umgebung",
           "help": "Auswahl gilt nicht für Ermittler, Signaturkarten und Schwächen.",
           "legacy": "Legacy",
           "legacy_help": "In der \"Legacy\" Umgebung dürfen Decks alle erschienenen Karten ohne Einschränkungen verwenden.",
@@ -1178,6 +1183,9 @@
         "placeholder": "Begegnungsset auswählen...",
         "title": "Begegnungsset"
       },
+      "environment": {
+        "title": "Umgebung"
+      },
       "fan_made_content": {
         "all": "Alles anzeigen",
         "fan_made": "Nur inoffizielle Inhalte",
@@ -1283,7 +1291,9 @@
         "focus_search": "Suche fokussieren",
         "move_down": "Vorherige Karte",
         "move_up": "Nächste Karte",
+        "next_card": "Nächste Karte",
         "open_card_modal": "Kartendialog für fokussierte Karte öffnen",
+        "previous_card": "Vorherige Karte",
         "reset_filters": "Filter zurücksetzen",
         "show_limited_access": "Eingeschränkten Zugang anzeigen",
         "show_limited_access_help": "Ermittler können über Deckbau-Optionen eingeschränkten, optionalen Zugriff auf Karten haben. Karten anzeigen, die auf diesen eingeschränkten Zugang zurückgehen.",
@@ -1420,6 +1430,7 @@
         "card_show_details": "Details anzeigen",
         "card_show_icon": "Kostensymbol anzeigen",
         "card_show_thumbnail": "Thumbnail anzeigen",
+        "card_show_unique_icon": "Show unique icon",
         "card_size": "Anzeigegröße",
         "card_size_sm": "Kompakt",
         "card_size_standard": "Standard",
@@ -1430,6 +1441,8 @@
         "font_size_preview": "Dann plötzlich sah ich es. Mit nur einem leichten Schäumen des Wassers, das seinen Aufsteig an die Oberfläche kennzeichnete, glitt das Ding über dem finstren Gewässer in mein Blickfeld. Gewaltig wie Polyphemos und widerwärtig wie ein riesiges Ungeheuer aus einem Albtraum schoss es den Monolithen hoch, um den es seine gigantischen, schuppenbedeckten Arme schlang, während es sein scheußliches Haupt neigte und rhythmische Laute ausstieß. Ich glaube, in diesem Augenblick wurde ich wahnsinnig.",
         "hide_weaknesses": "Schwächen in Spielerkartenlisten standardmäßig ausblenden",
         "hide_weaknesses_help": "Wenn dies aktiviert ist, werden Schwächen in Spielerkartenlisten standardmäßig ausgeblendet und müssen im <strong>Untertyp</strong>-Filter aktiviert werden, um sichtbar zu sein.",
+        "show_card_modal_popular_decks": "Populäre Decks in Kartenmodals anzeigen",
+        "show_card_modal_popular_decks_help": "Wenn dies aktiviert ist, werden populäre Decks, die die jeweilige Karte enthalten, im Kartenmodal angezeigt.",
         "show_move_to_side_deck": "\"Ins Nebendeck bewegen\" Button anzeigen",
         "show_move_to_side_deck_help": "Wenn dies aktiviert ist, werden im Deck Builder Buttons angezeigt, die es erlauben, Karten aus dem Deck ins Nebendeck zu bewegen. Dies kann hilfreich sein, wenn du Decks baust, indem du viele Optionen hinzufügst und anschließend reduzierst.",
         "sort_ignore_punctuation": "Sortierung ignoriert Satzzeichen",
