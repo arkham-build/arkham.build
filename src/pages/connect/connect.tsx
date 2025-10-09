@@ -5,6 +5,7 @@ import { Loader } from "@/components/ui/loader";
 import { AppLayout } from "@/layouts/app-layout";
 import { useSync } from "@/store/hooks/use-sync";
 import type { Provider } from "@/store/slices/connections.types";
+import type { StorageProvider } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { formatProviderName } from "@/utils/formatting";
 import { ErrorDisplay } from "../../components/error-display/error-display";
@@ -23,7 +24,7 @@ export function Connect() {
 
   const error = params.get("error")?.toString();
   const provider = params.get("provider")?.toString() || "arkhamdb";
-  const providerName = formatProviderName(provider);
+  const providerName = formatProviderName(provider as StorageProvider);
 
   useEffect(() => {
     if (connectLock.current) return;
