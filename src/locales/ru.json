@@ -18,11 +18,12 @@
           "title": "Это приложение доступно на нескольких языках благодаря следующим участникам",
           "zh": "Упрощенный китайский"
         },
-        "zzorba": "Доступ к API и иконкам ArkhamCards, помощь в решении вопросов и вдохновение для построения колод. Без вас этот проект был бы невозможен."
+        "zzorba": "Доступ к API и иконкам ArkhamCards, помощь в решении вопросов и вдохновение для построения колод. Без вас этот проект был бы невозможен.",
+        "qa": "QA-тестирование."
       },
       "image_credits": {
         "404": "404 illustration (edit)",
-        "arkham_cards_icons": "Переиспользоание иконок ArkhamCards",
+        "arkham_cards_icons": "Переиспользование иконок ArkhamCards",
         "card_icons": "Иконки карт",
         "logo": "Дизайн логотипа",
         "other": "Другие иконки",
@@ -50,7 +51,8 @@
     "card_modal": {
       "actions": {
         "open_card_page": "Страница карты",
-        "reviews": "Отзывы"
+        "reviews": "Отзывы",
+        "complete_task": "Выполнить задачу"
       }
     },
     "card_view": {
@@ -138,7 +140,17 @@
         "You cannot have more than 5 level 0 Seeker cards": "Нельзя включить больше 5 карт Искателей уровня 0",
         "You cannot have more than 5 level 0 Survivor cards": "Нельзя включить больше 5 карт Выживших уровня 0",
         "You must have at least 7 cards from 3 different factions": "У вас должно быть хотя бы по 7 карт из 3 разных классов",
-        "You must have at least 7 cards from each class": "У вас должно быть хотя бы по 7 карт каждого класса"
+        "You must have at least 7 cards from each class": "У вас должно быть хотя бы по 7 карт каждого класса",
+        "Atleast constraint violated.": "Нарушено ограничение «Хотя бы».",
+        "Deck must have at least 10 skill cards.": "В колоде должны быть хотя бы 10 карт навыков",
+        "No permanents except story and signature permanents": "No permanents except story and signature permanents",
+        "Too many off-class cards for Versatile.": "Слишком много внеклассовых карт для «Разностороннего».",
+        "Too many off-class cards.": "Слишком много внеклассовых карт.",
+        "You cannot have assets that take up an ally slot.": "Вы не можете брать активы занимающие слот союзника.",
+        "You cannot have more than 5 Mystic cards.": "У вас не может быть больше 5 карт Мистика.",
+        "You cannot have more than 5 Rogue cards.": "У вас не может быть больше 5 карт Ловкача.",
+        "You cannot have more than 5 Survivor cards.": "У вас не может быть больше 5 карт Выжившего.",
+        "You cannot have more than one Covenant in your deck.": "У вас не может быть больше одного завета в колоде."
       },
       "decks": {
         "bondedSlots": "Зависимые карты",
@@ -146,7 +158,9 @@
         "ignoreDeckLimitSlots": "Игнорировать лимит карт колоды",
         "sideSlots": "Отложенные карты",
         "sideSlots_short": "Отложенные",
-        "slots": "Колода"
+        "slots": "Колода",
+        "extraSlots": "Особая колода",
+        "extraSlots_short": "Особая"
       },
       "doom": "Безысходность",
       "encounter_cards": "Карты кампании",
@@ -628,7 +642,13 @@
       "victory": "Победа",
       "xp_few": "Опыта",
       "xp_many": "Опыта",
-      "xp_one": "Опыт"
+      "xp_one": "Опыт",
+      "card_back": "{{name}} — Оборот",
+      "proceed": "Продолжить",
+      "set_as_default": "Установить по умолчанию",
+      "sort_asc": "Сортировка по возрастанию",
+      "sort_desc": "Сортировка по убыванию",
+      "taboo_original_text": "Оригинальный текст карты"
     },
     "connect": {
       "error": "Ошибка соединения {{provider}}: {{error}}",
@@ -684,7 +704,8 @@
         "unowned": "Недоступные: {{count}} из {{total}} карт",
         "xp_available_help": "опыта получено в последнем улучшении.",
         "xp_required": "Опыта необходимо",
-        "xp_required_help": "Количество опыта чтобы собрать колоду с нуля."
+        "xp_required_help": "Количество опыта чтобы собрать колоду с нуля.",
+        "ignored_other": "{{count}} копий не идут в счёт размера колоды."
       },
       "tags": {
         "limited_pool": "Ограниченная коллекция"
@@ -724,7 +745,8 @@
         "invalid_card_count": "Колода содержит неверное количество следующих карт:",
         "investigator_requirements": "Колода не удовлетворяет ограничениям сыщика:",
         "too_few_cards": "{{deck}} — слишком мало карт.",
-        "too_many_cards": "{{deck}} — слишком много карт."
+        "too_many_cards": "{{deck}} — слишком много карт.",
+        "invalid_investigator": "Сыщик недопустим. Отсутствует необходимая конфигурация или карта не является сыщиком."
       }
     },
     "deck_collection": {
@@ -756,7 +778,8 @@
         "placeholder": "Выбрать теги",
         "title": "Теги"
       },
-      "title": "Колоды"
+      "title": "Колоды",
+      "archive": "Архив"
     },
     "deck_create": {
       "default_name": {
@@ -785,7 +808,13 @@
         "move_to_side_deck": "Переместить в отложенные карты",
         "quick_discard": "Отменить изменения (и остаться на странице)",
         "quick_save_deck": "Сохранить колоду (и остаться на странице)",
-        "quick_upgrade": "Улучшить {{name}}"
+        "quick_upgrade": "Улучшить {{name}}",
+        "decrement_quantity": "Уменшить количество в колоде",
+        "decrement_side_quantity": "Уменшить количество в отложенных картах",
+        "increment_quantity": "Увеличить количество в колоде",
+        "increment_side_quantity": "Увеличить количество в отложенных картах",
+        "set_quantity": "Установить количество в колоде",
+        "set_side_quantity": "Установить количество в отложенных картах"
       },
       "changes_restored": "Несохранённые изменения были восстановлены.",
       "config": {
@@ -824,7 +853,12 @@
         },
         "taboo": "Список табу",
         "tags": "Теги",
-        "tags_help": "Введите теги, разделяя пробелами"
+        "tags_help": "Введите теги, разделяя пробелами",
+        "title_and_tags": "Редактировать название и теги",
+        "version": {
+          "switch": "Переключить",
+          "title": "Другие версии"
+        }
       },
       "create_local_copy": "Создать локальную копию",
       "create_local_copy_help": "Создайте локальную копию этой колоды. Это позволит применить все оставшиеся правки и сохранить их. Обновления и история колоды не будут перенесены.",
@@ -894,7 +928,9 @@
         "no_results": "Нет рекомендаций для текущей колоды.",
         "publication_date": "Дата публикации",
         "relative": "Относительно",
-        "relative_help": "Считает в скольких колодах {{name}} использована каждая карта относительно других сыщиков с доступом к этой карте"
+        "relative_help": "Считает в скольких колодах {{name}} использована каждая карта относительно других сыщиков с доступом к этой карте",
+        "tooltip_absolute": "{{name}} используется в {{decksPercentage}}% колод {{investigator}}. ({{decksMatched}}/{{decksAnalyzed}})",
+        "tooltip_relative": "{{investigator}} использует {{name}} на {{percentile}}% чаще других сыщиков."
       },
       "save": "Сохранить колоду",
       "save_error": "Ошибка сохранения колоды: {{error}}",
@@ -911,7 +947,8 @@
         "entry_title": "Версия {{version}}",
         "entry_title_current": "Текущая версия",
         "title": "Версии"
-      }
+      },
+      "read_only": "У этой колоды есть улучшение и доступна только для просмотра."
     },
     "deck_view": {
       "actions": {
@@ -972,7 +1009,8 @@
         "success": "Колода успешно улучшена.",
         "title": "Улучшить колоду с опытом",
         "xp_gained": "Опыта получено"
-      }
+      },
+      "latest_version": "<a>Перейти к последней версии</a>."
     },
     "decklists": {
       "browse": {
@@ -1111,11 +1149,19 @@
       "uses": {
         "placeholder": "Выбрать тип многоразового",
         "title": "Многоразовый"
+      },
+      "environment": {
+        "title": "Среда"
+      },
+      "fan_made_content": {
+        "all": "Показывать всё",
+        "fan_made": "Только фанатский контент",
+        "official": "Только официальный контент",
+        "title": "Фанатский контент"
       }
     },
     "help": {
       "about": "О сайте",
-
       "changelog": "Журнал изменений",
       "collection_stats": "Статистика коллекции",
       "shortcuts": {
@@ -1146,7 +1192,12 @@
         "reset_filters": "Сбросить фильтры",
         "show_limited_access": "Показывать ограниченный доступ",
         "show_limited_access_help": "Сыщики могут иметь ограниченный опциональный доступ к картам по уровню, классу, чертам, типу и/или другим критериям. Данная функция при включении отображает карты этого ограниченного доступа.",
-        "show_unusable_cards": "Показывать неиспользованные карты"
+        "show_unusable_cards": "Показывать неиспользованные карты",
+        "next_card": "Следующая карта",
+        "previous_card": "Предыдущая карта",
+        "toggle_filter_menu": "Переключить меню фильтров",
+        "toggle_filters": "Скрыть/показать фильтры",
+        "toggle_sidebar": "Скрыть/показать колоды"
       },
       "all_cards": "Все карты",
       "categories": {
@@ -1208,7 +1259,8 @@
         "restore": "Восстановить резервную копию",
         "restore_error": "Ошибка восстановления резервной копии: {{error}}",
         "restore_success": "Резервная копия успешно восстановлена.",
-        "title": "Резервное копирование и восстановление"
+        "title": "Резервное копирование и восстановление",
+        "confirm": "Вы уверены что хотите восстановить эту резервную копию. Все существующие данные будут перезаписаны."
       },
       "card_data": {
         "card_count": "Количество карт",
@@ -1223,7 +1275,7 @@
         "update_available": "Доступны новые данные карт."
       },
       "collection": {
-        "card_collection": "Коллекция кард",
+        "card_collection": "Коллекция карт",
         "card_count": "Количество карт",
         "new_format": "Новый формат (1+1)",
         "old_format": "Старый формат (1+6)",
@@ -1257,7 +1309,8 @@
         "syncing": "Синхронизация в процессе",
         "title": "Подключёные аккаунты",
         "user_id": "ID пользователя",
-        "username": "Имя пользователя"
+        "username": "Имя пользователя",
+        "lock": "Другая операция {{provider}} активна, пожалуйста подождите…"
       },
       "display": {
         "card_display": "Настройки отображения карт",
@@ -1287,14 +1340,18 @@
         "theme_dark": "Тёмная",
         "theme_light": "Светлая",
         "theme_system": "Системная",
-        "title": "Отображение"
+        "title": "Отображение",
+        "show_card_modal_popular_decks": "Показывать популярные колоды в окне карты",
+        "show_card_modal_popular_decks_help": "Популярные колоды содержащие открытую карту будут показаны в окне карты"
       },
       "error": "Ошибка сохранения настроек: {{error}}",
       "general": {
         "default_taboo": "Список табу по умолчанию",
         "title": "Общее",
         "weakness_limited_card_pool": "Использовать ограничение коллекции для взятия базовой слабости",
-        "weakness_limited_card_pool_help": "При взятии базовой слабости будет учтён ограниченный набор карт, если таковой задан."
+        "weakness_limited_card_pool_help": "При взятии базовой слабости будет учтён ограниченный набор карт, если таковой задан.",
+        "default_environment": "Среда по умолчанию",
+        "latest_taboo": "Актуальный"
       },
       "lists": {
         "deck_view": "Колода",
@@ -1323,7 +1380,65 @@
         "toggle": "Toggle section"
       },
       "copy_to_clipboard": "Копировать в буфер обмена",
-      "copy_to_clipboard_success": "Скопировано."
+      "copy_to_clipboard_success": "Скопировано.",
+      "pagination": {
+        "next": "Дальше",
+        "previous": "Назад"
+      }
+    },
+    "fan_made_content": {
+      "actions": {
+        "import_file": "Импортировать из файла",
+        "import_url": "Импортировать из URL",
+        "install": "Установить контент",
+        "uninstall": "Удалить",
+        "view_cards": "Просмотр карт",
+        "view_external": "Узнать больше"
+      },
+      "available_content": "Доступный контент",
+      "banner_credit": "Illus. {{credit}}",
+      "content_types": "Типы контента",
+      "content_version": "Версия контента",
+      "empty": "Нет установленного контента",
+      "import_url": {
+        "label": "URL контента",
+        "placeholder": "Введите URL…",
+        "submit": "Импортировать"
+      },
+      "installed_content": "Установленный контент",
+      "messages": {
+        "available_content_loading": "Загрузка доступного контента…",
+        "content_installed": "Контент успешно добавлен.",
+        "content_loading": "Загрузка контента…",
+        "fetch_failed": "Не удалось загрузить контент: {{error}}",
+        "parse_failed": "Не удалось добавить контент: {{error}}",
+        "registry_failed": "Не удалось загрузить доступный контент из реестра: {{error}}"
+      },
+      "settings": {
+        "card_lists": "Списки карт",
+        "card_lists_help": "Эта настройка контролирует значение по умолчанию для фильтра «Фанатский контент» в списках карт."
+      },
+      "status": {
+        "alpha": "Альфа",
+        "beta": "Бета",
+        "complete": "Завершено",
+        "draft": "Наброски",
+        "final": "Финальное"
+      },
+      "status_installed": "Установленно",
+      "status_update_available": "Обновить контент",
+      "tags": "Теги",
+      "title": "Фанатский контент",
+      "types": {
+        "campaign": "Кампания",
+        "investigators": "Сыщики",
+        "player_cards": "Карты игроков",
+        "rework": "Переработка",
+        "scenario": "Сценарий"
+      }
+    },
+    "rules": {
+      "title": "Справочник правил"
     }
   }
 }
