@@ -101,6 +101,7 @@
       },
       "back": "返回",
       "cancel": "取消",
+      "card_back": "{{name}} - 背面",
       "card_one": "卡牌",
       "card_other": "卡牌",
       "clear": "清除",
@@ -245,6 +246,8 @@
         "none": "无槽位",
         "tarot": "塔罗牌"
       },
+      "sort_asc": "排序(升序)",
+      "sort_desc": "排序(降序)",
       "specialist": "专用卡牌",
       "subtype": {
         "basicweakness": "基础弱点",
@@ -280,6 +283,7 @@
       "taboo_chained": "费用增加{{xp}}点经验值。",
       "taboo_mutated": "异变",
       "taboo_none": "无",
+      "taboo_original_text": "原始卡牌文本",
       "taboo_unchained": "费用减少{{xp}}点经验值。",
       "total": "总计",
       "trait_one": "特性",
@@ -298,6 +302,7 @@
         "Altered": "幻境",
         "Ancient": "古代",
         "Ancient One": "古神",
+        "Apiary": "Apiary",
         "Arkham": "阿卡姆",
         "Arkham Asylum": "阿卡姆瘋人院",
         "Armor": "護甲",
@@ -354,6 +359,7 @@
         "Crew": "Crew",
         "Crime Scene": "犯罪現場",
         "Criminal": "罪犯",
+        "Cthulhu": "克蘇魯",
         "Cultist": "異教徒",
         "Curse": "詛咒",
         "Cursed": "詛咒縈繞",
@@ -379,7 +385,9 @@
         "Eldritch": "驚悚",
         "Elite": "精英",
         "Emissary": "Emissary",
+        "Enclave": "Enclave",
         "Endtimes": "終結",
+        "Enraged": "Enraged",
         "Entrepreneur": "經營者",
         "Evidence": "證據",
         "Exhibit": "展覽",
@@ -402,6 +410,7 @@
         "Forest": "Forest",
         "Forgotten": "失落",
         "Fortune": "幸運",
+        "Front": "Front",
         "Future": "未來",
         "Gambit": "局勢",
         "Game": "Game",
@@ -445,6 +454,7 @@
         "Job": "職業",
         "Jungle": "叢林",
         "Kadath": "卡達斯",
+        "Keeper": "Keeper",
         "Key": "鑰匙",
         "Kingsport": "Kingsport",
         "Kuala Lumpur": "吉隆坡",
@@ -453,6 +463,7 @@
         "Lead": "跡象",
         "Leader": "Leader",
         "Leng": "冷原",
+        "Lift": "Lift",
         "Lit": "Lit",
         "Locus Site": "護所地",
         "Lodge": "秘社",
@@ -479,6 +490,7 @@
         "Mountains": "山脈",
         "Mutated": "突變",
         "Mystery": "神秘",
+        "Nest": "Nest",
         "New Orleans": "新紐奧良",
         "New York City": "紐約城",
         "Nightgaunt": "夜魘",
@@ -533,8 +545,10 @@
         "Riverside": "河畔",
         "Road": "道路",
         "Role": "Role",
+        "Rooftop": "Rooftop",
         "Room": "Room",
         "Rot": "Rot",
+        "Ruined": "Ruined",
         "Ruins": "遺跡",
         "Salem": "塞勒姆",
         "Sanctum": "聖堂",
@@ -544,6 +558,7 @@
         "Scientist": "Scientist",
         "Scion": "Scion",
         "Script": "Script",
+        "Seafloor": "Seafloor",
         "Second Floor": "二樓",
         "Sentinel Hill": "哨兵山",
         "Serpent": "蛇族",
@@ -569,6 +584,7 @@
         "Station": "Station",
         "Steps": "臺階",
         "Stowaway": "Stowaway",
+        "Summit": "Summit",
         "Summon": "召喚",
         "Sunken": "Sunken",
         "Supply": "供給",
@@ -601,10 +617,12 @@
         "Unstable": "Unstable",
         "Upgrade": "升級",
         "Vale": "山谷",
+        "Vault": "Vault",
         "Vehicle": "載具",
         "Venice": "威尼斯",
         "Veteran": "老兵",
         "Void": "虛空",
+        "Walkway": "Walkway",
         "Warden": "監守",
         "Wastes": "廢土",
         "Wayfarer": "旅人",
@@ -678,6 +696,7 @@
     },
     "deck": {
       "actions": {
+        "archive": "归档卡组",
         "copy_id": "复制卡组ID",
         "create": "创建卡组",
         "delete": "删除卡组",
@@ -688,6 +707,7 @@
         "edit_short": "编辑",
         "export_json": "导出JSON",
         "export_text": "导出文本",
+        "unarchive": "取消归档卡组",
         "upgrade": "升级卡组",
         "upgrade_short": "升级"
       },
@@ -700,6 +720,7 @@
         "Market deck": "市场牌库",
         "Stick to the Plan": "原定计划"
       },
+      "cards": "卡组卡牌",
       "customization_sheet": "{{name}}的自定义配置表",
       "id": "卡组ID",
       "latest_upgrade": {
@@ -770,6 +791,7 @@
       }
     },
     "deck_collection": {
+      "archive": "归档",
       "collection_empty": "收藏为空",
       "connect_arkhamdb": "连接至ArkhamDB",
       "count": "{{count}}个卡组",
@@ -845,16 +867,23 @@
       "changes_restored": "未保存的更改已恢复。",
       "config": {
         "card_pool": {
-          "campaign": "战役",
-          "choose_campaign": "选择战役",
-          "choose_campaign_placeholder": "选择战役...",
-          "cpa_help": "战役同步活动是由Mythos Busters Discord服务器主办的持续性活动，旨在让玩家共同体验《诡镇奇谈》战役、分享故事并营造社群氛围。",
+          "apply_environment": "应用 {{environment}} 环境",
+          "campaign_playalong": "战役同步模式",
+          "campaign_playalong_help": "\"战役同步模式\"是由Mythos Busters Discord服务器主办的持续性活动。该模式旨在让玩家共同体验《诡镇奇谈》战役，分享故事并营造社群氛围。",
+          "choose_cycle_placeholder": "选择战役循环...",
+          "configure_environment": "配置环境",
+          "current": "标准环境",
+          "current_help": "在标准环境下进行牌库构建时，玩家只能使用核心卡牌、五套初始牌组以及最近发布的三部调查员扩展包。",
+          "custom": "自定义卡池",
           "help": "调查员、专属卡牌及剧情资产不受此选项影响。",
+          "legacy": "经典环境",
+          "legacy_help": "在经典环境中进行牌库构筑时，玩家可以使用《诡镇奇谈：卡牌版》所有扩展产品的调查员、玩家卡牌和弱点卡来组建牌库。此模式下没有任何限制规则。",
+          "limited": "限制环境",
+          "limited_help": "在限定环境中进行牌库构筑时，玩家只能使用核心套装、五套初始牌组以及自选的三部不同调查员扩展包中的卡牌组建牌库。",
           "placeholder": "选择扩展包...",
           "section_title": "卡牌池设置",
           "selected_cards": "已选择卡牌",
-          "title": "限定牌池",
-          "use_preset": "使用战役模式预设"
+          "title": "限定牌池"
         },
         "name": "卡组名称",
         "sealed": {
@@ -1007,6 +1036,7 @@
       },
       "import_failed": "导入卡组失败：{{error}}",
       "import_success": "卡组导入成功。",
+      "latest_version": "<a>跳转至最新版本</a>.",
       "list": "列表",
       "loading": "正在获取卡组...",
       "newer_version": "该卡组存在<a>新版本</a>。当前卡组为只读状态。",
@@ -1034,6 +1064,35 @@
         "success": "卡组升级成功。",
         "title": "使用经验值升级卡组",
         "xp_gained": "获得经验值"
+      }
+    },
+    "decklists": {
+      "browse": {
+        "loading": "正在加载卡组指南...",
+        "no_results": "无结果",
+        "results_count": "{{count}} 个结果",
+        "title": "卡组指南"
+      },
+      "filters": {
+        "author": "作者",
+        "author_placeholder": "输入作者名称 (例如 Valentin1331)...",
+        "description_length": "卡组指南最小长度",
+        "description_length_long": "长度",
+        "description_length_medium": "中等",
+        "description_length_short": "短",
+        "excluded_cards": "已排除的卡牌",
+        "investigator_factions": "调查员职阶",
+        "name": "卡组名称",
+        "name_placeholder": "输入名称 (例如 Deck Guide)...",
+        "required_cards": "所需卡牌",
+        "submit": "应用",
+        "title": "筛选条件"
+      },
+      "sorting": {
+        "date": "最新",
+        "likes": "最多喜欢",
+        "popularity": "最热门",
+        "user_reputation": "最高用户声望"
       }
     },
     "draw_simulator": {
@@ -1125,6 +1184,9 @@
       "encounter_set": {
         "placeholder": "选择遭遇组...",
         "title": "遭遇组"
+      },
+      "environment": {
+        "title": "环境"
       },
       "fan_made_content": {
         "all": "显示全部",
@@ -1231,7 +1293,9 @@
         "focus_search": "聚焦到搜索框",
         "move_down": "下移",
         "move_up": "上移",
+        "next_card": "下一张",
         "open_card_modal": "为聚焦卡牌打开卡牌窗口",
+        "previous_card": "上一张",
         "reset_filters": "重置筛选条件",
         "show_limited_access": "显示受构筑限制的卡牌",
         "show_limited_access_help": "调查员可能受到等级、职阶、特性、类型或其他条件的构筑限制。启用此选项时，将显示这些受构筑限制的卡牌。",
@@ -1279,6 +1343,7 @@
       "sort_by": "按"
     },
     "popular_decks": {
+      "decklists_link": "浏览所有卡组指南",
       "error": "热门卡组加载失败：{{error}}",
       "no_results": "未找到卡组",
       "title_card": "包含<tooltip>{{name}}</tooltip>的热门卡组",
@@ -1291,6 +1356,9 @@
       },
       "description": "启用预览功能将在卡牌浏览器中显示即将推出的扩展包卡牌。您可随时在收藏设置中调整此选项。",
       "title": "预览季已至！"
+    },
+    "rules": {
+      "title": "规则参考"
     },
     "settings": {
       "backup": {
@@ -1364,6 +1432,7 @@
         "card_show_details": "显示卡牌信息",
         "card_show_icon": "显示卡牌图标",
         "card_show_thumbnail": "显示卡牌缩略图",
+        "card_show_unique_icon": "显示独特图标",
         "card_size": "尺寸",
         "card_size_sm": "紧凑",
         "card_size_standard": "标准",
@@ -1374,6 +1443,8 @@
         "font_size_preview": "人类最古老而强烈的情绪，便是恐惧；而最古老最强烈的恐惧，便是对未知的恐惧。我认为，人的思维缺乏将已知事物联系起来的能力，这是世上最仁慈的事了。",
         "hide_weaknesses": "在玩家卡牌列表中隐藏弱点卡牌",
         "hide_weaknesses_help": "勾选此项时，弱点卡牌默认会在玩家卡牌列表中隐藏，需在<strong>子类型</strong>过滤器中启用才能显示。",
+        "show_card_modal_popular_decks": "在卡牌弹窗中显示热门牌组",
+        "show_card_modal_popular_decks_help": "勾选此项后，卡牌弹窗将显示包含该卡牌的热门牌组。",
         "show_move_to_side_deck": "显示\"移至副卡组\"按钮",
         "show_move_to_side_deck_help": "显示一个按钮，允许在编辑卡组时将卡牌从主卡组移至副卡组。此功能特别适合采用\"dayorbyte方法\"（即先超额填充卡组再精简卡牌）的卡组构建方式。",
         "sort_ignore_punctuation": "排序忽略标点符号",
@@ -1386,6 +1457,7 @@
       },
       "error": "保存设置失败：{{error}}",
       "general": {
+        "default_environment": "默认环境",
         "default_taboo": "默认禁卡表",
         "latest_taboo": "最新",
         "title": "通用",
@@ -1430,7 +1502,11 @@
         "toggle": "切换章节"
       },
       "copy_to_clipboard": "复制到剪贴板",
-      "copy_to_clipboard_success": "已复制"
+      "copy_to_clipboard_success": "已复制",
+      "pagination": {
+        "next": "下一个",
+        "previous": "上一个"
+      }
     }
   }
 }
