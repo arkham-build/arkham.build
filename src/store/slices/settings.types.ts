@@ -39,6 +39,7 @@ export type SettingsState = {
   hideWeaknessesByDefault: boolean;
   lists: {
     encounter: ListConfig;
+    mixed: ListConfig;
     investigator: ListConfig;
     player: ListConfig;
     deck: DecklistConfig;

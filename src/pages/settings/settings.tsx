@@ -217,6 +217,12 @@ function SettingsInner({
                     setSettings={setSettings}
                   />
                   <ListSettings
+                    listKey="mixed"
+                    title={t("lists.all_cards")}
+                    settings={settings}
+                    setSettings={setSettings}
+                  />
+                  <ListSettings
                     listKey="investigator"
                     title={t("common.type.investigator", { count: 2 })}
                     settings={settings}

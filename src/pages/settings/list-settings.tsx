@@ -14,6 +14,7 @@ import {
   DECK_SCANS_DEFAULTS,
   ENCOUNTER_DEFAULTS,
   INVESTIGATOR_DEFAULTS,
+  MIXED_DEFAULTS,
   PLAYER_DEFAULTS,
 } from "@/store/slices/settings";
 import type { SettingsState } from "@/store/slices/settings.types";
@@ -35,6 +36,12 @@ function getGroupItemsForList(listKey: keyof SettingsState["lists"]) {
 
   if (listKey === "investigator") {
     return ["cycle", "faction"];
+  }
+
+  if (listKey === "mixed") {
+    return Array.from(
+      new Set([...ENCOUNTER_GROUPING_TYPES, ...PLAYER_GROUPING_TYPES]),
+    );
   }
 
   return [...PLAYER_GROUPING_TYPES];
@@ -67,6 +74,10 @@ function getDefaultsForList(listKey: keyof SettingsState["lists"]) {
 
   if (listKey === "investigator") {
     return structuredClone(INVESTIGATOR_DEFAULTS);
+  }
+
+  if (listKey === "mixed") {
+    return structuredClone(MIXED_DEFAULTS);
   }
 
   return structuredClone(PLAYER_DEFAULTS);

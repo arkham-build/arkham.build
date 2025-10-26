@@ -33,6 +33,12 @@ export const INVESTIGATOR_DEFAULTS: ListConfig = {
   viewMode: "compact",
 };
 
+export const MIXED_DEFAULTS: ListConfig = {
+  group: ["pack", "encounter_set"],
+  sort: ["position"],
+  viewMode: "compact",
+};
+
 export const DECK_DEFAULTS: DecklistConfig = {
   group: ["type", "slot"],
   sort: ["name", "level"],
@@ -45,11 +51,12 @@ export const DECK_SCANS_DEFAULTS: DecklistConfig = {
 
 export function getInitialListsSetting(): SettingsState["lists"] {
   return {
-    player: structuredClone(PLAYER_DEFAULTS),
-    encounter: structuredClone(ENCOUNTER_DEFAULTS),
-    investigator: structuredClone(INVESTIGATOR_DEFAULTS),
     deck: structuredClone(DECK_DEFAULTS),
     deckScans: structuredClone(DECK_SCANS_DEFAULTS),
+    encounter: structuredClone(ENCOUNTER_DEFAULTS),
+    investigator: structuredClone(INVESTIGATOR_DEFAULTS),
+    mixed: structuredClone(MIXED_DEFAULTS),
+    player: structuredClone(PLAYER_DEFAULTS),
   };
 }
 
