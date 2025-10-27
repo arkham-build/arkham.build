@@ -82,6 +82,7 @@ export type Props<T extends Coded> = {
 };
 
 // TODO: the logic here is very messy, extract to a reducer when adding group support.
+// FIXME: some selected items (packs) can become undefined, reflect in types and guards.
 export function Combobox<T extends Coded>(props: Props<T>) {
   const {
     autoFocus,

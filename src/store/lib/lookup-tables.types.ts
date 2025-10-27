@@ -37,6 +37,7 @@ export type LookupTables = {
   };
   traitsByCardTypeSelection: LookupTable<string, 1>;
   packsByCycle: LookupTable<string, 1>;
+  reprintPacksByCycle: LookupTable<string, 1>;
   encounterCode: LookupTable<string>;
   typeCode: LookupTable<string>;
   subtypeCode: LookupTable<string>;

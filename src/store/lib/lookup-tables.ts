@@ -46,6 +46,7 @@ function getInitialLookupTables(): LookupTables {
     level: {},
     traitsByCardTypeSelection: {},
     packsByCycle: {},
+    reprintPacksByCycle: {},
   };
 }
 
@@ -420,5 +421,12 @@ function addPacksToLookupTables(
 ) {
   for (const pack of Object.values(metadata.packs)) {
     setInLookupTable(pack.code, lookupTables.packsByCycle, pack.cycle_code);
+    if (pack.reprint) {
+      setInLookupTable(
+        pack.code,
+        lookupTables.reprintPacksByCycle,
+        pack.cycle_code,
+      );
+    }
   }
 }

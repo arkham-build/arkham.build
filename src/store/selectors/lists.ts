@@ -789,11 +789,11 @@ export const selectCardRelationsResolver = createSelector(
  */
 
 const selectListFilterProperties = createSelector(
+  selectMetadata,
   selectLookupTables,
   selectBaseListCards,
-  (lookupTables, cards) => {
+  (metadata, lookupTables, cards) => {
     time("select_card_list_properties");
-    const cardTypes = new Set<CardTypeFilter>([]);
 
     const actionTable = lookupTables.actions;
 
@@ -816,15 +816,10 @@ const selectListFilterProperties = createSelector(
     const investigators = new Set<string>();
     const packs = new Set<string>();
     const factions = new Set<string>();
+    const encounterSets = new Set<string>();
 
     if (cards) {
       for (const card of cards) {
-        if (card.encounter_code) {
-          cardTypes.add("encounter");
-        } else {
-          cardTypes.add("player");
-        }
-
         if (card.type_code === "investigator") {
           investigators.add(card.code);
         }
@@ -832,6 +827,18 @@ const selectListFilterProperties = createSelector(
         types.add(card.type_code);
 
         packs.add(card.pack_code);
+        const pack = metadata.packs[card.pack_code];
+
+        if (pack.official !== false && !pack?.reprint) {
+          const cycle = metadata.cycles[pack?.cycle_code];
+          const reprintPackId = `${cycle?.code}${card.encounter_code ? "c" : "p"}`;
+          const reprintPack = metadata.packs[reprintPackId];
+          if (reprintPack?.reprint) packs.add(reprintPack.code);
+        }
+
+        if (card.encounter_code) {
+          encounterSets.add(card.encounter_code);
+        }
 
         factions.add(card.faction_code);
 
@@ -907,8 +914,8 @@ const selectListFilterProperties = createSelector(
 
     return {
       actions,
-      cardTypes,
       cost,
+      encounterSets,
       factions,
       health,
       illustrators,
@@ -1043,7 +1050,11 @@ export const selectEncounterSetMapper = createSelector(
 export const selectEncounterSetOptions = createSelector(
   selectMetadata,
   selectLocaleSortingCollator,
-  (metadata, collator) => sortedEncounterSets(metadata, collator),
+  selectListFilterProperties,
+  (metadata, collator, listFilterProperties) =>
+    sortedEncounterSets(metadata, collator).filter((set) =>
+      listFilterProperties.encounterSets.has(set.code),
+    ),
 );
 
 /**
@@ -1231,19 +1242,22 @@ export const selectPackOptions = createSelector(
   selectCyclesAndPacks,
   (listFilterProperties, cycles) => {
     return cycles.reduce((acc, cycle) => {
-      const present = cycle.packs.some((pack) =>
-        listFilterProperties.packs.has(pack.code),
-      );
-
-      if (!present) return acc;
-
       if (cycle.reprintPacks.length && cycle.code !== "core") {
-        acc.push(...cycle.reprintPacks);
+        acc.push(
+          ...cycle.reprintPacks.filter((p) =>
+            listFilterProperties.packs.has(p.code),
+          ),
+        );
       } else if (cycle.official !== false && cycle.packs.length === 2) {
-        acc.push(...cycle.packs);
+        acc.push(
+          ...cycle.packs.filter((p) => listFilterProperties.packs.has(p.code)),
+        );
       } else {
-        acc.push(...cycle.packs);
-        acc.push(...cycle.reprintPacks);
+        acc.push(
+          ...[...cycle.packs, ...cycle.reprintPacks].filter((p) =>
+            listFilterProperties.packs.has(p.code),
+          ),
+        );
       }
 
       return acc;
