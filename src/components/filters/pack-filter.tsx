@@ -9,9 +9,13 @@ import {
   selectPackMapper,
   selectPackOptions,
 } from "@/store/selectors/lists";
+import { selectMetadata } from "@/store/selectors/shared";
 import { isPackFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
-import { currentEnvironmentPacks } from "@/utils/environments";
+import {
+  currentEnvironmentPacks,
+  resolveLimitedPoolPacks,
+} from "@/utils/environments";
 import { displayPackName } from "@/utils/formatting";
 import { PackName } from "../pack-name";
 import { Button } from "../ui/button";
@@ -51,11 +55,16 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
 
   const { onChange } = useFilterCallbacks<string[]>(id);
 
+  const metadata = useStore(selectMetadata);
   const cycles = useStore(selectCampaignCycles);
 
   const onApplyCurrentEnvironment = useCallback(() => {
-    onChange(currentEnvironmentPacks(cycles));
-  }, [cycles, onChange]);
+    onChange(
+      resolveLimitedPoolPacks(metadata, currentEnvironmentPacks(cycles)).map(
+        (p) => p.code,
+      ),
+    );
+  }, [cycles, onChange, metadata]);
 
   return (
     <MultiselectFilter
