@@ -1,4 +1,4 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { fillSearch } from "./actions";
 import { mockApiCalls } from "./mocks";
 
@@ -87,51 +87,6 @@ test.describe("settings", () => {
     await expect(page.getByTestId("card-taboo").first()).toContainText(
       " Taboo list Mutated.",
     );
-  });
-
-  async function assertSubtypeSettingApplied(page: Page) {
-    await expect(page.getByTestId("subtype-none")).toBeChecked();
-    await expect(page.getByTestId("subtype-basicweakness")).not.toBeChecked();
-    await expect(page.getByTestId("subtype-weakness")).not.toBeChecked();
-
-    await page
-      .getByTestId("toggle-card-type")
-      .getByTestId("card-type-encounter")
-      .click();
-
-    await page
-      .getByTestId("subtype-filter")
-      .getByTestId("collapsible-trigger")
-      .click();
-
-    await expect(page.getByTestId("subtype-none")).toBeChecked();
-    await expect(page.getByTestId("subtype-weakness")).toBeChecked();
-  }
-
-  test("update 'hide weaknesses' setting", async ({ page }) => {
-    await mockApiCalls(page);
-    await page.goto("/");
-
-    await page.getByTestId("masthead-settings").click();
-    await page.getByLabel("Hide weaknesses in player").click();
-    await page.getByTestId("settings-save").click();
-    await page.getByTestId("settings-back").click();
-
-    await page
-      .getByTestId("subtype-filter")
-      .getByTestId("collapsible-trigger")
-      .click();
-
-    await assertSubtypeSettingApplied(page);
-
-    await page.reload();
-
-    await page
-      .getByTestId("subtype-filter")
-      .getByTestId("collapsible-trigger")
-      .click();
-
-    await assertSubtypeSettingApplied(page);
   });
 
   test("update list settings", async ({ page }) => {

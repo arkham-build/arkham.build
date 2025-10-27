@@ -757,9 +757,9 @@ function properties() {
 
 export function makeLists(
   settings: SettingsState,
-  initialValues?: Partial<Record<FilterKey, unknown>>,
+  _initialValues?: Partial<Record<FilterKey, unknown>>,
 ) {
-  const values = mergeInitialValues(initialValues ?? {}, settings);
+  const initialValues = mergeInitialValues(_initialValues ?? {}, settings);
 
   const systemFilters = [filterBacksides];
 
@@ -771,9 +771,9 @@ export function makeLists(
 
   return {
     browse: makeList({
-      display: getDisplaySettings(values, settings),
+      display: getDisplaySettings(initialValues, settings),
       duplicateFilter: (c) => filterDuplicates(c) || !!c.parallel,
-      initialValues: values,
+      initialValues,
       key: "browse",
       systemFilter,
       filters: cardsFilters({
@@ -794,16 +794,16 @@ export function makeLists(
         not(filterEncounterCards),
       ]),
       duplicateFilter: (c) => filterDuplicates(c) || !!c.parallel,
-      initialValues: values,
+      initialValues,
       key: "create_deck",
       filters: investigatorFilters({
         showOwnershipFilter: true,
       }),
     }),
     editor: makeList({
-      display: getDisplaySettings(values, settings),
+      display: getDisplaySettings(initialValues, settings),
       duplicateFilter: (c) => filterDuplicates(c) || !!c.parallel,
-      initialValues: values,
+      initialValues,
       key: "editor",
       systemFilter,
       filters: cardsFilters({
@@ -823,7 +823,6 @@ function mergeInitialValues(
     card_type: "player",
     fan_made_content: getInitialFanMadeContentFilter(settings),
     ownership: getInitialOwnershipFilter(settings),
-    subtype: getInitialSubtypeFilter(settings),
   };
 }
 
@@ -835,18 +834,6 @@ function getInitialFanMadeContentFilter(
 
 function getInitialOwnershipFilter(settings: SettingsState): OwnershipFilter {
   return settings.showAllCards ? "all" : "owned";
-}
-
-function getInitialSubtypeFilter(
-  settings: SettingsState,
-): SubtypeFilter | undefined {
-  return settings.hideWeaknessesByDefault
-    ? {
-        none: true,
-        weakness: false,
-        basicweakness: false,
-      }
-    : undefined;
 }
 
 function getDisplaySettings(

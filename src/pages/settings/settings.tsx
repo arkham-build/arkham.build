@@ -31,7 +31,6 @@ import { CardModalPopularDecksSetting } from "./card-modal-popular-decks";
 import { Connections } from "./connections";
 import { DefaultEnvironmentSetting } from "./default-environment";
 import { FontSizeSetting } from "./font-size";
-import { HideWeaknessSetting } from "./hide-weakness";
 import { ListSettings } from "./list-settings";
 import { LocaleSetting } from "./locale-setting";
 import { Section } from "./section";
@@ -182,10 +181,6 @@ function SettingsInner({
                   setSettings={setSettings}
                 />
                 <CardDisplaySettings
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-                <HideWeaknessSetting
                   settings={settings}
                   setSettings={setSettings}
                 />
