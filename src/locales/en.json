@@ -1501,6 +1501,9 @@
         "expand": "Expand section",
         "toggle": "Toggle section"
       },
+      "combobox": {
+        "unknown_option": "Unknown option"
+      },
       "copy_to_clipboard": "Copy to clipboard",
       "copy_to_clipboard_success": "Copied.",
       "pagination": {

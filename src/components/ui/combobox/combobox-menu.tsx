@@ -15,7 +15,7 @@ type Props<T extends Coded> = {
   listRef: React.MutableRefObject<HTMLElement[]>;
   omitItemPadding?: boolean;
   renderItem: (t: T) => React.ReactNode;
-  selectedItems: T[];
+  selectedItems: (T | undefined)[];
   setActiveIndex: (i: number) => void;
   setSelectedItem: (t: T) => void;
 };
@@ -85,7 +85,7 @@ export function ComboboxMenu<T extends Coded>(props: Props<T>) {
               }}
               tabIndex={active ? 0 : -1}
             >
-              {selectedItems.find((s) => s.code === item.code) && (
+              {selectedItems.find((s) => s?.code === item.code) && (
                 <CheckIcon className={css["menu-item-check"]} />
               )}
               {renderItem(item)}

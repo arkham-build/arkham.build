@@ -78,11 +78,10 @@ export type Props<T extends Coded> = {
   renderItem?: (item: T) => React.ReactNode;
   renderResult?: (item: T) => React.ReactNode;
   showLabel?: boolean;
-  selectedItems: T[];
+  selectedItems: (T | undefined)[];
 };
 
 // TODO: the logic here is very messy, extract to a reducer when adding group support.
-// FIXME: some selected items (packs) can become undefined, reflect in types and guards.
 export function Combobox<T extends Coded>(props: Props<T>) {
   const {
     autoFocus,
@@ -142,8 +141,9 @@ export function Combobox<T extends Coded>(props: Props<T>) {
 
   const setSelectedItem = useCallback(
     (item: T) => {
-      const next = [...selectedItems];
-      const idx = selectedItems.findIndex((s) => s.code === item.code);
+      const next = [...selectedItems] as T[];
+
+      const idx = next.findIndex((s) => s.code === item.code);
 
       if (idx === -1) {
         next.push(item);
@@ -170,10 +170,12 @@ export function Combobox<T extends Coded>(props: Props<T>) {
   );
 
   const removeSelectedItem = useCallback(
-    (item: T) => {
-      setSelectedItem(item);
+    (index: number) => {
+      const next = [...selectedItems] as T[];
+      next.splice(index, 1);
+      onValueChange?.(next);
     },
-    [setSelectedItem],
+    [selectedItems, onValueChange],
   );
 
   useEffect(() => {
