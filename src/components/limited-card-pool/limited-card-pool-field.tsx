@@ -3,7 +3,10 @@ import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Card } from "@/store/schemas/card.schema";
 import type { Pack } from "@/store/schemas/pack.schema";
-import { selectLimitedPoolPackOptions } from "@/store/selectors/lists";
+import {
+  selectLimitedPoolPackOptions,
+  selectPackMapper,
+} from "@/store/selectors/lists";
 import { displayPackName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { PackName } from "../pack-name";
@@ -23,6 +26,8 @@ type Props = {
 export function LimitedCardPoolField(props: Props) {
   const { investigator, onValueChange, selectedItems } = props;
   const { t } = useTranslation();
+
+  const packMapper = useStore(selectPackMapper);
 
   const packs = useStore(selectLimitedPoolPackOptions);
 
@@ -47,6 +52,13 @@ export function LimitedCardPoolField(props: Props) {
   const packToString = useCallback(
     (pack: Pack) => displayPackName(pack).toLowerCase(),
     [],
+  );
+
+  const onChange = useCallback(
+    (values: Pack[]) => {
+      onValueChange(values.map((pack) => pack.code));
+    },
+    [onValueChange],
   );
 
   return (
@@ -76,12 +88,12 @@ export function LimitedCardPoolField(props: Props) {
           itemToString={packToString}
           label={t("deck_edit.config.card_pool.title")}
           locale={locale}
-          onValueChange={onValueChange}
+          onValueChange={onChange}
           placeholder={t("deck_edit.config.card_pool.placeholder")}
           renderItem={packRenderer}
           renderResult={packRenderer}
           showLabel
-          selectedItems={selectedItems}
+          selectedItems={selectedItems.map(packMapper)}
         />
       </Field>
       <DialogContent>

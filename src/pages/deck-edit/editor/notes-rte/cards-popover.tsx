@@ -31,7 +31,7 @@ import {
   useNotesRichTextEditorContext,
 } from "./notes-rte-context";
 
-const emptySelection: string[] = [];
+const emptySelection: Card[] = [];
 
 type Props = {
   deck: ResolvedDeck;
@@ -89,8 +89,8 @@ export function CardsPopover(props: Props) {
   );
 
   const onSelectItem = useCallback(
-    (item: string[]) => {
-      const card = metadata.cards[item[0]];
+    (item: Card[]) => {
+      const card = item[0];
 
       if (!card) return;
       insertTextAtCaret(

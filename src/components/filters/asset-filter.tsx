@@ -1,10 +1,13 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
+import type { Coded } from "@/store/lib/types";
 import {
   selectActiveListFilter,
   selectAssetOptions,
   selectFilterChanges,
+  selectSlotsMapper,
+  selectUsesMapper,
 } from "@/store/selectors/lists";
 import { isAssetFilterObject } from "@/store/slices/lists.type-guards";
 import type { AssetFilter as AssetFilterType } from "@/store/slices/lists.types";
@@ -56,19 +59,22 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
 
   const locale = useStore((state) => state.settings.locale);
 
+  const slotsMapper = useStore(selectSlotsMapper);
+  const usesMapper = useStore(selectUsesMapper);
+
   const { onReset, onChange, onOpenChange } =
     useFilterCallbacks<Partial<AssetFilterType>>(id);
 
   const onChangeUses = useCallback(
-    (value: string[]) => {
-      onChange({ uses: value });
+    (value: Coded[]) => {
+      onChange({ uses: value.map(({ code }) => code) });
     },
     [onChange],
   );
 
   const onChangeSlot = useCallback(
-    (value: string[]) => {
-      onChange({ slots: value });
+    (value: Coded[]) => {
+      onChange({ slots: value.map(({ code }) => code) });
     },
     [onChange],
   );
@@ -127,7 +133,7 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
         placeholder={t("filters.slot.placeholder")}
         renderItem={renderSlot}
         renderResult={renderSlot}
-        selectedItems={filter.value.slots}
+        selectedItems={filter.value.slots.map(slotsMapper)}
         showLabel
       />
 
@@ -155,7 +161,7 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
         placeholder={t("filters.uses.placeholder")}
         renderItem={renderName}
         renderResult={renderName}
-        selectedItems={filter.value.uses}
+        selectedItems={filter.value.uses.map(usesMapper)}
         showLabel
       />
 

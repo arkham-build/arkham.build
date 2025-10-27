@@ -53,6 +53,8 @@ export type SubtypeFilter = {
 
 export type SelectFilter = string | number | undefined;
 
+export type CardTypeFilter = "" | "player" | "encounter";
+
 export type SkillIconsFilter = {
   agility: number | undefined;
   combat: number | undefined;
@@ -76,6 +78,7 @@ type InvestigatorCardAccessFilter = string[] | undefined;
 export type FilterMapping = {
   action: MultiselectFilter;
   asset: AssetFilter;
+  card_type: CardTypeFilter;
   cost: CostFilter;
   encounter_set: MultiselectFilter;
   faction: MultiselectFilter;
@@ -90,9 +93,9 @@ export type FilterMapping = {
   pack: MultiselectFilter;
   properties: PropertiesFilter;
   sanity: SanityFilter;
-  skillIcons: SkillIconsFilter;
+  skill_icons: SkillIconsFilter;
   subtype: SubtypeFilter;
-  tabooSet: SelectFilter;
+  taboo_set: SelectFilter;
   trait: MultiselectFilter;
   type: MultiselectFilter;
 };
@@ -139,7 +142,6 @@ export type SortingType =
 export type ViewMode = "compact" | "card-text" | "full-cards" | "scans";
 
 export type List = {
-  cardType: "player" | "encounter";
   display: {
     grouping: GroupingType[];
     properties?: string[];
@@ -170,11 +172,8 @@ export type ListsSlice = {
   activeList?: string;
   lists: Lists;
 
-  changeList(value: string, path: string): void;
-
   addList(
     key: string,
-    cardType: List["cardType"],
     initialValues?: Partial<Record<FilterKey, FilterMapping[FilterKey]>>,
   ): void;
 

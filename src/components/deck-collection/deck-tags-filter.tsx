@@ -21,7 +21,9 @@ export function DeckTagsFilter({ containerClass }: Props) {
   const changes = useStore(selectTagsChanges);
   const options = useStore(selectTagsInLocalDecks);
   const open = useStore((state) => state.deckCollection.open.tags);
-  const value = useStore((state) => selectDeckFilterValue(state, "tags"));
+  const value = useStore((state) =>
+    selectDeckFilterValue(state, "tags"),
+  ) as string[];
 
   const locale = useStore((state) => state.settings.locale);
 
@@ -41,8 +43,11 @@ export function DeckTagsFilter({ containerClass }: Props) {
   );
 
   const onChange = useCallback(
-    (value: string[]) => {
-      setFilterValue("tags", value);
+    (value: Coded[]) => {
+      setFilterValue(
+        "tags",
+        value.map((tag) => tag.code),
+      );
     },
     [setFilterValue],
   );
@@ -71,7 +76,7 @@ export function DeckTagsFilter({ containerClass }: Props) {
           locale={locale}
           onValueChange={onChange}
           placeholder={t("deck_collection.tags_filter.placeholder")}
-          selectedItems={value}
+          selectedItems={value.map((code) => ({ code }))}
           renderResult={renderResult}
           renderItem={renderResult}
         />

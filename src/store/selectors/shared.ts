@@ -198,3 +198,30 @@ export function selectSettingsTabooId(
 
   return tabooSetId;
 }
+
+export const selectCardMapper = createSelector(selectMetadata, (metadata) => {
+  return (code: string) => metadata.cards[code];
+});
+
+export const selectTraitMapper = createSelector(
+  selectLocaleSortingCollator,
+  (_) => {
+    return (code: string) => {
+      const key = `common.traits.${code}`;
+      const name = i18n.exists(key) ? i18n.t(key) : code;
+      return { code, name };
+    };
+  },
+);
+
+export const selectSkillMapper = createSelector(
+  selectLocaleSortingCollator,
+  (_) => {
+    return (code: string) => {
+      return {
+        code,
+        name: i18n.t(`common.skill.${code}`),
+      };
+    };
+  },
+);

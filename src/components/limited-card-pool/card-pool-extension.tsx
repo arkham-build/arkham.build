@@ -5,6 +5,7 @@ import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Card } from "@/store/schemas/card.schema";
 import { selectCardOptions } from "@/store/selectors/lists";
+import { selectCardMapper } from "@/store/selectors/shared";
 import { displayAttribute } from "@/utils/card-utils";
 import { isEmpty } from "@/utils/is-empty";
 import { CardsCombobox } from "../cards-combobox";
@@ -26,17 +27,18 @@ export function CardPoolExtension(props: Props) {
   const id = `card_pool_extension_${card.code}` as const;
 
   const items = useStore(selectCardOptions);
+  const cardMapper = useStore(selectCardMapper);
 
   const locale = useStore((state) => state.settings.locale);
 
   const updateMetaProperty = useStore((state) => state.updateMetaProperty);
 
   const onCardPoolChange = useCallback(
-    (selectedItems: string[]) => {
+    (selectedItems: Card[]) => {
       updateMetaProperty(
         deck.id,
         id,
-        selectedItems.map((code) => `card:${code}`).join(","),
+        selectedItems.map(({ code }) => `card:${code}`).join(","),
       );
     },
     [updateMetaProperty, deck.id, id],
@@ -64,7 +66,7 @@ export function CardPoolExtension(props: Props) {
       onValueChange={onCardPoolChange}
       readonly={!canEdit}
       showLabel={showLabel}
-      selectedItems={selectedItems}
+      selectedItems={selectedItems.map(cardMapper)}
     />
   );
 }

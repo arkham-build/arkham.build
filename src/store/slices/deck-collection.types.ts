@@ -1,9 +1,11 @@
 import type { StorageProvider } from "@/utils/constants";
 
+export type DeckProperties = Record<DeckPropertyName, string | boolean>;
+
 type DeckFiltersType = {
   xpCost: RangeMinMax;
   faction: string[];
-  properties: Record<DeckPropertyName, boolean>;
+  properties: DeckProperties;
   provider: StorageProvider[];
   search: string;
   tags: string[];

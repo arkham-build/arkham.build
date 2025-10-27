@@ -48,7 +48,11 @@ export function DeckProviderFilter(props: Props) {
       onOpenChange={onOpenChange}
       title={t("deck_edit.config.storage_provider.title")}
     >
-      <ToggleGroup type="multiple" onValueChange={onChange} value={value}>
+      <ToggleGroup
+        type="multiple"
+        onValueChange={onChange}
+        value={value as string[]}
+      >
         {options.map((value) => (
           <ToggleGroupItem key={value} value={value}>
             {providerTagRenderer(value, t)}

@@ -17,6 +17,7 @@ import type { StoreState } from "../slices";
 import type { Folder } from "../slices/data.types";
 import type {
   DeckFiltersKey,
+  DeckProperties,
   DeckPropertyName,
   DeckValidity,
   RangeMinMax,
@@ -33,7 +34,7 @@ const selectDeckFilters = (state: StoreState) => state.deckCollection.filters;
 
 export const selectDeckFilterValue = createSelector(
   selectDeckFilters,
-  (_, filter: DeckFiltersKey) => filter,
+  (_: StoreState, filter: DeckFiltersKey) => filter,
   (filters, filter) => filters[filter],
 );
 
@@ -106,9 +107,7 @@ export const selectDeckPropertiesChanges = createSelector(
   },
 );
 
-const makeDeckPropertiesFilter = (
-  properties: Record<DeckPropertyName, boolean>,
-) => {
+const makeDeckPropertiesFilter = (properties: DeckProperties) => {
   const filters = [];
   for (const property of Object.keys(properties)) {
     if (properties[property as DeckPropertyName]) {
@@ -211,7 +210,9 @@ const selectFilteringFunc = createSelector(selectDeckFilters, (filters) => {
 
       case "properties": {
         const currentFilter = filters[filter];
-        filterFuncs.push(makeDeckPropertiesFilter(currentFilter));
+        filterFuncs.push(
+          makeDeckPropertiesFilter(currentFilter as DeckProperties),
+        );
         break;
       }
 

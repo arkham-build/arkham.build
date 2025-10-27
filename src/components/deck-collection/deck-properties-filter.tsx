@@ -7,7 +7,10 @@ import {
   selectDeckProperties,
   selectDeckPropertiesChanges,
 } from "@/store/selectors/deck-collection";
-import type { DeckPropertyName } from "@/store/slices/deck-collection.types";
+import type {
+  DeckProperties,
+  DeckPropertyName,
+} from "@/store/slices/deck-collection.types";
 import { FilterContainer } from "../filters/primitives/filter-container";
 import { Checkbox } from "../ui/checkbox";
 import { CheckboxGroup } from "../ui/checkboxgroup";
@@ -22,8 +25,8 @@ export function DeckPropertiesFilter({ containerClass }: Props) {
   const open = useStore((state) => state.deckCollection.open.properties);
   const properties = useStore(useShallow(selectDeckProperties));
   const changes = useStore(selectDeckPropertiesChanges);
-  const values = useStore((state) =>
-    selectDeckFilterValue(state, "properties"),
+  const values = useStore(
+    (state) => selectDeckFilterValue(state, "properties") as DeckProperties,
   );
 
   const setFilterValue = useStore((state) => state.addDecksFilter);
@@ -60,7 +63,7 @@ export function DeckPropertiesFilter({ containerClass }: Props) {
       <CheckboxGroup cols={1}>
         {Object.keys(properties).map((key) => (
           <Checkbox
-            checked={values[key as DeckPropertyName]}
+            checked={values[key as DeckPropertyName] as boolean}
             data-key={key}
             id={`deck-property-${key}`}
             key={key}

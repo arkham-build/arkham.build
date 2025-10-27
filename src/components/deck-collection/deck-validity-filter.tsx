@@ -18,8 +18,8 @@ type Props = {
 
 export function DeckValidityFilter({ containerClass }: Props) {
   const open = useStore((state) => state.deckCollection.open.validity);
-  const value = useStore<DeckValidity>((state) =>
-    selectDeckFilterValue(state, "validity"),
+  const value = useStore<DeckValidity>(
+    (state) => selectDeckFilterValue(state, "validity") as DeckValidity,
   );
 
   const setFilterValue = useStore((state) => state.addDecksFilter);

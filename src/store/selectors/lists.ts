@@ -67,6 +67,7 @@ import type { Pack } from "../schemas/pack.schema";
 import type { StoreState } from "../slices";
 import type {
   AssetFilter,
+  CardTypeFilter,
   CostFilter,
   FanMadeContentFilter,
   FilterMapping,
@@ -89,6 +90,7 @@ import {
   selectLookupTables,
   selectMetadata,
   selectSettingsTabooId,
+  selectTraitMapper,
 } from "./shared";
 
 export type CardGroup = {
@@ -152,18 +154,6 @@ function makeUserFilter(
       case "faction": {
         const value = filterValue.value as MultiselectFilter;
         if (value.length) filters.push(filterFactions(value));
-        break;
-      }
-
-      case "fan_made_content": {
-        const value = filterValue.value as FanMadeContentFilter;
-
-        if (value === "official") {
-          filters.push(filterOfficial);
-        } else if (value === "fan-made") {
-          filters.push(not(filterOfficial));
-        }
-
         break;
       }
 
@@ -233,13 +223,13 @@ function makeUserFilter(
         break;
       }
 
-      case "skillIcons": {
+      case "skill_icons": {
         const value = filterValue.value as SkillIconsFilter;
         filters.push(filterSkillIcons(value));
         break;
       }
 
-      case "tabooSet": {
+      case "taboo_set": {
         const value = filterValue.value as number | undefined;
         if (value != null) filters.push(filterTabooSet(value, metadata));
         break;
@@ -317,6 +307,8 @@ function makeUserFilter(
       // For instance, it does not make sense to show weakness or non-collection card traits
       // as options in the trait filter.
       // TODO: At some point, we might want to refactor the store data structure to reflect this.
+      case "fan_made_content":
+      case "card_type":
       case "ownership": {
         break;
       }
@@ -351,7 +343,7 @@ export function selectCanonicalTabooSetId(
   if (resolvedDeck) return resolvedDeck.taboo_id;
 
   const filters = selectActiveListFilters(state);
-  const filterId = filters.findIndex((f) => f === "tabooSet");
+  const filterId = filters.findIndex((f) => f === "taboo_set");
 
   const filterValue = filterId
     ? selectActiveListFilter(state, filterId)
@@ -411,6 +403,7 @@ const selectDeckInvestigatorFilter = createSelector(
   selectMetadata,
   selectLookupTables,
   selectDeckCachedByCardAccess,
+  (state: StoreState) => state.settings,
   (
     _: StoreState,
     __: ResolvedDeck | undefined,
@@ -423,6 +416,7 @@ const selectDeckInvestigatorFilter = createSelector(
     metadata,
     lookupTables,
     resolvedDeck,
+    settings,
     targetDeck,
     showUnusableCards,
     showLimitedAccess,
@@ -474,19 +468,28 @@ const selectDeckInvestigatorFilter = createSelector(
     const ands = [investigatorAccessFilter, duplicatesNotInDeckFilter];
 
     const cardPool = resolvedDeck.cardPool;
+    const sealedDeck = resolvedDeck.sealedDeck?.cards;
+
+    if (!cardPool?.length && !sealedDeck) {
+      return and(ands);
+    }
+
+    const rbwFilter = or([
+      (c: Card) =>
+        !settings.useLimitedPoolForWeaknessDraw ||
+        (c.xp == null && !c.subtype_code),
+    ]);
+
     if (cardPool?.length) {
       const cardPoolFilter = filterCardPool(cardPool, metadata, lookupTables);
 
       if (cardPoolFilter) {
-        ands.push(or([cardPoolFilter, (c) => c.xp == null]));
+        ands.push(or([cardPoolFilter, rbwFilter]));
       }
     }
 
-    const sealedDeck = resolvedDeck.sealedDeck?.cards;
     if (sealedDeck) {
-      ands.push(
-        or([filterSealed(sealedDeck, lookupTables), (c) => c.xp == null]),
-      );
+      ands.push(or([filterSealed(sealedDeck, lookupTables), rbwFilter]));
     }
 
     return and(ands);
@@ -628,6 +631,34 @@ const selectBaseListCards = createSelector(
           });
         }
       }
+
+      const cardTypeFilter = Object.values(filterValues).find(
+        (f) => f.type === "card_type",
+      );
+
+      if (cardTypeFilter) {
+        const value = cardTypeFilter.value as CardTypeFilter;
+
+        if (value === "player") {
+          filters.push(not(filterEncounterCards));
+        } else if (value === "encounter") {
+          filters.push(filterEncounterCards);
+        }
+      }
+
+      const fanMadeContentFilter = Object.values(filterValues).find(
+        (f) => f.type === "fan_made_content",
+      );
+
+      if (fanMadeContentFilter) {
+        const value = fanMadeContentFilter.value as FanMadeContentFilter;
+
+        if (value === "official") {
+          filters.push(filterOfficial);
+        } else if (value === "fan-made") {
+          filters.push(not(filterOfficial));
+        }
+      }
     }
 
     if (filters.length) {
@@ -762,6 +793,8 @@ const selectListFilterProperties = createSelector(
   selectBaseListCards,
   (lookupTables, cards) => {
     time("select_card_list_properties");
+    const cardTypes = new Set<CardTypeFilter>([]);
+
     const actionTable = lookupTables.actions;
 
     const cost = { min: Number.MAX_SAFE_INTEGER, max: 0 };
@@ -786,6 +819,12 @@ const selectListFilterProperties = createSelector(
 
     if (cards) {
       for (const card of cards) {
+        if (card.encounter_code) {
+          cardTypes.add("encounter");
+        } else {
+          cardTypes.add("player");
+        }
+
         if (card.type_code === "investigator") {
           investigators.add(card.code);
         }
@@ -868,6 +907,7 @@ const selectListFilterProperties = createSelector(
 
     return {
       actions,
+      cardTypes,
       cost,
       factions,
       health,
@@ -886,12 +926,20 @@ const selectListFilterProperties = createSelector(
  * Actions
  */
 
+export const selectActionMapper = createSelector(
+  selectLocaleSortingCollator,
+  (_) => {
+    return (code: string) => ({ code, name: i18n.t(`common.actions.${code}`) });
+  },
+);
+
 export const selectActionOptions = createSelector(
   selectListFilterProperties,
   selectLocaleSortingCollator,
-  ({ actions }, collator) => {
+  selectActionMapper,
+  ({ actions }, collator, mapper) => {
     return Array.from(actions)
-      .map((code) => ({ code, name: i18n.t(`common.actions.${code}`) }))
+      .map(mapper)
       .sort((a, b) => collator.compare(a.name, b.name));
   },
 );
@@ -899,6 +947,31 @@ export const selectActionOptions = createSelector(
 /**
  * Asset
  */
+
+export const selectUsesMapper = createSelector(
+  selectLocaleSortingCollator,
+  (_) => {
+    return (code: string) => {
+      const displayStr = i18n.exists(`common.uses.${code}`)
+        ? i18n.t(`common.uses.${code}`)
+        : capitalize(code);
+      return { code, name: displayStr };
+    };
+  },
+);
+
+export const selectSlotsMapper = createSelector(
+  selectLocaleSortingCollator,
+  (_) => {
+    return (code: string) => {
+      const displayStr =
+        code === NO_SLOT_STRING
+          ? i18n.t("common.slot.none")
+          : i18n.t(`common.slot.${code.toLowerCase()}`);
+      return { code, name: displayStr };
+    };
+  },
+);
 
 export const selectAssetOptions = createSelector(
   selectLookupTables,
@@ -959,6 +1032,13 @@ function sortedEncounterSets(metadata: Metadata, collator: Intl.Collator) {
 
   return encounterSets;
 }
+
+export const selectEncounterSetMapper = createSelector(
+  selectMetadata,
+  (metadata) => {
+    return (code: string) => metadata.encounterSets[code];
+  },
+);
 
 export const selectEncounterSetOptions = createSelector(
   selectMetadata,
@@ -1041,6 +1121,7 @@ export const selectInvestigatorOptions = createSelector(
  * Investigator Card Access
  */
 
+// FIXME: consider how to handle fan-made content here
 export const selectCardOptions = createSelector(
   selectMetadata,
   selectLocaleSortingCollator,
@@ -1084,7 +1165,7 @@ export function levelToString(value: number) {
  * Packs
  */
 
-type CycleWithPacks = Cycle & {
+export type CycleWithPacks = Cycle & {
   packs: Pack[];
   reprintPacks: Pack[];
 };
@@ -1141,19 +1222,14 @@ export const selectCampaignCycles = createSelector(
     ),
 );
 
-const filterNewFormat = (packs: Pack[], cardType?: string) => {
-  return packs.filter((pack) =>
-    cardType === "encounter"
-      ? pack.code.endsWith("c")
-      : pack.code.endsWith("p"),
-  );
-};
+export const selectPackMapper = createSelector(selectMetadata, (metadata) => {
+  return (code: string) => metadata.packs[code];
+});
 
 export const selectPackOptions = createSelector(
   selectListFilterProperties,
   selectCyclesAndPacks,
-  selectActiveList,
-  (listFilterProperties, cycles, list) => {
+  (listFilterProperties, cycles) => {
     return cycles.reduce((acc, cycle) => {
       const present = cycle.packs.some((pack) =>
         listFilterProperties.packs.has(pack.code),
@@ -1162,9 +1238,9 @@ export const selectPackOptions = createSelector(
       if (!present) return acc;
 
       if (cycle.reprintPacks.length && cycle.code !== "core") {
-        acc.push(...filterNewFormat(cycle.reprintPacks, list?.cardType));
+        acc.push(...cycle.reprintPacks);
       } else if (cycle.official !== false && cycle.packs.length === 2) {
-        acc.push(...filterNewFormat(cycle.packs, list?.cardType));
+        acc.push(...cycle.packs);
       } else {
         acc.push(...cycle.packs);
         acc.push(...cycle.reprintPacks);
@@ -1175,23 +1251,38 @@ export const selectPackOptions = createSelector(
   },
 );
 
+function newFormatPlayerPack(pack: Pack) {
+  return pack.code.endsWith("p");
+}
+
 export const selectLimitedPoolPackOptions = createSelector(
   selectCyclesAndPacks,
-  selectActiveList,
   (state: StoreState) => state.fanMadeData.projects,
-  (cycles, list, fanMadeProjects) => {
+  (cycles, fanMadeProjects) => {
     return cycles.flatMap((cycle) => {
-      if (cycle.official === false && !fanMadeProjects?.[cycle.code]) {
-        return [];
+      // Fan-made content
+      if (cycle.official === false) {
+        if (!fanMadeProjects?.[cycle.code]) return [];
+        return cycle.packs;
       }
 
-      if (cycle.reprintPacks.length && cycle.code !== "core") {
-        return filterNewFormat(cycle.reprintPacks, list?.cardType);
+      // Core set
+      if (cycle.code === "core") {
+        return [...cycle.reprintPacks, ...cycle.packs];
       }
 
-      return cycle.official !== false && cycle.packs.length === 2
-        ? filterNewFormat(cycle.packs, list?.cardType)
-        : [...cycle.reprintPacks, ...cycle.packs];
+      // Reprinted new format
+      if (cycle.reprintPacks.length) {
+        return cycle.reprintPacks.filter(newFormatPlayerPack);
+      }
+
+      // New format
+      if (cycle.packs.length === 2) {
+        return cycle.packs.filter(newFormatPlayerPack);
+      }
+
+      // Everything else
+      return cycle.packs;
     });
   },
 );
@@ -1321,14 +1412,11 @@ export const selectTabooSetOptions = createSelector(
 
 export const selectTraitOptions = createSelector(
   selectListFilterProperties,
+  selectTraitMapper,
   selectLocaleSortingCollator,
-  ({ traits }, collator) => {
+  ({ traits }, traitMapper, collator) => {
     return Array.from(traits)
-      .map((code) => {
-        const key = `common.traits.${code}`;
-        const name = i18n.exists(key) ? i18n.t(key) : code;
-        return { code, name };
-      })
+      .map(traitMapper)
       .sort((a, b) => collator.compare(a.name, b.name));
   },
 );
@@ -1337,16 +1425,26 @@ export const selectTraitOptions = createSelector(
  * Type
  */
 
+export const selectTypeMapper = createSelector(
+  selectMetadata,
+  selectLocaleSortingCollator,
+  (metadata, _) => {
+    return (code: string) => {
+      return {
+        ...metadata.types[code],
+        name: i18n.t(`common.type.${code}`),
+      };
+    };
+  },
+);
+
 export const selectTypeOptions = createSelector(
   selectListFilterProperties,
   selectLocaleSortingCollator,
-  selectMetadata,
-  ({ types }, collator, metadata) => {
+  selectTypeMapper,
+  ({ types }, collator, mapper) => {
     return Array.from(types)
-      .map((code) => ({
-        ...metadata.types[code],
-        name: i18n.t(`common.type.${code}`),
-      }))
+      .map(mapper)
       .sort((a, b) => collator.compare(a.name, b.name));
   },
 );
@@ -1709,7 +1807,7 @@ export function selectFilterChanges<T extends keyof FilterMapping>(
       return selectSanityChanges(value as SanityFilter);
     }
 
-    case "skillIcons": {
+    case "skill_icons": {
       return selectSkillIconsChanges(value as SkillIconsFilter);
     }
 
@@ -1717,7 +1815,7 @@ export function selectFilterChanges<T extends keyof FilterMapping>(
       return selectSubtypeChanges(value as SubtypeFilter);
     }
 
-    case "tabooSet": {
+    case "taboo_set": {
       return selectTabooSetChanges(state, value as SelectFilter);
     }
 

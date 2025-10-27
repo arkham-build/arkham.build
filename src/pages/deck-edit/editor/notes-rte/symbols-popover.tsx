@@ -58,7 +58,7 @@ function useAvailableSymbols(): SymbolsPopoverItem[] {
   return symbols;
 }
 
-const emptySelection: string[] = [];
+const emptySelection: SymbolsPopoverItem[] = [];
 
 const renderItem = (item: SymbolsPopoverItem) => {
   return (
@@ -83,17 +83,12 @@ export function SymbolsPopover(props: Props) {
   const { insertTextAtCaret } = useNotesRichTextEditorContext();
 
   const onSelectItem = useCallback(
-    (values: string[]) => {
-      const value = values[0];
-      if (!value) return;
-
-      const symbol = symbols.find((item) => item.code === value);
-      if (!symbol) return;
-
+    (values: SymbolsPopoverItem[]) => {
+      const symbol = values[0];
       insertTextAtCaret(`<span class=\"icon-${symbol.code}\"></span>`);
       onEscapePress();
     },
-    [insertTextAtCaret, onEscapePress, symbols],
+    [insertTextAtCaret, onEscapePress],
   );
 
   return (

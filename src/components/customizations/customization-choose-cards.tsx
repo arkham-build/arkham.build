@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useStore } from "@/store";
@@ -7,6 +8,7 @@ import type {
   CustomizationOption as CustomizationOptionType,
 } from "@/store/schemas/card.schema";
 import {
+  selectCardMapper,
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
@@ -103,7 +105,16 @@ export function CustomizationChooseCards(props: Props) {
     selectPlayerCardsForCustomizationOptions(state, config),
   );
 
+  const cardMapper = useStore(selectCardMapper);
+
   const locale = useStore((state) => state.settings.locale);
+
+  const onValueChange = useCallback(
+    (newSelections: Card[]) => {
+      onChange(newSelections.map((card) => card.code));
+    },
+    [onChange],
+  );
 
   return (
     <CardsCombobox
@@ -113,9 +124,9 @@ export function CustomizationChooseCards(props: Props) {
       label={t("common.card", { count: limit })}
       limit={limit}
       locale={locale}
-      onValueChange={onChange}
+      onValueChange={onValueChange}
       readonly={readonly}
-      selectedItems={selections}
+      selectedItems={selections.map(cardMapper)}
     />
   );
 }

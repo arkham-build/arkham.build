@@ -1,8 +1,4 @@
-import {
-  displayPackName,
-  formatSlots,
-  shortenPackName,
-} from "@/utils/formatting";
+import { displayPackName, formatSlots } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
 import type { Card } from "../schemas/card.schema";
 import type { GroupingType } from "../slices/lists.types";
@@ -525,7 +521,7 @@ export function getGroupingKeyLabel(
     }
 
     case "pack": {
-      return shortenPackName(metadata.packs[segment]) ?? "";
+      return displayPackName(metadata.packs[segment]) ?? "";
     }
 
     case "default": {

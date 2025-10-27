@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
 import {
+  selectActionMapper,
   selectActionOptions,
   selectActiveListFilter,
   selectFilterChanges,
@@ -29,6 +30,8 @@ export function ActionFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     selectActionOptions(state, resolvedDeck, targetDeck),
   );
 
+  const actionMapper = useStore(selectActionMapper);
+
   const nameRenderer = useCallback(
     (item: Coded & { name: string }) => item.name,
     [],
@@ -44,7 +47,7 @@ export function ActionFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       itemToString={nameRenderer}
       placeholder={t("filters.action.placeholder")}
       title={t("filters.action.title")}
-      value={filter.value}
+      value={filter.value.map(actionMapper)}
     />
   );
 }

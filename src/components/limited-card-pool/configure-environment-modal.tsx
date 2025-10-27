@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Card } from "@/store/schemas/card.schema";
 import type { Cycle } from "@/store/schemas/cycle.schema";
-import { selectCampaignCycles } from "@/store/selectors/lists";
+import {
+  type CycleWithPacks,
+  selectCampaignCycles,
+} from "@/store/selectors/lists";
 import {
   CAMPAIGN_PLAYALONG_PROJECT_ID,
   campaignPlayalongPacks,
@@ -142,6 +145,10 @@ function LimitedTab(props: TabProps) {
     dialogCtx.setOpen(false);
   };
 
+  const onSelectionChange = useCallback((items: CycleWithPacks[]) => {
+    setSelectedItems(items.map((cycle) => cycle.code));
+  }, []);
+
   return (
     <>
       <Field full padded bordered>
@@ -154,11 +161,15 @@ function LimitedTab(props: TabProps) {
           renderItem={packRenderer}
           renderResult={packRenderer}
           itemToString={packToString}
-          onValueChange={setSelectedItems}
+          onValueChange={onSelectionChange}
           items={cycles}
           label={capitalize(t("common.cycle", { count: 3 }))}
           showLabel
-          selectedItems={selectedItems}
+          selectedItems={
+            selectedItems.map((code) =>
+              cycles.find((cycle) => cycle.code === code),
+            ) as CycleWithPacks[]
+          }
         />
       </Field>
       <EnvironmentsTabConfirm
@@ -200,6 +211,10 @@ function CampaignPlayalongTab(props: TabProps) {
     dialogCtx.setOpen(false);
   };
 
+  const onSelectionChange = useCallback((items: CycleWithPacks[]) => {
+    setSelectedItems(items.map((cycle) => cycle.code));
+  }, []);
+
   return (
     <>
       <Field full padded bordered>
@@ -212,11 +227,15 @@ function CampaignPlayalongTab(props: TabProps) {
           renderItem={packRenderer}
           renderResult={packRenderer}
           itemToString={packToString}
-          onValueChange={setSelectedItems}
+          onValueChange={onSelectionChange}
           items={cycles}
           label={capitalize(t("common.cycle", { count: 1 }))}
           showLabel
-          selectedItems={selectedItems}
+          selectedItems={
+            selectedItems
+              .map((code) => cycles.find((cycle) => cycle.code === code))
+              .filter(Boolean) as CycleWithPacks[]
+          }
         />
       </Field>
       <EnvironmentsTabConfirm

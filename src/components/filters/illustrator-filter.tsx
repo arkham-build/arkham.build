@@ -37,7 +37,7 @@ export function IllustratorFilter({
       options={options}
       placeholder={t("filters.illustrator.placeholder")}
       title={t("filters.illustrator.title")}
-      value={filter.value}
+      value={filter.value.map((i) => ({ code: i }))}
     />
   );
 }

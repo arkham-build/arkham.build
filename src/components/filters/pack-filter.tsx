@@ -1,18 +1,18 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Pack } from "@/store/schemas/pack.schema";
 import {
-  selectActiveList,
   selectActiveListFilter,
   selectCampaignCycles,
   selectFilterChanges,
+  selectPackMapper,
   selectPackOptions,
 } from "@/store/selectors/lists";
 import { isPackFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
 import { currentEnvironmentPacks } from "@/utils/environments";
-import { shortenPackName } from "@/utils/formatting";
+import { displayPackName } from "@/utils/formatting";
 import { PackName } from "../pack-name";
 import { Button } from "../ui/button";
 import type { FilterProps } from "./filters.types";
@@ -24,8 +24,6 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
 
-  const activeList = useStore(selectActiveList);
-
   assert(
     isPackFilterObject(filter),
     `PackFilter instantiated with '${filter?.type}'`,
@@ -35,33 +33,19 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     selectFilterChanges(state, filter.type, filter.value),
   );
 
+  const packMapper = useStore(selectPackMapper);
+
   const packOptions = useStore((state) =>
     selectPackOptions(state, resolvedDeck, targetDeck),
   );
 
-  const canShowUnusableCards = useStore((state) => state.ui.showUnusableCards);
-
-  const options = useMemo(
-    () =>
-      packOptions.filter((pack) => {
-        const cardPool = resolvedDeck?.cardPool;
-
-        return cardPool && activeList?.cardType === "player"
-          ? canShowUnusableCards ||
-              cardPool.includes(pack.code) ||
-              filter.value.includes(pack.code)
-          : true;
-      }),
-    [filter.value, resolvedDeck, packOptions, activeList, canShowUnusableCards],
-  );
-
   const nameRenderer = useCallback(
-    (pack: Pack) => <PackName pack={pack} shortenNewFormat />,
+    (pack: Pack) => <PackName pack={pack} />,
     [],
   );
 
   const itemToString = useCallback(
-    (pack: Pack) => shortenPackName(pack).toLowerCase(),
+    (pack: Pack) => displayPackName(pack).toLowerCase(),
     [],
   );
 
@@ -80,10 +64,10 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       itemToString={itemToString}
       nameRenderer={nameRenderer}
       open={filter.open}
-      options={options}
+      options={packOptions}
       placeholder={t("filters.pack.placeholder")}
       title={t("filters.pack.title")}
-      value={filter.value}
+      value={filter.value.map(packMapper)}
     >
       {!changes && (
         <Button

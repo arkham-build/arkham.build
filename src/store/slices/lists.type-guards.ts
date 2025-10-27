@@ -1,5 +1,6 @@
 import type {
   AssetFilter,
+  CardTypeFilter,
   CostFilter,
   FanMadeContentFilter,
   FilterKey,
@@ -22,6 +23,12 @@ export function isAssetFilterObject(
   filter?: FilterObject<FilterKey>,
 ): filter is FilterObject<"asset"> {
   return !!filter && filter.type === "asset";
+}
+
+export function isCardTypeFilterObject(
+  filter?: FilterObject<FilterKey>,
+): filter is FilterObject<"card_type"> {
+  return !!filter && filter.type === "card_type";
 }
 
 export function isCostFilterObject(
@@ -80,8 +87,8 @@ export function isPropertiesFilterObject(
 
 export function isSkillIconsFilterObject(
   filter?: FilterObject<FilterKey>,
-): filter is FilterObject<"skillIcons"> {
-  return !!filter && filter.type === "skillIcons";
+): filter is FilterObject<"skill_icons"> {
+  return !!filter && filter.type === "skill_icons";
 }
 
 export function isSubtypeFilterObject(
@@ -92,8 +99,8 @@ export function isSubtypeFilterObject(
 
 export function isTabooSetFilterObject(
   filter?: FilterObject<FilterKey>,
-): filter is FilterObject<"tabooSet"> {
-  return !!filter && filter.type === "tabooSet";
+): filter is FilterObject<"taboo_set"> {
+  return !!filter && filter.type === "taboo_set";
 }
 
 export function isTypeFilterObject(
@@ -146,6 +153,10 @@ export function isAssetFilter(value: unknown): value is AssetFilter {
     "slots" in value &&
     "uses" in value
   );
+}
+
+export function isCardTypeFilter(value: unknown): value is CardTypeFilter {
+  return value === "player" || value === "encounter" || value === "";
 }
 
 export function isCostFilter(value: unknown): value is CostFilter {

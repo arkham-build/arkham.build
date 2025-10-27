@@ -86,10 +86,6 @@ export function Filters(props: Props) {
         <div className={css["children"]}>{props.children}</div>
       )}
 
-      {activeList?.key !== "create_deck" && (
-        <CardTypeFilter className={css["card-type-filter"]} />
-      )}
-
       <div className={css["header"]}>
         <HotkeyTooltip
           keybind="alt+f"
@@ -131,6 +127,12 @@ export function Filters(props: Props) {
               <Fragment key={id}>
                 {filter === "action" && <ActionFilter {...params} />}
                 {filter === "asset" && <AssetFilter {...params} />}
+                {filter === "card_type" && (
+                  <CardTypeFilter
+                    className={css["card-type-filter"]}
+                    {...params}
+                  />
+                )}
                 {filter === "cost" && <CostFilter {...params} />}
                 {filter === "encounter_set" && (
                   <EncounterSetFilter {...params} />
@@ -145,10 +147,10 @@ export function Filters(props: Props) {
                 )}
                 {filter === "pack" && <PackFilter {...params} />}
                 {filter === "properties" && <PropertiesFilter {...params} />}
-                {filter === "skillIcons" && <SkillIconsFilter {...params} />}
+                {filter === "skill_icons" && <SkillIconsFilter {...params} />}
                 {filter === "subtype" && <SubtypeFilter {...params} />}
                 {filter === "trait" && <TraitFilter {...params} />}
-                {filter === "tabooSet" && <TabooSetFilter {...params} />}
+                {filter === "taboo_set" && <TabooSetFilter {...params} />}
                 {filter === "type" && <TypeFilter {...params} />}
                 {filter === "faction" && <FactionFilter {...params} />}
                 {filter === "investigator_skills" && (

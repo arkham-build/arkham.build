@@ -1,41 +1,51 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import { selectActiveList } from "@/store/selectors/lists";
+import { selectActiveListFilter } from "@/store/selectors/lists";
+import { isCardTypeFilterObject } from "@/store/slices/lists.type-guards";
+import type { CardTypeFilter as CardTypeFilterType } from "@/store/slices/lists.types";
+import { assert } from "@/utils/assert";
 import { useHotkey } from "@/utils/use-hotkey";
 import { HotkeyTooltip } from "../ui/hotkey";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import type { FilterProps } from "./filters.types";
+import { useFilterCallbacks } from "./primitives/filter-hooks";
 
-type Props = {
-  className?: string;
-};
+export function CardTypeFilter(props: FilterProps & { className?: string }) {
+  const { className, id } = props;
 
-export function CardTypeFilter(props: Props) {
-  const activeList = useStore(selectActiveList);
-  const changeList = useStore((state) => state.changeList);
+  const filter = useStore((state) => selectActiveListFilter(state, id));
+
+  assert(
+    isCardTypeFilterObject(filter),
+    `CardTypeFilter instantiated with '${filter?.type}'`,
+  );
+
   const { t } = useTranslation();
 
+  const { onChange } = useFilterCallbacks(id);
+
   const onToggle = useCallback(
-    (value: string) => {
-      changeList(value, window.location.href);
+    (value: CardTypeFilterType) => {
+      onChange(value);
     },
-    [changeList],
+    [onChange],
   );
 
   useHotkey("alt+p", () => onToggle("player"));
   useHotkey("alt+c", () => onToggle("encounter"));
 
-  if (!activeList) return null;
+  if (!filter) return null;
 
   return (
     <ToggleGroup
-      className={props.className}
-      defaultValue="player"
+      className={className}
+      defaultValue=""
       data-testid="toggle-card-type"
       full
-      onValueChange={onToggle}
+      onValueChange={onChange}
       type="single"
-      value={activeList.cardType}
+      value={filter.value}
     >
       <HotkeyTooltip keybind="alt+p" description={t("common.player_cards")}>
         <ToggleGroupItem data-testid="card-type-player" value="player">

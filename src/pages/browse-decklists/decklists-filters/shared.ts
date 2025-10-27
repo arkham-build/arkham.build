@@ -21,11 +21,9 @@ export type DecklistFilterProps = {
   >;
 };
 
-export const selectPlayerCards = createSelector(
-  selectMetadata,
+export const selectPlayerCardsFilter = createSelector(
   selectLookupTables,
-  selectLocaleSortingCollator,
-  (metadata, lookupTables, collator) => {
+  (lookupTables) => {
     const playerCardFilter = and([
       not(filterEncounterCards),
       not(filterType(["investigator"])),
@@ -34,14 +32,14 @@ export const selectPlayerCards = createSelector(
       (c) => c.official !== false,
     ]);
 
-    const playerCards = Object.values(metadata.cards).filter(playerCardFilter);
+    return playerCardFilter;
+  },
+);
 
-    const sortFn = makeSortFunction(
-      ["name", "level", "position"],
-      metadata,
-      collator,
-    );
-
-    return playerCards.sort(sortFn);
+export const selectPlayerCardsSort = createSelector(
+  selectMetadata,
+  selectLocaleSortingCollator,
+  (metadata, collator) => {
+    return makeSortFunction(["name", "level", "position"], metadata, collator);
   },
 );

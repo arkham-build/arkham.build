@@ -4,6 +4,7 @@ import { useStore } from "@/store";
 import type { EncounterSet } from "@/store/schemas/encounter-set.schema";
 import {
   selectActiveListFilter,
+  selectEncounterSetMapper,
   selectEncounterSetOptions,
   selectFilterChanges,
 } from "@/store/selectors/lists";
@@ -39,6 +40,8 @@ export function EncounterSetFilter({ id }: FilterProps) {
     [],
   );
 
+  const encounterSetMapper = useStore(selectEncounterSetMapper);
+
   return (
     <MultiselectFilter
       changes={changes}
@@ -49,7 +52,7 @@ export function EncounterSetFilter({ id }: FilterProps) {
       options={options}
       placeholder={t("filters.encounter_set.placeholder")}
       title={t("filters.encounter_set.title")}
-      value={filter.value}
+      value={filter.value.map(encounterSetMapper)}
     />
   );
 }

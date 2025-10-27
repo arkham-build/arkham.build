@@ -3,9 +3,11 @@ import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { Combobox } from "@/components/ui/combobox/combobox";
 import { useStore } from "@/store";
+import type { Coded } from "@/store/lib/types";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
+  selectTraitMapper,
 } from "@/store/selectors/shared";
 import i18n from "@/utils/i18n";
 
@@ -38,9 +40,18 @@ export function CustomizationChooseTraits(props: Props) {
 
   const locale = useStore((state) => state.settings.locale);
 
+  const mapper = useStore(selectTraitMapper);
+
   const nameRenderer = useCallback(
     (trait: { code: string; name: string }) => trait.name,
     [],
+  );
+
+  const onValueChange = useCallback(
+    (newSelections: Coded[]) => {
+      onChange(newSelections.map((card) => card.code));
+    },
+    [onChange],
   );
 
   return (
@@ -55,11 +66,11 @@ export function CustomizationChooseTraits(props: Props) {
       readonly={readonly}
       renderItem={nameRenderer}
       renderResult={nameRenderer}
-      onValueChange={onChange}
+      onValueChange={onValueChange}
       placeholder={t("deck_edit.customizable.traits_placeholder", {
         count: limit,
       })}
-      selectedItems={selections}
+      selectedItems={selections.map(mapper)}
     />
   );
 }

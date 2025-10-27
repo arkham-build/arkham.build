@@ -42,7 +42,7 @@ function UsableCardsList(props: { card: Card }) {
   const removeList = useStore((state) => state.removeList);
 
   useEffect(() => {
-    addList(listKey, "player", {
+    addList(listKey, {
       investigator: card.code,
     });
 

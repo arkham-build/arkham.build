@@ -7,6 +7,7 @@ import {
   selectFilterChanges,
   selectTraitOptions,
 } from "@/store/selectors/lists";
+import { selectTraitMapper } from "@/store/selectors/shared";
 import { isTraitFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
 import type { FilterProps } from "./filters.types";
@@ -29,6 +30,8 @@ export function TraitFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     selectTraitOptions(state, resolvedDeck, targetDeck),
   );
 
+  const traitMapper = useStore(selectTraitMapper);
+
   const nameRenderer = useCallback((c: Coded & { name: string }) => c.name, []);
 
   return (
@@ -41,7 +44,7 @@ export function TraitFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       nameRenderer={nameRenderer}
       placeholder={t("filters.trait.placeholder")}
       title={t("filters.trait.title")}
-      value={filter.value}
+      value={filter.value.map(traitMapper)}
     />
   );
 }

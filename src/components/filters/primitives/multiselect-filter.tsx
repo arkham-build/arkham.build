@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { Combobox } from "@/components/ui/combobox/combobox";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
@@ -15,7 +16,7 @@ type Props<T extends Coded> = {
   open: boolean;
   options: T[];
   placeholder?: string;
-  value: string[];
+  value: T[];
 };
 
 export function MultiselectFilter<T extends Coded>(props: Props<T>) {
@@ -37,6 +38,13 @@ export function MultiselectFilter<T extends Coded>(props: Props<T>) {
 
   const locale = useStore((state) => state.settings.locale);
 
+  const onValueChange = useCallback(
+    (selected: T[]) => {
+      onChange(selected.map((s) => s.code));
+    },
+    [onChange],
+  );
+
   return (
     <FilterContainer
       data-testid={`filter-${title}`}
@@ -54,7 +62,7 @@ export function MultiselectFilter<T extends Coded>(props: Props<T>) {
         items={options}
         label={title}
         locale={locale}
-        onValueChange={onChange}
+        onValueChange={onValueChange}
         placeholder={placeholder}
         renderItem={nameRenderer}
         renderResult={nameRenderer}

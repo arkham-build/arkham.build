@@ -61,7 +61,7 @@ export function DeckXPCostFilter({ containerClass }: Props) {
           max={max}
           min={min}
           onValueCommit={onValueCommit}
-          value={value ?? [min, max]}
+          value={(value as [number, number]) ?? [min, max]}
         />
       </FilterContainer>
     )

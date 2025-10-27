@@ -1,8 +1,9 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Combobox } from "@/components/ui/combobox/combobox";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
+import { selectSkillMapper } from "@/store/selectors/shared";
 import { SKILL_KEYS } from "@/utils/constants";
 
 type Props = {
@@ -25,13 +26,18 @@ export function CustomizationChooseSkill(props: Props) {
 
   const locale = useStore((state) => state.settings.locale);
 
+  const skillMapper = useStore(selectSkillMapper);
+
   const options = useMemo(
-    () =>
-      SKILL_KEYS.filter((x) => x !== "wild").map((key) => ({
-        code: key,
-        name: t(`common.skill.${key}`),
-      })),
-    [t],
+    () => SKILL_KEYS.filter((x) => x !== "wild").map(skillMapper),
+    [skillMapper],
+  );
+
+  const onValueChange = useCallback(
+    (newSelections: Coded[]) => {
+      onChange(newSelections.map((skill) => skill.code));
+    },
+    [onChange],
   );
 
   return (
@@ -42,12 +48,12 @@ export function CustomizationChooseSkill(props: Props) {
       label={t("common.skill.title")}
       limit={1}
       locale={locale}
-      onValueChange={onChange}
+      onValueChange={onValueChange}
       placeholder={t("deck_edit.customizable.skill_placeholder")}
       readonly={readonly}
       renderItem={itemRenderer}
       renderResult={itemRenderer}
-      selectedItems={selections}
+      selectedItems={selections.map(skillMapper)}
     />
   );
 }

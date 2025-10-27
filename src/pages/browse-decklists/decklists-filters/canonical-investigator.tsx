@@ -103,11 +103,13 @@ export function CanonicalInvestigator({
           const card = cards[0];
           setFormState((prev) => ({
             ...prev,
-            canonicalInvestigatorCode: card ? `${card}-${card}` : undefined,
+            canonicalInvestigatorCode: card
+              ? `${card.code}-${card.code}`
+              : undefined,
           }));
         }}
         selectedItems={
-          resolvedCanonicalCard ? [resolvedCanonicalCard.card.code] : []
+          resolvedCanonicalCard ? [resolvedCanonicalCard.card] : []
         }
         showLabel
       />

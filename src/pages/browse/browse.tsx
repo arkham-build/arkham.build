@@ -20,7 +20,7 @@ function Browse() {
   const setActiveList = useStore((state) => state.setActiveList);
 
   useEffect(() => {
-    setActiveList("browse_player");
+    setActiveList("browse");
   }, [setActiveList]);
 
   if (!isInitalized || !activeListId?.startsWith("browse")) return null;

@@ -63,7 +63,7 @@ function DeckEdit() {
   const deck = useStore((state) => selectResolvedDeckById(state, id, true));
 
   useEffect(() => {
-    setActiveList("editor_player");
+    setActiveList("editor");
 
     return () => {
       resetFilters();
