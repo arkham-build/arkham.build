@@ -6,10 +6,10 @@ import { CURRENT_CYCLE_POSITION, RETURN_TO_CYCLES } from "./constants";
 export const CAMPAIGN_PLAYALONG_PROJECT_ID =
   "5b6a1f95-73d1-4059-8af2-b9a645efd625";
 
-const CORE_PACKS = ["cycle:core", "cycle:investigator"];
+const CORE_PACKS = ["cycle:investigator", "cycle:core", "rtnotz"];
 
 export function currentEnvironmentPacks(cycles: Cycle[]) {
-  const packs = [...CORE_PACKS];
+  const packs = [];
 
   for (let i = CURRENT_CYCLE_POSITION; i >= CURRENT_CYCLE_POSITION - 2; i--) {
     const cycle = cycles.find((c) => c.position === i);
@@ -20,11 +20,13 @@ export function currentEnvironmentPacks(cycles: Cycle[]) {
     }
   }
 
+  packs.push(...CORE_PACKS.filter((c) => c !== "rtnotz"));
+
   return packs;
 }
 
 export function limitedEnvironmentPacks(cycles: Cycle[]) {
-  const packs = [...CORE_PACKS, "rtnotz"];
+  const packs = [];
 
   for (const cycle of cycles) {
     if (cycle.code !== "core") {
@@ -36,11 +38,13 @@ export function limitedEnvironmentPacks(cycles: Cycle[]) {
     }
   }
 
+  packs.push(...CORE_PACKS);
+
   return packs;
 }
 
 export function campaignPlayalongPacks(cycle: string) {
-  const packs = [...CORE_PACKS, "rtnotz"];
+  const packs = [];
 
   if (cycle !== "core") {
     packs.push(`${cycle}p`);
@@ -49,6 +53,8 @@ export function campaignPlayalongPacks(cycle: string) {
   if (RETURN_TO_CYCLES[cycle]) {
     packs.push(RETURN_TO_CYCLES[cycle]);
   }
+
+  packs.push(...CORE_PACKS);
 
   return packs;
 }
@@ -68,7 +74,9 @@ export function resolveLimitedPoolPacks(
       const cycle = metadata.cycles[cycleCode];
 
       if (cycle) {
-        const cyclePacks = packs.filter((p) => p.cycle_code === cycle.code);
+        const cyclePacks = packs
+          .filter((p) => p.cycle_code === cycle.code)
+          .sort((a, b) => a.position - b.position);
 
         if (cycle.code === "core") {
           selectedPacks.push(...cyclePacks);
