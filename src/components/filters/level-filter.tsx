@@ -5,6 +5,7 @@ import {
   levelToString,
   selectActiveListFilter,
   selectFilterChanges,
+  selectListFilterProperties,
 } from "@/store/selectors/lists";
 import { isLevelFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
@@ -23,10 +24,14 @@ function getToggleValue(value: [number, number] | undefined) {
   return "";
 }
 
-export function LevelFilter({ id }: FilterProps) {
+export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
+
+  const listProperties = useStore((state) =>
+    selectListFilterProperties(state, resolvedDeck, targetDeck),
+  );
 
   assert(
     isLevelFilterObject(filter),
@@ -100,7 +105,8 @@ export function LevelFilter({ id }: FilterProps) {
       alwaysShowChanges
       changes={changes}
       nonCollapsibleContent={
-        !filter.open && (
+        !filter.open &&
+        listProperties.levels.size > 1 && (
           <ToggleGroup
             data-testid="filters-level-shortcut"
             full

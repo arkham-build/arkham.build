@@ -5,6 +5,7 @@ import type { Type } from "@/store/schemas/metadata.schema";
 import {
   selectActiveListFilter,
   selectFilterChanges,
+  selectListFilterProperties,
   selectTypeMapper,
   selectTypeOptions,
 } from "@/store/selectors/lists";
@@ -22,6 +23,10 @@ export function TypeFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
   const setFilterValue = useStore((state) => state.setFilterValue);
+
+  const listProperties = useStore((state) =>
+    selectListFilterProperties(state, resolvedDeck, targetDeck),
+  );
 
   assert(
     isTypeFilterObject(filter),
@@ -65,15 +70,21 @@ export function TypeFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
           type="multiple"
           value={filter.value}
         >
-          <ToggleGroupItem value="asset">
-            {t("common.type.asset")}
-          </ToggleGroupItem>
-          <ToggleGroupItem value="event">
-            {t("common.type.event")}
-          </ToggleGroupItem>
-          <ToggleGroupItem value="skill">
-            {t("common.type.skill")}
-          </ToggleGroupItem>
+          {listProperties.types.has("asset") && (
+            <ToggleGroupItem value="asset">
+              {t("common.type.asset")}
+            </ToggleGroupItem>
+          )}
+          {listProperties.types.has("event") && (
+            <ToggleGroupItem value="event">
+              {t("common.type.event")}
+            </ToggleGroupItem>
+          )}
+          {listProperties.types.has("skill") && (
+            <ToggleGroupItem value="skill">
+              {t("common.type.skill")}
+            </ToggleGroupItem>
+          )}
         </ToggleGroup>
       )}
     </MultiselectFilter>

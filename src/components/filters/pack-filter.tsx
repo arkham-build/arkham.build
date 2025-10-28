@@ -6,6 +6,7 @@ import {
   selectActiveListFilter,
   selectCampaignCycles,
   selectFilterChanges,
+  selectListFilterProperties,
   selectPackMapper,
   selectPackOptions,
 } from "@/store/selectors/lists";
@@ -27,6 +28,10 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
+
+  const listFilterProperties = useStore((state) =>
+    selectListFilterProperties(state, resolvedDeck, targetDeck),
+  );
 
   assert(
     isPackFilterObject(filter),
@@ -66,6 +71,10 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     );
   }, [cycles, onChange, metadata]);
 
+  const showShortcut =
+    listFilterProperties.cardTypes.has("player") &&
+    listFilterProperties.levels.size > 1;
+
   return (
     <MultiselectFilter
       changes={changes}
@@ -78,7 +87,7 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       title={t("filters.pack.title")}
       value={filter.value.map(packMapper)}
     >
-      {!changes && (
+      {showShortcut && !changes && (
         <Button
           size="sm"
           onClick={onApplyCurrentEnvironment}

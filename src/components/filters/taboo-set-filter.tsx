@@ -3,6 +3,7 @@ import { useStore } from "@/store";
 import {
   selectActiveListFilter,
   selectFilterChanges,
+  selectListFilterProperties,
   selectTabooSetOptions,
 } from "@/store/selectors/lists";
 import { isTabooSetFilterObject } from "@/store/slices/lists.type-guards";
@@ -11,10 +12,15 @@ import { formatTabooSet } from "@/utils/formatting";
 import type { FilterProps } from "./filters.types";
 import { SelectFilter } from "./primitives/select-filter";
 
-export function TabooSetFilter({ id }: FilterProps) {
+export function TabooSetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
+
+  const listFilterProperties = useStore((state) =>
+    selectListFilterProperties(state, resolvedDeck, targetDeck),
+  );
+
   assert(
     isTabooSetFilterObject(filter),
     `TabooSetFilter instantiated with '${filter?.type}'`,
@@ -25,6 +31,10 @@ export function TabooSetFilter({ id }: FilterProps) {
   );
 
   const options = useStore(selectTabooSetOptions);
+
+  if (!listFilterProperties.cardTypes.has("player") && !filter.value) {
+    return null;
+  }
 
   return (
     <SelectFilter

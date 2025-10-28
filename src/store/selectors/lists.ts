@@ -788,7 +788,7 @@ export const selectCardRelationsResolver = createSelector(
  * Utilities
  */
 
-const selectListFilterProperties = createSelector(
+export const selectListFilterProperties = createSelector(
   selectMetadata,
   selectLookupTables,
   selectBaseListCards,
@@ -810,13 +810,15 @@ const selectListFilterProperties = createSelector(
     );
 
     const actions = new Set<string>();
-    const traits = new Set<string>();
-    const types = new Set<string>();
+    const cardTypes = new Set<string>();
+    const encounterSets = new Set<string>();
+    const factions = new Set<string>();
     const illustrators = new Set<string>();
     const investigators = new Set<string>();
+    const levels = new Set<number | null>();
     const packs = new Set<string>();
-    const factions = new Set<string>();
-    const encounterSets = new Set<string>();
+    const traits = new Set<string>();
+    const types = new Set<string>();
 
     if (cards) {
       for (const card of cards) {
@@ -824,6 +826,13 @@ const selectListFilterProperties = createSelector(
           investigators.add(card.code);
         }
 
+        if (card.encounter_code) {
+          cardTypes.add("encounter");
+        } else {
+          cardTypes.add("player");
+        }
+
+        levels.add(card.xp ?? null);
         types.add(card.type_code);
 
         packs.add(card.pack_code);
@@ -914,12 +923,14 @@ const selectListFilterProperties = createSelector(
 
     return {
       actions,
+      cardTypes,
       cost,
       encounterSets,
       factions,
       health,
       illustrators,
       investigators,
+      levels,
       packs,
       sanity,
       skills,
