@@ -477,6 +477,24 @@
     "xp": 0
   },
   {
+    "code": "12031",
+    "duplicate_of": "05024",
+    "pack_code": "core_2026",
+    "position": 31,
+    "cost": 4,
+    "deck_limit": 2,
+    "faction_code": "seeker",
+    "illustrator": "Quintin Gleim",
+    "name": "Fingerprint Kit",
+    "quantity": 2,
+    "preview": true,
+    "slot": "Hand",
+    "skill_intellect": 1,
+    "traits": "Item. Tool.",
+    "type_code": "asset",
+    "text": "Uses (3 supplies).\n[action] Exhaust Fingerprint Kit and spend 1 supply:\n<b>Investigate</b> ([intellect]). You get +1 [intellect] for this investigation. If you succeed, discover 1 additional clue at your location."
+  },
+  {
     "code": "12033",
     "cost": 3,
     "deck_limit": 2,
@@ -709,5 +727,22 @@
     "traits": "Supply.",
     "type_code": "event",
     "xp": 0
+  },
+  {
+    "code": "12098",
+    "cost": null,
+    "deck_limit": 2,
+    "faction_code": "neutral",
+    "illustrator": "Kate Swazee",
+    "name": "The Gold Bug",
+    "pack_code": "core_2026",
+    "position": 98,
+    "preview": true,
+    "quantity": 2,
+    "slot": "Accessory",
+    "subtype_code": "basicweakness",
+    "text": "<b>Revelation</b> - Put The Gold Bug into play in your threat area. It cannot leave play except by the [action] ability below.\nYou get -1 health and -1 sanity.\n[action]: Shuffle the Gold Bug into your deck.",
+    "traits": "Item. Relic. Alchemy. Cursed.",
+    "type_code": "asset"
   }
 ]
