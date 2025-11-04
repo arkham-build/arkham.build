@@ -13,15 +13,27 @@ type Props = {
   className?: string;
   children?: React.ReactNode;
   slotRight?: React.ReactNode;
+  hideSyncStatus?: boolean;
+  hideLocaleSwitch?: boolean;
+  hideSettings?: boolean;
 };
 
 export function Masthead(props: Props) {
+  const {
+    children,
+    className,
+    hideLocaleSwitch,
+    hideSettings,
+    hideSyncStatus,
+    slotRight,
+  } = props;
+
   const { t } = useTranslation();
 
   const [location] = useLocation();
 
   return (
-    <header className={cx(props.className, css["masthead"])} id="masthead">
+    <header className={cx(className, css["masthead"])} id="masthead">
       <div className={css["left"]}>
         <Link className={css["logo"]} href="~/" data-testid="masthead-logo">
           <Logo />
@@ -29,27 +41,29 @@ export function Masthead(props: Props) {
             {import.meta.env.VITE_PAGE_NAME}
           </span>
         </Link>
-        {props.children}
+        {children}
       </div>
       <nav className={css["right"]}>
-        {props.slotRight}
+        {slotRight}
         {location !== "/settings" && (
           <>
-            <SyncStatus />
-            <LocaleQuickSwitch />
-            <Link asChild href="~/settings">
-              <Button
-                as="a"
-                className={css["settings"]}
-                data-testid="masthead-settings"
-                iconOnly
-                size="lg"
-                tooltip={t("settings.title")}
-                variant="bare"
-              >
-                <SettingsIcon />
-              </Button>
-            </Link>
+            {!hideSyncStatus && <SyncStatus />}
+            {!hideLocaleSwitch && <LocaleQuickSwitch />}
+            {!hideSettings && (
+              <Link asChild href="~/settings">
+                <Button
+                  as="a"
+                  className={css["settings"]}
+                  data-testid="masthead-settings"
+                  iconOnly
+                  size="lg"
+                  tooltip={t("settings.title")}
+                  variant="bare"
+                >
+                  <SettingsIcon />
+                </Button>
+              </Link>
+            )}
           </>
         )}
         <HelpMenu />

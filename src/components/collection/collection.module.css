@@ -97,6 +97,7 @@
 .pack-label {
   display: block;
   flex: 1 1 auto;
+  font-size: var(--text-sm);
 }
 
 .pack-name {

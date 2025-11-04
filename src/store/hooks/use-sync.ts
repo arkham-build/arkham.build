@@ -59,6 +59,7 @@ export function shouldAutoSync(
     !location.includes("/settings") &&
     !location.includes("/connect") &&
     !location.includes("/search") &&
+    !location.includes("/blog") &&
     (!connections.lastSyncedAt ||
       Date.now() - connections.lastSyncedAt > 30 * 60 * 1000)
   );

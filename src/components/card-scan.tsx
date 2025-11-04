@@ -44,6 +44,7 @@ export function CardScan(props: Omit<Props, "flipped">) {
 
 export function CardScanControlled(props: Props) {
   const {
+    className,
     draggable,
     flipped,
     preventFlip,
@@ -116,6 +117,7 @@ export function CardScanControlled(props: Props) {
         flipped
           ? reverseSideways && css["sideways"]
           : isSideways && css["sideways"],
+        className,
       )}
       data-testid="card-scan"
       data-component="card-scan"

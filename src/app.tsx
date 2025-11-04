@@ -54,6 +54,8 @@ const InstallFanMadeContent = lazy(
   () => import("./pages/install-fan-made-content/install-fan-made-content"),
 );
 
+const Core2026Reveal = lazy(() => import("./pages/blog/core-2026-reveal"));
+
 function App() {
   return (
     <Providers>
@@ -124,6 +126,7 @@ function AppInner() {
                 component={InstallFanMadeContent}
                 path="/install-fan-made-content"
               />
+              <Route component={Core2026Reveal} path="/blog/core-2026-reveal" />
               <Route path="*">
                 <ErrorStatus statusCode={404} />
               </Route>
