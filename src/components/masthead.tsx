@@ -16,6 +16,7 @@ type Props = {
   hideSyncStatus?: boolean;
   hideLocaleSwitch?: boolean;
   hideSettings?: boolean;
+  invert?: boolean;
 };
 
 export function Masthead(props: Props) {
@@ -25,6 +26,7 @@ export function Masthead(props: Props) {
     hideLocaleSwitch,
     hideSettings,
     hideSyncStatus,
+    invert,
     slotRight,
   } = props;
 
@@ -33,7 +35,10 @@ export function Masthead(props: Props) {
   const [location] = useLocation();
 
   return (
-    <header className={cx(className, css["masthead"])} id="masthead">
+    <header
+      className={cx(className, css["masthead"], invert && css["invert"])}
+      id="masthead"
+    >
       <div className={css["left"]}>
         <Link className={css["logo"]} href="~/" data-testid="masthead-logo">
           <Logo />

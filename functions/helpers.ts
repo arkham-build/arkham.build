@@ -49,7 +49,7 @@ const OPEN_GRAPH_USER_AGENTS = [
   /ZoomBot/i,
 ];
 
-function isOpenGraphUserAgent(userAgent: string) {
+export function isOpenGraphUserAgent(userAgent: string) {
   return OPEN_GRAPH_USER_AGENTS.some((regex) => regex.test(userAgent));
 }
 
@@ -112,6 +112,6 @@ class ElementHandler {
   }
 }
 
-function rewriteOpengraphHead(res: Response, preview: PreviewResponse) {
+export function rewriteOpengraphHead(res: Response, preview: PreviewResponse) {
   return new HTMLRewriter().on("*", new ElementHandler(preview)).transform(res);
 }

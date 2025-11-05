@@ -8,6 +8,10 @@
   height: calc(1.5rem + var(--icon-3xl));
 }
 
+.masthead.invert {
+  color: var(--nord-6);
+}
+
 .left {
   flex: 0 0 auto;
   display: flex;
@@ -23,7 +27,7 @@
   text-decoration: none;
   font-weight: 700;
   font-size: var(--text-sm);
-  color: var(--text);
+  color: currentColor;
 }
 
 .logo svg {

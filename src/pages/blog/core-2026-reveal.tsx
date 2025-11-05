@@ -99,7 +99,7 @@ function Core2026Reveal() {
     <main className={css["layout"]}>
       <header className={css["header"]}>
         <div className={css["header-nav"]}>
-          <Masthead hideLocaleSwitch hideSyncStatus />
+          <Masthead hideLocaleSwitch hideSyncStatus invert />
         </div>
         <div className={css["header-backdrop"]}>
           <img
@@ -183,6 +183,20 @@ function Core2026Reveal() {
             Create souvenir
           </Button>
           {!API_URL && <p>The souvenir shop is now closed.</p>}
+          <p>
+            <small>
+              The souvenir shop uses{" "}
+              <a
+                href="https://github.com/tokeeto/shoggoth"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Shoggoth
+              </a>{" "}
+              to draw your cards. A warm thank you to Tokeeto for his help in
+              making this possible.
+            </small>
+          </p>
         </form>
       </article>
       {pack && (
