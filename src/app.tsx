@@ -126,7 +126,10 @@ function AppInner() {
                 component={InstallFanMadeContent}
                 path="/install-fan-made-content"
               />
-              <Route component={Core2026Reveal} path="/blog/core-2026-reveal" />
+              <Route
+                component={Core2026Reveal}
+                path="/blog/_core-2026-reveal"
+              />
               <Route path="*">
                 <ErrorStatus statusCode={404} />
               </Route>
