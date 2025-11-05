@@ -22,16 +22,8 @@ function Core2026Reveal() {
   const [name, setName] = useState("");
   const [pack, setPack] = useState<FanMadeProject | null>(null);
   const souvenirRef = useRef<HTMLDivElement | null>(null);
-  const toggleFlag = useStore((state) => state.toggleFlag);
-  const flags = useStore((state) => state.settings.flags);
 
   const addFanMadeProject = useStore((state) => state.addFanMadeProject);
-
-  useEffect(() => {
-    if (!flags?.["seen-core-2026-reveal"]) {
-      toggleFlag("seen-core-2026-reveal");
-    }
-  }, [flags, toggleFlag]);
 
   useEffect(() => {
     if (pack && souvenirRef.current) {
