@@ -871,6 +871,8 @@
           "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "The Campaign Play-Along is an ongoing event hosted on the Mythos Busters discord server. It is designed to play Arkham campaigns together, share stories and generally create a sense of community.",
           "choose_cycle_placeholder": "Select cycles...",
+          "collection": "Collection",
+          "collection_help": "Use your collection (see Settings).",
           "configure_environment": "Configure environment",
           "current": "Current",
           "current_help": "When deckbuilding in the Current Environment, players may only deckbuild with core cards, the five starter decks and the three most recent investigator expansions.",

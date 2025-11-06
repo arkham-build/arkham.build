@@ -78,6 +78,7 @@ export function ConfigureEnvironmentModal(props: Props) {
               <EnvironmentsTabTrigger value="current" />
               <EnvironmentsTabTrigger value="limited" />
               <EnvironmentsTabTrigger value="campaign_playalong" />
+              <EnvironmentsTabTrigger value="collection" />
             </TabsList>
             <EnvironmentsTabContent value="legacy">
               <LegacyTab {...tabProps} />
@@ -90,6 +91,9 @@ export function ConfigureEnvironmentModal(props: Props) {
             </EnvironmentsTabContent>
             <EnvironmentsTabContent value="campaign_playalong">
               <CampaignPlayalongTab {...tabProps} />
+            </EnvironmentsTabContent>
+            <EnvironmentsTabContent value="collection">
+              <CollectionTab {...tabProps} />
             </EnvironmentsTabContent>
           </Tabs>
         </DefaultModalContent>
@@ -120,6 +124,35 @@ function CurrentTab({ dialogCtx, onValueChange }: TabProps) {
         dialogCtx.setOpen(false);
       }}
       environment="current"
+    />
+  );
+}
+
+function CollectionTab({ dialogCtx, onValueChange }: TabProps) {
+  const cycles = useStore(selectCampaignCycles);
+  const ignored = cycles.reduce(
+    (acc, cycle) => {
+      const campaignCode = `${cycle.code}c`;
+      acc[campaignCode] = 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  const settings = useStore((state) => state.settings);
+  const collection = settings.collection;
+
+  const selected = Object.keys(collection).filter(
+    (code) => collection[code] > 0 && !(code in ignored),
+  );
+
+  return (
+    <EnvironmentsTabConfirm
+      onClick={() => {
+        onValueChange(selected);
+        dialogCtx.setOpen(false);
+      }}
+      environment="collection"
     />
   );
 }
