@@ -283,6 +283,7 @@
       "taboo_chained": "경험치가 {{xp}}점 더 많이 듭니다.",
       "taboo_mutated": "변형",
       "taboo_none": "없음",
+      "taboo_original_text": "원본 카드 문구",
       "taboo_unchained": "경험치가 {{xp}}점 더 적게 듭니다.",
       "total": "총합",
       "trait_one": "특성",
@@ -745,7 +746,7 @@
         "xp_required_help": "이 덱을 처음부터 새로 구성하는 데 필요한 경험치입니다."
       },
       "tags": {
-        "limited_pool": "제한 풀",
+        "limited_pool": "제한된 구성 환경",
         "private": "비공개",
         "sealed": "봉인됨",
         "shared": "공유됨"
@@ -873,15 +874,16 @@
           "configure_environment": "환경 설정",
           "current": "현행",
           "current_help": "현행 환경에서 덱을 구성하려면, 플레이어는 기본판과 조사자 확장 5종 및 최근 출시된 조사자 확장 3종으로만 덱을 구성할 수 있습니다.",
+          "custom": "커스텀",
           "help": "조사자, 전용 카드 및 이야기 자산 카드는 이 선택에 영향을 받지 않습니다..",
           "legacy": "유산",
           "legacy_help": "유산 환경에서 덱을 구성하려면, 플레이어는 아컴호러 카드게임의 모든 제품에서 나온 덱 구성 요소와 조사자, 플레이어 카드 및 약점을 자유롭게 사용할 수 있습니다. 어떠한 제한도 없습니다.",
           "limited": "제한",
           "limited_help": "제한 환경에서 덱을 구성하려면, 플레이어는 기본판과 조사자 확장 5종 및 선택한 조사자 확장 3종으로만 덱을 구성할 수 있습니다.",
           "placeholder": "팩 선택하기...",
-          "section_title": "카드 풀 설정",
+          "section_title": "카드 구성 환경 설정",
           "selected_cards": "선택된 카드",
-          "title": "제한된 카드 풀"
+          "title": "제한된 카드 구성 환경"
         },
         "name": "덱 이름",
         "sealed": {
@@ -1034,6 +1036,7 @@
       },
       "import_failed": "덱 가져오기에 실패함: {{error}}",
       "import_success": "덱 가져오기에 성공하였습니다.",
+      "latest_version": "<a>최신 버전으로 건너뛰기</a>.",
       "list": "목록",
       "loading": "덱 읽어오는 중...",
       "newer_version": "이 덱의 <a>새로운 버전</a>이 있습니다. 이 덱은 읽기 전용입니다.",
@@ -1181,6 +1184,9 @@
       "encounter_set": {
         "placeholder": "조우 세트 선택...",
         "title": "조우 세트"
+      },
+      "environment": {
+        "title": "환경"
       },
       "fan_made_content": {
         "all": "모두 보기",
@@ -1354,6 +1360,9 @@
     "rules": {
       "title": "참조 안내서"
     },
+    "search": {
+      "title": "검색 결과"
+    },
     "settings": {
       "backup": {
         "confirm": "이 백업을 복원하시겠습니까? 기존 데이터는 모두 덮어쓰게 됩니다.",
@@ -1455,8 +1464,8 @@
         "default_taboo": "기본 금기 목록",
         "latest_taboo": "최신",
         "title": "일반",
-        "weakness_limited_card_pool": "무작위 기본 약점 뽑기에 제한된 카드 풀 사용",
-        "weakness_limited_card_pool_help": "덱의 제한된 카드 풀이 정의되어 있는 경우, 이 옵션을 선택하면 무작위 기본 약점 뽑기가 해당 제한 내용을 준수합니다."
+        "weakness_limited_card_pool": "무작위 기본 약점 뽑기에 제한된 카드 구성 환경 사용",
+        "weakness_limited_card_pool_help": "덱의 제한된 카드 구성 환경이 정의되어 있는 경우, 이 옵션을 선택하면 무작위 기본 약점 뽑기가 해당 제한 내용을 준수합니다."
       },
       "lists": {
         "deck_view": "덱 보기",
@@ -1494,6 +1503,9 @@
         "collapse": "닫기",
         "expand": "확장",
         "toggle": "전환"
+      },
+      "combobox": {
+        "unknown_option": "알 수 없는 옵션"
       },
       "copy_to_clipboard": "클립보드에 복사",
       "copy_to_clipboard_success": "복사됨.",
