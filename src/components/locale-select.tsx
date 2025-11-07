@@ -1,5 +1,6 @@
 import { LoaderCircleIcon } from "lucide-react";
 import { LOCALES } from "@/utils/constants";
+import { cx } from "@/utils/cx";
 import css from "./locale-select.module.css";
 import { CustomSelect } from "./ui/custom-select";
 
@@ -17,6 +18,7 @@ export function LocaleSelect(props: Props) {
 
   return (
     <CustomSelect
+      className={cx(css["select"], variant && css[variant])}
       id={id}
       items={options}
       renderControl={(item) => (

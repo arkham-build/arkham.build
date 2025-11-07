@@ -27,6 +27,7 @@ type Item = {
 };
 
 type Props = {
+  className?: string;
   id?: string;
   items: Item[];
   itemToString?: (item: Item) => string;
@@ -41,6 +42,7 @@ type Props = {
 
 export function CustomSelect(props: Props) {
   const {
+    className,
     id,
     initialOpen,
     items,
@@ -115,7 +117,10 @@ export function CustomSelect(props: Props) {
   );
 
   return (
-    <div className={cx(css["container"], variant && css[variant])} id={id}>
+    <div
+      className={cx(css["container"], variant && css[variant], className)}
+      id={id}
+    >
       <button
         {...getReferenceProps()}
         className={css["control"]}
