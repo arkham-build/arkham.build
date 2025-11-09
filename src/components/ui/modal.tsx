@@ -22,9 +22,9 @@ export function Modal(props: Props) {
   const closeModal = useCloseModal();
 
   const modalRef = useRef<HTMLDivElement>(null);
+  const hasAddedState = useRef(false);
 
   const isMobile = useMedia(MQ_MOBILE);
-  const hasAddedState = useRef(false);
 
   useEffect(() => {
     if (!isMobile) return;
