@@ -73,7 +73,7 @@ export function ConfigureEnvironmentModal(props: Props) {
           title={t("deck_edit.config.card_pool.configure_environment")}
         >
           <Tabs value={tab} onValueChange={setTab}>
-            <TabsList>
+            <TabsList scrollable>
               <EnvironmentsTabTrigger value="legacy" />
               <EnvironmentsTabTrigger value="current" />
               <EnvironmentsTabTrigger value="limited" />
@@ -95,8 +95,8 @@ export function ConfigureEnvironmentModal(props: Props) {
             <EnvironmentsTabContent
               translationProps={{
                 components: {
-                  // biome-ignore lint/a11y/useAnchorContent: interpolation
                   settings_link: (
+                    // biome-ignore lint/a11y/useAnchorContent: interpolation
                     <a
                       href="/settings?tab=collection"
                       target="_blank"

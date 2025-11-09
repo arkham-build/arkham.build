@@ -13,9 +13,25 @@
   text-align: left;
 }
 
+.list.scrollable {
+  overflow-x: auto;
+  flex-flow: row nowrap;
+  min-width: 0;
+  gap: 0.375rem;
+
+  & > * {
+    flex: 1 0 auto;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  & .trigger {
+    container-type: none;
+  }
+}
+
 .trigger {
   background-color: var(--background-inactive) !important;
-  container-type: inline-size;
   border-radius: 0;
   border-width: 0;
   border-bottom: 0.125rem solid transparent;
