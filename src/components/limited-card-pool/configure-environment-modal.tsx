@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Card } from "@/store/schemas/card.schema";
 import type { Cycle } from "@/store/schemas/cycle.schema";
@@ -92,7 +92,21 @@ export function ConfigureEnvironmentModal(props: Props) {
             <EnvironmentsTabContent value="campaign_playalong">
               <CampaignPlayalongTab {...tabProps} />
             </EnvironmentsTabContent>
-            <EnvironmentsTabContent value="collection">
+            <EnvironmentsTabContent
+              translationProps={{
+                components: {
+                  // biome-ignore lint/a11y/useAnchorContent: interpolation
+                  settings_link: (
+                    <a
+                      href="/settings?tab=collection"
+                      target="_blank"
+                      rel="noreferrer"
+                    />
+                  ),
+                },
+              }}
+              value="collection"
+            >
               <CollectionTab {...tabProps} />
             </EnvironmentsTabContent>
           </Tabs>
@@ -297,10 +311,12 @@ function EnvironmentsTabTrigger({ value }: { value: string }) {
 
 function EnvironmentsTabContent({
   children,
+  translationProps,
   value,
 }: {
   children: React.ReactNode;
   value: string;
+  translationProps?: Record<string, unknown>;
 }) {
   const { t } = useTranslation();
 
@@ -308,7 +324,17 @@ function EnvironmentsTabContent({
     <TabsContent value={value}>
       <div className={css["environment-tab"]}>
         <div className="longform">
-          <p>{t(`deck_edit.config.card_pool.${value}_help`)}</p>
+          <p>
+            {translationProps ? (
+              <Trans
+                t={t}
+                i18nKey={`deck_edit.config.card_pool.${value}_help`}
+                {...translationProps}
+              />
+            ) : (
+              t(`deck_edit.config.card_pool.${value}_help`)
+            )}
+          </p>
         </div>
         {children}
       </div>
