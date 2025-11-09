@@ -130,20 +130,23 @@ function CurrentTab({ dialogCtx, onValueChange }: TabProps) {
 
 function CollectionTab({ dialogCtx, onValueChange }: TabProps) {
   const cycles = useStore(selectCampaignCycles);
-  const ignored = cycles.reduce(
-    (acc, cycle) => {
-      const campaignCode = `${cycle.code}c`;
-      acc[campaignCode] = 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
+  const ignored = cycles.reduce((acc, cycle) => {
+    if (cycle.reprintPacks) {
+      cycle.reprintPacks.forEach((pack) => {
+        if (pack.reprint?.type === "encounter") {
+          acc.add(pack.code);
+        }
+      });
+    }
+
+    return acc;
+  }, new Set());
 
   const settings = useStore((state) => state.settings);
   const collection = settings.collection;
 
   const selected = Object.keys(collection).filter(
-    (code) => collection[code] > 0 && !(code in ignored),
+    (code) => collection[code] > 0 && !ignored.has(code),
   );
 
   return (
