@@ -237,6 +237,7 @@ export const CARD_SET_ORDER = [
 
 export const MQ_FLOATING_SIDEBAR = "(max-width: 52rem)";
 export const MQ_FLOATING_FILTERS = "(max-width: 75rem)";
+export const MQ_MOBILE = "(hover: none) and (pointer: coarse)";
 
 export const PREVIEW_PACKS = (localPacks as JsonDataPack[])
   .filter((p) => p.date_release && new Date() < new Date(p.date_release))
