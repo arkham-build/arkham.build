@@ -1,8 +1,5 @@
 import { decodeExileSlots } from "@/utils/card-utils";
-import {
-  ALT_ART_INVESTIGATOR_MAP,
-  SPECIAL_CARD_CODES,
-} from "@/utils/constants";
+import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import type { Attachments, Card } from "../schemas/card.schema";
 import type { Deck } from "../schemas/deck.schema";
@@ -33,13 +30,7 @@ export function resolveDeck(
   deck: Deck,
 ): ResolvedDeck {
   const deckMeta = decodeDeckMeta(deck);
-  // some decks on arkhamdb are created for the replacement investigator, normalize.
-  const investigatorCode =
-    deck.investigator_code in ALT_ART_INVESTIGATOR_MAP
-      ? ALT_ART_INVESTIGATOR_MAP[
-          deck.investigator_code as keyof typeof ALT_ART_INVESTIGATOR_MAP
-        ]
-      : deck.investigator_code;
+  const investigatorCode = deck.investigator_code;
 
   const investigator = resolveCardWithRelations(
     deps,
