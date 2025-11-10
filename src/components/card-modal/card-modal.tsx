@@ -14,11 +14,7 @@ import {
   selectShowFanMadeRelations,
 } from "@/store/selectors/card-view";
 import type { CardModalConfig } from "@/store/slices/ui.types";
-import {
-  getCanonicalCardCode,
-  isSpecialist,
-  isStaticInvestigator,
-} from "@/utils/card-utils";
+import { isSpecialist, isStaticInvestigator } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { formatRelationTitle } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
@@ -203,10 +199,9 @@ export function CardModal(props: Props) {
     </>
   );
 
-  const canonicalCode = getCanonicalCardCode(cardWithRelations.card);
-
   const traits = cardWithRelations.card.real_traits;
-  const deckQuantity = ctx.resolvedDeck?.slots[canonicalCode] ?? 0;
+  const deckQuantity =
+    ctx.resolvedDeck?.slots[cardWithRelations.card.code] ?? 0;
 
   return (
     <Modal key={cardWithRelations.card.code} data-testid="card-modal">
@@ -219,8 +214,8 @@ export function CardModal(props: Props) {
                 asChild
                 href={
                   cardWithRelations.card.parallel
-                    ? `/deck/create/${canonicalCode}?initial_investigator=${cardWithRelations.card.code}`
-                    : `/deck/create/${canonicalCode}`
+                    ? `/deck/create/${cardWithRelations.card.alternate_of_code}?initial_investigator=${cardWithRelations.card.code}`
+                    : `/deck/create/${cardWithRelations.card.code}`
                 }
                 onClick={onCloseModal}
               >

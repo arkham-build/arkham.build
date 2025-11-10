@@ -7,7 +7,7 @@ import {
   deckSearchQuery,
   searchDecklists,
 } from "@/store/services/requests/decklists-search";
-import { displayAttribute } from "@/utils/card-utils";
+import { displayAttribute, getCanonicalCardCode } from "@/utils/card-utils";
 import { getAccentColorsForFaction } from "@/utils/use-accent-color";
 import { CardLink } from "../card-link";
 import { Expander } from "../ui/expander";
@@ -32,7 +32,8 @@ export function PopularDecks(props: Props) {
         scope.type_code === "investigator"
           ? `${scope.code}-${scope.code}`
           : undefined,
-      requiredCards: scope.type_code !== "investigator" ? [scope.code] : [],
+      requiredCards:
+        scope.type_code !== "investigator" ? [getCanonicalCardCode(scope)] : [],
     },
   };
 
