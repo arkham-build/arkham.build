@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
-import { displayAttribute, getCanonicalCardCode } from "@/utils/card-utils";
+import { displayAttribute } from "@/utils/card-utils";
 import { currentEnvironmentPacks } from "@/utils/environments";
 import { getDefaultDeckName } from "../lib/deck-factory";
 import { selectConnectionsData } from "../selectors/connections";
@@ -27,8 +27,6 @@ export const createDeckCreateSlice: StateCreator<
         investigator && investigator.type_code === "investigator",
         "Deck configure must be initialized with an investigator card.",
       );
-
-      const canonicalCode = getCanonicalCardCode(investigator);
 
       const choice = initialInvestigatorChoice
         ? metadata.cards[initialInvestigatorChoice]
@@ -62,9 +60,9 @@ export const createDeckCreateSlice: StateCreator<
       return {
         deckCreate: {
           extraCardQuantities: {},
-          investigatorBackCode: choice ? choice.code : canonicalCode,
-          investigatorCode: canonicalCode,
-          investigatorFrontCode: choice ? choice.code : canonicalCode,
+          investigatorBackCode: choice ? choice.code : investigator.code,
+          investigatorCode: investigator.code,
+          investigatorFrontCode: choice ? choice.code : investigator.code,
           provider: providerExists ? provider : "local",
           selections: {},
           sets: ["requiredCards"],
