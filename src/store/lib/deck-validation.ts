@@ -728,7 +728,7 @@ class DeckOptionsValidator implements SlotValidator {
       this.forbidden.push(card);
     } else if ((cardLevel(card) ?? 0) > 5) {
       this.forbidden.push(card);
-    } else if (card.real_text?.startsWith("Mutated. Forbidden.")) {
+    } else if (this.isForbiddenByTrait(card)) {
       this.forbidden.push(card);
       // campaign and investigator cards should not be validated against deck options.
     } else if (card.xp == null) {
@@ -738,6 +738,10 @@ class DeckOptionsValidator implements SlotValidator {
       this.cards.push(card);
       this.quantities[card.code] = quantity;
     }
+  }
+
+  isForbiddenByTrait(card: Card) {
+    return card.real_text?.includes("Forbidden.");
   }
 
   validate() {
