@@ -1,4 +1,3 @@
-import { Redirect } from "wouter";
 import { PopularDecks } from "@/components/arkhamdb-decklists/popular-decks";
 import { Card } from "@/components/card/card";
 import {
@@ -37,17 +36,7 @@ export function CardViewCards({
 }: {
   cardWithRelations: CardWithRelations;
 }) {
-  const canonicalCode =
-    cardWithRelations.card.duplicate_of_code ??
-    cardWithRelations.card.alternate_of_code;
-
   const showFanMadeRelations = useStore(selectShowFanMadeRelations);
-
-  if (canonicalCode && !cardWithRelations.card.parallel) {
-    const href = `/card/${canonicalCode}`;
-    return <Redirect replace to={href} />;
-  }
-
   const related = getRelatedCards(cardWithRelations, showFanMadeRelations);
 
   return (
