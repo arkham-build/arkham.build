@@ -1,0 +1,12 @@
+.printing {
+  display: flex;
+  color: currentColor;
+  width: 100%;
+  gap: 0.25rem;
+  align-items: baseline;
+}
+
+.printing-icon {
+  flex: 0 0 1rem;
+  text-align: center;
+}

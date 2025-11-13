@@ -9,7 +9,7 @@ import { useStore } from "@/store";
 import { getRelatedCards } from "@/store/lib/resolve-card";
 import type { CardWithRelations } from "@/store/lib/types";
 import { selectShowFanMadeRelations } from "@/store/selectors/card-view";
-import { isSpecialist } from "@/utils/card-utils";
+import { isSpecialist, official } from "@/utils/card-utils";
 import { formatRelationTitle } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import css from "./card-view.module.css";
@@ -49,7 +49,9 @@ export function CardViewCards({
         </Card>
       </div>
 
-      <PopularDecks scope={cardWithRelations.card} />
+      {official(cardWithRelations.card) && (
+        <PopularDecks scope={cardWithRelations.card} />
+      )}
 
       {!isEmpty(related) &&
         related.map(([key, value]) => (

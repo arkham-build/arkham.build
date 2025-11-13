@@ -74,3 +74,53 @@
 .view-section-cards > * + * {
   margin-top: 1rem;
 }
+
+.printings {
+  list-style: none;
+}
+
+.printings > * {
+  overflow: hidden;
+}
+
+.printings-item {
+  display: block;
+  color: currentColor;
+  text-decoration: none;
+  background: var(--palette-point-five);
+  border-style: solid;
+  border-color: var(--palette-2);
+  border-left-width: 1px;
+  border-right-width: 1px;
+  padding: 0.375rem 0.5rem;
+  border-top-width: 0;
+  border-bottom-width: 0;
+}
+
+.printings > * + * .printings-item {
+  border-top-width: 1px;
+  border-top-color: var(--palette-1);
+}
+
+.printings :where(:only-child, :first-child) .printings-item {
+  border-top-width: 1px;
+  border-radius: var(--rounded) var(--rounded) 0 0;
+}
+
+.printings :where(:only-child, :last-child) .printings-item {
+  border-bottom-width: 1px;
+  border-radius: 0 0 var(--rounded) var(--rounded);
+}
+
+a.printings-item:hover,
+a.printings-item:focus-visible {
+  background-color: var(--palette-1);
+}
+
+.preview {
+  width: min(18rem, 75%);
+}
+
+.preview {
+  box-shadow: var(--shadow);
+}

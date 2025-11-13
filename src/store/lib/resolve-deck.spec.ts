@@ -134,22 +134,6 @@ describe("resolveDeck", () => {
         resolved.investigator_code,
       );
     });
-
-    it("normalizes alt art investigator_code to the base card", () => {
-      const state = store.getState();
-      const deck = deckCustomizable;
-      const resolved = resolveDeck(
-        {
-          metadata: state.metadata,
-          lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
-        },
-        selectLocaleSortingCollator(state),
-        DeckSchema.parse(deck),
-      );
-      expect(deck.investigator_code).toEqual("98010");
-      expect(resolved.investigatorFront.card.code).toEqual("05001");
-    });
   });
 
   describe("deck building", () => {

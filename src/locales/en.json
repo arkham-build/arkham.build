@@ -74,6 +74,7 @@
       "scan": "Scan of {{code}}",
       "section_actions": "Actions",
       "section_deckbuilding": "Deckbuilding",
+      "section_printings": "Printings",
       "section_faq": "FAQ",
       "thumbnail": "Thumbnail of {{code}}"
     },

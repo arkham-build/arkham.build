@@ -9,6 +9,8 @@ import { addProjectToMetadata, cloneMetadata } from "../lib/fan-made-content";
 import { createLookupTables } from "../lib/lookup-tables";
 import type { ResolvedDeck } from "../lib/types";
 import type { Card } from "../schemas/card.schema";
+import type { Cycle } from "../schemas/cycle.schema";
+import type { Pack } from "../schemas/pack.schema";
 import type { StoreState } from "../slices";
 import type { Metadata } from "../slices/metadata.types";
 
@@ -224,5 +226,84 @@ export const selectSkillMapper = createSelector(
         name: i18n.t(`common.skill.${code}`),
       };
     };
+  },
+);
+
+export type Printing = {
+  id: string;
+  card: Card;
+  pack: Pack;
+  cycle: Cycle;
+};
+
+export const selectPrintingsForCard = createSelector(
+  selectMetadata,
+  selectLookupTables,
+  selectLocaleSortingCollator,
+  (_: StoreState, code: string) => code,
+  (metadata, lookupTables, collator, cardCode) => {
+    const duplicates = Object.keys(
+      lookupTables.relations.duplicates[cardCode] ?? {},
+    );
+
+    const packCodes = [cardCode, ...duplicates].reduce((acc, code) => {
+      const card = metadata.cards[code];
+
+      acc.set(card.pack_code, card);
+      const reprints = lookupTables.reprintPacksByPack[card.pack_code];
+
+      if (card) {
+        if (reprints) {
+          Object.keys(reprints).forEach((reprintCode) => {
+            const targetType = card.encounter_code ? "encounter" : "player";
+            const reprintPack = metadata.packs[reprintCode];
+            const reprintType = reprintPack.reprint?.type;
+            if (reprintType === targetType) acc.set(reprintCode, card);
+          });
+        }
+      }
+      return acc;
+    }, new Map<string, Card>());
+
+    const printings = Array.from(packCodes.entries())
+      .map(([packCode, card]) => {
+        const pack = metadata.packs[packCode];
+        const cycle = metadata.cycles[pack.cycle_code];
+        return {
+          card,
+          cycle,
+          id: `${pack.code}-${card.code}`,
+          pack,
+        } as Printing;
+      })
+      .sort((a, b) => {
+        if (official(a.cycle) !== official(b.cycle)) {
+          return a.cycle.official ? -1 : 1;
+        }
+
+        if (official(a.cycle) && official(b.cycle)) {
+          if (a.cycle.position !== b.cycle.position) {
+            return a.cycle.position - b.cycle.position;
+          }
+        } else {
+          const cycleNameComparison = collator.compare(
+            a.cycle.real_name,
+            b.cycle.real_name,
+          );
+
+          if (cycleNameComparison !== 0) {
+            return cycleNameComparison;
+          }
+        }
+
+        if (a.cycle.code === "core" && b.cycle.code === "core") {
+          return a.pack.position - b.pack.position;
+        }
+
+        // invert: mythos packs first, reprints second
+        return b.pack.position - a.pack.position;
+      });
+
+    return printings;
   },
 );

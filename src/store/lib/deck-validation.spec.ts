@@ -44,6 +44,7 @@ const tests = [
   ["invalid: signatures with incorrect quantity", "required_quantity_invalid"],
   ["invalid: missing replacement signature", "required_replacements_invalid"],
   ["invalid: missing advanced signature", "required_advanced_invalid"],
+  ["valid: reprinted signatures mixed with original", "mixed_signatures"],
   // Random basic weaknesses
   ["valid: random basic weakness present", "rbw"],
   [

@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import { getMockStore } from "@/test/get-mock-store";
 import { selectLookupTables } from "../selectors/shared";
-import type { StoreState } from ".";
+import type { StoreState } from "../slices";
 
 describe("lookup-tables", () => {
   let store: StoreApi<StoreState>;

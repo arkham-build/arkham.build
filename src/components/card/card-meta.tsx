@@ -1,13 +1,16 @@
+import { useStore } from "@/store";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
-import { isCardWithRelations } from "@/store/lib/types";
+import { selectPrintingsForCard } from "@/store/selectors/shared";
 import { cycleOrPack } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { displayPackName } from "@/utils/formatting";
 import EncounterIcon from "../icons/encounter-icon";
 import PackIcon from "../icons/pack-icon";
+import { Printing } from "../printing";
 import css from "./card.module.css";
 
 type Props = {
+  hideCollectorInfo?: boolean;
   resolvedCard: ResolvedCard | CardWithRelations;
   size: "tooltip" | "compact" | "full";
 };
@@ -49,28 +52,18 @@ export function CardMeta(props: Props) {
 
 function PlayerEntry(props: Props) {
   const { resolvedCard } = props;
-  const { card, cycle, pack } = resolvedCard;
 
-  const duplicates = isCardWithRelations(resolvedCard)
-    ? resolvedCard.relations?.duplicates
-    : [];
-
-  const displayPack = cycleOrPack(cycle, pack);
+  const printings = useStore((state) =>
+    selectPrintingsForCard(state, resolvedCard.card.code),
+  );
 
   return (
     <>
-      {duplicates?.map((duplicate) => (
-        <p className={css["meta-property"]} key={duplicate.card.code}>
-          {displayPackName(duplicate.pack)}{" "}
-          <PackIcon code={duplicate.pack.code} /> {duplicate.card.position}{" "}
-          <i className="icon-card-outline-bold" /> ×{duplicate.card.quantity}
+      {printings?.map((printing) => (
+        <p className={css["meta-property"]} key={printing.id}>
+          <Printing key={printing.id} printing={printing} />
         </p>
       ))}
-      <p className={css["meta-property"]}>
-        {displayPackName(displayPack)} <PackIcon code={displayPack.code} />{" "}
-        {card.position} <i className="icon-card-outline-bold" /> ×
-        {card.quantity}
-      </p>
     </>
   );
 }

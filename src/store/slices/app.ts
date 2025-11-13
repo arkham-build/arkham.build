@@ -8,10 +8,7 @@ import types from "@/store/services/data/types.json";
 import { assertCanPublishDeck, incrementVersion } from "@/utils/arkhamdb";
 import { assert } from "@/utils/assert";
 import { decodeExileSlots } from "@/utils/card-utils";
-import {
-  ALT_ART_INVESTIGATOR_MAP,
-  SPECIAL_CARD_CODES,
-} from "@/utils/constants";
+import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { randomId } from "@/utils/crypto";
 import { download } from "@/utils/download";
 import { time, timeEnd } from "@/utils/time";
@@ -166,13 +163,6 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
 
       const pack = metadata.packs[card.pack_code];
       const cycle = metadata.cycles[pack.cycle_code];
-
-      if (card.code in ALT_ART_INVESTIGATOR_MAP) {
-        card.duplicate_of_code =
-          ALT_ART_INVESTIGATOR_MAP[
-            card.code as keyof typeof ALT_ART_INVESTIGATOR_MAP
-          ];
-      }
 
       // "tags" is sometimes empty string, see: https://github.com/Kamalisk/arkhamdb-json-data/pull/1351#issuecomment-1937852236
       if (!card.tags) card.tags = undefined;

@@ -1,5 +1,5 @@
 import { applyTaboo } from "@/store/lib/card-edits";
-import { cardLimit, cardUses, splitMultiValue } from "@/utils/card-utils";
+import { cardUses, splitMultiValue } from "@/utils/card-utils";
 import {
   ACTION_TEXT_ENTRIES,
   REGEX_BONDED,
@@ -15,6 +15,14 @@ import type { LookupTable, LookupTables } from "./lookup-tables.types";
 
 function getInitialLookupTables(): LookupTables {
   return {
+    actions: {},
+    encounterCode: {},
+    level: {},
+    packsByCycle: {},
+    properties: {
+      fast: {},
+      succeedBy: {},
+    },
     relations: {
       base: {},
       bound: {},
@@ -30,23 +38,12 @@ function getInitialLookupTables(): LookupTables {
       duplicates: {},
       otherVersions: {},
     },
-    actions: {},
-    encounterCode: {},
-    factionCode: {},
-    subtypeCode: {},
-    typeCode: {},
-    properties: {
-      fast: {},
-      multislot: {},
-      succeedBy: {},
-    },
+    reprintPacksByPack: {},
     skillBoosts: {},
+    subtypeCode: {},
     traits: {},
+    typeCode: {},
     uses: {},
-    level: {},
-    traitsByCardTypeSelection: {},
-    packsByCycle: {},
-    reprintPacksByCycle: {},
   };
 }
 
@@ -70,6 +67,7 @@ export function createLookupTables(
   addPacksToLookupTables(metadata, lookupTables);
 
   timeEnd("refresh_lookup_tables");
+
   return lookupTables;
 }
 
@@ -95,8 +93,6 @@ function addCardToLookupTables(tables: LookupTables, card: Card) {
   if (card.faction_code !== "mythos") {
     indexByLevel(tables, card);
 
-    indexByMulticlass(tables, card);
-
     indexBySucceedsBy(tables, card);
 
     if (card.type_code === "asset") {
@@ -109,7 +105,6 @@ function addCardToLookupTables(tables: LookupTables, card: Card) {
 }
 
 function indexByCodes(tables: LookupTables, card: Card) {
-  setInLookupTable(card.code, tables.factionCode, card.faction_code);
   setInLookupTable(card.code, tables.typeCode, card.type_code);
 
   if (card.subtype_code) {
@@ -124,12 +119,6 @@ function indexByCodes(tables: LookupTables, card: Card) {
 function indexByTraits(tables: LookupTables, card: Card) {
   for (const trait of splitMultiValue(card.real_traits)) {
     setInLookupTable(card.code, tables.traits, trait);
-
-    if (card.encounter_code || card.faction_code === "mythos") {
-      setInLookupTable(trait, tables.traitsByCardTypeSelection, "encounter");
-    } else {
-      setInLookupTable(trait, tables.traitsByCardTypeSelection, "player");
-    }
   }
 }
 
@@ -154,16 +143,6 @@ function indexByFast(tables: LookupTables, card: Card) {
 
 function indexByLevel(tables: LookupTables, card: Card) {
   if (card.xp) setInLookupTable(card.code, tables.level, card.xp);
-}
-
-function indexByMulticlass(tables: LookupTables, card: Card) {
-  if (card.faction2_code) {
-    setInLookupTable(card.code, tables.factionCode, card.faction2_code);
-  }
-
-  if (card.faction3_code) {
-    setInLookupTable(card.code, tables.factionCode, card.faction3_code);
-  }
 }
 
 // TODO: handle "+X skill value".
@@ -212,6 +191,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
   const backs: Record<string, string> = {};
 
   const investigatorsByName: Record<string, string[]> = {};
+  const canonicalInvestigatorCodes = new Set<string>();
 
   // first pass: identify target cards.
   for (const card of cards) {
@@ -229,13 +209,12 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
       }
     }
 
-    const match = card.real_text?.match(REGEX_BONDED);
-
-    if (match && match.length > 0) {
-      if (!bonded[match[1]]) {
-        bonded[match[1]] = [card.code];
+    const bondedMatch = card.real_text?.match(REGEX_BONDED);
+    if (bondedMatch && bondedMatch.length > 0) {
+      if (!bonded[bondedMatch[1]]) {
+        bonded[bondedMatch[1]] = [card.code];
       } else {
-        bonded[match[1]].push(card.code);
+        bonded[bondedMatch[1]].push(card.code);
       }
     }
 
@@ -253,6 +232,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
     ) {
       investigatorsByName[card.real_name] ??= [];
       investigatorsByName[card.real_name].push(card.code);
+      canonicalInvestigatorCodes.add(card.code);
     }
   }
 
@@ -275,11 +255,6 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
         }
 
         if (investigator.duplicate_of_code) {
-          setInLookupTable(
-            investigator.duplicate_of_code,
-            tables.relations.restrictedTo,
-            card.code,
-          );
           continue;
         }
 
@@ -293,13 +268,6 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
           if (card.parallel) {
             setInLookupTable(card.code, tables.relations.parallelCards, key);
             // Kate has bonded cards restricted to her, these should not be part of the deck.
-          } else if (cardLimit(card) > 0) {
-            // TECH-DEBT
-            // It should not be required to add cards to "requiredCards" here,
-            // as resolving the relation "the other way around" should be enough/
-            // However, there are some data inconsistencies with duplicate cards (Marie)
-            // that make this necessary.
-            setInLookupTable(card.code, tables.relations.requiredCards, key);
           }
         }
       }
@@ -414,9 +382,12 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
 
     tables.relations.advanced[parallel] =
       tables.relations.advanced[investigator];
+
     tables.relations.replacement[parallel] =
       tables.relations.replacement[investigator];
+
     tables.relations.bonded[parallel] = tables.relations.bonded[investigator];
+
     tables.relations.parallelCards[parallel] =
       tables.relations.parallelCards[investigator];
 
@@ -427,6 +398,30 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
     }
   }
 
+  for (const code of canonicalInvestigatorCodes) {
+    const duplicates = tables.relations.duplicates[code];
+    if (!duplicates) continue;
+
+    for (const duplicateCode of Object.keys(duplicates)) {
+      tables.relations.requiredCards[duplicateCode] =
+        tables.relations.requiredCards[code];
+
+      tables.relations.advanced[duplicateCode] =
+        tables.relations.advanced[code];
+
+      tables.relations.replacement[duplicateCode] =
+        tables.relations.replacement[code];
+
+      tables.relations.bonded[duplicateCode] = tables.relations.bonded[code];
+
+      tables.relations.parallelCards[duplicateCode] =
+        tables.relations.parallelCards[code];
+
+      tables.relations.parallel[duplicateCode] =
+        tables.relations.parallel[code];
+    }
+  }
+
   timeEnd("create_relations");
 }
 
@@ -434,14 +429,30 @@ function addPacksToLookupTables(
   metadata: Metadata,
   lookupTables: LookupTables,
 ) {
-  for (const pack of Object.values(metadata.packs)) {
-    setInLookupTable(pack.code, lookupTables.packsByCycle, pack.cycle_code);
+  const reprintsByCycleCode: Record<string, string[]> = {};
+
+  const packs = Object.values(metadata.packs);
+
+  for (const pack of packs) {
     if (pack.reprint) {
-      setInLookupTable(
-        pack.code,
-        lookupTables.reprintPacksByCycle,
-        pack.cycle_code,
-      );
+      reprintsByCycleCode[pack.cycle_code] ??= [];
+      reprintsByCycleCode[pack.cycle_code].push(pack.code);
+    }
+  }
+
+  for (const pack of packs) {
+    setInLookupTable(pack.code, lookupTables.packsByCycle, pack.cycle_code);
+
+    if (reprintsByCycleCode[pack.cycle_code]) {
+      for (const reprintPackCode of reprintsByCycleCode[pack.cycle_code]) {
+        if (!pack.reprint && reprintPackCode !== pack.code) {
+          setInLookupTable(
+            reprintPackCode,
+            lookupTables.reprintPacksByPack,
+            pack.code,
+          );
+        }
+      }
     }
   }
 }
