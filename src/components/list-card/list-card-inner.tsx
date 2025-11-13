@@ -219,7 +219,9 @@ export function ListCardInner(props: Props) {
                           ? "dots"
                           : (cardLevelDisplay ?? "icon-only")
                       }
-                      cardShowCollectionNumber={cardShowCollectionNumber}
+                      cardShowCollectionNumber={
+                        cardShowCollectionNumber || !!card.reprint_of
+                      }
                       cardShowUniqueIcon={cardShowUniqueIcon}
                     />
                   </ListCardLink>

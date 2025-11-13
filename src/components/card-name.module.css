@@ -7,6 +7,10 @@
   font-size: var(--text-xs);
   color: var(--text);
   flex: 0 0 auto;
+  background: var(--palette-point-five);
+  line-height: 1;
+  padding: 0 0.125rem;
+  border-radius: var(--rounded);
 }
 
 .pack-detail-icon {

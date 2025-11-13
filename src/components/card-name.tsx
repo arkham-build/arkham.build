@@ -72,13 +72,12 @@ function CardPackDetail(props: { card: Card; invert?: boolean }) {
 
   return (
     <span className={css["pack-detail"]}>
-      (
       <PackIcon
         className={css["pack-detail-icon"]}
         code={displayPack.code}
         invert={invert}
       />{" "}
-      <span className={css["pack-detail-position"]}>{card.position}</span>)
+      <span className={css["pack-detail-position"]}>{card.position}</span>
     </span>
   );
 }

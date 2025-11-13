@@ -49,7 +49,7 @@ export function CardViewCards({
         </Card>
       </div>
 
-      {official(cardWithRelations.card) && (
+      {official(cardWithRelations.card) && !cardWithRelations.card.preview && (
         <PopularDecks scope={cardWithRelations.card} />
       )}
 

@@ -200,6 +200,7 @@ const JsonDataCardSchema = z.object({
   permanent: z.boolean().nullish(),
   position: z.number(),
   quantity: z.number(),
+  reprint_of: z.string().nullish(),
   restrictions: z.string().nullish(),
   sanity: z.number().nullish(),
   shroud: z.number().nullish(),
