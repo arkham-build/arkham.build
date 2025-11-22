@@ -155,6 +155,26 @@ describe("Lexer", () => {
         value: "_private",
       });
     });
+
+    it("tokenizes unicode identifiers", () => {
+      expect(tokenize("건강")[0]).toMatchObject({
+        type: "IDENTIFIER",
+        lexeme: "건강",
+        value: "건강",
+      });
+
+      expect(tokenize("生命值")[0]).toMatchObject({
+        type: "IDENTIFIER",
+        lexeme: "生命值",
+        value: "生命值",
+      });
+
+      expect(tokenize("santé")[0]).toMatchObject({
+        type: "IDENTIFIER",
+        lexeme: "santé",
+        value: "santé",
+      });
+    });
   });
 
   describe("comparison operators", () => {

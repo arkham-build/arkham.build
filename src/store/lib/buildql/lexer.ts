@@ -293,11 +293,7 @@ class Lexer {
   }
 
   private isAlpha(char: string): boolean {
-    return (
-      (char >= "a" && char <= "z") ||
-      (char >= "A" && char <= "Z") ||
-      char === "_"
-    );
+    return /^\p{Letter}$/u.test(char) || char === "_";
   }
 
   private isAlphaNumeric(char: string): boolean {
