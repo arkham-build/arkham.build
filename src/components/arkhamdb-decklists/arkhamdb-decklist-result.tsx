@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";
@@ -27,7 +27,6 @@ export function ArkhamDBDecklistResult({ result, showDetails }: Props) {
   const lookupTables = useStore(selectLookupTables);
   const sharing = useStore((state) => state.sharing);
   const collator = useStore(selectLocaleSortingCollator);
-  const [viewMode, setViewMode] = useState<"list" | "scans">("list");
 
   const resolved = useMemo(() => {
     const deps = { lookupTables, metadata, sharing };
@@ -76,12 +75,7 @@ export function ArkhamDBDecklistResult({ result, showDetails }: Props) {
           >
             <CollapsibleContent>
               <ResolvedDeckProvider resolvedDeck={resolved}>
-                <Decklist
-                  className={css["decklist"]}
-                  deck={resolved}
-                  viewMode={viewMode}
-                  setViewMode={setViewMode}
-                />
+                <Decklist className={css["decklist"]} deck={resolved} />
               </ResolvedDeckProvider>
             </CollapsibleContent>
           </Collapsible>

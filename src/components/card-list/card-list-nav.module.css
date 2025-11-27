@@ -34,3 +34,8 @@
   gap: 0.25rem;
   font-size: var(--text-sm);
 }
+
+.nav-popover {
+  max-height: 90dvh;
+  padding: 0 0.625rem;
+}

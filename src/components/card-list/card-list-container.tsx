@@ -6,6 +6,7 @@ import {
   selectListCards,
 } from "@/store/selectors/lists";
 import { selectActiveList, selectMetadata } from "@/store/selectors/shared";
+import { assert } from "@/utils/assert";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { Footer } from "../footer";
 import { CardGrid } from "./card-grid";
@@ -46,9 +47,8 @@ export const CardListContainer = forwardRef(function CardListContainer(
   }, [data?.cards, setCardModalConfig]);
 
   const list = useStore(selectActiveList);
-  const viewMode = list?.display?.viewMode ?? "compact";
-
-  const setListViewMode = useStore((state) => state.setListViewMode);
+  assert(list, "No active list found");
+  const listDisplay = list.display;
 
   const onSelectGroup = useCallback(
     (evt: React.ChangeEvent<HTMLSelectElement>) => {
@@ -104,27 +104,26 @@ export const CardListContainer = forwardRef(function CardListContainer(
           data={data}
           metadata={metadata}
           onSelectGroup={onSelectGroup}
-          onViewModeChange={setListViewMode}
-          viewMode={viewMode}
+          viewMode={listDisplay.viewMode}
         />
         {data &&
-          (viewMode === "scans" ? (
+          (listDisplay.viewMode === "scans" ? (
             <CardGrid
               {...rest}
               data={data}
+              listDisplay={listDisplay}
               metadata={metadata}
-              search={search}
               resolvedDeck={ctx.resolvedDeck}
-              viewMode={viewMode}
+              search={search}
             />
           ) : (
             <CardList
               {...rest}
               data={data}
+              listDisplay={listDisplay}
               metadata={metadata}
-              search={search}
               resolvedDeck={ctx.resolvedDeck}
-              viewMode={viewMode}
+              search={search}
             />
           ))}
         <Footer className={css["footer"]} />

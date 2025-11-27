@@ -152,7 +152,7 @@
         "You cannot have more than 5 level 0 Seeker cards": "You cannot have more than 5 level 0 Seeker cards",
         "You cannot have more than 5 level 0 Survivor cards": "You cannot have more than 5 level 0 Survivor cards",
         "You cannot have more than one Covenant in your deck.": "You cannot have more than one Covenant in your deck.",
-        "You must have at least 7 cards from 3 different factions": "You must have at least 7 cards from 3 different factions",
+        "You must have at least 7 cards from 3 different factions": "You must have at least 7 cards from 3 different classes",
         "You must have at least 7 cards from each class": "You must have at least 7 cards from each class"
       },
       "decks": {
@@ -772,7 +772,7 @@
       "tools": {
         "cards": "Cards",
         "count": "Count",
-        "factions": "Factions",
+        "factions": "Classes",
         "factions_tooltip": "{{count}} {{faction}} {{cards}}",
         "loading": "Loading deck tools...",
         "resource_cost": "Resource cost",
@@ -1314,7 +1314,7 @@
         "cost": "Cost",
         "cycle": "Cycle",
         "encounter_set": "Encounter set",
-        "faction": "Faction",
+        "faction": "Class",
         "level": "Level",
         "name": "Name",
         "pack": "Pack",
@@ -1334,7 +1334,9 @@
         "display_as_list_text": "List with card text",
         "display_as_scans": "Scans",
         "jump_to": "Jump to...",
-        "list_settings": "List settings"
+        "list_settings": "List settings",
+        "sort": "Sort",
+        "sort_default": "User default"
       },
       "reset": "Reset to default",
       "search": {

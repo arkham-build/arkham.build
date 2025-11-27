@@ -40,6 +40,7 @@ export async function importDeckFromFile(
   { navigate }: { navigate?: "view" | "edit" } = {},
 ) {
   await page.goto("/");
+  await page.mouse.move(0, 0);
 
   const fileChooserPromise = page.waitForEvent("filechooser");
 

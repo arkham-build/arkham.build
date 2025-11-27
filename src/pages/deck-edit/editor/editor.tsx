@@ -45,7 +45,11 @@ export function Editor(props: Props) {
   const { resolvedDeck: deck } = useResolvedDeckChecked();
   const { t } = useTranslation();
 
-  const groups = useStore((state) => selectDeckGroups(state, deck, "list"));
+  const settings = useStore((state) => state.settings);
+
+  const groups = useStore((state) =>
+    selectDeckGroups(state, deck, settings.lists.deck),
+  );
 
   const cssVariables = useAccentColor(deck.investigatorBack.card);
   const backgroundCls = getCardColor(deck.investigatorBack.card, "background");

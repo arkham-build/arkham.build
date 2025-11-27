@@ -1,31 +1,26 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { type ListRange, Virtuoso, type VirtuosoHandle } from "react-virtuoso";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { VirtuosoGrid, type VirtuosoHandle } from "react-virtuoso";
 import { Link } from "wouter";
 import { useStore } from "@/store";
 import type { Card } from "@/store/schemas/card.schema";
-import type {
-  CardGroup as CardGroupType,
-  ListState,
-} from "@/store/selectors/lists";
-import type { Metadata } from "@/store/slices/metadata.types";
+import { cx } from "@/utils/cx";
 import { preventLeftClick } from "@/utils/prevent-links";
 import { CardScan } from "../card-scan";
 import { Scroller } from "../ui/scroller";
 import { CardActions } from "./card-actions";
 import css from "./card-grid.module.css";
-import { Grouphead } from "./grouphead";
 import type { CardListImplementationProps } from "./types";
 
 export function CardGrid(props: CardListImplementationProps) {
-  const { data, metadata, search, ...rest } = props;
+  const { data, search, ...rest } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
   const virtuosoRef = useRef<VirtuosoHandle>(null);
-  const activeGroup = useRef<string | undefined>(undefined);
 
   const [scrollParent, setScrollParent] = useState<HTMLElement | undefined>();
   const [currentTop, setCurrentTop] = useState<number>(-1);
+  const [highlighted, setHighlighted] = useState<number | null>(null);
 
   const onScrollChange = useCallback(() => {
     setCurrentTop(-1);
@@ -45,12 +40,16 @@ export function CardGrid(props: CardListImplementationProps) {
 
       if (group === -1) return;
 
+      const cardAtOffset = data.groups
+        .slice(0, group)
+        .reduce((acc, _, idx) => acc + data.groupCounts[idx], 0);
+
+      setHighlighted(cardAtOffset);
+
       virtuosoRef.current?.scrollToIndex({
-        index: group,
+        index: cardAtOffset,
         behavior: "auto",
       });
-
-      activeGroup.current = key;
     }
 
     function onKeyboardNavigate(evt: Event) {
@@ -76,31 +75,11 @@ export function CardGrid(props: CardListImplementationProps) {
     };
   }, [data, openCardModal, currentTop]);
 
-  const rangeChanged = useCallback(
-    (range: ListRange) => {
-      activeGroup.current = data.groups[range.startIndex].key;
-    },
-    [data],
-  );
-
   // biome-ignore lint/correctness/useExhaustiveDependencies: a search should reset scroll position.
   useEffect(() => {
     setCurrentTop(-1);
-    activeGroup.current = undefined;
     virtuosoRef.current?.scrollToIndex(0);
-  }, [search]);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a change to card count should reset scroll position.
-  useEffect(() => {
-    if (activeGroup.current) {
-      const idx = data.groups.findIndex((g) => g.key === activeGroup.current);
-      if (idx > -1) {
-        virtuosoRef.current?.scrollToIndex(idx);
-      } else {
-        virtuosoRef.current?.scrollToIndex(0);
-      }
-    }
-  }, [data?.cards.length]);
+  }, [search, data?.cards.length, rest.listDisplay]);
 
   return (
     <Scroller
@@ -110,19 +89,18 @@ export function CardGrid(props: CardListImplementationProps) {
       type="always"
     >
       {data && (
-        <Virtuoso
+        <VirtuosoGrid
           customScrollParent={scrollParent}
           ref={virtuosoRef}
-          data={data.groups}
-          overscan={2}
-          rangeChanged={rangeChanged}
-          itemContent={(index, group) => (
-            <CardGridGroup
+          data={data.cards}
+          listClassName={css["group-items"]}
+          itemClassName={css["group-item"]}
+          itemContent={(index) => (
+            <CardGridItem
               {...rest}
-              group={group}
-              data={data}
-              index={index}
-              metadata={metadata}
+              card={data.cards[index]}
+              key={data.cards[index].id}
+              highlighted={highlighted === index}
             />
           )}
         />
@@ -131,54 +109,16 @@ export function CardGrid(props: CardListImplementationProps) {
   );
 }
 
-function CardGridGroup(
-  props: {
-    group: CardGroupType;
-    data: ListState;
-    index: number;
-    metadata: Metadata;
-  } & CardListImplementationProps,
-) {
-  const { group, data, index, metadata, ...rest } = props;
-  const { cards, groupCounts } = data;
-
-  const counts = groupCounts[index];
-
-  const offset =
-    index > 0
-      ? groupCounts.slice(0, index).reduce((acc, count) => acc + count, 0)
-      : 0;
-
-  const groupCards = useMemo(
-    () => cards.slice(offset, offset + counts),
-    [cards, counts, offset],
-  );
-
-  return (
-    <div className={css["group"]} key={group.key}>
-      <Grouphead
-        className={css["group-header"]}
-        grouping={group}
-        metadata={metadata}
-      />
-      <div className={css["group-items"]}>
-        {groupCards.map((card) => (
-          <CardGridItem {...rest} card={card} key={card.code} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export function CardGridItem(
   props: {
     card: Card;
+    highlighted?: boolean;
   } & Pick<
     CardListImplementationProps,
     "getListCardProps" | "quantities" | "resolvedDeck"
   >,
 ) {
-  const { card, getListCardProps, quantities } = props;
+  const { card, highlighted, getListCardProps, quantities } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
@@ -213,7 +153,10 @@ export function CardGridItem(
     >
       <Link
         href={`~/card/${card.code}`}
-        className={css["group-item-scan"]}
+        className={cx(
+          css["group-item-scan"],
+          highlighted && css["highlighted"],
+        )}
         onClick={onClick}
         onKeyUp={onPressEnter}
         tabIndex={0}

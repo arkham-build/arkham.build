@@ -2,11 +2,14 @@ import { SlidersVerticalIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CardlistCount } from "@/components/card-list/card-list-count";
+import { useStore } from "@/store";
 import { getGroupingKeyLabel, NONE } from "@/store/lib/grouping";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { ListState } from "@/store/selectors/lists";
+import { selectActiveList } from "@/store/selectors/shared";
 import type { ViewMode } from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";
+import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
 import { useHotkey } from "@/utils/use-hotkey";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import {
@@ -14,6 +17,7 @@ import {
   LimitedCardPoolTag,
   SealedDeckTag,
 } from "../deck-tags/deck-tags";
+import { SortSelect } from "../sort-select";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -22,6 +26,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { RadioGroup } from "../ui/radio-group";
+import { Scroller } from "../ui/scroller";
 import { Select } from "../ui/select";
 import css from "./card-list-nav.module.css";
 
@@ -30,12 +35,11 @@ type Props = {
   deck?: ResolvedDeck;
   metadata: Metadata;
   onSelectGroup: (evt: React.ChangeEvent<HTMLSelectElement>) => void;
-  onViewModeChange: (viewMode: ViewMode) => void;
   viewMode: ViewMode;
 };
 
 export function CardListNav(props: Props) {
-  const { data, metadata, onSelectGroup, onViewModeChange, viewMode } = props;
+  const { data, metadata, onSelectGroup } = props;
   const { t } = useTranslation();
 
   const { resolvedDeck: deck } = useResolvedDeck();
@@ -70,28 +74,6 @@ export function CardListNav(props: Props) {
     [data, metadata, hasAssetGroup],
   );
 
-  // TECH DEBT: option names and display names have diverted, reconcile.
-  const onToggleList = useCallback(() => {
-    onViewModeChange("compact");
-  }, [onViewModeChange]);
-
-  const onToggleCardText = useCallback(() => {
-    onViewModeChange("card-text");
-  }, [onViewModeChange]);
-
-  const onToggleFullCards = useCallback(() => {
-    onViewModeChange("full-cards");
-  }, [onViewModeChange]);
-
-  const onToggleScans = useCallback(() => {
-    onViewModeChange("scans");
-  }, [onViewModeChange]);
-
-  useHotkey("alt+l", onToggleList);
-  useHotkey("alt+shift+l", onToggleCardText);
-  useHotkey("alt+d", onToggleFullCards);
-  useHotkey("alt+s", onToggleScans);
-
   if (data == null) return null;
 
   return (
@@ -116,44 +98,87 @@ export function CardListNav(props: Props) {
             value=""
           />
         )}
-        <Popover placement="bottom-end">
-          <PopoverTrigger asChild>
-            <Button
-              className={css["nav-config"]}
-              tooltip={t("lists.nav.list_settings")}
-              data-test-id="card-list-config"
-              variant="bare"
-              iconOnly
-              size="lg"
-            >
-              <SlidersVerticalIcon />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <DropdownMenu>
-              <DropdownMenuSection title={t("lists.nav.display")}>
-                <RadioGroup value={viewMode} onValueChange={onViewModeChange}>
-                  <DropdownRadioGroupItem hotkey="alt+l" value="compact">
-                    {t("lists.nav.display_as_list")}
-                  </DropdownRadioGroupItem>
-                  <DropdownRadioGroupItem
-                    hotkey="alt+shift+l"
-                    value="card-text"
-                  >
-                    {t("lists.nav.display_as_list_text")}
-                  </DropdownRadioGroupItem>
-                  <DropdownRadioGroupItem hotkey="alt+d" value="full-cards">
-                    {t("lists.nav.display_as_detailed")}
-                  </DropdownRadioGroupItem>
-                  <DropdownRadioGroupItem hotkey="alt+s" value="scans">
-                    {t("lists.nav.display_as_scans")}
-                  </DropdownRadioGroupItem>
-                </RadioGroup>
-              </DropdownMenuSection>
-            </DropdownMenu>
-          </PopoverContent>
-        </Popover>
+        <DisplaySettings viewMode={props.viewMode} />
       </div>
     </nav>
+  );
+}
+
+function DisplaySettings({ viewMode }: { viewMode: ViewMode }) {
+  const { t } = useTranslation();
+
+  const setListViewMode = useStore((state) => state.setListViewMode);
+
+  const sortSelection = useStore(
+    (state) => selectActiveList(state)?.displaySortSelection,
+  );
+
+  const setListSort = useStore((state) => state.setListSort);
+
+  // TECH DEBT: option names and display names have diverted, reconcile.
+  const onToggleList = useCallback(() => {
+    setListViewMode("compact");
+  }, [setListViewMode]);
+
+  const onToggleCardText = useCallback(() => {
+    setListViewMode("card-text");
+  }, [setListViewMode]);
+
+  const onToggleFullCards = useCallback(() => {
+    setListViewMode("full-cards");
+  }, [setListViewMode]);
+
+  const onToggleScans = useCallback(() => {
+    setListViewMode("scans");
+  }, [setListViewMode]);
+
+  useHotkey("alt+l", onToggleList);
+  useHotkey("alt+shift+l", onToggleCardText);
+  useHotkey("alt+d", onToggleFullCards);
+  useHotkey("alt+s", onToggleScans);
+
+  return (
+    <Popover placement="bottom-end">
+      <PopoverTrigger asChild>
+        <Button
+          className={css["nav-config"]}
+          tooltip={t("lists.nav.list_settings")}
+          data-test-id="card-list-config"
+          variant="bare"
+          iconOnly
+          size="lg"
+        >
+          <SlidersVerticalIcon />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <DropdownMenu>
+          <Scroller className={css["nav-popover"]}>
+            <DropdownMenuSection title={t("lists.nav.display")}>
+              <RadioGroup value={viewMode} onValueChange={setListViewMode}>
+                <DropdownRadioGroupItem hotkey="alt+l" value="compact">
+                  {t("lists.nav.display_as_list")}
+                </DropdownRadioGroupItem>
+                <DropdownRadioGroupItem hotkey="alt+shift+l" value="card-text">
+                  {t("lists.nav.display_as_list_text")}
+                </DropdownRadioGroupItem>
+                <DropdownRadioGroupItem hotkey="alt+d" value="full-cards">
+                  {t("lists.nav.display_as_detailed")}
+                </DropdownRadioGroupItem>
+                <DropdownRadioGroupItem hotkey="alt+s" value="scans">
+                  {t("lists.nav.display_as_scans")}
+                </DropdownRadioGroupItem>
+              </RadioGroup>
+            </DropdownMenuSection>
+            <DropdownMenuSection title={t("lists.nav.sort")}>
+              <SortSelect
+                selectedId={sortSelection ?? DEFAULT_LIST_SORT_ID}
+                onConfigChange={setListSort}
+              />
+            </DropdownMenuSection>
+          </Scroller>
+        </DropdownMenu>
+      </PopoverContent>
+    </Popover>
   );
 }

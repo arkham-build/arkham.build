@@ -49,6 +49,37 @@ export const DECK_SCANS_DEFAULTS: DecklistConfig = {
   sort: ["slot", "name", "level", "position"],
 };
 
+export const SORTING_PRESETS: DecklistConfig[] = [
+  {
+    group: ["faction", "type"],
+    sort: ["name", "level", "position"],
+  },
+  {
+    group: ["pack", "encounter_set"],
+    sort: ["name", "level", "position"],
+  },
+  {
+    group: ["pack"],
+    sort: ["position"],
+  },
+  {
+    group: ["pack", "type"],
+    sort: ["name", "level", "position"],
+  },
+  {
+    group: ["type", "slot"],
+    sort: ["name", "level", "position"],
+  },
+  {
+    group: [],
+    sort: ["name", "level", "position"],
+  },
+  {
+    group: ["level"],
+    sort: ["name", "level", "position"],
+  },
+];
+
 export function getInitialListsSetting(): SettingsState["lists"] {
   return {
     deck: structuredClone(DECK_DEFAULTS),

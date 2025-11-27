@@ -8,7 +8,7 @@ import {
   resolveQuantities,
   resolveXP,
 } from "@/store/lib/deck-grouping";
-import type { GroupingResult } from "@/store/lib/grouping";
+import { type GroupingResult, NONE } from "@/store/lib/grouping";
 import { getDeckLimitOverride } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Card } from "@/store/schemas/card.schema";
@@ -20,6 +20,7 @@ import {
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
+import type { ViewMode } from "@/store/slices/lists.types";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";
 import { CardGridItem } from "../card-list/card-grid";
@@ -28,7 +29,6 @@ import type { FilteredListCardPropsGetter } from "../card-list/types";
 import { CardScan } from "../card-scan";
 import { CustomizableSheet } from "../customizable-sheet";
 import { ListCard } from "../list-card/list-card";
-import type { ViewMode } from "./decklist.types";
 import css from "./decklist-groups.module.css";
 
 type DecklistGroupsProps = {
@@ -71,20 +71,23 @@ export function DecklistGroup(props: DecklistGroupsProps) {
             className={cx(css["container"], viewMode && css[viewMode])}
             key={group.key}
           >
-            {parents.map((parent) => (
-              <h2 className={css["title"]} key={parent.key}>
-                <GroupLabel
-                  className={css["label"]}
-                  type={parent.type.split("|").at(-1) as string}
-                  segment={parent.key.split("|").at(-1) as string}
-                  metadata={metadata}
-                />
-                <GroupQuantity quantity={quantities.get(parent.key) ?? 0} />
-                {props.showXP && (
-                  <GroupExtraInfo text={`${xp.get(parent.key) ?? 0}`} />
-                )}
-              </h2>
-            ))}
+            {parents.map(
+              (parent) =>
+                parent.key !== NONE && (
+                  <h2 className={css["title"]} key={parent.key}>
+                    <GroupLabel
+                      className={css["label"]}
+                      type={parent.type.split("|").at(-1) as string}
+                      segment={parent.key.split("|").at(-1) as string}
+                      metadata={metadata}
+                    />
+                    <GroupQuantity quantity={quantities.get(parent.key) ?? 0} />
+                    {props.showXP && (
+                      <GroupExtraInfo text={`${xp.get(parent.key) ?? 0}`} />
+                    )}
+                  </h2>
+                ),
+            )}
             {!isGroupCollapsed(group) && (
               <h3
                 className={

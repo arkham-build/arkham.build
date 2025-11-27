@@ -52,16 +52,34 @@
   --card-spacing-x: 0.125rem;
   position: relative;
   width: 100%;
+  aspect-ratio: 300 / 420;
 }
 
 .group-item-scan {
-  display: block;
+  display: flex;
   width: 100%;
   background: transparent;
   cursor: pointer;
+  align-items: center;
 
   &:focus-visible {
     outline: 1px solid var(--focus);
+  }
+
+  &.highlighted {
+    animation: highlight-animation 0.375s ease-in;
+  }
+}
+
+@keyframes highlight-animation {
+  0% {
+    box-shadow: 0 0 0 0 var(--nord-5);
+  }
+  30% {
+    box-shadow: 0 0 5px 3px var(--nord-5);
+  }
+  100% {
+    box-shadow: 0 0 0 0 var(--nord-5);
   }
 }
 

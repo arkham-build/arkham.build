@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { forwardRef, useCallback } from "react";
+import { forwardRef, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ErrorDisplay,
@@ -16,6 +16,7 @@ import { type ListState, selectListCards } from "@/store/selectors/lists";
 import { selectMetadata } from "@/store/selectors/shared";
 import { getRecommendations } from "@/store/services/queries";
 import { ApiError } from "@/store/services/requests/shared";
+import type { ListDisplay } from "@/store/slices/lists.types";
 import { cx } from "@/utils/cx";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { DecklistsDateRangeInput } from "../arkhamdb-decklists/decklists-date-range-input";
@@ -202,6 +203,16 @@ function CardRecommenderInner(
 
   const metadata = useStore(selectMetadata);
 
+  const listDisplay = useMemo(
+    () =>
+      ({
+        sorting: [],
+        grouping: [],
+        viewMode: "compact",
+      }) as ListDisplay,
+    [],
+  );
+
   const { recommendations, decks_analyzed } = data;
 
   const indexedRecommendations = recommendations.reduce(
@@ -270,7 +281,7 @@ function CardRecommenderInner(
       data={newData}
       metadata={metadata}
       resolvedDeck={resolvedDeck}
-      viewMode="compact"
+      listDisplay={listDisplay}
       listMode="single"
       quantities={quantities}
       getListCardProps={listCardPropsWithRecommendations}

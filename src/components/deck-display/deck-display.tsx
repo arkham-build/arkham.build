@@ -28,7 +28,6 @@ import {
 } from "../deck-tags/deck-tags";
 import { DeckTools } from "../deck-tools/deck-tools";
 import { Decklist } from "../decklist/decklist";
-import type { ViewMode } from "../decklist/decklist.types";
 import { DecklistValidation } from "../decklist/decklist-validation";
 import { FolderTag } from "../folders/folder-tag";
 import { Button } from "../ui/button";
@@ -76,7 +75,6 @@ export function DeckDisplay(props: DeckDisplayProps) {
     validation,
   } = props;
 
-  const [viewMode, setViewMode] = useTabUrlState("list", "view_mode");
   const [currentTab, setCurrentTab] = useTabUrlState("deck");
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollState = useRef<Record<string, number>>({});
@@ -238,11 +236,7 @@ export function DeckDisplay(props: DeckDisplayProps) {
                   defaultOpen={validation.errors.length < 3}
                   validation={validation}
                 />
-                <Decklist
-                  deck={deck}
-                  viewMode={viewMode as ViewMode}
-                  setViewMode={setViewMode}
-                />
+                <Decklist deck={deck} />
               </div>
             </TabsContent>
             <TabsContent className={css["tab"]} value="tools">

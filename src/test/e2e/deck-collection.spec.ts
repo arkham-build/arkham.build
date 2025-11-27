@@ -79,6 +79,7 @@ test.describe("deck collection", () => {
       .getByTestId("collection-deck-Le Diamond")
       .getByTestId("deck-summary-title")
       .click();
+
     await page.getByTestId("view-more-actions").click();
     await page.getByTestId("view-archive").click();
     await page.getByTestId("masthead-logo").click();

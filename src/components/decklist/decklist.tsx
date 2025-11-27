@@ -1,12 +1,17 @@
-import { LayoutGridIcon, LayoutListIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo } from "react";
+import { LayoutGridIcon, LayoutListIcon, SortDescIcon } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
 import { countGroupRows, type DeckGrouping } from "@/store/lib/deck-grouping";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Card } from "@/store/schemas/card.schema";
 import { selectDeckGroups } from "@/store/selectors/decks";
+import { sortPresetId } from "@/store/slices/lists";
+import type { ViewMode } from "@/store/slices/lists.types";
+import type { DecklistConfig } from "@/store/slices/settings.types";
 import { countExperience } from "@/utils/card-utils";
+import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
@@ -15,25 +20,39 @@ import { Attachments } from "../attachments/attachments";
 import { getMatchingAttachables } from "../attachments/attachments.helpers";
 import { AllAttachables } from "../deck-tools/all-attachables";
 import { LimitedSlots } from "../deck-tools/limited-slots";
+import { SortSelect } from "../sort-select";
+import { Button } from "../ui/button";
+import { DropdownMenu } from "../ui/dropdown-menu";
 import { HotkeyTooltip } from "../ui/hotkey";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { useTabUrlState } from "../ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import css from "./decklist.module.css";
-import type { ViewMode } from "./decklist.types";
 import { DecklistGroup } from "./decklist-groups";
 import { DecklistSection } from "./decklist-section";
 
 type Props = {
   className?: string;
   deck: ResolvedDeck;
-  setViewMode: (mode: ViewMode) => void;
-  viewMode: ViewMode;
 };
 
 export function Decklist(props: Props) {
-  const { className, deck, setViewMode, viewMode } = props;
+  const { className, deck } = props;
   const { t } = useTranslation();
 
-  const groups = useStore((state) => selectDeckGroups(state, deck, viewMode));
+  const settings = useStore((state) => state.settings);
+
+  const [viewMode, setViewMode] = useTabUrlState("compact", "viewMode");
+
+  const [displayConfigId, setDisplayConfigId] = useState(DEFAULT_LIST_SORT_ID);
+
+  const [displayConfig, setDisplayConfig] = useState<DecklistConfig>(
+    viewMode === "scans" ? settings.lists.deckScans : settings.lists.deck,
+  );
+
+  const groups = useStore(
+    useShallow((state) => selectDeckGroups(state, deck, displayConfig)),
+  );
 
   const setCardModalConfig = useStore((state) => state.setCardModalConfig);
 
@@ -80,9 +99,37 @@ export function Decklist(props: Props) {
 
   const onSetViewMode = useCallback(
     (mode: ViewMode) => {
-      if (mode) setViewMode(mode as ViewMode);
+      if (mode) {
+        setViewMode(mode);
+        if (displayConfigId === DEFAULT_LIST_SORT_ID) {
+          setDisplayConfigId(DEFAULT_LIST_SORT_ID);
+          setDisplayConfig(
+            mode === "scans" ? settings.lists.deckScans : settings.lists.deck,
+          );
+        }
+      }
     },
-    [setViewMode],
+    [
+      setViewMode,
+      settings.lists.deck,
+      settings.lists.deckScans,
+      displayConfigId,
+    ],
+  );
+
+  const onSetListConfig = useCallback(
+    (config: DecklistConfig | undefined) => {
+      if (config) {
+        setDisplayConfigId(sortPresetId(config));
+        setDisplayConfig(config);
+      } else {
+        setDisplayConfigId(DEFAULT_LIST_SORT_ID);
+        setDisplayConfig(
+          viewMode === "scans" ? settings.lists.deckScans : settings.lists.deck,
+        );
+      }
+    },
+    [settings.lists.deck, settings.lists.deckScans, viewMode],
   );
 
   const labels = useMemo(
@@ -96,7 +143,7 @@ export function Decklist(props: Props) {
   );
 
   useHotkey("alt+s", () => onSetViewMode("scans"));
-  useHotkey("alt+l", () => onSetViewMode("list"));
+  useHotkey("alt+l", () => onSetViewMode("compact"));
 
   return (
     <article className={cx(css["decklist-container"], className)}>
@@ -110,7 +157,7 @@ export function Decklist(props: Props) {
             keybind="alt+l"
             description={t("deck_view.actions.display_as_list")}
           >
-            <ToggleGroupItem value="list">
+            <ToggleGroupItem value="compact">
               <LayoutListIcon /> {t("deck_view.list")}
             </ToggleGroupItem>
           </HotkeyTooltip>
@@ -123,6 +170,21 @@ export function Decklist(props: Props) {
             </ToggleGroupItem>
           </HotkeyTooltip>
         </ToggleGroup>
+        <Popover placement="bottom-start">
+          <PopoverTrigger asChild>
+            <Button iconOnly size="sm" variant="bare">
+              <SortDescIcon /> {t("lists.nav.sort")}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <DropdownMenu>
+              <SortSelect
+                selectedId={displayConfigId}
+                onConfigChange={onSetListConfig}
+              />
+            </DropdownMenu>
+          </PopoverContent>
+        </Popover>
       </nav>
 
       <div className={css["decklist"]} data-testid="view-decklist">
@@ -130,13 +192,13 @@ export function Decklist(props: Props) {
           <DecklistSection
             size={Object.keys(deck.slots).length}
             title={labels["slots"]}
-            columns={getColumnMode(viewMode, groups.slots)}
+            columns={getColumnMode(viewMode as ViewMode, groups.slots)}
           >
             <DecklistGroup
               deck={deck}
               grouping={groups.slots}
               getListCardProps={getListCardProps}
-              viewMode={viewMode}
+              viewMode={viewMode as ViewMode}
             />
           </DecklistSection>
         )}
@@ -145,7 +207,7 @@ export function Decklist(props: Props) {
           <div className={css["decklist-additional"]}>
             {groups.sideSlots && (
               <DecklistSection
-                columns={getColumnMode(viewMode, groups.sideSlots)}
+                columns={getColumnMode(viewMode as ViewMode, groups.sideSlots)}
                 showTitle
                 title={labels["sideSlots"]}
                 extraInfos={`${computeXPSum(deck, "sideSlots")} ${t("common.xp")}`}
@@ -154,14 +216,17 @@ export function Decklist(props: Props) {
                   deck={deck}
                   grouping={groups.sideSlots}
                   getListCardProps={getListCardProps}
-                  viewMode={viewMode}
+                  viewMode={viewMode as ViewMode}
                   showXP
                 />
               </DecklistSection>
             )}
             {groups.bondedSlots && (
               <DecklistSection
-                columns={getColumnMode(viewMode, groups.bondedSlots)}
+                columns={getColumnMode(
+                  viewMode as ViewMode,
+                  groups.bondedSlots,
+                )}
                 title={labels["bondedSlots"]}
                 showTitle
               >
@@ -169,14 +234,14 @@ export function Decklist(props: Props) {
                   deck={deck}
                   grouping={groups.bondedSlots}
                   getListCardProps={getListCardProps}
-                  viewMode={viewMode}
+                  viewMode={viewMode as ViewMode}
                 />
               </DecklistSection>
             )}
 
             {groups.extraSlots && (
               <DecklistSection
-                columns={getColumnMode(viewMode, groups.extraSlots)}
+                columns={getColumnMode(viewMode as ViewMode, groups.extraSlots)}
                 title={labels["extraSlots"]}
                 showTitle
               >
@@ -184,7 +249,7 @@ export function Decklist(props: Props) {
                   deck={deck}
                   grouping={groups.extraSlots}
                   getListCardProps={getListCardProps}
-                  viewMode={viewMode}
+                  viewMode={viewMode as ViewMode}
                 />
               </DecklistSection>
             )}

@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
+import { DEFAULT_LIST_SORT_ID, SPECIAL_CARD_CODES } from "@/utils/constants";
 import type { Filter } from "@/utils/fp";
 import { and, not } from "@/utils/fp";
 import {
@@ -33,6 +33,7 @@ import type {
   FilterMapping,
   LevelFilter,
   List,
+  ListDisplay,
   ListsSlice,
   OwnershipFilter,
   PropertiesFilter,
@@ -40,7 +41,7 @@ import type {
   SkillIconsFilter,
   SubtypeFilter,
 } from "./lists.types";
-import type { SettingsState } from "./settings.types";
+import type { DecklistConfig, SettingsState } from "./settings.types";
 
 const SYSTEM_FILTERS: Filter[] = [
   filterBacksides,
@@ -154,8 +155,9 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
     set((state) => {
       assert(state.activeList, "no active list is defined.");
 
-      const list = state.lists[state.activeList];
+      let list = state.lists[state.activeList];
       assert(list, `list ${state.activeList} not defined.`);
+      list = { ...list };
 
       const filterValues = { ...list.filterValues };
       assert(filterValues[id], `${state.activeList} has not filter ${id}.`);
@@ -183,7 +185,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
           );
           filterValues[id] = { ...filterValues[id], value: payload };
 
-          list.display = getDisplaySettings(
+          const nextDisplaySettings = getDisplaySettings(
             Object.fromEntries(
               list.filters.map(
                 (filter, i) => [filter, filterValues[i].value] as const,
@@ -191,6 +193,18 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
             ),
             state.settings,
           );
+
+          list.initialDisplay = nextDisplaySettings;
+
+          if (list.displaySortSelection === DEFAULT_LIST_SORT_ID) {
+            list.displaySortSelection = DEFAULT_LIST_SORT_ID;
+
+            list.display = {
+              ...list.display,
+              sorting: nextDisplaySettings.sorting,
+              grouping: nextDisplaySettings.grouping,
+            };
+          }
 
           break;
         }
@@ -426,6 +440,45 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
               ...list.display,
               viewMode,
             },
+          },
+        },
+      };
+    });
+  },
+
+  setListSort(config) {
+    set((state) => {
+      assert(state.activeList, "no active list is defined.");
+
+      const list = state.lists[state.activeList];
+      assert(list, `list ${state.activeList} not defined.`);
+
+      let preset: Pick<ListDisplay, "grouping" | "sorting">;
+
+      if (config) {
+        preset = {
+          sorting: config.sort,
+          grouping: config.group,
+        };
+      } else {
+        preset = {
+          sorting: list.initialDisplay.sorting,
+          grouping: list.initialDisplay.grouping,
+        };
+      }
+
+      return {
+        lists: {
+          ...state.lists,
+          [state.activeList]: {
+            ...list,
+            display: {
+              ...list.display,
+              ...preset,
+            },
+            displaySortSelection: config
+              ? sortPresetId(config)
+              : DEFAULT_LIST_SORT_ID,
           },
         },
       };
@@ -675,7 +728,7 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
 type MakeListOptions = {
   key: string;
   filters: FilterKey[];
-  display: List["display"];
+  display: ListDisplay;
   systemFilter?: Filter;
   initialValues?: Partial<Record<FilterKey, unknown>>;
   search?: Search;
@@ -697,6 +750,8 @@ function makeList({
     }, {}),
     filtersEnabled: true,
     display,
+    displaySortSelection: DEFAULT_LIST_SORT_ID,
+    initialDisplay: display,
     key,
     systemFilter,
     search: search ?? makeSearch(),
@@ -889,4 +944,8 @@ function getDisplaySettings(
       };
     }
   }
+}
+
+export function sortPresetId(config: DecklistConfig): string {
+  return [...config.group, ...config.sort].join("|");
 }

@@ -1,5 +1,6 @@
 import type { SkillKey } from "@/utils/constants";
 import type { Filter } from "@/utils/fp";
+import type { DecklistConfig } from "./settings.types";
 
 export type AssetFilter = {
   health: undefined | [number, number];
@@ -142,13 +143,17 @@ export type SortingType =
 
 export type ViewMode = "compact" | "card-text" | "full-cards" | "scans";
 
+export type ListDisplay = {
+  grouping: GroupingType[];
+  properties?: string[];
+  sorting: SortingType[];
+  viewMode: ViewMode;
+};
+
 export type List = {
-  display: {
-    grouping: GroupingType[];
-    properties?: string[];
-    sorting: SortingType[];
-    viewMode: ViewMode;
-  };
+  display: ListDisplay;
+  initialDisplay: Pick<ListDisplay, "grouping" | "sorting" | "viewMode">;
+  displaySortSelection: string;
   filters: FilterKey[];
   filtersEnabled: boolean;
   filterValues: {
@@ -182,6 +187,7 @@ export type ListsSlice = {
 
   setFiltersEnabled(value: boolean): void;
   setListViewMode(value: ViewMode): void;
+  setListSort(value: DecklistConfig | undefined): void;
 
   setFilterValue<T>(id: number, payload: T): void;
   setFilterOpen(id: number, open: boolean): void;

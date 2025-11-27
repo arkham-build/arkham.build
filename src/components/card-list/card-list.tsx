@@ -21,16 +21,16 @@ export function CardList(props: CardListImplementationProps) {
     data,
     metadata,
     quantities,
+    listDisplay,
     listMode,
     getListCardProps,
     resolvedDeck,
     search,
-    viewMode,
   } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
-  const showAltHead = viewMode === "card-text";
+  const showAltHead = listDisplay.viewMode === "card-text";
 
   const [currentTop, setCurrentTop] = useState<number>(-1);
   const [scrollParent, setScrollParent] = useState<HTMLElement | undefined>();
@@ -170,10 +170,10 @@ export function CardList(props: CardListImplementationProps) {
       currentTop,
       index,
       resolvedDeck,
-      viewMode,
+      viewMode: listDisplay.viewMode,
     };
 
-    if (viewMode === "full-cards") {
+    if (listDisplay.viewMode === "full-cards") {
       return <CardListItemFull {...itemProps} />;
     }
 
@@ -187,7 +187,7 @@ export function CardList(props: CardListImplementationProps) {
       ref={setScrollParent as unknown as React.RefObject<HTMLDivElement>}
       type="always"
     >
-      {viewMode !== "scans" &&
+      {listDisplay.viewMode !== "scans" &&
         data &&
         scrollParent &&
         (listMode === "single" ? (
@@ -219,7 +219,7 @@ export function CardList(props: CardListImplementationProps) {
             itemContent={(index, _, __, { currentTop }) =>
               makeItemContent(index, currentTop)
             }
-            key={`${data.key}-${viewMode}`}
+            key={`${data.key}-${listDisplay.viewMode}`}
             rangeChanged={rangeChanged}
             ref={virtuosoRef}
           />

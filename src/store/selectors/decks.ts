@@ -17,6 +17,7 @@ import type { Customization, ResolvedDeck } from "../lib/types";
 import type { Card } from "../schemas/card.schema";
 import type { Deck, Id } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
+import type { DecklistConfig } from "../slices/settings.types";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
@@ -365,16 +366,10 @@ export const selectLimitedSlotOccupation = createSelector(
 export const selectDeckGroups = createSelector(
   selectMetadata,
   selectLocaleSortingCollator,
-  (state: StoreState) => state.settings,
   (_: StoreState, deck: ResolvedDeck) => deck,
-  (_: StoreState, __: ResolvedDeck, viewMode: "list" | "scans") => viewMode,
-  (metadata, collator, settings, deck, viewMode) =>
-    groupDeckCards(
-      metadata,
-      collator,
-      viewMode === "scans" ? settings.lists.deckScans : settings.lists.deck,
-      deck,
-    ),
+  (_: StoreState, __: ResolvedDeck, listConfig: DecklistConfig) => listConfig,
+  (metadata, collator, deck, listConfig) =>
+    groupDeckCards(metadata, collator, listConfig, deck),
 );
 
 export const selectUndoHistory = createSelector(

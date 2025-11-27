@@ -36,7 +36,10 @@ import {
   queryFanMadeProjectData,
   queryFanMadeProjects,
 } from "@/store/services/queries";
-import type { FanMadeContentFilter } from "@/store/slices/lists.types";
+import type {
+  FanMadeContentFilter,
+  ListDisplay,
+} from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
@@ -526,14 +529,20 @@ function PreviewModal({ project }: { project: FanMadeProject }) {
     .map((card) => projectMetadata.cards[card.code])
     .filter((x) => !x.hidden);
 
+  const listDisplay = useMemo(
+    () =>
+      ({
+        grouping: ["pack", "encounter_set"],
+        sorting: ["position"],
+        viewMode: "scans",
+      }) as ListDisplay,
+    [],
+  );
+
   const groupedCards = getGroupedCards(
-    ["encounter_set", "subtype", "type", "slot"],
+    listDisplay.grouping,
     projectCards,
-    makeSortFunction(
-      ["position", "name", "level"],
-      projectMetadata,
-      sortingCollator,
-    ),
+    makeSortFunction(listDisplay.sorting, projectMetadata, sortingCollator),
     projectMetadata,
     sortingCollator,
   );
@@ -570,9 +579,13 @@ function PreviewModal({ project }: { project: FanMadeProject }) {
               groups,
               groupCounts,
             }}
+            listDisplay={{
+              grouping: ["encounter_set", "subtype", "type", "slot"],
+              sorting: ["position", "name", "level"],
+              viewMode: "scans",
+            }}
             listMode="grouped"
             metadata={metadata}
-            viewMode="scans"
           />
         </DefaultModalContent>
       </ModalInner>
