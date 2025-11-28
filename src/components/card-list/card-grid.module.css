@@ -21,7 +21,7 @@
 
 .group-items {
   display: grid;
-  gap: 16px; /* px since we use this valud in a js function */
+  gap: 16px; /* stable px value so that the JS-based height estimation can use it */
   align-items: flex-end;
 
   align-items: start;
