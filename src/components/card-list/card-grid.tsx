@@ -159,7 +159,7 @@ export function CardGrid(props: CardListImplementationProps) {
             ((rect.width - (columns - 1) * 16) / columns) * orientationModifier
           }
           data={rows}
-          overscan={10}
+          increaseViewportBy={6}
           skipAnimationFrameInResizeObserver
           itemContent={(_, cards) => (
             <div
