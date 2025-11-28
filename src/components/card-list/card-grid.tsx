@@ -116,7 +116,7 @@ export function CardGrid(props: CardListImplementationProps) {
       setHighlighted(cardAtOffset);
 
       virtuosoRef.current?.scrollToIndex({
-        index: cardAtOffset / columns - 1,
+        index: cardAtOffset / columns,
         behavior: "auto",
       });
     }
