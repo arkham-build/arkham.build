@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { VirtuosoGrid, type VirtuosoHandle } from "react-virtuoso";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import { Link } from "wouter";
 import { useStore } from "@/store";
 import type { Card } from "@/store/schemas/card.schema";
 import { cx } from "@/utils/cx";
 import { preventLeftClick } from "@/utils/prevent-links";
+import { useMeasure } from "@/utils/use-measure";
 import { CardScan } from "../card-scan";
 import { Scroller } from "../ui/scroller";
 import { CardActions } from "./card-actions";
@@ -18,9 +19,13 @@ export function CardGrid(props: CardListImplementationProps) {
 
   const virtuosoRef = useRef<VirtuosoHandle>(null);
 
-  const [scrollParent, setScrollParent] = useState<HTMLElement | undefined>();
+  const [scrollParent, setScrollParentState] = useState<
+    HTMLElement | undefined
+  >();
   const [currentTop, setCurrentTop] = useState<number>(-1);
   const [highlighted, setHighlighted] = useState<number | null>(null);
+
+  const [setMeasureRef, rect] = useMeasure();
 
   const onScrollChange = useCallback(() => {
     setCurrentTop(-1);
@@ -32,6 +37,70 @@ export function CardGrid(props: CardListImplementationProps) {
       scrollParent?.removeEventListener("wheel", onScrollChange);
     };
   }, [scrollParent, onScrollChange]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: a search should reset scroll position.
+  useEffect(() => {
+    setCurrentTop(-1);
+    virtuosoRef.current?.scrollToIndex(0);
+  }, [search, data?.cards.length, rest.listDisplay]);
+
+  const setScrollParent = useCallback(
+    (el: HTMLDivElement | null) => {
+      if (el) {
+        setScrollParentState(el);
+        setMeasureRef(el);
+      }
+    },
+    [setMeasureRef],
+  );
+
+  const columns = useMemo(() => {
+    const w = rect?.width ?? 0;
+    if (w >= 1152) return 6;
+    if (w >= 960) return 5;
+    if (w >= 720) return 4;
+    if (w >= 528) return 3;
+    if (w >= 320) return 2;
+    return 1;
+  }, [rect]);
+
+  // Determine the default orientation of cards in the list.
+  // This prevents lists from becoming jumpy when they overwhelmingly consist of horizontal cards.
+  const defaultOrientation = useMemo(() => {
+    return data.cards.reduce(
+      (acc, curr) => {
+        if (
+          curr.type_code === "act" ||
+          curr.type_code === "agenda" ||
+          curr.type_code === "investigator"
+        ) {
+          acc.horizontal += 1;
+        } else {
+          acc.vertical += 1;
+        }
+
+        return acc;
+      },
+      { horizontal: 0, vertical: 0 },
+    );
+  }, [data.cards]);
+
+  const orientationModifier =
+    defaultOrientation.horizontal > defaultOrientation.vertical
+      ? 300 / 420
+      : 420 / 300;
+
+  const rows = useMemo(() => {
+    if (!data) return [];
+
+    const rowCards: Card[][] = [];
+
+    for (let i = 0; i < data.cards.length; i += columns) {
+      rowCards.push(data.cards.slice(i, i + columns));
+    }
+
+    return rowCards;
+  }, [data, columns]);
 
   useEffect(() => {
     function onSelectGroup(evt: Event) {
@@ -47,7 +116,7 @@ export function CardGrid(props: CardListImplementationProps) {
       setHighlighted(cardAtOffset);
 
       virtuosoRef.current?.scrollToIndex({
-        index: cardAtOffset,
+        index: cardAtOffset / columns - 1,
         behavior: "auto",
       });
     }
@@ -73,13 +142,7 @@ export function CardGrid(props: CardListImplementationProps) {
       window.removeEventListener("list-select-group", onSelectGroup);
       window.removeEventListener("list-keyboard-navigate", onKeyboardNavigate);
     };
-  }, [data, openCardModal, currentTop]);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a search should reset scroll position.
-  useEffect(() => {
-    setCurrentTop(-1);
-    virtuosoRef.current?.scrollToIndex(0);
-  }, [search, data?.cards.length, rest.listDisplay]);
+  }, [data, openCardModal, currentTop, columns]);
 
   return (
     <Scroller
@@ -88,20 +151,33 @@ export function CardGrid(props: CardListImplementationProps) {
       ref={setScrollParent as unknown as React.RefObject<HTMLDivElement>}
       type="always"
     >
-      {data && (
-        <VirtuosoGrid
+      {rect?.width && data && (
+        <Virtuoso
           customScrollParent={scrollParent}
           ref={virtuosoRef}
-          data={data.cards}
-          listClassName={css["group-items"]}
-          itemClassName={css["group-item"]}
-          itemContent={(index) => (
-            <CardGridItem
-              {...rest}
-              card={data.cards[index]}
-              key={data.cards[index].id}
-              highlighted={highlighted === index}
-            />
+          defaultItemHeight={
+            ((rect.width - (columns - 1) * 16) / columns) * orientationModifier
+          }
+          data={rows}
+          overscan={10}
+          skipAnimationFrameInResizeObserver
+          itemContent={(_, cards) => (
+            <div
+              className={css["group-items"]}
+              style={{ "--columns": columns } as React.CSSProperties}
+            >
+              {cards.map((card) => (
+                <CardGridItem
+                  {...rest}
+                  card={card}
+                  key={card.id}
+                  highlighted={
+                    highlighted !== null &&
+                    data.cards.indexOf(card) === highlighted
+                  }
+                />
+              ))}
+            </div>
           )}
         />
       )}
