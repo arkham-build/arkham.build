@@ -156,7 +156,7 @@ export function CardGrid(props: CardListImplementationProps) {
           customScrollParent={scrollParent}
           ref={virtuosoRef}
           defaultItemHeight={
-            ((rect.width - (columns - 1) * 16) / columns) * orientationModifier
+           16 + (((rect.width - (columns - 1) * 16) / columns) * orientationModifier)
           }
           data={rows}
           increaseViewportBy={6}
