@@ -54,7 +54,7 @@ export function CardGrid(props: CardListImplementationProps) {
     [setMeasureRef],
   );
 
-  const columns = useMemo(() => {
+  const cols = useMemo(() => {
     const w = rect?.width ?? 0;
     if (w >= 1152) return 6;
     if (w >= 960) return 5;
@@ -95,12 +95,12 @@ export function CardGrid(props: CardListImplementationProps) {
 
     const rowCards: Card[][] = [];
 
-    for (let i = 0; i < data.cards.length; i += columns) {
-      rowCards.push(data.cards.slice(i, i + columns));
+    for (let i = 0; i < data.cards.length; i += cols) {
+      rowCards.push(data.cards.slice(i, i + cols));
     }
 
     return rowCards;
-  }, [data, columns]);
+  }, [data, cols]);
 
   useEffect(() => {
     function onSelectGroup(evt: Event) {
@@ -116,7 +116,7 @@ export function CardGrid(props: CardListImplementationProps) {
       setHighlighted(cardAtOffset);
 
       virtuosoRef.current?.scrollToIndex({
-        index: cardAtOffset / columns,
+        index: cardAtOffset / cols - 1,
         behavior: "auto",
       });
     }
@@ -142,7 +142,7 @@ export function CardGrid(props: CardListImplementationProps) {
       window.removeEventListener("list-select-group", onSelectGroup);
       window.removeEventListener("list-keyboard-navigate", onKeyboardNavigate);
     };
-  }, [data, openCardModal, currentTop, columns]);
+  }, [data, openCardModal, currentTop, cols]);
 
   return (
     <Scroller
@@ -157,7 +157,7 @@ export function CardGrid(props: CardListImplementationProps) {
           ref={virtuosoRef}
           key={orientationModifier}
           defaultItemHeight={
-           16 + (((rect.width - (columns - 1) * 16) / columns) * orientationModifier)
+            16 + (orientationModifier * (rect.width - 16 * (cols - 1))) / cols
           }
           data={rows}
           increaseViewportBy={6}
@@ -165,7 +165,7 @@ export function CardGrid(props: CardListImplementationProps) {
           itemContent={(_, cards) => (
             <div
               className={css["group-items"]}
-              style={{ "--columns": columns } as React.CSSProperties}
+              style={{ "--columns": cols } as React.CSSProperties}
             >
               {cards.map((card) => (
                 <CardGridItem
