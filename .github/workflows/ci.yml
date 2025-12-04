@@ -7,18 +7,6 @@ on:
   pull_request:
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    name: Check
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: "npm"
-          node-version-file: "package.json"
-      - run: npm ci
-      - run: npm run check
-
   lint:
     runs-on: ubuntu-latest
     name: Lint
@@ -30,43 +18,3 @@ jobs:
           node-version-file: "package.json"
       - run: npm ci
       - run: npm run lint
-
-  test:
-    runs-on: ubuntu-latest
-    name: Test
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: "npm"
-          node-version-file: "package.json"
-      - run: npm ci
-      - run: npm run test
-
-  e2e:
-    name: End-to-End Test
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.54.2
-    env:
-      VITE_PAGE_NAME: ${{ vars.VITE_PAGE_NAME }}
-      VITE_API_URL: ${{ vars.VITE_API_URL }}
-      VITE_ARKHAMDB_BASE_URL: ${{ vars.VITE_ARKHAMDB_BASE_URL }}
-      VITE_CARD_IMAGE_URL: ${{ vars.VITE_CARD_IMAGE_URL }}
-      VITE_SHOW_PREVIEW_BANNER: ${{ vars.VITE_SHOW_PREVIEW_BANNER }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: "npm"
-          node-version-file: "package.json"
-      - run: npm ci
-      - run: npm run prepare:e2e
-      - run: npm run test:e2e
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-    if: github.ref == 'refs/heads/main'

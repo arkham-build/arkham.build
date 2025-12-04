@@ -1,10 +1,20 @@
-name: Continuous Integration
+name: Backend - Continuous Integration
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
   pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+
+defaults:
+  run:
+    working-directory: backend
 
 jobs:
   check:
@@ -15,21 +25,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
-          node-version-file: "package.json"
+          node-version-file: "backend/package.json"
       - run: npm ci
       - run: npm run check
-
-  lint:
-    runs-on: ubuntu-latest
-    name: Lint
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: "npm"
-          node-version-file: "package.json"
-      - run: npm ci
-      - run: npm run lint
 
   test:
     runs-on: ubuntu-latest
@@ -39,6 +37,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
-          node-version-file: "package.json"
+          node-version-file: "backend/package.json"
       - run: npm ci
       - run: npm run test

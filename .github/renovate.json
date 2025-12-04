@@ -1,4 +1,0 @@
-{
-  "extends": ["config:base", "schedule:monthly"],
-  "timezone": "Europe/Berlin"
-}

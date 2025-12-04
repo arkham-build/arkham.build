@@ -1,8 +1,8 @@
-name: RelativeCI
+name: Frontend - RelativeCI
 
 on:
   workflow_run:
-    workflows: ["Build"]
+    workflows: ["Frontend - Build"]
     types:
       - completed
 

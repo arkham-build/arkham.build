@@ -1,4 +1,4 @@
-name: "[Production] End-to-End Tests"
+name: Frontend - [Production] End-to-End Tests
 
 on:
   schedule:
@@ -8,6 +8,10 @@ on:
       BASE_URL:
         required: true
         default: https://arkham.build
+
+defaults:
+  run:
+    working-directory: frontend
 
 jobs:
   e2e:
@@ -26,7 +30,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
-          node-version-file: "package.json"
+          node-version-file: "frontend/package.json"
       - run: npm ci
       - run: npm run prepare:e2e
       - run: npm run test:e2e -- -g @smoke
@@ -34,4 +38,4 @@ jobs:
         if: always()
         with:
           name: playwright-report
-          path: playwright-report/
+          path: frontend/playwright-report/
