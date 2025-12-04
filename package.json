@@ -2,6 +2,9 @@
   "name": "arkham-build-monorepo",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "workspaces": [
     "backend",
     "frontend"
