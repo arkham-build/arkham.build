@@ -1,4 +1,4 @@
-name: Frontend - Continuous Integration
+name: [Frontend] Tests
 
 on:
   push:

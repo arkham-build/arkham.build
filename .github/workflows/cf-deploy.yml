@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare Pages
+name: [Frontend] Deploy to Cloudflare Pages
 
 on:
   workflow_dispatch:

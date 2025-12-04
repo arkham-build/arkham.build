@@ -1,8 +1,8 @@
-name: Frontend - RelativeCI
+name: [Frontend] Upload stats to RelativeCI
 
 on:
   workflow_run:
-    workflows: ["Frontend - Build"]
+    workflows: ["[Frontend] Build"]
     types:
       - completed
 
