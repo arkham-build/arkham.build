@@ -9,10 +9,6 @@ on:
         required: true
         default: https://arkham.build
 
-defaults:
-  run:
-    working-directory: frontend
-
 jobs:
   e2e:
     timeout-minutes: 60
@@ -30,10 +26,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
-          node-version-file: "frontend/package.json"
+          node-version-file: "package.json"
       - run: npm ci
-      - run: npm run prepare:e2e
-      - run: npm run test:e2e -- -g @smoke
+      - run: npm run prepare:e2e --workspace=frontend
+      - run: npm run test:e2e --workspace=frontend -- -g @smoke
       - uses: actions/upload-artifact@v4
         if: always()
         with:

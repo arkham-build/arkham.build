@@ -12,10 +12,6 @@ on:
       - "backend/**"
       - ".github/workflows/backend-ci.yml"
 
-defaults:
-  run:
-    working-directory: backend
-
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -25,9 +21,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
-          node-version-file: "backend/package.json"
+          node-version-file: "package.json"
       - run: npm ci
-      - run: npm run check
+      - run: npm run check --workspace=backend
 
   test:
     runs-on: ubuntu-latest
@@ -37,6 +33,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
-          node-version-file: "backend/package.json"
+          node-version-file: "package.json"
       - run: npm ci
-      - run: npm run test
+      - run: npm run test --workspace=backend

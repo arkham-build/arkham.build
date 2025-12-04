@@ -12,10 +12,6 @@ on:
       - "frontend/**"
       - ".github/workflows/frontend-build.yml"
 
-defaults:
-  run:
-    working-directory: frontend
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,9 +25,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
-          node-version-file: "frontend/package.json"
+          node-version-file: "package.json"
       - run: npm ci
-      - run: npm run build
+      - run: npm run build --workspace=frontend
       - name: Upload webpack stats artifact
         uses: relative-ci/agent-upload-artifact-action@v2
         with:

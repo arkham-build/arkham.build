@@ -12,10 +12,6 @@ on:
       - "frontend/**"
       - ".github/workflows/frontend-ci.yml"
 
-defaults:
-  run:
-    working-directory: frontend
-
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -25,9 +21,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
-          node-version-file: "frontend/package.json"
+          node-version-file: "package.json"
       - run: npm ci
-      - run: npm run check
+      - run: npm run check --workspace=frontend
 
   test:
     runs-on: ubuntu-latest
@@ -37,9 +33,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
-          node-version-file: "frontend/package.json"
+          node-version-file: "package.json"
       - run: npm ci
-      - run: npm run test
+      - run: npm run test --workspace=frontend
 
   e2e:
     name: End-to-End Test
@@ -58,10 +54,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
-          node-version-file: "frontend/package.json"
+          node-version-file: "package.json"
       - run: npm ci
-      - run: npm run prepare:e2e
-      - run: npm run test:e2e
+      - run: npm run prepare:e2e --workspace=frontend
+      - run: npm run test:e2e --workspace=frontend
       - uses: actions/upload-artifact@v4
         if: always()
         with:
