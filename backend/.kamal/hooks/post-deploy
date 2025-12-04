@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# These environment variables are available:
+# KAMAL_RECORDED_AT
+# KAMAL_PERFORMER
+# KAMAL_VERSION
+# KAMAL_HOSTS
+# KAMAL_ROLES (if set)
+# KAMAL_DESTINATION (if set)
+# KAMAL_RUNTIME
+
+# Run database migrations after deployment
+echo "Running database migrations..."
+kamal app exec --reuse --primary -r web "npm run dbmate -- up"

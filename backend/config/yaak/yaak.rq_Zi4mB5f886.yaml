@@ -1,0 +1,29 @@
+type: http_request
+model: http_request
+id: rq_Zi4mB5f886
+createdAt: 2025-07-30T21:54:42.570995
+updatedAt: 2025-08-03T15:08:16.309531
+workspaceId: wk_bBoraEVHnK
+folderId: fl_ZDDpsyiw3d
+authentication: {}
+authenticationType: null
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Custom date range
+sortPriority: 2000.0
+url: ${[ base_url ]}/v2/public/recommendations/03006-03006
+urlParameters:
+- enabled: true
+  name: date_start
+  value: 2025-01
+  id: ht0tP2UzMv
+- enabled: true
+  name: date_end
+  value: 2025-08
+  id: bnzxDMcRUE
+- enabled: true
+  name: ''
+  value: ''
+  id: iXJ9iGDn2F

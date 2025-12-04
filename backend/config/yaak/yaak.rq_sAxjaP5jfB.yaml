@@ -1,0 +1,26 @@
+type: http_request
+model: http_request
+id: rq_sAxjaP5jfB
+createdAt: 2025-08-03T15:36:07.014718
+updatedAt: 2025-08-03T16:33:30.067112
+workspaceId: wk_bBoraEVHnK
+folderId: fl_JK7iKL4dYC
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Investigator faction
+sortPriority: 3000.0
+url: ${[ base_url ]}/v2/public/arkhamdb-decklists/search
+urlParameters:
+- enabled: true
+  name: investigator_faction
+  value: rogue
+  id: Zv3r3rPUpb
+- enabled: true
+  name: ''
+  value: ''
+  id: xPqFIPBUrr

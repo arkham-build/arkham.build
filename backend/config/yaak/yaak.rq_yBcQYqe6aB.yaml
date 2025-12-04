@@ -1,0 +1,25 @@
+type: http_request
+model: http_request
+id: rq_yBcQYqe6aB
+createdAt: 2025-08-04T10:33:20.201786
+updatedAt: 2025-08-04T10:46:42.579799
+workspaceId: wk_bBoraEVHnK
+folderId: fl_ZDDpsyiw3d
+authentication: {}
+authenticationType: null
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: 'Edge Case: Duplicate Resolution'
+sortPriority: 0.001
+url: ${[ base_url ]}/v2/public/recommendations/98010-98010
+urlParameters:
+- enabled: false
+  name: ''
+  value: ''
+  id: JjgUgfj2uZ
+- enabled: true
+  name: ''
+  value: ''
+  id: XtyW2nwnXG

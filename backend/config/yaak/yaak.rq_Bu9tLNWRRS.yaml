@@ -1,0 +1,25 @@
+type: http_request
+model: http_request
+id: rq_Bu9tLNWRRS
+createdAt: 2025-07-26T11:35:39.891994
+updatedAt: 2025-08-04T10:33:13.574879
+workspaceId: wk_bBoraEVHnK
+folderId: fl_ZDDpsyiw3d
+authentication: {}
+authenticationType: null
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Absolute ranking
+sortPriority: 0.0
+url: ${[ base_url ]}/v2/public/recommendations/03006-03006
+urlParameters:
+- enabled: false
+  name: ''
+  value: ''
+  id: JjgUgfj2uZ
+- enabled: true
+  name: ''
+  value: ''
+  id: XtyW2nwnXG

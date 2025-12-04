@@ -1,0 +1,14 @@
+{
+  "overrides": {
+    "columns": {
+      "cycle.translations": "{ locale: string; name: string }[]",
+      "pack.translations": "{ locale: string; name: string }[]",
+      "encounter_set.translations": "{ locale: string; name: string }[]",
+      "card.translations": "{ locale: string; [key: string]: string }[]",
+      "card.tags": "string[] | null",
+      "arkhamdb_decklist.slots": "Record<string, number>",
+      "arkhamdb_decklist.side_slots": "Record<string, number> | null",
+      "arkhamdb_decklist.ignore_deck_limit_slots": "Record<string, number> | null"
+    }
+  }
+}

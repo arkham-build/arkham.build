@@ -1,0 +1,33 @@
+type: http_request
+model: http_request
+id: rq_PrW6oXYeUN
+createdAt: 2025-08-03T09:54:15.961439
+updatedAt: 2025-08-03T15:09:01.545384
+workspaceId: wk_bBoraEVHnK
+folderId: fl_ZDDpsyiw3d
+authentication: {}
+authenticationType: null
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Required cards (percentile ranking)
+sortPriority: 4000.001
+url: ${[ base_url ]}/v2/public/recommendations/03006-03006
+urlParameters:
+- enabled: true
+  name: with
+  value: '01088'
+  id: rbGMCU5e2g
+- enabled: true
+  name: with
+  value: '01093'
+  id: F2iFt3XB97
+- enabled: true
+  name: algo
+  value: percentile_rank
+  id: YjHUJyykHp
+- enabled: true
+  name: ''
+  value: ''
+  id: kajnSg0pF0

@@ -1,0 +1,30 @@
+type: http_request
+model: http_request
+id: rq_SdBAxXBXAS
+createdAt: 2025-08-03T12:31:27.813854
+updatedAt: 2025-08-03T16:33:30.068650
+workspaceId: wk_bBoraEVHnK
+folderId: fl_JK7iKL4dYC
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Required cards + canonical investigator
+sortPriority: 5000.0
+url: ${[ base_url ]}/v2/public/arkhamdb-decklists/search
+urlParameters:
+- enabled: true
+  name: investigator
+  value: 01001-01001
+  id: R8m37g00S6
+- enabled: true
+  name: with
+  value: '01092'
+  id: qYIMS8204q
+- enabled: true
+  name: ''
+  value: ''
+  id: 4Jjm2hNtdT

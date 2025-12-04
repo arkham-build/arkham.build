@@ -1,0 +1,112 @@
+- name: Initial setup for Kamal host
+  hosts: all
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages to latest version
+      apt:
+        upgrade: dist
+
+    - name: Set timezone
+      timezone:
+        name: "{{ timezone | default('UTC') }}"
+
+    - name: Create app user
+      user:
+        name: app
+        password: "{{ app_password | password_hash('sha512') }}"
+        shell: /bin/bash
+        create_home: yes
+        groups: sudo
+        append: yes
+
+    - name: Ensure app .ssh directory exists
+      file:
+        path: /home/app/.ssh
+        state: directory
+        owner: app
+        group: app
+        mode: '0700'
+
+    - name: Copy root SSH keys to app user
+      copy:
+        src: /root/.ssh/authorized_keys
+        dest: /home/app/.ssh/authorized_keys
+        owner: app
+        group: app
+        mode: '0600'
+        remote_src: yes
+
+    - name: Install unattended-upgrades
+      apt:
+        name: unattended-upgrades
+        state: present
+
+    - name: Install UFW
+      apt:
+        name: ufw
+        state: present
+
+    - name: Allow SSH port 22
+      ufw:
+        rule: allow
+        port: '22'
+        proto: tcp
+
+    - name: Allow HTTP port 80
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+
+    - name: Allow HTTPS port 443
+      ufw:
+        rule: allow
+        port: '443'
+        proto: tcp
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+
+    - name: Disable root SSH login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+
+    - name: Disable SSH password authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+
+    - name: Install Docker, curl, and git
+      apt:
+        name:
+          - docker.io
+          - curl
+          - git
+        state: present
+
+    - name: Add app user to docker group
+      user:
+        name: app
+        groups: docker
+        append: yes
+
+    - name: Install fail2ban
+      apt:
+        name: fail2ban
+        state: present
+
+    - name: Reboot server
+      reboot:
+        reboot_timeout: 300

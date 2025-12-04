@@ -1,0 +1,30 @@
+type: http_request
+model: http_request
+id: rq_B4bLqtdu4Y
+createdAt: 2025-08-07T21:40:20.654226
+updatedAt: 2025-08-07T21:51:11.862012
+workspaceId: wk_bBoraEVHnK
+folderId: fl_JK7iKL4dYC
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Excluded cards (only deck)
+sortPriority: 2000.001
+url: ${[ base_url ]}/v2/public/arkhamdb-decklists/search
+urlParameters:
+- enabled: true
+  name: without
+  value: '08093'
+  id: R8m37g00S6
+- enabled: true
+  name: side_decks
+  value: 'false'
+  id: 7dU9jTkkHv
+- enabled: true
+  name: ''
+  value: ''
+  id: HD8M5chm4R

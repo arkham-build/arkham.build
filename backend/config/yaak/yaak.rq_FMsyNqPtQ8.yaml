@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_FMsyNqPtQ8
+createdAt: 2025-08-04T13:59:07.690336
+updatedAt: 2025-08-04T13:59:11.820316
+workspaceId: wk_bBoraEVHnK
+folderId: fl_WSoGd3Tv2j
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Version
+sortPriority: 0.001
+url: ${[ base_url ]}/version
+urlParameters: []

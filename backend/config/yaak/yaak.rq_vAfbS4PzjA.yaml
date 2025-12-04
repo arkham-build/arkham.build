@@ -1,0 +1,25 @@
+type: http_request
+model: http_request
+id: rq_vAfbS4PzjA
+createdAt: 2025-07-30T19:39:22.590474
+updatedAt: 2025-08-18T07:29:16.032822
+workspaceId: wk_bBoraEVHnK
+folderId: fl_ZDDpsyiw3d
+authentication: {}
+authenticationType: null
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Percentile Ranking
+sortPriority: 500.0
+url: ${[ base_url ]}/v2/public/recommendations/03006-03006
+urlParameters:
+- enabled: true
+  name: algo
+  value: percentile_rank
+  id: 5U8j8pCfJJ
+- enabled: true
+  name: ''
+  value: ''
+  id: jhD5mP8Tfv

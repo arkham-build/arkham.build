@@ -1,0 +1,11 @@
+.DS_Store
+
+dumps/*
+!dumps/.keep
+
+node_modules
+
+.env
+.env.*
+!.env.example
+!.env.test

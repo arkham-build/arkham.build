@@ -1,0 +1,25 @@
+type: http_request
+model: http_request
+id: rq_cEn69FZRpw
+createdAt: 2025-08-02T23:24:07.114533
+updatedAt: 2025-08-03T15:08:08.685275
+workspaceId: wk_bBoraEVHnK
+folderId: fl_ZDDpsyiw3d
+authentication: {}
+authenticationType: null
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Exclude side decks
+sortPriority: 1000.0
+url: ${[ base_url ]}/v2/public/recommendations/03006-03006
+urlParameters:
+- enabled: true
+  name: side_decks
+  value: 'false'
+  id: tb9SsmKDxv
+- enabled: true
+  name: ''
+  value: ''
+  id: Mh8RxPBQmP
