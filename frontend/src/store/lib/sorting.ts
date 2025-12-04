@@ -108,10 +108,6 @@ export function makeSortFunction(
         return sortByLevel;
       }
 
-      case "position": {
-        return sortByPosition;
-      }
-
       case "cycle": {
         return sortByCycle(metadata);
       }
@@ -134,6 +130,10 @@ export function makeSortFunction(
 
       case "subtype": {
         return sortBySubtype;
+      }
+
+      default: {
+        return sortByPosition;
       }
     }
   });

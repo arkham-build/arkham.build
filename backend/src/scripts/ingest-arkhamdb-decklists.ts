@@ -296,7 +296,7 @@ async function downloadCsvFile(config: Config, name: string): Promise<string> {
   return tempFilePath;
 }
 
-async function streamCsvAndInsert<T, U>(
+function streamCsvAndInsert<T, U>(
   filePath: string,
   transform: (row: T) => U,
   tx: Transaction<DB>,
@@ -341,7 +341,7 @@ async function streamCsvAndInsert<T, U>(
   });
 }
 
-async function loadCsvIntoMemory<T>(filePath: string): Promise<T[]> {
+function loadCsvIntoMemory<T>(filePath: string): Promise<T[]> {
   return new Promise((resolve, reject) => {
     const results: T[] = [];
     createReadStream(filePath)

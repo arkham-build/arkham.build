@@ -85,7 +85,7 @@ export function SymbolsPopover(props: Props) {
   const onSelectItem = useCallback(
     (values: SymbolsPopoverItem[]) => {
       const symbol = values[0];
-      insertTextAtCaret(`<span class=\"icon-${symbol.code}\"></span>`);
+      insertTextAtCaret(`<span class="icon-${symbol.code}"></span>`);
       onEscapePress();
     },
     [insertTextAtCaret, onEscapePress],

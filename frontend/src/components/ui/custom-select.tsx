@@ -198,7 +198,6 @@ function Option({
   const isSelected = selectedIndex === index;
 
   return (
-    // biome-ignore lint/a11y/useSemanticElements: we are using role="option".
     <button
       {...rest}
       className={cx(

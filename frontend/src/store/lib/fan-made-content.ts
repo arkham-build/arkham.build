@@ -68,7 +68,7 @@ export function validateFanMadeProject(project: FanMadeProject): void {
     const signature = cards[code];
     if (signature?.subtype_code == null && signature?.xp != null) {
       errors.push(
-        `${signature.name} is a signature, but has a non-null level. Make sure that its \"Level\" is set to \"None\" and export the project again.`,
+        `${signature.name} is a signature, but has a non-null level. Make sure that its "Level" is set to "None" and export the project again.`,
       );
     }
   }

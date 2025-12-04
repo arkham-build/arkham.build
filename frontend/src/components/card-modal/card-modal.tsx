@@ -299,7 +299,7 @@ function CardModalArrowNavigation(props: {
   const { t } = useTranslation();
   const openCardModal = useStore((state) => state.openCardModal);
 
-  const cardPosition = listOrder?.findIndex((c) => c === code) ?? -1;
+  const cardPosition = listOrder?.indexOf(code) ?? -1;
 
   const nextCardCode = listOrder?.[cardPosition + 1];
   const previousCardCode = listOrder?.[cardPosition - 1];

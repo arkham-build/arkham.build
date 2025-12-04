@@ -1,17 +1,22 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
+  "vcs": {
+    "enabled": false,
+    "clientKind": "git",
+    "useIgnoreFile": false
+  },
   "files": {
+    "ignoreUnknown": false,
     "includes": [
       "**",
-      "!**/dist/**",
-      "!**/coverage/**",
-      "!**/playwright-report/**",
-      "!**/test-results/**",
-      "!**/.wrangler/**"
+      "!**/dist",
+      "!**/coverage",
+      "!**/playwright-report",
+      "!**/test-results",
+      "!**/.wrangler"
     ],
     "maxSize": 10000000
   },
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "formatter": {
     "indentStyle": "space",
     "indentWidth": 2,
@@ -24,21 +29,27 @@
       "correctness": {
         "noUnusedImports": "error",
         "noUnusedVariables": "error",
-        "useHookAtTopLevel": "error"
-      },
-      "complexity": {
-        "useLiteralKeys": "off"
-      },
-      "nursery": {
+        "useHookAtTopLevel": "error",
         "useUniqueElementIds": "off"
       },
+      "complexity": {
+        "noImportantStyles": "off",
+        "useLiteralKeys": "off"
+      },
+      "nursery": {},
       "performance": {
         "noBarrelFile": "error",
         "noReExportAll": "error"
       },
       "suspicious": {
         "useAwait": "error",
-        "noDuplicateProperties": "off"
+        "noDuplicateProperties": "off",
+        "noUnknownAtRules": {
+          "level": "error",
+          "options": {
+            "ignore": ["extend"]
+          }
+        }
       },
       "style": {
         "noParameterAssign": "error",
@@ -55,9 +66,22 @@
       }
     }
   },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  },
   "css": {
     "parser": {
       "cssModules": true
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
     }
   }
 }

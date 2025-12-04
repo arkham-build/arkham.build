@@ -3,7 +3,7 @@ import path from "node:path";
 import { loadEnvFile } from "node:process";
 import { defineConfig } from "vitest/config";
 
-loadEnvFile(path.join(import.meta.dirname, `.env.test`));
+loadEnvFile(path.join(import.meta.dirname, ".env.test"));
 
 export default defineConfig({
   test: {

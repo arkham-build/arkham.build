@@ -33,12 +33,12 @@ export const log: Logger = (
 };
 
 export function logger() {
-  return async (c: Context<HonoEnv>, next: Next) => {
+  return (c: Context<HonoEnv>, next: Next) => {
     const requestId = c.get("requestId");
     const clientId = c.header("X-Client-Id");
 
-    const logger: Logger = (level, message, details) => {
-      details ??= {};
+    const logger: Logger = (level, message, _details) => {
+      const details = _details ?? {};
       details["request_id"] = requestId;
       details["client_id"] = clientId;
       log(level, message, details);

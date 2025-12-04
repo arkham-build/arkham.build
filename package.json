@@ -1,6 +1,17 @@
 {
-	"workspaces": [
-		"backend",
-		"frontend"
-	]
+  "name": "arkham-build-monorepo",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "fmt": "biome check --write",
+    "lint": "biome check",
+    "check": "biome check"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.8"
+  }
 }

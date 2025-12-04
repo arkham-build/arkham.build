@@ -248,7 +248,7 @@ export const selectShowFanMadeRelations = createSelector(
     if (activeList) {
       const { filters, filterValues } = activeList;
 
-      const idx = filters.findIndex((key) => key === "fan_made_content");
+      const idx = filters.indexOf("fan_made_content");
       const filterValue = idx !== -1 ? filterValues[idx] : undefined;
 
       if (filterValue != null) return filterValue.value !== "official";

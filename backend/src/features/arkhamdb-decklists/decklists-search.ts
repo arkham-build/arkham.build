@@ -203,9 +203,11 @@ export async function search(db: Database, search: SearchRequest) {
 
           if (sort_by === "popularity") {
             return sql.ref("ranking_score");
-          } else if (sort_by === "user_reputation") {
+          }
+          if (sort_by === "user_reputation") {
             return eb.ref("arkhamdb_user.reputation");
-          } else if (sort_by === "date") {
+          }
+          if (sort_by === "date") {
             return eb.ref("arkhamdb_decklist.date_creation");
           }
 

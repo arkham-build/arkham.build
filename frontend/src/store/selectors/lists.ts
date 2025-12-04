@@ -199,9 +199,7 @@ function makeUserFilter(
               filterLevel(value, resolvedDeck?.investigatorBack?.card),
             );
           } else {
-            const filterIndex = list.filters.findIndex(
-              (f) => f === "investigator",
-            );
+            const filterIndex = list.filters.indexOf("investigator");
             const filterValue = filterIndex
               ? list.filterValues[filterIndex]?.value
               : undefined;
@@ -345,7 +343,7 @@ export function selectCanonicalTabooSetId(
   if (resolvedDeck) return resolvedDeck.taboo_id;
 
   const filters = selectActiveListFilters(state);
-  const filterId = filters.findIndex((f) => f === "taboo_set");
+  const filterId = filters.indexOf("taboo_set");
 
   const filterValue = filterId
     ? selectActiveListFilter(state, filterId)

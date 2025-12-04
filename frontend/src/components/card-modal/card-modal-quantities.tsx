@@ -46,7 +46,7 @@ export function CardModalQuantities(props: Props) {
         updateCardQuantity(deck.id, card.code, -1, limit, slots);
       } else if (evt.code.startsWith("Digit")) {
         evt.preventDefault();
-        const quantity = Number.parseInt(evt.code.replace("Digit", ""));
+        const quantity = Number.parseInt(evt.code.replace("Digit", ""), 10);
         updateCardQuantity(deck.id, card.code, quantity, limit, slots, "set");
       }
     }
