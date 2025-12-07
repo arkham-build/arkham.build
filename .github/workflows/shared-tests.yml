@@ -1,0 +1,26 @@
+name: "[Shared] Tests"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "shared/**"
+      - ".github/workflows/shared-tests.yml"
+  pull_request:
+    paths:
+      - "shared/**"
+      - ".github/workflows/shared-tests.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: "npm"
+          node-version-file: "package.json"
+      - run: npm ci
+      - run: npm run test --workspace=shared
