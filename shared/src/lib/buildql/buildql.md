@@ -24,6 +24,8 @@ name == "breaking and entering"
 text == "<b>Fight.</b> You get +1 [combat]"
 ```
 
+Inversion: `!==`
+
 ### Loose equals (=)
 Loose equality operator. Works the same as == with the following differences:
 * `string`: Filters cards where attribute contains an exact substring match.

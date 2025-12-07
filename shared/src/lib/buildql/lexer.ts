@@ -165,19 +165,27 @@ class Lexer {
     const char = this.advance();
 
     switch (char) {
-      case "=":
+      case "=": {
         if (this.match("=")) {
           return this.createTokenAt("STRICT_EQ", "==", null, startPos);
         }
-        return this.createTokenAt("LOOSE_EQ", "=", null, startPos);
 
-      case "!":
+        return this.createTokenAt("LOOSE_EQ", "=", null, startPos);
+      }
+
+      case "!": {
         if (this.match("=")) {
+          if (this.match("=")) {
+            return this.createTokenAt("STRICT_NOT_EQ", "!==", null, startPos);
+          }
+
           return this.createTokenAt("NOT_EQ", "!=", null, startPos);
         }
-        return this.createTokenAt("NOT", "!", null, startPos);
 
-      case "?":
+        throw new LexerError(`Unexpected character: '!'`, startPos);
+      }
+
+      case "?": {
         if (this.match("?")) {
           if (this.match("!")) {
             return this.createTokenAt(
@@ -189,61 +197,81 @@ class Lexer {
           }
           return this.createTokenAt("STRICT_CONTAINS", "??", null, startPos);
         }
+
         if (this.match("!")) {
           return this.createTokenAt("LOOSE_NOT_CONTAINS", "?!", null, startPos);
         }
-        return this.createTokenAt("LOOSE_CONTAINS", "?", null, startPos);
 
-      case ">":
+        return this.createTokenAt("LOOSE_CONTAINS", "?", null, startPos);
+      }
+
+      case ">": {
         if (this.match("=")) {
           return this.createTokenAt("GTE", ">=", null, startPos);
         }
-        return this.createTokenAt("GT", ">", null, startPos);
 
-      case "<":
+        return this.createTokenAt("GT", ">", null, startPos);
+      }
+
+      case "<": {
         if (this.match("=")) {
           return this.createTokenAt("LTE", "<=", null, startPos);
         }
+
         return this.createTokenAt("LT", "<", null, startPos);
+      }
 
-      case "&":
+      case "&": {
         return this.createTokenAt("AND", "&", null, startPos);
+      }
 
-      case "|":
+      case "|": {
         return this.createTokenAt("OR", "|", null, startPos);
+      }
 
-      case "+":
+      case "+": {
         return this.createTokenAt("PLUS", "+", null, startPos);
+      }
 
-      case "-":
+      case "-": {
         return this.createTokenAt("MINUS", "-", null, startPos);
+      }
 
-      case "*":
+      case "*": {
         return this.createTokenAt("MULTIPLY", "*", null, startPos);
+      }
 
-      case "/":
+      case "/": {
         return this.createTokenAt("DIVIDE", "/", null, startPos);
+      }
 
-      case "%":
+      case "%": {
         return this.createTokenAt("MODULO", "%", null, startPos);
+      }
 
-      case "(":
+      case "(": {
         return this.createTokenAt("LPAREN", "(", null, startPos);
+      }
 
-      case ")":
+      case ")": {
         return this.createTokenAt("RPAREN", ")", null, startPos);
+      }
 
-      case "[":
+      case "[": {
         return this.createTokenAt("LBRACKET", "[", null, startPos);
+      }
 
-      case "]":
+      case "]": {
         return this.createTokenAt("RBRACKET", "]", null, startPos);
+      }
 
-      case ",":
+      case ",": {
         return this.createTokenAt("COMMA", ",", null, startPos);
+      }
 
-      default:
+      default: {
         throw new LexerError(`Unexpected character: '${char}'`, startPos);
+      }
     }
   }
 

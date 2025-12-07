@@ -7,6 +7,7 @@ export type TokenType =
   | "STRICT_EQ"
   | "LOOSE_EQ"
   | "NOT_EQ"
+  | "STRICT_NOT_EQ"
   | "STRICT_CONTAINS"
   | "STRICT_NOT_CONTAINS"
   | "LOOSE_CONTAINS"
