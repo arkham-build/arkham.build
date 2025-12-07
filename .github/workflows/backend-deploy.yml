@@ -1,0 +1,35 @@
+name: "[Backend] Deploy"
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: "npm"
+          node-version-file: "package.json"
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4
+          bundler-cache: false
+      - run: gem install kamal
+      - run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+      - run: npm ci
+      - working-directory: backend
+        env:
+          KAMAL_REGISTRY_USERNAME: ${{ secrets.KAMAL_REGISTRY_USERNAME }}
+          KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          INGEST_URL_ARKHAMDB_DECKLISTS: ${{ secrets.INGEST_URL_ARKHAMDB_DECKLISTS }}
+          INGEST_URL_METADATA: ${{ secrets.INGEST_URL_METADATA }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: kamal deploy

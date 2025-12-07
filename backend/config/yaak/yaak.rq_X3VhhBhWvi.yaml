@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_X3VhhBhWvi
+createdAt: 2025-08-05T11:00:52.982814
+updatedAt: 2025-08-05T12:56:13.039469
+workspaceId: wk_bBoraEVHnK
+folderId: fl_eohufYAbAh
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Get metadata
+sortPriority: 1999.9999
+url: ${[ base_url ]}/v2/public/arkhamdb-decklists/1/meta
+urlParameters: []

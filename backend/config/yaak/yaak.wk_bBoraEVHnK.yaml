@@ -1,0 +1,22 @@
+type: workspace
+model: workspace
+id: wk_bBoraEVHnK
+createdAt: 2025-07-26T11:33:32.553020
+updatedAt: 2025-07-26T11:42:46.606343
+authentication: {}
+authenticationType: null
+description: ''
+headers:
+- enabled: true
+  name: X-Client-Id
+  value: jtPU7w89zRlJVB7
+  id: CZJFKAfTwi
+- enabled: true
+  name: ''
+  value: ''
+  id: FnGp4p9kap
+name: api.arkham.build
+encryptionKeyChallenge: null
+settingValidateCertificates: true
+settingFollowRedirects: true
+settingRequestTimeout: 0

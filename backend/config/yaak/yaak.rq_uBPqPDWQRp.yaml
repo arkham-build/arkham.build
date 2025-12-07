@@ -1,0 +1,26 @@
+type: http_request
+model: http_request
+id: rq_uBPqPDWQRp
+createdAt: 2025-08-03T09:52:04.515134
+updatedAt: 2025-08-03T16:44:12.566454
+workspaceId: wk_bBoraEVHnK
+folderId: fl_JK7iKL4dYC
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Canonical investigator
+sortPriority: 1500.0
+url: ${[ base_url ]}/v2/public/arkhamdb-decklists/search
+urlParameters:
+- enabled: true
+  name: investigator
+  value: 01001-90024
+  id: R8m37g00S6
+- enabled: true
+  name: ''
+  value: ''
+  id: NAkAKTnKGQ

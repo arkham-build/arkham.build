@@ -1,0 +1,28 @@
+.skills {
+  display: flex;
+  flex-flow: row wrap;
+  list-style: none;
+  align-items: stretch;
+}
+
+.skill-cost {
+  font-size: calc(var(--card-text-size, 0.75em));
+}
+
+.skill-icon {
+  font-size: calc(1.25 * var(--card-text-size, 0.9375em));
+}
+
+.skill_numbered {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 2.5ch;
+}
+
+.skill-per-investigator {
+  font-size: 0.75rem;
+  align-self: flex-start;
+  transform: translateX(-0.125rem);
+}

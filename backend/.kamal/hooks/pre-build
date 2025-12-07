@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Git checkout is not clean, aborting..." >&2
+  git status --porcelain >&2
+  exit 1
+fi
+
+if ! npm run check; then
+  echo "Pre-build checks failed, aborting..." >&2
+  exit 1
+fi
+

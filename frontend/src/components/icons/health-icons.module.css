@@ -1,0 +1,45 @@
+.health,
+.sanity {
+  position: relative;
+  display: block;
+  line-height: 1;
+}
+
+.health {
+  color: var(--health);
+}
+
+.sanity {
+  color: var(--sanity);
+}
+
+.icon-base {
+  position: relative;
+  font-size: calc(2 * var(--card-text-size, var(--text-sm)));
+  z-index: 2;
+}
+
+.icon-background {
+  position: absolute;
+  color: var(--nord-4);
+  font-size: calc(2 * var(--card-text-size, var(--text-sm)));
+  z-index: 1;
+}
+
+.icon-cost {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(calc(-50% - 0.125rem));
+  font-size: 0.875em;
+  color: var(--color-inverted);
+  z-index: 3;
+
+  /** Chrome < 123 has a bug with paint-order, but lists is as supported. We use a feature with similar browser support as proxy check */
+  @supports (text-wrap-style: balance) {
+    -webkit-text-fill-color: var(--color-inverted);
+    -webkit-text-stroke: 2px currentColor;
+    color: currentColor;
+    paint-order: stroke fill;
+  }
+}

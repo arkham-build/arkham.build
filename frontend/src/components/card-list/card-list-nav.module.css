@@ -1,0 +1,41 @@
+.nav {
+  display: flex;
+  flex: 0 0 auto;
+  padding: 0.25rem 1px;
+  gap: 0.25rem;
+  font-family: var(--font-family-ui);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-row {
+  flex: 0 0 auto;
+  display: inline-flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.nav-jump {
+  flex: 1 1 auto;
+  width: 10rem;
+}
+
+.nav-config {
+  flex: 0 0 auto;
+}
+
+.nav-stats {
+  flex: 0 0 auto;
+  display: inline-flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--text-sm);
+}
+
+.nav-popover {
+  max-height: 90dvh;
+  padding: 0 0.625rem;
+}

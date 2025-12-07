@@ -1,0 +1,100 @@
+.scroller {
+  flex: 1 1 auto;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+
+.group {
+  position: relative;
+  padding-top: 1rem;
+}
+
+.group > * + * {
+  margin-top: 1rem;
+}
+
+.group-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.group-items {
+  display: grid;
+  gap: 16px; /* stable px value so that the JS-based height estimation can use it */
+  align-items: flex-end;
+
+  align-items: start;
+  padding-top: 16px;
+
+  grid-template-columns: repeat(var(--columns), 1fr);
+
+  &.grouped {
+    padding-top: 0;
+
+    @container (min-width: 20rem) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @container (min-width: 33rem) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @container (min-width: 45rem) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @container (min-width: 60rem) {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    @container (min-width: 72rem) {
+      grid-template-columns: repeat(var(--grid-max-columns, 6), 1fr);
+    }
+  }
+}
+
+.group-item {
+  --card-spacing-x: 0.125rem;
+  position: relative;
+  width: 100%;
+}
+
+.group-item-scan {
+  display: flex;
+  width: 100%;
+  background: transparent;
+  cursor: pointer;
+  align-items: center;
+
+  &:focus-visible {
+    outline: 1px solid var(--focus);
+  }
+
+  &.highlighted {
+    animation: highlight-animation 0.375s ease-in;
+  }
+}
+
+@keyframes highlight-animation {
+  0% {
+    box-shadow: 0 0 0 0 var(--nord-5);
+  }
+  30% {
+    box-shadow: 0 0 5px 3px var(--nord-5);
+  }
+  100% {
+    box-shadow: 0 0 0 0 var(--nord-5);
+  }
+}
+
+.group-item-scan img {
+  box-shadow: var(--shadow-md);
+}
+
+.group-item-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}

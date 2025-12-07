@@ -1,0 +1,16 @@
+.yaak
+.github
+node_modules
+.git
+src/tests
+
+.dockerignore
+.env*
+.gitignore
+biome.json
+docker-compose*
+Dockerfile
+Makefile
+vitest.config.ts
+README.md
+*.md

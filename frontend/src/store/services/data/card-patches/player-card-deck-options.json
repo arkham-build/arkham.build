@@ -1,0 +1,65 @@
+[
+  {
+    "code": "06167",
+    "deck_requirements": "size:5",
+    "deck_options": [
+      {
+        "name": "Versatile",
+        "level": {
+          "min": 0,
+          "max": 0
+        },
+        "limit": 1,
+        "error": "Too many off-class cards for Versatile."
+      }
+    ],
+    "patch": true
+  },
+  {
+    "code": "07303",
+    "deck_requirements": "size:5",
+    "deck_options": [
+      {
+        "atleast": {
+          "min": 10,
+          "types": 1
+        },
+        "type": ["skill"],
+        "virtual": true,
+        "error": "Deck must have at least 10 skill cards."
+      }
+    ],
+    "patch": true
+  },
+  {
+    "code": "08046",
+    "deck_requirements": "size:-5",
+    "patch": true
+  },
+  {
+    "code": "08031",
+    "deck_requirements": "size:15",
+    "patch": true
+  },
+  {
+    "code": "09077",
+    "deck_requirements": "size:10",
+    "patch": true
+  },
+  {
+    "code": "53010",
+    "deck_options": [
+      {
+        "not": true,
+        "slot": ["Ally"],
+        "level": {
+          "min": 0,
+          "max": 5
+        },
+        "error": "You cannot have assets that take up an ally slot.",
+        "virtual": true
+      }
+    ],
+    "patch": true
+  }
+]

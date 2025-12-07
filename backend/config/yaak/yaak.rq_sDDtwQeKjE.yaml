@@ -1,0 +1,29 @@
+type: http_request
+model: http_request
+id: rq_sDDtwQeKjE
+createdAt: 2025-07-30T21:51:13.618760
+updatedAt: 2025-08-03T15:08:57.980233
+workspaceId: wk_bBoraEVHnK
+folderId: fl_ZDDpsyiw3d
+authentication: {}
+authenticationType: null
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Required cards (absolute ranking)
+sortPriority: 4000.0
+url: ${[ base_url ]}/v2/public/recommendations/03006-03006
+urlParameters:
+- enabled: true
+  name: with
+  value: '01088'
+  id: rbGMCU5e2g
+- enabled: true
+  name: with
+  value: '01093'
+  id: F2iFt3XB97
+- enabled: true
+  name: ''
+  value: ''
+  id: MxDUAk2D5x

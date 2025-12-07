@@ -1,0 +1,45 @@
+{
+  "name": "@arkham-build/backend",
+  "version": "0.1.0",
+  "main": "src/main.ts",
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "check": "tsc",
+    "dbmate": "dbmate",
+    "db:up": "COMPOSE_MENU=0 docker compose up -d --build",
+    "db:down": "docker compose down",
+    "dev": "node --watch --experimental-strip-types --env-file=.env src/main.ts",
+    "dev:inspect": "node --inspect=localhost:9229 --experimental-strip-types --env-file=.env src/main.ts",
+    "fmt": "biome check --write",
+    "generate:database-types": "kysely-codegen --out-file src/db/schema.types.ts",
+    "ingest": "npm run ingest:metadata && npm run ingest:arkhamdb-decklists",
+    "ingest:metadata": "node --experimental-strip-types --env-file=.env src/scripts/ingest-metadata.ts",
+    "ingest:arkhamdb-decklists": "node --experimental-strip-types --env-file=.env src/scripts/ingest-arkhamdb-decklists.ts",
+    "lint": "biome check",
+    "start": "node --experimental-strip-types src/main.ts",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@fast-csv/parse": "5.0.2",
+    "@hono/node-server": "1.19.6",
+    "hono": "4.10.7",
+    "kysely": "0.28.8",
+    "pg": "8.16.3",
+    "zod": "4.1.13"
+  },
+  "devDependencies": {
+    "@testcontainers/postgresql": "11.9.0",
+    "@tsconfig/node-ts": "23.6.2",
+    "@tsconfig/node24": "24.0.3",
+    "@tsconfig/strictest": "2.0.8",
+    "@types/node": "24.10.1",
+    "@types/pg": "8.15.6",
+    "dbmate": "2.28.0",
+    "kysely-codegen": "0.19.0",
+    "testcontainers": "11.9.0",
+    "vitest": "4.0.15"
+  }
+}

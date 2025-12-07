@@ -1,0 +1,29 @@
+{
+  "date_creation": "2025-11-22T19:05:27+01:00",
+  "date_update": "2025-11-22T19:05:37+01:00",
+  "description_md": "",
+  "exile_string": null,
+  "ignoreDeckLimitSlots": null,
+  "id": 538,
+  "investigator_code": "01003",
+  "investigator_name": "\"Skids\" O'Toole",
+  "meta": "{}",
+  "name": "The \"Skids\" O'Toole Job",
+  "next_deck": null,
+  "previous_deck": null,
+  "problem": "too_few_cards",
+  "sideSlots": {},
+  "slots": {
+    "01000": 1,
+    "01010": 1,
+    "01011": 1,
+    "01516": 2
+  },
+  "taboo_id": 9,
+  "tags": "rogue",
+  "user_id": 1,
+  "version": "0.2",
+  "xp_adjustment": 0,
+  "xp_spent": 0,
+  "xp": 0
+}

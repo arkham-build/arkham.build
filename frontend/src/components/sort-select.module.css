@@ -1,0 +1,6 @@
+.sort-label {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 0.25rem;
+}

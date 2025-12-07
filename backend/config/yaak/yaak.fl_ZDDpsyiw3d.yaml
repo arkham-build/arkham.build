@@ -1,0 +1,13 @@
+type: folder
+model: folder
+id: fl_ZDDpsyiw3d
+createdAt: 2025-07-26T11:35:36.516054
+updatedAt: 2025-08-03T14:57:23.141436
+workspaceId: wk_bBoraEVHnK
+folderId: null
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+name: Recommendations
+sortPriority: 2000.0

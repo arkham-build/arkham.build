@@ -1,0 +1,16 @@
+{
+  "extends": [
+    "@tsconfig/node24/tsconfig.json",
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node-ts/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@arkham-build/shared": ["../shared/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "../shared/src"]
+}

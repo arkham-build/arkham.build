@@ -1,0 +1,30 @@
+type: http_request
+model: http_request
+id: rq_hUwWos4gS3
+createdAt: 2025-08-07T21:39:07.044968
+updatedAt: 2025-08-07T21:51:02.856575
+workspaceId: wk_bBoraEVHnK
+folderId: fl_JK7iKL4dYC
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Required cards (only deck)
+sortPriority: 4000.001
+url: ${[ base_url ]}/v2/public/arkhamdb-decklists/search
+urlParameters:
+- enabled: true
+  name: with
+  value: '08093'
+  id: R8m37g00S6
+- enabled: true
+  name: side_decks
+  value: 'false'
+  id: QzIBfeiywB
+- enabled: true
+  name: ''
+  value: ''
+  id: KqBnkumfWP

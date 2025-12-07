@@ -1,0 +1,42 @@
+type: http_request
+model: http_request
+id: rq_5qiNqQovmJ
+createdAt: 2025-08-19T11:17:19.824431
+updatedAt: 2025-08-19T11:19:21.249160
+workspaceId: wk_bBoraEVHnK
+folderId: fl_JK7iKL4dYC
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Tags
+sortPriority: 1750.001
+url: ${[ base_url ]}/v2/public/arkhamdb-decklists/search
+urlParameters:
+- enabled: true
+  name: tag
+  value: solo
+  id: Zv3r3rPUpb
+- enabled: true
+  name: tag
+  value: multiplayer
+  id: KbFHVnHJCS
+- enabled: true
+  name: tag
+  value: theme
+  id: yZIGNq4udV
+- enabled: false
+  name: ''
+  value: ''
+  id: KGD3HTwi3G
+- enabled: true
+  name: tag
+  value: beginner
+  id: FKgzJIHep3
+- enabled: true
+  name: ''
+  value: ''
+  id: 9ZNC0kW7ZC

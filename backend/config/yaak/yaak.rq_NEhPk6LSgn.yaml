@@ -1,0 +1,26 @@
+type: http_request
+model: http_request
+id: rq_NEhPk6LSgn
+createdAt: 2025-08-03T15:17:47.279109
+updatedAt: 2025-08-03T16:44:41.421346
+workspaceId: wk_bBoraEVHnK
+folderId: fl_JK7iKL4dYC
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Author
+sortPriority: 1000.0
+url: ${[ base_url ]}/v2/public/arkhamdb-decklists/search
+urlParameters:
+- enabled: true
+  name: author
+  value: loglady
+  id: R8m37g00S6
+- enabled: true
+  name: ''
+  value: ''
+  id: 9uY8aNkkty

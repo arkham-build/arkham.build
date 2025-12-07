@@ -1,0 +1,26 @@
+type: http_request
+model: http_request
+id: rq_aSBBZym9YA
+createdAt: 2025-08-03T16:07:30.418027
+updatedAt: 2025-08-03T16:33:30.069487
+workspaceId: wk_bBoraEVHnK
+folderId: fl_JK7iKL4dYC
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Sort by date
+sortPriority: 6000.0
+url: ${[ base_url ]}/v2/public/arkhamdb-decklists/search
+urlParameters:
+- enabled: true
+  name: sort_by
+  value: date
+  id: D4hiI4j3yv
+- enabled: true
+  name: ''
+  value: ''
+  id: qMGwyGNFp4

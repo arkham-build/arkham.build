@@ -1,0 +1,28 @@
+{
+  "id": "PV4zgRhTW7pNaAF",
+  "date_creation": "2025-11-22T17:13:34.058Z",
+  "date_update": "2025-11-22T17:18:11.334Z",
+  "description_md": "",
+  "meta": "{}",
+  "ignoreDeckLimitSlots": {},
+  "sideSlots": {},
+  "next_deck": null,
+  "previous_deck": null,
+  "tags": "",
+  "version": "0.2",
+  "taboo_id": 9,
+  "xp": null,
+  "xp_spent": null,
+  "exile_string": null,
+  "xp_adjustment": null,
+  "investigator_code": "60301",
+  "investigator_name": "Winifred Habbamock",
+  "name": "The Winifred Habbamock Job",
+  "slots": {
+    "60302": 1,
+    "60303": 1,
+    "60305": 2,
+    "01000": 1
+  },
+  "problem": "too_few_cards"
+}

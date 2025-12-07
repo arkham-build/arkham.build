@@ -1,0 +1,30 @@
+type: http_request
+model: http_request
+id: rq_4dGrr6wgMh
+createdAt: 2025-08-03T09:53:11.406169
+updatedAt: 2025-08-07T21:49:09.506881
+workspaceId: wk_bBoraEVHnK
+folderId: fl_JK7iKL4dYC
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Excluded cards
+sortPriority: 2000.0
+url: ${[ base_url ]}/v2/public/arkhamdb-decklists/search
+urlParameters:
+- enabled: true
+  name: without
+  value: '08093'
+  id: R8m37g00S6
+- enabled: true
+  name: ''
+  value: ''
+  id: 6AwF8V6Tzs
+- enabled: true
+  name: ''
+  value: ''
+  id: vNyKcUv8J2

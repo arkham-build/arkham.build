@@ -1,0 +1,35 @@
+{
+  "id": "npcZEXjHOiyZCuh",
+  "date_creation": "2024-08-10T10:56:27.358Z",
+  "date_update": "2024-08-10T10:58:32.693Z",
+  "description_md": "12 (10 + 2) for AF(5), 0 for first Shrivelling, 1 for second, 6 for Read the Signs",
+  "meta": "{\"alternate_back\":\"90017\"}",
+  "ignoreDeckLimitSlots": {
+    "60425": 2
+  },
+  "sideSlots": {},
+  "next_deck": null,
+  "previous_deck": null,
+  "tags": "",
+  "version": "0.1",
+  "xp": 19,
+  "xp_spent": null,
+  "exile_string": null,
+  "xp_adjustment": null,
+  "investigator_code": "01004",
+  "investigator_name": "Agnes Baker",
+  "name": "The Agnes Baker Mysteries",
+  "slots": {
+    "10101": 2,
+    "60425": 2,
+    "60430": 2,
+    "01000": 1,
+    "01012": 1,
+    "01013": 1,
+    "08059": 1,
+    "04109": 2,
+    "02306": 2
+  },
+  "problem": "too_few_cards",
+  "taboo_id": null
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "code": "03121",
+    "doom_per_investigator": true,
+    "patch": true
+  },
+  {
+    "code": "08679",
+    "enemy_evade_per_investigator": true,
+    "enemy_fight_per_investigator": true,
+    "patch": true
+  },
+  {
+    "code": "72028",
+    "shroud_per_investigator": true,
+    "shroud": 4,
+    "patch": true
+  },
+  {
+    "code": "87009",
+    "shroud": 1,
+    "shroud_per_investigator": true,
+    "patch": true
+  },
+  {
+    "code": "87018",
+    "shroud": 1,
+    "shroud_per_investigator": true,
+    "patch": true
+  },
+  {
+    "code": "87027",
+    "shroud": 1,
+    "shroud_per_investigator": true,
+    "patch": true
+  }
+]
