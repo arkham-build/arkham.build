@@ -5,8 +5,13 @@ import type {
   IdentifierNode,
   LiteralNode,
 } from "@arkham-build/shared";
+import { instantiateSearchFromLocale } from "@/store/lib/searching";
 import type { Card } from "@/store/schemas/card.schema";
-import type { FieldValue, InterpreterContext } from "./interpreter.types";
+import type {
+  FieldType,
+  FieldValue,
+  InterpreterContext,
+} from "./interpreter.types";
 
 export class InterpreterError extends Error {
   constructor(message: string) {
@@ -18,8 +23,11 @@ export class InterpreterError extends Error {
 export class Interpreter {
   private context: InterpreterContext;
 
-  constructor(context: InterpreterContext) {
-    this.context = context;
+  constructor(
+    context: Omit<InterpreterContext, "fuzzyMatcher">,
+    locale: string,
+  ) {
+    this.context = createInterpreterContext(context, locale);
   }
 
   evaluate(expr: Expr): (card: Card) => boolean {
@@ -53,6 +61,21 @@ export class Interpreter {
   private evaluateBinary(node: BinaryNode, card: Card): boolean {
     const { operator, left, right } = node;
 
+    const leftType = this.getFieldType(left);
+    const rightType = this.getFieldType(right);
+
+    if (
+      leftType !== "unknown" &&
+      rightType !== "unknown" &&
+      leftType !== rightType
+    ) {
+      throw new InterpreterError(
+        `Type mismatch: cannot compare ${leftType} field with ${rightType} field`,
+      );
+    }
+
+    const fieldType = leftType !== "unknown" ? leftType : rightType;
+
     switch (operator) {
       case "&": {
         return this.evaluateExpr(left, card) && this.evaluateExpr(right, card);
@@ -66,6 +89,7 @@ export class Interpreter {
         return this.strictEquals(
           this.getValue(left, card),
           this.getValue(right, card),
+          fieldType,
         );
       }
 
@@ -73,6 +97,7 @@ export class Interpreter {
         return !this.strictEquals(
           this.getValue(left, card),
           this.getValue(right, card),
+          fieldType,
         );
       }
 
@@ -80,37 +105,43 @@ export class Interpreter {
         return this.looseEquals(
           this.getValue(left, card),
           this.getValue(right, card),
+          fieldType,
         );
       }
       case "!=": {
         return !this.looseEquals(
           this.getValue(left, card),
           this.getValue(right, card),
+          fieldType,
         );
       }
 
       case "??": {
         const leftValue = this.getValue(left, card);
-        const rightList = this.getList(right, card);
-        return rightList.some((val) => this.strictEquals(leftValue, val));
+        return this.getList(right, card).some((val) =>
+          this.strictEquals(leftValue, val, leftType),
+        );
       }
 
       case "??!": {
         const leftValue = this.getValue(left, card);
-        const rightList = this.getList(right, card);
-        return !rightList.some((val) => this.strictEquals(leftValue, val));
+        return !this.getList(right, card).some((val) =>
+          this.strictEquals(leftValue, val, leftType),
+        );
       }
 
       case "?": {
         const leftValue = this.getValue(left, card);
-        const rightList = this.getList(right, card);
-        return rightList.some((val) => this.looseEquals(leftValue, val));
+        return this.getList(right, card).some((val) =>
+          this.looseEquals(leftValue, val, leftType),
+        );
       }
 
       case "?!": {
         const leftValue = this.getValue(left, card);
-        const rightList = this.getList(right, card);
-        return !rightList.some((val) => this.looseEquals(leftValue, val));
+        return !this.getList(right, card).some((val) =>
+          this.looseEquals(leftValue, val, leftType),
+        );
       }
 
       case ">": {
@@ -263,22 +294,32 @@ export class Interpreter {
   }
 
   private lookupField(name: string, card: Card): FieldValue {
-    const lookup = this.context.lookups[name];
+    const descriptor = this.context.lookups[name];
 
-    if (!lookup) {
+    if (!descriptor) {
       throw new InterpreterError(`Unknown field: ${name}`);
     }
 
-    return lookup(card);
+    return descriptor.lookup(card);
   }
 
-  private strictEquals(left: FieldValue, right: FieldValue): boolean {
-    if (right === false && (left === false || left === null)) {
-      return true;
+  private getFieldType(expr: Expr): FieldType | "unknown" {
+    if (expr.type === "IDENTIFIER") {
+      const descriptor = this.context.lookups[expr.name];
+      return descriptor.type;
     }
 
-    if (typeof left === "boolean" && typeof right === "boolean") {
-      return left === right;
+    return "unknown";
+  }
+
+  private strictEquals(
+    left: FieldValue,
+    right: FieldValue,
+    fieldType: FieldType | "unknown",
+  ): boolean {
+    if (typeof left === "boolean" || typeof right === "boolean") {
+      // biome-ignore lint/suspicious/noDoubleEquals: intentional
+      return !!left == !!right;
     }
 
     if (typeof left === "number" && typeof right === "number") {
@@ -286,19 +327,35 @@ export class Interpreter {
     }
 
     if (typeof left === "string" && typeof right === "string") {
-      return this.normalizeString(left) === this.normalizeString(right);
+      const normalizedLeft = this.normalizeString(left);
+      const normalizedRight = this.normalizeString(right);
+
+      if (fieldType === "text") {
+        return normalizedLeft.includes(normalizedRight);
+      }
+
+      return normalizedLeft === normalizedRight;
+    }
+
+    if (Array.isArray(left) && typeof right === "string") {
+      return left.some((val) => this.strictEquals(val, right, fieldType));
+    }
+
+    if (typeof left === "string" && Array.isArray(right)) {
+      return right.some((val) => this.strictEquals(left, val, fieldType));
     }
 
     return false;
   }
 
-  private looseEquals(left: FieldValue, right: FieldValue): boolean {
-    if (right === false && (left === false || left === null)) {
-      return true;
-    }
-
-    if (typeof left === "boolean" && typeof right === "boolean") {
-      return left === right;
+  private looseEquals(
+    left: FieldValue,
+    right: FieldValue,
+    fieldType: FieldType | "unknown",
+  ): boolean {
+    if (typeof left === "boolean" || typeof right === "boolean") {
+      // biome-ignore lint/suspicious/noDoubleEquals: intentional
+      return !!left == !!right;
     }
 
     if (typeof left === "number" && typeof right === "number") {
@@ -306,7 +363,22 @@ export class Interpreter {
     }
 
     if (typeof left === "string" && typeof right === "string") {
-      return this.normalizeString(left).includes(this.normalizeString(right));
+      const normalizedLeft = this.normalizeString(left);
+      const normalizedRight = this.normalizeString(right);
+
+      if (fieldType === "text") {
+        return this.context.fuzzyMatcher(normalizedLeft, normalizedRight);
+      }
+
+      return normalizedLeft.includes(normalizedRight);
+    }
+
+    if (Array.isArray(left) && typeof right === "string") {
+      return left.some((val) => this.looseEquals(val, right, fieldType));
+    }
+
+    if (typeof left === "string" && Array.isArray(right)) {
+      return right.some((val) => this.looseEquals(left, val, fieldType));
     }
 
     return false;
@@ -339,10 +411,34 @@ export class Interpreter {
   }
 }
 
+function createFuzzyMatcher(
+  locale: string,
+): (haystack: string, needle: string) => boolean {
+  const uf = instantiateSearchFromLocale(locale, {
+    interIns: 18,
+  });
+
+  return (haystack: string, needle: string) => {
+    const results = uf.search([haystack], needle, 0);
+    return !!results?.[0]?.length;
+  };
+}
+
+function createInterpreterContext(
+  context: Omit<InterpreterContext, "fuzzyMatcher">,
+  locale: string,
+): InterpreterContext {
+  return {
+    ...context,
+    fuzzyMatcher: createFuzzyMatcher(locale),
+  };
+}
+
 export function compile(
   expr: Expr,
-  context: InterpreterContext,
+  context: Omit<InterpreterContext, "fuzzyMatcher">,
+  locale = "en",
 ): (card: Card) => boolean {
-  const interpreter = new Interpreter(context);
+  const interpreter = new Interpreter(context, locale);
   return interpreter.evaluate(expr);
 }

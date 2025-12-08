@@ -217,4 +217,70 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ health: 3, sanity: 5 }))).toBe(false);
     });
   });
+
+  describe("Text vs String field handling", () => {
+    test("strict equals (==) on text fields uses substring match", () => {
+      const expr = parse('text == "fight"');
+      const filter = compile(expr, { lookups });
+
+      expect(
+        filter(
+          createMockCard({
+            text: "<b>Fight.</b> You get +1 [combat] for this test.",
+          }),
+        ),
+      ).toBe(true);
+      expect(filter(createMockCard({ text: "Parley. Investigate." }))).toBe(
+        false,
+      );
+    });
+
+    test("strict equals (==) on string fields uses exact match", () => {
+      const expr = parse('name == "Roland Banks"');
+      const filter = compile(expr, { lookups });
+
+      expect(filter(createMockCard({ name: "Roland Banks" }))).toBe(true);
+      expect(filter(createMockCard({ name: "Roland" }))).toBe(false);
+    });
+
+    test("loose equals (=) on text fields uses fuzzy match", () => {
+      const expr = parse('text = "fight combat"');
+      const filter = compile(expr, { lookups });
+
+      expect(
+        filter(
+          createMockCard({
+            text: "<b>Fight.</b> You get +1 [combat] for this test.",
+          }),
+        ),
+      ).toBe(true);
+      expect(filter(createMockCard({ text: "Investigate." }))).toBe(false);
+    });
+
+    test("loose equals (=) on string fields uses substring match", () => {
+      const expr = parse('name = "roland"');
+      const filter = compile(expr, { lookups });
+
+      expect(filter(createMockCard({ name: "Roland Banks" }))).toBe(true);
+      expect(filter(createMockCard({ name: "Wendy Adams" }))).toBe(false);
+    });
+
+    test("throws error when comparing text field with string field", () => {
+      const expr = parse("text == name");
+      const filter = compile(expr, { lookups });
+
+      expect(() =>
+        filter(createMockCard({ text: "test", name: "test" })),
+      ).toThrow("Type mismatch: cannot compare text field with string field");
+    });
+
+    test("allows comparing string literals with text fields", () => {
+      const expr = parse('text == "fight"');
+      const filter = compile(expr, { lookups });
+
+      expect(
+        filter(createMockCard({ text: "<b>Fight.</b> You get +1 [combat]" })),
+      ).toBe(true);
+    });
+  });
 });
