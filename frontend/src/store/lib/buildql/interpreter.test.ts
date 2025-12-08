@@ -1,4 +1,3 @@
-import { parse } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
 import { beforeAll, describe, expect, test } from "vitest";
 import type { Card } from "@/store/schemas/card.schema";
@@ -7,6 +6,7 @@ import { getMockStore } from "@/test/get-mock-store";
 import { compile, createInterpreterContext } from "./interpreter";
 import type { InterpreterContext } from "./interpreter.types";
 import { lookups } from "./lookups";
+import { parse } from "./parser";
 
 function createMockCard(overrides: Partial<Card> = {}): Card {
   return {

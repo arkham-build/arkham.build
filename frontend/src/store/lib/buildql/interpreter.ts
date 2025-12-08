@@ -1,10 +1,3 @@
-import type {
-  BinaryNode,
-  Expr,
-  GroupNode,
-  IdentifierNode,
-  LiteralNode,
-} from "@arkham-build/shared";
 import { instantiateSearchFromLocale } from "@/store/lib/searching";
 import type { Card } from "@/store/schemas/card.schema";
 import type {
@@ -12,6 +5,13 @@ import type {
   FieldValue,
   InterpreterContext,
 } from "./interpreter.types";
+import type {
+  BinaryNode,
+  Expr,
+  GroupNode,
+  IdentifierNode,
+  LiteralNode,
+} from "./parser.types";
 
 export class InterpreterError extends Error {
   constructor(message: string) {
