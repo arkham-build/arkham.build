@@ -175,6 +175,18 @@ class Lexer {
       }
 
       case "!": {
+        if (this.match("?")) {
+          if (this.match("?")) {
+            return this.createTokenAt(
+              "STRICT_NOT_CONTAINS",
+              "!??",
+              null,
+              startPos,
+            );
+          }
+          return this.createTokenAt("LOOSE_NOT_CONTAINS", "!?", null, startPos);
+        }
+
         if (this.match("=")) {
           if (this.match("=")) {
             return this.createTokenAt("STRICT_NOT_EQ", "!==", null, startPos);
@@ -188,19 +200,7 @@ class Lexer {
 
       case "?": {
         if (this.match("?")) {
-          if (this.match("!")) {
-            return this.createTokenAt(
-              "STRICT_NOT_CONTAINS",
-              "??!",
-              null,
-              startPos,
-            );
-          }
           return this.createTokenAt("STRICT_CONTAINS", "??", null, startPos);
-        }
-
-        if (this.match("!")) {
-          return this.createTokenAt("LOOSE_NOT_CONTAINS", "?!", null, startPos);
         }
 
         return this.createTokenAt("LOOSE_CONTAINS", "?", null, startPos);

@@ -145,11 +145,11 @@ describe("Parser", () => {
       });
     });
 
-    it("parses strict not contains (??!)", () => {
-      const ast = parse('trait ??! ["Tactic."]');
+    it("parses strict not contains (!??)", () => {
+      const ast = parse('trait !?? ["Tactic."]');
       expect(ast).toMatchObject({
         type: "BINARY",
-        operator: "??!",
+        operator: "!??",
       });
     });
 
@@ -161,11 +161,11 @@ describe("Parser", () => {
       });
     });
 
-    it("parses loose not contains (?!)", () => {
-      const ast = parse('trait ?! ["tactic"]');
+    it("parses loose not contains (!?)", () => {
+      const ast = parse('trait !? ["tactic"]');
       expect(ast).toMatchObject({
         type: "BINARY",
-        operator: "?!",
+        operator: "!?",
       });
     });
   });

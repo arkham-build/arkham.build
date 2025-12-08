@@ -334,11 +334,11 @@ describe("Lexer", () => {
       `);
     });
 
-    it("tokenizes strict not contains (??!)", () => {
-      const tokens = tokenize("??!");
+    it("tokenizes strict not contains (!??)", () => {
+      const tokens = tokenize("!??");
       expect(prepareSnapshot(tokens)[0]).toMatchInlineSnapshot(`
         {
-          "lexeme": "??!",
+          "lexeme": "!??",
           "type": "STRICT_NOT_CONTAINS",
           "value": null,
         }
@@ -356,11 +356,11 @@ describe("Lexer", () => {
       `);
     });
 
-    it("tokenizes loose not contains (?!)", () => {
-      const tokens = tokenize("?!");
+    it("tokenizes loose not contains (!?)", () => {
+      const tokens = tokenize("!?");
       expect(prepareSnapshot(tokens)[0]).toMatchInlineSnapshot(`
         {
-          "lexeme": "?!",
+          "lexeme": "!?",
           "type": "LOOSE_NOT_CONTAINS",
           "value": null,
         }

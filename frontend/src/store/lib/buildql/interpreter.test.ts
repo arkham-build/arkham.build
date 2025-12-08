@@ -129,8 +129,8 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ xp: 2 }))).toBe(false);
     });
 
-    test("strict not contains (??!)", () => {
-      const expr = parse("xp ??! [1, 3, 5]");
+    test("strict not contains (!??)", () => {
+      const expr = parse("xp !?? [1, 3, 5]");
       const filter = compile(expr, ctx);
 
       expect(filter(createMockCard({ xp: 1 }))).toBe(false);
@@ -145,8 +145,8 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ traits: "Item." }))).toBe(false);
     });
 
-    test("loose not contains (?!)", () => {
-      const expr = parse('trait ?! ["tactic", "supply"]');
+    test("loose not contains (!?)", () => {
+      const expr = parse('trait !? ["tactic", "supply"]');
       const filter = compile(expr, ctx);
 
       expect(filter(createMockCard({ traits: "Tactic. Supply." }))).toBe(false);

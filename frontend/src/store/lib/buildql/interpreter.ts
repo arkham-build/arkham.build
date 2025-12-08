@@ -123,7 +123,7 @@ export class Interpreter {
         );
       }
 
-      case "??!": {
+      case "!??": {
         const leftValue = this.getValue(left, card);
         return !this.getList(right, card).some((val) =>
           this.strictEquals(leftValue, val, leftType),
@@ -137,7 +137,7 @@ export class Interpreter {
         );
       }
 
-      case "?!": {
+      case "!?": {
         const leftValue = this.getValue(left, card);
         return !this.getList(right, card).some((val) =>
           this.looseEquals(leftValue, val, leftType),

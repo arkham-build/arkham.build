@@ -53,7 +53,7 @@ xp ?? [1, 3, 5, 8]
 trait ?? ["Tactic.", "Supply."]
 text ?? ["<b>Fight.</b>", "<b>Parley.</b>"]
 ```
-Inversion: `??!`
+Inversion: `!??`
 
 ### Loose contains (?)
 Same a strict contains, but using the loose equality check instead of the strict equality check.
@@ -62,7 +62,7 @@ xp ? [1, 3, 5, 8]
 trait ? ["tactic", "supply"]
 text ? ["fight", "parley"]
 ```
-Inversion: `?!`
+Inversion: `!?`
 
 ### Greater Than (>)
 Only applies to numbers.

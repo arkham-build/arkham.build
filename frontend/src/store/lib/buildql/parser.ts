@@ -225,11 +225,11 @@ export class Parser {
       case "STRICT_CONTAINS":
         return "??";
       case "STRICT_NOT_CONTAINS":
-        return "??!";
+        return "!??";
       case "LOOSE_CONTAINS":
         return "?";
       case "LOOSE_NOT_CONTAINS":
-        return "?!";
+        return "!?";
       case "PLUS":
         return "+";
       case "MINUS":
