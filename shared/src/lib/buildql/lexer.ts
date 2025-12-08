@@ -57,6 +57,7 @@ class Lexer {
     this.advance();
 
     let value = "";
+
     while (!this.isAtEnd() && this.peek() !== quote) {
       if (this.peek() === "\\") {
         this.advance();

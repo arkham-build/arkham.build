@@ -1,4 +1,10 @@
-import { splitMultiValue } from "@/utils/card-utils";
+import { filterTag } from "@/store/lib/filtering";
+import {
+  displayAttribute,
+  isSpecialist,
+  splitMultiValue,
+} from "@/utils/card-utils";
+import { displayPackName } from "@/utils/formatting";
 import type {
   FieldDescriptor,
   FieldLookup,
@@ -19,19 +25,17 @@ const fieldDefinitions: FieldDefinition[] = [
     name: "agility",
     aliases: ["agi", "foot"],
     type: "number",
-    lookup: (card) => card.skill_agility ?? null,
-  },
-  {
-    name: "bonded",
-    type: "boolean",
-    lookup: (card) => (card.bonded_to ? true : null),
+    lookup: (card) => card.skill_agility ?? 0,
   },
   {
     name: "class",
     aliases: ["cls", "faction"],
     legacyAlias: "f",
     type: "string",
-    lookup: (card) => card.faction_code,
+    lookup: (card, { t }) => [
+      t(`common.factions.${card.faction_code}`),
+      card.faction_code,
+    ],
   },
   {
     name: "clues",
@@ -43,7 +47,7 @@ const fieldDefinitions: FieldDefinition[] = [
     aliases: ["com", "fist"],
     legacyAlias: "c",
     type: "number",
-    lookup: (card) => card.skill_combat ?? null,
+    lookup: (card) => card.skill_combat ?? 0,
   },
   {
     name: "cost",
@@ -54,13 +58,21 @@ const fieldDefinitions: FieldDefinition[] = [
   {
     name: "customizable",
     type: "boolean",
-    lookup: (card) => (card.customization_options ? true : null),
+    lookup: (card) => !!card.customization_options,
   },
   {
     name: "cycle",
     legacyAlias: "y",
     type: "string",
-    lookup: (_card) => null, // TODO: implement
+    lookup: (card, { metadata }) => {
+      const pack = metadata.packs[card.pack_code];
+      if (!pack) return null;
+
+      const cycle = metadata.cycles[pack.cycle_code];
+      if (!cycle) return null;
+
+      return [pack.cycle_code, displayPackName(cycle)];
+    },
   },
   {
     name: "damage",
@@ -83,7 +95,14 @@ const fieldDefinitions: FieldDefinition[] = [
     name: "encounter_set",
     aliases: ["encounter", "set"],
     type: "string",
-    lookup: (card) => card.encounter_code ?? null,
+    lookup: (card, { metadata }) => {
+      if (!card.encounter_code) return null;
+
+      const encounterSet = metadata.encounterSets[card.encounter_code];
+      if (!encounterSet) return null;
+
+      return [card.encounter_code, encounterSet.name];
+    },
   },
   {
     name: "evade",
@@ -93,12 +112,12 @@ const fieldDefinitions: FieldDefinition[] = [
   {
     name: "exceptional",
     type: "boolean",
-    lookup: (card) => card.exceptional ?? null,
+    lookup: (card) => card.exceptional ?? false,
   },
   {
     name: "exile",
     type: "boolean",
-    lookup: (card) => card.exile ?? null,
+    lookup: (card) => card.exile ?? false,
   },
   {
     name: "fight",
@@ -109,19 +128,19 @@ const fieldDefinitions: FieldDefinition[] = [
     name: "flavor",
     legacyAlias: "v",
     type: "text",
-    lookup: (card) => card.flavor ?? null,
+    lookup: (card) => displayAttribute(card, "flavor") ?? null,
   },
   {
     name: "heals_damage",
     aliases: ["hd"],
     type: "boolean",
-    lookup: (_card) => null, // TODO: implement
+    lookup: (card) => filterTag("hd", true)(card),
   },
   {
     name: "heals_horror",
     aliases: ["hh"],
     type: "boolean",
-    lookup: (_card) => null, // TODO: implement
+    lookup: (card) => filterTag("hh", true)(card),
   },
   {
     name: "health",
@@ -153,7 +172,7 @@ const fieldDefinitions: FieldDefinition[] = [
     aliases: ["int", "book"],
     legacyAlias: "i",
     type: "number",
-    lookup: (card) => card.skill_intellect ?? null,
+    lookup: (card) => card.skill_intellect ?? 0,
   },
   {
     name: "level",
@@ -166,28 +185,34 @@ const fieldDefinitions: FieldDefinition[] = [
     name: "multiclass",
     aliases: ["multi"],
     type: "boolean",
-    lookup: (card) => (card.faction2_code || card.faction3_code ? true : null),
+    lookup: (card) => !!(card.faction2_code || card.faction3_code),
   },
   {
     name: "myriad",
     type: "boolean",
-    lookup: (card) => card.myriad ?? null,
+    lookup: (card) => card.myriad ?? false,
   },
   {
     name: "name",
     type: "string",
-    lookup: (card) => card.name,
+    lookup: (card) => displayAttribute(card, "name"),
   },
   {
     name: "pack",
     legacyAlias: "e",
     type: "string",
-    lookup: (card) => card.pack_code,
+    lookup: (card, { metadata }) => {
+      const pack = metadata.packs[card.pack_code];
+
+      if (!pack) return null;
+
+      return [card.pack_code, displayPackName(pack)];
+    },
   },
   {
     name: "permanent",
     type: "boolean",
-    lookup: (card) => card.permanent ?? null,
+    lookup: (card) => card.permanent ?? false,
   },
   {
     name: "quantity",
@@ -211,44 +236,50 @@ const fieldDefinitions: FieldDefinition[] = [
     name: "slot",
     legacyAlias: "z",
     type: "string",
-    lookup: (card) => {
+    lookup: (card, { t }) => {
       const value = card.slot ?? null;
       if (value === null) return null;
-      return splitMultiValue(value);
+
+      return splitMultiValue(value).map((s) => t(`common.slot.${s}`));
     },
-    multiValue: true,
   },
   {
     name: "specialist",
     type: "boolean",
-    lookup: (_card) => null, // TODO: implement
+    lookup: (card) => {
+      return isSpecialist(card);
+    },
   },
   {
     name: "subname",
     type: "string",
-    lookup: (card) => card.subname ?? null,
+    lookup: (card) => displayAttribute(card, "subname") ?? null,
   },
   {
     name: "subtype",
     aliases: ["sub"],
     legacyAlias: "b",
     type: "string",
-    lookup: (card) => card.subtype_code ?? null,
+    lookup: (card, { t }) => {
+      if (!card.subtype_code) return null;
+      return [card.subtype_code, t(`common.subtype.${card.subtype_code}`)];
+    },
   },
   {
     name: "text",
     legacyAlias: "x",
     type: "text",
-    lookup: (card) => card.text ?? null,
+    lookup: (card) => displayAttribute(card, "text") ?? null,
   },
   {
     name: "trait",
     legacyAlias: "k",
     type: "string",
-    lookup: (card) => {
+    lookup: (card, { t }) => {
       const value = card.traits ?? null;
       if (value === null) return null;
-      return splitMultiValue(value);
+
+      return splitMultiValue(value).map((trait) => t(`common.traits.${trait}`));
     },
     multiValue: true,
   },
@@ -256,13 +287,15 @@ const fieldDefinitions: FieldDefinition[] = [
     name: "type",
     legacyAlias: "t",
     type: "string",
-    lookup: (card) => card.type_code,
+    lookup: (card, { t }) => {
+      return [card.type_code, t(`common.type.${card.type_code}`)];
+    },
   },
   {
     name: "unique",
     legacyAlias: "u",
     type: "boolean",
-    lookup: (card) => card.is_unique ?? null,
+    lookup: (card) => card.is_unique ?? false,
   },
   {
     name: "vengeance",
@@ -279,14 +312,14 @@ const fieldDefinitions: FieldDefinition[] = [
     name: "wild",
     legacyAlias: "d",
     type: "number",
-    lookup: (card) => card.skill_wild ?? null,
+    lookup: (card) => card.skill_wild ?? 0,
   },
   {
     name: "willpower",
     aliases: ["will", "brain"],
     legacyAlias: "w",
     type: "number",
-    lookup: (card) => card.skill_willpower ?? null,
+    lookup: (card) => card.skill_willpower ?? 0,
   },
 ];
 

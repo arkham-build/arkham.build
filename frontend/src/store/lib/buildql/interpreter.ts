@@ -300,7 +300,7 @@ export class Interpreter {
       throw new InterpreterError(`Unknown field: ${name}`);
     }
 
-    return descriptor.lookup(card);
+    return descriptor.lookup(card, this.context.fieldLookupContext);
   }
 
   private getFieldType(expr: Expr): FieldType | "unknown" {
@@ -424,7 +424,7 @@ function createFuzzyMatcher(
   };
 }
 
-function createInterpreterContext(
+export function createInterpreterContext(
   context: Omit<InterpreterContext, "fuzzyMatcher">,
   locale: string,
 ): InterpreterContext {

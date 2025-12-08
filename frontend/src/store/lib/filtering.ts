@@ -513,7 +513,7 @@ function filterSucceedBy(
   return (card: Card) => !!succeedByTable[card.code];
 }
 
-function filterTag(tag: string, checkUnselectedCustomizations: boolean) {
+export function filterTag(tag: string, checkUnselectedCustomizations: boolean) {
   return (card: Card) => {
     if (!card.official) {
       return filterTagFallback(tag, checkUnselectedCustomizations)(card);
