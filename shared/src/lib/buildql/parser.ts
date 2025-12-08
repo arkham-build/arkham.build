@@ -71,6 +71,7 @@ export class Parser {
         "STRICT_EQ",
         "LOOSE_EQ",
         "NOT_EQ",
+        "STRICT_NOT_EQ",
         "GT",
         "LT",
         "GTE",
@@ -211,6 +212,8 @@ export class Parser {
         return "=";
       case "NOT_EQ":
         return "!=";
+      case "STRICT_NOT_EQ":
+        return "!==";
       case "GT":
         return ">";
       case "LT":

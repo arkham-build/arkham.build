@@ -85,6 +85,16 @@ describe("Parser", () => {
       });
     });
 
+    it("parses strict not equals (!==)", () => {
+      const ast = parse("xp !== 3");
+      expect(ast).toMatchObject({
+        type: "BINARY",
+        operator: "!==",
+        left: { type: "IDENTIFIER", name: "xp" },
+        right: { type: "LITERAL", value: 3 },
+      });
+    });
+
     it("parses greater than (>)", () => {
       const ast = parse("xp > 3");
       expect(ast).toMatchObject({
