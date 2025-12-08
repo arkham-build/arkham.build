@@ -33,6 +33,28 @@ export {
   RecommendationsResponseSchema,
 } from "./dtos/recommendations-response.schema.ts";
 
+export { LexerError, tokenize } from "./lib/buildql/lexer.ts";
+
+export type {
+  Position,
+  Span,
+  Token,
+  TokenType,
+} from "./lib/buildql/lexer.types.ts";
+
+export { Parser, ParserError, parse } from "./lib/buildql/parser.ts";
+
+export type {
+  BinaryNode,
+  BinaryOperator,
+  Expr,
+  GroupNode,
+  IdentifierNode,
+  ListNode,
+  LiteralNode,
+  NodeType,
+} from "./lib/buildql/parser.types.ts";
+
 export {
   decodeSearch,
   encodeSearch,

@@ -44,7 +44,6 @@ Checks the supplied list of options against attribute with the strict equality o
 xp ?? [1, 3, 5, 8]
 trait ?? ["Tactic.", "Supply."]
 text ?? ["<b>Fight.</b>", "<b>Parley.</b>"]
-Inversion: ??!
 ```
 Inversion: `??!`
 

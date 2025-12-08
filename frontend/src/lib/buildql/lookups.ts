@@ -1,0 +1,31 @@
+import type { Card } from "@/store/schemas/card.schema";
+import type { FieldLookup } from "./interpreter.types";
+
+export const lookups: Record<string, FieldLookup> = {
+  code: (card: Card) => card.code,
+  name: (card: Card) => card.name,
+  xp: (card: Card) => card.xp ?? null,
+  cost: (card: Card) => card.cost ?? null,
+  text: (card: Card) => card.text ?? null,
+  traits: (card: Card) => card.traits ?? null,
+  trait: (card: Card) => card.traits ?? null,
+  slot: (card: Card) => card.slot ?? null,
+  type: (card: Card) => card.type_code,
+  faction: (card: Card) => card.faction_code,
+  health: (card: Card) => card.health ?? null,
+  sanity: (card: Card) => card.sanity ?? null,
+  willpower: (card: Card) => card.skill_willpower ?? null,
+  intellect: (card: Card) => card.skill_intellect ?? null,
+  combat: (card: Card) => card.skill_combat ?? null,
+  agility: (card: Card) => card.skill_agility ?? null,
+  wild: (card: Card) => card.skill_wild ?? null,
+  unique: (card: Card) => card.is_unique ?? null,
+  bonded: (card: Card) => (card.bonded_to ? true : null),
+  exceptional: (card: Card) => card.exceptional ?? null,
+  permanent: (card: Card) => card.permanent ?? null,
+  exile: (card: Card) => card.exile ?? null,
+  myriad: (card: Card) => card.myriad ?? null,
+  victory: (card: Card) => card.victory ?? null,
+  vengeance: (card: Card) => card.vengeance ?? null,
+  deck_limit: (card: Card) => card.deck_limit ?? null,
+};
