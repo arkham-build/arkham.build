@@ -56,7 +56,7 @@ text ? ["fight", "parley"]
 Inversion: `?!`
 
 ### Exact contains (??)
-Same a contains, but using the equality check instead of the strict equality check.
+Same a contains, but using the exact equality check.
 
 ```
 text ?? ["<b>Fight.</b>", "<b>Parley.</b>"]
