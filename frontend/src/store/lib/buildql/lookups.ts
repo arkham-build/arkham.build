@@ -266,6 +266,16 @@ const fieldDefinitions: FieldDefinition[] = [
     },
   },
   {
+    name: "taboo_set",
+    type: "string",
+    lookup: (card, { metadata }) => {
+      if (card.taboo_set_id == null) return null;
+      const taboo = metadata.tabooSets[card.taboo_set_id];
+      if (!taboo) return null;
+      return taboo.name;
+    },
+  },
+  {
     name: "text",
     legacyAlias: "x",
     type: "text",

@@ -105,14 +105,12 @@ export class Interpreter {
         return this.looseEquals(
           this.getValue(left, card),
           this.getValue(right, card),
-          fieldType,
         );
       }
       case "!=": {
         return !this.looseEquals(
           this.getValue(left, card),
           this.getValue(right, card),
-          fieldType,
         );
       }
 
@@ -133,14 +131,14 @@ export class Interpreter {
       case "?": {
         const leftValue = this.getValue(left, card);
         return this.getList(right, card).some((val) =>
-          this.looseEquals(leftValue, val, leftType),
+          this.looseEquals(leftValue, val),
         );
       }
 
       case "!?": {
         const leftValue = this.getValue(left, card);
         return !this.getList(right, card).some((val) =>
-          this.looseEquals(leftValue, val, leftType),
+          this.looseEquals(leftValue, val),
         );
       }
 
@@ -348,11 +346,7 @@ export class Interpreter {
     return false;
   }
 
-  private looseEquals(
-    left: FieldValue,
-    right: FieldValue,
-    fieldType: FieldType | "unknown",
-  ): boolean {
+  private looseEquals(left: FieldValue, right: FieldValue): boolean {
     if (typeof left === "boolean" || typeof right === "boolean") {
       // biome-ignore lint/suspicious/noDoubleEquals: intentional
       return !!left == !!right;
@@ -365,20 +359,15 @@ export class Interpreter {
     if (typeof left === "string" && typeof right === "string") {
       const normalizedLeft = this.normalizeString(left);
       const normalizedRight = this.normalizeString(right);
-
-      if (fieldType === "text") {
-        return this.context.fuzzyMatcher(normalizedLeft, normalizedRight);
-      }
-
-      return normalizedLeft.includes(normalizedRight);
+      return this.context.fuzzyMatcher(normalizedLeft, normalizedRight);
     }
 
     if (Array.isArray(left) && typeof right === "string") {
-      return left.some((val) => this.looseEquals(val, right, fieldType));
+      return left.some((val) => this.looseEquals(val, right));
     }
 
     if (typeof left === "string" && Array.isArray(right)) {
-      return right.some((val) => this.looseEquals(left, val, fieldType));
+      return right.some((val) => this.looseEquals(left, val));
     }
 
     return false;
