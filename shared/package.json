@@ -12,7 +12,7 @@
     "node": "24.x"
   },
   "scripts": {
-    "test": "vitest"
+    "test": "vitest --pass-with-no-tests"
   },
   "dependencies": {
     "zod": "4.1.13"
