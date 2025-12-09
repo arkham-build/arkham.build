@@ -1,6 +1,7 @@
 export type TokenType =
   | "TRUE"
   | "FALSE"
+  | "NULL"
   | "NUMBER"
   | "STRING"
   | "IDENTIFIER"

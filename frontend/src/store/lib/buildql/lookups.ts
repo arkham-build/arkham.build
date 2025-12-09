@@ -237,10 +237,13 @@ const fieldDefinitions: FieldDefinition[] = [
     legacyAlias: "z",
     type: "string",
     lookup: (card, { t }) => {
-      const value = card.slot ?? null;
+      const value = card.real_slot ?? null;
+
       if (value === null) return null;
 
-      return splitMultiValue(value).map((s) => t(`common.slot.${s}`));
+      return splitMultiValue(value).map((s) =>
+        t(`common.slot.${s.toLowerCase()}`),
+      );
     },
   },
   {
@@ -286,7 +289,7 @@ const fieldDefinitions: FieldDefinition[] = [
     legacyAlias: "k",
     type: "string",
     lookup: (card, { t }) => {
-      const value = card.traits ?? null;
+      const value = displayAttribute(card, "traits") ?? null;
       if (value === null) return null;
 
       return splitMultiValue(value).map((trait) => t(`common.traits.${trait}`));

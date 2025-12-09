@@ -123,6 +123,10 @@ export class Parser {
       return this.createLiteralNode(false, this.previous().span);
     }
 
+    if (this.match("NULL")) {
+      return this.createLiteralNode(null, this.previous().span);
+    }
+
     if (this.match("NUMBER")) {
       return this.createLiteralNode(
         this.previous().value as number,
@@ -267,7 +271,7 @@ export class Parser {
   }
 
   private createLiteralNode(
-    value: string | number | boolean,
+    value: string | number | boolean | null,
     span: Span,
   ): LiteralNode {
     return {

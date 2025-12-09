@@ -48,6 +48,28 @@ describe("Lexer", () => {
       });
     });
 
+    it("tokenizes null", () => {
+      const tokens = tokenize("null");
+      expect(prepareSnapshot(tokens)[0]).toMatchInlineSnapshot(`
+        {
+          "lexeme": "null",
+          "type": "NULL",
+          "value": null,
+        }
+      `);
+    });
+
+    it("tokenizes null case-insensitively", () => {
+      expect(tokenize("NULL")[0]).toMatchObject({
+        type: "NULL",
+        value: null,
+      });
+      expect(tokenize("Null")[0]).toMatchObject({
+        type: "NULL",
+        value: null,
+      });
+    });
+
     it("tokenizes integer numbers", () => {
       const tokens = tokenize("42");
       expect(prepareSnapshot(tokens)[0]).toMatchInlineSnapshot(`

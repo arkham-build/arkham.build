@@ -153,6 +153,15 @@ class Lexer {
       };
     }
 
+    if (lowerValue === "null") {
+      return {
+        type: "NULL",
+        lexeme: value,
+        value: null,
+        span: { start: startPos, end: endPos },
+      };
+    }
+
     return {
       type: "IDENTIFIER",
       lexeme: value,

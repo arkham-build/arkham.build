@@ -34,6 +34,14 @@ describe("Parser", () => {
         value: "hello",
       });
     });
+
+    it("parses null", () => {
+      const ast = parse("null");
+      expect(ast).toMatchObject({
+        type: "LITERAL",
+        value: null,
+      });
+    });
   });
 
   describe("identifiers", () => {
@@ -92,6 +100,16 @@ describe("Parser", () => {
         operator: "!==",
         left: { type: "IDENTIFIER", name: "xp" },
         right: { type: "LITERAL", value: 3 },
+      });
+    });
+
+    it("parses comparison with null", () => {
+      const ast = parse("name = null");
+      expect(ast).toMatchObject({
+        type: "BINARY",
+        operator: "=",
+        left: { type: "IDENTIFIER", name: "name" },
+        right: { type: "LITERAL", value: null },
       });
     });
 

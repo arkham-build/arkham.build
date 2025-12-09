@@ -19,23 +19,13 @@ Example: If the filters are set to only show player cards, queries will only ret
 
 ## Operators
 
-### Strict equals (==)
-Applies the following:
-* boolean: true filters cards where attribute is true. false filters cards where attribute is false or null.
-* number: Filters cards where attribute matches exactly.
-* string: Filters cards where attribute matches exactly.
-* text: Filters cards where attribute contains an exact substring match.
-```
-bonded == true
-xp == 3
-name == "breaking and entering"
-text == "<b>Fight.</b> You get +1 [combat]"
-```
-
-### Loose equals (=)
-Loose equality operator. Works the same as == with the following differences:
-* string: Filters cards where attribute fuzzy matches the search string. This matches the current search implementation.
+### Equals (=)
+Equality operator. Applies the following:
+* `boolean`: true filters cards where attribute is true. false filters cards where attribute is false or null.
+* `number`: Filters cards where attribute matches exactly.
+* `string`: Filters cards where attribute fuzzy matches the search string. This matches the current search implementation.
 * text: Filters cards where attribute fuzzy matches the search string. This matches the current search implementation.
+
 ```
 bonded = true
 xp = 3
@@ -44,23 +34,34 @@ text = "fight you get +1 combat"
 ```
 Inversion: `!=`
 
-### Strict contains (??)
-Checks the supplied list of options against attribute with the strict equality operator. If any of the values match, the expression evaluates to true. This is a shorthand for chaining several `OR` operations.
+### Exact equals (==)
+Works the same as `=` with the following differences:
+* `string`: Filters cards where attribute matches exactly.
+* `text`: Filters cards where attribute contains an exact substring match.
 ```
-xp ?? [1, 3, 5, 8]
-trait ?? ["Tactic.", "Supply."]
-text ?? ["<b>Fight.</b>", "<b>Parley.</b>"]
+bonded == true
+xp == 3
+name == "breaking and entering"
+text == "<b>Fight.</b> You get +1 [combat]"
 ```
-Inversion: `??!`
+Inversion: `!==`
 
-### Loose contains (?)
-Same a strict contains, but using the loose equality check instead of the strict equality check.
+### Contains (?)
+Checks the supplied list of options against attribute with the equality operator. If any of the values match, the expression evaluates to true. This is a shorthand for chaining several `OR` operations.
 ```
 xp ? [1, 3, 5, 8]
 trait ? ["tactic", "supply"]
 text ? ["fight", "parley"]
 ```
 Inversion: `?!`
+
+### Exact contains (??)
+Same a contains, but using the equality check instead of the strict equality check.
+
+```
+text ?? ["<b>Fight.</b>", "<b>Parley.</b>"]
+```
+Inversion: `??!`
 
 ### Greater Than (>)
 Only applies to numbers.
@@ -106,6 +107,12 @@ xp > 3 | trait = "practiced"
 Braces can be used to group expressions. Expressions in groups will be evaluated before expressions referencing them.
 ```
 (xp = 0 | xp = 2) & (trait = "practiced" | trait = "innate")
+```
+
+## Null (null)
+Fields can be compared to `null` to check for nullish values.
+```
+xp = null
 ```
 
 ### References
@@ -308,6 +315,10 @@ The query language is left-associative, meaning that expressions are evaluated f
     name: "subtype",
     aliases: ["sub"],
     legacyAlias: "b",
+    type: "string",
+  },
+  {
+    name: "taboo_set",
     type: "string",
   },
   {

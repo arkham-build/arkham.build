@@ -25,6 +25,9 @@ import { and, not, or } from "@/utils/fp";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import { time, timeEnd } from "@/utils/time";
+import { compile } from "../lib/buildql/interpreter";
+import { lookups } from "../lib/buildql/lookups";
+import { parse } from "../lib/buildql/parser";
 import { applyCardChanges } from "../lib/card-edits";
 import { getAdditionalDeckOptions } from "../lib/deck-validation";
 import {
@@ -724,13 +727,37 @@ export const selectListCards = createSelector(
     }
 
     // apply search after initial filtering to cut down on search operations.
-    if (activeList.search.value) {
-      filteredCards = applySearch(
-        activeList.search,
-        filteredCards,
-        metadata,
-        settings.locale,
-      );
+    const search = activeList.search.value;
+    if (search) {
+      let compiles = false;
+
+      try {
+        const expr = parse(search);
+
+        time("apply_buildql");
+
+        const filterFn = compile(expr, {
+          lookups,
+          fieldLookupContext: {
+            metadata,
+            t: i18n.t,
+          },
+        });
+
+        filteredCards = filteredCards.filter(filterFn);
+        timeEnd("apply_buildql");
+
+        compiles = true;
+      } catch {}
+
+      if (!compiles) {
+        filteredCards = applySearch(
+          activeList.search,
+          filteredCards,
+          metadata,
+          settings.locale,
+        );
+      }
     }
 
     // this is the count of cards that a search would have matched before user filters are taken into account.

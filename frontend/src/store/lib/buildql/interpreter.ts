@@ -145,48 +145,56 @@ export class Interpreter {
       case ">": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
+        if (leftNum === null || rightNum === null) return false;
         return leftNum > rightNum;
       }
 
       case "<": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
+        if (leftNum === null || rightNum === null) return false;
         return leftNum < rightNum;
       }
 
       case ">=": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
+        if (leftNum === null || rightNum === null) return false;
         return leftNum >= rightNum;
       }
 
       case "<=": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
+        if (leftNum === null || rightNum === null) return false;
         return leftNum <= rightNum;
       }
 
       case "+": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
+        if (leftNum === null || rightNum === null) return false;
         return (leftNum + rightNum) as unknown as boolean;
       }
 
       case "-": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
+        if (leftNum === null || rightNum === null) return false;
         return (leftNum - rightNum) as unknown as boolean;
       }
 
       case "*": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
+        if (leftNum === null || rightNum === null) return false;
         return (leftNum * rightNum) as unknown as boolean;
       }
 
       case "/": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
+        if (leftNum === null || rightNum === null) return false;
 
         if (rightNum === 0) {
           throw new InterpreterError("Division by zero");
@@ -198,6 +206,7 @@ export class Interpreter {
       case "%": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
+        if (leftNum === null || rightNum === null) return false;
 
         if (rightNum === 0) {
           throw new InterpreterError("Modulo by zero");
@@ -241,6 +250,9 @@ export class Interpreter {
         if (["+", "-", "*", "/", "%"].includes(operator)) {
           const leftNum = this.toNumber(this.getValue(left, card));
           const rightNum = this.toNumber(this.getValue(right, card));
+          if (leftNum === null || rightNum === null) {
+            return null;
+          }
 
           switch (operator) {
             case "+": {
@@ -315,6 +327,11 @@ export class Interpreter {
     right: FieldValue,
     fieldType: FieldType | "unknown",
   ): boolean {
+    if (left == null || right == null) {
+      // biome-ignore lint/suspicious/noDoubleEquals: null check.
+      return left == right;
+    }
+
     if (typeof left === "boolean" || typeof right === "boolean") {
       // biome-ignore lint/suspicious/noDoubleEquals: intentional
       return !!left == !!right;
@@ -347,6 +364,10 @@ export class Interpreter {
   }
 
   private looseEquals(left: FieldValue, right: FieldValue): boolean {
+    if (left === null || right === null) {
+      return left === right;
+    }
+
     if (typeof left === "boolean" || typeof right === "boolean") {
       // biome-ignore lint/suspicious/noDoubleEquals: intentional
       return !!left == !!right;
@@ -377,7 +398,7 @@ export class Interpreter {
     return str.toLocaleLowerCase();
   }
 
-  private toNumber(value: FieldValue): number {
+  private toNumber(value: FieldValue): number | null {
     if (typeof value === "number") {
       return value;
     }
@@ -393,7 +414,7 @@ export class Interpreter {
     }
 
     if (value === null || value === undefined) {
-      return 0;
+      return null;
     }
 
     throw new InterpreterError(`Cannot convert ${typeof value} to number`);

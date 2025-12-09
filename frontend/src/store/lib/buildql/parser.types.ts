@@ -46,7 +46,7 @@ export interface ListNode extends BaseNode {
 
 export interface LiteralNode extends BaseNode {
   type: "LITERAL";
-  value: string | number | boolean;
+  value: string | number | boolean | null;
 }
 
 export interface IdentifierNode extends BaseNode {
