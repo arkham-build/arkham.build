@@ -203,7 +203,6 @@ const fieldDefinitions: FieldDefinition[] = [
     type: "string",
     lookup: (card, { metadata }) => {
       const pack = metadata.packs[card.pack_code];
-
       if (!pack) return null;
 
       return [card.pack_code, displayPackName(pack)];
@@ -249,9 +248,7 @@ const fieldDefinitions: FieldDefinition[] = [
   {
     name: "specialist",
     type: "boolean",
-    lookup: (card) => {
-      return isSpecialist(card);
-    },
+    lookup: (card) => isSpecialist(card),
   },
   {
     name: "subname",

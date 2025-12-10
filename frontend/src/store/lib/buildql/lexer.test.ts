@@ -92,6 +92,28 @@ describe("Lexer", () => {
       `);
     });
 
+    it("tokenizes negative numbers", () => {
+      const tokens = tokenize("-5");
+      expect(prepareSnapshot(tokens)[0]).toMatchInlineSnapshot(`
+        {
+          "lexeme": "-5",
+          "type": "NUMBER",
+          "value": -5,
+        }
+      `);
+    });
+
+    it("tokenizes negative zero", () => {
+      const tokens = tokenize("-0");
+      expect(prepareSnapshot(tokens)[0]).toMatchInlineSnapshot(`
+        {
+          "lexeme": "-0",
+          "type": "NUMBER",
+          "value": -0,
+        }
+      `);
+    });
+
     it("tokenizes string literals", () => {
       const tokens = tokenize('"hello world"');
       expect(prepareSnapshot(tokens)[0]).toMatchInlineSnapshot(`
@@ -852,6 +874,62 @@ describe("Lexer", () => {
             "lexeme": "true",
             "type": "TRUE",
             "value": true,
+          },
+          {
+            "lexeme": "",
+            "type": "EOF",
+            "value": null,
+          },
+        ]
+      `);
+    });
+
+    it("tokenizes expression with negative numbers", () => {
+      const tokens = tokenize("xp > -3");
+      expect(prepareSnapshot(tokens)).toMatchInlineSnapshot(`
+        [
+          {
+            "lexeme": "xp",
+            "type": "IDENTIFIER",
+            "value": "xp",
+          },
+          {
+            "lexeme": ">",
+            "type": "GT",
+            "value": null,
+          },
+          {
+            "lexeme": "-3",
+            "type": "NUMBER",
+            "value": -3,
+          },
+          {
+            "lexeme": "",
+            "type": "EOF",
+            "value": null,
+          },
+        ]
+      `);
+    });
+
+    it("distinguishes minus operator from negative number", () => {
+      const tokens = tokenize("5 - 3");
+      expect(prepareSnapshot(tokens)).toMatchInlineSnapshot(`
+        [
+          {
+            "lexeme": "5",
+            "type": "NUMBER",
+            "value": 5,
+          },
+          {
+            "lexeme": "-",
+            "type": "MINUS",
+            "value": null,
+          },
+          {
+            "lexeme": "3",
+            "type": "NUMBER",
+            "value": 3,
           },
           {
             "lexeme": "",

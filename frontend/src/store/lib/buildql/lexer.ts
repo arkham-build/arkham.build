@@ -45,6 +45,10 @@ class Lexer {
       return this.readNumber();
     }
 
+    if (char === "-" && !this.isAtEnd() && this.isDigit(this.peekNext())) {
+      return this.readNumber();
+    }
+
     if (this.isAlpha(char)) {
       return this.readIdentifier();
     }
@@ -110,6 +114,10 @@ class Lexer {
   private readNumber(): Token {
     const startPos = this.currentPosition();
     let value = "";
+
+    if (this.peek() === "-") {
+      value += this.advance();
+    }
 
     while (!this.isAtEnd() && this.isDigit(this.peek())) {
       value += this.advance();
@@ -292,6 +300,11 @@ class Lexer {
   private peek(): string {
     if (this.isAtEnd()) return "\0";
     return this.input.charAt(this.position);
+  }
+
+  private peekNext(): string {
+    if (this.position + 1 >= this.input.length) return "\0";
+    return this.input.charAt(this.position + 1);
   }
 
   private advance(): string {
