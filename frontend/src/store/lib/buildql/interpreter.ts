@@ -322,11 +322,26 @@ export class Interpreter {
     return "unknown";
   }
 
-  private strictEquals(
+  private equals(
     left: FieldValue,
     right: FieldValue,
+    mode: "strict" | "loose",
     fieldType: FieldType | "unknown",
   ): boolean {
+    if (typeof left !== "string" && typeof right === "string") {
+      try {
+        const rightNum = this.toNumber(right);
+        return left === rightNum;
+      } catch {}
+    }
+
+    if (typeof left === "string" && typeof right !== "string") {
+      try {
+        const leftNum = this.toNumber(left);
+        return leftNum === right;
+      } catch {}
+    }
+
     if (left == null || right == null) {
       // biome-ignore lint/suspicious/noDoubleEquals: null check.
       return left == right;
@@ -345,6 +360,10 @@ export class Interpreter {
       const normalizedLeft = this.normalizeString(left);
       const normalizedRight = this.normalizeString(right);
 
+      if (mode === "loose") {
+        return this.context.fuzzyMatcher(normalizedLeft, normalizedRight);
+      }
+
       if (fieldType === "text") {
         return normalizedLeft.includes(normalizedRight);
       }
@@ -353,45 +372,26 @@ export class Interpreter {
     }
 
     if (Array.isArray(left) && typeof right === "string") {
-      return left.some((val) => this.strictEquals(val, right, fieldType));
+      return left.some((val) => this.equals(val, right, mode, fieldType));
     }
 
     if (typeof left === "string" && Array.isArray(right)) {
-      return right.some((val) => this.strictEquals(left, val, fieldType));
+      return right.some((val) => this.equals(left, val, mode, fieldType));
     }
 
     return false;
   }
 
+  private strictEquals(
+    left: FieldValue,
+    right: FieldValue,
+    fieldType: FieldType | "unknown",
+  ): boolean {
+    return this.equals(left, right, "strict", fieldType);
+  }
+
   private looseEquals(left: FieldValue, right: FieldValue): boolean {
-    if (left === null || right === null) {
-      return left === right;
-    }
-
-    if (typeof left === "boolean" || typeof right === "boolean") {
-      // biome-ignore lint/suspicious/noDoubleEquals: intentional
-      return !!left == !!right;
-    }
-
-    if (typeof left === "number" && typeof right === "number") {
-      return left === right;
-    }
-
-    if (typeof left === "string" && typeof right === "string") {
-      const normalizedLeft = this.normalizeString(left);
-      const normalizedRight = this.normalizeString(right);
-      return this.context.fuzzyMatcher(normalizedLeft, normalizedRight);
-    }
-
-    if (Array.isArray(left) && typeof right === "string") {
-      return left.some((val) => this.looseEquals(val, right));
-    }
-
-    if (typeof left === "string" && Array.isArray(right)) {
-      return right.some((val) => this.looseEquals(left, val));
-    }
-
-    return false;
+    return this.equals(left, right, "loose", "unknown");
   }
 
   private normalizeString(str: string): string {
@@ -404,7 +404,13 @@ export class Interpreter {
     }
 
     if (typeof value === "string") {
-      const num = Number(value);
+      const val = value.trim().toLowerCase();
+      if (val === "-") return null;
+      if (val === "x") return -2;
+      if (val === "*") return -3;
+      if (val === "?") return -4;
+
+      const num = Number(val);
 
       if (Number.isNaN(num)) {
         throw new InterpreterError(`Cannot convert "${value}" to number`);
