@@ -7,6 +7,7 @@
         "card_design": "Custom card design.",
         "code": "Significant contributions to the codebase.",
         "customization_api": "API access to draw customization sheets.",
+        "metadata": "Card metadata support.",
         "qa": "QA testing.",
         "testing": "Patient feedback and testing during development of the initial version, design concepts.",
         "title": "Hall of Fame",

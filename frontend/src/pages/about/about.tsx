@@ -86,6 +86,10 @@ function About() {
             <strong>@Adran06</strong>, <strong>@coldtoes</strong>:{" "}
             {t("about.hall_of_fame.qa")}
           </li>
+          <li>
+            <strong>@dlloyd</strong>:{" "}
+            {t("about.hall_of_fame.metadata")}
+          </li>
         </ul>
         <p>{t("about.hall_of_fame.translation.title")}:</p>
         <ul>
