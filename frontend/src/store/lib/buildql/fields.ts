@@ -1,5 +1,6 @@
 import { filterTag } from "@/store/lib/filtering";
 import {
+  cardBackType,
   displayAttribute,
   isSpecialist,
   splitMultiValue,
@@ -17,7 +18,6 @@ interface FieldDefinition {
   legacyAlias?: string;
   type: FieldType;
   lookup: FieldLookup;
-  multiValue?: boolean;
 }
 
 const fieldDefinitions: FieldDefinition[] = [
@@ -28,19 +28,37 @@ const fieldDefinitions: FieldDefinition[] = [
     lookup: (card) => card.skill_agility ?? 0,
   },
   {
+    name: "back_type",
+    type: "string",
+    lookup: (card) => cardBackType(card),
+  },
+  {
     name: "class",
     aliases: ["cls", "faction"],
     legacyAlias: "f",
     type: "string",
-    lookup: (card, { t }) => [
-      t(`common.factions.${card.faction_code}`),
-      card.faction_code,
-    ],
+    lookup: (card, { i18n }) => {
+      const factions: string[] = [];
+
+      [card.faction_code, card.faction2_code, card.faction3_code].forEach(
+        (faction_code) => {
+          if (faction_code) {
+            factions.push(faction_code);
+
+            if (i18n.language !== "en") {
+              factions.push(i18n.t(`common.factions.${faction_code}`));
+            }
+          }
+        },
+      );
+
+      return factions;
+    },
   },
   {
     name: "clues",
     type: "number",
-    lookup: (card) => card.clues ?? null,
+    lookup: (card) => card.clues ?? card.clues_fixed ?? null,
   },
   {
     name: "combat",
@@ -235,14 +253,18 @@ const fieldDefinitions: FieldDefinition[] = [
     name: "slot",
     legacyAlias: "z",
     type: "string",
-    lookup: (card, { t }) => {
+    lookup: (card, { i18n }) => {
       const value = card.real_slot ?? null;
-
       if (value === null) return null;
 
-      return splitMultiValue(value).map((s) =>
-        t(`common.slot.${s.toLowerCase()}`),
-      );
+      const slots = splitMultiValue(value);
+
+      if (i18n.language === "en") return slots;
+
+      return [
+        ...slots,
+        ...slots.map((s) => i18n.t(`common.slot.${s.toLowerCase()}`)),
+      ];
     },
   },
   {
@@ -260,9 +282,12 @@ const fieldDefinitions: FieldDefinition[] = [
     aliases: ["sub"],
     legacyAlias: "b",
     type: "string",
-    lookup: (card, { t }) => {
+    lookup: (card, { i18n }) => {
       if (!card.subtype_code) return null;
-      return [card.subtype_code, t(`common.subtype.${card.subtype_code}`)];
+
+      if (i18n.language === "en") return card.subtype_code;
+
+      return [card.subtype_code, i18n.t(`common.subtype.${card.subtype_code}`)];
     },
   },
   {
@@ -285,20 +310,26 @@ const fieldDefinitions: FieldDefinition[] = [
     name: "trait",
     legacyAlias: "k",
     type: "string",
-    lookup: (card, { t }) => {
-      const value = displayAttribute(card, "traits") ?? null;
-      if (value === null) return null;
+    lookup: (card, { i18n }) => {
+      const value = displayAttribute(card, "traits");
+      if (value == null) return null;
 
-      return splitMultiValue(value).map((trait) => t(`common.traits.${trait}`));
+      const traits = splitMultiValue(value);
+      if (i18n.language === "en") return traits;
+
+      return [
+        ...traits,
+        ...traits.map((trait) => i18n.t(`common.traits.${trait}`)),
+      ];
     },
-    multiValue: true,
   },
   {
     name: "type",
     legacyAlias: "t",
     type: "string",
-    lookup: (card, { t }) => {
-      return [card.type_code, t(`common.type.${card.type_code}`)];
+    lookup: (card, { i18n }) => {
+      if (i18n.language === "en") return card.type_code;
+      return [card.type_code, i18n.t(`common.type.${card.type_code}`)];
     },
   },
   {

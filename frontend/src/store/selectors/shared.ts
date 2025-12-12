@@ -363,8 +363,8 @@ export const selectBuildQlInterpreter = createSelector(
     return createBuildQlInterpreter({
       fields,
       fieldLookupContext: {
+        i18n,
         metadata,
-        t: i18n.t,
       },
     });
   },

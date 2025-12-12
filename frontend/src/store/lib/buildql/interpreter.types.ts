@@ -1,4 +1,4 @@
-import type { TFunction } from "i18next";
+import type { i18n } from "i18next";
 import type { Card } from "@/store/schemas/card.schema";
 import type { Metadata } from "@/store/slices/metadata.types";
 
@@ -13,7 +13,7 @@ export type FieldValue =
 export type FieldType = "string" | "text" | "number" | "boolean";
 
 export type FieldLookupContext = {
-  t: TFunction;
+  i18n: i18n;
   metadata: Metadata;
 };
 
