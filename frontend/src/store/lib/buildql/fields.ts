@@ -333,7 +333,7 @@ const fieldDefinitions: FieldDefinition[] = [
   },
 ];
 
-function buildLookupMap(): Record<string, FieldDescriptor> {
+function buildAllFields(): Record<string, FieldDescriptor> {
   const map: Record<string, FieldDescriptor> = {};
 
   for (const field of fieldDefinitions) {
@@ -358,4 +358,4 @@ function buildLookupMap(): Record<string, FieldDescriptor> {
   return map;
 }
 
-export const lookups = buildLookupMap();
+export const fields = buildAllFields();

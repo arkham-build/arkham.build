@@ -348,6 +348,14 @@ export class Parser {
 
 export function parse(input: string): Expr {
   const tokens = tokenize(input);
-  const parser = new Parser(tokens);
-  return parser.parse();
+  const parsed = new Parser(tokens).parse();
+
+  if (parsed.type !== "BINARY" && parsed.type !== "GROUP") {
+    throw new ParserError(
+      "Expression must be a binary operation or a group",
+      parsed.span.start,
+    );
+  }
+
+  return parsed;
 }

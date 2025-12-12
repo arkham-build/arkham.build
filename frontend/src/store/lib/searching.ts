@@ -11,7 +11,7 @@ import type { Metadata } from "../slices/metadata.types";
  * This makes search like `+1 [willpower]` work (for the most part).
  * 18 chars to accomodate "[...] at a skill test [...]".
  */
-const MATCHING_MAX_TOKEN_DISTANCE = 18;
+export const MATCHING_MAX_TOKEN_DISTANCE = 18;
 
 function prepareCardFace(card: Card, search: Search) {
   const needle: string[] = [];

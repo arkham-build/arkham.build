@@ -110,11 +110,13 @@ export type FilterObject<K extends FilterKey> = {
 };
 
 export type Search = {
-  value: string;
+  buildQlSearch?: Filter;
   includeBacks: boolean;
   includeFlavor: boolean;
   includeGameText: boolean;
   includeName: boolean;
+  mode: "buildql" | "simple";
+  value: string;
 };
 
 export type GroupingType =

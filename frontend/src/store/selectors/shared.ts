@@ -4,6 +4,8 @@ import { PREVIEW_PACKS } from "@/utils/constants";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import { time, timeEnd } from "@/utils/time";
+import { fields } from "../lib/buildql/fields";
+import { createInterpreter as createBuildQlInterpreter } from "../lib/buildql/interpreter";
 import { ownedCardCount } from "../lib/card-ownership";
 import { addProjectToMetadata, cloneMetadata } from "../lib/fan-made-content";
 import { createLookupTables } from "../lib/lookup-tables";
@@ -352,5 +354,22 @@ export const selectPrintingsForCard = createSelector(
       });
 
     return printings;
+  },
+);
+
+export const selectBuildQlInterpreter = createSelector(
+  selectMetadata,
+  (state: StoreState) => state.settings.locale,
+  (metadata, locale) => {
+    return createBuildQlInterpreter(
+      {
+        fields,
+        fieldLookupContext: {
+          metadata,
+          t: i18n.t,
+        },
+      },
+      locale,
+    );
   },
 );

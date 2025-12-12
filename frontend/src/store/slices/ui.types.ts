@@ -12,12 +12,12 @@ export type CardModalState = {
 
 export type UIState = {
   ui: {
-    initialized: boolean;
-    showUnusableCards: boolean;
-    showLimitedAccess: boolean;
-    fanMadeContentCache: Partial<DeckFanMadeContent>;
-    navigationHistory: string[];
     cardModal: CardModalState;
+    fanMadeContentCache: Partial<DeckFanMadeContent>;
+    initialized: boolean;
+    navigationHistory: string[];
+    showLimitedAccess: boolean;
+    showUnusableCards: boolean;
   };
 };
 

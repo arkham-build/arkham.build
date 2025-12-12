@@ -3,9 +3,9 @@ import { beforeAll, describe, expect, test } from "vitest";
 import type { Card } from "@/store/schemas/card.schema";
 import { selectMetadata } from "@/store/selectors/shared";
 import { getMockStore } from "@/test/get-mock-store";
+import { lookups } from "./fields";
 import { compile, createInterpreterContext } from "./interpreter";
 import type { InterpreterContext } from "./interpreter.types";
-import { lookups } from "./lookups";
 import { parse } from "./parser";
 
 function createMockCard(overrides: Partial<Card> = {}): Card {

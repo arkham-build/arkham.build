@@ -1,5 +1,9 @@
-import { instantiateSearchFromLocale } from "@/store/lib/searching";
+import {
+  instantiateSearchFromLocale,
+  MATCHING_MAX_TOKEN_DISTANCE,
+} from "@/store/lib/searching";
 import type { Card } from "@/store/schemas/card.schema";
+import { normalizeDiacritics } from "@/utils/normalize-diacritics";
 import type {
   FieldType,
   FieldValue,
@@ -105,12 +109,14 @@ export class Interpreter {
         return this.looseEquals(
           this.getValue(left, card),
           this.getValue(right, card),
+          fieldType,
         );
       }
       case "!=": {
         return !this.looseEquals(
           this.getValue(left, card),
           this.getValue(right, card),
+          fieldType,
         );
       }
 
@@ -131,14 +137,14 @@ export class Interpreter {
       case "?": {
         const leftValue = this.getValue(left, card);
         return this.getList(right, card).some((val) =>
-          this.looseEquals(leftValue, val),
+          this.looseEquals(leftValue, val, fieldType),
         );
       }
 
       case "!?": {
         const leftValue = this.getValue(left, card);
         return !this.getList(right, card).some((val) =>
-          this.looseEquals(leftValue, val),
+          this.looseEquals(leftValue, val, fieldType),
         );
       }
 
@@ -304,7 +310,7 @@ export class Interpreter {
   }
 
   private lookupField(name: string, card: Card): FieldValue {
-    const descriptor = this.context.lookups[name];
+    const descriptor = this.context.fields[name];
 
     if (!descriptor) {
       throw new InterpreterError(`Unknown field: ${name}`);
@@ -315,7 +321,7 @@ export class Interpreter {
 
   private getFieldType(expr: Expr): FieldType | "unknown" {
     if (expr.type === "IDENTIFIER") {
-      const descriptor = this.context.lookups[expr.name];
+      const descriptor = this.context.fields[expr.name];
       return descriptor.type;
     }
 
@@ -360,11 +366,11 @@ export class Interpreter {
       const normalizedLeft = this.normalizeString(left);
       const normalizedRight = this.normalizeString(right);
 
-      if (mode === "loose") {
+      if (fieldType === "text" && mode === "loose") {
         return this.context.fuzzyMatcher(normalizedLeft, normalizedRight);
       }
 
-      if (fieldType === "text") {
+      if (fieldType === "text" || mode === "loose") {
         return normalizedLeft.includes(normalizedRight);
       }
 
@@ -390,8 +396,12 @@ export class Interpreter {
     return this.equals(left, right, "strict", fieldType);
   }
 
-  private looseEquals(left: FieldValue, right: FieldValue): boolean {
-    return this.equals(left, right, "loose", "unknown");
+  private looseEquals(
+    left: FieldValue,
+    right: FieldValue,
+    fieldType: FieldType | "unknown",
+  ): boolean {
+    return this.equals(left, right, "loose", fieldType);
   }
 
   private normalizeString(str: string): string {
@@ -431,11 +441,16 @@ function createFuzzyMatcher(
   locale: string,
 ): (haystack: string, needle: string) => boolean {
   const uf = instantiateSearchFromLocale(locale, {
-    interIns: 18,
+    interIns: MATCHING_MAX_TOKEN_DISTANCE,
   });
 
   return (haystack: string, needle: string) => {
-    const results = uf.search([haystack], needle, 0);
+    const results = uf.search(
+      [normalizeDiacritics(haystack)],
+      normalizeDiacritics(needle),
+      0,
+    );
+
     return !!results?.[0]?.length;
   };
 }
@@ -450,11 +465,10 @@ export function createInterpreterContext(
   };
 }
 
-export function compile(
-  expr: Expr,
+export function createInterpreter(
   context: Omit<InterpreterContext, "fuzzyMatcher">,
   locale = "en",
-): (card: Card) => boolean {
-  const interpreter = new Interpreter(context, locale);
-  return interpreter.evaluate(expr);
+): Interpreter {
+  const interpreterContext = createInterpreterContext(context, locale);
+  return new Interpreter(interpreterContext, locale);
 }
