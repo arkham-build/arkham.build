@@ -1,9 +1,5 @@
-import {
-  instantiateSearchFromLocale,
-  MATCHING_MAX_TOKEN_DISTANCE,
-} from "@/store/lib/searching";
 import type { Card } from "@/store/schemas/card.schema";
-import { normalizeDiacritics } from "@/utils/normalize-diacritics";
+import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";
 import type {
   FieldType,
   FieldValue,
@@ -26,12 +22,10 @@ export class InterpreterError extends Error {
 
 export class Interpreter {
   private context: InterpreterContext;
+  private needleCache: Map<string, RegExp> = new Map();
 
-  constructor(
-    context: Omit<InterpreterContext, "fuzzyMatcher">,
-    locale: string,
-  ) {
-    this.context = createInterpreterContext(context, locale);
+  constructor(context: Omit<InterpreterContext, "fuzzyMatcher">) {
+    this.context = createInterpreterContext(context);
   }
 
   evaluate(expr: Expr): (card: Card) => boolean {
@@ -334,20 +328,35 @@ export class Interpreter {
     mode: "strict" | "loose",
     fieldType: FieldType | "unknown",
   ): boolean {
-    if (typeof left !== "string" && typeof right === "string") {
+    // 1. Translated text fields are represented as arrays, unnest.
+    if (Array.isArray(left) && typeof right === "string") {
+      return left.some((val) => this.equals(val, right, mode, fieldType));
+    }
+
+    if (typeof left === "string" && Array.isArray(right)) {
+      return right.some((val) => this.equals(left, val, mode, fieldType));
+    }
+
+    // 2. Number fields can have string-like values, or be null (* / - / ?)
+    if (left != null && typeof left !== "string" && typeof right === "string") {
       try {
         const rightNum = this.toNumber(right);
         return left === rightNum;
       } catch {}
     }
 
-    if (typeof left === "string" && typeof right !== "string") {
+    if (
+      right != null &&
+      typeof left === "string" &&
+      typeof right !== "string"
+    ) {
       try {
         const leftNum = this.toNumber(left);
         return leftNum === right;
       } catch {}
     }
 
+    // 3. Any leftover nulls can be compared directly.
     if (left == null || right == null) {
       // biome-ignore lint/suspicious/noDoubleEquals: null check.
       return left == right;
@@ -366,23 +375,37 @@ export class Interpreter {
       const normalizedLeft = this.normalizeString(left);
       const normalizedRight = this.normalizeString(right);
 
-      if (fieldType === "text" && mode === "loose") {
-        return this.context.fuzzyMatcher(normalizedLeft, normalizedRight);
+      if (!normalizedLeft || !normalizedRight) {
+        return normalizedLeft === normalizedRight;
       }
 
-      if (fieldType === "text" || mode === "loose") {
-        return normalizedLeft.includes(normalizedRight);
+      // Use the shorter string as needle for fuzzy matching.
+      const needleRight = normalizedRight.length < normalizedLeft.length;
+
+      if (mode === "loose") {
+        const needleStr = needleRight ? normalizedRight : normalizedLeft;
+
+        const cachedNeedle = this.needleCache.get(needleStr);
+
+        const needle = cachedNeedle ?? prepareNeedle(needleStr);
+        if (!needle) return false;
+
+        if (!cachedNeedle) {
+          if (this.needleCache.size > 1000) this.needleCache.clear();
+          this.needleCache.set(needleStr, needle);
+        }
+
+        const matchStr = needleRight ? normalizedLeft : normalizedRight;
+        return fuzzyMatch([matchStr], needle);
+      }
+
+      if (fieldType === "text") {
+        return needleRight
+          ? normalizedLeft.includes(normalizedRight)
+          : normalizedRight.includes(normalizedLeft);
       }
 
       return normalizedLeft === normalizedRight;
-    }
-
-    if (Array.isArray(left) && typeof right === "string") {
-      return left.some((val) => this.equals(val, right, mode, fieldType));
-    }
-
-    if (typeof left === "string" && Array.isArray(right)) {
-      return right.some((val) => this.equals(left, val, mode, fieldType));
     }
 
     return false;
@@ -415,6 +438,7 @@ export class Interpreter {
 
     if (typeof value === "string") {
       const val = value.trim().toLowerCase();
+
       if (val === "-") return null;
       if (val === "x") return -2;
       if (val === "*") return -3;
@@ -437,38 +461,12 @@ export class Interpreter {
   }
 }
 
-function createFuzzyMatcher(
-  locale: string,
-): (haystack: string, needle: string) => boolean {
-  const uf = instantiateSearchFromLocale(locale, {
-    interIns: MATCHING_MAX_TOKEN_DISTANCE,
-  });
-
-  return (haystack: string, needle: string) => {
-    const results = uf.search(
-      [normalizeDiacritics(haystack)],
-      normalizeDiacritics(needle),
-      0,
-    );
-
-    return !!results?.[0]?.length;
-  };
-}
-
 export function createInterpreterContext(
-  context: Omit<InterpreterContext, "fuzzyMatcher">,
-  locale: string,
+  context: InterpreterContext,
 ): InterpreterContext {
-  return {
-    ...context,
-    fuzzyMatcher: createFuzzyMatcher(locale),
-  };
+  return context;
 }
 
-export function createInterpreter(
-  context: Omit<InterpreterContext, "fuzzyMatcher">,
-  locale = "en",
-): Interpreter {
-  const interpreterContext = createInterpreterContext(context, locale);
-  return new Interpreter(interpreterContext, locale);
+export function createInterpreter(context: InterpreterContext): Interpreter {
+  return new Interpreter(createInterpreterContext(context));
 }

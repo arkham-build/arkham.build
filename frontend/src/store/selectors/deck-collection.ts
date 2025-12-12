@@ -1,5 +1,4 @@
 import { createSelector } from "reselect";
-import { assert } from "@/utils/assert";
 import { displayAttribute } from "@/utils/card-utils";
 import {
   FACTION_ORDER,
@@ -8,11 +7,10 @@ import {
 } from "@/utils/constants";
 import { formatProviderName } from "@/utils/formatting";
 import { and, or } from "@/utils/fp";
+import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";
 import i18n from "@/utils/i18n";
-import { normalizeDiacritics } from "@/utils/normalize-diacritics";
 import type { LookupTables } from "../lib/lookup-tables.types";
 import { deckTags } from "../lib/resolve-deck";
-import { instantiateSearchFromLocale } from "../lib/searching";
 import type { ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";
 import type { Folder } from "../slices/data.types";
@@ -46,16 +44,6 @@ export const selectDeckFilterValue = createSelector(
 // Search
 export const selectDeckSearchTerm = (state: StoreState) =>
   state.deckCollection.filters.search;
-
-const selectSearchableTextInDecks = createSelector(
-  selectLocalDecks,
-  (decks) => {
-    return decks.map(
-      (deck) =>
-        `${deck.name}|${displayAttribute(deck.cards.investigator.card, "name")}`,
-    );
-  },
-);
 
 // Faction
 export const selectDeckFactionFilter = (state: StoreState) =>
@@ -335,35 +323,26 @@ export const selectTagsInLocalDecks = createSelector(
 const selectDecksFiltered = createSelector(
   selectLocalDecks,
   selectDeckSearchTerm,
-  selectSearchableTextInDecks,
   selectFilteringFunc,
-  (state: StoreState) => state.settings,
-  (decks, searchTerm, searchableText, filterFunc, settings) => {
+  (decks, searchTerm, filterFunc) => {
     let decksToFilter: ResolvedDeck[];
 
     if (searchTerm) {
-      const finder = instantiateSearchFromLocale(settings.locale, {
-        intraMode: 0,
-        interIns: MATCHING_MAX_TOKEN_DISTANCE_DECKS,
-      });
-
-      const normalizedSearchTerm = normalizeDiacritics(searchTerm);
-
-      // Normalize letters with diacritics in searchable text to stripped letters
-      const normalizedSearchableText = searchableText.map(normalizeDiacritics);
-
-      const results = finder.search(
-        normalizedSearchableText,
-        normalizedSearchTerm,
+      const needle = prepareNeedle(
+        searchTerm,
+        MATCHING_MAX_TOKEN_DISTANCE_DECKS,
       );
 
-      decksToFilter = [];
-
-      if (results[0]) {
-        for (const result of results[0]) {
-          assert(decks[result], "Searching outside of bounds");
-          decksToFilter.push(decks[result]);
-        }
+      if (needle) {
+        decksToFilter = decks.filter((deck) => {
+          const text = [
+            deck.name,
+            displayAttribute(deck.cards.investigator.card, "name"),
+          ];
+          return fuzzyMatch(text, needle);
+        });
+      } else {
+        decksToFilter = decks;
       }
     } else {
       decksToFilter = decks;

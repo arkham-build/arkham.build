@@ -3,8 +3,8 @@ import { beforeAll, describe, expect, test } from "vitest";
 import type { Card } from "@/store/schemas/card.schema";
 import { selectMetadata } from "@/store/selectors/shared";
 import { getMockStore } from "@/test/get-mock-store";
-import { lookups } from "./fields";
-import { compile, createInterpreterContext } from "./interpreter";
+import { fields } from "./fields";
+import { createInterpreter, createInterpreterContext } from "./interpreter";
 import type { InterpreterContext } from "./interpreter.types";
 import { parse } from "./parser";
 
@@ -23,21 +23,23 @@ function createMockCard(overrides: Partial<Card> = {}): Card {
   } as Card;
 }
 
+function compile(expr: ReturnType<typeof parse>, ctx: InterpreterContext) {
+  const interpreter = createInterpreter(ctx);
+  return interpreter.evaluate(expr);
+}
+
 describe("Interpreter", () => {
   let ctx: InterpreterContext;
 
   beforeAll(async () => {
     const mockStore = await getMockStore();
-    ctx = createInterpreterContext(
-      {
-        lookups,
-        fieldLookupContext: {
-          t: ((str: string) => str) as unknown as TFunction,
-          metadata: selectMetadata(mockStore.getState()),
-        },
+    ctx = createInterpreterContext({
+      fields,
+      fieldLookupContext: {
+        t: ((str: string) => str) as unknown as TFunction,
+        metadata: selectMetadata(mockStore.getState()),
       },
-      "en",
-    );
+    });
   });
 
   describe("Binary operators", () => {

@@ -34,7 +34,6 @@
     "@floating-ui/react": "0.27.15",
     "@fontsource-variable/noto-sans": "5.2.7",
     "@fontsource-variable/noto-serif": "5.2.7",
-    "@leeoniya/ufuzzy": "1.0.18",
     "@lucide/lab": "0.1.2",
     "@radix-ui/react-checkbox": "1.3.2",
     "@radix-ui/react-collapsible": "1.1.11",

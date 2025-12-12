@@ -734,12 +734,7 @@ export const selectListCards = createSelector(
           } catch {}
         }
       } else {
-        filteredCards = applySearch(
-          activeList.search,
-          filteredCards,
-          metadata,
-          settings.locale,
-        );
+        filteredCards = applySearch(activeList.search, filteredCards, metadata);
       }
     }
 

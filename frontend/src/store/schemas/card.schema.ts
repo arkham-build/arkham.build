@@ -102,6 +102,7 @@ const AtLeastSchema = z.object({
   factions: z.number().nullish(),
   min: z.number(),
   types: z.number().nullish(),
+  traits: z.number().nullish(),
 });
 
 const OptionSelectSchema = z.object({

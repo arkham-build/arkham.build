@@ -346,7 +346,13 @@ export class Parser {
   }
 }
 
-export function parse(input: string): Expr {
+export function parseUnchecked(input: string): Expr {
+  const tokens = tokenize(input);
+  const parsed = new Parser(tokens).parse();
+  return parsed;
+}
+
+export function parse(input: string) {
   const tokens = tokenize(input);
   const parsed = new Parser(tokens).parse();
 

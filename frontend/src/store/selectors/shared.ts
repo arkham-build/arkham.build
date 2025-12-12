@@ -359,17 +359,13 @@ export const selectPrintingsForCard = createSelector(
 
 export const selectBuildQlInterpreter = createSelector(
   selectMetadata,
-  (state: StoreState) => state.settings.locale,
-  (metadata, locale) => {
-    return createBuildQlInterpreter(
-      {
-        fields,
-        fieldLookupContext: {
-          metadata,
-          t: i18n.t,
-        },
+  (metadata) => {
+    return createBuildQlInterpreter({
+      fields,
+      fieldLookupContext: {
+        metadata,
+        t: i18n.t,
       },
-      locale,
-    );
+    });
   },
 );

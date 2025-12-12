@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { ParserError, parse } from "./parser";
+import { ParserError, parseUnchecked } from "./parser";
 
 describe("Parser", () => {
   describe("literals", () => {
     it("parses true", () => {
-      const ast = parse("true");
+      const ast = parseUnchecked("true");
       expect(ast).toMatchObject({
         type: "LITERAL",
         value: true,
@@ -12,7 +12,7 @@ describe("Parser", () => {
     });
 
     it("parses false", () => {
-      const ast = parse("false");
+      const ast = parseUnchecked("false");
       expect(ast).toMatchObject({
         type: "LITERAL",
         value: false,
@@ -20,7 +20,7 @@ describe("Parser", () => {
     });
 
     it("parses integers", () => {
-      const ast = parse("42");
+      const ast = parseUnchecked("42");
       expect(ast).toMatchObject({
         type: "LITERAL",
         value: 42,
@@ -28,7 +28,7 @@ describe("Parser", () => {
     });
 
     it("parses strings", () => {
-      const ast = parse('"hello"');
+      const ast = parseUnchecked('"hello"');
       expect(ast).toMatchObject({
         type: "LITERAL",
         value: "hello",
@@ -36,7 +36,7 @@ describe("Parser", () => {
     });
 
     it("parses null", () => {
-      const ast = parse("null");
+      const ast = parseUnchecked("null");
       expect(ast).toMatchObject({
         type: "LITERAL",
         value: null,
@@ -46,7 +46,7 @@ describe("Parser", () => {
 
   describe("identifiers", () => {
     it("parses simple identifiers", () => {
-      const ast = parse("xp");
+      const ast = parseUnchecked("xp");
       expect(ast).toMatchObject({
         type: "IDENTIFIER",
         name: "xp",
@@ -54,7 +54,7 @@ describe("Parser", () => {
     });
 
     it("parses identifiers with underscores", () => {
-      const ast = parse("deck_limit");
+      const ast = parseUnchecked("deck_limit");
       expect(ast).toMatchObject({
         type: "IDENTIFIER",
         name: "deck_limit",
@@ -64,7 +64,7 @@ describe("Parser", () => {
 
   describe("comparison operators", () => {
     it("parses strict equals (==)", () => {
-      const ast = parse("xp == 3");
+      const ast = parseUnchecked("xp == 3");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "==",
@@ -74,7 +74,7 @@ describe("Parser", () => {
     });
 
     it("parses loose equals (=)", () => {
-      const ast = parse("xp = 3");
+      const ast = parseUnchecked("xp = 3");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "=",
@@ -84,7 +84,7 @@ describe("Parser", () => {
     });
 
     it("parses not equals (!=)", () => {
-      const ast = parse("xp != 3");
+      const ast = parseUnchecked("xp != 3");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "!=",
@@ -94,7 +94,7 @@ describe("Parser", () => {
     });
 
     it("parses strict not equals (!==)", () => {
-      const ast = parse("xp !== 3");
+      const ast = parseUnchecked("xp !== 3");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "!==",
@@ -104,7 +104,7 @@ describe("Parser", () => {
     });
 
     it("parses comparison with null", () => {
-      const ast = parse("name = null");
+      const ast = parseUnchecked("name = null");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "=",
@@ -114,7 +114,7 @@ describe("Parser", () => {
     });
 
     it("parses greater than (>)", () => {
-      const ast = parse("xp > 3");
+      const ast = parseUnchecked("xp > 3");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: ">",
@@ -124,7 +124,7 @@ describe("Parser", () => {
     });
 
     it("parses less than (<)", () => {
-      const ast = parse("xp < 3");
+      const ast = parseUnchecked("xp < 3");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "<",
@@ -134,7 +134,7 @@ describe("Parser", () => {
     });
 
     it("parses greater than or equal (>=)", () => {
-      const ast = parse("xp >= 3");
+      const ast = parseUnchecked("xp >= 3");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: ">=",
@@ -144,7 +144,7 @@ describe("Parser", () => {
     });
 
     it("parses less than or equal (<=)", () => {
-      const ast = parse("xp <= 3");
+      const ast = parseUnchecked("xp <= 3");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "<=",
@@ -154,7 +154,7 @@ describe("Parser", () => {
     });
 
     it("parses strict contains (??)", () => {
-      const ast = parse('trait ?? ["Tactic."]');
+      const ast = parseUnchecked('trait ?? ["Tactic."]');
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "??",
@@ -164,7 +164,7 @@ describe("Parser", () => {
     });
 
     it("parses strict not contains (!??)", () => {
-      const ast = parse('trait !?? ["Tactic."]');
+      const ast = parseUnchecked('trait !?? ["Tactic."]');
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "!??",
@@ -172,7 +172,7 @@ describe("Parser", () => {
     });
 
     it("parses loose contains (?)", () => {
-      const ast = parse('trait ? ["tactic"]');
+      const ast = parseUnchecked('trait ? ["tactic"]');
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "?",
@@ -180,7 +180,7 @@ describe("Parser", () => {
     });
 
     it("parses loose not contains (!?)", () => {
-      const ast = parse('trait !? ["tactic"]');
+      const ast = parseUnchecked('trait !? ["tactic"]');
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "!?",
@@ -190,7 +190,7 @@ describe("Parser", () => {
 
   describe("logical operators", () => {
     it("parses AND (&)", () => {
-      const ast = parse("xp > 3 & cost < 5");
+      const ast = parseUnchecked("xp > 3 & cost < 5");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "&",
@@ -206,7 +206,7 @@ describe("Parser", () => {
     });
 
     it("parses OR (|)", () => {
-      const ast = parse("xp > 3 | cost < 5");
+      const ast = parseUnchecked("xp > 3 | cost < 5");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "|",
@@ -224,7 +224,7 @@ describe("Parser", () => {
 
   describe("arithmetic operators", () => {
     it("parses addition (+)", () => {
-      const ast = parse("health + sanity");
+      const ast = parseUnchecked("health + sanity");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "+",
@@ -234,7 +234,7 @@ describe("Parser", () => {
     });
 
     it("parses subtraction (-)", () => {
-      const ast = parse("health - 1");
+      const ast = parseUnchecked("health - 1");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "-",
@@ -242,7 +242,7 @@ describe("Parser", () => {
     });
 
     it("parses multiplication (*)", () => {
-      const ast = parse("cost * 2");
+      const ast = parseUnchecked("cost * 2");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "*",
@@ -250,7 +250,7 @@ describe("Parser", () => {
     });
 
     it("parses division (/)", () => {
-      const ast = parse("cost / 2");
+      const ast = parseUnchecked("cost / 2");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "/",
@@ -258,7 +258,7 @@ describe("Parser", () => {
     });
 
     it("parses modulo (%)", () => {
-      const ast = parse("cost % 2");
+      const ast = parseUnchecked("cost % 2");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "%",
@@ -268,7 +268,7 @@ describe("Parser", () => {
 
   describe("groups", () => {
     it("parses grouped expression", () => {
-      const ast = parse("(xp > 3)");
+      const ast = parseUnchecked("(xp > 3)");
       expect(ast).toMatchObject({
         type: "GROUP",
         expression: {
@@ -281,7 +281,7 @@ describe("Parser", () => {
     });
 
     it("parses nested groups", () => {
-      const ast = parse("((xp > 3))");
+      const ast = parseUnchecked("((xp > 3))");
       expect(ast).toMatchObject({
         type: "GROUP",
         expression: {
@@ -299,7 +299,7 @@ describe("Parser", () => {
 
   describe("lists", () => {
     it("parses empty list", () => {
-      const ast = parse("[]");
+      const ast = parseUnchecked("[]");
       expect(ast).toMatchObject({
         type: "LIST",
         elements: [],
@@ -307,7 +307,7 @@ describe("Parser", () => {
     });
 
     it("parses list with single element", () => {
-      const ast = parse("[1]");
+      const ast = parseUnchecked("[1]");
       expect(ast).toMatchObject({
         type: "LIST",
         elements: [{ type: "LITERAL", value: 1 }],
@@ -315,7 +315,7 @@ describe("Parser", () => {
     });
 
     it("parses list with multiple elements", () => {
-      const ast = parse("[1, 2, 3]");
+      const ast = parseUnchecked("[1, 2, 3]");
       expect(ast).toMatchObject({
         type: "LIST",
         elements: [
@@ -327,7 +327,7 @@ describe("Parser", () => {
     });
 
     it("parses list with strings", () => {
-      const ast = parse('["Tactic.", "Supply."]');
+      const ast = parseUnchecked('["Tactic.", "Supply."]');
       expect(ast).toMatchObject({
         type: "LIST",
         elements: [
@@ -340,7 +340,7 @@ describe("Parser", () => {
 
   describe("operator precedence", () => {
     it("AND has higher precedence than OR", () => {
-      const ast = parse("a | b & c");
+      const ast = parseUnchecked("a | b & c");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "|",
@@ -355,7 +355,7 @@ describe("Parser", () => {
     });
 
     it("multiplication has higher precedence than addition", () => {
-      const ast = parse("a + b * c");
+      const ast = parseUnchecked("a + b * c");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "+",
@@ -370,7 +370,7 @@ describe("Parser", () => {
     });
 
     it("comparison has lower precedence than arithmetic", () => {
-      const ast = parse("health + sanity > 10");
+      const ast = parseUnchecked("health + sanity > 10");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: ">",
@@ -385,7 +385,7 @@ describe("Parser", () => {
     });
 
     it("groups override precedence", () => {
-      const ast = parse("(a | b) & c");
+      const ast = parseUnchecked("(a | b) & c");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "&",
@@ -405,7 +405,7 @@ describe("Parser", () => {
 
   describe("left associativity", () => {
     it("OR is left associative", () => {
-      const ast = parse("a | b | c");
+      const ast = parseUnchecked("a | b | c");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "|",
@@ -420,7 +420,7 @@ describe("Parser", () => {
     });
 
     it("AND is left associative", () => {
-      const ast = parse("a & b & c");
+      const ast = parseUnchecked("a & b & c");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "&",
@@ -435,7 +435,7 @@ describe("Parser", () => {
     });
 
     it("addition is left associative", () => {
-      const ast = parse("a + b + c");
+      const ast = parseUnchecked("a + b + c");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "+",
@@ -452,7 +452,7 @@ describe("Parser", () => {
 
   describe("complete expressions from spec", () => {
     it('parses "bonded == true"', () => {
-      const ast = parse("bonded == true");
+      const ast = parseUnchecked("bonded == true");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "==",
@@ -462,7 +462,7 @@ describe("Parser", () => {
     });
 
     it('parses "xp > 3 & trait = \\"practiced\\""', () => {
-      const ast = parse('xp > 3 & trait = "practiced"');
+      const ast = parseUnchecked('xp > 3 & trait = "practiced"');
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "&",
@@ -482,7 +482,7 @@ describe("Parser", () => {
     });
 
     it('parses "(xp = 0 | xp = 2) & (trait = \\"practiced\\" | trait = \\"innate\\")"', () => {
-      const ast = parse(
+      const ast = parseUnchecked(
         '(xp = 0 | xp = 2) & (trait = "practiced" | trait = "innate")',
       );
       expect(ast).toMatchObject({
@@ -530,7 +530,7 @@ describe("Parser", () => {
     });
 
     it('parses "health + sanity < 14"', () => {
-      const ast = parse("health + sanity < 14");
+      const ast = parseUnchecked("health + sanity < 14");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "<",
@@ -545,7 +545,7 @@ describe("Parser", () => {
     });
 
     it('parses "cost % 2 = 0"', () => {
-      const ast = parse("cost % 2 = 0");
+      const ast = parseUnchecked("cost % 2 = 0");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "=",
@@ -560,7 +560,7 @@ describe("Parser", () => {
     });
 
     it('parses "xp ?? [1, 3, 5, 8]"', () => {
-      const ast = parse("xp ?? [1, 3, 5, 8]");
+      const ast = parseUnchecked("xp ?? [1, 3, 5, 8]");
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "??",
@@ -578,7 +578,7 @@ describe("Parser", () => {
     });
 
     it('parses "health > sanity & trait = \\"ally\\""', () => {
-      const ast = parse('health > sanity & trait = "ally"');
+      const ast = parseUnchecked('health > sanity & trait = "ally"');
       expect(ast).toMatchObject({
         type: "BINARY",
         operator: "&",
@@ -600,7 +600,7 @@ describe("Parser", () => {
 
   describe("span tracking", () => {
     it("tracks span for literals", () => {
-      const ast = parse("true");
+      const ast = parseUnchecked("true");
       expect(ast.span).toEqual({
         start: { offset: 0, line: 1, column: 1 },
         end: { offset: 4, line: 1, column: 5 },
@@ -608,7 +608,7 @@ describe("Parser", () => {
     });
 
     it("tracks span for binary expressions", () => {
-      const ast = parse("a > b");
+      const ast = parseUnchecked("a > b");
       expect(ast.span).toEqual({
         start: { offset: 0, line: 1, column: 1 },
         end: { offset: 5, line: 1, column: 6 },
@@ -616,7 +616,7 @@ describe("Parser", () => {
     });
 
     it("tracks span for groups", () => {
-      const ast = parse("(a)");
+      const ast = parseUnchecked("(a)");
       expect(ast.span).toEqual({
         start: { offset: 0, line: 1, column: 1 },
         end: { offset: 3, line: 1, column: 4 },
@@ -626,28 +626,28 @@ describe("Parser", () => {
 
   describe("error handling", () => {
     it("throws on unexpected token", () => {
-      expect(() => parse("xp >")).toThrow(ParserError);
-      expect(() => parse("xp >")).toThrow("Expected expression");
+      expect(() => parseUnchecked("xp >")).toThrow(ParserError);
+      expect(() => parseUnchecked("xp >")).toThrow("Expected expression");
     });
 
     it("throws on unclosed group", () => {
-      expect(() => parse("(xp > 3")).toThrow(ParserError);
-      expect(() => parse("(xp > 3")).toThrow("Expected ')'");
+      expect(() => parseUnchecked("(xp > 3")).toThrow(ParserError);
+      expect(() => parseUnchecked("(xp > 3")).toThrow("Expected ')'");
     });
 
     it("throws on unclosed list", () => {
-      expect(() => parse("[1, 2")).toThrow(ParserError);
-      expect(() => parse("[1, 2")).toThrow("Expected ']'");
+      expect(() => parseUnchecked("[1, 2")).toThrow(ParserError);
+      expect(() => parseUnchecked("[1, 2")).toThrow("Expected ']'");
     });
 
     it("throws on trailing tokens", () => {
-      expect(() => parse("xp > 3 4")).toThrow(ParserError);
-      expect(() => parse("xp > 3 4")).toThrow("Unexpected token");
+      expect(() => parseUnchecked("xp > 3 4")).toThrow(ParserError);
+      expect(() => parseUnchecked("xp > 3 4")).toThrow("Unexpected token");
     });
 
     it("includes position in error", () => {
       try {
-        parse("xp >");
+        parseUnchecked("xp >");
       } catch (e) {
         expect(e).toBeInstanceOf(ParserError);
         expect((e as ParserError).position).toBeDefined();

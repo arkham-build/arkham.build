@@ -12,12 +12,11 @@ import {
 } from "@floating-ui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { instantiateSearchFromLocale } from "@/store/lib/searching";
 import type { Coded } from "@/store/lib/types";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { cx } from "@/utils/cx";
+import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";
 import { isEmpty } from "@/utils/is-empty";
-import { normalizeDiacritics } from "@/utils/normalize-diacritics";
 import css from "./combobox.module.css";
 import { ComboboxMenu } from "./combobox-menu";
 import { ComboboxResults } from "./combobox-results";
@@ -30,32 +29,19 @@ function defaultRenderer<T extends Coded>(val: T) {
   return val.code;
 }
 
-function fuzzyMatch<T extends Coded>(
-  locale: string,
+function fuzzy<T extends Coded>(
   search: string,
   items: T[],
   itemToString: (item: T) => string,
 ) {
+  const needle = prepareNeedle(search);
   if (!search) return items;
+  if (!needle) return items;
 
-  const normalizedSearchTerm = normalizeDiacritics(search);
-
-  const uf = instantiateSearchFromLocale(locale);
-
-  // Normalize diacritics in search items to stripped letters
-  const searchItems = items.map((item) =>
-    normalizeDiacritics(itemToString(item)),
-  );
-
-  const results = uf.search(searchItems, normalizedSearchTerm, 1);
-  if (!results?.[0]) return items;
-
-  const matches = results[0].reduce<Record<string, boolean>>((acc, curr) => {
-    acc[curr] = true;
-    return acc;
-  }, {});
-
-  return items.filter((_, i) => matches[i]);
+  return items.filter((item) => {
+    const haystack = itemToString(item);
+    return fuzzyMatch([haystack], needle);
+  });
 }
 
 export type Props<T extends Coded> = {
@@ -92,7 +78,6 @@ export function Combobox<T extends Coded>(props: Props<T>) {
     items,
     itemToString = defaultItemToString,
     label,
-    locale,
     limit,
     placeholder,
     omitItemPadding,
@@ -135,8 +120,8 @@ export function Combobox<T extends Coded>(props: Props<T>) {
   const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
 
   const filteredItems = useMemo(
-    () => fuzzyMatch(locale, inputValue, items, itemToString),
-    [items, inputValue, itemToString, locale],
+    () => fuzzy(inputValue, items, itemToString),
+    [items, inputValue, itemToString],
   );
 
   const setSelectedItem = useCallback(

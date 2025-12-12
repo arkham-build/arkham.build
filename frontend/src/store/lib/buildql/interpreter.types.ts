@@ -29,6 +29,5 @@ export interface FieldDescriptor {
 
 export type InterpreterContext = {
   fields: Record<string, FieldDescriptor>;
-  fuzzyMatcher: (haystack: string, needle: string) => boolean;
   fieldLookupContext: FieldLookupContext;
 };
