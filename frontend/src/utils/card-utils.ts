@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import type { Card } from "@/store/schemas/card.schema";
 import type { Cycle } from "@/store/schemas/cycle.schema";
 import type { Pack } from "@/store/schemas/pack.schema";
@@ -300,4 +301,30 @@ export function oldFormatCardUrl(card: Card) {
 
 export function canShowCardPoolExtension(card: Card) {
   return card.card_pool_extension && !card.card_pool_extension.selections;
+}
+
+export function doubleSidedBackCard(card: Card, t: TFunction) {
+  if (!card.double_sided) return undefined;
+
+  const { clues: _, doom: __, shroud: ___, ...attributes } = card;
+
+  const nameFallback = t("common.card_back", {
+    name: displayAttribute(card, "name"),
+  });
+
+  return {
+    ...attributes,
+    name: displayAttribute(card, "back_name") || nameFallback,
+    real_name: card.real_back_name || nameFallback,
+    subname: displayAttribute(card, "back_subname"),
+    real_subname: card.real_back_subname,
+    flavor: displayAttribute(card, "back_flavor"),
+    real_flavor: card.real_back_flavor,
+    illustrator: card.back_illustrator,
+    text: displayAttribute(card, "back_text"),
+    real_text: card.real_back_text,
+    traits:
+      displayAttribute(card, "back_traits") || displayAttribute(card, "traits"),
+    real_traits: card.real_back_traits || card.real_traits,
+  };
 }

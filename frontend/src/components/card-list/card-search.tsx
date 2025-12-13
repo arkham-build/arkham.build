@@ -9,6 +9,7 @@ import { useAgathaEasterEggTrigger } from "@/utils/easter-egg-agatha";
 import { useHotkey } from "@/utils/use-hotkey";
 import { Checkbox } from "../ui/checkbox";
 import { SearchInput } from "../ui/search-input";
+import { Tag } from "../ui/tag";
 import css from "./card-search.module.css";
 
 type Props = {
@@ -117,27 +118,33 @@ export function CardSearch(props: Props) {
         {slotRight}
       </div>
       <div className={css["flags"]}>
+        {search.mode === "buildql" && <Tag size="sm">BuildQL</Tag>}
         <div className={css["flags-slot"]}>{slotFlags}</div>
-        <Checkbox
-          checked={search.includeName}
-          data-testid="search-card-name"
-          id="search-card-name"
-          label={t("lists.search.include_name")}
-          onCheckedChange={onToggleCardName}
-        />
-        <Checkbox
-          checked={search.includeGameText}
-          data-testid="search-game-text"
-          id="search-game-text"
-          label={t("lists.search.include_game_text")}
-          onCheckedChange={onToggleGameText}
-        />
-        <Checkbox
-          checked={search.includeFlavor}
-          id="search-game-flavor"
-          label={t("lists.search.include_flavor")}
-          onCheckedChange={onToggleFlavor}
-        />
+        {}
+        {search.mode === "simple" && (
+          <>
+            <Checkbox
+              checked={search.includeName}
+              data-testid="search-card-name"
+              id="search-card-name"
+              label={t("lists.search.include_name")}
+              onCheckedChange={onToggleCardName}
+            />
+            <Checkbox
+              checked={search.includeGameText}
+              data-testid="search-game-text"
+              id="search-game-text"
+              label={t("lists.search.include_game_text")}
+              onCheckedChange={onToggleGameText}
+            />
+            <Checkbox
+              checked={search.includeFlavor}
+              id="search-game-flavor"
+              label={t("lists.search.include_flavor")}
+              onCheckedChange={onToggleFlavor}
+            />
+          </>
+        )}
         <Checkbox
           checked={search.includeBacks}
           id="search-back"

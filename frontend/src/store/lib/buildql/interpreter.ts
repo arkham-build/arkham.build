@@ -329,11 +329,11 @@ export class Interpreter {
     fieldType: FieldType | "unknown",
   ): boolean {
     // 1. Translated text fields are represented as arrays, unnest.
-    if (Array.isArray(left) && typeof right === "string") {
+    if (Array.isArray(left)) {
       return left.some((val) => this.equals(val, right, mode, fieldType));
     }
 
-    if (typeof left === "string" && Array.isArray(right)) {
+    if (Array.isArray(right)) {
       return right.some((val) => this.equals(left, val, mode, fieldType));
     }
 

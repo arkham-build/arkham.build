@@ -70,6 +70,7 @@ function getInitialList() {
 
 export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
   set,
+  get,
 ) => ({
   activeList: getInitialList(),
   lists: {},
@@ -367,25 +368,57 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
   },
 
   setSearchFlag(flag, value) {
-    set((state) => {
-      assert(state.activeList, "no active list is defined.");
+    let state = get();
 
-      const list = state.lists[state.activeList];
-      assert(list, `list ${state.activeList} not defined.`);
+    assert(state.activeList, "no active list is defined.");
+    const activeList = state.activeList;
 
-      return {
-        lists: {
-          ...state.lists,
-          [state.activeList]: {
-            ...list,
-            search: {
-              ...list.search,
-              [flag]: value,
-            },
+    let list = state.lists[state.activeList];
+    assert(list, `list ${state.activeList} not defined.`);
+
+    set((state) => ({
+      lists: {
+        ...state.lists,
+        [activeList]: {
+          ...list,
+          search: {
+            ...list.search,
+            [flag]: value,
           },
         },
-      };
-    });
+      },
+    }));
+
+    if (list.search.mode === "buildql") {
+      state = get();
+
+      list = state.lists[activeList];
+      assert(list, `list ${activeList} not defined.`);
+
+      const interpreter = selectBuildQlInterpreter(state);
+
+      let buildQlSearch: Filter | undefined;
+      try {
+        const filter = interpreter.evaluate(parseBuildQl(list.search.value));
+        filter({} as Card);
+        buildQlSearch = filter;
+      } catch {}
+
+      if (buildQlSearch) {
+        set((state) => ({
+          lists: {
+            ...state.lists,
+            [activeList]: {
+              ...list,
+              search: {
+                ...list.search,
+                buildQlSearch,
+              },
+            },
+          },
+        }));
+      }
+    }
   },
 
   setSearchValue(value) {

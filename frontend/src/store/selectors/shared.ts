@@ -359,11 +359,13 @@ export const selectPrintingsForCard = createSelector(
 
 export const selectBuildQlInterpreter = createSelector(
   selectMetadata,
-  (metadata) => {
+  selectActiveList,
+  (metadata, list) => {
     return createBuildQlInterpreter({
       fields,
       fieldLookupContext: {
         i18n,
+        matchBacks: !!list?.search?.includeBacks,
         metadata,
       },
     });

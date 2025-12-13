@@ -4,7 +4,7 @@ import type { Metadata } from "@/store/slices/metadata.types";
 
 export type FieldValue =
   | string
-  | string[]
+  | FieldValue[]
   | number
   | boolean
   | null
@@ -14,6 +14,7 @@ export type FieldType = "string" | "text" | "number" | "boolean";
 
 export type FieldLookupContext = {
   i18n: i18n;
+  matchBacks: boolean;
   metadata: Metadata;
 };
 
