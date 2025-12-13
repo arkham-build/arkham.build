@@ -136,230 +136,375 @@ Logical operators are resolved in the following order:
 
 The query language is left-associative, meaning that expressions are evaluated from left to right. If multiple operators have the same precedence, the operator on the left side of the expression is evaluated first.
 
+## Card backs
+
+When the `[x] Backs` toggle is activated, queries will check both the front- and backside of a card when matching values. All fields can be prefixed with `back:` to query against the backside of a card. This can be used to compare with the frontside:
+
+```
+back:subname != null & back:subname != subname
+```
+
 ## Fields
-```js
+```json
 [
   {
-    name: "agility",
-    aliases: ["agi", "foot"],
-    type: "number",
+    "name": "agility",
+    "type": "number",
+    "aliases": [
+      "ag",
+      "foot"
+    ],
+    "legacyAlias": "a"
   },
   {
-    name: "bonded",
-    type: "boolean",
+    "name": "faction",
+    "type": "string",
+    "aliases": [
+      "cls",
+      "class"
+    ],
+    "legacyAlias": "f"
   },
   {
-    name: "class",
-    aliases: ["cls", "faction"],
-    legacyAlias: "f",
-    type: "string",
+    "name": "clues",
+    "type": "number",
+    "aliases": [
+      "cl"
+    ]
   },
   {
-    name: "clues",
-    type: "number",
+    "name": "combat",
+    "type": "number",
+    "aliases": [
+      "cb",
+      "fist"
+    ],
+    "legacyAlias": "c"
   },
   {
-    name: "combat",
-    aliases: ["com", "fist"],
-    legacyAlias: "c",
-    type: "number",
+    "name": "cost",
+    "type": "number",
+    "aliases": [
+      "co"
+    ],
+    "legacyAlias": "o"
   },
   {
-    name: "cost",
-    legacyAlias: "o",
-    type: "number",
+    "name": "customizable",
+    "type": "boolean",
+    "aliases": [
+      "cus"
+    ]
   },
   {
-    name: "customizable",
-    type: "boolean",
+    "name": "cycle",
+    "type": "string",
+    "aliases": [
+      "cy"
+    ],
+    "legacyAlias": "y"
   },
   {
-    name: "cycle",
-    legacyAlias: "y",
-    type: "string",
+    "name": "damage",
+    "type": "number",
+    "aliases": [
+      "dmg"
+    ]
   },
   {
-    name: "damage",
-    aliases: ["dmg"],
-    type: "number",
+    "name": "deck_limit",
+    "type": "number",
+    "aliases": [
+      "dl",
+      "limit"
+    ]
   },
   {
-    name: "deck_limit",
-    aliases: ["limit"],
-    type: "number",
+    "name": "doom",
+    "type": "number",
+    "aliases": [
+      "do"
+    ]
   },
   {
-    name: "doom",
-    type: "number",
+    "name": "encounter_set",
+    "type": "string",
+    "aliases": [
+      "en",
+      "encounter",
+      "set"
+    ]
   },
   {
-    name: "encounter_set",
-    aliases: ["encounter", "set"],
-    type: "string",
+    "name": "evade",
+    "type": "number",
+    "aliases": [
+      "ev"
+    ]
   },
   {
-    name: "evade",
-    type: "number",
+    "name": "exceptional",
+    "type": "boolean",
+    "aliases": [
+      "ex"
+    ]
   },
   {
-    name: "exceptional",
-    type: "boolean",
+    "name": "exile",
+    "type": "boolean",
+    "aliases": [
+      "exl"
+    ]
   },
   {
-    name: "exile",
-    type: "boolean",
+    "name": "fight",
+    "type": "number",
+    "aliases": [
+      "fi"
+    ]
   },
   {
-    name: "fight",
-    type: "number",
+    "name": "flavor",
+    "type": "text",
+    "aliases": [
+      "fl"
+    ],
+    "legacyAlias": "v"
   },
   {
-    name: "flavor",
-    legacyAlias: "v",
-    type: "text",
+    "name": "heals_damage",
+    "type": "boolean",
+    "aliases": [
+      "hd"
+    ]
   },
   {
-    name: "heals_damage",
-    aliases: ["hd"],
-    type: "boolean",
+    "name": "heals_horror",
+    "type": "boolean",
+    "aliases": [
+      "hh"
+    ]
   },
   {
-    name: "heals_horror",
-    aliases: ["hh"],
-    type: "boolean",
+    "name": "health",
+    "type": "number",
+    "aliases": [
+      "hp"
+    ],
+    "legacyAlias": "h"
   },
   {
-    name: "health",
-    aliases: ["hp"],
-    legacyAlias: "h",
-    type: "number",
+    "name": "horror",
+    "type": "number",
+    "aliases": [
+      "ho"
+    ]
   },
   {
-    name: "horror",
-    type: "number",
+    "name": "id",
+    "type": "string",
+    "aliases": [
+      "code"
+    ]
   },
   {
-    name: "id",
-    aliases: ["code"],
-    type: "string",
+    "name": "illustrator",
+    "type": "string",
+    "aliases": [
+      "il",
+      "illu",
+      "artist"
+    ],
+    "legacyAlias": "l"
   },
   {
-    name: "illustrator",
-    aliases: ["artist", "illu"],
-    legacyAlias: "l",
-    type: "string",
+    "name": "intellect",
+    "type": "number",
+    "aliases": [
+      "in",
+      "int",
+      "book"
+    ],
+    "legacyAlias": "i"
   },
   {
-    name: "intellect",
-    aliases: ["int", "book"],
-    legacyAlias: "i",
-    type: "number",
+    "name": "xp",
+    "type": "number",
+    "aliases": [
+      "level",
+      "lvl"
+    ],
+    "legacyAlias": "p"
   },
   {
-    name: "level",
-    aliases: ["xp"],
-    legacyAlias: "p",
-    type: "number",
+    "name": "multiclass",
+    "type": "boolean",
+    "aliases": [
+      "mu",
+      "multi"
+    ]
   },
   {
-    name: "multiclass",
-    aliases: ["multi"],
-    type: "boolean",
+    "name": "myriad",
+    "type": "boolean",
+    "aliases": [
+      "my"
+    ]
   },
   {
-    name: "myriad",
-    type: "boolean",
+    "name": "name",
+    "type": "string",
+    "aliases": [
+      "na"
+    ]
   },
   {
-    name: "name",
-    type: "string",
+    "name": "pack",
+    "type": "string",
+    "aliases": [
+      "pa"
+    ],
+    "legacyAlias": "e"
   },
   {
-    name: "pack",
-    legacyAlias: "e",
-    type: "string",
+    "name": "permanent",
+    "type": "boolean",
+    "aliases": [
+      "pe",
+      "perm"
+    ]
   },
   {
-    name: "permanent",
-    type: "boolean",
+    "name": "quantity",
+    "type": "number",
+    "aliases": [
+      "qt",
+      "qty"
+    ]
   },
   {
-    name: "quantity",
-    aliases: ["qt"],
-    type: "number",
+    "name": "reverse_type",
+    "type": "string",
+    "aliases": [
+      "rt"
+    ]
   },
   {
-    name: "sanity",
-    aliases: ["san"],
-    legacyAlias: "s",
-    type: "number",
+    "name": "sanity",
+    "type": "number",
+    "aliases": [
+      "sa"
+    ],
+    "legacyAlias": "s"
   },
   {
-    name: "shroud",
-    type: "number",
+    "name": "shroud",
+    "type": "number",
+    "aliases": [
+      "sh"
+    ]
   },
   {
-    name: "slot",
-    legacyAlias: "z",
-    type: "string",
+    "name": "slot",
+    "type": "string",
+    "aliases": [
+      "sl"
+    ],
+    "legacyAlias": "z"
   },
   {
-    name: "specialist",
-    type: "boolean",
+    "name": "specialist",
+    "type": "boolean",
+    "aliases": [
+      "sp"
+    ]
   },
   {
-    name: "subname",
-    type: "string",
+    "name": "subname",
+    "type": "string",
+    "aliases": [
+      "sn"
+    ]
   },
   {
-    name: "subtype",
-    aliases: ["sub"],
-    legacyAlias: "b",
-    type: "string",
+    "name": "subtype",
+    "type": "string",
+    "aliases": [
+      "st"
+    ],
+    "legacyAlias": "b"
   },
   {
-    name: "taboo_set",
-    type: "string",
+    "name": "taboo_set",
+    "type": "string",
+    "aliases": [
+      "ts"
+    ]
   },
   {
-    name: "text",
-    legacyAlias: "x",
-    type: "text",
+    "name": "text",
+    "type": "text",
+    "aliases": [
+      "txt"
+    ],
+    "legacyAlias": "x"
   },
   {
-    name: "trait",
-    legacyAlias: "k",
-    type: "string",
+    "name": "trait",
+    "type": "string",
+    "aliases": [
+      "tr"
+    ],
+    "legacyAlias": "k"
   },
   {
-    name: "type",
-    legacyAlias: "t",
-    type: "string",
+    "name": "type",
+    "type": "string",
+    "aliases": [
+      "ty"
+    ],
+    "legacyAlias": "t"
   },
   {
-    name: "unique",
-    legacyAlias: "u",
-    type: "boolean",
+    "name": "unique",
+    "type": "boolean",
+    "aliases": [
+      "un"
+    ],
+    "legacyAlias": "u"
   },
   {
-    name: "vengeance",
-    type: "number",
+    "name": "vengeance",
+    "type": "number",
+    "aliases": [
+      "ve"
+    ]
   },
   {
-    name: "victory",
-    legacyAlias: "j",
-    type: "number",
+    "name": "victory",
+    "type": "number",
+    "aliases": [
+      "vp"
+    ],
+    "legacyAlias": "j"
   },
   {
-    name: "wild",
-    legacyAlias: "d",
-    type: "number",
+    "name": "wild",
+    "type": "number",
+    "aliases": [
+      "wd"
+    ],
+    "legacyAlias": "d"
   },
   {
-    name: "willpower",
-    aliases: ["will", "brain"],
-    legacyAlias: "w",
-    type: "number",
-  },
+    "name": "willpower",
+    "type": "number",
+    "aliases": [
+      "wp",
+      "will",
+      "brain"
+    ],
+    "legacyAlias": "w"
+  }
 ]
 ```

@@ -5,7 +5,7 @@ import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import { time, timeEnd } from "@/utils/time";
 import { fields } from "../lib/buildql/fields";
-import { createInterpreter as createBuildQlInterpreter } from "../lib/buildql/interpreter";
+import { Interpreter } from "../lib/buildql/interpreter";
 import { ownedCardCount } from "../lib/card-ownership";
 import { addProjectToMetadata, cloneMetadata } from "../lib/fan-made-content";
 import { createLookupTables } from "../lib/lookup-tables";
@@ -361,7 +361,7 @@ export const selectBuildQlInterpreter = createSelector(
   selectMetadata,
   selectActiveList,
   (metadata, list) => {
-    return createBuildQlInterpreter({
+    return new Interpreter({
       fields,
       fieldLookupContext: {
         i18n,

@@ -160,7 +160,7 @@ const makeDeckPropertiesFilter = (properties: DeckProperties) => {
 const makeDeckValidityFilter = (value: Omit<DeckValidity, "all">) => {
   switch (value) {
     case "valid":
-      return (deck: ResolvedDeck) => deck.problem === null;
+      return (deck: ResolvedDeck) => deck.problem == null;
     case "invalid":
       return (deck: ResolvedDeck) => Boolean(deck.problem);
     default:

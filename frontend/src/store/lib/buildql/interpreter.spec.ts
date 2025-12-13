@@ -1,10 +1,10 @@
-import type { TFunction } from "i18next";
+import type { i18n, TFunction } from "i18next";
 import { beforeAll, describe, expect, test } from "vitest";
 import type { Card } from "@/store/schemas/card.schema";
 import { selectMetadata } from "@/store/selectors/shared";
 import { getMockStore } from "@/test/get-mock-store";
 import { fields } from "./fields";
-import { createInterpreter, createInterpreterContext } from "./interpreter";
+import { Interpreter } from "./interpreter";
 import type { InterpreterContext } from "./interpreter.types";
 import { parse } from "./parser";
 
@@ -24,7 +24,7 @@ function createMockCard(overrides: Partial<Card> = {}): Card {
 }
 
 function compile(expr: ReturnType<typeof parse>, ctx: InterpreterContext) {
-  const interpreter = createInterpreter(ctx);
+  const interpreter = new Interpreter(ctx);
   return interpreter.evaluate(expr);
 }
 
@@ -33,13 +33,17 @@ describe("Interpreter", () => {
 
   beforeAll(async () => {
     const mockStore = await getMockStore();
-    ctx = createInterpreterContext({
+    ctx = {
       fields,
       fieldLookupContext: {
-        t: ((str: string) => str) as unknown as TFunction,
+        matchBacks: false,
+        i18n: {
+          language: "en",
+          t: ((key: string) => key) as TFunction,
+        } as i18n,
         metadata: selectMetadata(mockStore.getState()),
       },
-    });
+    };
   });
 
   describe("Binary operators", () => {

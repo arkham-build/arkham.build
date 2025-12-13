@@ -24,8 +24,8 @@ export class Interpreter {
   private context: InterpreterContext;
   private needleCache: Map<string, RegExp> = new Map();
 
-  constructor(context: Omit<InterpreterContext, "fuzzyMatcher">) {
-    this.context = createInterpreterContext(context);
+  constructor(context: InterpreterContext) {
+    this.context = context;
   }
 
   evaluate(expr: Expr): (card: Card) => boolean {
@@ -145,56 +145,56 @@ export class Interpreter {
       case ">": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
-        if (leftNum === null || rightNum === null) return false;
+        if (leftNum == null || rightNum == null) return false;
         return leftNum > rightNum;
       }
 
       case "<": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
-        if (leftNum === null || rightNum === null) return false;
+        if (leftNum == null || rightNum == null) return false;
         return leftNum < rightNum;
       }
 
       case ">=": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
-        if (leftNum === null || rightNum === null) return false;
+        if (leftNum == null || rightNum == null) return false;
         return leftNum >= rightNum;
       }
 
       case "<=": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
-        if (leftNum === null || rightNum === null) return false;
+        if (leftNum == null || rightNum == null) return false;
         return leftNum <= rightNum;
       }
 
       case "+": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
-        if (leftNum === null || rightNum === null) return false;
+        if (leftNum == null || rightNum == null) return false;
         return (leftNum + rightNum) as unknown as boolean;
       }
 
       case "-": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
-        if (leftNum === null || rightNum === null) return false;
+        if (leftNum == null || rightNum == null) return false;
         return (leftNum - rightNum) as unknown as boolean;
       }
 
       case "*": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
-        if (leftNum === null || rightNum === null) return false;
+        if (leftNum == null || rightNum == null) return false;
         return (leftNum * rightNum) as unknown as boolean;
       }
 
       case "/": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
-        if (leftNum === null || rightNum === null) return false;
+        if (leftNum == null || rightNum == null) return false;
 
         if (rightNum === 0) {
           throw new InterpreterError("Division by zero");
@@ -206,7 +206,7 @@ export class Interpreter {
       case "%": {
         const leftNum = this.toNumber(this.getValue(left, card));
         const rightNum = this.toNumber(this.getValue(right, card));
-        if (leftNum === null || rightNum === null) return false;
+        if (leftNum == null || rightNum == null) return false;
 
         if (rightNum === 0) {
           throw new InterpreterError("Modulo by zero");
@@ -250,7 +250,7 @@ export class Interpreter {
         if (["+", "-", "*", "/", "%"].includes(operator)) {
           const leftNum = this.toNumber(this.getValue(left, card));
           const rightNum = this.toNumber(this.getValue(right, card));
-          if (leftNum === null || rightNum === null) {
+          if (leftNum == null || rightNum == null) {
             return null;
           }
 
@@ -328,7 +328,10 @@ export class Interpreter {
     mode: "strict" | "loose",
     fieldType: FieldType | "unknown",
   ): boolean {
-    // 1. Translated text fields are represented as arrays, unnest.
+    // Arrays represent:
+    // - Fields that have multiple values
+    // - Cards that have different values on front and back
+
     if (Array.isArray(left)) {
       return left.some((val) => this.equals(val, right, mode, fieldType));
     }
@@ -337,7 +340,9 @@ export class Interpreter {
       return right.some((val) => this.equals(left, val, mode, fieldType));
     }
 
-    // 2. Number fields can have string-like values, or be null (* / - / ?)
+    // Number fields can have string-like values, or be null (* / - / ?)
+    // Check if we have a mixed comparison first as `null` maps to `-`.
+
     if (left != null && typeof left !== "string" && typeof right === "string") {
       try {
         const rightNum = this.toNumber(right);
@@ -347,8 +352,8 @@ export class Interpreter {
 
     if (
       right != null &&
-      typeof left === "string" &&
-      typeof right !== "string"
+      typeof right !== "string" &&
+      typeof left === "string"
     ) {
       try {
         const leftNum = this.toNumber(left);
@@ -356,10 +361,11 @@ export class Interpreter {
       } catch {}
     }
 
-    // 3. Any leftover nulls can be compared directly.
-    if (left == null || right == null) {
+    // In the context of the card data, null and empty string are equivalent
+
+    if (left == null || right == null || left === "" || right === "") {
       // biome-ignore lint/suspicious/noDoubleEquals: null check.
-      return left == right;
+      return (left || null) == (right || null);
     }
 
     if (typeof left === "boolean" || typeof right === "boolean") {
@@ -428,13 +434,11 @@ export class Interpreter {
   }
 
   private normalizeString(str: string): string {
-    return str.toLocaleLowerCase();
+    return str.toLocaleLowerCase().trim();
   }
 
   private toNumber(value: FieldValue): number | null {
-    if (typeof value === "number") {
-      return value;
-    }
+    if (typeof value === "number") return value;
 
     if (typeof value === "string") {
       const val = value.trim().toLowerCase();
@@ -445,7 +449,6 @@ export class Interpreter {
       if (val === "?") return -4;
 
       const num = Number(val);
-
       if (Number.isNaN(num)) {
         throw new InterpreterError(`Cannot convert "${value}" to number`);
       }
@@ -453,20 +456,8 @@ export class Interpreter {
       return num;
     }
 
-    if (value === null || value === undefined) {
-      return null;
-    }
+    if (value == null) return null;
 
     throw new InterpreterError(`Cannot convert ${typeof value} to number`);
   }
-}
-
-export function createInterpreterContext(
-  context: InterpreterContext,
-): InterpreterContext {
-  return context;
-}
-
-export function createInterpreter(context: InterpreterContext): Interpreter {
-  return new Interpreter(createInterpreterContext(context));
 }

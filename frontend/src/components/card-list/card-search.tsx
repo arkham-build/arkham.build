@@ -50,7 +50,7 @@ export function CardSearch(props: Props) {
   useHotkey("/", onShortcut);
 
   const debouncedSetSearchValue = useMemo(
-    () => debounce(setSearchValue, 125),
+    () => debounce(setSearchValue, 50),
     [setSearchValue],
   );
 

@@ -348,7 +348,7 @@ class Lexer {
   }
 
   private isAlphaNumeric(char: string): boolean {
-    return this.isAlpha(char) || this.isDigit(char);
+    return this.isAlpha(char) || this.isDigit(char) || char === ":";
   }
 
   private currentPosition(): Position {
