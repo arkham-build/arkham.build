@@ -150,12 +150,12 @@ describe("GET /v2/public/recommendations", () => {
           "recommendation": 75,
         },
         {
-          "card_code": "01064",
-          "recommendation": 66.67,
-        },
-        {
           "card_code": "01089",
           "recommendation": 60,
+        },
+        {
+          "card_code": "01064",
+          "recommendation": 50,
         },
         {
           "card_code": "01088",

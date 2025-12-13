@@ -161,9 +161,9 @@ export async function importPackFromFile(page: Page, packPath: string) {
 
   const fileChooser = await fileChooserPromise;
 
-  await fileChooser.setFiles([
-    path.join(process.cwd(), "src/test/fixtures/stubs", packPath),
-  ]);
+  const dir = import.meta.dirname;
+
+  await fileChooser.setFiles([path.join(dir, "../fixtures/stubs", packPath)]);
 
   await page.waitForTimeout(300);
 }

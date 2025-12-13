@@ -92,6 +92,16 @@ export function FanMadeContent(props: SettingProps) {
   const onAddProject = useCallback(
     async (payload: unknown) => {
       try {
+        const search = new URLSearchParams(window.location.search);
+        search.delete("install_id");
+        search.delete("install_url");
+
+        window.history.replaceState(
+          {},
+          "",
+          `${window.location.pathname}?${search.toString()}`,
+        );
+
         await addFanMadeProject(payload);
 
         toast.show({

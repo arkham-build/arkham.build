@@ -23,7 +23,6 @@ export function cycleToApiFormat(
   };
 }
 
-// FIXME: we are missing the `linked` attribute, does it matter?
 export function cardToApiFormat(
   card: JsonDataCard & { official?: boolean },
   mode = "card",
@@ -56,7 +55,7 @@ export function cardToApiFormat(
 
   return mode === "patch"
     ? (Object.fromEntries(
-        Object.entries(fullCard).filter(([_, value]) => value != null),
+        Object.entries(fullCard).filter(([_, value]) => value !== undefined),
       ) as ApiCard)
     : fullCard;
 }

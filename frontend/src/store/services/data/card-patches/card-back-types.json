@@ -1,0 +1,162 @@
+[
+  {
+    "code": "06028",
+    "back_type": "encounter",
+    "patch": true
+  },
+  {
+    "code": "06346",
+    "back_type": "atlach_nacha",
+    "patch": true
+  },
+  {
+    "code": "10643",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10644a",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10644b",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10644c",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10645a",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10645b",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10645c",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10645b",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10646",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10647a",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10647b",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10647c",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "10648",
+    "back_type": "the_longest_night",
+    "patch": true
+  },
+  {
+    "code": "11016",
+    "back_type": "encounter",
+    "patch": true
+  },
+  {
+    "code": "11552",
+    "back_type": "artifact",
+    "patch": true
+  },
+  {
+    "code": "11582",
+    "back_type": "artifact",
+    "patch": true
+  },
+  {
+    "code": "11611",
+    "back_type": "artifact",
+    "patch": true
+  },
+  {
+    "code": "11638",
+    "back_type": "artifact",
+    "patch": true
+  },
+  {
+    "code": "11688",
+    "back_type": "artifact",
+    "patch": true
+  },
+  {
+    "code": "11705",
+    "back_type": "cthulhu_deck",
+    "patch": true
+  },
+  {
+    "code": "11706",
+    "back_type": "cthulhu_deck",
+    "patch": true
+  },
+  {
+    "code": "11707",
+    "back_type": "cthulhu_deck",
+    "patch": true
+  },
+  {
+    "code": "11708",
+    "back_type": "cthulhu_deck",
+    "patch": true
+  },
+  {
+    "code": "11709",
+    "back_type": "cthulhu_deck",
+    "patch": true
+  },
+  {
+    "code": "11710",
+    "back_type": "cthulhu_deck",
+    "patch": true
+  },
+  {
+    "code": "11711",
+    "back_type": "cthulhu_deck",
+    "patch": true
+  },
+  {
+    "code": "11712",
+    "back_type": "cthulhu_deck",
+    "patch": true
+  },
+  {
+    "code": "11713",
+    "back_type": "cthulhu_deck",
+    "patch": true
+  },
+  {
+    "code": "11714",
+    "back_type": "cthulhu_deck",
+    "patch": true
+  },
+  {
+    "code": "11715",
+    "back_type": "cthulhu_deck",
+    "patch": true
+  }
+]

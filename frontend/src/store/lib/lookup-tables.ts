@@ -350,7 +350,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
 
     // TODO: there is an edge case with Dream-Gate where the front should show when accessing `06015b` via
     // a bond, but currently does not.
-    if (!card.linked && bonded[card.real_name]) {
+    if (!card.hidden && bonded[card.real_name]) {
       for (const bondedCode of bonded[card.real_name]) {
         // beware the great hank samson.
         if (bondedCode !== card.code && !card.real_text?.startsWith("Bonded")) {

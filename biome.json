@@ -33,7 +33,6 @@
         "useUniqueElementIds": "off"
       },
       "complexity": {
-        "noImportantStyles": "off",
         "useLiteralKeys": "off"
       },
       "performance": {

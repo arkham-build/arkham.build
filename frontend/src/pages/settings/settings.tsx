@@ -52,7 +52,7 @@ function Settings() {
   return (
     <SettingsInner
       colorTheme={colorTheme}
-      key={`${settingsKey}-${colorTheme}`}
+      key={`${settingsKey(settings)}-${colorTheme}`}
       settings={settings}
       updateColorTheme={updateColorTheme}
       updateSettings={applySettings}

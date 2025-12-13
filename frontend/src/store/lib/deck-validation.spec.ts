@@ -247,6 +247,9 @@ const tests = [
   // || Lola
   ["valid: || Lola faction validation", "parallel_lola"],
   ["invalid: || Lola faction validation", "parallel_lola_invalid"],
+  // Joe Diamond
+  ["valid: at least x of trait", "atleast_traits_valid"],
+  ["invalid: at least x of trait", "atleast_traits_invalid"],
 ];
 
 function validate(store: StoreApi<StoreState>, deck: Deck) {

@@ -1152,11 +1152,7 @@ export const selectInvestigatorOptions = createSelector(
     >((acc, code) => {
       const card = metadata.cards[code];
 
-      if (
-        card &&
-        !card.encounter_code &&
-        (!card.alt_art_investigator || card.parallel)
-      ) {
+      if (card && !card.duplicate_of_code && !card.encounter_code) {
         acc.push(card);
       }
 
@@ -1164,7 +1160,14 @@ export const selectInvestigatorOptions = createSelector(
     }, []);
 
     investigators.sort(sortByName(collator));
-    return investigators;
+
+    return [
+      { label: i18n.t("filters.investigator.any_investigator"), value: "" },
+      ...investigators.map((card) => ({
+        label: displayAttribute(card, "name"),
+        value: card.code,
+      })),
+    ];
   },
 );
 

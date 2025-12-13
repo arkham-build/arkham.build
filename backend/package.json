@@ -1,6 +1,5 @@
 {
   "name": "@arkham-build/backend",
-  "version": "0.1.0",
   "main": "src/main.ts",
   "type": "module",
   "engines": {

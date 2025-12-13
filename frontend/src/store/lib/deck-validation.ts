@@ -3,6 +3,7 @@ import {
   cardLimit,
   isRandomBasicWeaknessLike,
   isStaticInvestigator,
+  splitMultiValue,
 } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { range } from "@/utils/range";
@@ -799,6 +800,7 @@ class DeckOptionsValidator implements SlotValidator {
       if (!option.atleast) continue;
       const min = option.atleast.min;
       const factionCount = option.atleast.factions;
+      const traitCount = option.atleast.traits;
       const typeCount = option.atleast.types;
 
       const clustered: Record<string, number> = {};
@@ -826,32 +828,38 @@ class DeckOptionsValidator implements SlotValidator {
           clustered[card.type_code] ??= 0;
           clustered[card.type_code] += quantities[card.code];
         }
+      } else if (traitCount) {
+        for (const card of cards) {
+          const traits = splitMultiValue(card.real_traits);
+          for (const trait of traits) {
+            clustered[trait] ??= 0;
+            clustered[trait] += quantities[card.code];
+          }
+        }
       }
 
+      const targetOption = option.faction ?? option.type ?? option.trait;
+      const targetCount = factionCount ?? typeCount ?? traitCount;
+
       const matches = Object.entries(clustered).filter(([key, val]) => {
-        const target = factionCount ? option.faction : option.type;
-        return target?.includes(key) && val >= min;
+        return targetOption?.includes(key) && val >= min;
       });
 
-      const target = factionCount ? factionCount : typeCount;
-
       let actual = matches.length;
-      let required = target;
+      let required = targetCount;
 
       if (required === 1) {
-        const target = factionCount ? option.faction : option.type;
-
-        if (target?.length) {
+        if (targetOption?.length) {
           required = option.atleast.min;
 
-          actual = target.reduce((acc, curr) => {
+          actual = targetOption.reduce((acc, curr) => {
             const val = clustered[curr] ?? 0;
             return val >= acc ? val : acc;
           }, 0);
         }
       }
 
-      if (matches.length < (target ?? 0)) {
+      if (matches.length < (targetCount ?? 0)) {
         errors.push({
           type: "INVALID_DECK_OPTION",
           details: {

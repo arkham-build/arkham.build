@@ -1,5 +1,25 @@
 [
   {
+    "code": "05002",
+    "deck_options": [
+      {
+        "atleast": {
+          "min": 11,
+          "traits": 1
+        },
+        "trait": ["Insight"],
+        "virtual": true,
+        "error": "Deck must have at least 11 Insights."
+      },
+      {
+        "faction": ["seeker", "neutral"],
+        "level": { "min": 0, "max": 5 }
+      },
+      { "faction": ["guardian"], "level": { "min": 0, "max": 2 } }
+    ],
+    "patch": true
+  },
+  {
     "code": "06167",
     "deck_requirements": "size:5",
     "deck_options": [

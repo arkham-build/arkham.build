@@ -161,6 +161,7 @@ const JsonDataCardSchema = z.object({
   back_name: z.string().nullish(),
   back_subname: z.string().nullish(),
   back_text: z.string().nullish(),
+  back_type: z.string().nullish(),
   back_traits: z.string().nullish(),
   bonded_count: z.number().nullish(),
   bonded_to: z.string().nullish(),
@@ -267,7 +268,6 @@ export const ApiCardSchema = JsonDataCardSchema.omit({
   deck_requirements: ApiDeckRequirementsSchema.nullish(),
   duplicate_of_code: z.string().nullish(),
   id: z.string(), // {code} or {code}-{taboo_set_id}
-  linked: z.boolean().nullish(),
   locale: z.string().nullish(),
   preview: z.boolean().nullish(),
   real_back_flavor: z.string().nullish(),

@@ -1,68 +1,70 @@
-.scan-container {
-  position: relative;
-  perspective: 600px;
+@layer ui-components {
+  .scan-container {
+    position: relative;
+    perspective: 600px;
 
-  &:hover .scan-flip-trigger {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity 0.125s ease-in;
+    &:hover .scan-flip-trigger {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity 0.125s ease-in;
+    }
   }
-}
 
-.scan-front,
-.scan-back {
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  transition: transform 0.5s;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.scan-front {
-  transform: rotateY(0deg);
-}
-
-.scan-back {
-  transform: rotateY(180deg);
-}
-
-.scan-flip-trigger {
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  visibility: hidden;
-  opacity: 0;
-}
-
-.flipped .scan-front {
-  transform: rotateY(180deg);
-}
-
-.flipped .scan-back {
-  transform: rotateY(360deg);
-}
-
-.scan-container,
-.scan {
-  position: relative;
-  aspect-ratio: 300 / 420;
-  width: 100%;
-  height: auto;
-
-  &.sideways {
-    aspect-ratio: 420 / 300;
+  .scan-front,
+  .scan-back {
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    transition: transform 0.5s;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
-}
 
-.scan > img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  background: var(--palette-1);
-  border-radius: var(--rounded-scan);
+  .scan-front {
+    transform: rotateY(0deg);
+  }
+
+  .scan-back {
+    transform: rotateY(180deg);
+  }
+
+  .scan-flip-trigger {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .flipped .scan-front {
+    transform: rotateY(180deg);
+  }
+
+  .flipped .scan-back {
+    transform: rotateY(360deg);
+  }
+
+  .scan-container,
+  .scan {
+    position: relative;
+    aspect-ratio: 300 / 420;
+    width: 100%;
+    height: auto;
+
+    &.sideways {
+      aspect-ratio: 420 / 300;
+    }
+  }
+
+  .scan > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    background: var(--palette-1);
+    border-radius: var(--rounded-scan);
+  }
 }

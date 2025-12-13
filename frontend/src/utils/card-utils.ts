@@ -5,7 +5,6 @@ import type { Pack } from "@/store/schemas/pack.schema";
 import {
   CYCLES_WITH_STANDALONE_PACKS,
   ORIENTATION_CHANGED_CARDS,
-  PLAYER_CARDS_ENCOUNTER_BACK_IDS,
   REGEX_USES,
   SIDEWAYS_TYPE_CODES,
   SKILL_KEYS,
@@ -44,42 +43,17 @@ type CardBackType =
   | "player"
   | "encounter"
   | "card"
-  | "longest_night"
+  | "the_longest_night"
   | "artifact"
-  | "cthulhu";
+  | "cthulhu_deck";
 
 export function cardBackType(card: Card): CardBackType {
   if (doubleSided(card)) return "card";
 
-  if (card.faction_code === "mythos") {
-    // longest night enemy deck
-    if (
-      card.encounter_code === "the_longest_night" &&
-      card.type_code === "enemy"
-    ) {
-      return "longest_night";
-    }
-
-    // cthulhu deck
-    if (
-      card.encounter_code === "the_doom_of_arkham_part_2" &&
-      card.type_code === "story"
-    ) {
-      return "cthulhu";
-    }
-
-    return "encounter";
-  }
-
-  // tdc artifacts
-  if (card.pack_code === "tdcc" && card.real_traits?.includes("Artifact")) {
-    return "artifact";
-  }
+  if (card.back_type) return card.back_type as CardBackType;
 
   if (
-    // Cards from investigator expansions that have an encounter back.
-    PLAYER_CARDS_ENCOUNTER_BACK_IDS.includes(card.code) ||
-    // Campaign assets that don't go in player decks have encounter back.
+    card.faction_code === "mythos" ||
     (card.encounter_code && !card.deck_limit)
   ) {
     return "encounter";

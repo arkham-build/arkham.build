@@ -9,20 +9,18 @@ import css from "./card-recommender.module.css";
 
 type RecommendationBarProps = {
   card: Card;
+  data: Recommendation;
   decksAnalyzed: number;
   investigator: Card;
   isRelative: boolean;
-  recommendations: Record<string, Recommendation>;
 };
 
 export function RecommendationBar(props: RecommendationBarProps) {
-  const { card, decksAnalyzed, recommendations, isRelative, investigator } =
-    props;
+  const { card, data, decksAnalyzed, isRelative, investigator } = props;
 
   const { t } = useTranslation();
 
-  const recData = recommendations[card.code];
-  const recommendation = recData.recommendation;
+  const recommendation = data.recommendation;
   const wholeRec = Math.round(recommendation);
 
   const cssVariables = useMemo(
@@ -47,7 +45,7 @@ export function RecommendationBar(props: RecommendationBarProps) {
                 investigator: displayAttribute(investigator, "name"),
                 decksPercentage: wholeRec,
                 decksAnalyzed,
-                decksMatched: recData.decks_matched ?? 0,
+                decksMatched: data.decks_matched ?? 0,
                 name: displayAttribute(card, "name"),
               })
         }

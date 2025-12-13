@@ -120,6 +120,6 @@ logging:
 
 aliases:
   console: app exec --interactive --reuse -r web "sh"
-  ingest: app exec --primary --reuse -r web "npm run ingest"
+  ingest: app exec --primary --reuse -r web "npm run ingest -w backend"
   logs: app logs --follow
   db-console: accessory exec db --interactive --reuse "sh"

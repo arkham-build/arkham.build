@@ -69,8 +69,8 @@ function BrowseDecklists() {
     setSearchParams(initialSearchParams.current);
   };
 
-  const onSortByChange = (sortBy: SortType) => {
-    const nextState = { ...state, sortBy, offset: 0 };
+  const onSortByChange = (sort_by: SortType) => {
+    const nextState = { ...state, sort_by, offset: 0 };
     setState(nextState);
     setSearchParams(deckSearchQuery(nextState, 30));
   };

@@ -1,82 +1,84 @@
-.list {
-  --background-active: var(--palette-point-five);
-  --background-inactive: transparent;
-  --color-border: var(--palette-1);
+@layer ui-components {
+  .list {
+    --background-active: var(--palette-point-five);
+    --background-inactive: transparent;
+    --color-border: var(--palette-1);
 
-  display: flex;
-  flex-flow: row wrap;
-  border-bottom: 1px solid var(--color-border);
-}
+    display: flex;
+    flex-flow: row wrap;
+    border-bottom: 1px solid var(--color-border);
+  }
 
-.list > * {
-  flex: 1 1 auto;
-  text-align: left;
-}
+  .list > * {
+    flex: 1 1 auto;
+    text-align: left;
+  }
 
-.list.vertical {
-  flex-direction: column;
-  flex-wrap: nowrap;
-  border-bottom: none;
+  .list.vertical {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    border-bottom: none;
 
-  & > * {
+    & > * {
+      flex: 0 0 auto;
+    }
+  }
+
+  .trigger {
+    background-color: var(--background-inactive);
+    border-radius: 0;
+    border-width: 0;
+    border-bottom: 0.125rem solid transparent;
+    container-type: inline-size;
+    min-height: 1rem;
+    padding: 0.375rem 0.125rem;
+  }
+
+  .trigger.icon-only {
+    flex: 0 0 auto;
+    min-width: 3em;
+  }
+
+  .trigger svg,
+  .trigger .icon {
     flex: 0 0 auto;
   }
-}
 
-.trigger {
-  background-color: var(--background-inactive) !important;
-  border-radius: 0;
-  border-width: 0;
-  border-bottom: 0.125rem solid transparent;
-  container-type: inline-size;
-  min-height: 1rem;
-  padding: 0.375rem 0.125rem;
-}
+  .trigger span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
 
-.trigger.icon-only {
-  flex: 0 0 auto;
-  min-width: 3em;
-}
+  .trigger svg + span {
+    @container (max-width: 17ch) {
+      display: inline-block;
+      display: none;
+    }
+  }
 
-.trigger svg,
-.trigger .icon {
-  flex: 0 0 auto;
-}
+  .trigger[data-state="active"] {
+    background-color: var(--background-active);
+    border-bottom: 0.125rem solid var(--accent-color-dark, var(--nord-10));
+  }
 
-.trigger span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
+  .trigger[data-state="active"]:hover,
+  .trigger[data-state="active"]:focus-visible {
+    border-color: var(--accent-color, var(--nord-10));
+    z-index: 1;
+  }
 
-.trigger svg + span {
-  @container (max-width: 17ch) {
-    display: inline-block;
+  .content.mounted {
     display: none;
+
+    &[data-state="active"] {
+      display: block;
+    }
   }
-}
 
-.trigger[data-state="active"] {
-  background-color: var(--background-active) !important;
-  border-bottom: 0.125rem solid var(--accent-color-dark, var(--nord-10));
-}
-
-.trigger[data-state="active"]:hover,
-.trigger[data-state="active"]:focus-visible {
-  border-color: var(--accent-color, var(--nord-10));
-  z-index: 1;
-}
-
-.content.mounted {
-  display: none;
-
-  &[data-state="active"] {
-    display: block;
+  :root[data-theme="light"] .list {
+    --background-active: transparent;
+    --background-inactive: transparent;
+    --color-border: var(--palette-1);
   }
-}
-
-:root[data-theme="light"] .list {
-  --background-active: transparent;
-  --background-inactive: transparent;
-  --color-border: var(--palette-1);
 }

@@ -36,7 +36,6 @@ import { selectDecksDisplayList } from "@/store/selectors/deck-collection";
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
 import { FileInput } from "../ui/file-input";
-import { HotkeyTooltip } from "../ui/hotkey";
 import css from "./deck-collection.module.css";
 import { DeckCollectionFilters } from "./deck-collection-filters";
 import { DeckCollectionFolder } from "./deck-collection-folder";
@@ -117,13 +116,6 @@ export function DeckCollection() {
               <DeckCollectionImport />
             </Popover>
           )}
-          <Link asChild to="/deck/create">
-            <HotkeyTooltip keybind="n" description={t("deck.actions.create")}>
-              <Button as="a" data-testid="collection-create-deck">
-                <PlusIcon />
-              </Button>
-            </HotkeyTooltip>
-          </Link>
           <Link to="/decklists" asChild>
             <Button as="a" data-testid="collection-deck-guides" size="sm">
               <BookTextIcon />
@@ -167,6 +159,15 @@ export function DeckCollection() {
           </Popover>
         </div>
       </header>
+      <div className={css["cta"]}>
+        <Link asChild to="/deck/create">
+          <Button as="a" data-testid="collection-create-deck" size="sm">
+            <PlusIcon />
+            {t("deck.actions.create")}
+          </Button>
+        </Link>
+      </div>
+
       {deckCollection.total > 1 && (
         <div className={css["filters"]}>
           <DeckCollectionFilters

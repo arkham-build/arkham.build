@@ -1,7 +1,6 @@
 {
   "name": "@arkham-build/frontend",
   "private": true,
-  "version": "3.7.0",
   "type": "module",
   "engines": {
     "node": "24.x"

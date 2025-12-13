@@ -23,12 +23,15 @@ export function CardTabooText(props: Props) {
 
   if (!real_taboo_text_change && taboo_xp == null) return null;
 
+  const textTransformed = (card.taboo_set_id as number) > 5;
+
   return (
     <div className={cx("border-taboo", css["text"])} data-testid="card-taboo">
       {!!real_taboo_text_change && (
         <div>
           <DefaultTooltip
             options={TOOLTIP_OPTIONS}
+            paused={!textTransformed}
             tooltip={
               <span
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
@@ -43,34 +46,52 @@ export function CardTabooText(props: Props) {
             <p>
               <i className="icon-tablet color-taboo icon-text" />{" "}
               {t("common.taboo")} <br />
-              {t("common.taboo_mutated")}.
+              {textTransformed ? (
+                <p className={css["taboo-change"]}>
+                  {t("common.taboo_mutated")}.
+                </p>
+              ) : (
+                <p className={css["taboo-change"]}>
+                  <em
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
+                    dangerouslySetInnerHTML={{
+                      __html: parseCardTextHtml(
+                        displayAttribute(card, "taboo_text_change"),
+                      ),
+                    }}
+                  />
+                </p>
+              )}
             </p>
           </DefaultTooltip>
-          {showOriginalText && original != null && !!real_taboo_text_change && (
-            <details className={css["taboo-original-text"]}>
-              <summary>{t("common.taboo_original_text")}</summary>
-              <div className={cx(css["text"])}>
-                <div
-                  // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
-                  dangerouslySetInnerHTML={{
-                    __html: parseCardTextHtml(
-                      displayAttribute(original as Card, "text"),
-                    ),
-                  }}
-                />
-                {card.real_back_text && (
+          {textTransformed &&
+            showOriginalText &&
+            original != null &&
+            !!real_taboo_text_change && (
+              <details className={css["taboo-original-text"]}>
+                <summary>{t("common.taboo_original_text")}</summary>
+                <div className={cx(css["text"])}>
                   <div
                     // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
                     dangerouslySetInnerHTML={{
                       __html: parseCardTextHtml(
-                        displayAttribute(original as Card, "back_text"),
+                        displayAttribute(original as Card, "text"),
                       ),
                     }}
                   />
-                )}
-              </div>
-            </details>
-          )}
+                  {card.real_back_text && (
+                    <div
+                      // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
+                      dangerouslySetInnerHTML={{
+                        __html: parseCardTextHtml(
+                          displayAttribute(original as Card, "back_text"),
+                        ),
+                      }}
+                    />
+                  )}
+                </div>
+              </details>
+            )}
         </div>
       )}
       {children && <div className={css["taboo-extra"]}>{children}</div>}

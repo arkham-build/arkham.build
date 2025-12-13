@@ -1,108 +1,110 @@
-.button {
-  display: inline-flex;
-  gap: 0.375rem;
+@layer ui-base {
+  .button {
+    display: inline-flex;
+    gap: 0.375rem;
 
-  align-items: center;
-  border-radius: var(--rounded);
-  background: var(--palette-point-five);
-  color: var(--text);
-  border: 1px solid var(--palette-2);
-  font-family: var(--font-family-ui);
-  font-size: inherit;
-  user-select: none;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
+    align-items: center;
+    border-radius: var(--rounded);
+    background: var(--palette-point-five);
+    color: var(--text);
+    border: 1px solid var(--palette-2);
+    font-family: var(--font-family-ui);
+    font-size: inherit;
+    user-select: none;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
 
-  &[disabled] {
-    opacity: 0.3;
-    cursor: default;
+    &[disabled] {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    &:not([disabled]):hover {
+      background: var(--palette-1);
+      border-color: var(--palette-2);
+    }
+
+    &:not([disabled]):active {
+      background: var(--palette-2);
+      border-color: var(--palette-3);
+    }
+
+    &:focus-visible {
+      outline: 1px solid var(--focus);
+    }
   }
 
-  &:not([disabled]):hover {
-    background: var(--palette-1);
-    border-color: var(--palette-2);
+  .button:not(.none) {
+    font-size: var(--text-base);
+    padding: 0.375rem 0.75rem;
   }
 
-  &:not([disabled]):active {
-    background: var(--palette-2);
-    border-color: var(--palette-3);
+  a.button {
+    color: currentColor;
+    text-decoration: none;
   }
 
-  &:focus-visible {
-    outline: 1px solid var(--focus);
+  .button.full {
+    width: 100%;
   }
-}
 
-.button:not(.none) {
-  font-size: var(--text-base);
-  padding: 0.375rem 0.75rem;
-}
+  .button.primary {
+    background: var(--accent-color-dark, var(--nord-10));
+    border-color: transparent;
+    color: var(--accent-color-contrast, var(--nord-6));
 
-a.button {
-  color: currentColor;
-  text-decoration: none;
-}
-
-.button.full {
-  width: 100%;
-}
-
-.button.primary {
-  background: var(--accent-color-dark, var(--nord-10));
-  border-color: transparent;
-  color: var(--accent-color-contrast, var(--nord-6));
-
-  &:hover {
-    background: var(--accent-color, var(--nord-9));
+    &:hover {
+      background: var(--accent-color, var(--nord-9));
+    }
   }
-}
 
-.button.link,
-.button.bare {
-  color: currentColor;
-  background: none;
-  border-color: transparent;
-}
+  .button.link,
+  .button.bare {
+    color: currentColor;
+    background: none;
+    border-color: transparent;
+  }
 
-.button.link {
-  text-decoration: underline;
-}
+  .button.link {
+    text-decoration: underline;
+  }
 
-.button.xs {
-  font-size: var(--text-xs);
-  padding: 0.125rem 0.25rem;
-}
+  .button.xs {
+    font-size: var(--text-xs);
+    padding: 0.125rem 0.25rem;
+  }
 
-.button.sm {
-  font-size: var(--text-sm);
-  padding: 0.25rem 0.5rem;
-}
+  .button.sm {
+    font-size: var(--text-sm);
+    padding: 0.25rem 0.5rem;
+  }
 
-.button.lg {
-  padding: 0.5rem 0.75rem;
-}
+  .button.lg {
+    padding: 0.5rem 0.75rem;
+  }
 
-.button:not(.icon-only):not(.none) {
-  min-width: 5ch;
-}
+  .button:not(.icon-only):not(.none) {
+    min-width: 5ch;
+  }
 
-.button:not(.none).icon-only {
-  padding: 0.375rem;
-}
+  .button:not(.none).icon-only {
+    padding: 0.375rem;
+  }
 
-.button:not(.none).icon-only.xs {
-  padding: 0.125rem;
-}
+  .button:not(.none).icon-only.xs {
+    padding: 0.125rem;
+  }
 
-.button:not(.none).icon-only.sm {
-  padding: 0.25rem;
-}
+  .button:not(.none).icon-only.sm {
+    padding: 0.25rem;
+  }
 
-.button:not(.none).icon-only.lg {
-  padding: 0.5rem;
-}
+  .button:not(.none).icon-only.lg {
+    padding: 0.5rem;
+  }
 
-.button.round {
-  border-radius: 100%;
+  .button.round {
+    border-radius: 100%;
+  }
 }

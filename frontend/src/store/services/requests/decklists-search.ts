@@ -46,7 +46,7 @@ export function deckSearchQuery(
 export function parseDeckSearchQuery(
   search: URLSearchParams,
 ): DecklistsFiltersState {
-  const queries = search.keys().reduce(
+  const queries = Array.from(search.keys()).reduce(
     (acc, key) => {
       const values = search.getAll(key);
       acc[key] = values.length > 1 ? values : [values[0]];

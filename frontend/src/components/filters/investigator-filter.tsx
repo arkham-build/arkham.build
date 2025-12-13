@@ -1,19 +1,20 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import type { Card } from "@/store/schemas/card.schema";
 import {
   selectActiveListFilter,
   selectFilterChanges,
   selectInvestigatorOptions,
   selectListFilterProperties,
 } from "@/store/selectors/lists";
-import { selectLookupTables } from "@/store/selectors/shared";
+import { selectMetadata } from "@/store/selectors/shared";
 import { isInvestigatorFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
-import { displayAttribute } from "@/utils/card-utils";
+import { ListCardInner } from "../list-card/list-card-inner";
+import type { Item } from "../ui/custom-select";
+import css from "./filters.module.css";
 import type { FilterProps } from "./filters.types";
-import { SelectFilter } from "./primitives/select-filter";
+import { CustomSelectFilter } from "./primitives/custom-select-filter";
 
 export function InvestigatorFilter({
   id,
@@ -23,6 +24,8 @@ export function InvestigatorFilter({
   const { t } = useTranslation();
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
+
+  const metadata = useStore(selectMetadata);
 
   const listFilterProperties = useStore((state) =>
     selectListFilterProperties(state, resolvedDeck, targetDeck),
@@ -41,19 +44,39 @@ export function InvestigatorFilter({
     selectInvestigatorOptions(state, resolvedDeck, targetDeck),
   );
 
-  const lookupTables = useStore(selectLookupTables);
-  const otherVersionsTable = lookupTables.relations.otherVersions;
-
   const renderOption = useCallback(
-    (card: Card) => (
-      <option key={card.code} value={card.code}>
-        {displayAttribute(card, "name")}
-        {card.parallel && ` (${t("common.parallel")})`}
-        {otherVersionsTable[card.code] &&
-          ` (${t(`common.factions.${card.faction_code}`)})`}
-      </option>
-    ),
-    [otherVersionsTable, t],
+    (item: Item | undefined) => {
+      if (!item) {
+        return (
+          <div className={css["investigator-filter-empty"]}>
+            {t("ui.combobox.unknown_option")}
+          </div>
+        );
+      }
+
+      if (!item.value) {
+        return (
+          <div className={css["investigator-filter-empty"]}>
+            {t("filters.investigator.placeholder")}
+          </div>
+        );
+      }
+
+      const card = metadata.cards[item.value];
+      if (!card) return null;
+
+      return (
+        <ListCardInner
+          card={card}
+          cardLevelDisplay="icon-only"
+          cardShowCollectionNumber
+          disableModalOpen
+          omitBorders
+          size="xs"
+        />
+      );
+    },
+    [t, metadata],
   );
 
   if (!listFilterProperties.cardTypes.has("player") && !filter.value) {
@@ -61,14 +84,15 @@ export function InvestigatorFilter({
   }
 
   return (
-    <SelectFilter
+    <CustomSelectFilter
       changes={changes}
+      data-testid="investigator-filter"
       id={id}
       open={filter.open}
       options={options}
       renderOption={renderOption}
       title={t("filters.investigator.title")}
-      value={filter.value}
+      value={filter.value?.toString() ?? ""}
     />
   );
 }

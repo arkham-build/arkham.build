@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/noNonNullAssertion: checked */
 import {
   type Recommendation,
   RecommendationsRequestSchema,
@@ -14,7 +15,7 @@ import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Card } from "@/store/schemas/card.schema";
 import { type ListState, selectListCards } from "@/store/selectors/lists";
-import { selectMetadata } from "@/store/selectors/shared";
+import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import { getRecommendations } from "@/store/services/queries";
 import { ApiError } from "@/store/services/requests/shared";
 import type { ListDisplay } from "@/store/slices/lists.types";
@@ -206,6 +207,7 @@ function CardRecommenderInner(
   const { t } = useTranslation();
 
   const metadata = useStore(selectMetadata);
+  const lookupTables = useStore(selectLookupTables);
 
   const listDisplay = useMemo(
     () =>
@@ -227,18 +229,31 @@ function CardRecommenderInner(
     {} as Record<string, Recommendation>,
   );
 
-  const sortedCards = listState.cards
-    .filter(
-      (card) =>
-        indexedRecommendations[card.code] !== undefined &&
-        card.xp != null &&
-        indexedRecommendations[card.code].recommendation !== 0,
-    )
-    .sort(
-      (a, b) =>
-        indexedRecommendations[b.code].recommendation -
-        indexedRecommendations[a.code].recommendation,
-    );
+  const idMappings = new Map<string, string>();
+  const sortedCards: Card[] = [];
+
+  for (const card of listState.cards) {
+    if (card.xp == null) continue;
+
+    const match = [
+      card.code,
+      ...Object.keys(lookupTables.relations.duplicates[card.code] ?? {}),
+      ...Object.keys(lookupTables.relations.reprints[card.code] ?? {}),
+    ].find((code) => indexedRecommendations[code]?.recommendation > 0);
+
+    if (match) {
+      idMappings.set(card.code, match);
+      sortedCards.push(card);
+    }
+  }
+
+  sortedCards.sort((a, b) => {
+    const aScore =
+      indexedRecommendations[idMappings.get(a.code)!]?.recommendation ?? 0;
+    const bScore =
+      indexedRecommendations[idMappings.get(b.code)!]?.recommendation ?? 0;
+    return bScore - aScore;
+  });
 
   const newData: ListState = {
     cards: sortedCards,
@@ -254,10 +269,10 @@ function CardRecommenderInner(
       renderCardAfter: (card: Card) => (
         <RecommendationBar
           card={card}
+          data={indexedRecommendations[idMappings.get(card.code)!]}
           decksAnalyzed={decks_analyzed}
           isRelative={isRelative}
           investigator={investigator}
-          recommendations={indexedRecommendations}
         />
       ),
     }),
@@ -267,6 +282,7 @@ function CardRecommenderInner(
       investigator,
       indexedRecommendations,
       isRelative,
+      idMappings,
     ],
   );
 

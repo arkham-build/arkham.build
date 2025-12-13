@@ -1,20 +1,22 @@
-.thumbnail {
-  position: relative;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  border: 1px solid currentColor;
-  border-radius: var(--rounded);
-  backface-visibility: hidden;
-}
+@layer ui-components {
+  .thumbnail {
+    position: relative;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border: 1px solid currentColor;
+    border-radius: var(--rounded);
+    backface-visibility: hidden;
+  }
 
-.thumbnail img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  color: transparent;
+  .thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    color: transparent;
+  }
 }

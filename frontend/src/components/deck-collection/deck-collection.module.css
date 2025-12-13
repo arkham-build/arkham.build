@@ -106,3 +106,11 @@
 .filters {
   flex: 0 0 auto;
 }
+
+.cta {
+  padding-inline: 0.625rem;
+
+  & > * {
+    width: 100%;
+  }
+}

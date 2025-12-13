@@ -1,2 +1,2 @@
 # Run ingest job daily at 4:00 AM UTC
-0 4 * * * cd /app && npm run ingest
+0 4 * * * cd /app && npm run ingest -w backend

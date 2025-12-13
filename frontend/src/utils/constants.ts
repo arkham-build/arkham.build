@@ -212,8 +212,6 @@ export const SPECIAL_CARD_CODES = {
   VENGEFUL_SHADE: "90053",
 };
 
-export const PLAYER_CARDS_ENCOUNTER_BACK_IDS = ["06028", "11016"];
-
 export const ORIENTATION_CHANGED_CARDS = ["85037", "85038"];
 
 export const CARD_SET_ORDER = [

@@ -379,6 +379,18 @@ exports[`Deck Validation > invalid: Versatile with too many off-class cards 1`] 
 ]
 `;
 
+exports[`Deck Validation > invalid: at least x of trait 1`] = `
+[
+  {
+    "details": {
+      "count": "(10 / 11)",
+      "error": "Deck must have at least 11 Insights.",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
 exports[`Deck Validation > invalid: customizable level below investigator range 1`] = `
 [
   {

@@ -21,24 +21,30 @@ export function LocaleSelect(props: Props) {
       className={cx(css["select"], variant && css[variant])}
       id={id}
       items={options}
-      renderControl={(item) => (
-        <span className={css["control-row"]}>
-          {loading && <LoaderCircleIcon className="spin" />}
-          {variant === "compact" ? (
+      renderControl={(item) => {
+        if (!item) return null;
+        return (
+          <span className={css["control-row"]}>
+            {loading && <LoaderCircleIcon className="spin" />}
+            {variant === "compact" ? (
+              <LocaleIcon locale={item.value} />
+            ) : (
+              <>
+                <LocaleIcon locale={item.value} /> {item.label}
+              </>
+            )}
+          </span>
+        );
+      }}
+      renderItem={(item) => {
+        if (!item) return null;
+        return (
+          <span className={css["control-row"]}>
             <LocaleIcon locale={item.value} />
-          ) : (
-            <>
-              <LocaleIcon locale={item.value} /> {item.label}
-            </>
-          )}
-        </span>
-      )}
-      renderItem={(item) => (
-        <span className={css["control-row"]}>
-          <LocaleIcon locale={item.value} />
-          {item.label}
-        </span>
-      )}
+            {item.label}
+          </span>
+        );
+      }}
       value={value}
       variant={variant}
       onValueChange={onValueChange}

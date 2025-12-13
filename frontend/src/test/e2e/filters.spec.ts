@@ -232,7 +232,11 @@ test.describe("filters", () => {
     await fillSearch(page, "runic axe");
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
     await page.getByRole("heading", { name: "Investigator" }).click();
-    await page.getByTestId("filter-Investigator-input").selectOption("04002");
+    await page
+      .getByTestId("investigator-filter")
+      .getByTestId("custom-select-control")
+      .click();
+    await page.getByTestId("custom-select-option-04002").click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
     await page.getByRole("radio", { name: "Level 1-" }).click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();

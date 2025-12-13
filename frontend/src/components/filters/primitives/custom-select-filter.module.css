@@ -1,0 +1,6 @@
+@layer app {
+  .menu {
+    max-height: min(50dvh, 20rem);
+    width: min(18rem, 100dvw);
+  }
+}

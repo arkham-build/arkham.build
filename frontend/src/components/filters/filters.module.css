@@ -105,3 +105,10 @@
 .skill-filter .icon {
   font-size: var(--text-lg);
 }
+
+.investigator-filter-empty {
+  min-height: 2.25rem;
+  display: flex;
+  align-items: center;
+  padding-inline: 0.375rem;
+}

@@ -3,7 +3,7 @@
     "about": {
       "description": "<p>Informacje zawarte w tej aplikacji o <ffg>Horrorze w Arkham: Grze karcianej™</ffg>, zarówno tekstowe, jak i graficzne, są zastrzeżone przez © Fantasy Flight Games {{date}}. Ta aplikacja jest projektem fanowskim i nie jest produkowana, popierana, wspierana ani powiązana z Fantasy Flight Games.</p><p>Aplikacja została stworzona przez <felix_url>Felix'a</felix_url> i <contrib_url>kontrybutorów</contrib_url> w celu wsparcia społeczności Horroru w Arkham: Gry karcianej. Kod źródłowy tego projektu jest dostępny na <github_url>Github'ie</github_url>. Recenzje i zgłoszenia błędów są mile widziane za pośrednictwem Github'a lub dedykowanego kanału na serwerze Discord Mythos Busters.</p><p>Wszystkie dzieła sztuki i ilustracje są własnością intelektualną ich twórców. Wszystkie obrazki i grafiki Horroru w Arkham: Gry karcianej są własnością intelektualną Fantasy Flight Games.</p>",
       "hall_of_fame": {
-        "arkham_db": "Za dostęp do OAuth, ustrukturyzowane dane kart i za bycie wieloletnią podstawą społeczności.",
+        "arkham_db": "Za dostęp do OAuth ArkhamDB.",
         "card_design": "Za dostosowany do aplikacji projekt kart.",
         "code": "Za znaczący wkład w kod aplikacji.",
         "customization_api": "Za dostęp do API z arkuszami usprawnień.",
@@ -63,7 +63,9 @@
         "usable_by": "Pula kart: {{prefix}}{{name}}",
         "usable_by_interpolated": "Pula kart: <tooltip>{{name}}</tooltip>",
         "view_backside": "Rewers",
-        "who_can_take": "Kto może wziąć tę kartę?"
+        "who_can_take": "Kto może wziąć tę kartę?",
+        "show_original_image": "Pokaż obrazek oryginalnej wersji karty",
+        "show_taboo_image": "Pokaż obrazek wersji tabu karty"
       },
       "faq": {
         "empty": "Brak dostępnych wpisów FAQ.",
@@ -75,6 +77,7 @@
       "section_actions": "Akcje",
       "section_deckbuilding": "Budowa talii",
       "section_faq": "FAQ",
+      "section_printings": "Wydruki",
       "thumbnail": "Miniatura {{code}}"
     },
     "choose_investigator": {
@@ -199,6 +202,7 @@
         "value": "Poziom {{level}}"
       },
       "more_actions": "Więcej akcji",
+      "myriad": "Niezliczone",
       "no_entries": "Brak wpisów",
       "none": "Brak",
       "nonexceptional": "Nie-wyjątkowa",
@@ -230,8 +234,8 @@
         "replacement": "Karty osobiste (wersje Replacement)",
         "requiredCards": "Karty osobiste",
         "restrictedTo": "Ograniczone do",
-        "specialist": "Specialist",
-        "specialist_investigators": "Specialist Investigators"
+        "specialist": "Karty specjalistyczne",
+        "specialist_investigators": "Badacze mogący użyć tej karty specjalistycznej"
       },
       "reset": "Resetuj",
       "seal": "Pieczęć",
@@ -253,12 +257,13 @@
         "body": "Ciało",
         "hand": "Ręka",
         "hand x2": "Ręka x2",
+        "head": "Head",
         "none": "Bez strefy",
         "tarot": "Tarot"
       },
       "sort_asc": "Sortuj rosnąco",
       "sort_desc": "Sortuj malejąco",
-      "specialist": "Specialist",
+      "specialist": "Specjalistyczne",
       "subtype": {
         "basicweakness": "Podstawowe osłabienie",
         "none": "Brak podtypu",
@@ -719,9 +724,9 @@
         "edit_short": "Edytuj",
         "export_json": "Eksportuj JSON",
         "export_text": "Eksportuj tekst",
+        "unarchive": "Przywróć talię",
         "upgrade": "Ulepsz talię",
-        "upgrade_short": "Ulepsz",
-        "unarchive": "Przywróć talię"
+        "upgrade_short": "Ulepsz"
       },
       "annotation": "Adnotacje",
       "annotation_tooltip": "Karta ma adnotacje",
@@ -888,6 +893,8 @@
           "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "„Campaign Play-Along” jest powracającym wydarzeniem organizowanym na serwerze Discord Mythos Busters. Jest ono zaprojektowane do wspólnego grania w kampanie Arkham, dzielenia się historiami i ogólnie tworzenia poczucia wspólnoty.",
           "choose_cycle_placeholder": "Wybierz cykle...",
+          "collection": "Kolekcja",
+          "collection_help": "Ustaw swoją aktualną <settings_link>Kolekcję</settings_link> kart jako pula tej talii. Może to być przydatne w celu zamrożenia puli kart talii lub udostępnienia „ustawień wstępnych” dla osób dzielących tę samą fizyczną kolekcję kart.",
           "configure_environment": "Skonfiguruj środowisko gry",
           "current": "Aktualne",
           "current_help": "Podczas budowania talii w środowisku Aktualnym gracze mogą budować talię wyłącznie przy użyciu kart z zestawu podstawowego, pięciu talii początkowych badaczy i trzech najnowszych rozszerzeń badacza.",
@@ -1119,6 +1126,7 @@
     },
     "draw_simulator": {
       "draw_tooltip": "Wylosuj {{count}} {{cards}}.",
+      "mulligan_mode": "Tryb pierwszej ręki",
       "redraw": "Wylosuj wybrane ponownie",
       "redraw_tooltip": "Wybrane karty zostaną przesunięte na koniec talii, a następnie zastąpione nowymi kartami.",
       "reset": "Resetuj",
@@ -1252,7 +1260,7 @@
       "properties": {
         "heals_damage": "Leczy obrażenia",
         "heals_horror": "Leczy przerażenie",
-        "succeed_by": "Succeed by",
+        "succeed_by": "Sukces o",
         "title": "Właściwości"
       },
       "reset_filter": "Resetuj filtr",
@@ -1352,8 +1360,11 @@
         "display_as_list": "Tylko nazwa karty",
         "display_as_list_text": "Nazwa z tekstem karty",
         "display_as_scans": "Skan karty",
+        "display_as_scans_grouped": "Skan karty (zgrupowany)",
         "jump_to": "Przeskocz do...",
-        "list_settings": "Ustawienia listy"
+        "list_settings": "Ustawienia listy",
+        "sort": "Sortowanie",
+        "sort_default": "Domyślne użytkownika"
       },
       "reset": "Przywróć domyślne",
       "search": {

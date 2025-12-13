@@ -26,12 +26,12 @@ export function CardsCombobox(props: Props) {
   const resultRenderer = useCallback((item: Card) => {
     return (
       <ListCardInner
+        card={item}
         cardLevelDisplay="icon-only"
         cardShowCollectionNumber
         omitBorders
         omitThumbnail
         size="xs"
-        card={item}
       />
     );
   }, []);

@@ -28,6 +28,7 @@ import {
   isSpecialist,
   official,
   oldFormatCardUrl,
+  parseCardTitle,
 } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { displayPackName, formatRelationTitle } from "@/utils/formatting";
@@ -105,7 +106,6 @@ function CardSetNav(props: { currentCard: CardWithRelations }) {
         .filter(
           and([
             filterBacksides,
-            (card) => !card.hidden,
             (card) => {
               if (targetPack.reprint && targetPack.reprint?.type !== "rcore") {
                 const cardPack = metadata.packs[card.pack_code];
@@ -185,7 +185,12 @@ function CardSetLink(props: {
           as="a"
         >
           {shift < 0 && <ChevronsLeftIcon />}
-          {displayAttribute(targetCard, "name")}
+          <span
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
+            dangerouslySetInnerHTML={{
+              __html: parseCardTitle(displayAttribute(targetCard, "name")),
+            }}
+          />
           {shift > 0 && <ChevronsRightIcon />}
         </Button>
       </Link>

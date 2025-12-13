@@ -215,14 +215,12 @@ function query(config: Config) {
         id # used for taboos
         illustrator
         is_unique
-        linked
         myriad
         official
         pack_code
         pack_position
         permanent
         position
-        preview
         quantity
         real_back_flavor
         real_back_name
