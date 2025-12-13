@@ -683,7 +683,6 @@ const selectBaseListCards = createSelector(
 export const selectListCards = createSelector(
   selectMetadata,
   selectLookupTables,
-  (state: StoreState) => state.settings,
   selectActiveList,
   selectBaseListCards,
   selectLocaleSortingCollator,
@@ -697,7 +696,6 @@ export const selectListCards = createSelector(
   (
     metadata,
     lookupTables,
-    settings,
     activeList,
     _filteredCards,
     sortingCollator,
