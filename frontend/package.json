@@ -71,7 +71,7 @@
     "happy-dom": "20.0.2",
     "postcss-extend-rule": "4.0.0",
     "rollup-plugin-webpack-stats": "2.1.1",
-    "vite": "7.1.5",
+    "vite": "7.1.11",
     "vitest": "3.2.4",
     "wrangler": "4.27.0"
   }
