@@ -7,22 +7,31 @@ import css from "./printing.module.css";
 
 type Props = {
   active?: boolean;
+  actionNode?: React.ReactNode;
   className?: string;
-  onClick?: (card: Card) => void;
   printing: PrintingT;
 };
 
-export function Printing({ active, className, onClick, printing }: Props) {
+export function Printing({ actionNode, active, className, printing }: Props) {
   const { pack, card } = printing;
 
   return (
     <PrintingInner
       active={active}
+      actionNode={actionNode}
       className={className}
       card={card}
       icon={<PackIcon code={pack.code} />}
-      name={displayPackName(pack)}
-      onClick={onClick}
+      name={
+        <a
+          className="link-current"
+          href={`/browse/pack/${pack.code}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {displayPackName(pack)}
+        </a>
+      }
       position={card.position}
       quantity={card.quantity}
     />
@@ -30,35 +39,32 @@ export function Printing({ active, className, onClick, printing }: Props) {
 }
 
 type PrintingInnerProps = {
+  actionNode?: React.ReactNode;
   active?: boolean;
   card: Card;
   className?: string;
   icon: React.ReactNode;
-  name: string;
-  onClick?: (card: Card) => void;
+  name: React.ReactNode;
   position: number | string;
   quantity?: number;
 };
 
 export function PrintingInner({
   active,
-  card,
+  actionNode,
   className,
   icon,
   name,
-  onClick,
   position,
   quantity,
 }: PrintingInnerProps) {
-  const El = onClick ? "button" : "span";
-
   return (
-    <El
-      className={cx(css["printing"], active && css["active"], className)}
-      onClick={onClick ? () => onClick(card) : undefined}
-    >
+    <span className={cx(css["printing"], active && css["active"], className)}>
       <span className={css["printing-icon"]}>{icon}</span> {name}
-      <span className="nowrap">&#65119;{position}</span>
+      <span className="nowrap">
+        <small>&nbsp;#&nbsp;</small>
+        {position}
+      </span>
       {!!quantity && (
         <>
           {" "}
@@ -67,6 +73,9 @@ export function PrintingInner({
           </span>
         </>
       )}
-    </El>
+      {actionNode && (
+        <span className={css["printing-action"]}>{actionNode}</span>
+      )}
+    </span>
   );
 }

@@ -18,6 +18,12 @@ import { useAgathaEasterEggHint } from "./utils/easter-egg-agatha";
 
 const Browse = lazy(() => import("./pages/browse/browse"));
 
+const BrowseEncounterSet = lazy(
+  () => import("./pages/browse/browse-encounter-set"),
+);
+
+const BrowsePack = lazy(() => import("./pages/browse/browse-pack"));
+
 const DeckEdit = lazy(() => import("./pages/deck-edit/deck-edit"));
 
 const ChooseInvestigator = lazy(
@@ -104,6 +110,11 @@ function AppInner() {
           <Router hook={useBrowserLocation}>
             <Switch>
               <Route component={Browse} path="/" />
+              <Route component={BrowsePack} path="/browse/pack/:pack_code" />
+              <Route
+                component={BrowseEncounterSet}
+                path="/browse/encounter_set/:encounter_code"
+              />
               <Route component={Search} path="/search" />
               <Route component={CardView} path="/card/:code" />
               <Route

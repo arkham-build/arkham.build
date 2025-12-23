@@ -361,6 +361,10 @@
     font-size: var(--text-xs);
   }
 
+  .meta-property + .meta-property {
+    margin-top: 0.125rem;
+  }
+
   .meta-property [class^="encounters-"],
   .meta-property svg {
     display: inline-block;

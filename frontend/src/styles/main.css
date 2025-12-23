@@ -255,6 +255,10 @@
     }
   }
 
+  .link-current {
+    color: currentColor;
+  }
+
   small,
   .small {
     font-size: var(--text-xs);

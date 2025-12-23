@@ -966,8 +966,10 @@ function mergeInitialValues(
   return {
     ...initialValues,
     card_type: initialValues.card_type ?? "player",
-    fan_made_content: getInitialFanMadeContentFilter(settings),
-    ownership: getInitialOwnershipFilter(settings),
+    fan_made_content:
+      initialValues.fan_made_content ??
+      getInitialFanMadeContentFilter(settings),
+    ownership: initialValues.ownership ?? getInitialOwnershipFilter(settings),
   };
 }
 

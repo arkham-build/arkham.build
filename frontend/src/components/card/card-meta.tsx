@@ -1,13 +1,12 @@
+import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
 import type { Card } from "@/store/schemas/card.schema";
-import {
-  type Printing as PrintingT,
-  selectPrintingsForCard,
-} from "@/store/selectors/shared";
+import { selectPrintingsForCard } from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
 import EncounterIcon from "../icons/encounter-icon";
 import { Printing, PrintingInner } from "../printing";
+import { Button } from "../ui/button";
 import css from "./card.module.css";
 
 type Props = {
@@ -63,24 +62,44 @@ export function CardMeta(props: Props) {
 function PlayerEntry(props: Props) {
   const { onPrintingSelect, resolvedCard } = props;
 
+  const { t } = useTranslation();
+
   const printings = useStore((state) =>
     selectPrintingsForCard(state, resolvedCard.card.code),
   );
+
+  const cardCode = resolvedCard.card.code;
 
   return (
     <>
       <hr className={css["meta-divider"]} />
 
-      {printings?.map((printing) => (
-        <p className={css["meta-property"]} key={printing.id}>
-          <Printing
-            active={printingActive(resolvedCard.card.code, printing, printings)}
-            key={printing.id}
-            printing={printing}
-            onClick={onPrintingSelect}
-          />
-        </p>
-      ))}
+      {printings?.map((printing) => {
+        const active = cardCode === printing.card.code;
+
+        const hasVersions =
+          printings.filter((p) => p.card.code !== cardCode).length > 0;
+
+        return (
+          <p className={css["meta-property"]} key={printing.id}>
+            <Printing
+              active={active && hasVersions}
+              key={printing.id}
+              printing={printing}
+              actionNode={
+                !active && hasVersions && onPrintingSelect ? (
+                  <Button
+                    size="xxs"
+                    onClick={() => onPrintingSelect(printing.card)}
+                  >
+                    {t("common.select")}
+                  </Button>
+                ) : undefined
+              }
+            />
+          </p>
+        );
+      })}
     </>
   );
 }
@@ -96,6 +115,8 @@ function EncounterEntry(props: Props) {
 
   if (!encounterSet) return null;
 
+  const cardCode = resolvedCard.card.code;
+
   return (
     <>
       <hr className={css["meta-divider"]} />
@@ -103,7 +124,16 @@ function EncounterEntry(props: Props) {
         <PrintingInner
           card={card}
           icon={<EncounterIcon code={card.encounter_code} />}
-          name={encounterSet.name}
+          name={
+            <a
+              className="link-current"
+              href={`/browse/pack/${encounterSet.code}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {encounterSet.name}
+            </a>
+          }
           position={getEncounterPositions(
             card.encounter_position ?? 1,
             card.quantity,
@@ -111,15 +141,22 @@ function EncounterEntry(props: Props) {
         />
       </p>
       <hr className={css["meta-divider"]} />
-      {printings?.map((printing) => (
-        <p className={css["meta-property"]} key={printing.id}>
-          <Printing
-            active={printingActive(resolvedCard.card.code, printing, printings)}
-            key={printing.id}
-            printing={printing}
-          />
-        </p>
-      ))}
+      {printings?.map((printing) => {
+        const active = cardCode === printing.card.code;
+
+        const hasVersions =
+          printings.filter((p) => p.card.code !== cardCode).length > 0;
+
+        return (
+          <p className={css["meta-property"]} key={printing.id}>
+            <Printing
+              active={active && hasVersions}
+              key={printing.id}
+              printing={printing}
+            />
+          </p>
+        );
+      })}
     </>
   );
 }
@@ -129,15 +166,4 @@ function getEncounterPositions(position: number, quantity: number) {
   const start = position;
   const end = position + quantity - 1;
   return `${start}-${end}`;
-}
-
-function printingActive(
-  cardCode: string,
-  printing: PrintingT,
-  printings: PrintingT[],
-) {
-  return (
-    cardCode === printing.card.code &&
-    printings.filter((p) => p.card.code !== cardCode).length > 0
-  );
 }

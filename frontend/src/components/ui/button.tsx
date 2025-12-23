@@ -12,7 +12,7 @@ export type Props<T extends ButtonType> = React.ComponentProps<T> & {
   disabled?: boolean;
   iconOnly?: boolean;
   variant?: "primary" | "secondary" | "bare" | "link";
-  size?: "xs" | "sm" | "lg" | "full" | "none";
+  size?: "xxs" | "xs" | "sm" | "lg" | "full" | "none";
   tooltip?: React.ReactNode;
   round?: boolean;
 };

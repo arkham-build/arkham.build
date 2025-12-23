@@ -70,6 +70,11 @@
     text-decoration: underline;
   }
 
+  .button.xxs {
+    font-size: var(--text-2xs);
+    padding: 0.125rem 0.25rem;
+  }
+
   .button.xs {
     font-size: var(--text-xs);
     padding: 0.125rem 0.25rem;
