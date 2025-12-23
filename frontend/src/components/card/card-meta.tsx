@@ -127,7 +127,7 @@ function EncounterEntry(props: Props) {
           name={
             <a
               className="link-current"
-              href={`/browse/pack/${encounterSet.code}`}
+              href={`/browse/encounter_set/${encounterSet.code}`}
               target="_blank"
               rel="noreferrer"
             >

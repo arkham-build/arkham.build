@@ -72,7 +72,14 @@ export function GroupLabel(props: GroupLabelProps) {
     return (
       <span className={className}>
         <PackIcon className={css["icon"]} code={segment} />
-        <span>{keyLabel}</span>
+        <a
+          className="link-current"
+          href={`/browse/cycle/${segment}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {keyLabel}
+        </a>
       </span>
     );
   }
@@ -81,7 +88,14 @@ export function GroupLabel(props: GroupLabelProps) {
     return (
       <span className={className}>
         <EncounterIcon className={css["icon"]} code={segment} />
-        <span>{keyLabel}</span>
+        <a
+          className="link-current"
+          href={`/browse/encounter_set/${segment}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {keyLabel}
+        </a>
       </span>
     );
   }
@@ -118,7 +132,14 @@ export function GroupLabel(props: GroupLabelProps) {
     return (
       <span className={className}>
         <PackIcon className={css["icon"]} code={segment} />
-        <span>{keyLabel}</span>
+        <a
+          className="link-current"
+          href={`/browse/pack/${segment}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {keyLabel}
+        </a>
       </span>
     );
   }
