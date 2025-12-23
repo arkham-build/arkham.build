@@ -18,7 +18,6 @@ function BrowsePack() {
       filterKey="pack"
       filterValue={[pack_code]}
       listKeyPrefix="browse-pack"
-      paramValue={pack_code}
       icon={<PackIcon code={pack_code} />}
       title={displayPackName(pack)}
     />

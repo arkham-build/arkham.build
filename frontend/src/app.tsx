@@ -24,6 +24,8 @@ const BrowseEncounterSet = lazy(
 
 const BrowsePack = lazy(() => import("./pages/browse/browse-pack"));
 
+const BrowseCycle = lazy(() => import("./pages/browse/browse-cycle"));
+
 const DeckEdit = lazy(() => import("./pages/deck-edit/deck-edit"));
 
 const ChooseInvestigator = lazy(
@@ -111,6 +113,7 @@ function AppInner() {
             <Switch>
               <Route component={Browse} path="/" />
               <Route component={BrowsePack} path="/browse/pack/:pack_code" />
+              <Route component={BrowseCycle} path="/browse/cycle/:cycle_code" />
               <Route
                 component={BrowseEncounterSet}
                 path="/browse/encounter_set/:encounter_code"

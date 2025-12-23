@@ -19,7 +19,6 @@ function BrowseEncounterSet() {
       filterKey="encounter_set"
       filterValue={[encounter_code]}
       listKeyPrefix="browse-encounter-set"
-      paramValue={encounter_code}
       icon={<EncounterIcon code={encounter_code} />}
       title={encounterSet.name}
     />

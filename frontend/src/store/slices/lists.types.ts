@@ -189,6 +189,7 @@ export type ListsSlice = {
       showOwnershipFilter?: boolean;
       showInvestigatorFilter?: boolean;
       search?: string;
+      additionalFilters?: FilterKey[];
     },
   ): void;
 

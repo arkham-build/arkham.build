@@ -4,12 +4,15 @@ import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provide
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
 import { selectIsInitialized } from "@/store/selectors/shared";
-import type { FilterMapping } from "@/store/slices/lists.types";
+import type { FilterKey, FilterMapping } from "@/store/slices/lists.types";
 import { useDocumentTitle } from "@/utils/use-document-title";
 
 interface Props {
-  filterKey: "pack" | "encounter_set";
-  filterValue: FilterMapping["pack"] | FilterMapping["encounter_set"];
+  filterKey: "pack" | "encounter_set" | "cycle";
+  filterValue:
+    | FilterMapping["pack"]
+    | FilterMapping["encounter_set"]
+    | FilterMapping["cycle"];
   listKeyPrefix: string;
   icon: React.ReactNode;
   title: string;
@@ -31,12 +34,21 @@ export function BrowseWithFilter(props: Props) {
   const listKey = `${listKeyPrefix}-${filterValue.at(0)}`;
 
   useEffect(() => {
-    addList(listKey, {
-      card_type: "",
-      ownership: "all",
-      fan_made_content: "all",
-      [filterKey]: filterValue,
-    });
+    const additionalFilters: FilterKey[] =
+      filterKey === "cycle" ? ["illustrator", "cycle"] : ["illustrator"];
+
+    addList(
+      listKey,
+      {
+        card_type: "",
+        ownership: "all",
+        fan_made_content: "all",
+        [filterKey]: filterValue,
+      },
+      {
+        additionalFilters,
+      },
+    );
 
     setActiveList(listKey);
 

@@ -544,6 +544,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       search: "",
       showOwnershipFilter: true,
       showInvestigatorFilter: true,
+      additionalFilters: ["illustrator"],
     },
   ) {
     set((state) => {
@@ -554,7 +555,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       lists[key] = makeList({
         display: getDisplaySettings(values, state.settings),
         filters: cardsFilters({
-          additionalFilters: ["illustrator"],
+          additionalFilters: opts.additionalFilters ?? ["illustrator"],
           showOwnershipFilter: opts.showOwnershipFilter,
           showInvestigatorsFilter: opts.showOwnershipFilter,
         }),
