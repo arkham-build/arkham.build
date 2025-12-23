@@ -59,6 +59,8 @@ Equality operator. Applies the following:
 * `string`: Filters cards where attribute fuzzy matches the search string. This matches the current search implementation.
 * `text`: Filters cards where attribute fuzzy matches the search string. This matches the current search implementation.
 
+When fuzzy matching, the code looks for the **right**-hand side string in the **left**-hand side string.
+
 ```
 bonded = true
 xp = 3

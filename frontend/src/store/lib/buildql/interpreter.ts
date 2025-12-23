@@ -269,14 +269,17 @@ export class Interpreter {
     compare: (left: FieldValue | RegExp, right: FieldValue | RegExp) => boolean,
   ): boolean {
     const leftValue = this.getValue(left, card);
+
     const rightValue = this.getValue(right, card, {
       operator,
       otherValue: leftValue,
     });
+
     const leftValueWithContext = this.getValue(left, card, {
       operator,
       otherValue: rightValue,
     });
+
     return compare(leftValueWithContext, rightValue);
   }
 
@@ -532,11 +535,8 @@ export class Interpreter {
         return normalizedLeft === normalizedRight;
       }
 
-      // Use the shorter string as needle for fuzzy matching.
-      const needleRight = normalizedRight.length < normalizedLeft.length;
-
       if (mode === "loose") {
-        const needleStr = needleRight ? normalizedRight : normalizedLeft;
+        const needleStr = normalizedRight;
 
         const cachedNeedle = this.needleCache.get(needleStr);
 
@@ -548,14 +548,12 @@ export class Interpreter {
           this.needleCache.set(needleStr, needle);
         }
 
-        const matchStr = needleRight ? normalizedLeft : normalizedRight;
+        const matchStr = normalizedLeft;
         return fuzzyMatch([matchStr], needle);
       }
 
       if (fieldType === "text") {
-        return needleRight
-          ? normalizedLeft.includes(normalizedRight)
-          : normalizedRight.includes(normalizedLeft);
+        return normalizedLeft.includes(normalizedRight);
       }
 
       return normalizedLeft === normalizedRight;
