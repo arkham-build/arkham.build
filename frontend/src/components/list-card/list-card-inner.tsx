@@ -53,6 +53,7 @@ export type Props = {
   highlightQuantity?: boolean;
   isActive?: boolean;
   isForbidden?: boolean;
+  isCardNotInLimitedPool?: boolean;
   isIgnored?: number;
   isRemoved?: boolean;
   limitOverride?: number;
@@ -91,6 +92,7 @@ export function ListCardInner(props: Props) {
     highlightQuantity,
     isActive,
     isForbidden,
+    isCardNotInLimitedPool,
     isIgnored,
     isRemoved,
     limitOverride,
@@ -155,6 +157,7 @@ export function ListCardInner(props: Props) {
         !omitBorders && css["borders"],
         isRemoved && quantity === 0 && css["removed"],
         isForbidden && css["forbidden"],
+        isCardNotInLimitedPool && css["card-not-in-limited-pool"],
         isActive && css["active"],
         showCardText && css["card-text"],
         css[card.faction_code],

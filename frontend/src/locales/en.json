@@ -783,6 +783,7 @@
         "title": "Deck tools"
       },
       "validation": {
+        "card_not_in_limited_pool": "The following cards are not part of this deck's card pool:",
         "forbidden_cards": "Deck contains forbidden cards (cards not permitted by Investigator):",
         "invalid": "Deck is invalid.",
         "invalid_card_count": "Deck contains invalid number of copies of the following cards:",

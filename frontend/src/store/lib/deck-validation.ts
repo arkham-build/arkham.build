@@ -13,9 +13,11 @@ import type {
   Card,
   DeckOption,
 } from "../schemas/card.schema";
+import type { MultiselectFilter } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {
+  filterCardPool,
   filterInvestigatorAccess,
   filterInvestigatorWeaknessAccess,
   makeOptionFilter,
@@ -28,9 +30,10 @@ export type DeckValidationResult = {
   errors: DeckValidationError[];
 };
 
-type ValidationError =
+export type ValidationError =
   | "DECK_REQUIREMENTS_NOT_MET"
   | "FORBIDDEN"
+  | "CARD_NOT_IN_LIMITED_POOL"
   | "INVALID_CARD_COUNT"
   | "INVALID_DECK_OPTION"
   | "INVALID_INVESTIGATOR"
@@ -91,7 +94,17 @@ export type ForbiddenCardError = {
   type: "FORBIDDEN";
   details: {
     code: string;
+    real_name: string;
     target: "slots" | "extraSlots";
+  }[];
+};
+
+export type CardNotInLimitedPoolError = {
+  type: "CARD_NOT_IN_LIMITED_POOL";
+  details: {
+    code: string;
+    real_name: string;
+    xp: number;
   }[];
 };
 
@@ -119,6 +132,12 @@ export function isForbiddenCardError(
   return error.type === "FORBIDDEN";
 }
 
+export function isCardNotInLimitedPoolError(
+  error: DeckValidationError,
+): error is CardNotInLimitedPoolError {
+  return error.type === "CARD_NOT_IN_LIMITED_POOL";
+}
+
 export function isTooFewCardsError(
   error: DeckValidationError,
 ): error is TooFewCardsError {
@@ -141,6 +160,7 @@ export type DeckValidationError =
   | BaseError
   | InvalidCardError
   | ForbiddenCardError
+  | CardNotInLimitedPoolError
   | DeckOptionsError
   | TooManyCardsError
   | TooFewCardsError
@@ -204,6 +224,10 @@ export function validateDeck(
   if (deck.hasExtraDeck) {
     errors.push(...validateExtraDeckSize(deck));
     errors.push(...validateSlots(deck, metadata, lookupTables, "extraSlots"));
+  }
+
+  if (deck.cardPool?.length) {
+    errors.push(...validateLimitedCardPool(deck, metadata, lookupTables));
   }
 
   timeEnd("validate_deck");
@@ -334,6 +358,47 @@ function validateExtraDeckSize(deck: ResolvedDeck): DeckValidationError[] {
           },
         ]
     : [];
+}
+
+function validateLimitedCardPool(
+  deck: ResolvedDeck,
+  metadata: Metadata,
+  lookupTables: LookupTables,
+): DeckValidationError[] {
+  const cardPoolFilter = filterCardPool(
+    deck.cardPool as MultiselectFilter,
+    metadata,
+    lookupTables,
+  );
+
+  const limitedPoolFilter = (c: Card) => {
+    if (!cardPoolFilter || cardPoolFilter(c)) return true;
+    const duplicates = lookupTables.relations.duplicates[c.code];
+    if (!duplicates) return false;
+    return Object.keys(duplicates).some((code) =>
+      cardPoolFilter(metadata.cards[code]),
+    );
+  };
+
+  const limitedPoolViolation: Card[] = [
+    ...Object.values(deck.cards["slots"]),
+    ...Object.values(deck.cards["sideSlots"]),
+  ]
+    .map((se) => se.card)
+    .filter((card) => !card.subtype_code && !limitedPoolFilter(card));
+
+  const errors: DeckValidationError[] = [];
+  if (limitedPoolViolation.length) {
+    errors.push({
+      type: "CARD_NOT_IN_LIMITED_POOL" as const,
+      details: Object.values(limitedPoolViolation).map((card) => ({
+        code: card.code,
+        real_name: card.real_name,
+        xp: card.xp ? card.xp : 0,
+      })),
+    });
+  }
+  return errors;
 }
 
 function validateSlots(

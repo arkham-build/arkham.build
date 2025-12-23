@@ -235,12 +235,16 @@
    * Variants
    */
 
-  .listcard-wrapper.forbidden {
+  .listcard-wrapper.forbidden,
+  .listcard-wrapper.card-not-in-limited-pool {
     filter: grayscale(1);
   }
 
-  .listcard-wrapper.forbidden .name button:not(:hover) {
-    text-decoration: line-through;
+  .listcard-wrapper.forbidden,
+  .listcard-wrapper.card-not-in-limited-pool {
+    .name button:not(:hover) {
+      text-decoration: line-through;
+    }
   }
 
   .listcard-wrapper.emoved {

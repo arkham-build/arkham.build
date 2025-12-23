@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   type DeckValidationResult,
+  isCardNotInLimitedPoolError,
   isDeckOptionsError,
   isDeckRequirementsNotMetError,
   isForbiddenCardError,
@@ -95,6 +96,19 @@ export function DecklistValidation(props: Props) {
                       {error.details.map((detail) => (
                         <li key={detail.code}>
                           {displayAttribute(cards[detail.code], "name")}
+                        </li>
+                      ))}
+                    </ol>
+                  </>
+                )}
+                {isCardNotInLimitedPoolError(error) && (
+                  <>
+                    {t("deck.validation.card_not_in_limited_pool")}
+                    <ol className={css["decklist-validation-result-cards"]}>
+                      {error.details.map((detail) => (
+                        <li key={detail.code}>
+                          {displayAttribute(cards[detail.code], "name")} (
+                          {detail.xp})
                         </li>
                       ))}
                     </ol>

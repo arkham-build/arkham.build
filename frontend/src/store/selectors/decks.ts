@@ -9,7 +9,14 @@ import {
 } from "../lib/deck-edits";
 import { groupDeckCards } from "../lib/deck-grouping";
 import type { ChangeStats, UpgradeStats } from "../lib/deck-upgrades";
-import { type ForbiddenCardError, validateDeck } from "../lib/deck-validation";
+import {
+  type CardNotInLimitedPoolError,
+  type DeckValidationError,
+  type DeckValidationResult,
+  type ForbiddenCardError,
+  type ValidationError,
+  validateDeck,
+} from "../lib/deck-validation";
 import { limitedSlotOccupation } from "../lib/limited-slots";
 import type { LookupTables } from "../lib/lookup-tables.types";
 import { makeSortFunction, sortAlphabeticalLatin } from "../lib/sorting";
@@ -102,12 +109,30 @@ export const selectDeckValid = createSelector(
   },
 );
 
+function findErrorByType(
+  deckValidation: DeckValidationResult,
+  type: ValidationError,
+) {
+  return deckValidation.errors.find(
+    (x: DeckValidationError) => x.type === type,
+  );
+}
+
 export const selectForbiddenCards = createSelector(
   selectDeckValid,
   (deckValidation) => {
-    const forbidden = deckValidation.errors.find((x) => x.type === "FORBIDDEN");
+    const forbidden = findErrorByType(deckValidation, "FORBIDDEN");
     if (!forbidden) return [];
     return (forbidden as ForbiddenCardError).details;
+  },
+);
+
+export const selectCardsNotInLimitedPool = createSelector(
+  selectDeckValid,
+  (deckValidation) => {
+    const cnilp = findErrorByType(deckValidation, "CARD_NOT_IN_LIMITED_POOL");
+    if (!cnilp) return [];
+    return (cnilp as CardNotInLimitedPoolError).details;
   },
 );
 

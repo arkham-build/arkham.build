@@ -13,7 +13,10 @@ import { getDeckLimitOverride } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Card } from "@/store/schemas/card.schema";
 import type { Slots } from "@/store/schemas/deck.schema";
-import { selectForbiddenCards } from "@/store/selectors/decks";
+import {
+  selectCardsNotInLimitedPool,
+  selectForbiddenCards,
+} from "@/store/selectors/decks";
 import {
   selectCanCheckOwnership,
   selectCardOwnedCount,
@@ -46,6 +49,9 @@ export function DecklistGroup(props: DecklistGroupsProps) {
   const lookupTables = useStore(selectLookupTables);
   const canCheckOwnership = useStore(selectCanCheckOwnership);
   const forbiddenCards = useStore((state) => selectForbiddenCards(state, deck));
+  const cardsNotInLimitedPool = useStore((state) =>
+    selectCardsNotInLimitedPool(state, deck),
+  );
   const cardOwnedCount = useStore(selectCardOwnedCount);
 
   const quantities = resolveQuantities(grouping);
@@ -125,6 +131,13 @@ export function DecklistGroup(props: DecklistGroupsProps) {
                           (x.code === card.code ||
                             x.code === card.duplicate_of_code) &&
                           x.target === grouping.id,
+                      ) != null
+                    }
+                    isCardNotInLimitedPool={
+                      cardsNotInLimitedPool.find(
+                        (x) =>
+                          x.code === card.code ||
+                          x.code === card.duplicate_of_code,
                       ) != null
                     }
                     card={card}
