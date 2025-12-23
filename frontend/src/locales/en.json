@@ -1183,6 +1183,10 @@
         "odd": "Odd",
         "title": "Cost"
       },
+      "cycle": {
+        "title": "Cycle",
+        "placeholder": "Select cycles..."
+      },
       "encounter_set": {
         "placeholder": "Select encounter sets...",
         "title": "Encounter set"

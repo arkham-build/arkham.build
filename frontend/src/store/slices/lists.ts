@@ -171,6 +171,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       switch (filterValues[id].type) {
         case "illustrator":
         case "action":
+        case "cycle":
         case "encounter_set":
         case "trait":
         case "type":
@@ -692,6 +693,7 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
     case "illustrator":
     case "investigator_card_access":
     case "action":
+    case "cycle":
     case "encounter_set":
     case "pack":
     case "trait":

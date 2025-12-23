@@ -284,6 +284,23 @@ export function filterCost(filterState: CostFilter) {
 }
 
 /**
+ * Cycle
+ */
+
+export function filterCycleCode(
+  filterState: MultiselectFilter,
+  metadata: Metadata,
+) {
+  if (isEmpty(filterState)) return undefined;
+
+  return (card: Card) => {
+    const pack = metadata.packs[card.pack_code];
+    if (!pack) return false;
+    return filterState.includes(pack.cycle_code);
+  };
+}
+
+/**
  * Encounter Set
  */
 

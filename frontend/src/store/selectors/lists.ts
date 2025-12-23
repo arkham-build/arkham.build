@@ -34,6 +34,7 @@ import {
   filterBacksides,
   filterCardPool,
   filterCost,
+  filterCycleCode,
   filterDuplicates,
   filterDuplicatesFromContext,
   filterEncounterCards,
@@ -149,6 +150,15 @@ function makeUserFilter(
       case "cost": {
         const value = filterValue.value as CostFilter;
         if (value.range) filters.push(filterCost(value));
+        break;
+      }
+
+      case "cycle": {
+        const value = filterValue.value as MultiselectFilter;
+        if (value.length) {
+          const filter = filterCycleCode(value, metadata);
+          if (filter) filters.push(filter);
+        }
         break;
       }
 
@@ -1282,6 +1292,25 @@ export const selectCampaignCycles = createSelector(
     ),
 );
 
+export const selectCycleMapper = createSelector(selectMetadata, (metadata) => {
+  return (code: string) => metadata.cycles[code];
+});
+
+export const selectCycleOptions = createSelector(
+  selectCyclesAndPacks,
+  (cycles) => cycles,
+);
+
+const selectCycleChanges = createSelector(
+  selectMetadata,
+  (_: StoreState, value: MultiselectFilter) => value,
+  (metadata, value) => {
+    return value
+      .map((id) => metadata.cycles[id].name)
+      .join(` ${i18n.t("filters.or")} `);
+  },
+);
+
 export const selectPackMapper = createSelector(selectMetadata, (metadata) => {
   return (code: string) => metadata.packs[code];
 });
@@ -1820,6 +1849,10 @@ export function selectFilterChanges<T extends keyof FilterMapping>(
 
     case "cost": {
       return selectCostChanges(value as CostFilter);
+    }
+
+    case "cycle": {
+      return selectCycleChanges(state, value as MultiselectFilter);
     }
 
     case "encounter_set": {

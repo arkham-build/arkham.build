@@ -20,6 +20,7 @@ import { ActionFilter } from "./action-filter";
 import { AssetFilter } from "./asset-filter";
 import { CardTypeFilter } from "./card-type-filter";
 import { CostFilter } from "./cost-filter";
+import { CycleFilter } from "./cycle-filter";
 import { EncounterSetFilter } from "./encounter-set-filter";
 import { FactionFilter } from "./faction-filter";
 import { FanMadeContentFilter } from "./fan-made-content-filter";
@@ -134,6 +135,7 @@ export function Filters(props: Props) {
                   />
                 )}
                 {filter === "cost" && <CostFilter {...params} />}
+                {filter === "cycle" && <CycleFilter {...params} />}
                 {filter === "encounter_set" && (
                   <EncounterSetFilter {...params} />
                 )}

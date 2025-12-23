@@ -81,6 +81,7 @@ export type FilterMapping = {
   asset: AssetFilter;
   card_type: CardTypeFilter;
   cost: CostFilter;
+  cycle: MultiselectFilter;
   encounter_set: MultiselectFilter;
   faction: MultiselectFilter;
   fan_made_content: FanMadeContentFilter;

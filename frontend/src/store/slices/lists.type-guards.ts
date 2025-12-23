@@ -37,6 +37,12 @@ export function isCostFilterObject(
   return !!filter && filter.type === "cost";
 }
 
+export function isCycleFilterObject(
+  filter?: FilterObject<FilterKey>,
+): filter is FilterObject<"cycle"> {
+  return !!filter && filter.type === "cycle";
+}
+
 export function isEncounterSetFilterObject(
   filter?: FilterObject<FilterKey>,
 ): filter is FilterObject<"encounter_set"> {
