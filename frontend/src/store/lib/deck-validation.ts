@@ -25,7 +25,7 @@ import type { DeckMeta, ResolvedDeck } from "./types";
 
 export type DeckValidationResult = {
   valid: boolean;
-  errors: Error[];
+  errors: DeckValidationError[];
 };
 
 type ValidationError =
@@ -95,43 +95,49 @@ export type ForbiddenCardError = {
   }[];
 };
 
-export function isTooManyCardsError(error: Error): error is TooManyCardsError {
+export function isTooManyCardsError(
+  error: DeckValidationError,
+): error is TooManyCardsError {
   return error.type === "TOO_MANY_CARDS";
 }
 
-export function isDeckOptionsError(error: Error): error is DeckOptionsError {
+export function isDeckOptionsError(
+  error: DeckValidationError,
+): error is DeckOptionsError {
   return error.type === "INVALID_DECK_OPTION";
 }
 
 export function isInvalidCardCountError(
-  error: Error,
+  error: DeckValidationError,
 ): error is InvalidCardError {
   return error.type === "INVALID_CARD_COUNT";
 }
 
 export function isForbiddenCardError(
-  error: Error,
+  error: DeckValidationError,
 ): error is ForbiddenCardError {
   return error.type === "FORBIDDEN";
 }
 
-export function isTooFewCardsError(error: Error): error is TooFewCardsError {
+export function isTooFewCardsError(
+  error: DeckValidationError,
+): error is TooFewCardsError {
   return error.type === "TOO_FEW_CARDS";
 }
 
 export function isDeckRequirementsNotMetError(
-  error: Error,
+  error: DeckValidationError,
 ): error is DeckRequirementsNotMetError {
   return error.type === "DECK_REQUIREMENTS_NOT_MET";
 }
 
 export function isInvalidInvestigatorError(
-  error: Error,
+  error: DeckValidationError,
 ): error is BaseError & { type: "INVALID_INVESTIGATOR" } {
   return error.type === "INVALID_INVESTIGATOR";
 }
 
-type Error =
+export type DeckValidationError =
   | BaseError
   | InvalidCardError
   | ForbiddenCardError
@@ -151,7 +157,7 @@ function findIndexReversed<T>(
   return -1;
 }
 
-function formatReturnValue(errors: Error[]) {
+function formatReturnValue(errors: DeckValidationError[]) {
   return { valid: errors.length === 0, errors };
 }
 
@@ -190,7 +196,7 @@ export function validateDeck(
     };
   }
 
-  const errors: Error[] = [
+  const errors: DeckValidationError[] = [
     ...validateDeckSize(deck),
     ...validateSlots(deck, metadata, lookupTables),
   ];
@@ -236,7 +242,7 @@ function validateInvestigator(deck: ResolvedDeck) {
   return valid;
 }
 
-function validateDeckSize(deck: ResolvedDeck): Error[] {
+function validateDeckSize(deck: ResolvedDeck): DeckValidationError[] {
   const investigatorBack = deck.investigatorBack.card;
 
   let investigatorDeckSize = investigatorBack.deck_requirements?.size ?? 0;
@@ -295,7 +301,7 @@ function validateDeckSize(deck: ResolvedDeck): Error[] {
     : [];
 }
 
-function validateExtraDeckSize(deck: ResolvedDeck): Error[] {
+function validateExtraDeckSize(deck: ResolvedDeck): DeckValidationError[] {
   const investigatorBack = deck.investigatorBack.card;
 
   // FIXME: this is a hack. Instead, we should not count signatures towards side deck size.
@@ -335,7 +341,7 @@ function validateSlots(
   metadata: Metadata,
   lookupTables: LookupTables,
   mode: "slots" | "extraSlots" = "slots",
-): Error[] {
+): DeckValidationError[] {
   const validators: SlotValidator[] = [
     new DeckLimitsValidator(deck),
     new DeckRequiredCardsValidator(deck, lookupTables, mode),
@@ -379,7 +385,7 @@ function validateSlots(
 
 interface SlotValidator {
   add(card: Card, quantity: number): void;
-  validate(): Error[];
+  validate(): DeckValidationError[];
 }
 
 class DeckLimitsValidator implements SlotValidator {
@@ -423,7 +429,7 @@ class DeckLimitsValidator implements SlotValidator {
     }
   }
 
-  validate(): Error[] {
+  validate(): DeckValidationError[] {
     const details = Object.values(this.violations);
     return details.length
       ? [
@@ -496,7 +502,7 @@ class DeckRequiredCardsValidator implements SlotValidator {
   }
 
   // TODO: validate that signatures are pairs.
-  validate(): Error[] {
+  validate(): DeckValidationError[] {
     return [
       ...this.validateCardRequirements(),
       ...this.validateRandomRequirements(),
@@ -504,7 +510,7 @@ class DeckRequiredCardsValidator implements SlotValidator {
     ];
   }
 
-  validateCardRequirements(): Error[] {
+  validateCardRequirements(): DeckValidationError[] {
     const requirementCounts = Object.keys(this.requirements.card ?? {}).reduce(
       (counts, code) => {
         counts[code] = 0;
@@ -586,7 +592,7 @@ class DeckRequiredCardsValidator implements SlotValidator {
   // TODO: the rbw check is currently hardcoded as it is the only random requirement
   // and the json data structure does not allow us to sufficiently handle edge cases such as
   // "The Bell Tolls", which is a "weakness" that counts as a "basicweakness".
-  validateRandomRequirements(): Error[] {
+  validateRandomRequirements(): DeckValidationError[] {
     if (!this.requirements.random?.length) return [];
 
     const valid =
@@ -608,7 +614,7 @@ class DeckRequiredCardsValidator implements SlotValidator {
         ];
   }
 
-  validateParallelFront(): Error[] {
+  validateParallelFront(): DeckValidationError[] {
     if (
       this.investigatorFront.code === SPECIAL_CARD_CODES.PARALLEL_WENDY &&
       !this.cards[SPECIAL_CARD_CODES.TIDAL_MEMENTO]
@@ -760,7 +766,7 @@ class DeckOptionsValidator implements SlotValidator {
   }
 
   validate() {
-    const errors: Error[] = [
+    const errors: DeckValidationError[] = [
       ...this.validateAtLeast(this.deckOptions),
       ...this.validateLimit(this.deckOptions),
     ];
@@ -793,8 +799,8 @@ class DeckOptionsValidator implements SlotValidator {
     return errors;
   }
 
-  validateAtLeast(options: DeckOption[]): Error[] {
-    const errors: Error[] = [];
+  validateAtLeast(options: DeckOption[]): DeckValidationError[] {
+    const errors: DeckValidationError[] = [];
 
     for (const option of options) {
       if (!option.atleast) continue;
@@ -873,8 +879,8 @@ class DeckOptionsValidator implements SlotValidator {
     return errors;
   }
 
-  validateLimit(options: DeckOption[]): Error[] {
-    const errors: Error[] = [];
+  validateLimit(options: DeckOption[]): DeckValidationError[] {
+    const errors: DeckValidationError[] = [];
 
     /**
      * Tracks which card copies have been matched by a deck option.
@@ -1005,8 +1011,8 @@ class SideDeckLimitsValidator implements SlotValidator {
     }
   }
 
-  validate(): Error[] {
-    const errors: Error[] = [];
+  validate(): DeckValidationError[] {
+    const errors: DeckValidationError[] = [];
 
     for (let i = 0; i < this.cards.length; i += 1) {
       const card = this.cards[i];
