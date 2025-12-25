@@ -378,9 +378,17 @@ function validateLimitedCardPool(
   const limitedPoolViolation: Card[] = [
     ...Object.values(deck.cards["slots"]),
     ...Object.values(deck.cards["sideSlots"]),
+    ...Object.values(deck.cards["extraSlots"]),
   ]
     .map((se) => se.card)
-    .filter((card) => !card.subtype_code && !limitedPoolFilter(card));
+    .filter(
+      (card) =>
+        !card.subtype_code &&
+        !limitedPoolFilter(card) &&
+        (deck.slots[card.code] ||
+          deck.sideSlots?.[card.code] ||
+          deck.extraSlots?.[card.code]),
+    );
 
   const errors: DeckValidationError[] = [];
   if (limitedPoolViolation.length) {
