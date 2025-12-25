@@ -13,7 +13,6 @@ import type {
   Card,
   DeckOption,
 } from "../schemas/card.schema";
-import type { MultiselectFilter } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {
@@ -365,11 +364,7 @@ function validateLimitedCardPool(
   metadata: Metadata,
   lookupTables: LookupTables,
 ): DeckValidationError[] {
-  const cardPoolFilter = filterCardPool(
-    deck.cardPool as MultiselectFilter,
-    metadata,
-    lookupTables,
-  );
+  const cardPoolFilter = filterCardPool(deck.cardPool, metadata, lookupTables);
 
   const limitedPoolFilter = (c: Card) => {
     if (!cardPoolFilter || cardPoolFilter(c)) return true;

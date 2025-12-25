@@ -193,10 +193,12 @@ export function filterAttribute(attributeFilter: AttributeFilter) {
  */
 
 export function filterCardPool(
-  value: MultiselectFilter,
+  value: MultiselectFilter | undefined,
   metadata: Metadata,
   lookupTables: LookupTables,
 ) {
+  if (isEmpty(value)) return undefined;
+
   const [cards, rest] = partition(value, (key) => key.startsWith("card:"));
 
   const packFilter = filterPackCode(

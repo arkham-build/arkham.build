@@ -242,7 +242,7 @@
 
   .listcard-wrapper.forbidden,
   .listcard-wrapper.card-not-in-limited-pool {
-    .name button:not(:hover) {
+    & .name :where(button, span):not(:hover) {
       text-decoration: line-through;
     }
   }
