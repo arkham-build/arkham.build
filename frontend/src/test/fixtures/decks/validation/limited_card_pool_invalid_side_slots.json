@@ -1,0 +1,43 @@
+{
+  "id": "PfoSflJbV29r4cj",
+  "name": "Invalid Limited Card Pool - Side Slots Not In Pool",
+  "date_creation": "2025-12-25T07:39:59.985Z",
+  "date_update": "2025-12-25T07:40:33.304Z",
+  "description_md": "",
+  "investigator_code": "01001",
+  "slots": {
+    "01000": 1,
+    "01016": 2,
+    "01017": 2,
+    "01018": 2,
+    "01019": 2,
+    "01020": 2,
+    "01021": 2,
+    "01022": 2,
+    "01023": 2,
+    "01024": 2,
+    "01025": 2,
+    "01026": 2,
+    "01030": 2,
+    "01086": 2,
+    "01087": 2,
+    "01006": 1,
+    "01007": 1,
+    "01042": 2
+  },
+  "sideSlots": {
+    "03020": 2
+  },
+  "ignoreDeckLimitSlots": null,
+  "version": "0.2",
+  "xp": null,
+  "xp_spent": null,
+  "xp_adjustment": null,
+  "exile_string": null,
+  "taboo_id": null,
+  "meta": "{\"card_pool\":\"core\"}",
+  "tags": "",
+  "previous_deck": null,
+  "next_deck": null,
+  "problem": "investigator"
+}

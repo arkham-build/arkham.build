@@ -484,6 +484,51 @@ exports[`Deck Validation > invalid: extra deck with too many copies of a card 1`
 ]
 `;
 
+exports[`Deck Validation > invalid: limited card pool with cards not in pool 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "03020",
+        "real_name": ".32 Colt",
+        "xp": 0,
+      },
+    ],
+    "type": "CARD_NOT_IN_LIMITED_POOL",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: limited card pool with side slots not in pool 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "03020",
+        "real_name": ".32 Colt",
+        "xp": 0,
+      },
+    ],
+    "type": "CARD_NOT_IN_LIMITED_POOL",
+  },
+]
+`;
+
+exports[`Deck Validation > invalid: limited card pool with upgraded cards not in pool 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "02150",
+        "real_name": "Deduction",
+        "xp": 2,
+      },
+    ],
+    "type": "CARD_NOT_IN_LIMITED_POOL",
+  },
+]
+`;
+
 exports[`Deck Validation > invalid: missing advanced signature 1`] = `
 [
   {

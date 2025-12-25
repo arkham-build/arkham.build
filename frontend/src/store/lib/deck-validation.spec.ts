@@ -250,6 +250,27 @@ const tests = [
   // Joe Diamond
   ["valid: at least x of trait", "atleast_traits_valid"],
   ["invalid: at least x of trait", "atleast_traits_invalid"],
+  // Limited card pool
+  [
+    "valid: limited card pool with all cards in pool",
+    "limited_card_pool_valid",
+  ],
+  [
+    "valid: limited card pool with duplicate cards in pool",
+    "limited_card_pool_valid_with_duplicates",
+  ],
+  [
+    "invalid: limited card pool with cards not in pool",
+    "limited_card_pool_invalid_cards_not_in_pool",
+  ],
+  [
+    "invalid: limited card pool with upgraded cards not in pool",
+    "limited_card_pool_invalid_upgraded_cards",
+  ],
+  [
+    "invalid: limited card pool with side slots not in pool",
+    "limited_card_pool_invalid_side_slots",
+  ],
 ];
 
 function validate(store: StoreApi<StoreState>, deck: Deck) {
