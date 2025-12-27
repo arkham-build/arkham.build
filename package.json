@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "fmt": "biome check --write",
+    "rules:dev": "npx chokidar-cli \"**/rules.html\" -c \"npm run rules:sync -w frontend && npm run fmt\"",
     "lint": "biome check"
   },
   "dependencies": {
