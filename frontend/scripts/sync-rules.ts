@@ -20,8 +20,8 @@ async function main() {
   doc.querySelectorAll("[style]").forEach((element) => {
     let styles = element.getAttribute("style") ?? "";
     if (styles.includes("color")) {
-      styles = styles.replace("color:red", "color:var(--red);");
-      styles = styles.replace("color:blue", "color:var(--blue);");
+      styles = styles.replace("color: red", "color: var(--red);");
+      styles = styles.replace("color: blue", "color: var(--blue);");
       element.setAttribute("style", styles || "");
     } else {
       element.removeAttribute("style");
