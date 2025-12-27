@@ -3,14 +3,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { type Node, Window } from "happy-dom";
 
-const RULES_URL =
-  "https://raw.githubusercontent.com/Kamalisk/arkhamdb/refs/heads/arkham/src/AppBundle/Resources/views/Default/rulesreference.html.twig";
-const RULES_REGEX = /{% block body %}(?<text>.*){% endblock %}/s;
-
 await main();
 
 async function main() {
-  const rulesText = await fetchRulesText();
+  const rulesText = fs.readFileSync(
+    path.resolve(import.meta.dirname, "../src/assets/rules.html"),
+    "utf-8",
+  );
+
   const doc = documentFromText(rulesText);
 
   doc.querySelectorAll("script").forEach((script) => {
@@ -124,13 +124,6 @@ function wrapReactComponent(html: string): string {
 
   export default RulesReference;
   `;
-}
-
-async function fetchRulesText() {
-  const res = await fetch(RULES_URL);
-  const text = RULES_REGEX.exec(await res.text())?.groups?.text;
-  assert(text, `Failed to extract rules text from ${RULES_URL}`);
-  return text;
 }
 
 function documentFromText(text: string) {
