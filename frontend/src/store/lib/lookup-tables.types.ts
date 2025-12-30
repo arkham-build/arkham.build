@@ -47,6 +47,7 @@ export type LookupTables = {
     otherVersions: LookupTable<string>;
   };
   reprintPacksByPack: LookupTable<string>;
+  encounterCodesByPack: LookupTable<string>;
   skillBoosts: LookupTable<string>;
   subtypeCode: LookupTable<string>;
   traits: LookupTable<string>;

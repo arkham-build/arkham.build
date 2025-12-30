@@ -40,6 +40,7 @@ function getInitialLookupTables(): LookupTables {
       requiredCards: {},
       restrictedTo: {},
     },
+    encounterCodesByPack: {},
     reprintPacksByPack: {},
     skillBoosts: {},
     subtypeCode: {},
@@ -115,6 +116,11 @@ function indexByCodes(tables: LookupTables, card: Card) {
 
   if (card.encounter_code) {
     setInLookupTable(card.code, tables.encounterCode, card.encounter_code);
+    setInLookupTable(
+      card.encounter_code,
+      tables.encounterCodesByPack,
+      card.pack_code,
+    );
   }
 }
 
@@ -472,14 +478,25 @@ function addPacksToLookupTables(
   for (const pack of packs) {
     setInLookupTable(pack.code, lookupTables.packsByCycle, pack.cycle_code);
 
-    if (reprintsByCycleCode[pack.cycle_code]) {
+    const cycleReprints = reprintsByCycleCode[pack.cycle_code];
+
+    if (cycleReprints) {
       for (const reprintPackCode of reprintsByCycleCode[pack.cycle_code]) {
+        const reprintPack = metadata.packs[reprintPackCode];
+
         if (!pack.reprint && reprintPackCode !== pack.code) {
           setInLookupTable(
             reprintPackCode,
             lookupTables.reprintPacksByPack,
             pack.code,
           );
+
+          if (reprintPack.reprint?.type !== "player") {
+            lookupTables.encounterCodesByPack[reprintPackCode] = {
+              ...lookupTables.encounterCodesByPack[reprintPackCode],
+              ...lookupTables.encounterCodesByPack[pack.code],
+            };
+          }
         }
       }
     }
