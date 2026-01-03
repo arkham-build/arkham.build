@@ -7,26 +7,6 @@
   min-height: 0;
 }
 
-.recommender-header {
-  flex: 0 0 auto;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--font-family-ui);
-}
-
-.recommender-header span {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-}
-
-.scroller {
-  flex: 1 1 auto;
-  border-top: 1px solid transparent;
-  border-bottom: 1px solid transparent;
-}
-
 .recommendation-bar-container {
   width: calc(100% - 4em);
   display: inline-block;

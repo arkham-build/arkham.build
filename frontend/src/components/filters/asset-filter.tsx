@@ -20,7 +20,7 @@ import { RangeSelect } from "../ui/range-select";
 import css from "./filters.module.css";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 type Option = {
   code: string;
@@ -62,8 +62,8 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const slotsMapper = useStore(selectSlotsMapper);
   const usesMapper = useStore(selectUsesMapper);
 
-  const { onReset, onChange, onOpenChange } =
-    useFilterCallbacks<Partial<AssetFilterType>>(id);
+  const { onReset, onChange, onOpenChange, locked } =
+    useFilter<Partial<AssetFilterType>>(id);
 
   const onChangeUses = useCallback(
     (value: Coded[]) => {
@@ -119,12 +119,14 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     <FilterContainer
       className={css["asset-filter"]}
       changes={changes}
+      locked={locked}
       onOpenChange={onOpenChange}
       onReset={onReset}
       open={filter.open}
       title={t("filters.asset.title")}
     >
       <Combobox
+        disabled={locked}
         id="asset-slots"
         items={options.slots}
         label={t("filters.slot.title")}
@@ -143,6 +145,7 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
         </legend>
         {options.skillBoosts.map((skill) => (
           <Checkbox
+            disabled={locked}
             checked={filter.value.skillBoosts.includes(skill)}
             id={`asset-skillboost-${skill}`}
             key={skill}
@@ -153,6 +156,7 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       </fieldset>
 
       <Combobox
+        disabled={locked}
         id="asset-uses"
         items={options.uses}
         label={t("filters.uses.title")}
@@ -166,6 +170,7 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       />
 
       <RangeSelect
+        disabled={locked}
         id="asset-health"
         label={t("filters.health.title")}
         max={options.health.max}
@@ -178,6 +183,7 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       />
 
       <RangeSelect
+        disabled={locked}
         id="asset-sanity"
         label={t("filters.sanity.title")}
         max={options.sanity.max}
@@ -190,6 +196,7 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       />
 
       <Checkbox
+        disabled={locked}
         checked={filter.value.healthX}
         id="asset-health-x"
         label={t("filters.health_sanity_x")}

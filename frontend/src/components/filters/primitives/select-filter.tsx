@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterContainer } from "./filter-container";
-import { useFilterCallbacks } from "./filter-hooks";
+import { useFilter } from "./filter-hooks";
 
 type Props<T, V extends number | string | undefined> = {
   id: number;
@@ -21,7 +21,7 @@ export function SelectFilter<T, V extends number | string | undefined>(
     props;
 
   const { t } = useTranslation();
-  const { onReset, onOpenChange, onChange } = useFilterCallbacks<V>(id);
+  const { onReset, onOpenChange, onChange, locked } = useFilter<V>(id);
 
   const onValueChange = useCallback(
     (evt: React.ChangeEvent<HTMLSelectElement>) => {
@@ -37,12 +37,14 @@ export function SelectFilter<T, V extends number | string | undefined>(
   return (
     <FilterContainer
       changes={changes}
+      locked={locked}
       onOpenChange={onOpenChange}
       onReset={onReset}
       open={open}
       title={title}
     >
       <select
+        disabled={locked}
         onChange={onValueChange}
         data-testid={`filter-${title}-input`}
         value={value ?? ""}

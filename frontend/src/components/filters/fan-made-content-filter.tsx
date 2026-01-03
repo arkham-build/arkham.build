@@ -15,7 +15,7 @@ import {
 } from "../ui/radio-button-group";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 export function FanMadeContentFilter({ id }: FilterProps) {
   const { t } = useTranslation();
@@ -26,7 +26,7 @@ export function FanMadeContentFilter({ id }: FilterProps) {
     "filter must be a fan-made-content filter",
   );
 
-  const { onChange, onOpenChange } = useFilterCallbacks(id);
+  const { onChange, onOpenChange, locked } = useFilter(id);
 
   const changes = useStore((state) =>
     selectFilterChanges(state, filter.type, filter.value),
@@ -47,12 +47,14 @@ export function FanMadeContentFilter({ id }: FilterProps) {
       alwaysShowChanges
       changes={changes}
       data-testid="filter-fan-made-content"
+      locked={locked}
       noChangesLabel={t("filters.fan_made_content.all")}
       onOpenChange={onOpenChange}
       open={filter.open}
       title={t("filters.fan_made_content.title")}
     >
       <RadioButtonGroup
+        disabled={locked}
         icons
         onValueChange={onChange}
         value={filter.value ?? ""}

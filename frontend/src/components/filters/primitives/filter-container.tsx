@@ -1,7 +1,8 @@
 import type { CollapsibleProps } from "@radix-ui/react-collapsible";
-import { CircleIcon, XIcon } from "lucide-react";
+import { CircleIcon, LockIcon, XIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { cx } from "@/utils/cx";
 import { Button } from "../../ui/button";
 import { Collapsible, CollapsibleContent } from "../../ui/collapsible";
 import css from "./filter-container.module.css";
@@ -11,6 +12,7 @@ type Props = {
   changes?: string;
   children: React.ReactNode;
   className?: string;
+  locked?: boolean;
   noChangesLabel?: string;
   nonCollapsibleContent?: React.ReactNode;
   onOpenChange: (val: boolean) => void;
@@ -24,6 +26,7 @@ export function FilterContainer(props: Props) {
     changes,
     children,
     className,
+    locked,
     noChangesLabel,
     nonCollapsibleContent,
     alwaysShowChanges,
@@ -50,7 +53,9 @@ export function FilterContainer(props: Props) {
     <Collapsible
       {...rest}
       actions={
-        changes && onReset ? (
+        locked ? (
+          <LockIcon className={css["locked-icon"]} />
+        ) : changes && onReset ? (
           <Button
             onClick={onFilterReset}
             iconOnly
@@ -61,7 +66,7 @@ export function FilterContainer(props: Props) {
           </Button>
         ) : undefined
       }
-      className={className}
+      className={cx(className, locked && css["locked"])}
       onOpenChange={onOpenChange}
       open={open}
       sub={

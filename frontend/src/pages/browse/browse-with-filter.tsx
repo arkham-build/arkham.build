@@ -52,6 +52,7 @@ export function BrowseWithFilter(props: Props) {
       },
       {
         additionalFilters,
+        lockedFilters: new Set([filterKey]),
       },
     );
 

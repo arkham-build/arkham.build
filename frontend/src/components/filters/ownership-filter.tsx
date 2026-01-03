@@ -13,14 +13,14 @@ import {
 } from "../ui/radio-button-group";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 export function OwnershipFilter({ id }: FilterProps) {
   const { t } = useTranslation();
   const filter = useStore((state) => selectActiveListFilter(state, id));
   assert(isOwnershipFilterObject(filter), "filter must be an ownership filter");
 
-  const { onChange, onOpenChange } = useFilterCallbacks(id);
+  const { onChange, onOpenChange, locked } = useFilter(id);
 
   const changes = useStore((state) =>
     selectFilterChanges(state, filter.type, filter.value),
@@ -30,11 +30,13 @@ export function OwnershipFilter({ id }: FilterProps) {
     <FilterContainer
       alwaysShowChanges
       changes={changes}
+      locked={locked}
       onOpenChange={onOpenChange}
       open={filter.open}
       title={t("filters.ownership.title")}
     >
       <RadioButtonGroup
+        disabled={locked}
         icons
         onValueChange={onChange}
         value={filter.value ?? ""}

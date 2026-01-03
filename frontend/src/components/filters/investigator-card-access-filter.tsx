@@ -13,13 +13,13 @@ import { assert } from "@/utils/assert";
 import { CardsCombobox } from "../cards-combobox";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 export function InvestigatorCardAccessFilter(props: FilterProps) {
   const { id } = props;
   const { t } = useTranslation();
 
-  const { onReset, onChange, onOpenChange } = useFilterCallbacks<string[]>(id);
+  const { onReset, onChange, onOpenChange, locked } = useFilter<string[]>(id);
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
 
@@ -49,12 +49,14 @@ export function InvestigatorCardAccessFilter(props: FilterProps) {
   return (
     <FilterContainer
       changes={changes}
+      locked={locked}
       onReset={onReset}
       onOpenChange={onOpenChange}
       open={filter.open}
       title={t("filters.investigator_card_access.title")}
     >
       <CardsCombobox
+        disabled={locked}
         autoFocus
         id={`${id}-choose-cards`}
         items={cards}

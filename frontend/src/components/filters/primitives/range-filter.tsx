@@ -1,6 +1,6 @@
 import { RangeSelect } from "@/components/ui/range-select";
 import { FilterContainer } from "./filter-container";
-import { useFilterCallbacks } from "./filter-hooks";
+import { useFilter } from "./filter-hooks";
 
 type Props = {
   id: number;
@@ -16,17 +16,19 @@ type Props = {
 export function RangeFilter(props: Props) {
   const { changes, id, min, max, open, title, value } = props;
 
-  const { onReset, onChange, onOpenChange } = useFilterCallbacks(id);
+  const { onReset, onChange, onOpenChange, locked } = useFilter(id);
 
   return (
     <FilterContainer
       changes={changes}
+      locked={locked}
       onOpenChange={onOpenChange}
       onReset={onReset}
       open={open}
       title={title}
     >
       <RangeSelect
+        disabled={locked}
         data-testid={props["data-testid"]}
         id={`range-filter-${id}`}
         max={max}

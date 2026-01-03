@@ -21,7 +21,7 @@ import { displayPackName } from "@/utils/formatting";
 import { PackName } from "../pack-name";
 import { Button } from "../ui/button";
 import type { FilterProps } from "./filters.types";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 import { MultiselectFilter } from "./primitives/multiselect-filter";
 
 export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
@@ -58,7 +58,7 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     [],
   );
 
-  const { onChange } = useFilterCallbacks<string[]>(id);
+  const { onChange } = useFilter<string[]>(id);
 
   const metadata = useStore(selectMetadata);
   const cycles = useStore(selectCampaignCycles);

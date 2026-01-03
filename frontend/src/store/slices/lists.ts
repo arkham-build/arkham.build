@@ -106,6 +106,8 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       const filterValues = { ...list.filterValues };
       assert(filterValues[id], `${state.activeList} has not filter ${id}.`);
 
+      if (filterValues[id].locked) return state;
+
       filterValues[id] = makeFilterValue(filterValues[id].type);
 
       return {
@@ -165,6 +167,8 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
 
       const filterValues = { ...list.filterValues };
       assert(filterValues[id], `${state.activeList} has not filter ${id}.`);
+
+      if (filterValues[id].locked) return state;
 
       switch (filterValues[id].type) {
         case "illustrator":
@@ -545,6 +549,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       showOwnershipFilter: true,
       showInvestigatorFilter: true,
       additionalFilters: ["illustrator"],
+      lockedFilters: new Set<FilterKey>(),
     },
   ) {
     set((state) => {
@@ -570,6 +575,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
           includeGameText: false,
           includeName: true,
         },
+        lockedFilters: opts.lockedFilters ?? new Set<FilterKey>(),
       });
 
       return { lists };
@@ -615,15 +621,21 @@ function makeFilterObject<K extends FilterKey>(
   type: K,
   value: FilterMapping[K],
   open = false,
+  locked = false,
 ) {
   return {
     open,
+    locked,
     type,
     value,
   };
 }
 
-function makeFilterValue(type: FilterKey, initialValue?: unknown) {
+function makeFilterValue(
+  type: FilterKey,
+  initialValue?: unknown,
+  locked = false,
+) {
   switch (type) {
     case "asset": {
       return makeFilterObject(
@@ -638,6 +650,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
               uses: [],
               healthX: false,
             },
+        false,
+        locked,
       );
     }
 
@@ -645,6 +659,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
       return makeFilterObject(
         type,
         isCardTypeFilter(initialValue) ? initialValue : "",
+        false,
+        locked,
       );
     }
 
@@ -659,6 +675,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
               odd: false,
               x: false,
             },
+        false,
+        locked,
       );
     }
 
@@ -670,6 +688,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
           : {
               range: undefined,
             },
+        false,
+        locked,
       );
     }
 
@@ -678,6 +698,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
       return makeFilterObject(
         type,
         isRangeFilter(initialValue) ? initialValue : undefined,
+        false,
+        locked,
       );
     }
 
@@ -692,6 +714,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
               intellect: undefined,
               willpower: undefined,
             },
+        false,
+        locked,
       );
     }
 
@@ -707,6 +731,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
       return makeFilterObject(
         type,
         isMultiSelectFilter(initialValue) ? initialValue : [],
+        false,
+        locked,
       );
     }
 
@@ -721,6 +747,7 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
               basicweakness: true,
             },
         false,
+        locked,
       );
     }
 
@@ -728,6 +755,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
       return makeFilterObject(
         type,
         isOwnershipFilter(initialValue) ? initialValue : "all",
+        false,
+        locked,
       );
     }
 
@@ -735,6 +764,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
       return makeFilterObject(
         type,
         isFanMadeContentFilter(initialValue) ? initialValue : "all",
+        false,
+        locked,
       );
     }
 
@@ -761,6 +792,7 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
               victory: false,
             },
         true,
+        locked,
       );
     }
 
@@ -768,6 +800,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
       return makeFilterObject(
         type,
         typeof initialValue === "string" ? initialValue : undefined,
+        false,
+        locked,
       );
     }
 
@@ -775,6 +809,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
       return makeFilterObject(
         type,
         typeof initialValue === "number" ? initialValue : undefined,
+        false,
+        locked,
       );
     }
 
@@ -791,6 +827,8 @@ function makeFilterValue(type: FilterKey, initialValue?: unknown) {
               wild: undefined,
               any: undefined,
             },
+        false,
+        locked,
       );
     }
   }
@@ -803,6 +841,7 @@ type MakeListOptions = {
   systemFilter?: Filter;
   initialValues?: Partial<Record<FilterKey, unknown>>;
   search?: Search;
+  lockedFilters?: Set<FilterKey>;
 };
 
 function makeList({
@@ -812,11 +851,13 @@ function makeList({
   systemFilter,
   initialValues,
   search,
+  lockedFilters = new Set<FilterKey>(),
 }: MakeListOptions): List {
   const list = {
     filters,
     filterValues: filters.reduce<List["filterValues"]>((acc, curr, i) => {
-      acc[i] = makeFilterValue(curr, initialValues?.[curr]);
+      const locked = lockedFilters.has(curr);
+      acc[i] = makeFilterValue(curr, initialValues?.[curr], locked);
       return acc;
     }, {}),
     filtersEnabled: true,

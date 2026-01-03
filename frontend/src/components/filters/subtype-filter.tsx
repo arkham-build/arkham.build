@@ -13,7 +13,7 @@ import { Checkbox } from "../ui/checkbox";
 import { CheckboxGroup } from "../ui/checkboxgroup";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 export function SubtypeFilter({ id }: FilterProps) {
   const { t } = useTranslation();
@@ -30,7 +30,7 @@ export function SubtypeFilter({ id }: FilterProps) {
 
   const options = selectSubtypeOptions();
 
-  const { onReset, onOpenChange, onChange } = useFilterCallbacks(id);
+  const { onReset, onOpenChange, onChange, locked } = useFilter(id);
 
   const onValueChange = useCallback(
     (key: keyof SubtypeFilterType, value: boolean) => {
@@ -45,6 +45,7 @@ export function SubtypeFilter({ id }: FilterProps) {
     <FilterContainer
       changes={changes}
       data-testid="subtype-filter"
+      locked={locked}
       onOpenChange={onOpenChange}
       onReset={onReset}
       open={filter.open}
@@ -53,6 +54,7 @@ export function SubtypeFilter({ id }: FilterProps) {
       <CheckboxGroup>
         {options.map(({ code, name }) => (
           <Checkbox
+            disabled={locked}
             checked={filter.value[code as keyof SubtypeFilterType]}
             data-key={code}
             data-testid={`subtype-${code}`}

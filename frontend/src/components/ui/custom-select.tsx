@@ -27,6 +27,7 @@ export type Item = {
 
 type Props = {
   className?: string;
+  disabled?: boolean;
   id?: string;
   items: Item[];
   itemToString?: (item: Item) => string;
@@ -43,6 +44,7 @@ type Props = {
 export function CustomSelect(props: Props) {
   const {
     className,
+    disabled,
     id,
     initialOpen,
     items,
@@ -121,6 +123,7 @@ export function CustomSelect(props: Props) {
         {...getReferenceProps()}
         className={css["control"]}
         data-testid="custom-select-control"
+        disabled={disabled}
         ref={refs.setReference}
         type="button"
       >

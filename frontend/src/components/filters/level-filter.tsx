@@ -13,7 +13,7 @@ import { RangeSelect } from "../ui/range-select";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 function getToggleValue(value: [number, number] | undefined) {
   if (!value) return "";
@@ -40,7 +40,7 @@ export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     selectFilterChanges(state, filter.type, filter.value),
   );
 
-  const { onReset, onChange, onOpenChange } = useFilterCallbacks(id);
+  const { onReset, onChange, onOpenChange, locked } = useFilter(id);
 
   const onChangeRange = useCallback(
     (val: [number, number] | undefined) => {
@@ -84,10 +84,12 @@ export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     <FilterContainer
       alwaysShowChanges
       changes={changes}
+      locked={locked}
       nonCollapsibleContent={
         !filter.open &&
         listProperties.levels.size > 1 && (
           <ToggleGroup
+            disabled={locked}
             data-testid="filters-level-shortcut"
             full
             onValueChange={onApplyLevelShortcut}
@@ -109,6 +111,7 @@ export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       title={t("filters.level.title")}
     >
       <RangeSelect
+        disabled={locked}
         id="level-select"
         label={t("filters.level.title")}
         max={5}

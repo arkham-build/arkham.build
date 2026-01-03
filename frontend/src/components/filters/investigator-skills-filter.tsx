@@ -16,7 +16,7 @@ import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import type { FilterProps } from "./filters.types";
 import css from "./investigator-skills-filter.module.css";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 const INVESTIGATOR_SKILL_KEYS: SkillKey[] = SKILL_KEYS.filter(
   (key) => key !== "wild",
@@ -26,8 +26,8 @@ export function InvestigatorSkillsFilter(props: FilterProps) {
   const { id, resolvedDeck, targetDeck } = props;
   const { t } = useTranslation();
 
-  const { onReset, onChange, onOpenChange } =
-    useFilterCallbacks<InvestigatorSkillsFilterType>(id);
+  const { onReset, onChange, onOpenChange, locked } =
+    useFilter<InvestigatorSkillsFilterType>(id);
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
 
@@ -79,6 +79,7 @@ export function InvestigatorSkillsFilter(props: FilterProps) {
   return (
     <FilterContainer
       changes={changes}
+      locked={locked}
       onReset={onReset}
       onOpenChange={onOpenChange}
       open={filter.open}
@@ -86,6 +87,7 @@ export function InvestigatorSkillsFilter(props: FilterProps) {
       nonCollapsibleContent={
         !filter.open && (
           <ToggleGroup
+            disabled={locked}
             type="multiple"
             full
             onValueChange={onSetShortcut}
@@ -108,6 +110,7 @@ export function InvestigatorSkillsFilter(props: FilterProps) {
     >
       {INVESTIGATOR_SKILL_KEYS.map((key) => (
         <RangeSelect
+          disabled={locked}
           key={key}
           data-testid={`filter-investigator-skills-${key}`}
           id={`$filter-${id}-${key}`}

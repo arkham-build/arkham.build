@@ -1,10 +1,16 @@
 import { useCallback } from "react";
 import { useStore } from "@/store";
 
-export function useFilterCallbacks<T>(id: number) {
+export function useFilter<T>(id: number) {
   const setFilterValue = useStore((state) => state.setFilterValue);
   const setFilterOpen = useStore((state) => state.setFilterOpen);
   const resetFilter = useStore((state) => state.resetFilter);
+  const locked = useStore((state) => {
+    const listId = state.activeList;
+    return listId
+      ? (state.lists[listId]?.filterValues[id]?.locked ?? false)
+      : false;
+  });
 
   const onReset = useCallback(() => {
     resetFilter(id);
@@ -28,5 +34,6 @@ export function useFilterCallbacks<T>(id: number) {
     onReset,
     onOpenChange,
     onChange,
+    locked,
   };
 }

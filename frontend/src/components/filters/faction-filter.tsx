@@ -8,7 +8,7 @@ import { isFactionFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
 import { FactionToggle } from "../faction-toggle";
 import type { FilterProps } from "./filters.types";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 export function FactionFilter(props: FilterProps) {
   const { id, resolvedDeck, targetDeck } = props;
@@ -23,7 +23,7 @@ export function FactionFilter(props: FilterProps) {
     selectFactionOptions(state, resolvedDeck, targetDeck),
   );
 
-  const { onChange } = useFilterCallbacks(id);
+  const { onChange } = useFilter(id);
 
   const onValueChange = useCallback(
     (value: string[]) => {

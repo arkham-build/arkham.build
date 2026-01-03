@@ -1312,7 +1312,7 @@ const selectCycleChanges = createSelector(
   (_: StoreState, value: MultiselectFilter) => value,
   (metadata, value) => {
     return value
-      .map((id) => metadata.cycles[id].name)
+      .map((id) => displayPackName(metadata.cycles[id]))
       .join(` ${i18n.t("filters.or")} `);
   },
 );

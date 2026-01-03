@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { Link } from "wouter";
 import EncounterIcon from "@/components/icons/encounter-icon";
@@ -120,6 +121,8 @@ export function SetTree({ activeCode, activeType }: SetTreeProps) {
     "format",
   );
 
+  const { t } = useTranslation();
+
   const cardSetTree = useStore((state) =>
     selectCardSetTree(state, formatSelection),
   );
@@ -134,15 +137,19 @@ export function SetTree({ activeCode, activeType }: SetTreeProps) {
   });
 
   return (
-    <Scroller className={css["tree"]} type="always">
+    <Scroller className={css["tree"]}>
       <div className={css["format-toggle"]}>
         <ToggleGroup
           value={formatSelection}
           onValueChange={setFormatSelection}
           type="single"
         >
-          <ToggleGroupItem value="new">New format</ToggleGroupItem>
-          <ToggleGroupItem value="old">Old format</ToggleGroupItem>
+          <ToggleGroupItem value="new">
+            {t("settings.collection.new_format")}
+          </ToggleGroupItem>
+          <ToggleGroupItem value="old">
+            {t("settings.collection.old_format")}
+          </ToggleGroupItem>
         </ToggleGroup>
       </div>
       <SetTreeNode activeKey={activeKey} item={cardSetTree} depth={0} />
@@ -190,7 +197,12 @@ function SetTreeNode({
             : `/browse/${item.type}/${item.data.code}${window.location.search}`
         }
       >
-        {item.type === "none" && item.data.name}
+        {item.type === "none" && (
+          <>
+            <i className="icon-cards" />
+            {item.data.name}
+          </>
+        )}
         {(item.type === "cycle" || item.type === "pack") && (
           <>
             <PackIcon className={css["node-icon"]} code={item.data.code} />

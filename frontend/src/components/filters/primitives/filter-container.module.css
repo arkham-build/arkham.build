@@ -20,3 +20,12 @@
 .collapsible {
   padding: 0.5rem 0;
 }
+
+.locked {
+  border: 1px solid var(--palette-3);
+}
+
+.locked-icon {
+  width: 0.75rem;
+  color: var(--palette-three-point-five);
+}

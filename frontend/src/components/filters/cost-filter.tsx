@@ -14,7 +14,7 @@ import { CheckboxGroup } from "../ui/checkboxgroup";
 import { RangeSelect } from "../ui/range-select";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 export function CostFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
@@ -33,7 +33,7 @@ export function CostFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     selectCostMinMax(state, resolvedDeck, targetDeck),
   );
 
-  const { onReset, onChange, onOpenChange } = useFilterCallbacks(id);
+  const { onReset, onChange, onOpenChange, locked } = useFilter(id);
 
   const onValueCommit = useCallback(
     (val: number[]) => {
@@ -92,12 +92,14 @@ export function CostFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     <FilterContainer
       changes={changes}
       data-testid="filters-cost"
+      locked={locked}
       onOpenChange={onToggleOpen}
       onReset={onReset}
       open={filter.open}
       title={t("filters.cost.title")}
     >
       <RangeSelect
+        disabled={locked}
         data-testid="filters-cost-range"
         id="cost-select"
         label={t("filters.cost.title")}
@@ -109,6 +111,7 @@ export function CostFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       />
       <CheckboxGroup cols={2}>
         <Checkbox
+          disabled={locked}
           data-testid="filters-cost-even"
           checked={filter.value.even}
           id="cost-even"
@@ -116,6 +119,7 @@ export function CostFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
           onCheckedChange={onSetEven}
         />
         <Checkbox
+          disabled={locked}
           data-testid="filters-cost-x"
           checked={filter.value.x}
           id="cost-x"
@@ -123,6 +127,7 @@ export function CostFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
           onCheckedChange={onSetX}
         />
         <Checkbox
+          disabled={locked}
           data-testid="filters-cost-odd"
           checked={filter.value.odd}
           id="cost-odd"

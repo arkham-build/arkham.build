@@ -107,6 +107,7 @@ export type FilterKey = keyof FilterMapping;
 
 export type FilterObject<K extends FilterKey> = {
   open: boolean;
+  locked?: boolean;
   type: K;
   value: FilterMapping[K];
 };
@@ -191,6 +192,7 @@ export type ListsSlice = {
       showInvestigatorFilter?: boolean;
       search?: string;
       additionalFilters?: FilterKey[];
+      lockedFilters?: Set<FilterKey>;
     },
   ): void;
 

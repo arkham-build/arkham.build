@@ -9,7 +9,7 @@ import { useHotkey } from "@/utils/use-hotkey";
 import { HotkeyTooltip } from "../ui/hotkey";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import type { FilterProps } from "./filters.types";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 export function CardTypeFilter(props: FilterProps & { className?: string }) {
   const { className, id } = props;
@@ -23,7 +23,7 @@ export function CardTypeFilter(props: FilterProps & { className?: string }) {
 
   const { t } = useTranslation();
 
-  const { onChange } = useFilterCallbacks(id);
+  const { onChange, locked } = useFilter(id);
 
   const onToggle = useCallback(
     (value: CardTypeFilterType) => {
@@ -46,6 +46,7 @@ export function CardTypeFilter(props: FilterProps & { className?: string }) {
       className={className}
       defaultValue=""
       data-testid="toggle-card-type"
+      disabled={locked}
       full
       onValueChange={onChange}
       type="single"

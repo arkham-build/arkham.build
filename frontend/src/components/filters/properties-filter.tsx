@@ -14,7 +14,7 @@ import { Checkbox } from "../ui/checkbox";
 import { CheckboxGroup } from "../ui/checkboxgroup";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 export function PropertiesFilter({ id }: FilterProps) {
   const filter = useStore((state) => selectActiveListFilter(state, id));
@@ -29,7 +29,7 @@ export function PropertiesFilter({ id }: FilterProps) {
     selectFilterChanges(state, filter.type, filter.value),
   );
 
-  const { onReset, onChange, onOpenChange } = useFilterCallbacks(id);
+  const { onReset, onChange, onOpenChange, locked } = useFilter(id);
 
   const properties = useStore(selectPropertyOptions);
 
@@ -61,6 +61,7 @@ export function PropertiesFilter({ id }: FilterProps) {
   return (
     <FilterContainer
       changes={changes}
+      locked={locked}
       onOpenChange={onOpenChange}
       onReset={onReset}
       open={filter.open}
@@ -69,6 +70,7 @@ export function PropertiesFilter({ id }: FilterProps) {
       <CheckboxGroup cols={2}>
         {properties.map(({ key, label }) => (
           <Checkbox
+            disabled={locked}
             checked={filter.value[key as keyof PropertiesFilterType]}
             data-key={key}
             id={`property-${key}`}

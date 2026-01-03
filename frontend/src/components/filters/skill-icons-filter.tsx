@@ -15,7 +15,7 @@ import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import css from "./filters.module.css";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilterCallbacks } from "./primitives/filter-hooks";
+import { useFilter } from "./primitives/filter-hooks";
 
 export function SkillIconsFilter({ id }: FilterProps) {
   const { t } = useTranslation();
@@ -31,7 +31,7 @@ export function SkillIconsFilter({ id }: FilterProps) {
     selectFilterChanges(state, filter.type, filter.value),
   );
 
-  const { onReset, onOpenChange, onChange } = useFilterCallbacks(id);
+  const { onReset, onOpenChange, onChange, locked } = useFilter(id);
 
   const onToggleChange = useCallback(
     (key: keyof SkillIconsFilterType, val: string) => {
@@ -47,6 +47,7 @@ export function SkillIconsFilter({ id }: FilterProps) {
       alwaysShowChanges
       changes={changes}
       className={css["skill-filter"]}
+      locked={locked}
       onOpenChange={onOpenChange}
       onReset={onReset}
       open={filter.open}
@@ -59,6 +60,7 @@ export function SkillIconsFilter({ id }: FilterProps) {
             key={key}
           >
             <ToggleGroup
+              disabled={locked}
               key={key}
               onValueChange={(val) =>
                 onToggleChange(key as keyof SkillIconsFilterType, val)

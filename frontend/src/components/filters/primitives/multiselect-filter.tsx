@@ -3,7 +3,7 @@ import { Combobox } from "@/components/ui/combobox/combobox";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
 import { FilterContainer } from "./filter-container";
-import { useFilterCallbacks } from "./filter-hooks";
+import { useFilter } from "./filter-hooks";
 
 type Props<T extends Coded> = {
   changes?: string;
@@ -34,7 +34,7 @@ export function MultiselectFilter<T extends Coded>(props: Props<T>) {
     value,
   } = props;
 
-  const { onReset, onOpenChange, onChange } = useFilterCallbacks<string[]>(id);
+  const { onReset, onOpenChange, onChange, locked } = useFilter<string[]>(id);
 
   const locale = useStore((state) => state.settings.locale);
 
@@ -49,6 +49,7 @@ export function MultiselectFilter<T extends Coded>(props: Props<T>) {
     <FilterContainer
       data-testid={`filter-${title}`}
       changes={changes}
+      locked={locked}
       nonCollapsibleContent={children}
       onOpenChange={onOpenChange}
       onReset={onReset}
@@ -57,6 +58,7 @@ export function MultiselectFilter<T extends Coded>(props: Props<T>) {
     >
       <Combobox
         autoFocus
+        disabled={locked}
         id={`filter-${id}`}
         itemToString={itemToString}
         items={options}

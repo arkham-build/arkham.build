@@ -1176,6 +1176,7 @@
       },
       "all": "All",
       "and": "and",
+      "locked": "This filter is locked",
       "asset": {
         "title": "Asset"
       },
