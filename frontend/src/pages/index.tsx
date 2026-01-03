@@ -2,53 +2,35 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { CardListContainer } from "@/components/card-list/card-list-container";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
+import { DeckCollection } from "@/components/deck-collection/deck-collection";
 import { Filters } from "@/components/filters/filters";
 import { ListLayout } from "@/layouts/list-layout";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { useStore } from "@/store";
 import { selectIsInitialized } from "@/store/selectors/shared";
 import { useDocumentTitle } from "@/utils/use-document-title";
-import { SetTree } from "./set-tree";
 
-function Browse() {
+function Index() {
   const { t } = useTranslation();
 
-  const activeList = useStore((state) => state.lists[state.activeList ?? ""]);
-  const addList = useStore((state) => state.addList);
-  const setActiveList = useStore((state) => state.setActiveList);
-  const removeList = useStore((state) => state.removeList);
-
+  const activeListId = useStore((state) => state.activeList);
   const isInitalized = useStore(selectIsInitialized);
   useDocumentTitle(t("browse.title"));
 
+  const setActiveList = useStore((state) => state.setActiveList);
+
   useEffect(() => {
-    const listKey = "browse-all";
+    setActiveList("index");
+  }, [setActiveList]);
 
-    addList(listKey, {
-      card_type: "",
-      ownership: "all",
-      fan_made_content: "all",
-    });
-
-    setActiveList(listKey);
-
-    return () => {
-      removeList(listKey);
-      setActiveList(undefined);
-    };
-  }, [addList, removeList, setActiveList]);
-
-  if (!activeList || !isInitalized) {
-    return null;
-  }
+  if (!isInitalized || !activeListId?.startsWith("index")) return null;
 
   return (
     <CardModalProvider>
       <ListLayoutContextProvider>
         <ListLayout
-          noFade
           filters={<Filters targetDeck={undefined} />}
-          sidebar={<SetTree />}
+          sidebar={<DeckCollection />}
           sidebarWidthMax="var(--sidebar-width-one-col)"
         >
           {(props) => <CardListContainer {...props} />}
@@ -58,4 +40,4 @@ function Browse() {
   );
 }
 
-export default Browse;
+export default Index;

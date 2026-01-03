@@ -126,7 +126,10 @@ export function TabsContent({
   );
 }
 
-export function useTabUrlState(defaultValue: string, queryKey = "tab") {
+export function useTabUrlState<T extends string>(
+  defaultValue: T,
+  queryKey = "tab",
+) {
   const [tab, setTab] = useState<string>(
     () =>
       new URL(window.location.href).searchParams.get(queryKey) ?? defaultValue,
@@ -142,5 +145,5 @@ export function useTabUrlState(defaultValue: string, queryKey = "tab") {
     [queryKey],
   );
 
-  return [tab, onTabChange] as const;
+  return [tab as T, onTabChange] as const;
 }

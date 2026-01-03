@@ -84,16 +84,13 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       const list = state.lists[activeList];
       assert(list, `list ${activeList} not defined.`);
 
-      const initialValues = mergeInitialValues({}, state.settings);
-
       return {
         lists: {
           ...state.lists,
-          [activeList]: makeList({
-            ...list,
-            display: getDisplaySettings(initialValues, state.settings),
-            initialValues,
-          }),
+          [activeList]: {
+            ...list.initialState,
+            initialState: list.initialState,
+          },
         },
       };
     });
@@ -202,7 +199,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
             state.settings,
           );
 
-          list.initialDisplay = nextDisplaySettings;
+          list.initialState.display = nextDisplaySettings;
 
           if (list.displaySortSelection === DEFAULT_LIST_SORT_ID) {
             list.displaySortSelection = DEFAULT_LIST_SORT_ID;
@@ -517,8 +514,8 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         };
       } else {
         preset = {
-          sorting: list.initialDisplay.sorting,
-          grouping: list.initialDisplay.grouping,
+          sorting: list.initialState.display.sorting,
+          grouping: list.initialState.display.grouping,
         };
       }
 
@@ -816,7 +813,7 @@ function makeList({
   initialValues,
   search,
 }: MakeListOptions): List {
-  return {
+  const list = {
     filters,
     filterValues: filters.reduce<List["filterValues"]>((acc, curr, i) => {
       acc[i] = makeFilterValue(curr, initialValues?.[curr]);
@@ -825,10 +822,14 @@ function makeList({
     filtersEnabled: true,
     display,
     displaySortSelection: DEFAULT_LIST_SORT_ID,
-    initialDisplay: display,
     key,
     systemFilter,
     search: search ?? makeSearch(),
+  };
+
+  return {
+    ...list,
+    initialState: { ...list },
   };
 }
 
@@ -928,17 +929,6 @@ export function makeLists(
   const systemFilter = and(systemFilters);
 
   return {
-    browse: makeList({
-      display: getDisplaySettings(initialValues, settings),
-      initialValues,
-      key: "browse",
-      systemFilter,
-      filters: cardsFilters({
-        additionalFilters: ["illustrator"],
-        showOwnershipFilter: true,
-        showInvestigatorsFilter: true,
-      }),
-    }),
     create_deck: makeList({
       display: {
         grouping: settings.lists.investigator.group,
@@ -964,6 +954,17 @@ export function makeLists(
       filters: cardsFilters({
         showOwnershipFilter: true,
         showInvestigatorsFilter: false,
+      }),
+    }),
+    index: makeList({
+      display: getDisplaySettings(initialValues, settings),
+      initialValues,
+      key: "index",
+      systemFilter,
+      filters: cardsFilters({
+        additionalFilters: ["illustrator"],
+        showOwnershipFilter: true,
+        showInvestigatorsFilter: true,
       }),
     }),
   };

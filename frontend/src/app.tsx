@@ -16,6 +16,8 @@ import { selectIsInitialized } from "./store/selectors/shared";
 import { queryDataVersion } from "./store/services/queries";
 import { useAgathaEasterEggHint } from "./utils/easter-egg-agatha";
 
+const Index = lazy(() => import("./pages/index"));
+
 const Browse = lazy(() => import("./pages/browse/browse"));
 
 const BrowseEncounterSet = lazy(
@@ -111,7 +113,8 @@ function AppInner() {
         {storeInitialized && (
           <Router hook={useBrowserLocation}>
             <Switch>
-              <Route component={Browse} path="/" />
+              <Route component={Index} path="/" />
+              <Route component={Browse} path="/browse" />
               <Route component={BrowsePack} path="/browse/pack/:pack_code" />
               <Route component={BrowseCycle} path="/browse/cycle/:cycle_code" />
               <Route

@@ -21,8 +21,9 @@ type Props = {
   }) => React.ReactNode;
   className?: string;
   filters?: React.ReactNode;
-  mastheadContent?: React.ReactNode;
   hideSidebarCollapse?: boolean;
+  mastheadContent?: React.ReactNode;
+  noFade?: boolean;
   sidebar: React.ReactNode;
   sidebarWidthMax: string;
 };
@@ -32,8 +33,9 @@ export function ListLayout(props: Props) {
     children,
     className,
     filters,
-    mastheadContent,
     hideSidebarCollapse,
+    mastheadContent,
+    noFade,
     sidebar,
     sidebarWidthMax,
   } = props;
@@ -118,7 +120,7 @@ export function ListLayout(props: Props) {
     <div
       className={cx(
         css["layout"],
-        "fade-in",
+        !noFade && "fade-in",
         className,
         floatingMenuOpen && css["floating-menu-open"],
         filters && css["has-filters"],

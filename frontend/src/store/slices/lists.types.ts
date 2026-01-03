@@ -162,7 +162,7 @@ export type ListDisplay = {
 
 export type List = {
   display: ListDisplay;
-  initialDisplay: Pick<ListDisplay, "grouping" | "sorting" | "viewMode">;
+  initialState: Omit<List, "initialState">;
   displaySortSelection: string;
   filters: FilterKey[];
   filtersEnabled: boolean;

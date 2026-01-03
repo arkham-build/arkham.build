@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { getGroupingKeyLabel, NONE } from "@/store/lib/grouping";
 import type { CardGroup } from "@/store/selectors/lists";
 import type { Metadata } from "@/store/slices/metadata.types";
@@ -88,14 +89,12 @@ export function GroupLabel(props: GroupLabelProps) {
     return (
       <span className={className}>
         <EncounterIcon className={css["icon"]} code={segment} />
-        <a
+        <Link
           className="link-current"
           href={`/browse/encounter_set/${segment}`}
-          target="_blank"
-          rel="noreferrer"
         >
           {keyLabel}
-        </a>
+        </Link>
       </span>
     );
   }
@@ -132,14 +131,9 @@ export function GroupLabel(props: GroupLabelProps) {
     return (
       <span className={className}>
         <PackIcon className={css["icon"]} code={segment} />
-        <a
-          className="link-current"
-          href={`/browse/pack/${segment}`}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <Link className="link-current" href={`/browse/pack/${segment}`}>
           {keyLabel}
-        </a>
+        </Link>
       </span>
     );
   }
