@@ -96,7 +96,10 @@ function DeckEditInner() {
   useDocumentTitle(t("deck_edit.title", { name: deck.name }));
 
   const [currentTab, setCurrentTab] = useTabUrlState("slots", "list");
-  const [currentTool, setCurrentTool] = useTabUrlState("card-list", "tool");
+  const [currentTool, setCurrentTool] = useTabUrlState<string>(
+    "card-list",
+    "tool",
+  );
 
   const tabs = useMemo(() => {
     const tabs = [
