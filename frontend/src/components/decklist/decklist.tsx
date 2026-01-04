@@ -42,7 +42,10 @@ export function Decklist(props: Props) {
 
   const settings = useStore((state) => state.settings);
 
-  const [viewMode, setViewMode] = useTabUrlState("compact", "viewMode");
+  const [viewMode, setViewMode] = useTabUrlState<ViewMode>(
+    "compact",
+    "viewMode",
+  );
 
   const [displayConfigId, setDisplayConfigId] = useState(DEFAULT_LIST_SORT_ID);
 
