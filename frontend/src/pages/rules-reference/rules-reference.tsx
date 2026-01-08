@@ -368,6 +368,7 @@ function RulesReference() {
         <li>
             <a href="#Record_in_your_Campaign_Log">"Record in your Campaign Log..."</a>
         </li>
+        <li><a href="#Relentless">Relentless</a></li>
         <li><a href="#Remember_that">"Remember that..."</a></li>
         <li>
             <a href="#Removed_from_Game">Removed from Game</a>
@@ -375,6 +376,7 @@ function RulesReference() {
         <li>
             <a href="#Replacing_an_Opening_Hand">Replacing an Opening Hand</a>
         </li>
+        <li><a href="#Replacement_Cards">Replacement Cards</a></li>
         <li><a href="#Researched">Researched</a></li>
         <li><a href="#Resign">Resign</a></li>
         <li><a href="#Resource_Action">Resource Action</a></li>
@@ -6409,6 +6411,18 @@ function RulesReference() {
         might be important in a later scenario.</i>
 </p>
 
+<h2 id="Relentless" style="color: var(--red);">
+    Relentless (added in <em>The Drowned City</em>)
+</h2>
+
+<p>
+    Some enemies in this campaign have the relentless keyword. During 
+    the enemy phase (after framework step 3.3), each enemy with the 
+    relentless keyword that has attacked this phase (even if that attack was 
+    canceled) readies and attacks the investigator(s) it is engaged with a 
+    second time.
+</p>
+
 <h2 id="Remember_that">“Remember that...”</h2>
 
 <p>
@@ -6468,6 +6482,42 @@ function RulesReference() {
         number of cards in Sefina’s opening hand, it would alter
         both the number of cards drawn from her ability and the
         number of cards she keeps as her opening hand.</i>
+</p>
+
+<h2 id="Replacement_Cards" style="color: var(--red);">
+    Replacement Cards (added in <em>Parallel Investigators</em>)
+</h2>
+
+<p>
+    Signature cards with the Replacement keyword are optional replacements 
+    for the given card. When building a deck, you may choose to replace the 
+    specific cards listed under “Deckbuilding Requirements” with all of that 
+    investigator’s replacement cards. Doing so satisfies your Deckbuilding 
+    Requirements. During a campaign, this choice cannot be unmade.
+</p>
+
+<p>
+    <i>
+        For example: Marta is building a Lola Hayes deck. Improvisation and Crisis of 
+        Identity are listed under Deckbuilding Requirements for Lola Hayes. Marta may 
+        choose to instead replace those four cards with all five versions of Leading Lady, 
+        as well as Samuel Blake.
+    </i>
+</p>
+
+<p>
+    You may also choose to include all cards listed under “Deckbuilding 
+    Requirements” as well as all of that investigator’s replacement cards. 
+    Replacement cards added in this manner do not count towards the 
+    investigator’s deck size.
+</p>
+
+<p>
+    <i>
+        For example: Marta is building a Lola Hayes deck. Instead of deciding between 
+        her typical signature cards and her replacement signature cards, Marta may 
+        choose to add all ten cards to her deck.
+    </i>
 </p>
 
 <h2 id="Researched" style="color: var(--red);">
