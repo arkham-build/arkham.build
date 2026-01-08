@@ -7473,6 +7473,7 @@ function RulesReference() {
 </p>
 
 <!-- TODO: add image of tarot slot -->
+<h1>[tarot_inverted]</h1>
 
 <p>
     As with other slots, tarot slots limit the number of asset
