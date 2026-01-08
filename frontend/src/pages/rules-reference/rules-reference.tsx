@@ -6327,6 +6327,25 @@ function RulesReference() {
     integrate them into your collection of player cards.
 </p>
 
+<table>
+    <tbody><tr>
+        <td>
+            <img src="https://assets.arkham.build/optimized/05046.avif">
+        </td>
+        <td>
+            <img src="https://assets.arkham.build/optimized/05047.avif">
+        </td>
+    </tr>
+        <tr>
+        <td>
+            <img src="https://assets.arkham.build/optimized/05048.avif">
+        </td>
+        <td>
+            <img src="https://assets.arkham.build/optimized/05049.avif">
+        </td>
+    </tr>
+</tbody></table>
+
 <h2 id="Put_into_Play">Put into Play</h2>
 
 <p>
@@ -7114,23 +7133,25 @@ function RulesReference() {
 
 <table>
     <tbody><tr>
-        <td colspan="2" align="center">
-            [accessory_inverted] 1 accessory slot
-        </td>
+        <td>[accessory_inverted] 1 accessory slot</td>
     </tr>
     <tr>
         <td>[body_inverted] 1 body slot</td>
+    </tr>
+    <tr>
         <td>[ally_inverted] 1 ally slot</td>
     </tr>
     <tr>
-        <td>[hand_inverted] 1 hand slot</td>
-        <td>[hand_x2_inverted] 2 hand slots</td>
+        <td>[hand_inverted] 1 hand slot | [hand_x2_inverted] 2 hand slots</td>
     </tr>
     <tr>
-        <td>[arcane_inverted] 1 arcane slot</td>
-        <td>[arcane_x2_inverted] 2 arcane slots</td>
+        <td>[arcane_inverted] 1 arcane slot | [arcane_x2_inverted] 2 arcane slots</td>
     </tr>
 </tbody></table>
+
+<p>
+    See also <a href="#Tarot_Slot">Tarot Slot</a>.
+</p>
 
 <p>
     If playing or gaining control of an asset would put an
