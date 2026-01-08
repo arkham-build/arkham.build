@@ -146,6 +146,7 @@ function RulesReference() {
         <li><a href="#Cancel">Cancel</a></li>
         <li><a href="#Cannot">Cannot</a></li>
         <li><a href="#Cardtypes">Cardtypes</a></li>
+        <li><a href="#Challenge_Scenarios">Challenge Scenarios</a></li>
         <li><a href="#Chaos_Tokens">Chaos Tokens</a></li>
         <ul>
             <li>
@@ -337,6 +338,7 @@ function RulesReference() {
         <li>
             <a href="#Ownership_and_Control">Ownership and Control</a>
         </li>
+        <li><a href="#Parallel_Investigators">Parallel Investigators</a></li>
         <li><a href="#Parley">Parley</a></li>
         <li><a href="#Partner">Partner</a></li>
         <li><a href="#Patrol">Patrol</a></li>
@@ -2186,6 +2188,18 @@ function RulesReference() {
     4, "<a href="#Enemy_Cards">Enemy Cards</a>" on page 10, "<a href="#Event_Cards">Event Cards</a>" on page 11, "<a href="#Location_Cards">Location Cards</a>" on page 14, "<a href="#Skill_Cards">Skill Cards</a>" on
     page 18, "<a href="#Treachery_Cards">Treachery Cards</a>" on
     page 20.
+</p>
+
+<h2 id="Challenge_Scenarios" style="color: var(--red);">
+    Challenge Scenarios (added in <em>Parallel Investigators</em>)
+</h2>
+
+<p>
+    Challenge scenarios are special print-and-play scenarios that utilize existing 
+    products in the <i>Arkham Horror: The Card Game</i> collection, along with 
+    additional print-and-play cards, to create new content. These scenarios are 
+    designed with certain prerequisites in mind, in order to craft a challenging 
+    puzzle-like experience.
 </p>
 
 <h2 id="Chaos_Tokens">Chaos Tokens</h2>
@@ -5947,6 +5961,20 @@ function RulesReference() {
         placement of the card is adjusted.
     </li>
 </ul>
+
+<h2 id="Parallel_Investigators" style="color: var(--red);">
+    Parallel Investigators (added in <em>Parallel Investigators</em>)
+</h2>
+
+<p>
+    Parallel investigators are alternate, print-and-play versions of investigators 
+    from existing <i>Arkham Horror: The Card Game</i> products. These investigators, 
+    along with their advanced signature cards, are fully playable in any scenario 
+    or campaign.
+</p>
+
+<!-- TODO: image size-->
+<img src="https://assets.arkham.build/optimized/90084.avif" alt="Parallel Jenny Barnes">
 
 <h2 id="Parley">Parley</h2>
 
