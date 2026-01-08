@@ -424,6 +424,7 @@ function RulesReference() {
                 <a href="#Spawning_an_Enemy">Spawning an Enemy</a>
             </li>
         </ul>
+        <li><a href="#Specialist_Cards">Specialist Cards</a></li>
         <li><a href="#Standalone_Mode">Standalone Mode</a></li>
         <li><a href="#Story_Cards">Story Cards</a></li>
         <li><a href="#Supplies">Supplies</a></li>
@@ -1787,7 +1788,7 @@ function RulesReference() {
 </p>
 
 <p>
-    <i>For example: Hope, Zeal, and Augur all have the "bonded
+    <i>For example: Hope, Zeal, and Augur all have the "Bonded
         (Miss Doyle)" keyword. This means each of those cards is
         bonded to the card Miss Doyle. Hope, Zeal, and Augur
         each have no level and are therefore not available as
@@ -1799,6 +1800,17 @@ function RulesReference() {
         investigator's deck and do not count towards their deck
         size.</i>
 </p>
+
+<table>
+    <tbody><tr>
+        <td>
+            <img src="https://assets.arkham.build/optimized/06030.avif" alt="Miss Doyle">
+        </td>
+        <td>
+            <img src="https://assets.arkham.build/optimized/06031.avif" alt="Hope">
+        </td>
+    </tr>
+</tbody></table>
 
 <p>
     <span style="color: var(--blue);">(Added in FAQ, section 'Game Play', point 1.19)</span>
@@ -2223,6 +2235,18 @@ function RulesReference() {
     [curse] tokens. However, certain card effects can add these
     tokens or remove them from the chaos bag.
 </p>
+
+<!-- TODO: make images smaller -->
+<table>
+    <tbody><tr>
+        <td>
+            <img src="/assets/rules/ChaosToken_Bless.png" alt="Bless Token">
+        </td>
+        <td>
+            <img src="/assets/rules/ChaosToken_Curse.png" alt="Curse Token">
+        </td>
+    </tr>
+</tbody></table>
 
 <ul>
     <li>
@@ -2963,6 +2987,18 @@ function RulesReference() {
         copy of Hunter’s Armor in that investigator’s deck is
         affected by the upgrade.</i>
 </p>
+
+<table>
+    <tbody><tr>
+        <td>
+            <img src="https://assets.arkham.build/optimized/09021.avif" alt="Hunter’s Armor">
+        </td>
+        <td>
+            <img src="/assets/rules/09021-upgradesheet.jpg" alt="Hunter’s Armor - Upgradesheet">
+        </td>
+    </tr>
+</tbody></table>
+
 
 <ul>
     <li>
@@ -5652,13 +5688,16 @@ function RulesReference() {
 <p>
     A multi-class card is a card which bears multiple class
     icons instead of one, and is a card of each of those
-    classes. For example, a card with both a Rogue ([rogue]) and
-    a Guardian ([guardian]) icon is both a Rogue card and a
+    classes. For example, .45 Thompson (0) has both a Rogue ([rogue]) and
+    a Guardian ([guardian]) icon and is thus both a Rogue card and a
     Guardian card for all purposes. Generally, a multi-class
     card can be included in an investigator’s deck if that
     investigator has access to <i>either</i> of that card’s
     classes.
 </p>
+
+<!-- TODO: fix size of image to half or less -->
+<img src="https://assets.arkham.build/optimized/05115.avif" alt=".45 Thompson (0)">
 
 <p>
     If an investigator has limited access to one of the classes
@@ -7135,6 +7174,44 @@ function RulesReference() {
     engage.
 </p>
 
+<h2 id="Specialist_Cards" style="color: var(--red);">
+    Specialist Cards (added in <em>The Drowned City</em>)
+</h2>
+
+<p>
+    Some of the player cards in this product belong to a new group of
+    Neutral cards known as Specialist cards. Specialist cards can be
+    identified by their black color and by the absence of any class icon.
+</p>
+
+<p>
+    Each Specialist card also contains text that specifies one or more
+    <b>Traits</b>, e.g. “<b>Miskatonic</b>, <b>Scholar</b> deck only.” An investigator <b>must</b>
+    have one or more of the indicated <b>Traits</b> printed on their investigator
+    card in order to purchase that Specialist card.
+</p>
+
+<p>
+    Additionally, an investigator must follow all of their deckbuilding
+    options and restrictions when looking to purchase a Specialist card
+    for their deck.
+</p>
+
+<p>
+    <i>
+        For example: Dakota Garofalo is a specialist <b></b>Ally asset with the
+        text “<b>Detective</b>, <b>Hunter</b>, <b>Wayfarer</b> deck only” in its text box. Only
+        investigators with the <b>Detective</b>, <b>Hunter</b>, and/or <b>Wayfarer</b> traits may
+        purchase this card, regardless of other deckbuilding access. For example,
+        Marion Tavares does not possess any of the specified <b>Traits</b>, and therefore
+        cannot include this card in her deck. However, Michael McGlen with the
+        <b>Hunter</b> trait may purchase Dakota Garofalo.
+    </i>
+</p>
+
+<!-- TODO: Make image smaller -->
+<img src="https://assets.arkham.build/optimized/11110.avif" alt="Dakota Garofalo">
+
 <h2 id="Standalone_Mode">Standalone Mode</h2>
 
 <p>
@@ -7394,6 +7471,8 @@ function RulesReference() {
     expansion. The following symbol indicates that an asset
     fills a tarot slot:
 </p>
+
+<!-- TODO: add image of tarot slot -->
 
 <p>
     As with other slots, tarot slots limit the number of asset
