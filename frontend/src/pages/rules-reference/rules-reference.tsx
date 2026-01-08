@@ -6477,6 +6477,17 @@ function RulesReference() {
         so if they have "identified the gateway."</i>
 </p>
 
+<table>
+    <tbody><tr>
+        <td>
+            <img src="https://assets.arkham.build/optimized/08033.avif" alt="Archive of Conduits (Unidentified)">
+        </td>
+        <td>
+            <img src="https://assets.arkham.build/optimized/08041.avif" alt="Archive of Conduits (Gateway to Tindalos)">
+        </td>
+    </tr>
+</tbody></table>
+
 <h2 id="Resign">Resign</h2>
 
 <p>
