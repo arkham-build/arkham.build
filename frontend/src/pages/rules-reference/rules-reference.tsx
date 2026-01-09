@@ -7571,8 +7571,8 @@ function RulesReference() {
     fills a tarot slot:
 </p>
 
-<!-- TODO: add image of tarot slot -->
-<h1>[tarot_inverted]</h1>
+<!-- TODO: Center image? -->
+<img src="/assets/rules/overlay-tarot-slot.png">
 
 <p>
     As with other slots, tarot slots limit the number of asset
