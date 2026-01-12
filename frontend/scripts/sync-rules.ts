@@ -23,8 +23,6 @@ async function main() {
       styles = styles.replace("color: red", "color: var(--red);");
       styles = styles.replace("color: blue", "color: var(--blue);");
       element.setAttribute("style", styles || "");
-    } else {
-      element.removeAttribute("style");
     }
   });
 
@@ -62,7 +60,7 @@ async function main() {
     `),
     htmlFromString(`
       <blockquote>
-        The content on this page is sourced from <a href="https://arkhamdb.com">ArkhamDB</a> and maintained by <a href="https://github.com/Kamalisk/arkhamdb/commits/arkham/src/AppBundle/Resources/views/Default/rulesreference.html.twig">its contributors</a>. The source code is available <a href="https://github.com/Kamalisk/arkhamdb/blob/arkham/src/AppBundle/Resources/views/Default/rulesreference.html.twig">on GitHub</a>.
+        The content of this page is available <a href="https://github.com/arkham-build/arkham.build/blob/main/frontend/src/assets/rules.html">on GitHub</a>.
       </blockquote>
     `),
   );

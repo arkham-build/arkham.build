@@ -25,7 +25,7 @@ function RulesReference() {
 <nav class="inner rop">
 <ul>
     <li>
-        <a href="#Intro">A Note from ArkhamDB</a>
+        <a href="#Intro">Introduction</a>
         <ul>
             <li>
                 <a href="#The_Thing_That_Should_Not_Be">The Thing That Should Not Be...</a>
@@ -541,9 +541,9 @@ function RulesReference() {
       <h1 id="top">Rules reference</h1>
     </body><body>
       <blockquote>
-        The content on this page is sourced from <a href="https://arkhamdb.com">ArkhamDB</a> and maintained by <a href="https://github.com/Kamalisk/arkhamdb/commits/arkham/src/AppBundle/Resources/views/Default/rulesreference.html.twig">its contributors</a>. The source code is available <a href="https://github.com/Kamalisk/arkhamdb/blob/arkham/src/AppBundle/Resources/views/Default/rulesreference.html.twig">on GitHub</a>.
+        The content of this page is available <a href="https://github.com/arkham-build/arkham.build/blob/main/frontend/src/assets/rules.html">on GitHub</a>.
       </blockquote>
-    </body>A Note from ArkhamDB</h2>
+    </body>Introduction</h2>
 
 <p>
     This page contains a replica of the Rules Reference found in
@@ -1808,10 +1808,10 @@ function RulesReference() {
 <table>
     <tbody><tr>
         <td>
-            <img src="https://assets.arkham.build/optimized/06030.avif" alt="Miss Doyle">
+            <img class="card-scan" src="https://assets.arkham.build/optimized/06030.avif" alt="Miss Doyle">
         </td>
         <td>
-            <img src="https://assets.arkham.build/optimized/06031.avif" alt="Hope">
+            <img class="card-scan" src="https://assets.arkham.build/optimized/06031.avif" alt="Hope">
         </td>
     </tr>
 </tbody></table>
@@ -2195,10 +2195,10 @@ function RulesReference() {
 </h2>
 
 <p>
-    Challenge scenarios are special print-and-play scenarios that utilize existing 
-    products in the <i>Arkham Horror: The Card Game</i> collection, along with 
-    additional print-and-play cards, to create new content. These scenarios are 
-    designed with certain prerequisites in mind, in order to craft a challenging 
+    Challenge scenarios are special print-and-play scenarios that utilize existing
+    products in the <i>Arkham Horror: The Card Game</i> collection, along with
+    additional print-and-play cards, to create new content. These scenarios are
+    designed with certain prerequisites in mind, in order to craft a challenging
     puzzle-like experience.
 </p>
 
@@ -2252,14 +2252,13 @@ function RulesReference() {
     tokens or remove them from the chaos bag.
 </p>
 
-<!-- TODO: make images smaller -->
 <table>
     <tbody><tr>
         <td>
-            <img src="/assets/rules/ChaosToken_Bless.png" alt="Bless Token">
+            <img src="/assets/rules/ChaosToken_Bless.png" alt="Bless Token" width="72" style="margin-inline: auto;">
         </td>
         <td>
-            <img src="/assets/rules/ChaosToken_Curse.png" alt="Curse Token">
+            <img src="/assets/rules/ChaosToken_Curse.png" alt="Curse Token" width="72" style="margin-inline: auto;">
         </td>
     </tr>
 </tbody></table>
@@ -3007,10 +3006,10 @@ function RulesReference() {
 <table>
     <tbody><tr>
         <td>
-            <img src="https://assets.arkham.build/optimized/09021.avif" alt="Hunter’s Armor">
+            <img class="card-scan" src="https://assets.arkham.build/optimized/09021.avif" alt="Hunter’s Armor">
         </td>
         <td>
-            <img src="/assets/rules/09021-upgradesheet.jpg" alt="Hunter’s Armor - Upgradesheet">
+            <img class="card-scan" src="/assets/rules/09021-upgradesheet.jpg" alt="Hunter’s Armor - Upgradesheet">
         </td>
     </tr>
 </tbody></table>
@@ -5712,8 +5711,7 @@ function RulesReference() {
     classes.
 </p>
 
-<!-- TODO: fix size of image to half or less -->
-<img src="https://assets.arkham.build/optimized/05115.avif" alt=".45 Thompson (0)">
+<img class="card-scan" src="https://assets.arkham.build/optimized/05115.avif" alt=".45 Thompson (0)">
 
 <p>
     If an investigator has limited access to one of the classes
@@ -5967,14 +5965,13 @@ function RulesReference() {
 </h2>
 
 <p>
-    Parallel investigators are alternate, print-and-play versions of investigators 
-    from existing <i>Arkham Horror: The Card Game</i> products. These investigators, 
-    along with their advanced signature cards, are fully playable in any scenario 
+    Parallel investigators are alternate, print-and-play versions of investigators
+    from existing <i>Arkham Horror: The Card Game</i> products. These investigators,
+    along with their advanced signature cards, are fully playable in any scenario
     or campaign.
 </p>
 
-<!-- TODO: image size-->
-<img src="https://assets.arkham.build/optimized/90084.avif" alt="Parallel Jenny Barnes">
+<img class="card-scan" src="https://assets.arkham.build/optimized/90084.avif" alt="Parallel Jenny Barnes">
 
 <h2 id="Parley">Parley</h2>
 
@@ -6330,18 +6327,18 @@ function RulesReference() {
 <table>
     <tbody><tr>
         <td>
-            <img src="https://assets.arkham.build/optimized/05046.avif">
+            <img class="card-scan" src="https://assets.arkham.build/optimized/05046.avif">
         </td>
         <td>
-            <img src="https://assets.arkham.build/optimized/05047.avif">
+            <img class="card-scan" src="https://assets.arkham.build/optimized/05047.avif">
         </td>
     </tr>
         <tr>
         <td>
-            <img src="https://assets.arkham.build/optimized/05048.avif">
+            <img class="card-scan" src="https://assets.arkham.build/optimized/05048.avif">
         </td>
         <td>
-            <img src="https://assets.arkham.build/optimized/05049.avif">
+            <img class="card-scan" src="https://assets.arkham.build/optimized/05049.avif">
         </td>
     </tr>
 </tbody></table>
@@ -6463,10 +6460,10 @@ function RulesReference() {
 </h2>
 
 <p>
-    Some enemies in this campaign have the relentless keyword. During 
-    the enemy phase (after framework step 3.3), each enemy with the 
-    relentless keyword that has attacked this phase (even if that attack was 
-    canceled) readies and attacks the investigator(s) it is engaged with a 
+    Some enemies in this campaign have the relentless keyword. During
+    the enemy phase (after framework step 3.3), each enemy with the
+    relentless keyword that has attacked this phase (even if that attack was
+    canceled) readies and attacks the investigator(s) it is engaged with a
     second time.
 </p>
 
@@ -6536,33 +6533,33 @@ function RulesReference() {
 </h2>
 
 <p>
-    Signature cards with the Replacement keyword are optional replacements 
-    for the given card. When building a deck, you may choose to replace the 
-    specific cards listed under “Deckbuilding Requirements” with all of that 
-    investigator’s replacement cards. Doing so satisfies your Deckbuilding 
+    Signature cards with the Replacement keyword are optional replacements
+    for the given card. When building a deck, you may choose to replace the
+    specific cards listed under “Deckbuilding Requirements” with all of that
+    investigator’s replacement cards. Doing so satisfies your Deckbuilding
     Requirements. During a campaign, this choice cannot be unmade.
 </p>
 
 <p>
     <i>
-        For example: Marta is building a Lola Hayes deck. Improvisation and Crisis of 
-        Identity are listed under Deckbuilding Requirements for Lola Hayes. Marta may 
-        choose to instead replace those four cards with all five versions of Leading Lady, 
+        For example: Marta is building a Lola Hayes deck. Improvisation and Crisis of
+        Identity are listed under Deckbuilding Requirements for Lola Hayes. Marta may
+        choose to instead replace those four cards with all five versions of Leading Lady,
         as well as Samuel Blake.
     </i>
 </p>
 
 <p>
-    You may also choose to include all cards listed under “Deckbuilding 
-    Requirements” as well as all of that investigator’s replacement cards. 
-    Replacement cards added in this manner do not count towards the 
+    You may also choose to include all cards listed under “Deckbuilding
+    Requirements” as well as all of that investigator’s replacement cards.
+    Replacement cards added in this manner do not count towards the
     investigator’s deck size.
 </p>
 
 <p>
     <i>
-        For example: Marta is building a Lola Hayes deck. Instead of deciding between 
-        her typical signature cards and her replacement signature cards, Marta may 
+        For example: Marta is building a Lola Hayes deck. Instead of deciding between
+        her typical signature cards and her replacement signature cards, Marta may
         choose to add all ten cards to her deck.
     </i>
 </p>
@@ -6616,10 +6613,10 @@ function RulesReference() {
 <table>
     <tbody><tr>
         <td>
-            <img src="https://assets.arkham.build/optimized/08033.avif" alt="Archive of Conduits (Unidentified)">
+            <img src="https://assets.arkham.build/optimized/08033.avif" alt="Archive of Conduits (Unidentified)" class="card-scan">
         </td>
         <td>
-            <img src="https://assets.arkham.build/optimized/08041.avif" alt="Archive of Conduits (Gateway to Tindalos)">
+            <img src="https://assets.arkham.build/optimized/08041.avif" alt="Archive of Conduits (Gateway to Tindalos)" class="card-scan">
         </td>
     </tr>
 </tbody></table>
@@ -7308,8 +7305,7 @@ function RulesReference() {
     </i>
 </p>
 
-<!-- TODO: Make image smaller -->
-<img src="https://assets.arkham.build/optimized/11110.avif" alt="Dakota Garofalo">
+<img src="https://assets.arkham.build/optimized/11110.avif" alt="Dakota Garofalo" class="card-scan">
 
 <h2 id="Standalone_Mode">Standalone Mode</h2>
 
@@ -7571,8 +7567,7 @@ function RulesReference() {
     fills a tarot slot:
 </p>
 
-<!-- TODO: Center image? -->
-<img src="/assets/rules/overlay-tarot-slot.png">
+<img src="/assets/rules/overlay-tarot-slot.png" width="72" class="center">
 
 <p>
     As with other slots, tarot slots limit the number of asset

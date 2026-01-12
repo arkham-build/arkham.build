@@ -80,7 +80,7 @@
     --rounded: 0.25rem;
     --rounded-lg: 1rem;
     --rounded-xl: 1.5rem;
-    --rounded-scan: 3.75%;
+    --rounded-scan: 5%;
 
     --layout-padding: 0.75rem;
     --layout-max-width: 118rem;
@@ -852,6 +852,13 @@
     border-radius: var(--rounded);
   }
 
+  .longform .card-scan {
+    width: 100%;
+    max-width: 18rem;
+    margin-inline: auto;
+    border-radius: var(--rounded-scan);
+  }
+
   .external-icon {
     display: inline-block;
     width: 0.75rem;
@@ -891,6 +898,10 @@
     background-blend-mode: lighten;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
     color: var(--nord-5);
+  }
+
+  .center {
+    margin-inline: auto;
   }
 
   /**
