@@ -24,6 +24,35 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface Account {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+  updated_at: Generated<Timestamp>;
+}
+
+export interface AccountCollection {
+  account_id: string;
+  collection: Json | null;
+}
+
+export interface AccountIdentity {
+  account_id: string;
+  created_at: Generated<Timestamp>;
+  email: string | null;
+  id: Generated<string>;
+  password_hash: string | null;
+  provider: string;
+  provider_user_id: string;
+  updated_at: Generated<Timestamp>;
+  verified_at: Timestamp | null;
+}
+
+export interface AccountSettings {
+  account_id: string;
+  settings: Json | null;
+}
+
 export interface ArkhamdbDecklist {
   canonical_investigator_code: string;
   date_creation: Timestamp;
@@ -165,6 +194,33 @@ export interface DataVersion {
   translation_updated_at: Timestamp;
 }
 
+export interface Deck {
+  account_id: string | null;
+  created_at: Generated<Timestamp>;
+  description: Generated<string | null>;
+  exile_string: string | null;
+  id: Generated<string>;
+  ignore_deck_limit: Json | null;
+  investigator_code: string;
+  investigator_name: string;
+  meta: Json | null;
+  name: string;
+  next_deck: string | null;
+  prev_deck: string | null;
+  problem: string | null;
+  provider_deck_id: string | null;
+  provider_type: string;
+  side_slots: Json | null;
+  slots: Json;
+  taboo_set_id: number | null;
+  tags: string | null;
+  updated_at: Generated<Timestamp>;
+  version: string | null;
+  xp: number | null;
+  xp_adjustment: number | null;
+  xp_spent: number | null;
+}
+
 export interface EncounterSet {
   code: string;
   pack_code: string;
@@ -176,6 +232,15 @@ export interface Faction {
   code: string;
   is_primary: boolean;
   name: string;
+}
+
+export interface OauthToken {
+  access_token: string;
+  account_identity_id: string;
+  created_at: Generated<Timestamp>;
+  refresh_token: string | null;
+  token_expires_at: Timestamp | null;
+  updated_at: Generated<Timestamp>;
 }
 
 export interface Pack {
@@ -195,6 +260,14 @@ export interface SchemaMigrations {
   version: string;
 }
 
+export interface Session {
+  account_id: string;
+  created_at: Generated<Timestamp>;
+  expires_at: Timestamp;
+  id: Generated<string>;
+  last_activity_at: Generated<Timestamp>;
+}
+
 export interface Subtype {
   code: string;
   name: string;
@@ -212,7 +285,21 @@ export interface Type {
   name: string;
 }
 
+export interface VerificationToken {
+  account_identity_id: string | null;
+  created_at: Generated<Timestamp>;
+  email: string;
+  expires_at: Timestamp;
+  id: Generated<string>;
+  token_hash: string;
+  token_type: string;
+}
+
 export interface DB {
+  account: Account;
+  account_collection: AccountCollection;
+  account_identity: AccountIdentity;
+  account_settings: AccountSettings;
   arkhamdb_decklist: ArkhamdbDecklist;
   arkhamdb_ranking_cache: ArkhamdbRankingCache;
   arkhamdb_user: ArkhamdbUser;
@@ -220,12 +307,16 @@ export interface DB {
   card_resolution: CardResolution;
   cycle: Cycle;
   data_version: DataVersion;
+  deck: Deck;
   encounter_set: EncounterSet;
   faction: Faction;
+  oauth_token: OauthToken;
   pack: Pack;
   pack_type: PackType;
   schema_migrations: SchemaMigrations;
+  session: Session;
   subtype: Subtype;
   taboo_set: TabooSet;
   type: Type;
+  verification_token: VerificationToken;
 }

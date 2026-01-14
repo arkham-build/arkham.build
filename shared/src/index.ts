@@ -1,6 +1,15 @@
 /** biome-ignore-all lint/performance/noBarrelFile: TECH DEBT: look into `exports` */
 
 export {
+  ForgotPasswordRequestSchema,
+  LoginRequestSchema,
+  MeResponse,
+  ResetPasswordSchema,
+  SignupRequestSchema,
+  VerifyEmailRequestSchema,
+} from "./dtos/auth.schema.ts";
+
+export {
   type DateRange,
   DateRangeSchema,
 } from "./dtos/date-range.schema.ts";
