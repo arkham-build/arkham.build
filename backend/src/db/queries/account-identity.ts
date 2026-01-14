@@ -1,5 +1,13 @@
 import type { Database } from "../db.ts";
 
+export function getAccountIdentity(db: Database, id: string) {
+  return db
+    .selectFrom("account_identity")
+    .selectAll()
+    .where("id", "=", id)
+    .executeTakeFirst();
+}
+
 export function getAccountIdentityByAccountId(db: Database, accountId: string) {
   return db
     .selectFrom("account_identity")

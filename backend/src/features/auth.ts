@@ -12,12 +12,17 @@ import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
 import { createAccount, getAccount } from "../db/queries/account.ts";
 import {
+  getAccountIdentity,
   getAccountIdentityByAccountId,
   getAccountIdentityByEmail,
   updateAccountIdentityVerified,
   updatePasswordHash,
 } from "../db/queries/account-identity.ts";
-import { createSession, deleteSession } from "../db/queries/session.ts";
+import {
+  createSession,
+  deleteSession,
+  deleteSessionsByAccountId,
+} from "../db/queries/session.ts";
 import {
   consumeVerificationToken,
   createVerificationToken,
@@ -30,7 +35,6 @@ import {
   verifyPassword,
 } from "../lib/auth/crypto.ts";
 import { sessionAuth } from "../lib/auth/session-auth.ts";
-import { createEmailService } from "../lib/email.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import { zodValidator } from "../lib/validation.ts";
 
@@ -43,6 +47,7 @@ export function authRouter() {
     async (c) => {
       const db = c.get("db");
       const config = c.get("config");
+      const emailService = c.get("emailService");
 
       const { name, email, password } = c.req.valid("json");
 
@@ -74,7 +79,6 @@ export function authRouter() {
         expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
       });
 
-      const emailService = createEmailService(config);
       await emailService.sendVerificationEmail(email, token);
 
       return new Response(null, { status: 201 });
@@ -178,15 +182,9 @@ export function authRouter() {
           "email_verification",
         );
 
-        if (!verificationToken) {
+        if (!verificationToken?.account_identity_id) {
           throw new HTTPException(400, {
             message: "Invalid or expired verification token",
-          });
-        }
-
-        if (!verificationToken.account_identity_id) {
-          throw new HTTPException(400, {
-            message: "Invalid verification token",
           });
         }
 
@@ -207,6 +205,7 @@ export function authRouter() {
       const { email } = c.req.valid("json");
       const db = c.get("db");
       const config = c.get("config");
+      const emailService = c.get("emailService");
 
       const accountIdentity = await getAccountIdentityByEmail(db, email);
 
@@ -225,7 +224,6 @@ export function authRouter() {
           expiryHours: config.PASSWORD_RESET_TOKEN_EXPIRY_HOURS,
         });
 
-        const emailService = createEmailService(config);
         await emailService.sendPasswordResetEmail(email, token);
       }
 
@@ -249,15 +247,20 @@ export function authRouter() {
           "password_reset",
         );
 
-        if (!verificationToken) {
+        if (!verificationToken?.account_identity_id) {
           throw new HTTPException(400, {
             message: "Invalid or expired password reset token",
           });
         }
 
-        if (!verificationToken.account_identity_id) {
+        const accountIdentity = await getAccountIdentity(
+          tx,
+          verificationToken.account_identity_id,
+        );
+
+        if (!accountIdentity) {
           throw new HTTPException(400, {
-            message: "Invalid password reset token",
+            message: "Invalid or expired password reset token",
           });
         }
 
@@ -266,6 +269,8 @@ export function authRouter() {
           verificationToken.account_identity_id,
           passwordHash,
         );
+
+        await deleteSessionsByAccountId(tx, accountIdentity.account_id);
       });
 
       return new Response(null, { status: 200 });

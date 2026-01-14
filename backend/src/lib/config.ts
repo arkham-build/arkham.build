@@ -21,7 +21,7 @@ export const configSchema = z.object({
   POSTGRES_PASSWORD: z.string(),
   POSTGRES_PORT: z.coerce.number().int().min(1).max(65535).default(5432),
   POSTGRES_USER: z.string(),
-  SESSION_COOKIE_NAME: z.string().default("arkham_session"),
+  SESSION_COOKIE_NAME: z.string().default("arkham-build-session"),
   SESSION_EXPIRY_HOURS: z.coerce.number().int().positive().default(720),
   SESSION_SECRET: z.string().min(32),
   VERIFICATION_TOKEN_EXPIRY_HOURS: z.coerce

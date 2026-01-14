@@ -9,11 +9,16 @@ import { recommendationsRouter } from "./features/recommendations.ts";
 import { bodyLimitMiddleware } from "./lib/body-limit.ts";
 import type { Config } from "./lib/config.ts";
 import { corsMiddleware } from "./lib/cors.ts";
+import type { EmailService } from "./lib/email.ts";
 import { errorHandler } from "./lib/errors.ts";
 import type { HonoEnv } from "./lib/hono-env.ts";
 import { logger, requestLogger } from "./lib/logger.ts";
 
-export function appFactory(config: Config, database: Database) {
+export function appFactory(
+  config: Config,
+  database: Database,
+  emailService: EmailService,
+) {
   const app = new Hono<HonoEnv>();
 
   app.use(secureHeaders());
@@ -27,6 +32,7 @@ export function appFactory(config: Config, database: Database) {
   app.use((c, next) => {
     c.set("db", database);
     c.set("config", config);
+    c.set("emailService", emailService);
     return next();
   });
 
