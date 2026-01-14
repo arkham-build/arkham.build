@@ -21,6 +21,16 @@ export async function deleteSession(db: Database, id: string) {
   return await db.deleteFrom("session").where("id", "=", id).executeTakeFirst();
 }
 
+export async function deleteSessionsByAccountId(
+  db: Database,
+  accountId: string,
+) {
+  return await db
+    .deleteFrom("session")
+    .where("account_id", "=", accountId)
+    .executeTakeFirst();
+}
+
 export async function getSession(db: Database, id: string) {
   return await db
     .selectFrom("session")
