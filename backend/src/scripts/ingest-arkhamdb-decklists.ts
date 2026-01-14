@@ -9,7 +9,7 @@ import { pipeline } from "node:stream/promises";
 import { parse } from "@fast-csv/parse";
 import type { Insertable, Transaction } from "kysely";
 import { connectionString, type Database, getDatabase } from "../db/db.ts";
-import { getAllCardResolutions } from "../db/queries/get-all-card-resolutions.ts";
+import { getAllCardResolutions } from "../db/queries/card-resolution.ts";
 import type { ArkhamdbDecklist, DB } from "../db/schema.types.ts";
 import { type Config, configFromEnv } from "../lib/config.ts";
 import { log } from "../lib/logger.ts";

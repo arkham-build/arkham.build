@@ -8,7 +8,7 @@ import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { expressionBuilder, sql } from "kysely";
 import type { Database } from "../db/db.ts";
-import { getCardById } from "../db/queries/get-card-by-id.ts";
+import { getCardById } from "../db/queries/card.ts";
 import type { DB } from "../db/schema.types.ts";
 import {
   canonicalInvestigatorCodeCond,

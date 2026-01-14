@@ -7,7 +7,7 @@ import { applySqlFiles } from "../db/db.helpers.ts";
 import { getTestDatabase } from "./test-utils.ts";
 
 beforeAll(async () => {
-  const container = new PostgreSqlContainer("postgres:16-alpine");
+  const container = new PostgreSqlContainer("postgres:18-alpine");
   globalThis.postgresContainer = await container.start();
   const database = getTestDatabase();
   await database.transaction().execute(async (tx) => {
