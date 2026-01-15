@@ -28,6 +28,7 @@ import {
   consumeVerificationToken,
   createVerificationToken,
   deleteVerificationTokensByEmail,
+  getLatestVerificationTokenByEmail,
 } from "../db/queries/verification-token.ts";
 import {
   generateRandomToken,
@@ -38,6 +39,20 @@ import {
 import { sessionAuth } from "../lib/auth/session-auth.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import { zodValidator } from "../lib/validation.ts";
+
+function assertEmailCooldown(
+  tokenCreatedAt: Date,
+  cooldownMs = 5 * 60 * 1000,
+): void {
+  const retryAfter = new Date(tokenCreatedAt.getTime() + cooldownMs);
+
+  if (Date.now() < retryAfter.getTime()) {
+    throw new HTTPException(429, {
+      message: "Please wait before requesting another email",
+      cause: { retryAfter: retryAfter.toISOString() },
+    });
+  }
+}
 
 export function authRouter() {
   const routes = new Hono<HonoEnv>();
@@ -211,6 +226,16 @@ export function authRouter() {
       const accountIdentity = await getAccountIdentityByEmail(db, email);
 
       if (accountIdentity && !accountIdentity.verified_at) {
+        const latestToken = await getLatestVerificationTokenByEmail(
+          db,
+          email,
+          "email_verification",
+        );
+
+        if (latestToken) {
+          assertEmailCooldown(latestToken.created_at);
+        }
+
         const token = generateRandomToken();
         const tokenHash = hashToken(token);
 
@@ -250,6 +275,16 @@ export function authRouter() {
 
       // FIXME: mitigate enumeration attacks
       if (accountIdentity?.verified_at) {
+        const latestToken = await getLatestVerificationTokenByEmail(
+          db,
+          email,
+          "password_reset",
+        );
+
+        if (latestToken) {
+          assertEmailCooldown(latestToken.created_at);
+        }
+
         await deleteVerificationTokensByEmail(db, email, "password_reset");
 
         const token = generateRandomToken();

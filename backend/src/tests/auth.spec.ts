@@ -1,6 +1,7 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: test code */
 import assert from "node:assert";
 import type { Hono } from "hono";
-import { describe, expect } from "vitest";
+import { describe, expect, vi } from "vitest";
 import type { EmailService } from "../lib/email.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import type { MockMailer } from "./mocks/email.ts";
@@ -330,52 +331,68 @@ describe("Auth routes", () => {
     test("resends verification email for unverified account", async ({
       dependencies,
     }) => {
-      const { app, emailService } = dependencies;
+      vi.useFakeTimers();
 
-      await signup(app, {
-        name: "Test User",
-        email: "resend@example.com",
-        password: "SecurePassword123!",
-      });
+      try {
+        const { app, emailService } = dependencies;
 
-      emailService.mailer.reset();
+        await signup(app, {
+          name: "Test User",
+          email: "resend@example.com",
+          password: "SecurePassword123!",
+        });
 
-      const res = await resendVerification(app, "resend@example.com");
+        emailService.mailer.reset();
 
-      expect(res.status).toBe(200);
-      expect(emailService.mailer.sentEmails).toHaveLength(1);
-      expect(emailService.mailer.sentEmails[0]?.to).toEqual(
-        "resend@example.com",
-      );
-      expect(
-        extractToken(emailService.mailer.sentEmails[0]?.body),
-      ).toBeTruthy();
+        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+
+        const res = await resendVerification(app, "resend@example.com");
+
+        expect(res.status).toBe(200);
+        expect(emailService.mailer.sentEmails).toHaveLength(1);
+        expect(emailService.mailer.sentEmails[0]?.to).toEqual(
+          "resend@example.com",
+        );
+        expect(
+          extractToken(emailService.mailer.sentEmails[0]?.body),
+        ).toBeTruthy();
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     test("new token works after resending verification", async ({
       dependencies,
     }) => {
-      const { app, emailService } = dependencies;
+      vi.useFakeTimers();
 
-      await signup(app, {
-        name: "Test User",
-        email: "resend-works@example.com",
-        password: "SecurePassword123!",
-      });
+      try {
+        const { app, emailService } = dependencies;
 
-      const oldToken = extractToken(emailService.mailer.sentEmails[0]?.body);
+        await signup(app, {
+          name: "Test User",
+          email: "resend-works@example.com",
+          password: "SecurePassword123!",
+        });
 
-      await resendVerification(app, "resend-works@example.com");
+        const oldToken = extractToken(emailService.mailer.sentEmails[0]?.body);
 
-      const newToken = extractToken(emailService.mailer.sentEmails[1]?.body);
-      assert(newToken, "No new verification token found");
+        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
 
-      assert(oldToken, "No old verification token found");
-      const oldRes = await verifyEmail(app, oldToken);
-      expect(oldRes.status).toBe(400);
+        await resendVerification(app, "resend-works@example.com");
 
-      const res = await verifyEmail(app, newToken);
-      expect(res.status).toBe(200);
+        const newToken = extractToken(emailService.mailer.sentEmails[1]?.body);
+        assert(newToken, "No new verification token found");
+
+        assert(oldToken, "No old verification token found");
+        const oldRes = await verifyEmail(app, oldToken);
+        expect(oldRes.status).toBe(400);
+
+        const res = await verifyEmail(app, newToken);
+        expect(res.status).toBe(200);
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     test("returns 200 for non-existent email without revealing existence", async ({
@@ -406,6 +423,66 @@ describe("Auth routes", () => {
 
       expect(res.status).toBe(200);
       expect(emailService.mailer.sentEmails).toHaveLength(0);
+    });
+
+    test("rate limits requests within 5 minute window", async ({
+      dependencies,
+    }) => {
+      vi.useFakeTimers();
+
+      try {
+        const { app, emailService } = dependencies;
+
+        await signup(app, {
+          name: "Test User",
+          email: "rate-limit-resend@example.com",
+          password: "SecurePassword123!",
+        });
+
+        emailService.mailer.reset();
+
+        vi.advanceTimersByTime(4 * 60 * 1000 + 1000);
+
+        const res = await resendVerification(
+          app,
+          "rate-limit-resend@example.com",
+        );
+
+        expect(res.status).toBe(429);
+        const body: any = await res.json();
+        expect(body.cause?.retryAfter).toBeDefined();
+        expect(emailService.mailer.sentEmails).toHaveLength(0);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    test("allows request after 5 minute cooldown", async ({ dependencies }) => {
+      vi.useFakeTimers();
+
+      try {
+        const { app, emailService } = dependencies;
+
+        await signup(app, {
+          name: "Test User",
+          email: "rate-limit-resend-wait@example.com",
+          password: "SecurePassword123!",
+        });
+
+        emailService.mailer.reset();
+
+        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+
+        const res = await resendVerification(
+          app,
+          "rate-limit-resend-wait@example.com",
+        );
+
+        expect(res.status).toBe(200);
+        expect(emailService.mailer.sentEmails).toHaveLength(1);
+      } finally {
+        vi.useRealTimers();
+      }
     });
   });
 
@@ -463,6 +540,73 @@ describe("Auth routes", () => {
 
       expect(res.status).toBe(200);
       expect(emailService.mailer.sentEmails).toHaveLength(0);
+    });
+
+    test("rate limits requests within 5 minute window", async ({
+      dependencies,
+    }) => {
+      vi.useFakeTimers();
+
+      try {
+        const { app, emailService } = dependencies;
+
+        await signupAndVerify(app, emailService, {
+          name: "Test User",
+          email: "rate-limit-forgot@example.com",
+          password: "SecurePassword123!",
+        });
+
+        emailService.mailer.reset();
+
+        await forgotPassword(app, "rate-limit-forgot@example.com");
+        expect(emailService.mailer.sentEmails).toHaveLength(1);
+
+        emailService.mailer.reset();
+
+        vi.advanceTimersByTime(4 * 60 * 1000 + 1000);
+
+        const res = await forgotPassword(app, "rate-limit-forgot@example.com");
+
+        expect(res.status).toBe(429);
+        const body: any = await res.json();
+        expect(body.cause?.retryAfter).toBeDefined();
+        expect(emailService.mailer.sentEmails).toHaveLength(0);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    test("allows request after 5 minute cooldown", async ({ dependencies }) => {
+      vi.useFakeTimers();
+
+      try {
+        const { app, emailService } = dependencies;
+
+        await signupAndVerify(app, emailService, {
+          name: "Test User",
+          email: "rate-limit-forgot-wait@example.com",
+          password: "SecurePassword123!",
+        });
+
+        emailService.mailer.reset();
+
+        await forgotPassword(app, "rate-limit-forgot-wait@example.com");
+        expect(emailService.mailer.sentEmails).toHaveLength(1);
+
+        emailService.mailer.reset();
+
+        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+
+        const res = await forgotPassword(
+          app,
+          "rate-limit-forgot-wait@example.com",
+        );
+
+        expect(res.status).toBe(200);
+        expect(emailService.mailer.sentEmails).toHaveLength(1);
+      } finally {
+        vi.useRealTimers();
+      }
     });
   });
 
