@@ -4,6 +4,7 @@ export {
   ForgotPasswordRequestSchema,
   LoginRequestSchema,
   MeResponse,
+  ResendVerificationRequestSchema,
   ResetPasswordSchema,
   SignupRequestSchema,
   VerifyEmailRequestSchema,
