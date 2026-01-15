@@ -3,7 +3,8 @@ import { test as base } from "vitest";
 import { appFactory } from "../app.ts";
 import { getDatabase } from "../db/db.ts";
 import { configFromEnv } from "../lib/config.ts";
-import { createMockEmailService } from "./mocks/email.ts";
+import { EmailService } from "../lib/email.ts";
+import { MockMailer } from "./mocks/email.ts";
 
 export function getTestDatabase() {
   const container = globalThis.postgresContainer;
@@ -22,13 +23,13 @@ function getDependencies() {
     POSTGRES_PASSWORD: container.getPassword(),
     POSTGRES_PORT: container.getPort(),
     POSTGRES_USER: container.getUsername(),
-    POSTMARK_API_TOKEN: "test-postmark-token",
-    POSTMARK_FROM_EMAIL: "test@example.com",
+    FROM_EMAIL: "test@example.com",
     SESSION_SECRET: "test-session-secret-at-least-32-characters-long",
   });
 
   const db = getTestDatabase();
-  const emailService = createMockEmailService();
+
+  const emailService = new EmailService(new MockMailer(), config.FRONTEND_URL);
   const app = appFactory(config, db, emailService);
 
   return { app, db, emailService };
