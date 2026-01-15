@@ -43,5 +43,6 @@ function formatError(err: HTTPException & { cause?: unknown }) {
 function formatErrorCause(cause: unknown) {
   if (cause instanceof ZodError) return cause.issues;
   if (cause instanceof Error) return cause.message;
+  if (cause != null && typeof cause === "object") return cause;
   return undefined;
 }

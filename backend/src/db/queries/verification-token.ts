@@ -12,7 +12,10 @@ export async function createVerificationToken(
   db: Database,
   params: CreateVerificationTokenParams,
 ) {
-  const expiresAt = new Date(Date.now() + params.expiryHours * 60 * 60 * 1000);
+  const now = new Date();
+  const expiresAt = new Date(
+    now.getTime() + params.expiryHours * 60 * 60 * 1000,
+  );
 
   return await db
     .insertInto("verification_token")
@@ -21,6 +24,7 @@ export async function createVerificationToken(
       email: params.email,
       token_hash: params.tokenHash,
       token_type: params.tokenType,
+      created_at: now,
       expires_at: expiresAt,
     })
     .returningAll()
@@ -50,5 +54,19 @@ export async function consumeVerificationToken(
     .where("token_hash", "=", tokenHash)
     .where("token_type", "=", tokenType)
     .where("expires_at", ">", new Date())
+    .executeTakeFirst();
+}
+
+export async function getLatestVerificationTokenByEmail(
+  db: Database,
+  email: string,
+  tokenType: "email_verification" | "password_reset",
+) {
+  return await db
+    .selectFrom("verification_token")
+    .selectAll()
+    .where("email", "=", email)
+    .where("token_type", "=", tokenType)
+    .orderBy("created_at", "desc")
     .executeTakeFirst();
 }
