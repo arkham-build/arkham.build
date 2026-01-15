@@ -3,6 +3,7 @@ import {
   ForgotPasswordRequestSchema,
   LoginRequestSchema,
   MeResponse,
+  ResendVerificationRequestSchema,
   ResetPasswordSchema,
   SignupRequestSchema,
   VerifyEmailRequestSchema,
@@ -193,6 +194,44 @@ export function authRouter() {
           verificationToken.account_identity_id,
         );
       });
+
+      return new Response(null, { status: 200 });
+    },
+  );
+
+  routes.post(
+    "/resend-verification",
+    zodValidator("json", ResendVerificationRequestSchema),
+    async (c) => {
+      const { email } = c.req.valid("json");
+      const db = c.get("db");
+      const config = c.get("config");
+      const emailService = c.get("emailService");
+
+      const accountIdentity = await getAccountIdentityByEmail(db, email);
+
+      if (accountIdentity && !accountIdentity.verified_at) {
+        const token = generateRandomToken();
+        const tokenHash = hashToken(token);
+
+        await db.transaction().execute(async (tx) => {
+          await deleteVerificationTokensByEmail(
+            tx,
+            email,
+            "email_verification",
+          );
+
+          await createVerificationToken(tx, {
+            accountIdentityId: accountIdentity.id,
+            email,
+            tokenHash,
+            tokenType: "email_verification",
+            expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
+          });
+        });
+
+        await emailService.sendVerificationEmail(email, token);
+      }
 
       return new Response(null, { status: 200 });
     },

@@ -31,3 +31,7 @@ export const ResetPasswordSchema = z.object({
 export const VerifyEmailRequestSchema = z.object({
   token: z.string(),
 });
+
+export const ResendVerificationRequestSchema = z.object({
+  email: z.email(),
+});

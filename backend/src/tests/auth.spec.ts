@@ -52,6 +52,14 @@ function resetPassword(app: Hono<HonoEnv>, token: string, password: string) {
   });
 }
 
+function resendVerification(app: Hono<HonoEnv>, email: string) {
+  return app.request("/v2/auth/resend-verification", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+}
+
 async function signupAndVerify(
   app: Hono<HonoEnv>,
   emailService: EmailService<MockMailer>,
@@ -315,6 +323,89 @@ describe("Auth routes", () => {
       });
 
       expect(res.status).toBe(401);
+    });
+  });
+
+  describe("POST /v2/auth/resend-verification", () => {
+    test("resends verification email for unverified account", async ({
+      dependencies,
+    }) => {
+      const { app, emailService } = dependencies;
+
+      await signup(app, {
+        name: "Test User",
+        email: "resend@example.com",
+        password: "SecurePassword123!",
+      });
+
+      emailService.mailer.reset();
+
+      const res = await resendVerification(app, "resend@example.com");
+
+      expect(res.status).toBe(200);
+      expect(emailService.mailer.sentEmails).toHaveLength(1);
+      expect(emailService.mailer.sentEmails[0]?.to).toEqual(
+        "resend@example.com",
+      );
+      expect(
+        extractToken(emailService.mailer.sentEmails[0]?.body),
+      ).toBeTruthy();
+    });
+
+    test("new token works after resending verification", async ({
+      dependencies,
+    }) => {
+      const { app, emailService } = dependencies;
+
+      await signup(app, {
+        name: "Test User",
+        email: "resend-works@example.com",
+        password: "SecurePassword123!",
+      });
+
+      const oldToken = extractToken(emailService.mailer.sentEmails[0]?.body);
+
+      await resendVerification(app, "resend-works@example.com");
+
+      const newToken = extractToken(emailService.mailer.sentEmails[1]?.body);
+      assert(newToken, "No new verification token found");
+
+      assert(oldToken, "No old verification token found");
+      const oldRes = await verifyEmail(app, oldToken);
+      expect(oldRes.status).toBe(400);
+
+      const res = await verifyEmail(app, newToken);
+      expect(res.status).toBe(200);
+    });
+
+    test("returns 200 for non-existent email without revealing existence", async ({
+      dependencies,
+    }) => {
+      const { app, emailService } = dependencies;
+
+      const res = await resendVerification(app, "nonexistent@example.com");
+
+      expect(res.status).toBe(200);
+      expect(emailService.mailer.sentEmails).toHaveLength(0);
+    });
+
+    test("does not send email for already verified account", async ({
+      dependencies,
+    }) => {
+      const { app, emailService } = dependencies;
+
+      await signupAndVerify(app, emailService, {
+        name: "Test User",
+        email: "already-verified@example.com",
+        password: "SecurePassword123!",
+      });
+
+      emailService.mailer.reset();
+
+      const res = await resendVerification(app, "already-verified@example.com");
+
+      expect(res.status).toBe(200);
+      expect(emailService.mailer.sentEmails).toHaveLength(0);
     });
   });
 

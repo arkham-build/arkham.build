@@ -60,7 +60,7 @@ export class DebugMailer implements Mailer {
   }
 }
 
-export class EmailService<M extends Mailer> {
+export class EmailService<M extends Mailer = Mailer> {
   mailer: M;
   private frontendUrl: string;
 
