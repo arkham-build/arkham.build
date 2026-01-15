@@ -1,8 +1,9 @@
-import assert from "assert";
+import assert from "node:assert";
 import type { Hono } from "hono";
 import { describe, expect } from "vitest";
+import type { EmailService } from "../lib/email.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
-import type { MockEmailService } from "./mocks/email.ts";
+import type { MockMailer } from "./mocks/email.ts";
 import { test } from "./test-utils.ts";
 
 interface SignupParams {
@@ -53,15 +54,24 @@ function resetPassword(app: Hono<HonoEnv>, token: string, password: string) {
 
 async function signupAndVerify(
   app: Hono<HonoEnv>,
-  emailService: MockEmailService,
+  emailService: EmailService<MockMailer>,
   params: SignupParams,
 ) {
   await signup(app, params);
-  const token =
-    emailService.sentEmails[emailService.sentEmails.length - 1]?.token;
+  const token = extractToken(
+    emailService.mailer.sentEmails[emailService.mailer.sentEmails.length - 1]
+      ?.body,
+  );
   if (!token) throw new Error("No verification token found");
   await verifyEmail(app, token);
   return token;
+}
+
+function extractToken(
+  emailBody: string | undefined,
+): string | null | undefined {
+  const match = emailBody?.match(/token=([a-zA-Z0-9-_]+)/);
+  return match ? match[1] : null;
 }
 
 describe("Auth routes", () => {
@@ -78,12 +88,11 @@ describe("Auth routes", () => {
       });
 
       expect(res.status).toBe(201);
-      expect(emailService.sentEmails).toHaveLength(1);
-      expect(emailService.sentEmails[0]?.token).toBeTruthy();
-      expect(emailService.sentEmails[0]).toMatchObject({
-        type: "verification",
-        email: "test@example.com",
-      });
+      expect(emailService.mailer.sentEmails).toHaveLength(1);
+      expect(
+        extractToken(emailService.mailer.sentEmails[0]?.body),
+      ).toBeTruthy();
+      expect(emailService.mailer.sentEmails[0]?.to).toEqual("test@example.com");
     });
 
     test("validates account does not exist", async ({ dependencies }) => {
@@ -129,7 +138,7 @@ describe("Auth routes", () => {
         password: "SecurePassword123!",
       });
 
-      const token = emailService.sentEmails[0]?.token;
+      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
       assert(token, "No verification token found");
 
       const res = await verifyEmail(app, token);
@@ -151,7 +160,7 @@ describe("Auth routes", () => {
         password: "SecurePassword123!",
       });
 
-      const token = emailService.sentEmails[0]?.token;
+      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
       assert(token, "No verification token found");
 
       const res1 = await verifyEmail(app, token);
@@ -321,16 +330,18 @@ describe("Auth routes", () => {
         password: "SecurePassword123!",
       });
 
-      emailService.reset();
+      emailService.mailer.reset();
 
       const res = await forgotPassword(app, "forgot@example.com");
 
       expect(res.status).toBe(200);
-      expect(emailService.sentEmails).toHaveLength(1);
-      expect(emailService.sentEmails[0]).toMatchObject({
-        type: "password_reset",
-        email: "forgot@example.com",
-      });
+      expect(emailService.mailer.sentEmails).toHaveLength(1);
+      expect(emailService.mailer.sentEmails[0]?.to).toEqual(
+        "forgot@example.com",
+      );
+      expect(
+        extractToken(emailService.mailer.sentEmails[0]?.body),
+      ).toBeTruthy();
     });
 
     test("returns 200 for non-existent email without revealing existence", async ({
@@ -341,7 +352,7 @@ describe("Auth routes", () => {
       const res = await forgotPassword(app, "nonexistent-forgot@example.com");
 
       expect(res.status).toBe(200);
-      expect(emailService.sentEmails).toHaveLength(0);
+      expect(emailService.mailer.sentEmails).toHaveLength(0);
     });
 
     test("does not send email for unverified account", async ({
@@ -355,12 +366,12 @@ describe("Auth routes", () => {
         password: "SecurePassword123!",
       });
 
-      emailService.reset();
+      emailService.mailer.reset();
 
       const res = await forgotPassword(app, "unverified-forgot@example.com");
 
       expect(res.status).toBe(200);
-      expect(emailService.sentEmails).toHaveLength(0);
+      expect(emailService.mailer.sentEmails).toHaveLength(0);
     });
   });
 
@@ -376,7 +387,7 @@ describe("Auth routes", () => {
 
       await forgotPassword(app, "reset@example.com");
 
-      const resetToken = emailService.sentEmails[1]?.token;
+      const resetToken = extractToken(emailService.mailer.sentEmails[1]?.body);
       assert(resetToken, "No verification token found");
 
       const res = await resetPassword(app, resetToken, "NewPassword123!");
@@ -423,7 +434,7 @@ describe("Auth routes", () => {
 
       await forgotPassword(app, "session-invalidate@example.com");
 
-      const resetToken = emailService.sentEmails[1]?.token;
+      const resetToken = extractToken(emailService.mailer.sentEmails[1]?.body);
       assert(resetToken, "No verification token found");
 
       await resetPassword(app, resetToken, "NewPassword123!");
@@ -447,7 +458,7 @@ describe("Auth routes", () => {
 
       await forgotPassword(app, "reset-once@example.com");
 
-      const resetToken = emailService.sentEmails[1]?.token;
+      const resetToken = extractToken(emailService.mailer.sentEmails[1]?.body);
       assert(resetToken, "No verification token found");
 
       const res1 = await resetPassword(app, resetToken, "NewPassword123!");

@@ -34,8 +34,11 @@ export const configSchema = z.object({
     .int()
     .positive()
     .default(1),
-  POSTMARK_API_TOKEN: z.string(),
-  POSTMARK_FROM_EMAIL: z.string().email(),
+  // Mailer
+  AWS_REGION: z.string().optional(),
+  AWS_ACCESS_KEY_ID: z.string().optional(),
+  AWS_SECRET_ACCESS_KEY: z.string().optional(),
+  FROM_EMAIL: z.email(),
   FRONTEND_URL: z.string().url(),
 });
 
