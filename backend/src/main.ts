@@ -2,13 +2,13 @@ import { serve } from "@hono/node-server";
 import { appFactory } from "./app.ts";
 import { connectionString, getDatabase } from "./db/db.ts";
 import { configSchema } from "./lib/config.ts";
-import { DebugMailer, EmailService, SESMailer } from "./lib/email.ts";
+import { EmailService, SMTPMailer } from "./lib/email.ts";
 import { log } from "./lib/logger.ts";
 
 const config = configSchema.parse(process.env);
 const database = getDatabase(connectionString(config));
 const emailService = new EmailService(
-  config.AWS_ACCESS_KEY_ID ? new SESMailer(config) : new DebugMailer(),
+  new SMTPMailer(config),
   config.FRONTEND_URL,
 );
 

@@ -35,11 +35,16 @@ export const configSchema = z.object({
     .positive()
     .default(1),
   // Mailer
-  AWS_REGION: z.string().optional(),
-  AWS_ACCESS_KEY_ID: z.string().optional(),
-  AWS_SECRET_ACCESS_KEY: z.string().optional(),
+  SMTP_HOST: z.string(),
+  SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
+  SMTP_SECURE: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
+  SMTP_USER: z.string(),
+  SMTP_PASS: z.string(),
   FROM_EMAIL: z.email(),
-  FRONTEND_URL: z.string().url(),
+  FRONTEND_URL: z.url(),
 });
 
 export type Config = z.infer<typeof configSchema>;

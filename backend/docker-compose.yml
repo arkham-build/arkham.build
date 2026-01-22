@@ -16,5 +16,11 @@ services:
       - ./src/scripts:/scripts
       - ./src/tests/seeds:/app/src/tests/seeds
 
+  mailcrab:
+    image: marlonb/mailcrab:latest
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+
 volumes:
   postgres_data:
