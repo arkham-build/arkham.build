@@ -1,5 +1,6 @@
 import type { Card } from "@/store/schemas/card.schema";
 import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";
+import { BackArray } from "./fields";
 import type {
   FieldType,
   FieldValue,
@@ -94,12 +95,8 @@ export class Interpreter {
       }
 
       case "!==": {
-        return this.evaluateComparison(
-          left,
-          right,
-          card,
-          operator,
-          (l, r) => !this.strictEquals(l, r, fieldType),
+        return this.evaluateComparison(left, right, card, operator, (l, r) =>
+          this.strictNotEquals(l, r, fieldType),
         );
       }
 
@@ -110,12 +107,8 @@ export class Interpreter {
       }
 
       case "!=": {
-        return this.evaluateComparison(
-          left,
-          right,
-          card,
-          operator,
-          (l, r) => !this.looseEquals(l, r, fieldType),
+        return this.evaluateComparison(left, right, card, operator, (l, r) =>
+          this.looseNotEquals(l, r, fieldType),
         );
       }
 
@@ -584,6 +577,49 @@ export class Interpreter {
     fieldType: FieldType | "unknown",
   ): boolean {
     return this.equals(left, right, "loose", fieldType);
+  }
+
+  private strictNotEquals(
+    left: FieldValue | RegExp,
+    right: FieldValue | RegExp,
+    fieldType: FieldType | "unknown",
+  ): boolean {
+    return this.notEquals(left, right, "strict", fieldType);
+  }
+
+  private looseNotEquals(
+    left: FieldValue | RegExp,
+    right: FieldValue | RegExp,
+    fieldType: FieldType | "unknown",
+  ): boolean {
+    return this.notEquals(left, right, "loose", fieldType);
+  }
+
+  private notEquals(
+    left: FieldValue | RegExp,
+    right: FieldValue | RegExp,
+    mode: "strict" | "loose",
+    fieldType: FieldType | "unknown",
+  ): boolean {
+    // BackArray (front/back values): any element not matching qualifies
+    if (left instanceof BackArray) {
+      return left.some((val) => this.notEquals(val, right, mode, fieldType));
+    }
+
+    // Regular arrays (multi-value fields): all elements must not match
+    if (Array.isArray(left)) {
+      return left.every((val) => !this.equals(val, right, mode, fieldType));
+    }
+
+    if (right instanceof BackArray) {
+      return right.some((val) => this.notEquals(left, val, mode, fieldType));
+    }
+
+    if (Array.isArray(right)) {
+      return right.every((val) => !this.equals(left, val, mode, fieldType));
+    }
+
+    return !this.equals(left, right, mode, fieldType);
   }
 
   private normalizeString(str: string): string {

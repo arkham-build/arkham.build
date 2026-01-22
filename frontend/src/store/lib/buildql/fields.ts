@@ -19,6 +19,12 @@ import type {
   FieldType,
 } from "./interpreter.types";
 
+export class BackArray<T> extends Array<T> {
+  constructor(items: T[]) {
+    super(...items);
+  }
+}
+
 interface FieldDefinition {
   aliases?: string[];
   legacyAlias?: string;
@@ -461,7 +467,7 @@ function backResolver(resolver: FieldLookup) {
       if (onlyReturnBackAttr) return resolver(back ?? ({} as Card), ctx);
 
       return back
-        ? [resolver(card, ctx), resolver(back, ctx)].flat()
+        ? new BackArray([resolver(card, ctx), resolver(back, ctx)].flat())
         : resolver(card, ctx);
     };
   };
