@@ -45,7 +45,7 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.57.0
     env:
       VITE_PAGE_NAME: ${{ vars.VITE_PAGE_NAME }}
-      VITE_API_URL: ${{ vars.VITE_API_URL }}
+      VITE_API_LEGACY_URL: ${{ vars.VITE_API_LEGACY_URL }}
       VITE_ARKHAMDB_BASE_URL: ${{ vars.VITE_ARKHAMDB_BASE_URL }}
       VITE_CARD_IMAGE_URL: ${{ vars.VITE_CARD_IMAGE_URL }}
       VITE_SHOW_PREVIEW_BANNER: ${{ vars.VITE_SHOW_PREVIEW_BANNER }}

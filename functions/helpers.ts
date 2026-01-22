@@ -1,5 +1,5 @@
 export interface Env {
-  VITE_API_URL: string;
+  VITE_API_LEGACY_URL: string;
 }
 
 type Context = EventContext<Env, string, unknown>;
@@ -17,7 +17,7 @@ export function makePreviewRoute(
     }
 
     try {
-      const preview = await fetchPreview(ctx.env.VITE_API_URL, type, id);
+      const preview = await fetchPreview(ctx.env.VITE_API_LEGACY_URL, type, id);
       preview["og:url"] = ctx.request.url;
       return rewriteOpengraphHead(await ctx.next(), preview);
     } catch (err) {

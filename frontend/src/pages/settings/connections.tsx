@@ -131,7 +131,7 @@ function ConnectionDetails(props: {
         <Button
           as="a"
           disabled={!!connectionLock}
-          href={`${import.meta.env.VITE_API_URL}/auth/signin?provider=${connection.provider}`}
+          href={`${import.meta.env.VITE_API_LEGACY_URL}/auth/signin?provider=${connection.provider}`}
           type="button"
           size="sm"
         >
@@ -164,7 +164,7 @@ function ConnectionInit(props: { provider: Provider }) {
       <div className={css["actions"]}>
         <Button
           as="a"
-          href={`${import.meta.env.VITE_API_URL}/auth/signin?provider=${provider}`}
+          href={`${import.meta.env.VITE_API_LEGACY_URL}/auth/signin?provider=${provider}`}
           type="button"
           size="sm"
         >

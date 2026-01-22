@@ -47,7 +47,7 @@ function customizationSheetUrl(
   deck: ResolvedDeck,
   metadata: Metadata,
 ) {
-  const base = `${import.meta.env.VITE_API_URL}/v1/public/customization_sheet`;
+  const base = `${import.meta.env.VITE_API_LEGACY_URL}/v1/public/customization_sheet`;
 
   const tabooId = deck.taboo_id ?? "0";
 

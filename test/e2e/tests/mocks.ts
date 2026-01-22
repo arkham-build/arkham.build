@@ -21,7 +21,7 @@ import metadataResponse from "../../fixtures/stubs/metadata.json" with {
 };
 
 export async function mockApiCalls(page: Page) {
-  const apiUrl = process.env.VITE_API_URL ?? "https://api.arkham.build";
+  const apiUrl = process.env.VITE_API_LEGACY_URL ?? "https://api.arkham.build";
 
   const baseUrl = `${apiUrl}/v1`;
 
