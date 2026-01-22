@@ -64,7 +64,10 @@ async function request(
   path: string,
   options: RequestInit = {},
 ): Promise<Response> {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/v1${path}`, options);
+  const res = await fetch(
+    `${import.meta.env.VITE_API_LEGACY_URL}/v1${path}`,
+    options,
+  );
 
   if (res.status >= 400) {
     const err = await res.json();

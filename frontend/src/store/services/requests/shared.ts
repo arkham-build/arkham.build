@@ -11,10 +11,7 @@ export async function apiV2Request(
   path: string,
   options: RequestInit = {},
 ): Promise<Response> {
-  const res = await fetch(
-    `${import.meta.env.VITE_RECOMMENDATION_API_URL}${path}`,
-    options,
-  );
+  const res = await fetch(`${import.meta.env.VITE_API_URL}${path}`, options);
 
   if (!res.ok) {
     const err = await res.json();
