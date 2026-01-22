@@ -25,6 +25,10 @@ function getDependencies() {
     POSTGRES_USER: container.getUsername(),
     FROM_EMAIL: "test@example.com",
     SESSION_SECRET: "test-session-secret-at-least-32-characters-long",
+    SMTP_HOST: "localhost",
+    SMTP_PORT: 1025,
+    SMTP_USER: "",
+    SMTP_PASS: "",
   });
 
   const db = getTestDatabase();
