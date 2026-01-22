@@ -108,10 +108,10 @@ npm run test:watch
 npm run test:coverage
 ```
 
-## Lint
+## Check
 
 ```sh
-npm run lint
+npm run check
 ```
 
 ## Format
