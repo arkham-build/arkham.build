@@ -179,6 +179,7 @@ export function LatestUpgrade(props: Props) {
                     data-testid="latest-upgrade-xp-decrement"
                     variant="bare"
                     onClick={onDecrement}
+                    tooltip={t("deck.latest_upgrade.decrement_xp")}
                   >
                     <MinusCircleIcon />
                   </Button>
@@ -187,6 +188,7 @@ export function LatestUpgrade(props: Props) {
                     size="none"
                     variant="bare"
                     onClick={onIcrement}
+                    tooltip={t("deck.latest_upgrade.increment_xp")}
                   >
                     <PlusCircleIcon />
                   </Button>

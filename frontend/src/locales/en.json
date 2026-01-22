@@ -732,6 +732,8 @@
       "id": "Deck id",
       "latest_upgrade": {
         "add_to_deck": "Add to current deck",
+        "decrement_xp": "Decrease available amount of XP for this upgrade",
+        "increment_xp": "Increase available amount of XP for this upgrade",
         "no_changes": "No changes.",
         "summary": "{{xpSpent}} of {{xp}} XP spent",
         "title": "Latest upgrade",
