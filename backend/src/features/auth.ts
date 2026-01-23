@@ -38,6 +38,8 @@ import {
   verifyPassword,
 } from "../lib/auth/crypto.ts";
 import { sessionAuth } from "../lib/auth/session-auth.ts";
+import { passwordResetEmailTemplate } from "../lib/email/templates/password-reset-email.ts";
+import { verificationEmailTemplate } from "../lib/email/templates/verification-email.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import { zodValidator } from "../lib/validation.ts";
 
@@ -100,7 +102,11 @@ export function authRouter() {
         expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
       });
 
-      await emailService.sendVerificationEmail(email, token);
+      const verificationUrl = `${config.FRONTEND_URL}/verify-email?token=${token}`;
+      await emailService.sendTemplate(
+        verificationEmailTemplate({ verificationUrl }),
+        email,
+      );
 
       return new Response(null, { status: 201 });
     },
@@ -260,7 +266,11 @@ export function authRouter() {
           });
         });
 
-        await emailService.sendVerificationEmail(email, token);
+        const verificationUrl = `${config.FRONTEND_URL}/verify-email?token=${token}`;
+        await emailService.sendTemplate(
+          verificationEmailTemplate({ verificationUrl }),
+          email,
+        );
       }
 
       return new Response(null, { status: 200 });
@@ -306,7 +316,11 @@ export function authRouter() {
           expiryHours: config.PASSWORD_RESET_TOKEN_EXPIRY_HOURS,
         });
 
-        await emailService.sendPasswordResetEmail(email, token);
+        const resetUrl = `${config.FRONTEND_URL}/reset-password?token=${token}`;
+        await emailService.sendTemplate(
+          passwordResetEmailTemplate({ resetUrl }),
+          email,
+        );
       }
 
       return new Response(null, { status: 200 });

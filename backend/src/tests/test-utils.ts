@@ -3,7 +3,7 @@ import { test as base } from "vitest";
 import { appFactory } from "../app.ts";
 import { getDatabase } from "../db/db.ts";
 import { configFromEnv } from "../lib/config.ts";
-import { EmailService } from "../lib/email.ts";
+import { createEmailService } from "../lib/email/email-service.ts";
 import { MockMailer } from "./mocks/email.ts";
 
 export function getTestDatabase() {
@@ -33,7 +33,7 @@ function getDependencies() {
 
   const db = getTestDatabase();
 
-  const emailService = new EmailService(new MockMailer(), config.FRONTEND_URL);
+  const emailService = createEmailService(new MockMailer());
   const app = appFactory(config, db, emailService);
 
   return { app, db, emailService };

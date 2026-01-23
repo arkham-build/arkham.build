@@ -9,7 +9,7 @@ import { recommendationsRouter } from "./features/recommendations.ts";
 import { bodyLimitMiddleware } from "./lib/body-limit.ts";
 import type { Config } from "./lib/config.ts";
 import { corsMiddleware } from "./lib/cors.ts";
-import type { EmailService } from "./lib/email.ts";
+import type { EmailService } from "./lib/email/email-service.ts";
 import { errorHandler } from "./lib/errors.ts";
 import type { HonoEnv } from "./lib/hono-env.ts";
 import { logger, requestLogger } from "./lib/logger.ts";

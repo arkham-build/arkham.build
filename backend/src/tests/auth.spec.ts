@@ -2,7 +2,7 @@
 import assert from "node:assert";
 import type { Hono } from "hono";
 import { describe, expect, vi } from "vitest";
-import type { EmailService } from "../lib/email.ts";
+import type { EmailService } from "../lib/email/email-service.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import type { MockMailer } from "./mocks/email.ts";
 import { test } from "./test-utils.ts";

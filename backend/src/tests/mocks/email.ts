@@ -1,4 +1,4 @@
-import type { Mailer } from "../../lib/email.ts";
+import type { Mailer } from "../../lib/email/mailer.ts";
 
 export class MockMailer implements Mailer {
   public sentEmails: Array<{

@@ -2,15 +2,13 @@ import { serve } from "@hono/node-server";
 import { appFactory } from "./app.ts";
 import { connectionString, getDatabase } from "./db/db.ts";
 import { configSchema } from "./lib/config.ts";
-import { EmailService, SMTPMailer } from "./lib/email.ts";
+import { createEmailService } from "./lib/email/email-service.ts";
+import { SMTPMailer } from "./lib/email/mailer.ts";
 import { log } from "./lib/logger.ts";
 
 const config = configSchema.parse(process.env);
 const database = getDatabase(connectionString(config));
-const emailService = new EmailService(
-  new SMTPMailer(config),
-  config.FRONTEND_URL,
-);
+const emailService = createEmailService(new SMTPMailer(config));
 
 const app = appFactory(config, database, emailService);
 
