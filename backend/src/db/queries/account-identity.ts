@@ -26,6 +26,19 @@ export async function getAccountIdentityByEmail(db: Database, email: string) {
     .executeTakeFirst();
 }
 
+export async function getAccountIdentityByUsername(
+  db: Database,
+  username: string,
+) {
+  return await db
+    .selectFrom("account_identity")
+    .innerJoin("account", "account.id", "account_identity.account_id")
+    .selectAll("account_identity")
+    .where("account.name", "=", username)
+    .where("account_identity.provider", "=", "email")
+    .executeTakeFirst();
+}
+
 export async function updateAccountIdentityVerified(
   db: Database,
   accountIdentityId: string,

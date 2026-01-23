@@ -37,11 +37,11 @@ function login(app: Hono<HonoEnv>, email: string, password: string) {
   });
 }
 
-function forgotPassword(app: Hono<HonoEnv>, email: string) {
+function forgotPassword(app: Hono<HonoEnv>, emailOrUsername: string) {
   return app.request("/v2/auth/forgot-password", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
+    body: JSON.stringify({ emailOrUsername }),
   });
 }
 

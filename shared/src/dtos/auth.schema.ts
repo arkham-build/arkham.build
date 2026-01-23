@@ -19,7 +19,7 @@ export const LoginRequestSchema = z.object({
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
 export const ForgotPasswordRequestSchema = z.object({
-  email: z.email(),
+  emailOrUsername: z.string().min(1).max(255),
 });
 
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
