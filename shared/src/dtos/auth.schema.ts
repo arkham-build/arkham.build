@@ -1,7 +1,17 @@
 import { z } from "zod";
 
+// alphanumeric characters, underscore, and hyphen only
+export const PATTERN_VALID_USERNAME = "^[a-zA-Z0-9_-]+$";
+
 export const SignupRequestSchema = z.object({
-  name: z.string().min(1).max(64),
+  name: z
+    .string()
+    .min(1)
+    .max(64)
+    .regex(
+      new RegExp(PATTERN_VALID_USERNAME),
+      "Username can only contain letters, numbers, underscores, and hyphens",
+    ),
   email: z.email().max(255),
   password: z.string().min(8),
 });

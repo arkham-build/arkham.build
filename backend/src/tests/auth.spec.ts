@@ -91,7 +91,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       const res = await signup(app, {
-        name: "Test User",
+        name: "testuser",
         email: "test@example.com",
         password: "SecurePassword123!",
       });
@@ -108,13 +108,13 @@ describe("Auth routes", () => {
       const { app } = dependencies;
 
       await signup(app, {
-        name: "Test User",
+        name: "testuser",
         email: "duplicate@example.com",
         password: "SecurePassword123!",
       });
 
       const res = await signup(app, {
-        name: "Another User",
+        name: "anotheruser",
         email: "duplicate@example.com",
         password: "AnotherPassword123!",
       });
@@ -129,7 +129,25 @@ describe("Auth routes", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: "Test User",
+          name: "testuser",
+        }),
+      });
+
+      expect(res.status).toBe(400);
+    });
+
+    test("does not allow special characters in username", async ({
+      dependencies,
+    }) => {
+      const { app } = dependencies;
+
+      const res = await app.request("/v2/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "test@user",
+          email: "test@example.com",
+          password: "SecurePassword123!",
         }),
       });
 
@@ -142,7 +160,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signup(app, {
-        name: "Test User",
+        name: "testuser",
         email: "verify@example.com",
         password: "SecurePassword123!",
       });
@@ -164,7 +182,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signup(app, {
-        name: "Test User",
+        name: "testuser",
         email: "once@example.com",
         password: "SecurePassword123!",
       });
@@ -187,7 +205,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signupAndVerify(app, emailService, {
-        name: "Test User",
+        name: "testuser",
         email: "login@example.com",
         password: "SecurePassword123!",
       });
@@ -203,7 +221,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signupAndVerify(app, emailService, {
-        name: "Test User",
+        name: "testuser",
         email: "wrong-pass@example.com",
         password: "SecurePassword123!",
       });
@@ -228,7 +246,7 @@ describe("Auth routes", () => {
       const { app } = dependencies;
 
       await signup(app, {
-        name: "Test User",
+        name: "testuser",
         email: "unverified@example.com",
         password: "SecurePassword123!",
       });
@@ -250,7 +268,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signupAndVerify(app, emailService, {
-        name: "Test User",
+        name: "testuser",
         email: "me@example.com",
         password: "SecurePassword123!",
       });
@@ -267,7 +285,7 @@ describe("Auth routes", () => {
 
       expect(await res.json()).toMatchObject({
         account: {
-          name: "Test User",
+          name: "testuser",
           email: "me@example.com",
         },
       });
@@ -289,7 +307,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signupAndVerify(app, emailService, {
-        name: "Test User",
+        name: "testuser",
         email: "logout@example.com",
         password: "SecurePassword123!",
       });
@@ -337,7 +355,7 @@ describe("Auth routes", () => {
         const { app, emailService } = dependencies;
 
         await signup(app, {
-          name: "Test User",
+          name: "testuser",
           email: "resend@example.com",
           password: "SecurePassword123!",
         });
@@ -370,7 +388,7 @@ describe("Auth routes", () => {
         const { app, emailService } = dependencies;
 
         await signup(app, {
-          name: "Test User",
+          name: "testuser",
           email: "resend-works@example.com",
           password: "SecurePassword123!",
         });
@@ -412,7 +430,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signupAndVerify(app, emailService, {
-        name: "Test User",
+        name: "testuser",
         email: "already-verified@example.com",
         password: "SecurePassword123!",
       });
@@ -434,7 +452,7 @@ describe("Auth routes", () => {
         const { app, emailService } = dependencies;
 
         await signup(app, {
-          name: "Test User",
+          name: "testuser",
           email: "rate-limit-resend@example.com",
           password: "SecurePassword123!",
         });
@@ -464,7 +482,7 @@ describe("Auth routes", () => {
         const { app, emailService } = dependencies;
 
         await signup(app, {
-          name: "Test User",
+          name: "testuser",
           email: "rate-limit-resend-wait@example.com",
           password: "SecurePassword123!",
         });
@@ -493,7 +511,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signupAndVerify(app, emailService, {
-        name: "Test User",
+        name: "testuser",
         email: "forgot@example.com",
         password: "SecurePassword123!",
       });
@@ -529,7 +547,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signup(app, {
-        name: "Test User",
+        name: "testuser",
         email: "unverified-forgot@example.com",
         password: "SecurePassword123!",
       });
@@ -551,7 +569,7 @@ describe("Auth routes", () => {
         const { app, emailService } = dependencies;
 
         await signupAndVerify(app, emailService, {
-          name: "Test User",
+          name: "testuser",
           email: "rate-limit-forgot@example.com",
           password: "SecurePassword123!",
         });
@@ -583,7 +601,7 @@ describe("Auth routes", () => {
         const { app, emailService } = dependencies;
 
         await signupAndVerify(app, emailService, {
-          name: "Test User",
+          name: "testuser",
           email: "rate-limit-forgot-wait@example.com",
           password: "SecurePassword123!",
         });
@@ -615,7 +633,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signupAndVerify(app, emailService, {
-        name: "Test User",
+        name: "testuser",
         email: "reset@example.com",
         password: "OldPassword123!",
       });
@@ -654,7 +672,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signupAndVerify(app, emailService, {
-        name: "Test User",
+        name: "testuser",
         email: "session-invalidate@example.com",
         password: "OldPassword123!",
       });
@@ -686,7 +704,7 @@ describe("Auth routes", () => {
       const { app, emailService } = dependencies;
 
       await signupAndVerify(app, emailService, {
-        name: "Test User",
+        name: "testuser",
         email: "reset-once@example.com",
         password: "OldPassword123!",
       });

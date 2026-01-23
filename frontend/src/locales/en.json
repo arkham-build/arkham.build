@@ -52,6 +52,7 @@
       "password": "Password",
       "password_validation": "Minimum 8 characters",
       "username": "Username",
+      "username_validation": "Letters, numbers, underscores, and hyphens only",
       "errors": {
         "account_not_verified": "Your account has not been verified yet. Please <verifyLink>verify</verifyLink> your email before logging in.",
         "forgot_password_failed": "Failed to initiate password reset: {{error}}",
