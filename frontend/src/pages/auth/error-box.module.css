@@ -1,0 +1,16 @@
+.error {
+  background: rgba(255, 0, 0, 0.05);
+  border: 1px solid var(--nord-11);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: var(--text-sm);
+}
+
+.error a {
+  color: var(--nord-5);
+
+  &:hover {
+    text-decoration: underline;
+    color: var(--nord-6);
+  }
+}

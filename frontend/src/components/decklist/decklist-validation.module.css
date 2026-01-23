@@ -1,8 +1,8 @@
 @layer app {
   .decklist-validation {
     background: rgba(255, 0, 0, 0.05);
-    padding: 0.25rem;
     border: 1px solid var(--nord-11);
+    padding: 0.25rem;
     border-radius: 0.25rem;
     font-size: var(--text-sm);
   }

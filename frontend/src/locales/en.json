@@ -46,6 +46,55 @@
       "attached": "Attached to {{name}}",
       "eligible": "Eligible for {{name}}"
     },
+    "auth": {
+      "email": "Email",
+      "password": "Password",
+      "password_validation": "Minimum 8 characters",
+      "username": "Username",
+      "errors": {
+        "account_not_verified": "Your account has not been verified yet. Please <verifyLink>verify</verifyLink> your email before logging in.",
+        "forgot_password_failed": "Failed to initiate password reset: {{error}}",
+        "invalid_credentials": "Invalid email or password",
+        "login_failed": "Login failed: {{error}}",
+        "password_reset_failed": "Password reset failed: {{error}}",
+        "rate_limited": "Too many requests. Please wait {{interval}} before trying again",
+        "signup_failed": "Signup failed: {{error}}",
+        "verify_email_failed": "Email verification failed: {{error}}",
+        "verify_email_send_failed": "Failed to resend verification email: {{error}}",
+        "resend_error": "Failed to resend verification: {{error}}"
+      },
+      "login": {
+        "forgot_password": "Forgot password?",
+        "no_account": "Don't have an account?",
+        "signup_link": "Sign up",
+        "title": "Log in"
+      },
+      "signup": {
+        "title": "Sign up",
+        "has_account": "Already have an account?",
+        "success": "Signed up successfully! Please check your email to verify your account."
+      },
+      "forgot_password": {
+        "back_to_login": "Back to login",
+        "title": "Forgot password",
+        "description": "Enter your email address and we'll send you a reminder of your details along with instructions on how to reset your password.",
+        "submit": "Send password reset instructions",
+        "success": "If an account exists for this email, you'll receive a reset link shortly."
+      },
+      "verify_email": {
+        "title": "Verify email",
+        "token": "Verification token",
+        "success": "Email verified! You can now log in.",
+        "resend": "Resend verification email",
+        "resend_success": "Verification email sent successfully. Please check your inbox."
+      },
+      "reset_password": {
+        "title": "Reset password",
+        "password": "New password",
+        "confirm_password": "Confirm password",
+        "success": "Password reset successfully. You can now log in."
+      }
+    },
     "browse": {
       "title": "Browse cards"
     },

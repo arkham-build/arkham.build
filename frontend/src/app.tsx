@@ -77,6 +77,11 @@ const Core2026Reveal = lazy(() => import("./pages/blog/core-2026-reveal"));
 const FanMadeContentPreview = lazy(
   () => import("./pages/fan-made-content-preview/fan-made-content-preview"),
 );
+const Login = lazy(() => import("./pages/auth/login"));
+const Signup = lazy(() => import("./pages/auth/signup"));
+const ForgotPassword = lazy(() => import("./pages/auth/forgot-password"));
+const VerifyEmail = lazy(() => import("./pages/auth/verify-email"));
+const ResetPassword = lazy(() => import("./pages/auth/reset-password"));
 
 function App() {
   return (
@@ -160,6 +165,12 @@ function AppInner() {
                 component={InstallFanMadeContent}
                 path="/install-fan-made-content"
               />
+              <Route component={Core2026Reveal} path="/blog/core-2026-reveal" />
+              <Route component={Login} path="/login" />
+              <Route component={Signup} path="/signup" />
+              <Route component={ForgotPassword} path="/forgot-password" />
+              <Route component={VerifyEmail} path="/verify-email" />
+              <Route component={ResetPassword} path="/reset-password" />
               <Route path="*">
                 <ErrorStatus statusCode={404} />
               </Route>
