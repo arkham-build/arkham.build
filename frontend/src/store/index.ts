@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import type { StoreState } from "./slices";
 import { createAppSlice } from "./slices/app";
+import { createAuthSlice } from "./slices/auth";
 import { createConnectionsSlice } from "./slices/connections";
 import { createDataSlice } from "./slices/data";
 import { createDeckCollectionSlice } from "./slices/deck-collection";
@@ -19,6 +20,7 @@ import { createUISlice } from "./slices/ui";
 // biome-ignore lint/suspicious/noExplicitAny: safe.
 const stateCreator = (...args: [any, any, any]) => ({
   ...createAppSlice(...args),
+  ...createAuthSlice(...args),
   ...createDataSlice(...args),
   ...createFanMadeDataSlice(...args),
   ...createMetadataSlice(...args),

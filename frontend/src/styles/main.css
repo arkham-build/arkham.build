@@ -87,6 +87,8 @@
 
     --scrollbar-size: 10px;
     --scrollbar-padding: 14px;
+
+    --error: var(--nord-11);
   }
 
   .theme-dark {

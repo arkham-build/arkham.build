@@ -2,9 +2,9 @@ import assert from "node:assert";
 import {
   ForgotPasswordRequestSchema,
   LoginRequestSchema,
-  MeResponse,
+  MeResponseSchema,
   ResendVerificationRequestSchema,
-  ResetPasswordSchema,
+  ResetPasswordRequestSchema,
   SignupRequestSchema,
   VerifyEmailRequestSchema,
 } from "@arkham-build/shared";
@@ -174,7 +174,7 @@ export function authRouter() {
     const accountIdentity = await getAccountIdentityByAccountId(db, account.id);
 
     return c.json(
-      MeResponse.parse({
+      MeResponseSchema.parse({
         account: {
           id: account.id,
           name: account.name,
@@ -307,7 +307,7 @@ export function authRouter() {
 
   routes.post(
     "/reset-password",
-    zodValidator("json", ResetPasswordSchema),
+    zodValidator("json", ResetPasswordRequestSchema),
     async (c) => {
       const { token, password } = c.req.valid("json");
       const db = c.get("db");

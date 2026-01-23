@@ -1,0 +1,12 @@
+.forgot-link {
+  text-align: right;
+  font-size: var(--text-sm);
+}
+
+.forgot-link a {
+  color: var(--focus);
+}
+
+.forgot-link a:hover {
+  text-decoration: underline;
+}

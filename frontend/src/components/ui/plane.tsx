@@ -5,7 +5,7 @@ type Props<T extends React.ElementType = "div"> = {
   as?: T;
   children: React.ReactNode;
   className?: string;
-  size?: "sm";
+  size?: "sm" | "none";
 } & React.ComponentPropsWithoutRef<T>;
 
 export function Plane<T extends React.ElementType>(props: Props<T>) {

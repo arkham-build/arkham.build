@@ -1,12 +1,20 @@
 /** biome-ignore-all lint/performance/noBarrelFile: TECH DEBT: look into `exports` */
 
 export {
+  type ForgotPasswordRequest,
   ForgotPasswordRequestSchema,
+  type LoginRequest,
   LoginRequestSchema,
-  MeResponse,
+  type MeResponse,
+  MeResponseSchema,
+  PATTERN_VALID_PASSWORD,
+  type ResendVerificationRequest,
   ResendVerificationRequestSchema,
-  ResetPasswordSchema,
+  type ResetPasswordRequest,
+  ResetPasswordRequestSchema,
+  type SignupRequest,
   SignupRequestSchema,
+  type VerifyEmailRequest,
   VerifyEmailRequestSchema,
 } from "./dtos/auth.schema.ts";
 

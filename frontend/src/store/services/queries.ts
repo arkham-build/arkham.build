@@ -71,7 +71,7 @@ async function request(
 
   if (res.status >= 400) {
     const err = await res.json();
-    throw new ApiError(err.message, res.status);
+    throw new ApiError(err.message, res.status, err?.cause ?? undefined);
   }
 
   return res;

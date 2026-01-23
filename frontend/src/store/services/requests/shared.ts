@@ -1,9 +1,12 @@
 export class ApiError extends Error {
   status: number;
+  // biome-ignore lint/suspicious/noExplicitAny: FIXME
+  cause?: any;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, cause?: unknown) {
     super(message);
     this.status = status;
+    this.cause = cause;
   }
 }
 
@@ -15,7 +18,7 @@ export async function apiV2Request(
 
   if (!res.ok) {
     const err = await res.json();
-    throw new ApiError(err.message, res.status);
+    throw new ApiError(err.message, res.status, err?.cause);
   }
 
   return res;
