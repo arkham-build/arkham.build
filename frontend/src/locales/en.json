@@ -48,6 +48,7 @@
     },
     "auth": {
       "email": "Email",
+      "email_or_username": "Email or username",
       "password": "Password",
       "password_validation": "Minimum 8 characters",
       "username": "Username",
@@ -77,9 +78,9 @@
       "forgot_password": {
         "back_to_login": "Back to login",
         "title": "Forgot password",
-        "description": "Enter your email address and we'll send you a reminder of your details along with instructions on how to reset your password.",
+        "description": "Enter your email or username and we'll send you instructions on how to reset your password.",
         "submit": "Send password reset instructions",
-        "success": "If an account exists for this email, you'll receive a reset link shortly."
+        "success": "If an account exists, you'll receive a reset link shortly."
       },
       "verify_email": {
         "title": "Verify email",

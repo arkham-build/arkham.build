@@ -16,6 +16,7 @@ import {
   getAccountIdentity,
   getAccountIdentityByAccountId,
   getAccountIdentityByEmail,
+  getAccountIdentityByUsername,
   updateAccountIdentityVerified,
   updatePasswordHash,
 } from "../db/queries/account-identity.ts";
@@ -39,6 +40,10 @@ import {
 import { sessionAuth } from "../lib/auth/session-auth.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import { zodValidator } from "../lib/validation.ts";
+
+function isEmail(input: string): boolean {
+  return input.includes("@");
+}
 
 function assertEmailCooldown(
   tokenCreatedAt: Date,
@@ -266,15 +271,18 @@ export function authRouter() {
     "/forgot-password",
     zodValidator("json", ForgotPasswordRequestSchema),
     async (c) => {
-      const { email } = c.req.valid("json");
+      const { emailOrUsername } = c.req.valid("json");
       const db = c.get("db");
       const config = c.get("config");
       const emailService = c.get("emailService");
 
-      const accountIdentity = await getAccountIdentityByEmail(db, email);
+      const accountIdentity = isEmail(emailOrUsername)
+        ? await getAccountIdentityByEmail(db, emailOrUsername)
+        : await getAccountIdentityByUsername(db, emailOrUsername);
 
-      // FIXME: mitigate enumeration attacks
-      if (accountIdentity?.verified_at) {
+      const email = accountIdentity?.email;
+
+      if (accountIdentity?.verified_at && email) {
         const latestToken = await getLatestVerificationTokenByEmail(
           db,
           email,

@@ -11,7 +11,7 @@ import { ErrorBox } from "./error-box";
 import { errorMapper } from "./helpers";
 
 function ForgotPassword() {
-  const [email, setEmail] = useState("");
+  const [emailOrUsername, setEmailOrUsername] = useState("");
   const { t } = useTranslation();
 
   const forgotPasswordMutation = useMutation({
@@ -20,7 +20,7 @@ function ForgotPassword() {
 
   const onSubmit = async (evt: React.FormEvent) => {
     evt.preventDefault();
-    await forgotPasswordMutation.mutateAsync({ email });
+    await forgotPasswordMutation.mutateAsync({ emailOrUsername });
   };
 
   if (forgotPasswordMutation.isSuccess) {
@@ -64,15 +64,17 @@ function ForgotPassword() {
           </ErrorBox>
         )}
         <Field full>
-          <FieldLabel htmlFor="email">{t("auth.email")}</FieldLabel>
+          <FieldLabel htmlFor="emailOrUsername">
+            {t("auth.email_or_username")}
+          </FieldLabel>
           <input
-            autoComplete="email"
+            autoComplete="username"
             disabled={forgotPasswordMutation.isPending}
-            id="email"
+            id="emailOrUsername"
             required
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            value={email}
+            onChange={(e) => setEmailOrUsername(e.target.value)}
+            type="text"
+            value={emailOrUsername}
           />
         </Field>
 
