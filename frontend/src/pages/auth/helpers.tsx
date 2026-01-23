@@ -45,3 +45,7 @@ export function errorMapper(
     error: (error as Error).message,
   });
 }
+
+export function createPasswordMatchPattern(password: string): string {
+  return password.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}

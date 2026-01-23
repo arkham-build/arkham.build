@@ -10,7 +10,7 @@ import { postResetPassword } from "@/store/services/requests/auth";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
-import { errorMapper } from "./error-mapper";
+import { createPasswordMatchPattern, errorMapper } from "./helpers";
 
 function ResetPassword() {
   const { t } = useTranslation();
@@ -78,6 +78,7 @@ function ResetPassword() {
             disabled={resetPasswordMutation.isPending}
             id="confirm-password"
             onChange={(e) => setConfirmPassword(e.target.value)}
+            pattern={createPasswordMatchPattern(password)}
             required
             type="password"
             value={confirmPassword}
@@ -85,9 +86,7 @@ function ResetPassword() {
         </Field>
 
         <Button
-          disabled={
-            resetPasswordMutation.isPending || password !== confirmPassword
-          }
+          disabled={resetPasswordMutation.isPending}
           type="submit"
           variant="primary"
           size="full"

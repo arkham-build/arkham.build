@@ -9,7 +9,7 @@ import { ApiError } from "@/store/services/requests/shared";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
-import { errorMapper } from "./error-mapper";
+import { errorMapper } from "./helpers";
 import css from "./login.module.css";
 
 function Login() {
