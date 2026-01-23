@@ -1,4 +1,7 @@
-import { PATTERN_VALID_PASSWORD } from "@arkham-build/shared";
+import {
+  PATTERN_VALID_PASSWORD,
+  PATTERN_VALID_USERNAME,
+} from "@arkham-build/shared";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -62,13 +65,14 @@ function Signup() {
             {errorMapper(signupMutation.error, t, "auth.errors.signup_failed")}
           </ErrorBox>
         )}
-        <Field full>
+        <Field full helpText={t("auth.username_validation")}>
           <FieldLabel htmlFor="name">{t("auth.username")}</FieldLabel>
           <input
             autoComplete="name"
             disabled={signupMutation.isPending}
             id="name"
             maxLength={64}
+            pattern={PATTERN_VALID_USERNAME}
             required
             onChange={(e) => setName(e.target.value)}
             type="text"

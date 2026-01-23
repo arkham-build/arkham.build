@@ -8,6 +8,7 @@ export {
   type MeResponse,
   MeResponseSchema,
   PATTERN_VALID_PASSWORD,
+  PATTERN_VALID_USERNAME,
   type ResendVerificationRequest,
   ResendVerificationRequestSchema,
   type ResetPasswordRequest,
