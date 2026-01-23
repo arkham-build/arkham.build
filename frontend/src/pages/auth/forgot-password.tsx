@@ -8,7 +8,7 @@ import { postForgotPassword } from "@/store/services/requests/auth";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
-import { errorMapper } from "./error-mapper";
+import { errorMapper } from "./helpers";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");

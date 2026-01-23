@@ -9,7 +9,7 @@ import { postSignup } from "@/store/services/requests/auth";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
-import { errorMapper } from "./error-mapper";
+import { createPasswordMatchPattern, errorMapper } from "./helpers";
 
 function Signup() {
   const { t } = useTranslation();
@@ -20,6 +20,7 @@ function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const onSubmit = async (evt: React.FormEvent) => {
     evt.preventDefault();
@@ -99,6 +100,22 @@ function Signup() {
             required
             type="password"
             value={password}
+          />
+        </Field>
+
+        <Field full>
+          <FieldLabel htmlFor="confirm-password">
+            {t("auth.reset_password.confirm_password")}
+          </FieldLabel>
+          <input
+            autoComplete="new-password"
+            disabled={signupMutation.isPending}
+            id="confirm-password"
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            pattern={createPasswordMatchPattern(password)}
+            required
+            type="password"
+            value={confirmPassword}
           />
         </Field>
 
