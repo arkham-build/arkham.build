@@ -37,6 +37,7 @@ export async function getSession(db: Database, id: string) {
     .selectAll()
     .where("id", "=", id)
     .where("expires_at", ">", new Date())
+    .orderBy("last_activity_at", "desc")
     .executeTakeFirst();
 }
 

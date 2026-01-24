@@ -1,6 +1,8 @@
 /** biome-ignore-all lint/performance/noBarrelFile: TECH DEBT: look into `exports` */
 
 export {
+  type CompleteProfileRequest,
+  CompleteProfileRequestSchema,
   type ForgotPasswordRequest,
   ForgotPasswordRequestSchema,
   type LoginRequest,

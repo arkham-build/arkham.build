@@ -64,3 +64,11 @@ export const ResendVerificationRequestSchema = z.object({
 export type ResendVerificationRequest = z.infer<
   typeof ResendVerificationRequestSchema
 >;
+
+export const CompleteProfileRequestSchema = z.object({
+  username: z.string().min(3).max(64).regex(new RegExp(PATTERN_VALID_USERNAME)),
+});
+
+export type CompleteProfileRequest = z.infer<
+  typeof CompleteProfileRequestSchema
+>;

@@ -1,9 +1,19 @@
 import { z } from "zod";
 
 export const configSchema = z.object({
-  INGEST_URL_ARKHAMDB_DECKLISTS: z.string(),
+  // Mailer
+  AWS_ACCESS_KEY_ID: z.string().optional(),
+  AWS_REGION: z.string().optional(),
+  AWS_SECRET_ACCESS_KEY: z.string().optional(),
+  ARKHAMDB_BASE_URL: z.url(),
+  ARKHAMDB_OAUTH_CLIENT_ID: z.string(),
+  ARKHAMDB_OAUTH_CLIENT_SECRET: z.string(),
+  ARKHAMDB_OAUTH_REDIRECT_URI: z.url(),
   CORS_ORIGINS: z.string(),
+  FROM_EMAIL: z.email(),
+  FRONTEND_URL: z.url(),
   HOSTNAME: z.string().default("localhost"),
+  INGEST_URL_ARKHAMDB_DECKLISTS: z.string(),
   INGEST_URL_METADATA: z.string(),
   METADATA_LOCALES: z
     .preprocess(
@@ -43,8 +53,6 @@ export const configSchema = z.object({
     .transform((v) => v === "true"),
   SMTP_USER: z.string(),
   SMTP_PASS: z.string(),
-  FROM_EMAIL: z.email(),
-  FRONTEND_URL: z.url(),
 });
 
 export type Config = z.infer<typeof configSchema>;

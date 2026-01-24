@@ -1,5 +1,6 @@
 import assert from "node:assert";
 import {
+  CompleteProfileRequestSchema,
   ForgotPasswordRequestSchema,
   LoginRequestSchema,
   MeResponseSchema,
@@ -8,10 +9,15 @@ import {
   SignupRequestSchema,
   VerifyEmailRequestSchema,
 } from "@arkham-build/shared";
-import { Hono } from "hono";
+import { type Context, Hono } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
-import { createAccount, getAccount } from "../db/queries/account.ts";
+import {
+  createAccount,
+  getAccount,
+  updateAccountName,
+  upsertAccountFromOAuth,
+} from "../db/queries/account.ts";
 import {
   getAccountIdentity,
   getAccountIdentityByAccountId,
@@ -32,6 +38,11 @@ import {
   getLatestVerificationTokenByEmail,
 } from "../db/queries/verification-token.ts";
 import {
+  authorize,
+  exchangeAuthCodeForToken,
+  fetchUserDecksForOAuth,
+} from "../lib/arkhamdb/oauth.ts";
+import {
   generateRandomToken,
   hashPassword,
   hashToken,
@@ -42,24 +53,6 @@ import { passwordResetEmailTemplate } from "../lib/email/templates/password-rese
 import { verificationEmailTemplate } from "../lib/email/templates/verification-email.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import { zodValidator } from "../lib/validation.ts";
-
-function isEmail(input: string): boolean {
-  return input.includes("@");
-}
-
-function assertEmailCooldown(
-  tokenCreatedAt: Date,
-  cooldownMs = 5 * 60 * 1000,
-): void {
-  const retryAfter = new Date(tokenCreatedAt.getTime() + cooldownMs);
-
-  if (Date.now() < retryAfter.getTime()) {
-    throw new HTTPException(429, {
-      message: "Please wait before requesting another email",
-      cause: { retryAfter: retryAfter.toISOString() },
-    });
-  }
-}
 
 export function authRouter() {
   const routes = new Hono<HonoEnv>();
@@ -80,7 +73,7 @@ export function authRouter() {
       // XXX: While this error message is clearer, it potentially allows enumeration of registered emails.
       if (existingIdentity) {
         throw new HTTPException(400, {
-          message: "An account is already registered for this email.",
+          message: "An account is already registered for this email",
         });
       }
 
@@ -152,13 +145,7 @@ export function authRouter() {
       config.SESSION_EXPIRY_HOURS,
     );
 
-    setCookie(c, config.SESSION_COOKIE_NAME, session.id, {
-      httpOnly: true,
-      secure: config.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: config.SESSION_EXPIRY_HOURS * 60 * 60,
-      path: "/",
-    });
+    setSessionCookie(c, session.id);
 
     return new Response(null, { status: 200 });
   });
@@ -288,7 +275,7 @@ export function authRouter() {
 
       const accountIdentity = isEmail(emailOrUsername)
         ? await getAccountIdentityByEmail(db, emailOrUsername)
-        : await getAccountIdentityByUsername(db, emailOrUsername);
+        : await getAccountIdentityByUsername(db, "email", emailOrUsername);
 
       const email = accountIdentity?.email;
 
@@ -373,5 +360,110 @@ export function authRouter() {
     },
   );
 
+  routes.get("/arkhamdb", (c) => {
+    return authorize(c);
+  });
+
+  routes.get("/arkhamdb/callback", async (c) => {
+    const db = c.get("db");
+    const config = c.get("config");
+    const code = c.req.query("code");
+
+    if (!code) {
+      return c.redirect(`${config.FRONTEND_URL}/?error=oauth_missing_code`);
+    }
+
+    try {
+      const accessToken = await exchangeAuthCodeForToken(c, code);
+      const decks = await fetchUserDecksForOAuth(c, accessToken.access_token);
+
+      if (decks.length === 0) {
+        return c.redirect(`${config.FRONTEND_URL}/?error=arkhamdb_no_decks`);
+      }
+
+      const firstDeck = decks[0];
+
+      if (!firstDeck?.user_id) {
+        return c.redirect(
+          `${config.FRONTEND_URL}/?error=arkhamdb_invalid_response`,
+        );
+      }
+
+      const session = await upsertAccountFromOAuth(db, {
+        accessToken,
+        config,
+        provider: "arkhamdb",
+        providerUserId: firstDeck.user_id.toString(),
+      });
+      setSessionCookie(c, session.id);
+      return c.redirect(`${config.FRONTEND_URL}/signup/arkhamdb`);
+    } catch (error) {
+      console.error("OAuth callback error:", error);
+      return c.redirect(`${config.FRONTEND_URL}/?error=oauth_failed`);
+    }
+  });
+
+  routes.post(
+    "/complete-profile",
+    sessionAuth(),
+    zodValidator("json", CompleteProfileRequestSchema),
+    async (c) => {
+      const db = c.get("db");
+      const account = c.get("account");
+      assert(account, "Account should be set by middleware");
+
+      const { username } = c.req.valid("json");
+
+      await db.transaction().execute(async (tx) => {
+        const existingAccount = await tx
+          .selectFrom("account")
+          .selectAll()
+          .where("name", "=", username)
+          .where("id", "!=", account.id)
+          .executeTakeFirst();
+
+        if (existingAccount) {
+          throw new HTTPException(400, {
+            message: "Username is already taken",
+          });
+        }
+
+        await updateAccountName(tx, account.id, username);
+      });
+
+      return new Response(null, { status: 200 });
+    },
+  );
+
   return routes;
+}
+
+function assertEmailCooldown(
+  tokenCreatedAt: Date,
+  cooldownMs = 5 * 60 * 1000,
+): void {
+  const retryAfter = new Date(tokenCreatedAt.getTime() + cooldownMs);
+
+  if (Date.now() < retryAfter.getTime()) {
+    throw new HTTPException(429, {
+      message: "Please wait before requesting another email",
+      cause: { retryAfter: retryAfter.toISOString() },
+    });
+  }
+}
+
+function isEmail(input: string): boolean {
+  return input.includes("@");
+}
+
+function setSessionCookie(c: Context<HonoEnv>, sessionId: string): void {
+  const config = c.get("config");
+
+  setCookie(c, config.SESSION_COOKIE_NAME, sessionId, {
+    httpOnly: true,
+    secure: config.NODE_ENV === "production",
+    sameSite: "Strict",
+    maxAge: config.SESSION_EXPIRY_HOURS * 60 * 60,
+    path: "/",
+  });
 }

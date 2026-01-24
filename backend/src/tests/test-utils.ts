@@ -17,6 +17,10 @@ function getDependencies() {
   assert(container, "PostgreSQL container not started.");
 
   const config = configFromEnv({
+    ARKHAMDB_BASE_URL: "https://arkhamdb.com",
+    ARKHAMDB_OAUTH_CLIENT_ID: "test-client-id",
+    ARKHAMDB_OAUTH_CLIENT_SECRET: "test-client-secret",
+    ARKHAMDB_OAUTH_REDIRECT_URI: "http://localhost:3001/auth/callback",
     FRONTEND_URL: "http://localhost:3000",
     POSTGRES_DB: container.getDatabase(),
     POSTGRES_HOST: container.getHost(),
@@ -36,7 +40,7 @@ function getDependencies() {
   const emailService = createEmailService(new MockMailer());
   const app = appFactory(config, db, emailService);
 
-  return { app, db, emailService };
+  return { app, db, emailService, config };
 }
 
 export const test = base.extend<{
