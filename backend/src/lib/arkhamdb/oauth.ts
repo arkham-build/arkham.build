@@ -174,7 +174,7 @@ export async function fetchUserDecksForOAuth(
   ctx: Context<HonoEnv>,
   accessToken: string,
 ): Promise<ArkhamDBDeck[]> {
-  const res = await request<ArkhamDBDeck[]>(ctx, "/oauth2/decks", {
+  const res = await request<ArkhamDBDeck[]>(ctx, "/api/oauth2/decks", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

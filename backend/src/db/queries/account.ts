@@ -1,7 +1,7 @@
 import type { AccessToken } from "../../lib/arkhamdb/types.ts";
 import type { Config } from "../../lib/config.ts";
 import type { Database } from "../db.ts";
-import { getAccountIdentityByUsername } from "./account-identity.ts";
+import { getAccountIdentityByUserProviderId } from "./account-identity.ts";
 import { upsertOAuthToken } from "./ouath-token.ts";
 import { createSession } from "./session.ts";
 
@@ -12,14 +12,14 @@ export interface CreateAccountParams {
 }
 
 export async function createAccount(db: Database, params: CreateAccountParams) {
-  return await db.transaction().execute(async (trx) => {
-    const account = await trx
+  return await db.transaction().execute(async (tx) => {
+    const account = await tx
       .insertInto("account")
       .values({ name: params.name })
       .returningAll()
       .executeTakeFirstOrThrow();
 
-    const accountIdentity = await trx
+    const accountIdentity = await tx
       .insertInto("account_identity")
       .values({
         account_id: account.id,
@@ -54,21 +54,23 @@ export async function upsertAccountFromOAuth(
   db: Database,
   params: CreateAccountFromOAuthParams,
 ) {
-  return await db.transaction().execute(async (trx) => {
-    let accountIdentity = await getAccountIdentityByUsername(
-      trx,
+  return await db.transaction().execute(async (tx) => {
+    let accountIdentity = await getAccountIdentityByUserProviderId(
+      tx,
       "arkhamdb",
       params.providerUserId,
     );
 
+    const existing = !!accountIdentity;
+
     if (!accountIdentity) {
-      const account = await trx
+      const account = await tx
         .insertInto("account")
         .values({ name: `provider_${params.providerUserId}` })
         .returningAll()
         .executeTakeFirstOrThrow();
 
-      accountIdentity = await trx
+      accountIdentity = await tx
         .insertInto("account_identity")
         .values({
           account_id: account.id,
@@ -80,15 +82,15 @@ export async function upsertAccountFromOAuth(
         .executeTakeFirstOrThrow();
     }
 
-    await upsertOAuthToken(trx, accountIdentity.id, params.accessToken);
+    await upsertOAuthToken(tx, accountIdentity.id, params.accessToken);
 
     const session = await createSession(
-      trx,
+      tx,
       accountIdentity.account_id,
       params.config.SESSION_EXPIRY_HOURS,
     );
 
-    return session;
+    return { session, existing };
   });
 }
 

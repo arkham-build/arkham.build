@@ -18,33 +18,26 @@ import {
 } from "../lib/decklists-helpers.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 
-export function recommendationsRouter() {
-  const routes = new Hono<HonoEnv>();
+const routes = new Hono<HonoEnv>();
 
-  routes.get("/:canonical_investigator_code", async (c) => {
-    const req = decodeSearch<RecommendationsRequest>(
-      RecommendationsRequestSchema,
-      {
-        ...c.req.queries(),
-        canonical_investigator_code: [
-          c.req.param("canonical_investigator_code"),
-        ],
-      },
-    );
+routes.get("/:canonical_investigator_code", async (c) => {
+  const req = decodeSearch<RecommendationsRequest>(
+    RecommendationsRequestSchema,
+    {
+      ...c.req.queries(),
+      canonical_investigator_code: [c.req.param("canonical_investigator_code")],
+    },
+  );
 
-    const recommendations = await getRecommendations(c.get("db"), req);
+  const recommendations = await getRecommendations(c.get("db"), req);
 
-    const res = RecommendationsResponseSchema.parse({
-      data: { recommendations },
-    });
-
-    c.header("Cache-Control", "public, max-age=86400, immutable");
-
-    return c.json(res);
+  const res = RecommendationsResponseSchema.parse({
+    data: { recommendations },
   });
 
-  return routes;
-}
+  c.header("Cache-Control", "public, max-age=86400, immutable");
+  return c.json(res);
+});
 
 async function getRecommendations(db: Database, req: RecommendationsRequest) {
   const canonicalInvestigatorCode = await resolveCanonicalInvestigator(
@@ -304,3 +297,5 @@ function formatRecommendations(
     ? { decksAnalyzed: 0, recommendations: [] }
     : { decksAnalyzed, recommendations };
 }
+
+export default routes;

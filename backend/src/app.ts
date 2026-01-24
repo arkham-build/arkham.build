@@ -3,9 +3,6 @@ import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
 import type { Database } from "./db/db.ts";
 import { getAppDataVersions } from "./db/queries/app-data-versions.ts";
-import { arkhamDbDecklistsRouter } from "./features/arkhamdb-decklists/index.ts";
-import { authRouter } from "./features/auth.ts";
-import { recommendationsRouter } from "./features/recommendations.ts";
 import { bodyLimitMiddleware } from "./lib/body-limit.ts";
 import type { Config } from "./lib/config.ts";
 import { corsMiddleware } from "./lib/cors.ts";
@@ -13,6 +10,9 @@ import type { EmailService } from "./lib/email/email-service.ts";
 import { errorHandler } from "./lib/errors.ts";
 import type { HonoEnv } from "./lib/hono-env.ts";
 import { logger, requestLogger } from "./lib/logger.ts";
+import arkhamDbDecklistsRouter from "./routes/arkhamdb-decklists.ts";
+import authRouter from "./routes/auth.ts";
+import recommendationsRouter from "./routes/recommendations.ts";
 
 export function appFactory(
   config: Config,
@@ -37,11 +37,12 @@ export function appFactory(
   });
 
   const pub = new Hono<HonoEnv>();
-  pub.route("/arkhamdb-decklists", arkhamDbDecklistsRouter());
-  pub.route("/recommendations", recommendationsRouter());
+  pub.route("/arkhamdb-decklists", arkhamDbDecklistsRouter);
+  pub.route("/recommendations", recommendationsRouter);
 
   app.route("/v2/public", pub);
-  app.route("/v2/auth", authRouter());
+  app.route("/v2/auth", authRouter);
+
   app.get("/up", (c) => c.text("ok"));
 
   app.get("/version", async (c) => {

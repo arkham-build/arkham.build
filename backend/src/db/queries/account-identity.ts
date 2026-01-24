@@ -22,6 +22,19 @@ export async function getAccountIdentityByUsername(
     .executeTakeFirst();
 }
 
+export async function getAccountIdentityByUserProviderId(
+  db: Database,
+  provider: string,
+  providerUserId: string,
+) {
+  return await db
+    .selectFrom("account_identity")
+    .selectAll("account_identity")
+    .where("account_identity.provider", "=", provider)
+    .where("account_identity.provider_user_id", "=", providerUserId)
+    .executeTakeFirst();
+}
+
 export function getAccountIdentityByAccountId(db: Database, accountId: string) {
   return db
     .selectFrom("account_identity")
