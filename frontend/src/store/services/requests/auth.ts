@@ -1,4 +1,6 @@
 import {
+  type CompleteProfileRequest,
+  CompleteProfileRequestSchema,
   type ForgotPasswordRequest,
   ForgotPasswordRequestSchema,
   type LoginRequest,
@@ -89,6 +91,17 @@ export async function postResetPassword(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(ResetPasswordRequestSchema.parse(payload)),
+    credentials: "include",
+  });
+}
+
+export async function postCompleteProfile(
+  payload: CompleteProfileRequest,
+): Promise<void> {
+  await apiV2Request("/v2/auth/complete-profile", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(CompleteProfileRequestSchema.parse(payload)),
     credentials: "include",
   });
 }

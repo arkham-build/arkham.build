@@ -92,6 +92,7 @@
       "tooltip_count_player": "Ten {{type}}: Całkowita liczba kart badacza"
     },
     "common": {
+      "or": "or",
       "actions": {
         "draw": "Dobranie",
         "engage": "Wejście w zwarcie",
@@ -1236,7 +1237,6 @@
         "no_level": "Brak",
         "title": "Poziom"
       },
-      "or": "or",
       "ownership": {
         "owned": "Posiadane",
         "title": "Własność",

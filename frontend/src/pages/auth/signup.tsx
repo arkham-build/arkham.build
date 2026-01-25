@@ -13,6 +13,7 @@ import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
 import { createPasswordMatchPattern, errorMapper } from "./helpers";
+import { OAuthSeparator } from "./oauth-separator";
 
 function Signup() {
   const { t } = useTranslation();
@@ -130,6 +131,18 @@ function Signup() {
           size="full"
         >
           {t("auth.signup.title")}
+        </Button>
+
+        <OAuthSeparator />
+
+        <Button
+          as="a"
+          href={`${import.meta.env.VITE_API_URL}/v2/auth/arkhamdb`}
+          variant="secondary"
+          size="full"
+        >
+          <i className="icon-elder_sign" />
+          {t("auth.signup.with_arkhamdb")}
         </Button>
       </AuthForm>
     </AuthLayout>

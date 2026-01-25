@@ -52,6 +52,7 @@ import { sessionAuth } from "../lib/auth/session-auth.ts";
 import { passwordResetEmailTemplate } from "../lib/email/templates/password-reset-email.ts";
 import { verificationEmailTemplate } from "../lib/email/templates/verification-email.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
+import { isEmpty } from "../lib/is-empty.ts";
 import { zodValidator } from "../lib/validation.ts";
 
 const routes = new Hono<HonoEnv>();
@@ -63,22 +64,18 @@ routes.post("/signup", zodValidator("json", SignupRequestSchema), async (c) => {
 
   const { name, email, password } = c.req.valid("json");
 
-  const existingIdentity = await getAccountIdentityByEmail(db, email);
-
   // This is checked again on the database level.
   // XXX: While this error message is clearer, it potentially allows enumeration of registered emails.
-  if (existingIdentity) {
+  if (await getAccountIdentityByEmail(db, email)) {
     throw new HTTPException(400, {
       message: "An account is already registered for this email",
     });
   }
 
-  const passwordHash = await hashPassword(password);
-
   const { accountIdentity } = await createAccount(db, {
     name,
     email,
-    passwordHash,
+    passwordHash: await hashPassword(password),
   });
 
   const token = generateRandomToken();
@@ -91,9 +88,10 @@ routes.post("/signup", zodValidator("json", SignupRequestSchema), async (c) => {
     expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
   });
 
-  const verificationUrl = `${config.FRONTEND_URL}/verify-email?token=${token}`;
   await emailService.sendTemplate(
-    verificationEmailTemplate({ verificationUrl }),
+    verificationEmailTemplate({
+      verificationUrl: `${config.FRONTEND_URL}/verify-email?token=${token}`,
+    }),
     email,
   );
 
@@ -108,11 +106,7 @@ routes.post("/login", zodValidator("json", LoginRequestSchema), async (c) => {
 
   const accountIdentity = await getAccountIdentityByEmail(db, email);
 
-  if (
-    !accountIdentity ||
-    !accountIdentity.password_hash ||
-    !accountIdentity.email
-  ) {
+  if (!accountIdentity?.password_hash || !accountIdentity?.email) {
     throw new HTTPException(401, { message: "Invalid email or password" });
   }
 
@@ -127,7 +121,7 @@ routes.post("/login", zodValidator("json", LoginRequestSchema), async (c) => {
 
   if (!accountIdentity.verified_at) {
     throw new HTTPException(403, {
-      message: "Account not verified",
+      message: "Account is not verified",
     });
   }
 
@@ -147,8 +141,8 @@ routes.post("/login", zodValidator("json", LoginRequestSchema), async (c) => {
 routes.post("/logout", sessionAuth(), async (c) => {
   const db = c.get("db");
   const config = c.get("config");
-  const sessionId = getCookie(c, config.SESSION_COOKIE_NAME);
 
+  const sessionId = getCookie(c, config.SESSION_COOKIE_NAME);
   if (sessionId) {
     await deleteSession(db, sessionId);
   }
@@ -159,8 +153,9 @@ routes.post("/logout", sessionAuth(), async (c) => {
 
 routes.get("/me", sessionAuth(), async (c) => {
   const db = c.get("db");
+
   const account = c.get("account");
-  assert(account, "Account should be set by middleware");
+  assert(account, "Account should be set by session middleware");
 
   const accountIdentity = await getAccountIdentityByAccountId(db, account.id);
 
@@ -212,7 +207,6 @@ routes.post(
     const { email } = c.req.valid("json");
     const db = c.get("db");
     const config = c.get("config");
-    const emailService = c.get("emailService");
 
     const accountIdentity = await getAccountIdentityByEmail(db, email);
 
@@ -223,16 +217,13 @@ routes.post(
         "email_verification",
       );
 
-      if (latestToken) {
-        assertEmailCooldown(latestToken.created_at);
-      }
+      if (latestToken) assertEmailCooldown(latestToken.created_at);
 
       const token = generateRandomToken();
       const tokenHash = hashToken(token);
 
       await db.transaction().execute(async (tx) => {
         await deleteVerificationTokensByEmail(tx, email, "email_verification");
-
         await createVerificationToken(tx, {
           accountIdentityId: accountIdentity.id,
           email,
@@ -242,9 +233,10 @@ routes.post(
         });
       });
 
-      const verificationUrl = `${config.FRONTEND_URL}/verify-email?token=${token}`;
-      await emailService.sendTemplate(
-        verificationEmailTemplate({ verificationUrl }),
+      await c.get("emailService").sendTemplate(
+        verificationEmailTemplate({
+          verificationUrl: `${config.FRONTEND_URL}/verify-email?token=${token}`,
+        }),
         email,
       );
     }
@@ -258,9 +250,8 @@ routes.post(
   zodValidator("json", ForgotPasswordRequestSchema),
   async (c) => {
     const { emailOrUsername } = c.req.valid("json");
-    const db = c.get("db");
     const config = c.get("config");
-    const emailService = c.get("emailService");
+    const db = c.get("db");
 
     const accountIdentity = isEmail(emailOrUsername)
       ? await getAccountIdentityByEmail(db, emailOrUsername)
@@ -275,26 +266,24 @@ routes.post(
         "password_reset",
       );
 
-      if (latestToken) {
-        assertEmailCooldown(latestToken.created_at);
-      }
+      if (latestToken) assertEmailCooldown(latestToken.created_at);
 
       await deleteVerificationTokensByEmail(db, email, "password_reset");
 
       const token = generateRandomToken();
-      const tokenHash = hashToken(token);
 
       await createVerificationToken(db, {
         accountIdentityId: accountIdentity.id,
         email,
-        tokenHash,
+        tokenHash: hashToken(token),
         tokenType: "password_reset",
         expiryHours: config.PASSWORD_RESET_TOKEN_EXPIRY_HOURS,
       });
 
-      const resetUrl = `${config.FRONTEND_URL}/reset-password?token=${token}`;
-      await emailService.sendTemplate(
-        passwordResetEmailTemplate({ resetUrl }),
+      await c.get("emailService").sendTemplate(
+        passwordResetEmailTemplate({
+          resetUrl: `${config.FRONTEND_URL}/reset-password?token=${token}`,
+        }),
         email,
       );
     }
@@ -349,9 +338,7 @@ routes.post(
   },
 );
 
-routes.get("/arkhamdb", (c) => {
-  return authorize(c);
-});
+routes.get("/arkhamdb", authorize);
 
 routes.get("/arkhamdb/callback", async (c) => {
   const db = c.get("db");
@@ -366,12 +353,11 @@ routes.get("/arkhamdb/callback", async (c) => {
     const accessToken = await exchangeAuthCodeForToken(c, code);
     const decks = await fetchUserDecksForOAuth(c, accessToken.access_token);
 
-    if (decks.length === 0) {
+    if (isEmpty(decks)) {
       return c.redirect(`${config.FRONTEND_URL}/?error=arkhamdb_no_decks`);
     }
 
     const firstDeck = decks[0];
-
     if (!firstDeck?.user_id) {
       return c.redirect(
         `${config.FRONTEND_URL}/?error=arkhamdb_invalid_response`,
@@ -384,12 +370,13 @@ routes.get("/arkhamdb/callback", async (c) => {
       provider: "arkhamdb",
       providerUserId: firstDeck.user_id.toString(),
     });
-    setSessionCookie(c, session.id);
 
-    const path = existing ? "/" : "/signup/arkhamdb";
+    setSessionCookie(c, session.id);
+    const path = existing ? "/" : "/signup/complete";
     return c.redirect(`${config.FRONTEND_URL}${path}`);
   } catch (error) {
-    console.error("OAuth callback error:", error);
+    const logger = c.get("logger");
+    logger("warn", (error as Error).message);
     return c.redirect(`${config.FRONTEND_URL}/?error=oauth_failed`);
   }
 });

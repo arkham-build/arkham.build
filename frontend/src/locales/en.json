@@ -69,12 +69,19 @@
         "forgot_password": "Forgot password?",
         "no_account": "Don't have an account?",
         "signup_link": "Sign up",
-        "title": "Log in"
+        "title": "Log in",
+        "with_arkhamdb": "Log in with ArkhamDB"
       },
       "signup": {
         "title": "Sign up",
         "has_account": "Already have an account?",
-        "success": "Signed up successfully! Please check your email to verify your account."
+        "success": "Signed up successfully! Please check your email to verify your account.",
+        "with_arkhamdb": "Sign up with ArkhamDB",
+        "complete_profile": {
+          "title": "Complete your profile",
+          "description": "Choose a username for your account. This will be displayed publicly on your decks and contributions.",
+          "success": "Profile completed! You can now start building decks."
+        }
       },
       "forgot_password": {
         "back_to_login": "Back to login",
@@ -251,6 +258,7 @@
       "none": "None",
       "nonexceptional": "Non-exceptional",
       "ok": "OK",
+      "or": "or",
       "pack_one": "pack",
       "pack_other": "packs",
       "packs_new_format": {
@@ -1281,7 +1289,6 @@
         "no_level": "Null",
         "title": "Level"
       },
-      "or": "or",
       "ownership": {
         "owned": "Owned",
         "title": "Ownership",

@@ -72,7 +72,7 @@ export const selectTagsChanges = createSelector(
   (filters) => {
     const tagsFilters = filters.tags;
     if (!tagsFilters.length) return "";
-    return tagsFilters.join(` ${i18n.t("filters.or")} `);
+    return tagsFilters.join(` ${i18n.t("common.or")} `);
   },
 );
 
@@ -526,7 +526,7 @@ const selectDeckFactionChanges = createSelector(
   (filters) => {
     const factionFilters = filters.faction;
     if (!factionFilters.length) return "";
-    return factionFilters.join(` ${i18n.t("filters.or")} `);
+    return factionFilters.join(` ${i18n.t("common.or")} `);
   },
 );
 
@@ -538,7 +538,7 @@ export const selectProviderChanges = createSelector(
 
     return providerFilters
       .map((val) => formatProviderName(val))
-      .join(` ${i18n.t("filters.or")} `);
+      .join(` ${i18n.t("common.or")} `);
   },
 );
 

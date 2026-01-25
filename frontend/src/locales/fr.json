@@ -60,6 +60,7 @@
       "tooltip_count_player": "Nombre total de cartes Joueur dans {{type}}"
     },
     "common": {
+      "or": "ou",
       "actions": {
         "draw": "Piocher",
         "engage": "Engager",
@@ -1001,7 +1002,6 @@
         "no_level": "Nul",
         "title": "Niveau"
       },
-      "or": "ou",
       "ownership": {
         "owned": "Possédé",
         "title": "Possession",

@@ -61,6 +61,7 @@
       "tooltip_count_player": "Número total de cartas de Jugador en {{type}}"
     },
     "common": {
+      "or": "o",
       "actions": {
         "draw": "Robar",
         "engage": "Enfrentarse",
@@ -1002,7 +1003,6 @@
         "no_level": "Nulo",
         "title": "Nivel"
       },
-      "or": "o",
       "ownership": {
         "owned": "Propiedad",
         "title": "Propiedad",

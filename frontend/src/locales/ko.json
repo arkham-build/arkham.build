@@ -93,6 +93,7 @@
       "tooltip_count_player": "{{type}} 유형인 플레이어 카드 수"
     },
     "common": {
+      "or": "또는",
       "actions": {
         "draw": "카드 뽑기",
         "engage": "교전",

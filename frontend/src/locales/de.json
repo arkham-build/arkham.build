@@ -93,6 +93,7 @@
       "tooltip_count_player": "Gesamtzahl der Spielerkarten in {{type}}"
     },
     "common": {
+      "or": "oder",
       "actions": {
         "draw": "Ziehen",
         "engage": "In einen Kampf verwickeln",
@@ -1225,7 +1226,6 @@
         "no_level": "Keine Stufe",
         "title": "Stufe"
       },
-      "or": "oder",
       "ownership": {
         "owned": "In Besitz",
         "title": "Kartensammlung",

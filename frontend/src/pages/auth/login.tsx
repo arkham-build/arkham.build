@@ -11,6 +11,7 @@ import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
 import { errorMapper } from "./helpers";
 import css from "./login.module.css";
+import { OAuthSeparator } from "./oauth-separator";
 
 function Login() {
   const [, navigate] = useLocation();
@@ -101,6 +102,18 @@ function Login() {
           size="full"
         >
           {t("auth.login.title")}
+        </Button>
+
+        <OAuthSeparator />
+
+        <Button
+          as="a"
+          href={`${import.meta.env.VITE_API_URL}/v2/auth/arkhamdb`}
+          variant="secondary"
+          size="full"
+        >
+          <i className="icon-elder_sign" />
+          {t("auth.login.with_arkhamdb")}
         </Button>
       </AuthForm>
     </AuthLayout>

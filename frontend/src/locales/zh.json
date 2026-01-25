@@ -89,6 +89,7 @@
       "tooltip_count_player": "{{type}}中的玩家卡牌总数"
     },
     "common": {
+      "or": "或",
       "actions": {
         "draw": "抽牌",
         "engage": "交战",
@@ -1206,7 +1207,6 @@
         "no_level": "无等级",
         "title": "等级"
       },
-      "or": "或",
       "ownership": {
         "owned": "已拥有",
         "title": "所有权",
