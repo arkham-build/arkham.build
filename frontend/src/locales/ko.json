@@ -231,6 +231,7 @@
       },
       "reset": "초기화",
       "seal": "봉인",
+      "select": "선택",
       "set_as_default": "기본 값으로 설정",
       "shroud": "장막",
       "skill": {
@@ -649,6 +650,7 @@
         "Witch": "마녀 - Witch",
         "Witch House": "마녀집 - Witch House",
         "Woods": "숲 - Woods",
+        "Worker": "Worker",
         "Y'ha-nthlei": "이하 느틀레이 - Y'ha-nthlei",
         "Yithian": "이스인 - Yithian",
         "Yoth": "요스 - Yoth",
@@ -744,6 +746,8 @@
       "id": "덱 ID",
       "latest_upgrade": {
         "add_to_deck": "현재 덱에 추가",
+        "decrement_xp": "이번 향상에 대해 사용가능한 경험치를 줄이기",
+        "increment_xp": "이번 향상에 대해 사용가능한 경험치를 늘리기",
         "no_changes": "변경점 없음.",
         "summary": "소비한 경험치: {{xpSpent}}/{{xp}}",
         "title": "마지막 향상",
@@ -796,6 +800,7 @@
         "title": "덱 도구"
       },
       "validation": {
+        "card_not_in_limited_pool": "다음 카드는 이 덱의 카드 구성 환경에서는 포함될 수 없습니다:",
         "forbidden_cards": "덱에 금지된 카드(조사자가 허용하지 않는 카드)가 들어 있습니다:",
         "invalid": "덱이 유효하지 않음.",
         "invalid_card_count": "덱에 포함된 다음 카드의 사본 수가 잘못되었습니다:",
@@ -1055,12 +1060,15 @@
       "scans": "이미지",
       "sharing": {
         "create": "공유 생성하기",
+        "create_failed": "공유 생성하기에 실패함: {{error}}",
         "create_tooltip": "공유하면 공개적으로 접속할 수 있는 읽기 전용 링크가 생성됩니다. 링크가 있는 사람은 누구나 덱을 볼 수는 있지만 편집할 수는 없습니다.  <br />공유는 언제든지 제거할 수 있습니다. 공유를 제거해도 덱 자체에는 영향을 미치지 않습니다.",
         "delete": "공유 삭제하기",
+        "delete_failed": "공유 삭제하기에 실패함: {{error}}",
         "description": "덱은 로컬로 저장되었습니다.",
         "description_present": "이 덱은 <a>해당 링크</a>를 통해 보일 수 있도록 공개 공유됩니다.",
         "title": "공개 공유",
-        "update": "공유 갱신하기"
+        "update": "공유 갱신하기",
+        "update_failed": "공유 갱신하기에 실패함: {{error}}"
       },
       "tab_deck_list": "덱",
       "tab_history": "기록",
@@ -1109,6 +1117,7 @@
     "draw_simulator": {
       "draw_tooltip": "{{cards}} {{count}}장 뽑기.",
       "mulligan_mode": "멀리건 모드",
+      "mulligan_mode_help": "이 기능이 활성화되면 타로 카드 이외의 약점 카드와 게임 시작 시 플레이 영역에 놓이는 카드는 자동으로 다시 뽑힙니다. 멀리건 모드가 비활성화된 후, 덱은 한 번 섞입니다.",
       "redraw": "선택한 카드만 다시 뽑기",
       "redraw_tooltip": "선택한 카드는 덱 맨 밑으로 되돌리고 새로운 카드로 대체합니다.",
       "reset": "초기화",
@@ -1192,6 +1201,10 @@
         "odd": "홀수",
         "title": "비용"
       },
+      "cycle": {
+        "placeholder": "사이클 선택...",
+        "title": "사이클"
+      },
       "encounter_set": {
         "placeholder": "조우 세트 선택...",
         "title": "조우 세트"
@@ -1228,6 +1241,7 @@
         "no_level": "Null",
         "title": "레벨"
       },
+      "locked": "이 필터는 잠겼습니다.",
       "or": "또는",
       "ownership": {
         "owned": "소유함",
@@ -1279,7 +1293,6 @@
     "help": {
       "about": "이 사이트에 대하여",
       "changelog": "변경 기록",
-      "collection_stats": "보유 게임 상태",
       "shortcuts": {
         "group_card_list": "카드 목록",
         "group_card_list_search": "카드 목록 (검색 중심)",
@@ -1352,7 +1365,8 @@
         "include_flavor": "기타 문구",
         "include_game_text": "카드 문구",
         "include_name": "이름",
-        "placeholder": "카드 찾아보기..."
+        "placeholder": "카드 찾아보기...",
+        "title": "검색"
       },
       "sort_by": "정렬 기준"
     },
@@ -1372,7 +1386,10 @@
       "title": "미리보기 시즌이 시작되었습니다!"
     },
     "rules": {
-      "title": "참조 안내서"
+      "back_to_top": "맨 위로 되돌아가기",
+      "search_placeholder": "키워드 찾아보기...",
+      "title": "참조 안내서",
+      "toc": "목차"
     },
     "search": {
       "title": "검색 결과"
