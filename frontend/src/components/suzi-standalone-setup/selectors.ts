@@ -67,7 +67,13 @@ export const selectAvailableUpgrades = createSelector(
 
     if (checkOwnership) {
       filters.push((c: Card) =>
-        filterOwnership(c, metadata, lookupTables, collection, false),
+        filterOwnership({
+          card: c,
+          metadata,
+          lookupTables,
+          collection,
+          showAllCards: false,
+        }),
       );
     }
 

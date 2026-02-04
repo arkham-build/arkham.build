@@ -125,13 +125,13 @@ export const selectCardOwnedCount = createSelector(
   (state: StoreState) => state.settings,
   (metadata, lookupTables, collection, settings) => {
     return (card: Card) => {
-      return ownedCardCount(
+      return ownedCardCount({
         card,
         metadata,
         lookupTables,
         collection,
-        settings.showAllCards,
-      );
+        showAllCards: settings.showAllCards,
+      });
     };
   },
 );

@@ -969,13 +969,13 @@ describe("filter: ownership", () => {
     code: string,
     config: Record<string, number | boolean>,
   ) {
-    return filterOwnership(
-      state.metadata.cards[code],
-      state.metadata,
-      selectLookupTables(state),
-      config,
-      false, // TODO: test.
-    );
+    return filterOwnership({
+      card: state.metadata.cards[code],
+      metadata: state.metadata,
+      lookupTables: selectLookupTables(state),
+      collection: config,
+      showAllCards: false, // TODO: test.
+    });
   }
 
   it("handles case: pack owned", () => {

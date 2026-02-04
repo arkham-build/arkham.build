@@ -664,13 +664,13 @@ const selectBaseListCards = createSelector(
 
         if (value !== "all") {
           filters.push((card: Card) => {
-            const ownership = filterOwnership(
+            const ownership = filterOwnership({
               card,
               metadata,
               lookupTables,
               collection,
-              false,
-            );
+              showAllCards: false,
+            });
 
             return value === "owned" ? ownership : !ownership;
           });

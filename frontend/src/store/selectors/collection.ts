@@ -35,13 +35,13 @@ export const selectTotalOwned = createSelector(
     for (const card of cards) {
       if (!filter(card)) continue;
 
-      const owned = ownedCardCount(
+      const owned = ownedCardCount({
         card,
         metadata,
         lookupTables,
         collection,
-        false,
-      );
+        showAllCards: false,
+      });
 
       if (filterEncounterCards(card)) {
         ownedEncounterCards += owned;

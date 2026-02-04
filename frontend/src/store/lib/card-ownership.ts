@@ -3,15 +3,18 @@ import type { Card } from "../schemas/card.schema";
 import type { Metadata } from "../slices/metadata.types";
 import type { LookupTables } from "./lookup-tables.types";
 
-// TECH DEBT: clean up function signature.
-export function ownedCardCount(
-  card: Card,
-  metadata: Metadata,
-  lookupTables: LookupTables,
-  collection: Record<string, number | boolean>,
-  showAllCards: boolean | undefined,
-  strict = false,
-) {
+export type CardOwnershipOptions = {
+  card: Card;
+  metadata: Metadata;
+  lookupTables: LookupTables;
+  collection: Record<string, number | boolean>;
+  showAllCards?: boolean;
+  strict?: boolean;
+};
+
+export function ownedCardCount(options: CardOwnershipOptions) {
+  const { card, metadata, lookupTables, collection, showAllCards, strict } =
+    options;
   if (card.code === SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS) {
     return card.quantity;
   }

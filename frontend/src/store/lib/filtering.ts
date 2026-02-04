@@ -32,7 +32,7 @@ import type {
   SubtypeFilter,
 } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
-import { ownedCardCount } from "./card-ownership";
+import { type CardOwnershipOptions, ownedCardCount } from "./card-ownership";
 import type { LookupTables } from "./lookup-tables.types";
 import type { ResolvedDeck, SealedDeck, Selections } from "./types";
 import { isOptionSelect } from "./types";
@@ -433,24 +433,8 @@ export function filterLevel(filterState: LevelFilter, investigator?: Card) {
  * Ownership
  */
 
-export function filterOwnership(
-  card: Card,
-  metadata: Metadata,
-  lookupTables: LookupTables,
-  collection: Record<string, number | boolean>,
-  showAllCards: boolean,
-  strict = false,
-) {
-  return (
-    ownedCardCount(
-      card,
-      metadata,
-      lookupTables,
-      collection,
-      showAllCards,
-      strict,
-    ) > 0
-  );
+export function filterOwnership(options: CardOwnershipOptions) {
+  return ownedCardCount(options) > 0;
 }
 
 /**

@@ -37,14 +37,15 @@ export function randomBasicWeaknessForDeck(
   ).reduce<string[]>((acc, code) => {
     const card = metadata.cards[code];
 
-    const ownedCount = ownedCardCount(
+    const ownedCount = ownedCardCount({
       card,
       metadata,
       lookupTables,
       collection,
-      !useLimitedPool && settings.showAllCards,
-      useLimitedPool || settings.cardListsDefaultContentType === "official",
-    );
+      showAllCards: !useLimitedPool && settings.showAllCards,
+      strict:
+        useLimitedPool || settings.cardListsDefaultContentType === "official",
+    });
 
     if (
       card.code === SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS ||
