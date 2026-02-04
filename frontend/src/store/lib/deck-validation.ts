@@ -836,6 +836,7 @@ class DeckOptionsValidator implements SlotValidator {
   validate() {
     const errors: DeckValidationError[] = [
       ...this.validateAtLeast(this.deckOptions),
+      ...this.validateVirtualLimit(this.deckOptions),
       ...this.validateLimit(this.deckOptions),
     ];
 
@@ -947,6 +948,42 @@ class DeckOptionsValidator implements SlotValidator {
     return errors;
   }
 
+  /**
+   * Validates virtual deck options (e.g. Covenants) independently.
+   * Virtual options impose limits (e.g. max 1 Covenant card) without
+   * interacting with the regular deck option matching tracked in `validateLimit`.
+   */
+  validateVirtualLimit(options: DeckOption[]): DeckValidationError[] {
+    const errors: DeckValidationError[] = [];
+
+    for (const option of options) {
+      if (!option.virtual || option.atleast) continue;
+
+      const filter = makeOptionFilter(option as DeckOption, this.config);
+      if (!filter) continue;
+
+      let matchCount = 0;
+
+      for (const card of this.cards) {
+        if (filter(card)) {
+          matchCount += this.quantities[card.code];
+        }
+      }
+
+      if (matchCount > (option.limit as number)) {
+        errors.push({
+          type: "INVALID_DECK_OPTION",
+          details: {
+            count: `(${matchCount} / ${option.limit})`,
+            error: option.error as string, // SAFE! all virtual limit options have error.
+          },
+        });
+      }
+    }
+
+    return errors;
+  }
+
   validateLimit(options: DeckOption[]): DeckValidationError[] {
     const errors: DeckValidationError[] = [];
 
@@ -956,9 +993,8 @@ class DeckOptionsValidator implements SlotValidator {
      * which means that they violate the deck_building restrictions.
      * Invariants:
      *  - `option.atleast` are ignored.
-     *  - `option.virtual` (used for covenants) etc. are validated separately.
+     *  - `option.virtual` (used for covenants) etc. are validated in `validateVirtualLimit`.
      *  - deck_options are sorted from "unlimited > limited".
-     * TECH DEBT: move Covenant validation to a separate validator.
      */
     const optionMatched = new Map<string, number>();
 
@@ -971,13 +1007,13 @@ class DeckOptionsValidator implements SlotValidator {
 
     for (let i = 0; i < options.length; i += 1) {
       const option = options[i];
-      if (option.atleast && option.virtual) continue;
+      if (option.virtual) continue;
 
       const filter = makeOptionFilter(option as DeckOption, this.config);
 
       let matchCount = 0;
 
-      const isLimitOption = !option.not && !option.virtual && option.limit;
+      const isLimitOption = !option.not && option.limit;
 
       if (filter) {
         for (const card of this.cards) {
@@ -1011,9 +1047,7 @@ class DeckOptionsValidator implements SlotValidator {
 
             if (matches) matchCount += 1;
 
-            // only mark a card as matche for "real" limit options,
-            // i.e. being a covernant should not increment the limit.
-            if (matches && !option.virtual && !option.not) {
+            if (matches && !option.not) {
               optionMatched.set(card.code, matchedQuantity + 1);
             }
           }
@@ -1024,17 +1058,6 @@ class DeckOptionsValidator implements SlotValidator {
             break;
           }
         }
-      }
-
-      // virtual options are not counted towards the limit, check separately.
-      if (option.virtual && matchCount > (option.limit as number)) {
-        errors.push({
-          type: "INVALID_DECK_OPTION",
-          details: {
-            count: `(${matchCount} / ${option.limit})`,
-            error: option.error as string, // SAFE! all virtual limit options have error.
-          },
-        });
       }
     }
 
