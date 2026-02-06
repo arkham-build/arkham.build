@@ -375,3 +375,21 @@ export const selectBuildQlInterpreter = createSelector(
     });
   },
 );
+
+export const selectStaticBuildQlInterpreter = createSelector(
+  selectMetadata,
+  selectLookupTables,
+  selectActiveList,
+  (metadata, lookupTables, list) => {
+    return new Interpreter({
+      fields,
+      fieldLookupContext: {
+        deck: undefined,
+        i18n,
+        lookupTables,
+        matchBacks: !!list?.search?.includeBacks,
+        metadata,
+      },
+    });
+  },
+);

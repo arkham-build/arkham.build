@@ -25,6 +25,7 @@ import { and, not, or } from "@/utils/fp";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import { time, timeEnd } from "@/utils/time";
+import type { Interpreter } from "../lib/buildql/interpreter";
 import { applyCardChanges } from "../lib/card-edits";
 import { getAdditionalDeckOptions } from "../lib/deck-validation";
 import {
@@ -93,6 +94,7 @@ import type {
 import type { Metadata } from "../slices/metadata.types";
 import {
   selectActiveList,
+  selectBuildQlInterpreter,
   selectCollection,
   selectLocaleSortingCollator,
   selectLookupTables,
@@ -122,6 +124,7 @@ function makeUserFilter(
   list: List,
   resolvedDeck: ResolvedDeck | undefined,
   targetDeck: TargetDeck | undefined,
+  buildQlInterpreter: Interpreter,
 ) {
   const filters: Filter[] = [];
 
@@ -179,13 +182,17 @@ function makeUserFilter(
 
         if (value) {
           const filter = [];
-          const accessFilter = filterInvestigatorAccess(metadata.cards[value], {
-            customizable: {
-              properties: "all",
-              level: "all",
+          const accessFilter = filterInvestigatorAccess(
+            metadata.cards[value],
+            buildQlInterpreter,
+            {
+              customizable: {
+                properties: "all",
+                level: "all",
+              },
+              targetDeck,
             },
-            targetDeck,
-          });
+          );
           const weaknessFilter = filterInvestigatorWeaknessAccess(
             metadata.cards[value],
             { targetDeck },
@@ -206,7 +213,11 @@ function makeUserFilter(
         if (value.range) {
           if (resolvedDeck) {
             filters.push(
-              filterLevel(value, resolvedDeck?.investigatorBack?.card),
+              filterLevel(
+                value,
+                buildQlInterpreter,
+                resolvedDeck?.investigatorBack?.card,
+              ),
             );
           } else {
             const filterIndex = list.filters.indexOf("investigator");
@@ -216,7 +227,7 @@ function makeUserFilter(
             const investigator = filterValue
               ? metadata.cards[filterValue as string]
               : undefined;
-            filters.push(filterLevel(value, investigator));
+            filters.push(filterLevel(value, buildQlInterpreter, investigator));
           }
         }
 
@@ -283,7 +294,7 @@ function makeUserFilter(
           const filter = (card: Card) => {
             if (card.type_code !== "investigator") return false;
 
-            const filter = filterInvestigatorAccess(card, {
+            const filter = filterInvestigatorAccess(card, buildQlInterpreter, {
               customizable: {
                 properties: "all",
                 level: "all",
@@ -413,6 +424,7 @@ const selectDeckInvestigatorFilter = createSelector(
   selectMetadata,
   selectLookupTables,
   selectDeckCachedByCardAccess,
+  selectBuildQlInterpreter,
   (state: StoreState) => state.settings,
   (
     _: StoreState,
@@ -425,6 +437,7 @@ const selectDeckInvestigatorFilter = createSelector(
     metadata,
     lookupTables,
     resolvedDeck,
+    buildQlInterpreter,
     settings,
     targetDeck,
     showUnusableCards,
@@ -449,17 +462,21 @@ const selectDeckInvestigatorFilter = createSelector(
 
     const ors = [];
 
-    const investigatorFilter = filterInvestigatorAccess(investigatorBack, {
-      additionalDeckOptions: getAdditionalDeckOptions(resolvedDeck),
-      customizable: {
-        properties: "all",
-        level: "all",
+    const investigatorFilter = filterInvestigatorAccess(
+      investigatorBack,
+      buildQlInterpreter,
+      {
+        additionalDeckOptions: getAdditionalDeckOptions(resolvedDeck),
+        customizable: {
+          properties: "all",
+          level: "all",
+        },
+        investigatorFront: resolvedDeck.investigatorFront.card,
+        selections: resolvedDeck.selections,
+        targetDeck,
+        showLimitedAccess,
       },
-      investigatorFront: resolvedDeck.investigatorFront.card,
-      selections: resolvedDeck.selections,
-      targetDeck,
-      showLimitedAccess,
-    });
+    );
 
     const weaknessFilter = filterInvestigatorWeaknessAccess(investigatorBack, {
       targetDeck,
@@ -707,6 +724,7 @@ export const selectListCards = createSelector(
   selectActiveList,
   selectBaseListCards,
   selectLocaleSortingCollator,
+  selectBuildQlInterpreter,
   (_: StoreState, resolvedDeck: ResolvedDeck | undefined) => resolvedDeck,
   (
     _: StoreState,
@@ -720,6 +738,7 @@ export const selectListCards = createSelector(
     activeList,
     baseFilterResult,
     sortingCollator,
+    buildQlInterpreter,
     deck,
     targetDeck,
     showUnusableCards,
@@ -769,6 +788,7 @@ export const selectListCards = createSelector(
       activeList,
       deck,
       targetDeck,
+      buildQlInterpreter,
     );
 
     if (userFilter) {

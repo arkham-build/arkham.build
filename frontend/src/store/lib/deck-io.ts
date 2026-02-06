@@ -18,6 +18,7 @@ import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
+  selectStaticBuildQlInterpreter,
 } from "../selectors/shared";
 import { getInitialSettings } from "../slices/settings";
 import {
@@ -51,6 +52,7 @@ export function formatDeckImport(
     ),
     selectMetadata(state),
     selectLookupTables(state),
+    selectStaticBuildQlInterpreter(state),
   );
 
   const problem = mapValidationToProblem(validation);

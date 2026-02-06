@@ -14,6 +14,7 @@ import type {
   DeckOption,
 } from "../schemas/card.schema";
 import type { Metadata } from "../slices/metadata.types";
+import type { Interpreter } from "./buildql/interpreter";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {
   filterCardPool,
@@ -198,6 +199,7 @@ export function validateDeck(
   deck: ResolvedDeck,
   metadata: Metadata,
   lookupTables: LookupTables,
+  buildQlInterpreter: Interpreter,
 ): DeckValidationResult {
   time("validate_deck");
 
@@ -217,12 +219,20 @@ export function validateDeck(
 
   const errors: DeckValidationError[] = [
     ...validateDeckSize(deck),
-    ...validateSlots(deck, metadata, lookupTables),
+    ...validateSlots(deck, metadata, lookupTables, buildQlInterpreter),
   ];
 
   if (deck.hasExtraDeck) {
     errors.push(...validateExtraDeckSize(deck));
-    errors.push(...validateSlots(deck, metadata, lookupTables, "extraSlots"));
+    errors.push(
+      ...validateSlots(
+        deck,
+        metadata,
+        lookupTables,
+        buildQlInterpreter,
+        "extraSlots",
+      ),
+    );
   }
 
   if (deck.cardPool?.length) {
@@ -408,12 +418,13 @@ function validateSlots(
   deck: ResolvedDeck,
   metadata: Metadata,
   lookupTables: LookupTables,
+  buildQlInterpreter: Interpreter,
   mode: "slots" | "extraSlots" = "slots",
 ): DeckValidationError[] {
   const validators: SlotValidator[] = [
     new DeckLimitsValidator(deck),
     new DeckRequiredCardsValidator(deck, lookupTables, mode),
-    new DeckOptionsValidator(deck, lookupTables, mode),
+    new DeckOptionsValidator(deck, lookupTables, buildQlInterpreter, mode),
   ];
 
   if (mode === "extraSlots") {
@@ -732,6 +743,7 @@ class DeckRequiredCardsValidator implements SlotValidator {
 }
 
 class DeckOptionsValidator implements SlotValidator {
+  buildQlInterpreter: Interpreter;
   cards: Card[] = [];
   signatures: Card[] = [];
   config: InvestigatorAccessConfig;
@@ -746,6 +758,7 @@ class DeckOptionsValidator implements SlotValidator {
   constructor(
     deck: ResolvedDeck,
     lookupTables: LookupTables,
+    buildQlInterpreter: Interpreter,
     mode: "slots" | "extraSlots" = "slots",
   ) {
     const investigatorBack = deck.investigatorBack.card;
@@ -755,9 +768,13 @@ class DeckOptionsValidator implements SlotValidator {
 
     this.config = config;
     this.deckOptions = deckOptions;
+    this.buildQlInterpreter = buildQlInterpreter;
 
-    this.playerCardFilter = filterInvestigatorAccess(investigatorBack, config);
-
+    this.playerCardFilter = filterInvestigatorAccess(
+      investigatorBack,
+      buildQlInterpreter,
+      config,
+    );
     this.weaknessFilter = filterInvestigatorWeaknessAccess(investigatorBack);
   }
 
@@ -959,7 +976,11 @@ class DeckOptionsValidator implements SlotValidator {
     for (const option of options) {
       if (!option.virtual || option.atleast) continue;
 
-      const filter = makeOptionFilter(option as DeckOption, this.config);
+      const filter = makeOptionFilter(
+        option as DeckOption,
+        this.buildQlInterpreter,
+        this.config,
+      );
       if (!filter) continue;
 
       let matchCount = 0;
@@ -1009,7 +1030,11 @@ class DeckOptionsValidator implements SlotValidator {
       const option = options[i];
       if (option.virtual) continue;
 
-      const filter = makeOptionFilter(option as DeckOption, this.config);
+      const filter = makeOptionFilter(
+        option as DeckOption,
+        this.buildQlInterpreter,
+        this.config,
+      );
 
       let matchCount = 0;
 

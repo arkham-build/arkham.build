@@ -3,7 +3,10 @@ import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import { getMockStore } from "@/test/get-mock-store";
 import type { Card } from "../schemas/card.schema";
-import { selectLookupTables } from "../selectors/shared";
+import {
+  selectLookupTables,
+  selectStaticBuildQlInterpreter,
+} from "../selectors/shared";
 import type { StoreState } from "../slices";
 import type {
   AssetFilter,
@@ -35,8 +38,11 @@ describe("filter: investigator access", () => {
     target: string,
     config?: InvestigatorAccessConfig,
   ) {
+    const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
+
     return filterInvestigatorAccess(
       state.metadata.cards[code],
+      buildQlInterpreter,
       config,
     )?.(state.metadata.cards[target]);
   }
@@ -526,16 +532,20 @@ describe("filter: investigator access", () => {
   describe("trait changes from parallel fronts", () => {
     it("uses parallel front traits for checking trait-based access", () => {
       const state = store.getState();
+      const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
 
       const wendyAdams = state.metadata.cards["01005"];
       const parallelWendyAdams = state.metadata.cards["90037"];
       const forbiddenSutra = state.metadata.cards["11103"];
 
-      expect(filterInvestigatorAccess(wendyAdams)?.(forbiddenSutra)).toEqual(
-        false,
-      );
+      expect(
+        filterInvestigatorAccess(
+          wendyAdams,
+          buildQlInterpreter,
+        )?.(forbiddenSutra),
+      ).toEqual(false);
 
-      const filter = filterInvestigatorAccess(wendyAdams, {
+      const filter = filterInvestigatorAccess(wendyAdams, buildQlInterpreter, {
         investigatorFront: parallelWendyAdams,
       });
 
@@ -558,7 +568,12 @@ describe("filter: level", () => {
     config: LevelFilter,
     investigator?: Card,
   ) {
-    return filterLevel(config, investigator)(state.metadata.cards[code]);
+    const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
+    return filterLevel(
+      config,
+      buildQlInterpreter,
+      investigator,
+    )(state.metadata.cards[code]);
   }
 
   it("handles case: no range", () => {
@@ -644,9 +659,13 @@ describe("filter: level", () => {
 
   it("handles case: customizable exceeds level", () => {
     const state = store.getState();
+    const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
 
     expect(
-      filterLevel({ range: [0, 5] } as any)({
+      filterLevel(
+        { range: [0, 5] } as any,
+        buildQlInterpreter,
+      )({
         ...state.metadata.cards["09022"],
         xp: 0,
         customization_xp: 12,
@@ -1076,7 +1095,8 @@ describe("filter: custom content options", () => {
     };
 
     const state = store.getState();
-    const filter = makeOptionFilter(option);
+    const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
+    const filter = makeOptionFilter(option, buildQlInterpreter);
     expect(filter?.(state.metadata.cards["05187"])).toBeTruthy();
     expect(filter?.(state.metadata.cards["60127"])).toBeFalsy();
   });
@@ -1091,7 +1111,9 @@ describe("filter: custom content options", () => {
     };
 
     const state = store.getState();
-    const filter = makeOptionFilter(option);
+    const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
+
+    const filter = makeOptionFilter(option, buildQlInterpreter);
     expect(filter?.(state.metadata.cards["05187"])).toBeTruthy();
     expect(filter?.(state.metadata.cards["60127"])).toBeFalsy();
   });

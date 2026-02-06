@@ -12,6 +12,7 @@ import {
   selectLocaleSortingCollator,
   selectMetadata,
   selectShowFanMadeRelations,
+  selectStaticBuildQlInterpreter,
 } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { isSpecialist, official } from "@/utils/card-utils";
@@ -28,14 +29,26 @@ const selectSpecialistAccess = createSelector(
   (state: StoreState) => state.settings,
   selectLocaleSortingCollator,
   selectShowFanMadeRelations,
+  selectStaticBuildQlInterpreter,
   (_: StoreState, card: Card) => card,
-  (metadata, settings, collator, showFanMadeRelations, investigatorBack) => {
-    const investigatorFilter = filterInvestigatorAccess(investigatorBack, {
-      customizable: {
-        properties: "all",
-        level: "all",
+  (
+    metadata,
+    settings,
+    collator,
+    showFanMadeRelations,
+    buildQlInterpreter,
+    investigatorBack,
+  ) => {
+    const investigatorFilter = filterInvestigatorAccess(
+      investigatorBack,
+      buildQlInterpreter,
+      {
+        customizable: {
+          properties: "all",
+          level: "all",
+        },
       },
-    });
+    );
 
     return Object.values(metadata.cards)
       .filter((card) => {

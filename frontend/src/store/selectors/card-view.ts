@@ -16,6 +16,7 @@ import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
+  selectStaticBuildQlInterpreter,
 } from "./shared";
 
 export const selectCardWithRelations = createSelector(
@@ -54,8 +55,9 @@ export const selectUsableByInvestigators = createSelector(
   selectLookupTables,
   selectMetadata,
   selectLocaleSortingCollator,
+  selectStaticBuildQlInterpreter,
   (_: StoreState, card: Card) => card,
-  (lookupTables, metadata, collator, card) => {
+  (lookupTables, metadata, collator, buildQlInterpreter, card) => {
     const investigatorCodes = Object.keys(
       lookupTables.typeCode["investigator"],
     );
@@ -69,7 +71,10 @@ export const selectUsableByInvestigators = createSelector(
 
         if (!isValidInvestigator) return false;
 
-        const access = filterInvestigatorAccess(investigator);
+        const access = filterInvestigatorAccess(
+          investigator,
+          buildQlInterpreter,
+        );
         if (!access) return false;
 
         const weaknessAccess = filterInvestigatorWeaknessAccess(investigator);

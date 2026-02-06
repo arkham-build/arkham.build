@@ -4,6 +4,7 @@ import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
+  selectStaticBuildQlInterpreter,
 } from "../selectors/shared";
 import { ApiError } from "../services/requests/shared";
 import type { StoreState } from "../slices";
@@ -62,6 +63,7 @@ class ArkhamDBAdapter implements SyncAdapter<ArkhamDBDeckPayload> {
       ),
       metadata,
       lookupTables,
+      selectStaticBuildQlInterpreter(state),
     );
 
     const problem = mapValidationToProblem(validation);
