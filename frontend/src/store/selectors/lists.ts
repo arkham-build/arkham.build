@@ -1613,7 +1613,10 @@ export const selectAvailableUpgrades = createSelector(
         const isNotDuplicated =
           !availableUpgrades.upgrades[card.code] ||
           availableUpgrades.upgrades[card.code].every(
-            (c) => c.xp !== upgrade.xp || c.subname !== upgrade.subname,
+            (c) =>
+              c.xp !== upgrade.xp ||
+              displayAttribute(c, "subname") !==
+                displayAttribute(upgrade, "subname"),
           );
         if (!isNotDuplicated) continue;
 
