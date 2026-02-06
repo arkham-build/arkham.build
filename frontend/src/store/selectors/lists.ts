@@ -1629,6 +1629,17 @@ export const selectAvailableUpgrades = createSelector(
   },
 );
 
+export function selectResolvedUpgrades(
+  state: StoreState,
+  availableUpgrades: AvailableUpgrades,
+  deck: ResolvedDeck,
+  card: Card,
+) {
+  return availableUpgrades.upgrades[card.code]
+    .sort((a, b) => (a?.xp ?? 0) - (b?.xp ?? 0))
+    .map((upgrade) => selectResolvedCardById(state, upgrade.code, deck));
+}
+
 /**
  * Filter changes
  */

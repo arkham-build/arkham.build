@@ -22,6 +22,7 @@ import type { Card as CardT } from "@/store/schemas/card.schema";
 import {
   type AvailableUpgrades,
   selectResolvedCardById,
+  selectResolvedUpgrades,
 } from "@/store/selectors/lists";
 import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
@@ -51,9 +52,7 @@ export function QuickUpgrade(props: Props) {
 
   const resolvedUpgrades = useStore(
     useShallow((state) =>
-      availableUpgrades.upgrades[card.code]
-        .sort((a, b) => (a?.xp ?? 0) - (b?.xp ?? 0))
-        .map((upgrade) => selectResolvedCardById(state, upgrade.code, deck)),
+      selectResolvedUpgrades(state, availableUpgrades, deck, card),
     ),
   );
 
