@@ -17,7 +17,7 @@ import {
 import { QuantityInput } from "@/components/ui/quantity-input";
 import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
 import { useStore } from "@/store";
-import type { ResolvedDeck } from "@/store/lib/types";
+import type { CardWithRelations, ResolvedDeck } from "@/store/lib/types";
 import type { Card as CardT } from "@/store/schemas/card.schema";
 import {
   type AvailableUpgrades,
@@ -119,6 +119,7 @@ export function QuickUpgrade(props: Props) {
           {...props}
           open={dialogOpen}
           onOpenChange={setDialogOpen}
+          resolvedUpgrades={resolvedUpgrades}
           slots={slots}
         />
       )}
@@ -130,24 +131,25 @@ function QuickUpgradeDialog(
   props: Props & {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    resolvedUpgrades: (CardWithRelations | undefined)[];
     slots: "slots" | "extraSlots";
   },
 ) {
-  const { availableUpgrades, card, deck, onOpenChange, open, slots } = props;
+  const {
+    availableUpgrades,
+    card,
+    deck,
+    onOpenChange,
+    open,
+    resolvedUpgrades,
+    slots,
+  } = props;
   const { t } = useTranslation();
 
   const accentColor = useAccentColor(card);
 
   const resolvedCard = useStore((state) =>
     selectResolvedCardById(state, card.code, deck),
-  );
-
-  const resolvedUpgrades = useStore(
-    useShallow((state) =>
-      availableUpgrades.upgrades[card.code]
-        .sort((a, b) => (a?.xp ?? 0) - (b?.xp ?? 0))
-        .map((upgrade) => selectResolvedCardById(state, upgrade.code, deck)),
-    ),
   );
 
   const upgradeCard = useStore((state) => state.upgradeCard);
