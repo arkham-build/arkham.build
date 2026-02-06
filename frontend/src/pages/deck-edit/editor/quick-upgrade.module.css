@@ -20,6 +20,25 @@
   margin-top: 1rem;
 }
 
+.upgrade-tooltip {
+  width: max(24rem, 33.333dvw);
+  max-width: 32rem;
+  z-index: 80;
+
+  @media screen and (max-width: 36rem) {
+    display: none;
+  }
+}
+
+.upgrade-tooltip > * {
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--rounded);
+}
+
+.upgrade-tooltip > * + * {
+  margin-top: 0.375rem;
+}
+
 .quantity {
   background: var(--palette-0);
   color: var(--text);
