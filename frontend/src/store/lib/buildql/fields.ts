@@ -212,7 +212,7 @@ const fieldDefinitions: FieldDefinition[] = [
         if (!otherCard || (otherCard.xp ?? 0) <= (card.xp ?? 0)) return false;
         if (!deck) return true;
         if (!accessFilter) return false;
-        return accessFilter(otherCard) || weaknessFilter!(otherCard);
+        return accessFilter(otherCard) || weaknessFilter?.(otherCard);
       });
     }),
     name: "has_upgrade",
@@ -324,7 +324,7 @@ const fieldDefinitions: FieldDefinition[] = [
         if (!otherCard || (otherCard.xp ?? 0) >= (card.xp ?? 0)) return false;
         if (!deck) return true;
         if (!accessFilter) return false;
-        return accessFilter(otherCard) || weaknessFilter!(otherCard);
+        return accessFilter(otherCard) || weaknessFilter?.(otherCard);
       });
     }),
     name: "is_upgrade",
