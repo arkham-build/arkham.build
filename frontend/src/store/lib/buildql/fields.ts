@@ -203,16 +203,12 @@ const fieldDefinitions: FieldDefinition[] = [
           })
         : undefined;
 
-      const weaknessFilter = deck
-        ? filterInvestigatorWeaknessAccess(deck.investigatorBack.card)
-        : undefined;
-
       return Object.keys(otherLevels).some((otherCode) => {
         const otherCard = metadata.cards[otherCode];
         if (!otherCard || (otherCard.xp ?? 0) <= (card.xp ?? 0)) return false;
         if (!deck) return true;
         if (!accessFilter) return false;
-        return accessFilter(otherCard) || weaknessFilter?.(otherCard);
+        return accessFilter(otherCard);
       });
     }),
     name: "has_upgrade",
@@ -315,16 +311,12 @@ const fieldDefinitions: FieldDefinition[] = [
           })
         : undefined;
 
-      const weaknessFilter = deck
-        ? filterInvestigatorWeaknessAccess(deck.investigatorBack.card)
-        : undefined;
-
       return Object.keys(otherLevels).some((otherCode) => {
         const otherCard = metadata.cards[otherCode];
         if (!otherCard || (otherCard.xp ?? 0) >= (card.xp ?? 0)) return false;
         if (!deck) return true;
         if (!accessFilter) return false;
-        return accessFilter(otherCard) || weaknessFilter?.(otherCard);
+        return accessFilter(otherCard);
       });
     }),
     name: "is_upgrade",
