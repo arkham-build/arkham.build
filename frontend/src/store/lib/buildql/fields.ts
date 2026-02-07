@@ -191,12 +191,29 @@ const fieldDefinitions: FieldDefinition[] = [
   },
   {
     aliases: ["hu"],
-    lookup: backResolver((card, { lookupTables, metadata }) => {
+    lookup: backResolver((card, { deck, lookupTables, metadata }) => {
       const otherLevels = lookupTables.relations.level[card.code];
-      const hasUpgrade = Object.keys(otherLevels ?? {}).some(
-        (otherCode) => (metadata.cards[otherCode]?.xp ?? 0) > (card.xp ?? 0),
-      );
-      return hasUpgrade;
+      if (!otherLevels) return false;
+
+      const accessFilter = deck
+        ? filterInvestigatorAccess(deck.investigatorBack.card, {
+            customizable: { properties: "all", level: "all" },
+            investigatorFront: deck.investigatorFront.card,
+            selections: deck.selections,
+          })
+        : undefined;
+
+      const weaknessFilter = deck
+        ? filterInvestigatorWeaknessAccess(deck.investigatorBack.card)
+        : undefined;
+
+      return Object.keys(otherLevels).some((otherCode) => {
+        const otherCard = metadata.cards[otherCode];
+        if (!otherCard || (otherCard.xp ?? 0) <= (card.xp ?? 0)) return false;
+        if (!deck) return true;
+        if (!accessFilter) return false;
+        return accessFilter(otherCard) || weaknessFilter!(otherCard);
+      });
     }),
     name: "has_upgrade",
     type: "boolean",
@@ -286,12 +303,29 @@ const fieldDefinitions: FieldDefinition[] = [
   },
   {
     aliases: ["iu"],
-    lookup: backResolver((card, { lookupTables, metadata }) => {
+    lookup: backResolver((card, { deck, lookupTables, metadata }) => {
       const otherLevels = lookupTables.relations.level[card.code];
-      const upgraded = Object.keys(otherLevels ?? {}).some(
-        (otherCode) => (metadata.cards[otherCode]?.xp ?? 0) < (card.xp ?? 0),
-      );
-      return upgraded;
+      if (!otherLevels) return false;
+
+      const accessFilter = deck
+        ? filterInvestigatorAccess(deck.investigatorBack.card, {
+            customizable: { properties: "all", level: "all" },
+            investigatorFront: deck.investigatorFront.card,
+            selections: deck.selections,
+          })
+        : undefined;
+
+      const weaknessFilter = deck
+        ? filterInvestigatorWeaknessAccess(deck.investigatorBack.card)
+        : undefined;
+
+      return Object.keys(otherLevels).some((otherCode) => {
+        const otherCard = metadata.cards[otherCode];
+        if (!otherCard || (otherCard.xp ?? 0) >= (card.xp ?? 0)) return false;
+        if (!deck) return true;
+        if (!accessFilter) return false;
+        return accessFilter(otherCard) || weaknessFilter!(otherCard);
+      });
     }),
     name: "is_upgrade",
     type: "boolean",
