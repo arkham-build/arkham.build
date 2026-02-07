@@ -206,9 +206,7 @@ const fieldDefinitions: FieldDefinition[] = [
       return Object.keys(otherLevels).some((otherCode) => {
         const otherCard = metadata.cards[otherCode];
         if (!otherCard || (otherCard.xp ?? 0) <= (card.xp ?? 0)) return false;
-        if (!deck) return true;
-        if (!accessFilter) return false;
-        return accessFilter(otherCard);
+        return accessFilter?.(otherCard) ?? true;
       });
     }),
     name: "has_upgrade",
@@ -314,9 +312,7 @@ const fieldDefinitions: FieldDefinition[] = [
       return Object.keys(otherLevels).some((otherCode) => {
         const otherCard = metadata.cards[otherCode];
         if (!otherCard || (otherCard.xp ?? 0) >= (card.xp ?? 0)) return false;
-        if (!deck) return true;
-        if (!accessFilter) return false;
-        return accessFilter(otherCard);
+        return accessFilter?.(otherCard) ?? true;
       });
     }),
     name: "is_upgrade",
