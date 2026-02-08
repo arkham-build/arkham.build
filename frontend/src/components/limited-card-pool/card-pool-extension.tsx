@@ -1,9 +1,9 @@
+import type { Card } from "@arkham-build/shared";
 import { PlusSquareIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectCardOptions } from "@/store/selectors/lists";
 import { selectCardMapper } from "@/store/selectors/shared";
 import { canShowCardPoolExtension, displayAttribute } from "@/utils/card-utils";

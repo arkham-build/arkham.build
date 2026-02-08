@@ -1,5 +1,5 @@
+import type { Card } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
-import type { Card } from "@/store/schemas/card.schema";
 import { displayAttribute, numericalStr } from "@/utils/card-utils";
 import { formatSlots } from "@/utils/formatting";
 import { CardSlots } from "../card-slots";

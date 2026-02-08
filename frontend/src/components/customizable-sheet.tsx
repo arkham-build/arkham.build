@@ -1,8 +1,8 @@
+import type { Card } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectMetadata } from "@/store/selectors/shared";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { displayAttribute } from "@/utils/card-utils";

@@ -1,3 +1,8 @@
+import type {
+  ApiDeckRequirements,
+  Card,
+  DeckOption,
+} from "@arkham-build/shared";
 import {
   cardLevel,
   cardLimit,
@@ -8,11 +13,6 @@ import {
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { range } from "@/utils/range";
 import { time, timeEnd } from "@/utils/time";
-import type {
-  ApiDeckRequirements,
-  Card,
-  DeckOption,
-} from "../schemas/card.schema";
 import type { Metadata } from "../slices/metadata.types";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {

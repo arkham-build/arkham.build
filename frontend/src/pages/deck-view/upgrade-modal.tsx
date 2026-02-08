@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearch } from "wouter";
@@ -18,7 +19,6 @@ import { Scroller } from "@/components/ui/scroller";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectConnectionLockForDeck } from "@/store/selectors/shared";
 import { decodeExileSlots, displayAttribute } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";

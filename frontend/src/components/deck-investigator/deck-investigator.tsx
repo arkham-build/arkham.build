@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -7,7 +8,6 @@ import {
   getRelatedCards,
 } from "@/store/lib/resolve-card";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectShowFanMadeRelations } from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
 import { formatRelationTitle } from "@/utils/formatting";

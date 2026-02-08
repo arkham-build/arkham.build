@@ -10,17 +10,17 @@ import { expressionBuilder, sql } from "kysely";
 import type { Database } from "../db/db.ts";
 import { getCardById } from "../db/queries/card.ts";
 import type { DB } from "../db/schema.types.ts";
+import type { HonoEnv } from "../lib/hono-env.ts";
 import {
   canonicalInvestigatorCodeCond,
   deckFilterConds,
   inDateRangeConds,
   requiredSlotsCond,
-} from "../lib/decklists-helpers.ts";
-import type { HonoEnv } from "../lib/hono-env.ts";
+} from "./arkhamdb-decklists.helpers.ts";
 
-const routes = new Hono<HonoEnv>();
+const router = new Hono<HonoEnv>();
 
-routes.get("/:canonical_investigator_code", async (c) => {
+router.get("/:canonical_investigator_code", async (c) => {
   const req = decodeSearch<RecommendationsRequest>(
     RecommendationsRequestSchema,
     {
@@ -298,4 +298,4 @@ function formatRecommendations(
     : { decksAnalyzed, recommendations };
 }
 
-export default routes;
+export default router;

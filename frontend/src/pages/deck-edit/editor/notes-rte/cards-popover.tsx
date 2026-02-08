@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { Settings2Icon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -16,7 +17,6 @@ import { useStore } from "@/store";
 import { filterEncounterCards } from "@/store/lib/filtering";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectListCards } from "@/store/selectors/lists";
 import {
   selectLocaleSortingCollator,

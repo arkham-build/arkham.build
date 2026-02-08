@@ -1,10 +1,10 @@
+import { SKILL_KEYS } from "@arkham-build/shared";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Combobox } from "@/components/ui/combobox/combobox";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
 import { selectSkillMapper } from "@/store/selectors/shared";
-import { SKILL_KEYS } from "@/utils/constants";
 
 type Props = {
   disabled?: boolean;

@@ -1,10 +1,10 @@
+import type { Card } from "@arkham-build/shared";
 import {
   displayPackName,
   formatSlots,
   shortenPackName,
 } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
-import type { Card } from "../schemas/card.schema";
 import type { GroupingType } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
 import {

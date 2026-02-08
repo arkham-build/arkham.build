@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import {
   ArrowLeftToLineIcon,
   FlameIcon,
@@ -20,7 +21,6 @@ import { Progress } from "@/components/ui/progress";
 import { Scroller } from "@/components/ui/scroller";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectLatestUpgrade } from "@/store/selectors/decks";
 import { mapTabToSlot } from "@/store/slices/deck-edits.types";
 import { cardLimit, isStaticInvestigator } from "@/utils/card-utils";

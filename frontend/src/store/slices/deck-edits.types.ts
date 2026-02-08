@@ -1,5 +1,5 @@
+import type { Card, DeckOptionSelectType } from "@arkham-build/shared";
 import type { Annotations, DeckMeta, ResolvedDeck } from "../lib/types";
-import type { Card, DeckOptionSelectType } from "../schemas/card.schema";
 import type { Id } from "../schemas/deck.schema";
 import type { AvailableUpgrades } from "../selectors/lists";
 

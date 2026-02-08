@@ -1,4 +1,4 @@
-import type { Card } from "@/store/schemas/card.schema";
+import type { Card } from "@arkham-build/shared";
 import { cardLevel, getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import css from "./card-icon.module.css";

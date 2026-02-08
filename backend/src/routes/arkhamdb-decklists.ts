@@ -12,26 +12,26 @@ import type { ExpressionBuilder } from "kysely";
 import { sql } from "kysely";
 import type { Database } from "../db/db.ts";
 import type { Card, DB } from "../db/schema.types.ts";
+import type { HonoEnv } from "../lib/hono-env.ts";
+import { statusText } from "../lib/http-status.ts";
 import {
   canonicalInvestigatorCodeCond,
   deckFilterConds,
   excludedSlotsCond,
   inDateRangeConds,
   requiredSlotsCond,
-} from "../lib/decklists-helpers.ts";
-import type { HonoEnv } from "../lib/hono-env.ts";
-import { statusText } from "../lib/http-status.ts";
+} from "./arkhamdb-decklists.helpers.ts";
 
-const routes = new Hono<HonoEnv>();
+const router = new Hono<HonoEnv>();
 
-routes.use("*", async (c, next) => {
+router.use("*", async (c, next) => {
   await next();
   if (c.res.status < 300) {
     c.header("Cache-Control", "public, max-age=86400, immutable");
   }
 });
 
-routes.get("/search", async (c) => {
+router.get("/search", async (c) => {
   const searchReq = decodeSearch<DecklistSearchRequest>(
     DecklistSearchRequestSchema,
     c.req.queries(),
@@ -41,7 +41,7 @@ routes.get("/search", async (c) => {
   return c.json(res);
 });
 
-routes.get("/:id/meta", async (c) => {
+router.get("/:id/meta", async (c) => {
   const id = c.req.param("id");
   const meta = await getDecklistMeta(c.get("db"), Number(id));
 
@@ -233,4 +233,4 @@ async function search(db: Database, search: DecklistSearchRequest) {
   });
 }
 
-export default routes;
+export default router;

@@ -1,3 +1,4 @@
+import type { FanMadeProject } from "@arkham-build/shared";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -7,11 +8,8 @@ import { Loader } from "@/components/ui/loader";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
-import { addProjectToMetadata } from "@/store/lib/fan-made-content";
-import type { FanMadeProject } from "@/store/schemas/fan-made-project.schema";
 import { selectIsInitialized } from "@/store/selectors/shared";
 import { queryFanMadeProjectData } from "@/store/services/queries";
-import type { Metadata } from "@/store/slices/metadata.types";
 import { useDocumentTitle } from "@/utils/use-document-title";
 import { ErrorStatus } from "../errors/404";
 import css from "./fan-made-content-preview.module.css";
@@ -23,28 +21,28 @@ function FanMadeContentPreview() {
 
   const localFanMadePack = useStore((state) => state.fanMadeData.projects[id]);
   const cacheFanMadeProject = useStore((state) => state.cacheFanMadeProject);
+  const uncacheFanMadeProject = useStore(
+    (state) => state.uncacheFanMadeProject,
+  );
 
   const fanMadeProjectQuery = useQuery<FanMadeProject>({
     queryKey: ["fanMadeProject", id],
-    queryFn: async () => {
-      const project = await queryFanMadeProjectData(
-        `fan_made_content/${id}/project.json`,
-      );
-
-      const meta = {
-        cards: {},
-        packs: {},
-        cycles: {},
-        encounterSets: {},
-      } as Metadata;
-
-      addProjectToMetadata(meta, project);
-      cacheFanMadeProject(meta);
-
-      return project;
-    },
+    queryFn: () =>
+      queryFanMadeProjectData(`fan_made_content/${id}/project.json`),
     enabled: !localFanMadePack,
   });
+
+  useEffect(() => {
+    if (fanMadeProjectQuery.data) {
+      cacheFanMadeProject(fanMadeProjectQuery.data);
+    }
+
+    return () => {
+      if (fanMadeProjectQuery.data) {
+        uncacheFanMadeProject(fanMadeProjectQuery.data);
+      }
+    };
+  }, [fanMadeProjectQuery, uncacheFanMadeProject, cacheFanMadeProject]);
 
   if (localFanMadePack) {
     return <FanMadeContentPreviewInner project={localFanMadePack} />;

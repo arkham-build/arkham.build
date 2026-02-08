@@ -1,14 +1,11 @@
 import { z } from "zod";
 
 export const configSchema = z.object({
-  // Mailer
-  AWS_ACCESS_KEY_ID: z.string().optional(),
-  AWS_REGION: z.string().optional(),
-  AWS_SECRET_ACCESS_KEY: z.string().optional(),
   ARKHAMDB_BASE_URL: z.url(),
   ARKHAMDB_OAUTH_CLIENT_ID: z.string(),
   ARKHAMDB_OAUTH_CLIENT_SECRET: z.string(),
   ARKHAMDB_OAUTH_REDIRECT_URI: z.url(),
+  ADMIN_API_KEY: z.string(),
   CORS_ORIGINS: z.string(),
   FROM_EMAIL: z.email(),
   FRONTEND_URL: z.url(),

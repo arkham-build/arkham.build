@@ -1,15 +1,21 @@
 import {
+  type AttributeFilter,
+  type Card,
+  type DeckOption,
+  type SealedDeckResponse,
+  SKILL_KEYS,
+  type SkillKey,
+} from "@arkham-build/shared";
+import {
   cardLevel,
   cardUses,
   isSpecialist,
   official,
   splitMultiValue,
 } from "@/utils/card-utils";
-import type { SkillKey } from "@/utils/constants";
 import {
   NO_SLOT_STRING,
   REGEX_BONDED,
-  SKILL_KEYS,
   SPECIAL_CARD_CODES,
   TAG_REGEX_FALLBACKS,
 } from "@/utils/constants";
@@ -18,7 +24,6 @@ import type { Filter } from "@/utils/fp";
 import { and, not, notUnless, or } from "@/utils/fp";
 import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";
-import type { AttributeFilter, Card, DeckOption } from "../schemas/card.schema";
 import type {
   AssetFilter,
   CostFilter,
@@ -34,7 +39,7 @@ import type {
 import type { Metadata } from "../slices/metadata.types";
 import { type CardOwnershipOptions, ownedCardCount } from "./card-ownership";
 import type { LookupTables } from "./lookup-tables.types";
-import type { ResolvedDeck, SealedDeck, Selections } from "./types";
+import type { ResolvedDeck, Selections } from "./types";
 import { isOptionSelect } from "./types";
 
 /**
@@ -1223,7 +1228,7 @@ export function filterInvestigatorWeaknessAccess(
 }
 
 export function filterSealed(
-  sealedDeck: SealedDeck["cards"],
+  sealedDeck: SealedDeckResponse["cards"],
   lookupTables: LookupTables,
 ) {
   return (c: Card) => {

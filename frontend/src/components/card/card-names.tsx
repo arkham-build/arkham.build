@@ -1,7 +1,7 @@
+import type { Card } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { Link } from "wouter";
 import { useStore } from "@/store";
-import type { Card } from "@/store/schemas/card.schema";
 import { displayAttribute, parseCardTitle } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { preventLeftClick } from "@/utils/prevent-links";

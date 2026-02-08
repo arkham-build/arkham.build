@@ -1,3 +1,4 @@
+import type { FanMadeProject } from "@arkham-build/shared";
 import type { Deck } from "@/store/schemas/deck.schema";
 import type { DeckFanMadeContent } from "../lib/types";
 
@@ -25,7 +26,8 @@ export type UISlice = UIState & {
   setShowUnusableCards(value: boolean): void;
   setShowLimitedAccess(value: boolean): void;
   cacheFanMadeContent(decks: Deck[]): undefined;
-  cacheFanMadeProject(content: Partial<DeckFanMadeContent>): void;
+  cacheFanMadeProject(content: FanMadeProject): void;
+  uncacheFanMadeProject(content: FanMadeProject): void;
 
   pushHistory(path: string): void;
   pruneHistory(index: number): void;

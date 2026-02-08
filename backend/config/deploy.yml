@@ -13,10 +13,10 @@ image: arkham-build/api.arkham.build
 # Deploy to these servers.
 servers:
   web:
-    - 178.156.212.95
+    - 51.222.159.112
   cron:
     hosts:
-      - 178.156.212.95
+      - 51.222.159.112
     cmd: sh -c "(env && cat config/crontab) | crontab - && crond -f -l 2"
     options:
       memory: 1024m
@@ -58,12 +58,13 @@ env:
     CORS_ORIGINS: "https://arkham.build,*.arkham-build-prod.pages.dev,http://localhost:3000"
     DBMATE_MIGRATIONS_DIR: /app/backend/src/db/migrations
     DBMATE_SCHEMA_FILE: /app/backend/src/db/schema.sql
-    METADATA_LOCALES: "de,en,es,fr,ko,pl,ru,zh"
+    METADATA_LOCALES: "de,en,es,fr,it,ko,pl,ru,zh"
     METADATA_VERSION: 8
     NODE_ENV: production
     PORT: 3000
     POSTGRES_HOST: api-arkham-build-db
   secret:
+    - ADMIN_API_KEY
     - DATABASE_URL
     - INGEST_URL_ARKHAMDB_DECKLISTS
     - INGEST_URL_METADATA
@@ -102,7 +103,7 @@ ssh:
 accessories:
   db:
     image: postgres:18-alpine
-    host: 178.156.212.95
+    host: 51.222.159.112
     port: 5432
     env:
       clear:

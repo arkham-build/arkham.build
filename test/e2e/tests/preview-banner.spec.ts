@@ -4,7 +4,7 @@ import { fillSearch } from "./actions";
 import { mockApiCalls } from "./mocks";
 
 test.describe("preview banner", () => {
-  test("enable preview setting via preview banner" as any, async ({ page }) => {
+  test("enable preview setting via preview banner", async ({ page }) => {
     await mockApiCalls(page);
     await page.goto("/");
 

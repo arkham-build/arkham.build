@@ -1,5 +1,5 @@
+import type { Card } from "@arkham-build/shared";
 import { useStore } from "@/store";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectMetadata } from "@/store/selectors/shared";
 import {
   cardLevel,

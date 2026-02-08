@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import {
   countExperience,
   realCardLevel,
@@ -6,7 +7,6 @@ import {
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";
-import type { Card } from "../schemas/card.schema";
 import type { Customization, ResolvedDeck } from "./types";
 
 type DeckChanges = {

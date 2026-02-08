@@ -1,6 +1,6 @@
+import type { Card } from "@arkham-build/shared";
 import { FloatingPortal } from "@floating-ui/react";
 import { forwardRef } from "react";
-import type { Card } from "@/store/schemas/card.schema";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { CardTooltip } from "./card-tooltip";
 

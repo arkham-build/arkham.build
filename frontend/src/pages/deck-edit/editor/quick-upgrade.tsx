@@ -1,3 +1,4 @@
+import type { Card as CardT } from "@arkham-build/shared";
 import { FloatingPortal } from "@floating-ui/react";
 import { DicesIcon } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -18,7 +19,6 @@ import { QuantityInput } from "@/components/ui/quantity-input";
 import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
 import { useStore } from "@/store";
 import type { CardWithRelations, ResolvedDeck } from "@/store/lib/types";
-import type { Card as CardT } from "@/store/schemas/card.schema";
 import {
   type AvailableUpgrades,
   selectResolvedCardById,

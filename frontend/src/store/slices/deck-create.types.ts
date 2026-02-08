@@ -1,5 +1,4 @@
-import type { SealedDeck } from "../lib/types";
-import type { Card } from "../schemas/card.schema";
+import type { Card, SealedDeckResponse } from "@arkham-build/shared";
 
 export type CardSet = "requiredCards" | "advanced" | "replacement";
 
@@ -16,7 +15,7 @@ type DeckCreateState = {
     [key: string]: string;
   };
   cardPool?: string[];
-  sealed?: SealedDeck;
+  sealed?: SealedDeckResponse;
 };
 
 export type DeckCreateSlice = {
@@ -37,5 +36,5 @@ export type DeckCreateSlice = {
     side?: "front" | "back",
   ) => void;
   deckCreateSetCardPool: (value: string[]) => void;
-  deckCreateSetSealed: (payload: SealedDeck | undefined) => void;
+  deckCreateSetSealed: (payload: SealedDeckResponse | undefined) => void;
 };

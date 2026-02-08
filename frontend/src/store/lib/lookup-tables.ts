@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { applyTaboo } from "@/store/lib/card-edits";
 import { cardUses, splitMultiValue } from "@/utils/card-utils";
 import {
@@ -7,7 +8,6 @@ import {
   REGEX_SUCCEED_BY,
 } from "@/utils/constants";
 import { time, timeEnd } from "@/utils/time";
-import type { Card } from "../schemas/card.schema";
 import { selectSettingsTabooId } from "../selectors/shared";
 import type { Metadata } from "../slices/metadata.types";
 import type { SettingsState } from "../slices/settings.types";

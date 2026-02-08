@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CardsCombobox } from "@/components/cards-combobox";
@@ -8,7 +9,6 @@ import {
   filterType,
 } from "@/store/lib/filtering";
 import { makeSortFunction } from "@/store/lib/sorting";
-import type { Card } from "@/store/schemas/card.schema";
 import {
   selectCardsChanges,
   selectDeckFilterValue,

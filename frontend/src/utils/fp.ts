@@ -1,5 +1,5 @@
+import type { Card } from "@arkham-build/shared";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 
 type Filterable = Card | ResolvedDeck;
 export type Filter<T extends Filterable = Card> = (x: T) => boolean;

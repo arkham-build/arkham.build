@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { Content, Root, Trigger } from "@radix-ui/react-collapsible";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState } from "react";
@@ -6,7 +7,6 @@ import { useStore } from "@/store";
 import type { ChartableData } from "@/store/lib/deck-charts";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import {
   selectLocaleSortingCollator,
   selectMetadata,

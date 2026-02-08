@@ -1,4 +1,4 @@
-import type { Card, DeckOption } from "../schemas/card.schema";
+import type { Card, DeckOption } from "@arkham-build/shared";
 import { getAdditionalDeckOptions } from "./deck-validation";
 import { makeOptionFilter } from "./filtering";
 import type { ResolvedDeck } from "./types";

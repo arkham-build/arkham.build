@@ -1,7 +1,11 @@
 import type { StateCreator } from "zustand";
-import { buildCacheFromDecks } from "../lib/fan-made-content";
+import {
+  addProjectToMetadata,
+  buildCacheFromDecks,
+} from "../lib/fan-made-content";
 import type { DeckFanMadeContent } from "../lib/types";
 import type { StoreState } from ".";
+import type { Metadata } from "./metadata.types";
 import type { UISlice, UIState } from "./ui.types";
 
 function getInitialUIState(): UIState {
@@ -42,14 +46,68 @@ export const createUISlice: StateCreator<StoreState, [], [], UISlice> = (
       },
     }));
   },
-  cacheFanMadeProject(content) {
+  cacheFanMadeProject(project) {
+    set((state) => {
+      const meta = {
+        cards: {},
+        packs: {},
+        cycles: {},
+        encounterSets: {},
+      } as Metadata;
+
+      addProjectToMetadata(meta, project);
+
+      return {
+        ui: {
+          ...state.ui,
+          fanMadeContentCache: mergeFanMadeContent(
+            state.ui.fanMadeContentCache,
+            meta,
+          ),
+        },
+      };
+    });
+  },
+  uncacheFanMadeProject(content) {
+    const cards = content.data.cards
+      ? Object.fromEntries(content.data.cards.map((card) => [card.code, card]))
+      : undefined;
+
+    const packs = content.data.packs
+      ? Object.fromEntries(content.data.packs.map((pack) => [pack.code, pack]))
+      : undefined;
+
+    const encounterSets = content.data.encounter_sets
+      ? Object.fromEntries(
+          content.data.encounter_sets.map((set) => [set.code, set]),
+        )
+      : undefined;
+
     set((state) => ({
       ui: {
         ...state.ui,
-        fanMadeContentCache: mergeFanMadeContent(
-          state.ui.fanMadeContentCache,
-          content,
-        ),
+        fanMadeContentCache: {
+          cards: Object.fromEntries(
+            Object.entries(state.ui.fanMadeContentCache.cards || {}).filter(
+              ([code]) => !cards?.[code],
+            ),
+          ),
+          cycles: Object.fromEntries(
+            Object.entries(state.ui.fanMadeContentCache.cycles || {}).filter(
+              ([code]) => content.meta.code !== code,
+            ),
+          ),
+          packs: Object.fromEntries(
+            Object.entries(state.ui.fanMadeContentCache.packs || {}).filter(
+              ([code]) => !packs?.[code],
+            ),
+          ),
+          encounter_sets: Object.fromEntries(
+            Object.entries(
+              state.ui.fanMadeContentCache.encounter_sets || {},
+            ).filter(([code]) => !encounterSets?.[code]),
+          ),
+        },
       },
     }));
   },

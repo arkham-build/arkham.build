@@ -1,7 +1,7 @@
+import type { Card } from "@arkham-build/shared";
 import { useCallback, useMemo } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import type { Card } from "@/store/schemas/card.schema";
 import {
   selectActiveListFilter,
   selectCardOptions,

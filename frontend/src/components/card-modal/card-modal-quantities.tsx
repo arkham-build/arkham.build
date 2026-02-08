@@ -1,9 +1,9 @@
+import type { Card } from "@arkham-build/shared";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { getDeckLimitOverride } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectLookupTables } from "@/store/selectors/shared";
 import type { Slot } from "@/store/slices/deck-edits.types";
 import { cardLimit } from "@/utils/card-utils";

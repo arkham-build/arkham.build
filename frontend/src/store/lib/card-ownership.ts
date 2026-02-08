@@ -1,5 +1,5 @@
+import type { Card } from "@arkham-build/shared";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
-import type { Card } from "../schemas/card.schema";
 import type { Metadata } from "../slices/metadata.types";
 import type { LookupTables } from "./lookup-tables.types";
 

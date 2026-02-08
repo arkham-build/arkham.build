@@ -3,7 +3,7 @@ import type {
   ApiDeckRequirements,
   ApiRestrictions,
   JsonDataCard,
-} from "@/store/schemas/card.schema";
+} from "@arkham-build/shared";
 import type { JsonDataCycle } from "@/store/schemas/cycle.schema";
 import type { JsonDataPack } from "@/store/schemas/pack.schema";
 

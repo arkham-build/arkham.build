@@ -10,9 +10,12 @@ import type { EmailService } from "./lib/email/email-service.ts";
 import { errorHandler } from "./lib/errors.ts";
 import type { HonoEnv } from "./lib/hono-env.ts";
 import { logger, requestLogger } from "./lib/logger.ts";
+import adminRouter from "./routes/admin.ts";
 import arkhamDbDecklistsRouter from "./routes/arkhamdb-decklists.ts";
 import authRouter from "./routes/auth.ts";
+import fanMadeProjectInfoRouter from "./routes/fan-made-project-info.ts";
 import recommendationsRouter from "./routes/recommendations.ts";
+import sealedDeckRouter from "./routes/sealed-deck.ts";
 
 export function appFactory(
   config: Config,
@@ -37,10 +40,13 @@ export function appFactory(
   });
 
   const pub = new Hono<HonoEnv>();
+  app.route("/admin", adminRouter);
   pub.route("/arkhamdb-decklists", arkhamDbDecklistsRouter);
+  pub.route("/fan-made-project-info", fanMadeProjectInfoRouter);
   pub.route("/recommendations", recommendationsRouter);
-
+  pub.route("/sealed-deck", sealedDeckRouter);
   app.route("/v2/public", pub);
+
   app.route("/v2/auth", authRouter);
 
   app.get("/up", (c) => c.text("ok"));

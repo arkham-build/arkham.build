@@ -1,7 +1,7 @@
+import type { Card } from "@arkham-build/shared";
 import { CircleHelpIcon } from "lucide-react";
 import { useStore } from "@/store";
 import type { CardSet as CardSetType } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import {
   selectCanCheckOwnership,
   selectCardOwnedCount,

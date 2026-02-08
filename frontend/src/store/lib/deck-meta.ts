@@ -1,3 +1,4 @@
+import type { SealedDeckResponse } from "@arkham-build/shared";
 import type { Deck, Slots } from "@/store/schemas/deck.schema";
 import type { AttachmentQuantities } from "@/store/slices/deck-edits.types";
 import type { Metadata } from "@/store/slices/metadata.types";
@@ -9,7 +10,6 @@ import type {
   Customizations,
   DeckMeta,
   ResolvedCard,
-  SealedDeck,
   Selection,
   Selections,
 } from "./types";
@@ -249,7 +249,7 @@ export function decodeSealedDeck(deckMeta: DeckMeta) {
   };
 }
 
-export function encodeSealedDeck(sealed: SealedDeck) {
+export function encodeSealedDeck(sealed: SealedDeckResponse) {
   return {
     sealed_deck: Object.entries(sealed.cards)
       .map(([code, quantity]) => `${code}:${quantity}`)

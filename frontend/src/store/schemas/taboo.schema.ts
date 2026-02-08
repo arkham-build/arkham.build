@@ -1,5 +1,5 @@
+import { ApiCardSchema } from "@arkham-build/shared";
 import type z from "zod";
-import { ApiCardSchema } from "./card.schema";
 
 const TabooSchema = ApiCardSchema.pick({
   back_text: true,

@@ -1,8 +1,8 @@
+import type { Card } from "@arkham-build/shared";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import { Link } from "wouter";
 import { useStore } from "@/store";
-import type { Card } from "@/store/schemas/card.schema";
 import { cx } from "@/utils/cx";
 import { preventLeftClick } from "@/utils/prevent-links";
 import { useMeasure } from "@/utils/use-measure";

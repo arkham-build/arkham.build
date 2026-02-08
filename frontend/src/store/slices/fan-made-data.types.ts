@@ -1,4 +1,4 @@
-import type { FanMadeProject } from "../schemas/fan-made-project.schema";
+import type { FanMadeProject } from "@arkham-build/shared";
 
 export type FanMadeDataState = {
   projects: Record<string, FanMadeProject>;

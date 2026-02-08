@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { FanMadeCardSchema } from "./card.schema";
+import { AdditionalAttributes, JsonDataCardSchema } from "./card.schema.ts";
+
+export const FanMadeCardSchema =
+  JsonDataCardSchema.extend(AdditionalAttributes);
+
+export type FanMadeCard = z.infer<typeof FanMadeCardSchema>;
 
 const ContentTypeSchema = z.enum([
   "campaign",
@@ -11,7 +16,7 @@ const ContentTypeSchema = z.enum([
 
 const StatusSchema = z.enum(["draft", "alpha", "beta", "complete", "final"]);
 
-const ProjectMetaSchema = z.object({
+export const ProjectMetaSchema = z.object({
   author: z.string().register(z.globalRegistry, {
     description: "Author of the project.",
   }),

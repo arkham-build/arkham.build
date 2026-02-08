@@ -1,7 +1,7 @@
+import type { Card } from "@arkham-build/shared";
 import { ExternalLinkIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import type { Card } from "@/store/schemas/card.schema";
 import { Button } from "../ui/button";
 
 type Props = {

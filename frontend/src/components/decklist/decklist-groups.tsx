@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
@@ -11,7 +12,6 @@ import {
 import { type GroupingResult, NONE } from "@/store/lib/grouping";
 import { getDeckLimitOverride } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import type { Slots } from "@/store/schemas/deck.schema";
 import {
   selectCardsNotInLimitedPool,

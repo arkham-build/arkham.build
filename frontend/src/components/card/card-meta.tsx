@@ -1,7 +1,7 @@
+import type { Card } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectPrintingsForCard } from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
 import EncounterIcon from "../icons/encounter-icon";

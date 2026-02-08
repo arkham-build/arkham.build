@@ -1,4 +1,4 @@
-import type { Card } from "@/store/schemas/card.schema";
+import type { Card } from "@arkham-build/shared";
 import { cardLimit } from "@/utils/card-utils";
 import { TabooIndicator } from "../taboo-indicator";
 import { QuantityInput } from "../ui/quantity-input";

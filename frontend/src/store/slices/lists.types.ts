@@ -1,4 +1,4 @@
-import type { SkillKey } from "@/utils/constants";
+import type { SkillKey } from "@arkham-build/shared";
 import type { Filter } from "@/utils/fp";
 import type { ResolvedDeck } from "../lib/types";
 import type { DecklistConfig } from "./settings.types";

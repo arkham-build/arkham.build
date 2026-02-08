@@ -6,44 +6,64 @@
     "author": "HatfulBob",
     "language": "en",
     "external_link": "https://hatfulhomebrew.wordpress.com/2023/12/04/ordinary-citizens/",
-    "banner_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/banner.jpg",
+    "banner_url": "https://assets.arkham.build/fan-made/ordinary_citizens_banner.jpg",
     "types": ["investigators"],
     "status": "final",
-    "date_updated": "2025-05-22T00:46:30.448",
-    "url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/project.json"
+    "date_updated": "2025-06-18T19:44:25.825Z",
+    "generator": "Zoop 4.1, AHLCG plugin 9.6, Strange Eons 3.3.4241"
   },
   "data": {
     "cards": [
       {
-        "unique": true,
         "back_flavor": "You'd think that after all the calamities and mishaps that Arkham goes through, Sampson Welch would have considered different employment. Unfortunately, his father was a cop and his father before him, so he feels as though he must follow the 'family business'. Regardless, he regularly patrols his beat with his trusted dog Brock with not much activity beyond parking tickets and hooliganism. That is, until one night fateful night where he had investigated a cultist's apartment. The walls covered in gore and strange miasmas, the owners seemingly just piles of bone. He knew from then on that he would need more than just simple arrest warrants to figure out what's going on in his trusty town.",
         "back_name": "Sampson Welch",
         "back_text": "<b>Deck Size</b>: 30\n<b>Deckbuilding Options</b>: Guardian cards ([guardian]) level 0-5, cards with the <b>Fight</b> action level 0-3, Neutral cards level 0-5, up to 5 other Survivor ([survivor]) cards level 0.\n<b>Deckbuilding Requirements</b> (do not count toward deck size): Brock, Targeted for The Chase, 1 random basic weakness.\n<b>Additional Restrictions</b>: No [[Illicit]] or [[Spell]] cards.",
         "code": "341d40a3-fa63-4a39-8565-0a747ff6f4fb",
         "deck_requirements": "size:30, card:6cd4e092-e2ac-4f8c-81ce-e4bd8cadbb9e, card:bd599d91-2b13-4e2c-a104-914a334624f5, random:subtype:basicweakness",
         "deck_options": [
-          { "not": true, "trait": ["Illicit", "Spell"] },
-          { "faction": ["guardian"], "level": { "min": 0, "max": 5 } },
-          { "level": { "min": 0, "max": 3 }, "text_exact": ["<b>Fight.</b>"] },
-          { "faction": ["neutral"], "level": { "min": 0, "max": 5 } },
+          {
+            "not": true,
+            "trait": ["Illicit", "Spell"]
+          },
+          {
+            "faction": ["guardian"],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          },
+          {
+            "level": {
+              "min": 0,
+              "max": 3
+            },
+            "text_exact": ["<b>Fight.</b>"]
+          },
+          {
+            "faction": ["neutral"],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          },
           {
             "faction": ["survivor"],
-            "level": { "min": 0, "max": 0 },
+            "level": {
+              "min": 0,
+              "max": 0
+            },
             "limit": 5
           }
         ],
         "deck_limit": 1,
         "double_sided": true,
-        "exceptional": false,
         "faction_code": "guardian",
         "flavor": "\"Stay back!\"",
         "health": 7,
         "illustrator": "Mark Molnar",
         "is_unique": true,
-        "myriad": false,
         "name": "Sampson Welch",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 1,
         "quantity": 1,
         "sanity": 4,
@@ -55,24 +75,22 @@
         "text": "You begin the game with Brock in play.\n[reaction] When an enemy leaves your location: Take a fight action against that enemy. Ignore the aloof keyword for this attack. (Limit once per round.)\n[elder_sign] effect: +2. You may choose a non-[[Elite]] enemy at a connected location and move it to your location. If you do, ready Brock. \n",
         "traits": "Police.",
         "type_code": "investigator",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/341d40a3-fa63-4a39-8565-0a747ff6f4fb.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/341d40a3-fa63-4a39-8565-0a747ff6f4fb_thumb.jpg",
-        "back_image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/341d40a3-fa63-4a39-8565-0a747ff6f4fb_back.jpg",
-        "back_thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/341d40a3-fa63-4a39-8565-0a747ff6f4fb_back_thumb.jpg"
+        "image_url": "https://eons.arkham.build/341d40a3-fa63-4a39-8565-0a747ff6f4fb-Front-Sampson%20Welch-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027526801",
+        "thumbnail_url": "https://eons.arkham.build/341d40a3-fa63-4a39-8565-0a747ff6f4fb-Front-thumbnail.png?cachebust=1749027527177",
+        "back_image_url": "https://eons.arkham.build/341d40a3-fa63-4a39-8565-0a747ff6f4fb-Back-Sampson%20Welch-resolution-300-compressionquality-0.90-bleed-0.0-Back.jpg?cachebust=1749027528114",
+        "back_thumbnail_url": "https://eons.arkham.build/341d40a3-fa63-4a39-8565-0a747ff6f4fb-Back-thumbnail.png?cachebust=1749027528465"
       },
       {
-        "unique": true,
         "code": "bd599d91-2b13-4e2c-a104-914a334624f5",
         "cost": 2,
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
+        "health": 3,
+        "sanity": 2,
         "illustrator": "Mark Molnar",
         "is_unique": true,
-        "myriad": false,
         "name": "Brock",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 2,
         "quantity": 1,
         "restrictions": "investigator:341d40a3-fa63-4a39-8565-0a747ff6f4fb",
@@ -82,19 +100,16 @@
         "text": "Sampson Welch deck only.\n[free] During your turn, exhaust Brock and choose a non-[[Elite]] enemy at your location: Move that enemy to a connecting location.\n[reaction] During a fight action, exhaust Brock: Add your [agility] to this attack.",
         "traits": "Ally. Creature.",
         "type_code": "asset",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/bd599d91-2b13-4e2c-a104-914a334624f5.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/bd599d91-2b13-4e2c-a104-914a334624f5_thumb.jpg"
+        "image_url": "https://eons.arkham.build/bd599d91-2b13-4e2c-a104-914a334624f5-Front-Brock-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027575073",
+        "thumbnail_url": "https://eons.arkham.build/bd599d91-2b13-4e2c-a104-914a334624f5-Front-thumbnail.png?cachebust=1749027575411"
       },
       {
         "code": "6cd4e092-e2ac-4f8c-81ce-e4bd8cadbb9e",
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "illustrator": "Jake Murray",
-        "myriad": false,
         "name": "Targeted for The Chase",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 3,
         "quantity": 1,
         "restrictions": "investigator:341d40a3-fa63-4a39-8565-0a747ff6f4fb",
@@ -102,38 +117,55 @@
         "text": "<b>Revelation</b> - Each hunter enemy at a connecting location moves one location closer to you and engages you. Each enemy engaged with you readies, then attacks you. If no enemies were readied or moved by this effect, discard cards from the top of the encounter deck until an enemy is discarded. Spawn that enemy engaged with you.",
         "traits": "Omen.",
         "type_code": "treachery",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/6cd4e092-e2ac-4f8c-81ce-e4bd8cadbb9e.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/6cd4e092-e2ac-4f8c-81ce-e4bd8cadbb9e_thumb.jpg"
+        "image_url": "https://eons.arkham.build/6cd4e092-e2ac-4f8c-81ce-e4bd8cadbb9e-Front-Targeted%20for%20The%20Chase-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027560735",
+        "thumbnail_url": "https://eons.arkham.build/6cd4e092-e2ac-4f8c-81ce-e4bd8cadbb9e-Front-thumbnail.png?cachebust=1749027561102"
       },
       {
-        "unique": true,
         "back_flavor": "You had a case you needed solved, Rodney Dorman had your back. He got the evidence, the interviews, and he worked fast and quick so you see justice done. That was before his last trip to France where he had been invited to see a showing of \"The King in Yellow\". It was an absolutely fascinating play that stuck with him a bit too much once he returned to Arkham. He could not get it off his mind, an endless fixation that was only silenced through booze. Now, he has been trying to get off the bottle and go through his massive backlog of unsolved cases. He worked as hard as he can, but no matter what he did, he cannot get that play out of his mind (or what was left of it anyways).",
         "back_name": "Rodney Dorman",
         "back_text": "<b>Deck Size</b>: 30\n<b>Deckbuilding Options</b>: Seeker cards ([seeker]) level 0-5, [[Insight]] cards level 0-4, up to 10 other Rogue and/or Guardian ([rogue]/[guardian]) cards level 0-1, Neutral cards level 0-5.\n<b>Deckbuilding Requirements</b> (do not count toward deck size): Case #17, Case #75, Case #257, Case #1910, Unhappy Client, 1 random basic weakness.",
         "code": "1a947a01-c46b-4985-806d-74edc2bbaa99",
         "deck_requirements": "size:30, card:0674aeda-e667-41cf-9fef-edca89f53f42, card:9235a64e-1b3e-4d2b-8ff7-ae120d59f867, card:b5be088e-53b0-43db-b28c-d0ee5515026e, card:c22d4ce2-4acc-4904-a80f-ec04c48e4b25, card:fd993c4f-6f6f-474c-9a7a-e384ea9b754a, random:subtype:basicweakness",
         "deck_options": [
-          { "faction": ["seeker"], "level": { "min": 0, "max": 5 } },
-          { "level": { "min": 0, "max": 4 }, "trait": ["Insight"] },
+          {
+            "faction": ["seeker"],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          },
+          {
+            "level": {
+              "min": 0,
+              "max": 4
+            },
+            "trait": ["Insight"]
+          },
           {
             "faction": ["rogue", "guardian"],
-            "level": { "min": 0, "max": 1 },
+            "level": {
+              "min": 0,
+              "max": 1
+            },
             "limit": 10
           },
-          { "faction": ["neutral"], "level": { "min": 0, "max": 5 } }
+          {
+            "faction": ["neutral"],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          }
         ],
         "deck_limit": 1,
         "double_sided": true,
-        "exceptional": false,
         "faction_code": "seeker",
         "flavor": "\"Everyone deserves a fair trial.\"",
         "health": 7,
         "illustrator": "Scott Gustafson",
         "is_unique": true,
-        "myriad": false,
         "name": "Rodney Dorman",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 4,
         "quantity": 1,
         "sanity": 7,
@@ -145,24 +177,19 @@
         "text": "<b>Forced</b> - When the game begins: Reveal cards from the top of your deck until you reveal a [[Case]] asset. Put that asset into play. Shuffle each other revealed card back into your deck.\nThe first investigate action you perform on each turn does not provoke attacks of opportunity.\n[elder_sign] effect: +1. You may shuffle a [[Case]] asset from your discard pile into your deck.",
         "traits": "Civic. Veteran.",
         "type_code": "investigator",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/1a947a01-c46b-4985-806d-74edc2bbaa99.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/1a947a01-c46b-4985-806d-74edc2bbaa99_thumb.jpg",
-        "back_image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/1a947a01-c46b-4985-806d-74edc2bbaa99_back.jpg",
-        "back_thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/1a947a01-c46b-4985-806d-74edc2bbaa99_back_thumb.jpg"
+        "image_url": "https://eons.arkham.build/1a947a01-c46b-4985-806d-74edc2bbaa99-Front-Rodney%20Dorman-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027558506",
+        "thumbnail_url": "https://eons.arkham.build/1a947a01-c46b-4985-806d-74edc2bbaa99-Front-thumbnail.png?cachebust=1749027558867",
+        "back_image_url": "https://eons.arkham.build/1a947a01-c46b-4985-806d-74edc2bbaa99-Back-Rodney%20Dorman-resolution-300-compressionquality-0.90-bleed-0.0-Back.jpg?cachebust=1749027559649",
+        "back_thumbnail_url": "https://eons.arkham.build/1a947a01-c46b-4985-806d-74edc2bbaa99-Back-thumbnail.png?cachebust=1749027560014"
       },
       {
-        "unique": false,
         "code": "0674aeda-e667-41cf-9fef-edca89f53f42",
         "cost": 2,
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "illustrator": "Norman Saunders",
-        "is_unique": false,
-        "myriad": false,
         "name": "Case #17",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 5,
         "quantity": 1,
         "restrictions": "investigator:1a947a01-c46b-4985-806d-74edc2bbaa99",
@@ -171,23 +198,18 @@
         "text": "Fast. Rodney Dorman deck only.\nUses (2 evidence). If there is no evidence on Case #17, discard it.\n[reaction] When you discover a clue while engaged with an enemy, spend 1 evidence: You may either exhaust that enemy or deal 1 damage to that enemy.",
         "traits": "Case.",
         "type_code": "asset",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/0674aeda-e667-41cf-9fef-edca89f53f42.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/0674aeda-e667-41cf-9fef-edca89f53f42_thumb.jpg"
+        "image_url": "https://eons.arkham.build/0674aeda-e667-41cf-9fef-edca89f53f42-Front-Case%20%2317-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027557234",
+        "thumbnail_url": "https://eons.arkham.build/0674aeda-e667-41cf-9fef-edca89f53f42-Front-thumbnail.png?cachebust=1749027557738"
       },
       {
-        "unique": false,
         "code": "b5be088e-53b0-43db-b28c-d0ee5515026e",
         "cost": 1,
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "flavor": "\"Your honor, my client was simply returning the artifacts.\"",
         "illustrator": "Rafał Szłapa",
-        "is_unique": false,
-        "myriad": false,
         "name": "Case #75",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 6,
         "quantity": 1,
         "restrictions": "investigator:1a947a01-c46b-4985-806d-74edc2bbaa99",
@@ -196,22 +218,17 @@
         "text": "Fast. Rodney Dorman deck only.\nUses (3 evidence). If there is no evidence on Case #75, discard it.\n[reaction] When an enemy engages you, spend 1 evidence: Gain 1 resource.",
         "traits": "Case.",
         "type_code": "asset",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/b5be088e-53b0-43db-b28c-d0ee5515026e.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/b5be088e-53b0-43db-b28c-d0ee5515026e_thumb.jpg"
+        "image_url": "https://eons.arkham.build/b5be088e-53b0-43db-b28c-d0ee5515026e-Front-Case%20%2375-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027572743",
+        "thumbnail_url": "https://eons.arkham.build/b5be088e-53b0-43db-b28c-d0ee5515026e-Front-thumbnail.png?cachebust=1749027573198"
       },
       {
-        "unique": false,
         "code": "9235a64e-1b3e-4d2b-8ff7-ae120d59f867",
         "cost": 1,
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "illustrator": "Tiziano Baracchi",
-        "is_unique": false,
-        "myriad": false,
         "name": "Case #257",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 7,
         "quantity": 1,
         "restrictions": "investigator:1a947a01-c46b-4985-806d-74edc2bbaa99",
@@ -220,22 +237,17 @@
         "text": "Fast. Rodney Dorman deck only.\nUses (3 evidence). If there is no evidence on Case #257, discard it.\n[reaction] When an enemy engages you, spend 1 evidence: Draw 1 card.",
         "traits": "Case.",
         "type_code": "asset",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/9235a64e-1b3e-4d2b-8ff7-ae120d59f867.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/9235a64e-1b3e-4d2b-8ff7-ae120d59f867_thumb.jpg"
+        "image_url": "https://eons.arkham.build/9235a64e-1b3e-4d2b-8ff7-ae120d59f867-Front-Case%20%23257-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027564901",
+        "thumbnail_url": "https://eons.arkham.build/9235a64e-1b3e-4d2b-8ff7-ae120d59f867-Front-thumbnail.png?cachebust=1749027565237"
       },
       {
-        "unique": false,
         "code": "c22d4ce2-4acc-4904-a80f-ec04c48e4b25",
         "cost": 3,
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "illustrator": "Rafał Szłapa",
-        "is_unique": false,
-        "myriad": false,
         "name": "Case #1910",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 8,
         "quantity": 1,
         "restrictions": "investigator:1a947a01-c46b-4985-806d-74edc2bbaa99",
@@ -244,8 +256,8 @@
         "text": "Fast. Rodney Dorman deck only.\n[reaction] When a non-[[Elite]] enemy engages you, you may disengage from that enemy. Then, either exhaust that enemy or move immediately to a connecting location. Discard Case #1910.",
         "traits": "Case.",
         "type_code": "asset",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/c22d4ce2-4acc-4904-a80f-ec04c48e4b25.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/c22d4ce2-4acc-4904-a80f-ec04c48e4b25_thumb.jpg"
+        "image_url": "https://eons.arkham.build/c22d4ce2-4acc-4904-a80f-ec04c48e4b25-Front-Case%20%231910-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027563883",
+        "thumbnail_url": "https://eons.arkham.build/c22d4ce2-4acc-4904-a80f-ec04c48e4b25-Front-thumbnail.png?cachebust=1749027564239"
       },
       {
         "code": "fd993c4f-6f6f-474c-9a7a-e384ea9b754a",
@@ -254,16 +266,13 @@
         "enemy_evade": 3,
         "enemy_fight": 3,
         "enemy_horror": 0,
-        "exceptional": false,
         "faction_code": "neutral",
         "flavor": "Some people would do anything to get their case heard.",
         "health": 2,
         "health_per_investigator": false,
         "illustrator": "Elder Sign: Gates of Arkham",
-        "myriad": false,
         "name": "Unhappy Client",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 9,
         "quantity": 1,
         "restrictions": "investigator:1a947a01-c46b-4985-806d-74edc2bbaa99",
@@ -271,38 +280,55 @@
         "text": "<b>Prey</b> - Rodney Dorman only.\nHunter.\nTreat each of your [[Case]] assets as if its text box were blank (except for [[Traits]]).\n[action]: <b>Parley.</b> Place 1 of your clues on your location. Deal 1 damage to Unhappy Client.",
         "traits": "Humanoid. Criminal.",
         "type_code": "enemy",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/fd993c4f-6f6f-474c-9a7a-e384ea9b754a.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/fd993c4f-6f6f-474c-9a7a-e384ea9b754a_thumb.jpg"
+        "image_url": "https://eons.arkham.build/fd993c4f-6f6f-474c-9a7a-e384ea9b754a-Front-Unhappy%20Client-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027529093",
+        "thumbnail_url": "https://eons.arkham.build/fd993c4f-6f6f-474c-9a7a-e384ea9b754a-Front-thumbnail.png?cachebust=1749027529433"
       },
       {
-        "unique": true,
         "back_flavor": "The war effort was rough for all, and for Lucia Deveraux it was no exception. She had simply signed up as a nurse, claiming expertise in medicine at the time. However, more and more soldiers kept coming back with even more bizarre wounds, many of which seemed to be more than what resulted from just bullets and explosions. Regardless, she did her job without paying much mind to it. Flash forward to years later, Lucia has found it difficult to find employment. Sure, she can help give out some medicines or whatnot, but her constant nightmares of what she saw haunt her tremendously. Worse yet, she believes that whatever caused those horrific tragedies is coming for her next, around every corner and in every shadow. \"Just gotta help a few more fellas, and that'll be enough dough to skip town for good\", she keeps telling herself.",
         "back_name": "Lucia Deveraux",
         "back_text": "<b>Deck Size</b>: 30.\n<b>Deckbuilding Options</b>: Rogue cards ([rogue]) level 0-5, [[Science]] cards level 0-4, up to 10 other Guardian and/or Survivor ([guardian]/[survivor]) cards level 0-1, Neutral cards level 0-5.\n<b>Deckbuilding Requirements</b> (do not count toward deck size): Lucia's Medicines, Nurses' Bag, Ones We Lost, 1 random basic weakness.",
         "code": "a33f6beb-915c-428c-8891-df292ddec98a",
         "deck_requirements": "size:30, card:38fa4050-d63d-4870-91cd-a076d642f192, card:79f0989e-865c-4090-a3ed-8d5b179b8478, card:af992dfb-7ec1-42e7-9036-d5df56d3b2b5, random:subtype:basicweakness",
         "deck_options": [
-          { "faction": ["rogue"], "level": { "min": 0, "max": 5 } },
-          { "level": { "min": 0, "max": 4 }, "trait": ["Science"] },
+          {
+            "faction": ["rogue"],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          },
+          {
+            "level": {
+              "min": 0,
+              "max": 4
+            },
+            "trait": ["Science"]
+          },
           {
             "faction": ["guardian", "survivor"],
-            "level": { "min": 0, "max": 1 },
+            "level": {
+              "min": 0,
+              "max": 1
+            },
             "limit": 10
           },
-          { "faction": ["neutral"], "level": { "min": 0, "max": 5 } }
+          {
+            "faction": ["neutral"],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          }
         ],
         "deck_limit": 1,
         "double_sided": true,
-        "exceptional": false,
         "faction_code": "rogue",
         "flavor": "\"Yeah yeah, quit yer yappin', I'll be right there...\"",
         "health": 8,
         "illustrator": "Oleg Kuzmin",
         "is_unique": true,
-        "myriad": false,
         "name": "Lucia Deveraux",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 10,
         "quantity": 1,
         "sanity": 6,
@@ -311,27 +337,22 @@
         "skill_intellect": 4,
         "skill_willpower": 3,
         "subname": "The Nurse",
-        "text": "You may take an additional action during your turn, which can only be used to play cards or activate [action] abilities that heal investigators. \n[reaction] After one of your card effects heals an investigator: Gain 1 resource. (Limit once per round.)\n[elder_sign] effect: +2. If this test is successful, heal 1 damage or 1 horror from an investigator at your location.",
+        "text": "[reaction] During your turn, after one of your card effects heals damage and/or horror from an investigator: Gain 1 resource. You may take an additional action this turn. (Limit once per round.)\n[elder_sign] effect: +2. If you succeed, heal 1 damage or 1 horror from an investigator at your location.",
         "traits": "Veteran. Medic.",
         "type_code": "investigator",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/a33f6beb-915c-428c-8891-df292ddec98a.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/a33f6beb-915c-428c-8891-df292ddec98a_thumb.jpg",
-        "back_image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/a33f6beb-915c-428c-8891-df292ddec98a_back.jpg",
-        "back_thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/a33f6beb-915c-428c-8891-df292ddec98a_back_thumb.jpg"
+        "image_url": "https://eons.arkham.build/a33f6beb-915c-428c-8891-df292ddec98a-Front-Lucia%20Deveraux-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749141431872",
+        "thumbnail_url": "https://eons.arkham.build/a33f6beb-915c-428c-8891-df292ddec98a-Front-thumbnail.png?cachebust=1749141432449",
+        "back_image_url": "https://eons.arkham.build/a33f6beb-915c-428c-8891-df292ddec98a-Back-Lucia%20Deveraux-resolution-300-compressionquality-0.90-bleed-0.0-Back.jpg?cachebust=1749141433470",
+        "back_thumbnail_url": "https://eons.arkham.build/a33f6beb-915c-428c-8891-df292ddec98a-Back-thumbnail.png?cachebust=1749141433977"
       },
       {
-        "unique": false,
         "code": "38fa4050-d63d-4870-91cd-a076d642f192",
         "cost": 3,
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "illustrator": "Mayrig Simonjan",
-        "is_unique": false,
-        "myriad": false,
         "name": "Lucia's Medicines",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 11,
         "quantity": 1,
         "restrictions": "investigator:a33f6beb-915c-428c-8891-df292ddec98a",
@@ -341,22 +362,17 @@
         "text": "Fast. Lucia Deveraux deck only. Uses (4 supplies). If Lucia's Medicines have no supplies, discard them.\n[action] Exhaust Lucia's Medicines and spend 1 supply: Test [agility] (1). If you succeed, heal 1 damage or 1 horror from an investigator at your location. If you succeed by 2 or more, heal 2 damage or 2 horror (or any combination thereof) from among investigators at your location instead.",
         "traits": "Item. Tool. Science.",
         "type_code": "asset",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/38fa4050-d63d-4870-91cd-a076d642f192.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/38fa4050-d63d-4870-91cd-a076d642f192_thumb.jpg"
+        "image_url": "https://eons.arkham.build/38fa4050-d63d-4870-91cd-a076d642f192-Front-Lucia_s%20Medicine-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027577066",
+        "thumbnail_url": "https://eons.arkham.build/38fa4050-d63d-4870-91cd-a076d642f192-Front-thumbnail.png?cachebust=1749027577401"
       },
       {
-        "unique": false,
         "code": "79f0989e-865c-4090-a3ed-8d5b179b8478",
         "cost": 2,
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "illustrator": "Miguel Ángel González",
-        "is_unique": false,
-        "myriad": false,
         "name": "Nurses' Bag",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 12,
         "quantity": 1,
         "restrictions": "investigator:a33f6beb-915c-428c-8891-df292ddec98a",
@@ -366,20 +382,17 @@
         "text": "Lucia Deveraux deck only.\n[action] Exhaust Nurses' Bag: One at a time, discard the top card of your deck until you discard a card with the [[Item]] trait. Draw that card. Shuffle each weakness that was discarded by this effect back into your deck.\n[reaction] After you heal damage or horror from an investigator at your location, exhaust Nurses' Bag: Gain as many resources as the total damage and/or horror healed.",
         "traits": "Item. Science.",
         "type_code": "asset",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/79f0989e-865c-4090-a3ed-8d5b179b8478.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/79f0989e-865c-4090-a3ed-8d5b179b8478_thumb.jpg"
+        "image_url": "https://eons.arkham.build/79f0989e-865c-4090-a3ed-8d5b179b8478-Front-Nurses%20Bag-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027573930",
+        "thumbnail_url": "https://eons.arkham.build/79f0989e-865c-4090-a3ed-8d5b179b8478-Front-thumbnail.png?cachebust=1749027574288"
       },
       {
         "code": "af992dfb-7ec1-42e7-9036-d5df56d3b2b5",
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "flavor": "No one's ever really gone.",
         "illustrator": "Filipe Pagliuso",
-        "myriad": false,
         "name": "Ones We Lost",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 13,
         "quantity": 1,
         "restrictions": "investigator:a33f6beb-915c-428c-8891-df292ddec98a",
@@ -387,37 +400,54 @@
         "text": "<b>Revelation</b> - Place Ones We Lost in your threat area.\nYou get -1 to each of your skills for each point of damage on you <i>(to a minimum of 0)</i>.\n<b>Forced</b> - At the end of your turn: If you have 3 or more damage on your investigator and healed any investigators this turn, discard Ones We Lost. Otherwise, take 1 damage.",
         "traits": "Flaw.",
         "type_code": "treachery",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/af992dfb-7ec1-42e7-9036-d5df56d3b2b5.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/af992dfb-7ec1-42e7-9036-d5df56d3b2b5_thumb.jpg"
+        "image_url": "https://eons.arkham.build/af992dfb-7ec1-42e7-9036-d5df56d3b2b5-Front-Ones%20We%20Lost-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027562895",
+        "thumbnail_url": "https://eons.arkham.build/af992dfb-7ec1-42e7-9036-d5df56d3b2b5-Front-thumbnail.png?cachebust=1749027563241"
       },
       {
-        "unique": true,
         "back_flavor": "By all accounts, Richard Carlisle is dead. Everyone saw the news story, it was a massive wreck. A gigantic car crash smashing his Ford to absolute bits! The strangest part of it all was that in the wreck of the totalled vehicle, the body of Mr. Carlisle was not found at all. A few days later, a man named Richard Carlisle started appearing again, alive and well. He claims to be the same man, talks the same talk, walks the same walk, and even has the same daredevil attitude that probably got him in that accident to begin with. However, when asked about how he survived it was very strange. His only answer was an odd claim. A claim to have just 'crawled out once he saw a smirk'.",
         "back_name": "Richard Carlisle",
-        "back_text": "<b>Deck Size</b>: 30\n<b>Deckbuilding Options</b>: Mystic cards ([mystic]) level 0-5, [[Gambit]] cards level 0-4, up to 10 other Rogue and/or Survivor cards ([rogue]/[survivor]) level 0-1, Neutral cards level 0-5.\n<b>Deckbuilding Requirements</b> (do not count toward deck size): \"Smirk\", Toll of Magic, 1 random basic weakness.",
+        "back_text": "<b>Deck Size</b>: 30\n<b>Deckbuilding Options</b>: Mystic cards ([mystic]) level 0-5, [[Gambit]] cards level 0-4, up to 10 other Rogue and/or Survivor cards ([rogue]/[survivor]) level 0-1, Neutral cards level 0-5.\n<b>Deckbuilding Requirements</b> (do not count toward deck size)</b>: \"Smirk\", Toll of Magic, 1 random basic weakness.",
         "code": "3e6f158d-03b6-427d-9d73-da74cd8b7549",
-        "deck_requirements": "size:30, card:8d4ffe74-53e6-4a83-91c9-1c1f6c4274ad, random:subtype:basicweakness",
+        "deck_requirements": "size:30, card:8d4ffe74-53e6-4a83-91c9-1c1f6c4274ad, card:96860ed7-9612-4e12-9dde-532a609d4e51, random:subtype:basicweakness",
         "deck_options": [
-          { "faction": ["mystic"], "level": { "min": 0, "max": 5 } },
-          { "level": { "min": 0, "max": 4 }, "trait": ["Gambit"] },
+          {
+            "faction": ["mystic"],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          },
+          {
+            "level": {
+              "min": 0,
+              "max": 4
+            },
+            "trait": ["Gambit"]
+          },
           {
             "faction": ["rogue", "survivor"],
-            "level": { "min": 0, "max": 1 },
+            "level": {
+              "min": 0,
+              "max": 1
+            },
             "limit": 10
           },
-          { "faction": ["neutral"], "level": { "min": 0, "max": 5 } }
+          {
+            "faction": ["neutral"],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          }
         ],
         "deck_limit": 1,
         "double_sided": true,
-        "exceptional": false,
         "faction_code": "mystic",
         "health": 6,
         "illustrator": "Chris McGrath",
         "is_unique": true,
-        "myriad": false,
         "name": "Richard Carlisle",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 14,
         "quantity": 1,
         "sanity": 8,
@@ -429,24 +459,20 @@
         "text": "[reaction] When you succeed a skill test on a [[Spell]] card, for every 2 points you succeed by, you may (choose one):\n- Draw 1 card.\n- Gain 1 resource.\n- Deal 1 damage to an enemy at your location.\n(Limit once per round per choice.)\n[elder_sign] effect: +0. If you succeed, you may resolve a choice on Richard's [reaction] ability, ignoring its limit.",
         "traits": "Sorcerer. Criminal.",
         "type_code": "investigator",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/3e6f158d-03b6-427d-9d73-da74cd8b7549.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/3e6f158d-03b6-427d-9d73-da74cd8b7549_thumb.jpg",
-        "back_image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/3e6f158d-03b6-427d-9d73-da74cd8b7549_back.jpg",
-        "back_thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/3e6f158d-03b6-427d-9d73-da74cd8b7549_back_thumb.jpg"
+        "image_url": "https://eons.arkham.build/3e6f158d-03b6-427d-9d73-da74cd8b7549-Front-Richard%20Carlile-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027521093",
+        "thumbnail_url": "https://eons.arkham.build/3e6f158d-03b6-427d-9d73-da74cd8b7549-Front-thumbnail.png?cachebust=1749027521508",
+        "back_image_url": "https://eons.arkham.build/3e6f158d-03b6-427d-9d73-da74cd8b7549-Back-Richard%20Carlile-resolution-300-compressionquality-0.90-bleed-0.0-Back.jpg?cachebust=1749027522355",
+        "back_thumbnail_url": "https://eons.arkham.build/3e6f158d-03b6-427d-9d73-da74cd8b7549-Back-thumbnail.png?cachebust=1749027522950"
       },
       {
-        "unique": true,
         "code": "96860ed7-9612-4e12-9dde-532a609d4e51",
         "cost": 4,
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "illustrator": "Benjamin Weustemaat",
         "is_unique": true,
-        "myriad": false,
         "name": "\"Smirk\"",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 15,
         "quantity": 1,
         "restrictions": "investigator:3e6f158d-03b6-427d-9d73-da74cd8b7549",
@@ -456,20 +482,17 @@
         "text": "Richard Carlisle deck only.\n[reaction] When committing cards to a skill test, exhaust \"Smirk\": All cards committed to this test gain a [wild] icon until the end of the test.\n[reaction] When you use Richard Carlisle's [reaction] ability, exhaust \"Smirk\": You may select one of the chosen effects again this round.",
         "traits": "Ally. Avatar. Ancient One?",
         "type_code": "asset",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/96860ed7-9612-4e12-9dde-532a609d4e51.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/96860ed7-9612-4e12-9dde-532a609d4e51_thumb.jpg"
+        "image_url": "https://eons.arkham.build/96860ed7-9612-4e12-9dde-532a609d4e51-Front-Smirk-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027576055",
+        "thumbnail_url": "https://eons.arkham.build/96860ed7-9612-4e12-9dde-532a609d4e51-Front-thumbnail.png?cachebust=1749027576393"
       },
       {
         "code": "8d4ffe74-53e6-4a83-91c9-1c1f6c4274ad",
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "flavor": "Did you really think you could control this power?",
         "illustrator": "Filipe Pagliuso",
-        "myriad": false,
         "name": "Toll of Magic",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 16,
         "quantity": 1,
         "restrictions": "investigator:3e6f158d-03b6-427d-9d73-da74cd8b7549",
@@ -477,34 +500,55 @@
         "text": "<b>Revelation</b> - Test [willpower] (0). Skill icons on cards committed to this test subtract from your skill value instead of adding to it.\nFor every 2 points you succeed by, you must either take 1 damage or take 1 horror.",
         "traits": "Omen.",
         "type_code": "treachery",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/8d4ffe74-53e6-4a83-91c9-1c1f6c4274ad.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/8d4ffe74-53e6-4a83-91c9-1c1f6c4274ad_thumb.jpg"
+        "image_url": "https://eons.arkham.build/8d4ffe74-53e6-4a83-91c9-1c1f6c4274ad-Front-Toll%20of%20Magic-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027556151",
+        "thumbnail_url": "https://eons.arkham.build/8d4ffe74-53e6-4a83-91c9-1c1f6c4274ad-Front-thumbnail.png?cachebust=1749027556511"
       },
       {
-        "unique": true,
         "back_flavor": "Nobody was sure how Melissa Swanson was able to do her 'parlor tricks', as she called them. She always had a way with the arcane, and she always used it to her advantage. A strong combination of feminine wiles and esoteric arts, she always got her way. When she grew older, she grew quite a fondness for ancient artifacts and treats, so she devoted her spare time into researching the origin of such items. The deeper she delved, the more profane knowledge that man was not destined to know was unlocked for her. Not that she minded, anyways. After all, she was always good at handling whatever magic was thrown her way.",
         "back_name": "Melissa Swanson",
         "back_text": "<b>Deck Size</b>: 30\n<b>Deckbuilding Options</b>: Mystic cards ([mystic]) level 0-5, [[Innate]] cards level 0-3, Neutral cards level 0-5, up to 5 other Seeker cards ([seeker]) level 0.\n<b>Deckbuilding Requirements</b> (do not count toward deck size): Unstoppable Power, Price of Power, 1 random basic weakness.",
         "code": "ba23c5d9-0f12-4379-99b5-ecacd425a08d",
         "deck_requirements": "size:30, card:60ff4894-0bee-4a45-af7f-2b48d15a9af9, card:da0b58bb-4b54-4e8b-9f23-32e84d308e85, random:subtype:basicweakness",
         "deck_options": [
-          { "faction": ["mystic"], "level": { "min": 0, "max": 5 } },
-          { "level": { "min": 0, "max": 3 }, "trait": ["Innate"] },
-          { "faction": ["neutral"], "level": { "min": 0, "max": 5 } },
-          { "faction": ["seeker"], "level": { "min": 0, "max": 0 }, "limit": 5 }
+          {
+            "faction": ["mystic"],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          },
+          {
+            "level": {
+              "min": 0,
+              "max": 3
+            },
+            "trait": ["Innate"]
+          },
+          {
+            "faction": ["neutral"],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          },
+          {
+            "faction": ["seeker"],
+            "level": {
+              "min": 0,
+              "max": 0
+            },
+            "limit": 5
+          }
         ],
         "deck_limit": 1,
         "double_sided": true,
-        "exceptional": false,
         "faction_code": "mystic",
         "flavor": "\"Some of us are just naturally this skilled.\"",
         "health": 5,
         "illustrator": "Luisa Preissler",
         "is_unique": true,
-        "myriad": false,
         "name": "Melissa Swanson",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 17,
         "quantity": 1,
         "sanity": 9,
@@ -516,22 +560,19 @@
         "text": "[reaction] After an investigator at your location commits a card to a skill test, spend 1 charge from an asset you control: That card gains [wild] [wild] icons until the end of the test. (Limit once per test.)\n[elder_sign] effect: +0. After this test ends, search the top 3 cards of your deck for a skill card and add it to your hand. Shuffle your deck.",
         "traits": "Socialite. Sorcerer.",
         "type_code": "investigator",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/ba23c5d9-0f12-4379-99b5-ecacd425a08d.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/ba23c5d9-0f12-4379-99b5-ecacd425a08d_thumb.jpg",
-        "back_image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/ba23c5d9-0f12-4379-99b5-ecacd425a08d_back.jpg",
-        "back_thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/ba23c5d9-0f12-4379-99b5-ecacd425a08d_back_thumb.jpg"
+        "image_url": "https://eons.arkham.build/ba23c5d9-0f12-4379-99b5-ecacd425a08d-Front-Melissa%20Swanson-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027570354",
+        "thumbnail_url": "https://eons.arkham.build/ba23c5d9-0f12-4379-99b5-ecacd425a08d-Front-thumbnail.png?cachebust=1749027570715",
+        "back_image_url": "https://eons.arkham.build/ba23c5d9-0f12-4379-99b5-ecacd425a08d-Back-Melissa%20Swanson-resolution-300-compressionquality-0.90-bleed-0.0-Back.jpg?cachebust=1749027571585",
+        "back_thumbnail_url": "https://eons.arkham.build/ba23c5d9-0f12-4379-99b5-ecacd425a08d-Back-thumbnail.png?cachebust=1749027572029"
       },
       {
         "code": "da0b58bb-4b54-4e8b-9f23-32e84d308e85",
         "cost": 3,
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "illustrator": "Mykz Revecho",
-        "myriad": false,
         "name": "Unstoppable Power",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 18,
         "quantity": 1,
         "restrictions": "investigator:ba23c5d9-0f12-4379-99b5-ecacd425a08d",
@@ -539,54 +580,72 @@
         "text": "Melissa Swanson only. Max once per round.\nPerform a basic action. For each skill test that occurs during that action, commit every eligible skill card from your hand and discard pile. This action does not provoke attacks of opportunity.",
         "traits": "Spell.",
         "type_code": "event",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/da0b58bb-4b54-4e8b-9f23-32e84d308e85.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/da0b58bb-4b54-4e8b-9f23-32e84d308e85_thumb.jpg"
+        "image_url": "https://eons.arkham.build/da0b58bb-4b54-4e8b-9f23-32e84d308e85-Front-Unstoppable%20Power-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027561879",
+        "thumbnail_url": "https://eons.arkham.build/da0b58bb-4b54-4e8b-9f23-32e84d308e85-Front-thumbnail.png?cachebust=1749027562223"
       },
       {
         "code": "60ff4894-0bee-4a45-af7f-2b48d15a9af9",
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "illustrator": "wombo.art",
-        "myriad": false,
         "name": "Price of Power",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 19,
         "quantity": 1,
         "restrictions": "investigator:ba23c5d9-0f12-4379-99b5-ecacd425a08d",
         "subtype_code": "weakness",
-        "text": "<b>Revelation</b> - Place Price of Power in your threat area.\n<b>Forced</b> -  At the end of your turn: Choose and discard 1 skill card from your hand. If you cannot, take 2 horror and discard Price of Power.",
+        "text": "<b>Revelation</b> - Place Price of Power in your threat area.\n<b>Forced</b> - At the end of your turn: Choose and discard 1 skill card from your hand. If you cannot, take 2 horror and discard Price of Power.",
         "traits": "Curse.",
         "type_code": "treachery",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/60ff4894-0bee-4a45-af7f-2b48d15a9af9.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/60ff4894-0bee-4a45-af7f-2b48d15a9af9_thumb.jpg"
+        "image_url": "https://eons.arkham.build/60ff4894-0bee-4a45-af7f-2b48d15a9af9-Front-Price%20of%20Power-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027569398",
+        "thumbnail_url": "https://eons.arkham.build/60ff4894-0bee-4a45-af7f-2b48d15a9af9-Front-thumbnail.png?cachebust=1749027569733"
       },
       {
-        "unique": true,
         "back_flavor": "Bad luck used to follow Walter around like a bad hair day. Endless calamity and misery surrounded the poor guy so to get through the day he always tried to pray. He prayed and prayed and prayed, but he did not get an answer. No answers caused Walter to get desperate. He traveled the world, learning all sorts of ancient rituals and arts, anything that would work to help his rotten luck turn around. Walter called out to any powers that be, but he may not appreciate who will be the one that answers.",
         "back_name": "Walter Crankovitch",
         "back_text": "<b>Deck Size</b>: 30\n<b>Deckbuilding Options</b>: Survivor cards ([survivor]) level 0-3, [[Ritual]] cards level 0-5, Neutral cards level 0-5, up to 5 other Mystic cards ([mystic]) level 0.\n<b>Deckbuilding Requirements</b> (do not count toward deck size): Pocket Bible, \"Bad Luck\", 1 random basic weakness.\n<b>Bonus Experience</b>: You begin the campaign with 5 additional experience (does not affect the number of weaknesses you must take in Standalone Mode).",
         "code": "44700011-7f83-420e-bcc3-77d29086c0b2",
         "deck_requirements": "size:30, card:69657414-64e9-45a6-a0ac-429a6fad3815, card:6d1ad3c7-f981-45dd-84b1-9faac85d644d, random:subtype:basicweakness",
         "deck_options": [
-          { "faction": ["survivor"], "level": { "min": 0, "max": 3 } },
-          { "level": { "min": 0, "max": 5 }, "trait": ["Ritual"] },
-          { "faction": ["neutral"], "level": { "min": 0, "max": 5 } },
-          { "faction": ["mystic"], "level": { "min": 0, "max": 0 }, "limit": 5 }
+          {
+            "faction": ["survivor"],
+            "level": {
+              "min": 0,
+              "max": 3
+            }
+          },
+          {
+            "level": {
+              "min": 0,
+              "max": 5
+            },
+            "trait": ["Ritual"]
+          },
+          {
+            "faction": ["neutral"],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          },
+          {
+            "faction": ["mystic"],
+            "level": {
+              "min": 0,
+              "max": 0
+            },
+            "limit": 5
+          }
         ],
         "deck_limit": 1,
         "double_sided": true,
-        "exceptional": false,
         "faction_code": "survivor",
         "flavor": "\"By all the power vested in me, you will be gone from this realm!\"",
         "health": 7,
         "illustrator": "Mauro Belfiore",
         "is_unique": true,
-        "myriad": false,
         "name": "Walter Crankovitch",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 20,
         "quantity": 1,
         "sanity": 8,
@@ -598,25 +657,20 @@
         "text": "[reaction] When you play or resolve an ability on a [[Ritual]] card: Draw 1 card. (Limit once per phase.)\n[elder_sign] effect: +1. You may discard a [[Ritual]] card in play under your control or in your hand to draw 2 cards.",
         "traits": "Believer. Cursed.",
         "type_code": "investigator",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/44700011-7f83-420e-bcc3-77d29086c0b2.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/44700011-7f83-420e-bcc3-77d29086c0b2_thumb.jpg",
-        "back_image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/44700011-7f83-420e-bcc3-77d29086c0b2_back.jpg",
-        "back_thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/44700011-7f83-420e-bcc3-77d29086c0b2_back_thumb.jpg"
+        "image_url": "https://eons.arkham.build/44700011-7f83-420e-bcc3-77d29086c0b2-Front-Walter%20Crankovitch-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027523697",
+        "thumbnail_url": "https://eons.arkham.build/44700011-7f83-420e-bcc3-77d29086c0b2-Front-thumbnail.png?cachebust=1749027524026",
+        "back_image_url": "https://eons.arkham.build/44700011-7f83-420e-bcc3-77d29086c0b2-Back-Walter%20Crankovitch-resolution-300-compressionquality-0.90-bleed-0.0-Back.jpg?cachebust=1749027524785",
+        "back_thumbnail_url": "https://eons.arkham.build/44700011-7f83-420e-bcc3-77d29086c0b2-Back-thumbnail.png?cachebust=1749027525136"
       },
       {
-        "unique": false,
         "code": "6d1ad3c7-f981-45dd-84b1-9faac85d644d",
         "cost": 3,
         "deck_limit": 1,
-        "exceptional": false,
         "faction_code": "neutral",
         "flavor": "Has many scribbles of notes to aid your allies and harm your enemies.",
         "illustrator": "Peter Paul Rubens",
-        "is_unique": false,
-        "myriad": false,
         "name": "Pocket Bible",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 21,
         "quantity": 1,
         "restrictions": "investigator:44700011-7f83-420e-bcc3-77d29086c0b2",
@@ -628,8 +682,8 @@
         "text": "Walter Crankovitch deck only.\n[[Ritual]] assets in play do not take up any slot(s).\n[reaction] After you play or resolve an ability on a [[Ritual]] card, exhaust Pocket Bible: Add 1 [bless] token to the chaos bag or heal 1 horror from an investigator or [[Ally]] asset at your location.",
         "traits": "Item. Relic. Tome.",
         "type_code": "asset",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/6d1ad3c7-f981-45dd-84b1-9faac85d644d.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/6d1ad3c7-f981-45dd-84b1-9faac85d644d_thumb.jpg"
+        "image_url": "https://eons.arkham.build/6d1ad3c7-f981-45dd-84b1-9faac85d644d-Front-Pocket%20Bible-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027565965",
+        "thumbnail_url": "https://eons.arkham.build/6d1ad3c7-f981-45dd-84b1-9faac85d644d-Front-thumbnail.png?cachebust=1749027566313"
       },
       {
         "code": "69657414-64e9-45a6-a0ac-429a6fad3815",
@@ -638,15 +692,12 @@
         "enemy_evade": 3,
         "enemy_fight": 2,
         "enemy_horror": 2,
-        "exceptional": false,
         "faction_code": "neutral",
         "health": 2,
         "health_per_investigator": false,
         "illustrator": "Albin Grau",
-        "myriad": false,
         "name": "\"Bad Luck\"",
         "pack_code": "277acb12-c700-4f85-a17d-091110af0e8a",
-        "permanent": false,
         "position": 22,
         "quantity": 1,
         "restrictions": "investigator:44700011-7f83-420e-bcc3-77d29086c0b2",
@@ -654,8 +705,8 @@
         "text": "Hunter.\n<b>Spawn</b> - Location farthest from Walter Crankovitch (empty, if able)\n<b>Prey</b> - Walter Crankovitch only.\n<b>Forced</b> - After Walter Crankovitch plays or resolves an ability on a player card: \"Bad Luck\" resolves the hunter keyword and performs an attack, if able, without exhausting.",
         "traits": "Geist.",
         "type_code": "enemy",
-        "image_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/69657414-64e9-45a6-a0ac-429a6fad3815.jpg",
-        "thumbnail_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/69657414-64e9-45a6-a0ac-429a6fad3815_thumb.jpg"
+        "image_url": "https://eons.arkham.build/69657414-64e9-45a6-a0ac-429a6fad3815-Front-Bad%20Luck-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1749027525816",
+        "thumbnail_url": "https://eons.arkham.build/69657414-64e9-45a6-a0ac-429a6fad3815-Front-thumbnail.png?cachebust=1749027526145"
       }
     ],
     "encounter_sets": [],
@@ -664,7 +715,7 @@
         "code": "277acb12-c700-4f85-a17d-091110af0e8a",
         "name": "Ordinary Citizens",
         "date_release": "2025-05-22",
-        "icon_url": "https://assets.arkham.build/fan_made_content/277acb12-c700-4f85-a17d-091110af0e8a/pack_277acb12-c700-4f85-a17d-091110af0e8a.png"
+        "icon_url": "https://eons.arkham.build/277acb12-c700-4f85-a17d-091110af0e8a-collection-icon.png?cachebust=1749027577697"
       }
     ]
   }

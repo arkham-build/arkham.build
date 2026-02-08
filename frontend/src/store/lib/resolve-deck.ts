@@ -1,7 +1,7 @@
+import type { Attachments, Card } from "@arkham-build/shared";
 import { decodeExileSlots } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
-import type { Attachments, Card } from "../schemas/card.schema";
 import type { Deck } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
 import { getAttachableCards } from "./attachments";

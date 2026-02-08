@@ -1,8 +1,8 @@
+import type { Card } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { ListCard } from "@/components/list-card/list-card";
 import { Details } from "@/components/ui/details";
 import { useStore } from "@/store";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectUsableByInvestigators } from "@/store/selectors/card-view";
 import { displayAttribute } from "@/utils/card-utils";
 

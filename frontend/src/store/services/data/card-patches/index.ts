@@ -1,4 +1,4 @@
-import type { JsonDataCard } from "@/store/schemas/card.schema";
+import type { JsonDataCard } from "@arkham-build/shared";
 import attachments from "./attachments.json";
 import cardBackTypes from "./card-back-types.json";
 import gameBeginAttributes from "./game-begin-attributes.json";

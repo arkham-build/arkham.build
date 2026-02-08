@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import { useStore } from "@/store";
 import {
@@ -6,7 +7,6 @@ import {
 } from "@/store/lib/filtering";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedCard } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectUsableByInvestigators } from "@/store/selectors/card-view";
 import {
   selectLocaleSortingCollator,

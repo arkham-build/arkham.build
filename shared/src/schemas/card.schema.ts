@@ -3,7 +3,7 @@ import {
   COMPARISON_OPERATOR,
   FACTION_ORDER,
   PLAYER_TYPE_ORDER,
-} from "@/utils/constants";
+} from "../lib/constants.ts";
 
 /* Attachments */
 
@@ -153,7 +153,7 @@ export type DeckOptionSelectType = "deckSize" | "faction" | "option";
 
 const Faction = z.enum(FACTION_ORDER);
 
-const JsonDataCardSchema = z.object({
+export const JsonDataCardSchema = z.object({
   alternate_of: z.string().nullish(),
   back_flavor: z.string().nullish(),
   back_illustrator: z.string().nullish(),
@@ -303,7 +303,7 @@ const CardPoolExtensionSchema = z.object({
   selections: z.array(z.string()).optional(),
 });
 
-const AdditionalAttributes = {
+export const AdditionalAttributes = {
   attachments: AttachmentsSchema.nullish(),
   back_image_url: z.url().nullish(),
   back_thumbnail_url: z.url().nullish(),
@@ -313,11 +313,6 @@ const AdditionalAttributes = {
   taboo_xp: z.number().nullish(),
   thumbnail_url: z.url().nullish(),
 };
-
-export const FanMadeCardSchema =
-  JsonDataCardSchema.extend(AdditionalAttributes);
-
-export type FanMadeCard = z.infer<typeof FanMadeCardSchema>;
 
 /**
  * Card as used by the application.
@@ -334,7 +329,7 @@ const CardRuntimeAttributes = {
   parallel: z.boolean().nullish(),
 };
 
-const CardSchema = ApiCardSchema.extend({
+export const CardSchema = ApiCardSchema.extend({
   ...AdditionalAttributes,
   ...CardRuntimeAttributes,
 });

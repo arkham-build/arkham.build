@@ -1,5 +1,5 @@
+import type { Card } from "@arkham-build/shared";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import type { Slots } from "@/store/schemas/deck.schema";
 import type { ListState, TargetDeck } from "@/store/selectors/lists";
 import type { ListDisplay, Search } from "@/store/slices/lists.types";

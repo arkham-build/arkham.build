@@ -243,6 +243,12 @@ export interface OauthToken {
   updated_at: Generated<Timestamp>;
 }
 
+export interface FanMadeProjectInfo {
+  bucket_path: string;
+  id: string;
+  meta: Json;
+}
+
 export interface Pack {
   code: string;
   cycle_code: string;
@@ -311,6 +317,7 @@ export interface DB {
   encounter_set: EncounterSet;
   faction: Faction;
   oauth_token: OauthToken;
+  fan_made_project_info: FanMadeProjectInfo;
   pack: Pack;
   pack_type: PackType;
   schema_migrations: SchemaMigrations;

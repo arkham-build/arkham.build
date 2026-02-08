@@ -1,9 +1,9 @@
-import { useCallback, useId, useMemo } from "react";
-import type { Customization } from "@/store/lib/types";
 import type {
   Card,
   CustomizationOption as CustomizationOptionType,
-} from "@/store/schemas/card.schema";
+} from "@arkham-build/shared";
+import { useCallback, useId, useMemo } from "react";
+import type { Customization } from "@/store/lib/types";
 import type { CustomizationEdit } from "@/store/slices/deck-edits.types";
 import { parseCustomizationTextHtml } from "@/utils/card-utils";
 import { range } from "@/utils/range";

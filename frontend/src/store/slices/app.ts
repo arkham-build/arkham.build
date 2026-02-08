@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { applyDeckEdits, getChangeRecord } from "@/store/lib/deck-edits";
 import { createDeck } from "@/store/lib/deck-factory";
@@ -28,7 +29,6 @@ import { decodeExtraSlots, encodeExtraSlots } from "../lib/slots";
 import { disconnectProviderIfUnauthorized, syncAdapters } from "../lib/sync";
 import type { DeckMeta } from "../lib/types";
 import { dehydrate, hydrate } from "../persist";
-import type { Card } from "../schemas/card.schema";
 import { selectDeckCreateCardSets } from "../selectors/deck-create";
 import {
   selectDeckHistory,

@@ -1,4 +1,6 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: checked */
+
+import type { Card } from "@arkham-build/shared";
 import {
   type Recommendation,
   RecommendationsRequestSchema,
@@ -13,7 +15,6 @@ import {
 } from "@/components/error-display/error-display";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { type ListState, selectListCards } from "@/store/selectors/lists";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import { getRecommendations } from "@/store/services/queries";
