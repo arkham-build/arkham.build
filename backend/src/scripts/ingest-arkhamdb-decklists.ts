@@ -9,7 +9,6 @@ import { pipeline } from "node:stream/promises";
 import { parse } from "@fast-csv/parse";
 import type { Insertable, Transaction } from "kysely";
 import { connectionString, type Database, getDatabase } from "../db/db.ts";
-import { getAllCardResolutions } from "../db/queries/card-resolution.ts";
 import type { ArkhamdbDecklist, DB } from "../db/schema.types.ts";
 import { type Config, configFromEnv } from "../lib/config.ts";
 import { log } from "../lib/logger.ts";
@@ -380,4 +379,8 @@ function hashSlots(
 
 function resolveId(code: string, cardResolutions: Map<string, string>): string {
   return cardResolutions.get(code) ?? code;
+}
+
+function getAllCardResolutions(db: Database) {
+  return db.selectFrom("card_resolution").selectAll().execute();
 }

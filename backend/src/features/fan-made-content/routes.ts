@@ -1,21 +1,18 @@
 import { FanMadeProjectInfoSchema } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import {
-  getAllFanMadeProjectInfos,
-  getFanMadeProjectInfo,
-} from "../db/queries/fan-made-project-info.ts";
-import type { HonoEnv } from "../lib/hono-env.ts";
+import type { HonoEnv } from "../../lib/hono-env.ts";
+import { getAllFanMadeProjectInfos, getFanMadeProjectInfo } from "./queries.ts";
 
-const router = new Hono<HonoEnv>();
+const routes = new Hono<HonoEnv>();
 
-router.get("/", async (c) => {
+routes.get("/", async (c) => {
   const projects = await getAllFanMadeProjectInfos(c.get("db"));
   const data = projects.map((p) => FanMadeProjectInfoSchema.parse(p));
   return c.json({ data });
 });
 
-router.get("/:id", async (ctx) => {
+routes.get("/:id", async (ctx) => {
   const project = await getFanMadeProjectInfo(
     ctx.get("db"),
     ctx.req.param("id"),
@@ -28,4 +25,4 @@ router.get("/:id", async (ctx) => {
   return ctx.json(FanMadeProjectInfoSchema.parse(project));
 });
 
-export default router;
+export default routes;

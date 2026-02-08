@@ -1,21 +1,28 @@
 import { FanMadeProjectInfoSchema } from "@arkham-build/shared";
 import { type Context, Hono } from "hono";
 import { bearerAuth } from "hono/bearer-auth";
-import { upsertFanMadeProjectInfo } from "../db/queries/fan-made-project-info.ts";
-import type { HonoEnv } from "../lib/hono-env.ts";
-import { zodValidator } from "../lib/validation.ts";
+import type { HonoEnv } from "../../lib/hono-env.ts";
+import { zodValidator } from "../../lib/validation.ts";
+import { getAppDataVersions, upsertFanMadeProjectInfo } from "./queries.ts";
 
-const router = new Hono<HonoEnv>();
+const routes = new Hono<HonoEnv>();
 
 const adminKeyMiddleware = bearerAuth({
   verifyToken: (token, c: Context<HonoEnv>) =>
     token === c.get("config").ADMIN_API_KEY,
 });
 
-router.use(adminKeyMiddleware);
+routes.get("/up", (c) => c.text("ok"));
 
-router.post(
+routes.get("/version", async (c) => {
+  const dataVersions = await getAppDataVersions(c.get("db"));
+  if (!dataVersions) throw new Error("could not infer data versions");
+  return c.json(dataVersions);
+});
+
+routes.post(
   "/fan_made_project_info",
+  adminKeyMiddleware,
   zodValidator("json", FanMadeProjectInfoSchema.omit({ id: true })),
   async (c) => {
     const body = c.req.valid("json");
@@ -27,4 +34,4 @@ router.post(
   },
 );
 
-export default router;
+export default routes;

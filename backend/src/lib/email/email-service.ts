@@ -1,5 +1,5 @@
+import type { EmailTemplate } from "./base-template.ts";
 import type { Mailer } from "./mailer.ts";
-import type { EmailTemplate } from "./templates/base.ts";
 
 export class EmailService<M extends Mailer = Mailer> {
   mailer: M;

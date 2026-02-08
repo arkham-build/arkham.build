@@ -1,11 +1,11 @@
 import assert from "node:assert";
 import type { Context } from "hono";
+import { refreshToken } from "../../features/auth/arkhamdb-oauth.ts";
 import {
   getOAuthTokenForSession,
   upsertOAuthToken,
-} from "../../db/queries/ouath-token.ts";
+} from "../common-queries.ts";
 import type { HonoEnv } from "../hono-env.ts";
-import { refreshToken } from "./oauth.ts";
 import type {
   ArkhamDBApiError,
   OAuthErrorResponse,

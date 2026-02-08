@@ -1,7 +1,7 @@
 import type { Selectable } from "kysely";
-import type { AccessToken } from "../../lib/arkhamdb/types.ts";
-import type { Database } from "../db.ts";
-import type { OauthToken, Session } from "../schema.types.ts";
+import type { Database } from "../db/db.ts";
+import type { OauthToken, Session } from "../db/schema.types.ts";
+import type { AccessToken } from "./arkhamdb/types.ts";
 
 export function getOAuthTokenForSession(
   db: Database,

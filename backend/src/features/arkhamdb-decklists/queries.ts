@@ -2,60 +2,20 @@ import {
   type DecklistMetaResponse,
   DecklistMetaResponseSchema,
   type DecklistSearchRequest,
-  DecklistSearchRequestSchema,
   DecklistSearchResponseSchema,
-  decodeSearch,
 } from "@arkham-build/shared";
-import { Hono } from "hono";
-import { HTTPException } from "hono/http-exception";
-import type { ExpressionBuilder } from "kysely";
-import { sql } from "kysely";
-import type { Database } from "../db/db.ts";
-import type { Card, DB } from "../db/schema.types.ts";
-import type { HonoEnv } from "../lib/hono-env.ts";
-import { statusText } from "../lib/http-status.ts";
+import { type ExpressionBuilder, sql } from "kysely";
+import type { Database } from "../../db/db.ts";
+import type { Card, DB } from "../../db/schema.types.ts";
 import {
   canonicalInvestigatorCodeCond,
   deckFilterConds,
   excludedSlotsCond,
   inDateRangeConds,
   requiredSlotsCond,
-} from "./arkhamdb-decklists.helpers.ts";
+} from "../../lib/decklist-query-helpers.ts";
 
-const router = new Hono<HonoEnv>();
-
-router.use("*", async (c, next) => {
-  await next();
-  if (c.res.status < 300) {
-    c.header("Cache-Control", "public, max-age=86400, immutable");
-  }
-});
-
-router.get("/search", async (c) => {
-  const searchReq = decodeSearch<DecklistSearchRequest>(
-    DecklistSearchRequestSchema,
-    c.req.queries(),
-  );
-
-  const res = await search(c.get("db"), searchReq);
-  return c.json(res);
-});
-
-router.get("/:id/meta", async (c) => {
-  const id = c.req.param("id");
-  const meta = await getDecklistMeta(c.get("db"), Number(id));
-
-  if (!meta) {
-    throw new HTTPException(404, {
-      message: statusText(404),
-      cause: `Decklist with ID ${id} not found.`,
-    });
-  }
-
-  return c.json(meta);
-});
-
-async function getDecklistMeta(
+export async function getDecklistMeta(
   db: Database,
   id: number,
 ): Promise<DecklistMetaResponse | undefined> {
@@ -80,7 +40,7 @@ async function getDecklistMeta(
   return DecklistMetaResponseSchema.parse(res);
 }
 
-async function search(db: Database, search: DecklistSearchRequest) {
+export async function search(db: Database, search: DecklistSearchRequest) {
   const conditions = (
     eb: ExpressionBuilder<
       DB & {
@@ -232,5 +192,3 @@ async function search(db: Database, search: DecklistSearchRequest) {
     },
   });
 }
-
-export default router;

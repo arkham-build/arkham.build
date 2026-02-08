@@ -2,7 +2,12 @@ import { Hono } from "hono";
 import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
 import type { Database } from "./db/db.ts";
-import { getAppDataVersions } from "./db/queries/app-data-versions.ts";
+import adminRouter from "./features/admin/routes.ts";
+import arkhamDbDecklistsRouter from "./features/arkhamdb-decklists/routes.ts";
+import authRouter from "./features/auth/routes.ts";
+import fanMadeProjectInfoRouter from "./features/fan-made-content/routes.ts";
+import recommendationsRouter from "./features/recommendations/routes.ts";
+import sealedDeckRouter from "./features/sealed-decks/routes.ts";
 import { bodyLimitMiddleware } from "./lib/body-limit.ts";
 import type { Config } from "./lib/config.ts";
 import { corsMiddleware } from "./lib/cors.ts";
@@ -10,12 +15,6 @@ import type { EmailService } from "./lib/email/email-service.ts";
 import { errorHandler } from "./lib/errors.ts";
 import type { HonoEnv } from "./lib/hono-env.ts";
 import { logger, requestLogger } from "./lib/logger.ts";
-import adminRouter from "./routes/admin.ts";
-import arkhamDbDecklistsRouter from "./routes/arkhamdb-decklists.ts";
-import authRouter from "./routes/auth.ts";
-import fanMadeProjectInfoRouter from "./routes/fan-made-project-info.ts";
-import recommendationsRouter from "./routes/recommendations.ts";
-import sealedDeckRouter from "./routes/sealed-deck.ts";
 
 export function appFactory(
   config: Config,
@@ -48,14 +47,6 @@ export function appFactory(
   app.route("/v2/public", pub);
 
   app.route("/v2/auth", authRouter);
-
-  app.get("/up", (c) => c.text("ok"));
-
-  app.get("/version", async (c) => {
-    const dataVersions = await getAppDataVersions(c.get("db"));
-    if (!dataVersions) throw new Error("could not infer data versions");
-    return c.json(dataVersions);
-  });
 
   app.onError(errorHandler);
 

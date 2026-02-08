@@ -1,72 +1,16 @@
-import {
-  decodeSearch,
-  type RecommendationsRequest,
-  RecommendationsRequestSchema,
-  RecommendationsResponseSchema,
-} from "@arkham-build/shared";
-import { Hono } from "hono";
-import { HTTPException } from "hono/http-exception";
-import { expressionBuilder, sql } from "kysely";
-import type { Database } from "../db/db.ts";
-import { getCardById } from "../db/queries/card.ts";
-import type { DB } from "../db/schema.types.ts";
-import type { HonoEnv } from "../lib/hono-env.ts";
+import assert from "node:assert";
+import type { RecommendationsRequest } from "@arkham-build/shared";
+import { expressionBuilder, type Selectable, sql } from "kysely";
+import type { Database } from "../../db/db.ts";
+import type { Card, DB } from "../../db/schema.types.ts";
 import {
   canonicalInvestigatorCodeCond,
   deckFilterConds,
   inDateRangeConds,
   requiredSlotsCond,
-} from "./arkhamdb-decklists.helpers.ts";
+} from "../../lib/decklist-query-helpers.ts";
 
-const router = new Hono<HonoEnv>();
-
-router.get("/:canonical_investigator_code", async (c) => {
-  const req = decodeSearch<RecommendationsRequest>(
-    RecommendationsRequestSchema,
-    {
-      ...c.req.queries(),
-      canonical_investigator_code: [c.req.param("canonical_investigator_code")],
-    },
-  );
-
-  const recommendations = await getRecommendations(c.get("db"), req);
-
-  const res = RecommendationsResponseSchema.parse({
-    data: { recommendations },
-  });
-
-  c.header("Cache-Control", "public, max-age=86400, immutable");
-  return c.json(res);
-});
-
-async function getRecommendations(db: Database, req: RecommendationsRequest) {
-  const canonicalInvestigatorCode = await resolveCanonicalInvestigator(
-    db,
-    req.canonical_investigator_code,
-  );
-
-  if (!canonicalInvestigatorCode) {
-    throw new HTTPException(400, {
-      cause: new Error(
-        `canonical_investigator_code ${req.canonical_investigator_code} does not match an investigator card.`,
-      ),
-    });
-  }
-
-  req.canonical_investigator_code = canonicalInvestigatorCode;
-
-  const { decksAnalyzed, recommendations } = await (req.analysis_algorithm ===
-  "absolute_rank"
-    ? getRecommendationsByAbsolutePercentage(db, req)
-    : getRecommendationsByPercentileRank(db, req));
-
-  return {
-    decks_analyzed: decksAnalyzed,
-    recommendations: recommendations,
-  };
-}
-
-async function getRecommendationsByAbsolutePercentage(
+export async function getRecommendationsByAbsolutePercentage(
   db: Database,
   req: RecommendationsRequest,
 ) {
@@ -159,7 +103,7 @@ async function getRecommendationsByAbsolutePercentage(
   return formatRecommendations(inclusions[0]?.decks_analyzed, recommendations);
 }
 
-async function getRecommendationsByPercentileRank(
+export async function getRecommendationsByPercentileRank(
   db: Database,
   req: RecommendationsRequest,
 ) {
@@ -265,7 +209,7 @@ async function getRecommendationsByPercentileRank(
   return formatRecommendations(inclusions[0]?.decks_analyzed, recommendations);
 }
 
-async function resolveCanonicalInvestigator(db: Database, code: string) {
+export async function resolveCanonicalInvestigator(db: Database, code: string) {
   const [frontCode, backCode] = code.split("-");
 
   if (!frontCode || !backCode) {
@@ -298,4 +242,21 @@ function formatRecommendations(
     : { decksAnalyzed, recommendations };
 }
 
-export default router;
+async function getCardById(
+  db: Database,
+  code: string,
+  tabooSetId?: number,
+): Promise<Selectable<Card>> {
+  const id = tabooSetId ? `${code}-${tabooSetId}` : code;
+
+  const card = await db
+    .selectFrom("card")
+    .selectAll()
+    .where("id", "=", ({ fn, val }) => fn<string>("resolve_card", [val(id)]))
+    .limit(1)
+    .executeTakeFirst();
+
+  assert(card, `Card with code ${code} not found in database.`);
+
+  return card;
+}

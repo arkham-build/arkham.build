@@ -1,12 +1,12 @@
 import type { Context } from "hono";
-import type { HonoEnv } from "../hono-env.ts";
-import { request } from "./shared.ts";
+import { request } from "../../lib/arkhamdb/shared.ts";
 import type {
   AccessToken,
   ArkhamDBDeck,
   OAuthErrorCode,
   OAuthErrorResponse,
-} from "./types.ts";
+} from "../../lib/arkhamdb/types.ts";
+import type { HonoEnv } from "../../lib/hono-env.ts";
 
 export class OAuthError extends Error {
   code: OAuthErrorCode;

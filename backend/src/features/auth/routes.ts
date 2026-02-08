@@ -12,48 +12,44 @@ import {
 import { type Context, Hono } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
-import {
-  createAccount,
-  getAccount,
-  updateAccountName,
-  upsertAccountFromOAuth,
-} from "../db/queries/account.ts";
-import {
-  getAccountIdentity,
-  getAccountIdentityByAccountId,
-  getAccountIdentityByEmail,
-  getAccountIdentityByUsername,
-  updateAccountIdentityVerified,
-  updatePasswordHash,
-} from "../db/queries/account-identity.ts";
-import {
-  createSession,
-  deleteSession,
-  deleteSessionsByAccountId,
-} from "../db/queries/session.ts";
-import {
-  consumeVerificationToken,
-  createVerificationToken,
-  deleteVerificationTokensByEmail,
-  getLatestVerificationTokenByEmail,
-} from "../db/queries/verification-token.ts";
+import type { HonoEnv } from "../../lib/hono-env.ts";
+import { isEmpty } from "../../lib/is-empty.ts";
+import { zodValidator } from "../../lib/validation.ts";
 import {
   authorize,
   exchangeAuthCodeForToken,
   fetchUserDecksForOAuth,
-} from "../lib/arkhamdb/oauth.ts";
+} from "./arkhamdb-oauth.ts";
 import {
   generateRandomToken,
   hashPassword,
   hashToken,
   verifyPassword,
-} from "../lib/auth/crypto.ts";
-import { sessionAuth } from "../lib/auth/session-auth.ts";
-import { passwordResetEmailTemplate } from "../lib/email/templates/password-reset-email.ts";
-import { verificationEmailTemplate } from "../lib/email/templates/verification-email.ts";
-import type { HonoEnv } from "../lib/hono-env.ts";
-import { isEmpty } from "../lib/is-empty.ts";
-import { zodValidator } from "../lib/validation.ts";
+} from "./crypto.ts";
+import {
+  passwordResetEmailTemplate,
+  verificationEmailTemplate,
+} from "./email-templates.ts";
+import {
+  consumeVerificationToken,
+  createAccount,
+  createSession,
+  createVerificationToken,
+  deleteSession,
+  deleteSessionsByAccountId,
+  deleteVerificationTokensByEmail,
+  getAccount,
+  getAccountIdentity,
+  getAccountIdentityByAccountId,
+  getAccountIdentityByEmail,
+  getAccountIdentityByUsername,
+  getLatestVerificationTokenByEmail,
+  updateAccountIdentityPasswordHash,
+  updateAccountIdentityVerified,
+  updateAccountName,
+  upsertAccountFromOAuth,
+} from "./queries.ts";
+import { sessionAuth } from "./session-auth-middleware.ts";
 
 const routes = new Hono<HonoEnv>();
 
@@ -325,7 +321,7 @@ routes.post(
         });
       }
 
-      await updatePasswordHash(
+      await updateAccountIdentityPasswordHash(
         tx,
         verificationToken.account_identity_id,
         passwordHash,
