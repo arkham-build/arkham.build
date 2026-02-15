@@ -196,7 +196,7 @@ const fieldDefinitions: FieldDefinition[] = [
       if (!otherLevels) return false;
 
       const accessFilter = deck
-        ? filterInvestigatorAccess(deck.investigatorBack.card, {
+        ? filterInvestigatorAccess(deck.investigatorBack.card, undefined, {
             customizable: { properties: "all", level: "all" },
             investigatorFront: deck.investigatorFront.card,
             selections: deck.selections,
@@ -302,7 +302,7 @@ const fieldDefinitions: FieldDefinition[] = [
       if (!otherLevels) return false;
 
       const accessFilter = deck
-        ? filterInvestigatorAccess(deck.investigatorBack.card, {
+        ? filterInvestigatorAccess(deck.investigatorBack.card, undefined, {
             customizable: { properties: "all", level: "all" },
             investigatorFront: deck.investigatorFront.card,
             selections: deck.selections,
