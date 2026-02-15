@@ -1,10 +1,10 @@
+import type { Card } from "@arkham-build/shared";
 import type { ReferenceType } from "@floating-ui/react";
 import { FileWarningIcon, StarIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { useStore } from "@/store";
-import type { Card } from "@/store/schemas/card.schema";
 import type { SettingsState } from "@/store/slices/settings.types";
 import {
   cardLimit,

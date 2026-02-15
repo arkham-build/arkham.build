@@ -1,4 +1,4 @@
-import type { Card } from "@/store/schemas/card.schema";
+import type { Card } from "@arkham-build/shared";
 import { isEnemyLike } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";

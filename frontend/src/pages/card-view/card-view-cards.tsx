@@ -1,3 +1,4 @@
+import type { Card as CardType } from "@arkham-build/shared";
 import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Link, useSearchParams } from "wouter";
@@ -9,13 +10,13 @@ import {
 } from "@/components/card-modal/specialist";
 import { CustomizationsEditor } from "@/components/customizations/customizations-editor";
 import PackIcon from "@/components/icons/pack-icon";
+import { OwnershipPartitionedCardList } from "@/components/ownership-partitioned-card-list";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store";
 import { filterBacksides } from "@/store/lib/filtering";
 import { getRelatedCards } from "@/store/lib/resolve-card";
 import { sortByPosition } from "@/store/lib/sorting";
 import type { CardWithRelations } from "@/store/lib/types";
-import type { Card as CardType } from "@/store/schemas/card.schema";
 import type { Pack } from "@/store/schemas/pack.schema";
 import {
   selectLookupTables,
@@ -227,23 +228,28 @@ export function CardViewCards({
       )}
 
       {!isEmpty(related) &&
-        related.map(([key, value]) => (
-          <CardViewSection key={key} id={key} title={formatRelationTitle(key)}>
-            {typeof value === "object" && !Array.isArray(value) && (
-              <Card resolvedCard={value} titleLinks="card" size="compact" />
-            )}
-            {Array.isArray(value) &&
-              value.map((c) => (
-                <Card
-                  canToggleBackside
-                  key={c.card.code}
-                  titleLinks="card"
-                  resolvedCard={c}
-                  size="compact"
-                />
-              ))}
-          </CardViewSection>
-        ))}
+        related.map(([key, value]) => {
+          return (
+            <CardViewSection
+              key={key}
+              id={key}
+              title={formatRelationTitle(key)}
+            >
+              <OwnershipPartitionedCardList
+                cards={value}
+                cardRenderer={(c) => (
+                  <Card
+                    canToggleBackside
+                    key={c.card.code}
+                    titleLinks="card"
+                    resolvedCard={c}
+                    size="compact"
+                  />
+                )}
+              />
+            </CardViewSection>
+          );
+        })}
 
       {cardWithRelations.card.type_code === "investigator" && (
         <CardViewSection title={formatRelationTitle("specialist")}>

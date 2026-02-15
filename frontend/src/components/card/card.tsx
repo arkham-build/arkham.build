@@ -1,8 +1,8 @@
+import type { Card as CardT } from "@arkham-build/shared";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
-import type { Card as CardT } from "@/store/schemas/card.schema";
 import { reversed } from "@/utils/card-utils";
 import { dataLanguage } from "@/utils/formatting";
 import { Button } from "../ui/button";

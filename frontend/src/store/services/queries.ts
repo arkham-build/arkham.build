@@ -1,3 +1,9 @@
+import type {
+  ApiCard,
+  FanMadeProject,
+  FanMadeProjectInfo,
+  SealedDeckResponse,
+} from "@arkham-build/shared";
 import {
   encodeSearch,
   type RecommendationsRequest,
@@ -10,13 +16,10 @@ import { packToApiFormat } from "@/utils/arkhamdb-json-format";
 import { assert } from "@/utils/assert";
 import { displayPackName } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
-import type { SealedDeck } from "../lib/types";
-import type { ApiCard } from "../schemas/card.schema";
 import type { Cycle } from "../schemas/cycle.schema";
 import type { DataVersion } from "../schemas/data-version.schema";
 import { type Deck, type Id, isDeck } from "../schemas/deck.schema";
 import type { JsonDataEncounterSet } from "../schemas/encounter-set.schema";
-import type { FanMadeProject } from "../schemas/fan-made-project.schema";
 import type { Pack } from "../schemas/pack.schema";
 import type { TabooSet } from "../schemas/taboo-set.schema";
 import type { History } from "../selectors/decks";
@@ -64,7 +67,10 @@ async function request(
   path: string,
   options: RequestInit = {},
 ): Promise<Response> {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/v1${path}`, options);
+  const res = await fetch(
+    `${import.meta.env.VITE_API_LEGACY_URL}/v1${path}`,
+    options,
+  );
 
   if (res.status >= 400) {
     const err = await res.json();
@@ -351,20 +357,14 @@ export async function getRecommendations(
   return RecommendationsResponseSchema.parse(json).data.recommendations;
 }
 
-export async function querySealedDeck(id: string): Promise<SealedDeck> {
-  const res = await request(`/public/sealed_deck/${id}`);
+export async function querySealedDeck(id: string): Promise<SealedDeckResponse> {
+  const res = await apiV2Request(`/v2/public/sealed-deck/${id}`);
   return await res.json();
 }
 
-export type FanMadeProjectListing = {
-  bucket_path: string;
-  id: string;
-  meta: FanMadeProject["meta"];
-};
-
-export async function queryFanMadeProjects(): Promise<FanMadeProjectListing[]> {
-  const res = await request("/public/fan_made_projects");
-  const { data }: { data: FanMadeProjectListing[] } = await res.json();
+export async function queryFanMadeProjects(): Promise<FanMadeProjectInfo[]> {
+  const res = await apiV2Request("/v2/public/fan-made-project-info");
+  const { data }: { data: FanMadeProjectInfo[] } = await res.json();
   return data.sort((a, b) => {
     return a.meta.name.localeCompare(b.meta.name);
   });

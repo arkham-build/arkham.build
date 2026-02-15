@@ -1,3 +1,4 @@
+import type { FactionName } from "@arkham-build/shared";
 import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -7,7 +8,6 @@ import {
   VictoryTooltip,
 } from "victory";
 import type { ChartableData } from "@/store/lib/deck-charts";
-import type { FactionName } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { useElementSize } from "../../utils/use-element-size";
 import { chartsTheme, containerTheme, tooltipWidth } from "./chart-theme";

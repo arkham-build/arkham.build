@@ -1,6 +1,6 @@
+import type { Card } from "@arkham-build/shared";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import type { Card } from "@/store/schemas/card.schema";
 import { getCardColor, thumbnailUrl } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { useAgathaEasterEggTransform } from "@/utils/easter-egg-agatha";

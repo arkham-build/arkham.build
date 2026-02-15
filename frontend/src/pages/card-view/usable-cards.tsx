@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { useEffect } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useParams } from "wouter";
@@ -6,7 +7,6 @@ import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectMetadata } from "@/store/selectors/shared";
 import { displayAttribute } from "@/utils/card-utils";
 import { ErrorStatus } from "../errors/404";

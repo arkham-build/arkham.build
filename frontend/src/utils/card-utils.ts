@@ -1,5 +1,5 @@
+import { type Card, SKILL_KEYS } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
-import type { Card } from "@/store/schemas/card.schema";
 import type { Cycle } from "@/store/schemas/cycle.schema";
 import type { Pack } from "@/store/schemas/pack.schema";
 import { assert } from "./assert";
@@ -8,7 +8,6 @@ import {
   ORIENTATION_CHANGED_CARDS,
   REGEX_USES,
   SIDEWAYS_TYPE_CODES,
-  SKILL_KEYS,
 } from "./constants";
 import { isEmpty } from "./is-empty";
 

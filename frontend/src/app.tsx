@@ -1,4 +1,9 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Route, Router, Switch, useLocation, useSearch } from "wouter";
@@ -9,12 +14,16 @@ import { ToastProvider } from "./components/ui/toast";
 import { useToast } from "./components/ui/toast.hooks";
 import { Connect } from "./pages/connect/connect";
 import { ErrorStatus } from "./pages/errors/404";
-import { CardDataSync } from "./pages/settings/card-data-sync";
 import { useStore } from "./store";
 import { shouldAutoSync, useSync } from "./store/hooks/use-sync";
 import { selectIsInitialized } from "./store/selectors/shared";
-import { queryDataVersion } from "./store/services/queries";
+import {
+  queryCards,
+  queryDataVersion,
+  queryMetadata,
+} from "./store/services/queries";
 import { useAgathaEasterEggHint } from "./utils/easter-egg-agatha";
+import { useColorThemeListener } from "./utils/use-color-theme";
 
 const Index = lazy(() => import("./pages/index"));
 
@@ -111,6 +120,7 @@ function AppInner() {
   const { t } = useTranslation();
   const storeInitialized = useStore(selectIsInitialized);
   const fontSize = useStore((state) => state.settings.fontSize);
+  useColorThemeListener();
 
   useEffect(() => {
     if (storeInitialized) {
@@ -165,6 +175,7 @@ function AppInner() {
               </Route>
             </Switch>
             <RouteReset />
+            <CardDataSyncTask />
             <AppTasks />
           </Router>
         )}
@@ -205,59 +216,89 @@ function RouteReset() {
   return null;
 }
 
-function AppTasks() {
-  const dataVersion = useStore((state) => state.metadata.dataVersion);
-  const connections = useStore((state) => state.connections);
-  const locale = useStore((state) => state.settings.locale);
-
-  const sync = useSync();
-  const toast = useToast();
+function CardDataSyncTask() {
   const [location] = useLocation();
-  const toastId = useRef<string>();
+  const locale = useStore((state) => state.settings.locale);
+  const dataVersion = useStore((state) => state.metadata.dataVersion);
 
-  useAgathaEasterEggHint();
+  const { t } = useTranslation();
+
+  const toast = useToast();
+  const toastId = useRef<string | undefined>();
+
+  const shouldQueryDataVersion =
+    !navigator.webdriver && !location.includes("/connect");
+
+  const { data: remoteDataVersion } = useQuery({
+    enabled: shouldQueryDataVersion,
+    queryFn: () => queryDataVersion(locale),
+    queryKey: ["tasks", "dataVersion", locale],
+    staleTime: 24 * 60 * 60 * 1000,
+  });
+
+  const init = useStore((state) => state.init);
+  const settings = useStore((state) => state.settings);
+
+  const initMutation = useMutation({
+    mutationFn: () =>
+      init(queryMetadata, queryDataVersion, queryCards, {
+        refresh: true,
+        locale: settings.locale,
+      }),
+  });
 
   useEffect(() => {
-    let mounted = true;
-
-    async function updateCardData() {
-      const data = await queryDataVersion(locale);
-
-      const upToDate =
-        data &&
-        dataVersion &&
-        data.locale === dataVersion.locale &&
-        data.cards_updated_at === dataVersion.cards_updated_at &&
-        data.translation_updated_at === dataVersion.translation_updated_at &&
-        data.version === dataVersion.version;
-
-      if (!upToDate && !toastId.current && mounted) {
-        toastId.current = toast.show({
-          children: (
-            <div>
-              <CardDataSync
-                onSyncComplete={() => {
-                  if (toastId.current) {
-                    toast.dismiss(toastId.current);
-                    toastId.current = undefined;
-                  }
-                }}
-              />
-            </div>
-          ),
-          persistent: true,
-        });
-      }
+    if (
+      !remoteDataVersion ||
+      !dataVersion ||
+      initMutation.isPending ||
+      initMutation.isError
+    ) {
+      return;
     }
 
-    if (!location.includes("/settings") && !location.includes("/connect")) {
-      updateCardData().catch(console.error);
-    }
+    const upToDate =
+      remoteDataVersion.locale === dataVersion.locale &&
+      remoteDataVersion.cards_updated_at === dataVersion.cards_updated_at &&
+      remoteDataVersion.translation_updated_at ===
+        dataVersion.translation_updated_at &&
+      remoteDataVersion.version === dataVersion.version;
 
-    return () => {
-      mounted = false;
-    };
-  }, [dataVersion, toast.dismiss, toast.show, location, locale]);
+    if (!upToDate) {
+      toastId.current = toast.show({
+        variant: "loading",
+        children: t("settings.card_data.loading"),
+      });
+
+      initMutation
+        .mutateAsync()
+        .then(() => {
+          if (toastId.current) {
+            toast.dismiss(toastId.current);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [
+    dataVersion,
+    initMutation.isError,
+    initMutation.isPending,
+    initMutation.mutateAsync,
+    remoteDataVersion,
+    toast,
+    t,
+  ]);
+
+  return null;
+}
+
+function AppTasks() {
+  const connections = useStore((state) => state.connections);
+
+  const sync = useSync();
+  const [location] = useLocation();
+
+  useAgathaEasterEggHint();
 
   const autoSyncLock = useRef(false);
 

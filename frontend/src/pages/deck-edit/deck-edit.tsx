@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import {
   BookOpenTextIcon,
   ChartAreaIcon,
@@ -29,7 +30,6 @@ import { useToast } from "@/components/ui/toast.hooks";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { useStore } from "@/store";
 import { getDeckLimitOverride } from "@/store/lib/resolve-deck";
-import type { Card } from "@/store/schemas/card.schema";
 import {
   selectDeckValid,
   selectResolvedDeckById,

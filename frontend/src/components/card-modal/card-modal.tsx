@@ -1,5 +1,7 @@
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: not relevant. */
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: backdrop needs to be clickable. */
+
+import type { Card as CardT } from "@arkham-build/shared";
 import { ArrowDownIcon, ArrowUpIcon, CheckCircleIcon } from "lucide-react";
 import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -9,7 +11,6 @@ import {
   getRelatedCardQuantity,
   getRelatedCards,
 } from "@/store/lib/resolve-card";
-import type { Card as CardT } from "@/store/schemas/card.schema";
 import { selectCardWithRelations } from "@/store/selectors/card-view";
 import { selectShowFanMadeRelations } from "@/store/selectors/shared";
 import type { CardModalConfig } from "@/store/slices/ui.types";

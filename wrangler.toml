@@ -5,20 +5,21 @@ dev.port = 3000
 
 [vars]
 NODE_VERSION = "24"
-VITE_API_URL = "https://api.arkham.build"
-# VITE_API_URL = "http://localhost:8787"
+VITE_API_LEGACY_URL = "https://api.arkham.build"
+# VITE_API_LEGACY_URL = "http://localhost:8787"
 VITE_ARKHAMDB_BASE_URL = "https://arkhamdb.com"
 # VITE_ARKHAMDB_BASE_URL = "http://localhost:8000"
 VITE_CARD_IMAGE_URL = "https://assets.arkham.build"
 VITE_PAGE_NAME = "arkham.build"
-VITE_RECOMMENDATION_API_URL = "https://api-v2.arkham.build"
+VITE_API_URL = "https://api-v2.arkham.build"
+# VITE_API_LEGACY_URL = "http://localhost:8686"
 VITE_SHOW_PREVIEW_BANNER="false"
 
 [env.production.vars]
 NODE_VERSION = "24"
-VITE_API_URL = "https://api.arkham.build"
+VITE_API_LEGACY_URL = "https://api.arkham.build"
 VITE_ARKHAMDB_BASE_URL = "https://arkhamdb.com"
 VITE_CARD_IMAGE_URL = "https://assets.arkham.build"
 VITE_PAGE_NAME = "arkham.build"
-VITE_RECOMMENDATION_API_URL = "https://api-v2.arkham.build"
+VITE_API_URL = "https://api-v2.arkham.build"
 VITE_SHOW_PREVIEW_BANNER="true"

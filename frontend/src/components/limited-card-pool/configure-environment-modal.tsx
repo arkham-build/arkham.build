@@ -1,7 +1,7 @@
+import type { Card } from "@arkham-build/shared";
 import { useCallback, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import type { Card } from "@/store/schemas/card.schema";
 import type { Cycle } from "@/store/schemas/cycle.schema";
 import {
   type CycleWithPacks,

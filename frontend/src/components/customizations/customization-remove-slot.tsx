@@ -1,6 +1,6 @@
+import type { Card } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { Select } from "@/components/ui/select";
-import type { Card } from "@/store/schemas/card.schema";
 import { splitMultiValue } from "@/utils/card-utils";
 import { Tag } from "../ui/tag";
 

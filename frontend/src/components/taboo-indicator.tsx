@@ -1,4 +1,4 @@
-import type { Card } from "@/store/schemas/card.schema";
+import type { Card } from "@arkham-build/shared";
 import { cx } from "@/utils/cx";
 import { ExperienceDots } from "./experience-dots";
 import css from "./taboo-indicator.module.css";

@@ -1,5 +1,5 @@
+import type { Attachments } from "@arkham-build/shared";
 import type { Deck } from "@/store/schemas/deck.schema";
-import type { Attachments } from "../schemas/card.schema";
 import type { AttachmentQuantities } from "../slices/deck-edits.types";
 import type { Metadata } from "../slices/metadata.types";
 

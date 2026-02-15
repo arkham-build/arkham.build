@@ -1,11 +1,12 @@
-import { displayAttribute, splitMultiValue } from "@/utils/card-utils";
-import type { FactionName, PlayerType } from "@/utils/constants";
 import {
   ASSET_SLOT_ORDER,
+  type Card,
   FACTION_ORDER,
+  type FactionName,
   PLAYER_TYPE_ORDER,
-} from "@/utils/constants";
-import type { Card } from "../schemas/card.schema";
+  type PlayerType,
+} from "@arkham-build/shared";
+import { displayAttribute, splitMultiValue } from "@/utils/card-utils";
 import type { SortingType } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
 

@@ -11,10 +11,60 @@
     "chapter": 2,
     "code": "core_2026",
     "cycle_code": "core_2026",
-    "date_release": "2026-04-30",
+    "date_release": "2026-03-20",
     "name": "Core Set 2026",
     "position": 100,
     "preview": true,
     "size": 999
+  },
+  {
+    "chapter": 2,
+    "code": "tom",
+    "cycle_code": "investigator",
+    "date_release": "2026-04-17",
+    "name": "Tommy Muldoon",
+    "position": 6,
+    "preview": true,
+    "size": 60
+  },
+  {
+    "chapter": 2,
+    "code": "car",
+    "cycle_code": "investigator",
+    "date_release": "2026-04-17",
+    "name": "Carolyn Fern",
+    "position": 7,
+    "preview": true,
+    "size": 60
+  },
+  {
+    "chapter": 2,
+    "code": "and",
+    "cycle_code": "investigator",
+    "date_release": "2026-04-17",
+    "name": "André Patel",
+    "position": 8,
+    "preview": true,
+    "size": 60
+  },
+  {
+    "chapter": 2,
+    "code": "mar",
+    "cycle_code": "investigator",
+    "date_release": "2026-04-17",
+    "name": "Marie Lambeau",
+    "position": 9,
+    "preview": true,
+    "size": 60
+  },
+  {
+    "chapter": 2,
+    "code": "mig",
+    "cycle_code": "investigator",
+    "date_release": "2026-04-17",
+    "name": "Miguel de la Cruz",
+    "position": 10,
+    "preview": true,
+    "size": 60
   }
 ]

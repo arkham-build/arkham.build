@@ -262,7 +262,7 @@ export function getRelatedCards(
   cardWithRelations: CardWithRelations,
   showFanMadeRelations: boolean,
   showPreviews: boolean,
-): [string, ResolvedCard | ResolvedCard[]][] {
+) {
   return Object.entries(cardWithRelations.relations ?? {})
     .reduce(
       (acc, [key, value]) => {

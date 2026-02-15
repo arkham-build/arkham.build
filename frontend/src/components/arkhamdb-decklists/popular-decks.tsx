@@ -1,8 +1,8 @@
+import type { Card } from "@arkham-build/shared";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircleIcon, ExternalLinkIcon } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "wouter";
-import type { Card } from "@/store/schemas/card.schema";
 import {
   deckSearchQuery,
   searchDecklists,

@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
 import { ArrowRightLeftIcon, Settings2Icon } from "lucide-react";
 import { useCallback, useMemo } from "react";
@@ -15,7 +16,6 @@ import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import { decodeSelections } from "@/store/lib/deck-meta";
 import type { CardWithRelations } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectConnectionsData } from "@/store/selectors/connections";
 import {
   selectDeckCreateChecked,

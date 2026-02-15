@@ -2,15 +2,18 @@ import { Hono } from "hono";
 import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
 import type { Database } from "./db/db.ts";
-import { getAppDataVersions } from "./db/queries/get-app-data-versions.ts";
-import { arkhamDbDecklistsRouter } from "./features/arkhamdb-decklists/index.ts";
-import { recommendationsRouter } from "./features/recommendations.ts";
+import { getAppDataVersions } from "./db/queries/data-version.ts";
 import { bodyLimitMiddleware } from "./lib/body-limit.ts";
 import type { Config } from "./lib/config.ts";
 import { corsMiddleware } from "./lib/cors.ts";
 import { errorHandler } from "./lib/errors.ts";
 import type { HonoEnv } from "./lib/hono-env.ts";
 import { logger, requestLogger } from "./lib/logger.ts";
+import adminRouter from "./routes/admin.ts";
+import arkhamDbDecklistsRouter from "./routes/arkhamdb-decklists.ts";
+import fanMadeProjectInfoRouter from "./routes/fan-made-project-info.ts";
+import recommendationsRouter from "./routes/recommendations.ts";
+import sealedDeckRouter from "./routes/sealed-deck.ts";
 
 export function appFactory(config: Config, database: Database) {
   const app = new Hono<HonoEnv>();
@@ -29,11 +32,15 @@ export function appFactory(config: Config, database: Database) {
     return next();
   });
 
-  const pub = new Hono<HonoEnv>();
-  pub.route("/arkhamdb-decklists", arkhamDbDecklistsRouter());
-  pub.route("/recommendations", recommendationsRouter());
+  app.route("/admin", adminRouter);
 
+  const pub = new Hono<HonoEnv>();
+  pub.route("/arkhamdb-decklists", arkhamDbDecklistsRouter);
+  pub.route("/fan-made-project-info", fanMadeProjectInfoRouter);
+  pub.route("/recommendations", recommendationsRouter);
+  pub.route("/sealed-deck", sealedDeckRouter);
   app.route("/v2/public", pub);
+
   app.get("/up", (c) => c.text("ok"));
 
   app.get("/version", async (c) => {

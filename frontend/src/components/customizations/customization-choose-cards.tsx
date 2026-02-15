@@ -1,12 +1,12 @@
+import type {
+  Card,
+  CustomizationOption as CustomizationOptionType,
+} from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useStore } from "@/store";
 import { makeSortFunction } from "@/store/lib/sorting";
-import type {
-  Card,
-  CustomizationOption as CustomizationOptionType,
-} from "@/store/schemas/card.schema";
 import {
   selectCardMapper,
   selectLocaleSortingCollator,

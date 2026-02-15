@@ -18,6 +18,7 @@
 .viewport > div[style] {
   /* biome-ignore lint/complexity/noImportantStyles: fix for library bug (radix-ui/primitives/issues/926) */
   display: block !important;
+  min-height: 100%;
 }
 
 .scrollbar {

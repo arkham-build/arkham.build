@@ -1,6 +1,10 @@
+import {
+  type Card,
+  FACTION_ORDER,
+  type FactionName,
+  SKILL_KEYS,
+} from "@arkham-build/shared";
 import { splitMultiValue } from "@/utils/card-utils";
-import { FACTION_ORDER, type FactionName, SKILL_KEYS } from "@/utils/constants";
-import type { Card } from "../schemas/card.schema";
 import type { DeckCharts } from "./types";
 
 export type ChartableData<T extends string | number = number> = {

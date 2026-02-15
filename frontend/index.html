@@ -1,6 +1,5 @@
 <!doctype html>
-<html class="theme-dark notranslate" lang="en" translate="no">
-
+<html class="notranslate" lang="en" translate="no" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +7,7 @@
   <meta name="description" content="Deck builder for Arkham Horror: The Card Game™" />
 
   <link rel="preconnect" href="%VITE_CARD_IMAGE_URL%" />
+  <link rel="preconnect" href="%VITE_API_LEGACY_URL%" crossorigin />
   <link rel="preconnect" href="%VITE_API_URL%" crossorigin />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -35,6 +35,8 @@
   <meta property="og:image" content="/opengraph.png" />
 
   <link rel="search" type="application/opensearchdescription+xml" title="arkham.build" href="https://arkham.build/opensearch.xml" />
+
+  <script src="/head.js"></script>
 </head>
 
 <body>

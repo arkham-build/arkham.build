@@ -178,6 +178,12 @@ export interface Faction {
   name: string;
 }
 
+export interface FanMadeProjectInfo {
+  bucket_path: string;
+  id: string;
+  meta: Json;
+}
+
 export interface Pack {
   code: string;
   cycle_code: string;
@@ -222,6 +228,7 @@ export interface DB {
   data_version: DataVersion;
   encounter_set: EncounterSet;
   faction: Faction;
+  fan_made_project_info: FanMadeProjectInfo;
   pack: Pack;
   pack_type: PackType;
   schema_migrations: SchemaMigrations;

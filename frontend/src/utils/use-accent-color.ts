@@ -1,5 +1,5 @@
+import type { Card } from "@arkham-build/shared";
 import { useMemo } from "react";
-import type { Card } from "@/store/schemas/card.schema";
 
 export function useAccentColor(card?: Card) {
   const cssVariables = useMemo(

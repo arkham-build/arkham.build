@@ -1,4 +1,4 @@
-import type { Card } from "../schemas/card.schema";
+import type { Card } from "@arkham-build/shared";
 import type { Cycle } from "../schemas/cycle.schema";
 import type { DataVersion } from "../schemas/data-version.schema";
 import type { EncounterSet } from "../schemas/encounter-set.schema";

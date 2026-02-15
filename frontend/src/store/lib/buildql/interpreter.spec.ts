@@ -1,6 +1,6 @@
+import type { Card } from "@arkham-build/shared";
 import type { i18n, TFunction } from "i18next";
 import { beforeAll, describe, expect, test } from "vitest";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import { getMockStore } from "@/test/get-mock-store";
 import { fields } from "./fields";

@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,7 +9,6 @@ import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provide
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
 import type { CardWithRelations } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectCardRelationsResolver } from "@/store/selectors/lists";
 import { selectActiveList } from "@/store/selectors/shared";
 import { displayAttribute } from "@/utils/card-utils";

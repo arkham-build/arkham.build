@@ -1,3 +1,7 @@
+import type {
+  DeckOptionSelectType,
+  SealedDeckResponse,
+} from "@arkham-build/shared";
 import type { TFunction } from "i18next";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,12 +15,7 @@ import type { SelectOption } from "@/components/ui/select";
 import { Select } from "@/components/ui/select";
 import { useStore } from "@/store";
 import { encodeCardPool, encodeSealedDeck } from "@/store/lib/deck-meta";
-import type {
-  CardWithRelations,
-  ResolvedDeck,
-  SealedDeck,
-} from "@/store/lib/types";
-import type { DeckOptionSelectType } from "@/store/schemas/card.schema";
+import type { CardWithRelations, ResolvedDeck } from "@/store/lib/types";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
 import type { StoreState } from "@/store/slices";
 import { debounce } from "@/utils/debounce";
@@ -148,7 +147,7 @@ export function MetaEditor(props: Props) {
   );
 
   const onSealedDeckChange = useCallback(
-    (value: SealedDeck | undefined) => {
+    (value: SealedDeckResponse | undefined) => {
       const encoded = value ? encodeSealedDeck(value) : undefined;
       updateMetaProperty(deck.id, "sealed_deck", encoded?.sealed_deck ?? null);
       updateMetaProperty(

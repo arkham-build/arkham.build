@@ -1,7 +1,7 @@
+import type { Card as CardType } from "@arkham-build/shared";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedCard } from "@/store/lib/types";
-import type { Card as CardType } from "@/store/schemas/card.schema";
 import {
   displayAttribute,
   doubleSidedBackCard,

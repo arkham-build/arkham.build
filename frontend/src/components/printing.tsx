@@ -1,4 +1,4 @@
-import type { Card } from "@/store/schemas/card.schema";
+import type { Card } from "@arkham-build/shared";
 import type { Printing as PrintingT } from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
 import { displayPackName } from "@/utils/formatting";

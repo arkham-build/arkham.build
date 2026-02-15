@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import { DEFAULT_LIST_SORT_ID, SPECIAL_CARD_CODES } from "@/utils/constants";
@@ -11,7 +12,6 @@ import {
   filterType,
 } from "../lib/filtering";
 import type { ResolvedDeck } from "../lib/types";
-import type { Card } from "../schemas/card.schema";
 import { selectBuildQlInterpreter } from "../selectors/shared";
 import type { StoreState } from ".";
 import {

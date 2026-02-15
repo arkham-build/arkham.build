@@ -197,6 +197,7 @@
       "more_actions": "More actions",
       "myriad": "Myriad",
       "no_entries": "No entries",
+      "non_collection_cards": "{{count}} non-collection cards",
       "none": "None",
       "nonexceptional": "Non-exceptional",
       "ok": "OK",
@@ -1056,6 +1057,7 @@
         "update": "Update share",
         "update_failed": "Failed to update share: {{error}}"
       },
+      "show_deck_list": "Show deck list",
       "tab_deck_list": "Deck",
       "tab_history": "History",
       "tab_notes": "Notes",

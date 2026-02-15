@@ -1,7 +1,7 @@
+import { FACTION_ORDER } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { FactionToggle } from "@/components/faction-toggle";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { FACTION_ORDER } from "@/utils/constants";
 import type { DecklistFilterProps } from "./shared";
 
 const EMPTY_ARRAY: never[] = [];

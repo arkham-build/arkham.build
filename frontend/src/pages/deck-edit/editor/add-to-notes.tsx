@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { PencilLine } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,7 +9,6 @@ import {
 } from "@/pages/deck-edit/editor/notes-rte/cards-to-markdown";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import { useNotesRichTextEditorContext } from "./notes-rte/notes-rte-context";
 

@@ -1,6 +1,5 @@
+import { type Card, SKILL_KEYS } from "@arkham-build/shared";
 import { Fragment } from "react";
-import type { Card } from "@/store/schemas/card.schema";
-import { SKILL_KEYS } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";
 import { SkillIcon } from "../icons/skill-icon";

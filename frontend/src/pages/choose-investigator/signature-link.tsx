@@ -1,9 +1,9 @@
+import type { Card } from "@arkham-build/shared";
 import { FloatingPortal, shift } from "@floating-ui/react";
 import { useCallback } from "react";
 import { CardTooltip } from "@/components/card-tooltip/card-tooltip";
 import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
 import { useStore } from "@/store";
-import type { Card } from "@/store/schemas/card.schema";
 import { displayAttribute } from "@/utils/card-utils";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import css from "./choose-investigator.module.css";

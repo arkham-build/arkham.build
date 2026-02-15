@@ -1,3 +1,4 @@
+import type { JsonDataCard } from "@arkham-build/shared";
 import localCards from "@/store/services/data/card-patches";
 import localCycles from "@/store/services/data/cycles.json";
 import localEncounters from "@/store/services/data/encounter_sets.json";
@@ -7,7 +8,6 @@ import {
   cycleToApiFormat,
   packToApiFormat,
 } from "@/utils/arkhamdb-json-format";
-import type { JsonDataCard } from "../schemas/card.schema";
 import type { JsonDataCycle } from "../schemas/cycle.schema";
 import type { EncounterSet } from "../schemas/encounter-set.schema";
 import type { JsonDataPack } from "../schemas/pack.schema";

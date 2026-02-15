@@ -7,8 +7,11 @@ import { Scroller } from "@/components/ui/scroller";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { StoreState } from "@/store/slices";
+import { MQ_WIDE_PREVIEW } from "@/utils/constants";
 import { debounce } from "@/utils/debounce";
+import { useMedia } from "@/utils/use-media";
 import css from "./notes-editor.module.css";
+import { NotesPreview } from "./notes-preview";
 import { NotesRichTextEditor } from "./notes-rte/notes-rte";
 
 type Props = {
@@ -45,31 +48,36 @@ export function NotesEditor(props: Props) {
     [updateMetaProperty, deck.id],
   );
 
+  const isWide = useMedia(MQ_WIDE_PREVIEW);
+
   return (
-    <Scroller>
-      <div className={css["notes-editor"]}>
-        <Field full helpText={t("deck_edit.notes.description_help")} padded>
-          <FieldLabel>{t("deck_edit.notes.description")}</FieldLabel>
-          <NotesRichTextEditor deck={deck} />
-        </Field>
-        <Field full padded helpText={t("deck_edit.notes.banner_url_help")}>
-          <FieldLabel>{t("deck_edit.notes.banner_url")}</FieldLabel>
-          <input
-            defaultValue={deck.metaParsed.banner_url ?? ""}
-            onChange={onBannerUrlChange}
-            type="text"
-            placeholder={t("deck_edit.notes.banner_url_placeholder")}
-          />
-        </Field>
-        <Field full padded helpText={t("deck_edit.notes.intro_help")}>
-          <FieldLabel>{t("deck_edit.notes.intro")}</FieldLabel>
-          <AutoSizingTextarea
-            data-testid="editor-intro"
-            defaultValue={deck.metaParsed.intro_md ?? ""}
-            onChange={onIntroChange}
-          />
-        </Field>
-      </div>
-    </Scroller>
+    <div className={css["container"]}>
+      <Scroller>
+        <div className={css["notes-editor"]}>
+          <Field full helpText={t("deck_edit.notes.description_help")} padded>
+            <FieldLabel>{t("deck_edit.notes.description")}</FieldLabel>
+            <NotesRichTextEditor deck={deck} />
+          </Field>
+          <Field full padded helpText={t("deck_edit.notes.banner_url_help")}>
+            <FieldLabel>{t("deck_edit.notes.banner_url")}</FieldLabel>
+            <input
+              defaultValue={deck.metaParsed.banner_url ?? ""}
+              onChange={onBannerUrlChange}
+              type="text"
+              placeholder={t("deck_edit.notes.banner_url_placeholder")}
+            />
+          </Field>
+          <Field full padded helpText={t("deck_edit.notes.intro_help")}>
+            <FieldLabel>{t("deck_edit.notes.intro")}</FieldLabel>
+            <AutoSizingTextarea
+              data-testid="editor-intro"
+              defaultValue={deck.metaParsed.intro_md ?? ""}
+              onChange={onIntroChange}
+            />
+          </Field>
+        </div>
+      </Scroller>
+      {isWide && <NotesPreview deck={deck} />}
+    </div>
   );
 }

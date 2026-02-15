@@ -1,7 +1,7 @@
+import type { SealedDeckResponse } from "@arkham-build/shared";
 import { BookLockIcon, XIcon } from "lucide-react";
 import { useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import type { SealedDeck } from "@/store/lib/types";
 import { assert } from "@/utils/assert";
 import { parseCsv } from "@/utils/parse-csv";
 import { Button } from "../ui/button";
@@ -12,8 +12,8 @@ import { useToast } from "../ui/toast.hooks";
 import css from "./limited-card-pool.module.css";
 
 export function SealedDeckField(props: {
-  onValueChange: (payload: SealedDeck | undefined) => void;
-  value?: SealedDeck;
+  onValueChange: (payload: SealedDeckResponse | undefined) => void;
+  value?: SealedDeckResponse;
 }) {
   const { onValueChange, value } = props;
 

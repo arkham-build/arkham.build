@@ -8,43 +8,37 @@ import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { expressionBuilder, sql } from "kysely";
 import type { Database } from "../db/db.ts";
-import { getCardById } from "../db/queries/get-card-by-id.ts";
+import { getCardById } from "../db/queries/card.ts";
 import type { DB } from "../db/schema.types.ts";
+import type { HonoEnv } from "../lib/hono-env.ts";
 import {
   canonicalInvestigatorCodeCond,
   deckFilterConds,
   inDateRangeConds,
   requiredSlotsCond,
-} from "../lib/decklists-helpers.ts";
-import type { HonoEnv } from "../lib/hono-env.ts";
+} from "./arkhamdb-decklists.helpers.ts";
 
-export function recommendationsRouter() {
-  const routes = new Hono<HonoEnv>();
+const router = new Hono<HonoEnv>();
 
-  routes.get("/:canonical_investigator_code", async (c) => {
-    const req = decodeSearch<RecommendationsRequest>(
-      RecommendationsRequestSchema,
-      {
-        ...c.req.queries(),
-        canonical_investigator_code: [
-          c.req.param("canonical_investigator_code"),
-        ],
-      },
-    );
+router.get("/:canonical_investigator_code", async (c) => {
+  const req = decodeSearch<RecommendationsRequest>(
+    RecommendationsRequestSchema,
+    {
+      ...c.req.queries(),
+      canonical_investigator_code: [c.req.param("canonical_investigator_code")],
+    },
+  );
 
-    const recommendations = await getRecommendations(c.get("db"), req);
+  const recommendations = await getRecommendations(c.get("db"), req);
 
-    const res = RecommendationsResponseSchema.parse({
-      data: { recommendations },
-    });
-
-    c.header("Cache-Control", "public, max-age=86400, immutable");
-
-    return c.json(res);
+  const res = RecommendationsResponseSchema.parse({
+    data: { recommendations },
   });
 
-  return routes;
-}
+  c.header("Cache-Control", "public, max-age=86400, immutable");
+
+  return c.json(res);
+});
 
 async function getRecommendations(db: Database, req: RecommendationsRequest) {
   const canonicalInvestigatorCode = await resolveCanonicalInvestigator(
@@ -304,3 +298,5 @@ function formatRecommendations(
     ? { decksAnalyzed: 0, recommendations: [] }
     : { decksAnalyzed, recommendations };
 }
+
+export default router;

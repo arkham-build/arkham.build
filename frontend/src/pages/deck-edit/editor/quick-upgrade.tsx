@@ -1,3 +1,4 @@
+import type { Card as CardT } from "@arkham-build/shared";
 import { FloatingPortal } from "@floating-ui/react";
 import { DicesIcon } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -15,12 +16,13 @@ import {
   ModalInner,
 } from "@/components/ui/modal";
 import { QuantityInput } from "@/components/ui/quantity-input";
+import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
 import { useStore } from "@/store";
-import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card as CardT } from "@/store/schemas/card.schema";
+import type { CardWithRelations, ResolvedDeck } from "@/store/lib/types";
 import {
   type AvailableUpgrades,
   selectResolvedCardById,
+  selectResolvedUpgrades,
 } from "@/store/selectors/lists";
 import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
@@ -38,13 +40,21 @@ type Props = {
 
 export function QuickUpgrade(props: Props) {
   const { availableUpgrades, card, currentTab, deck, hideButton } = props;
-  const { t } = useTranslation();
 
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const upgradeCard = useStore((state) => state.upgradeCard);
 
   const slots = currentTab === "extraSlots" ? "extraSlots" : "slots";
+
+  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
+    useRestingTooltip();
+
+  const resolvedUpgrades = useStore(
+    useShallow((state) =>
+      selectResolvedUpgrades(state, availableUpgrades, deck, card),
+    ),
+  );
 
   const onUpgradeCard = useCallback(() => {
     const upgrades = availableUpgrades.upgrades[card.code];
@@ -72,11 +82,10 @@ export function QuickUpgrade(props: Props) {
     <>
       {!hideButton && (
         <Button
+          ref={refs.setReference}
+          {...referenceProps}
           iconOnly
           data-testid="quick-upgrade"
-          tooltip={t("deck_edit.actions.quick_upgrade", {
-            name: displayAttribute(card, "name"),
-          })}
           onClick={onUpgradeCard}
           variant="bare"
           size="sm"
@@ -84,11 +93,32 @@ export function QuickUpgrade(props: Props) {
           <i className="icon icon-upgrade" />
         </Button>
       )}
+      {isMounted && (
+        <FloatingPortal id={FLOATING_PORTAL_ID}>
+          <div ref={refs.setFloating} style={floatingStyles}>
+            <div style={transitionStyles}>
+              <div className={css["upgrade-tooltip"]}>
+                {resolvedUpgrades.map((upgrade) => {
+                  if (!upgrade) return null;
+                  return (
+                    <Card
+                      key={upgrade.card.code}
+                      resolvedCard={upgrade}
+                      size="tooltip"
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </FloatingPortal>
+      )}
       {dialogOpen && (
         <QuickUpgradeDialog
           {...props}
           open={dialogOpen}
           onOpenChange={setDialogOpen}
+          resolvedUpgrades={resolvedUpgrades}
           slots={slots}
         />
       )}
@@ -100,24 +130,25 @@ function QuickUpgradeDialog(
   props: Props & {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    resolvedUpgrades: (CardWithRelations | undefined)[];
     slots: "slots" | "extraSlots";
   },
 ) {
-  const { availableUpgrades, card, deck, onOpenChange, open, slots } = props;
+  const {
+    availableUpgrades,
+    card,
+    deck,
+    onOpenChange,
+    open,
+    resolvedUpgrades,
+    slots,
+  } = props;
   const { t } = useTranslation();
 
   const accentColor = useAccentColor(card);
 
   const resolvedCard = useStore((state) =>
     selectResolvedCardById(state, card.code, deck),
-  );
-
-  const resolvedUpgrades = useStore(
-    useShallow((state) =>
-      availableUpgrades.upgrades[card.code]
-        .sort((a, b) => (a?.xp ?? 0) - (b?.xp ?? 0))
-        .map((upgrade) => selectResolvedCardById(state, upgrade.code, deck)),
-    ),
   );
 
   const upgradeCard = useStore((state) => state.upgradeCard);

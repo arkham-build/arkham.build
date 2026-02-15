@@ -51,6 +51,7 @@ import { useToast } from "../ui/toast.hooks";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./deck-display.module.css";
 import { DeckHistory } from "./deck-history/deck-history";
+import { DecklistPopover } from "./decklist-popover";
 import { Sidebar } from "./sidebar";
 import type { DeckOrigin } from "./types";
 
@@ -247,6 +248,7 @@ export function DeckDisplay(props: DeckDisplayProps) {
                 <Plane>
                   <DeckDescription content={deck.description_md} centered />
                 </Plane>
+                <DecklistPopover deck={deck} />
               </TabsContent>
             )}
             {hasHistory && (

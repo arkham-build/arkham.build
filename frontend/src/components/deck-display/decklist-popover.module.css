@@ -1,0 +1,14 @@
+@layer app {
+  .container {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+  }
+
+  .popover {
+    width: min(24rem, 95dvw);
+    height: 80dvh;
+    z-index: 2;
+    box-shadow: var(--shadow-lg);
+  }
+}

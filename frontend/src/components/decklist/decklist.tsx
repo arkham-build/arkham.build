@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { LayoutGridIcon, LayoutListIcon, SortDescIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -5,7 +6,6 @@ import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
 import { countGroupRows, type DeckGrouping } from "@/store/lib/deck-grouping";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Card } from "@/store/schemas/card.schema";
 import { selectDeckGroups } from "@/store/selectors/decks";
 import { sortPresetId } from "@/store/slices/lists";
 import type { ViewMode } from "@/store/slices/lists.types";

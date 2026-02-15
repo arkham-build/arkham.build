@@ -1,7 +1,7 @@
+import type { ApiCard, Card } from "@arkham-build/shared";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { displayAttribute, splitMultiValue } from "@/utils/card-utils";
 import i18n from "@/utils/i18n";
-import type { ApiCard, Card } from "../schemas/card.schema";
 import type { Customizations } from "./types";
 
 type Insert = {

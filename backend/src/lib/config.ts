@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const configSchema = z.object({
+  ADMIN_API_KEY: z.string(),
   INGEST_URL_ARKHAMDB_DECKLISTS: z.string(),
   CORS_ORIGINS: z.string(),
   HOSTNAME: z.string().default("localhost"),

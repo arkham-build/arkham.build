@@ -60,8 +60,7 @@
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "5.1.2",
     "autoprefixer": "10.4.23",
-    "happy-dom": "20.0.11",
-    "postcss-extend-rule": "4.0.0",
+    "happy-dom": "20.6.1",
     "vite": "7.3.0",
     "wrangler": "4.59.1"
   }

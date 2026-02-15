@@ -60,89 +60,6 @@ const ACTION_TEXT: { [key: string]: string } = {
 
 export const ACTION_TEXT_ENTRIES = Object.entries(ACTION_TEXT);
 
-export type SkillKey =
-  | "agility"
-  | "combat"
-  | "intellect"
-  | "willpower"
-  | "wild";
-
-export const SKILL_KEYS: SkillKey[] = [
-  "willpower",
-  "intellect",
-  "combat",
-  "agility",
-  "wild",
-] as const;
-
-export type PlayerType =
-  | "investigator"
-  | "asset"
-  | "event"
-  | "skill"
-  | "location"
-  | "story"
-  | "treachery"
-  | "enemy"
-  | "key";
-
-export const PLAYER_TYPE_ORDER = [
-  "investigator",
-  "asset",
-  "event",
-  "skill",
-  "location",
-  "enemy",
-  "enemy_location",
-  "key",
-  "treachery",
-  "scenario",
-  "act",
-  "agenda",
-  "story",
-] as const;
-
-export const ASSET_SLOT_ORDER = [
-  "Hand",
-  "Hand x2",
-  "Accessory",
-  "Ally",
-  "Arcane",
-  "Arcane x2",
-  "Head",
-  "Body",
-  "Tarot",
-  // followed by:
-  // - multi_slot
-  // - permanent
-  // - Other
-];
-
-const SKILL_ICONS = [
-  "skill_agility",
-  "skill_combat",
-  "skill_intellect",
-  "skill_willpower",
-  "skill_wild",
-] as const;
-
-export type SkillIcon = (typeof SKILL_ICONS)[number];
-
-export const FACTION_ORDER = [
-  "guardian",
-  "seeker",
-  "rogue",
-  "mystic",
-  "survivor",
-  "neutral",
-  "mythos",
-  "multiclass",
-] as const;
-
-export type FactionName = (typeof FACTION_ORDER)[number];
-
-export const COMPARISON_OPERATOR = ["=", "!="] as const;
-
 export const SIDEWAYS_TYPE_CODES = ["act", "agenda", "investigator"];
 
 export const CYCLES_WITH_STANDALONE_PACKS = [
@@ -182,12 +99,8 @@ export const SPECIAL_CARD_CODES = {
   OCCULT_EVIDENCE: "06008",
   /** Fake-bonded card, should be excluded from things liks draw simulator. */
   ON_THE_MEND: "09006",
-  /** Has option to add cards to ignore deck limit slots. */
-  PARALLEL_AGNES: "90017",
   /** Has spirit deck. */
   PARALLEL_JIM: "90049",
-  /** Has option to add cards to ignore deck limit slots. */
-  PARALLEL_SKIDS: "90008",
   /** Parallel front has deckbuilding impact. */
   PARALLEL_ROLAND: "90024",
   /** Parallel front has deckbuilding impact. */
@@ -235,6 +148,7 @@ export const CARD_SET_ORDER = [
 export const MQ_FLOATING_SIDEBAR = "(max-width: 52rem)";
 export const MQ_FLOATING_FILTERS = "(max-width: 75rem)";
 export const MQ_MOBILE = "(pointer: coarse)";
+export const MQ_WIDE_PREVIEW = "(min-width: 85rem)";
 
 export const PREVIEW_PACKS = (localPacks as JsonDataPack[])
   .filter((p) => p.date_release && new Date() < new Date(p.date_release))

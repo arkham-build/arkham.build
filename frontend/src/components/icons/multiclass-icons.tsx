@@ -1,4 +1,4 @@
-import type { Card } from "@/store/schemas/card.schema";
+import type { Card } from "@arkham-build/shared";
 import { cx } from "@/utils/cx";
 import { FactionIcon } from "./faction-icon";
 import css from "./multiclass-icons.module.css";

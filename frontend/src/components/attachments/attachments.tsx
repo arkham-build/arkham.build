@@ -1,10 +1,7 @@
+import type { Card, Attachments as IAttachments } from "@arkham-build/shared";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type {
-  Card,
-  Attachments as IAttachments,
-} from "@/store/schemas/card.schema";
 import { Button } from "../ui/button";
 import { ExternalLucideIcon } from "../ui/external-lucide-icon";
 import {

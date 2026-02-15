@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import { not, or } from "@/utils/fp";
 import {
@@ -8,8 +9,7 @@ import {
 } from "../lib/filtering";
 import { resolveCardWithRelations } from "../lib/resolve-card";
 import { makeSortFunction } from "../lib/sorting";
-import type { ResolvedDeck } from "../lib/types";
-import type { Card } from "../schemas/card.schema";
+import type { CardWithRelations, ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";
 import { selectCanonicalTabooSetId } from "./lists";
 import {
@@ -56,15 +56,27 @@ export const selectUsableByInvestigators = createSelector(
   selectMetadata,
   selectLocaleSortingCollator,
   selectStaticBuildQlInterpreter,
+  (state) => selectCanonicalTabooSetId(state, undefined),
   (_: StoreState, card: Card) => card,
-  (lookupTables, metadata, collator, buildQlInterpreter, card) => {
+  (lookupTables, metadata, collator, buildQlInterpreter, tabooSetId, card) => {
     const investigatorCodes = Object.keys(
       lookupTables.typeCode["investigator"],
     );
 
     const cards = investigatorCodes
-      .map((code) => metadata.cards[code])
-      .filter((investigator) => {
+      .map((code) =>
+        resolveCardWithRelations(
+          { metadata, lookupTables },
+          collator,
+          code,
+          tabooSetId,
+          undefined,
+          true,
+        ),
+      )
+      .filter((c) => {
+        if (!c) return false;
+        const investigator = c.card;
         const isValidInvestigator =
           not(filterEncounterCards)(investigator) &&
           filterAlternates(investigator);
@@ -80,10 +92,10 @@ export const selectUsableByInvestigators = createSelector(
         const weaknessAccess = filterInvestigatorWeaknessAccess(investigator);
 
         return or([access, weaknessAccess])(card);
-      });
+      }) as CardWithRelations[];
 
     const sorting = makeSortFunction(["name", "cycle"], metadata, collator);
 
-    return cards.sort(sorting);
+    return cards.sort((a, b) => sorting(a.card, b.card));
   },
 );

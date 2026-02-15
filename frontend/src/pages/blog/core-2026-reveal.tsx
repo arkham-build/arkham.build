@@ -1,3 +1,4 @@
+import type { FanMadeProject } from "@arkham-build/shared";
 import { useMutation } from "@tanstack/react-query";
 import { LoaderCircleIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -8,7 +9,6 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import { parseFanMadeProject } from "@/store/lib/fan-made-content";
-import type { FanMadeProject } from "@/store/schemas/fan-made-project.schema";
 import { selectMetadata } from "@/store/selectors/shared";
 import { cardToApiFormat } from "@/utils/arkhamdb-json-format";
 import { cx } from "@/utils/cx";

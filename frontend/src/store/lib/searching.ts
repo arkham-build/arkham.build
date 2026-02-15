@@ -1,6 +1,6 @@
+import type { Card } from "@arkham-build/shared";
 import { displayAttribute } from "@/utils/card-utils";
 import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";
-import type { Card } from "../schemas/card.schema";
 import type { Search } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
 

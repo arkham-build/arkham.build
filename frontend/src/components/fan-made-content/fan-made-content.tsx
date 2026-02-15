@@ -1,3 +1,8 @@
+import {
+  type FanMadeProject,
+  type FanMadeProjectInfo,
+  FanMadeProjectSchema,
+} from "@arkham-build/shared";
 import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import {
   BookDashedIcon,
@@ -16,13 +21,8 @@ import { useSearchParams } from "wouter";
 import { z } from "zod";
 import type { SettingProps } from "@/pages/settings/types";
 import { useStore } from "@/store";
-import {
-  type FanMadeProject,
-  FanMadeProjectSchema,
-} from "@/store/schemas/fan-made-project.schema";
 import { selectOwnedFanMadeProjects } from "@/store/selectors/fan-made-content";
 import {
-  type FanMadeProjectListing,
   queryFanMadeProjectData,
   queryFanMadeProjects,
 } from "@/store/services/queries";
@@ -78,7 +78,7 @@ export function FanMadeContent(props: SettingProps) {
 
   const listingsQuery = useQuery({
     queryFn: queryFanMadeProjects,
-    queryKey: ["fan-made-projects"],
+    queryKey: ["fan-made-project-info"],
   });
 
   const onAddProject = useCallback(
@@ -274,7 +274,7 @@ type RegistryProps = {
   filterFn: <T extends Filterable>(
     projects: T[] | undefined,
   ) => T[] | undefined;
-  listingsQuery: UseQueryResult<FanMadeProjectListing[]>;
+  listingsQuery: UseQueryResult<FanMadeProjectInfo[]>;
 };
 
 function Collection({ onAddProject, listingsQuery, filterFn }: RegistryProps) {
@@ -362,37 +362,34 @@ function Collection({ onAddProject, listingsQuery, filterFn }: RegistryProps) {
               (listing) => listing.meta.code === meta.code,
             );
 
-            if (!hasRemote || listing) {
-              return (
-                <ProjectCard key={meta.code} project={project}>
-                  {hasRemote && listing && (
-                    <ProjectInstallStatus
-                      installed={project}
-                      remote={listing}
-                      onUpdate={onAddFromRegistry}
-                    />
-                  )}
-                  <Button
-                    as="a"
-                    href={`/fan-made-content/preview/${meta.code}`}
-                    size="sm"
-                    data-testid="collection-project-view-cards"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    <EyeIcon /> {t("fan_made_content.actions.view_cards")}
-                  </Button>
-                  <Button
-                    data-testid="collection-project-uninstall"
-                    size="sm"
-                    onClick={() => removeFanMadeProject(project.meta.code)}
-                  >
-                    <Trash2Icon /> {t("fan_made_content.actions.uninstall")}
-                  </Button>
-                </ProjectCard>
-              );
-            }
-            return null;
+            return (
+              <ProjectCard key={meta.code} project={project}>
+                {hasRemote && listing && (
+                  <ProjectInstallStatus
+                    installed={project}
+                    remote={listing}
+                    onUpdate={onAddFromRegistry}
+                  />
+                )}
+                <Button
+                  as="a"
+                  href={`/fan-made-content/preview/${meta.code}`}
+                  size="sm"
+                  data-testid="collection-project-view-cards"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <EyeIcon /> {t("fan_made_content.actions.view_cards")}
+                </Button>
+                <Button
+                  data-testid="collection-project-uninstall"
+                  size="sm"
+                  onClick={() => removeFanMadeProject(project.meta.code)}
+                >
+                  <Trash2Icon /> {t("fan_made_content.actions.uninstall")}
+                </Button>
+              </ProjectCard>
+            );
           })}
         </div>
       )}
@@ -486,9 +483,9 @@ function Registry({ onAddProject, listingsQuery, filterFn }: RegistryProps) {
 }
 
 function ProjectInstallStatus(props: {
-  onUpdate: (listing: FanMadeProjectListing) => Promise<void>;
+  onUpdate: (listing: FanMadeProjectInfo) => Promise<void>;
   installed?: FanMadeProject;
-  remote?: FanMadeProjectListing;
+  remote?: FanMadeProjectInfo;
   showFallback?: boolean;
 }) {
   const { installed, remote, showFallback, onUpdate } = props;
@@ -522,7 +519,7 @@ function ProjectInstallStatus(props: {
 function ProjectCard(props: {
   children?: React.ReactNode;
   headerSlot?: React.ReactNode;
-  project: FanMadeProject | FanMadeProjectListing;
+  project: FanMadeProject | FanMadeProjectInfo;
 }) {
   const { children, headerSlot, project } = props;
   const { meta } = project;
@@ -787,7 +784,7 @@ function useProjectRegistry(onAddProject: (payload: unknown) => Promise<void>) {
   );
 
   const onAddFromRegistry = useCallback(
-    async (project: FanMadeProjectListing) => {
+    async (project: FanMadeProjectInfo) => {
       await onAddQuery(() => queryFanMadeProjectData(project.bucket_path));
     },
     [onAddQuery],
