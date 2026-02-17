@@ -1,11 +1,40 @@
 {
   "translation": {
     "about": {
+      "description": "<p>La información presentada en esta aplicación sobre <ffg>Arkham Horror: The Card Game™</ffg>, tanto textual como gráfica, es © Fantasy Flight Games {{date}}. Esta aplicación es un proyecto de fans y no está producida, respaldada, apoyada ni afiliada con Fantasy Flight Games.</p><p>Esta aplicación fue creada por <felix_url>Felix</felix_url> y <contrib_url>contribuidores</contrib_url> para apoyar a la comunidad de Arkham Horror: The Card Game. El código fuente de este proyecto está disponible en <github_url>Github</github_url>. Los comentarios y reportes de errores son bienvenidos a través de issues en Github o del canal dedicado en el servidor de Discord de Mythos Busters.</p><p>Todas las ilustraciones son propiedad intelectual de sus respectivos creadores. Todas las imágenes y gráficos de Arkham Horror: The Card Game™ tienen copyright de Fantasy Flight Games.</p>",
+      "hall_of_fame": {
+        "arkham_db": "Acceso OAuth a ArkhamDB.",
+        "card_design": "Diseño de cartas personalizadas.",
+        "code": "Contribuciones significativas al código fuente.",
+        "customization_api": "Acceso a la API para generar hojas de personalización.",
+        "metadata": "Soporte de metadatos de cartas.",
+        "qa": "Pruebas de control de calidad.",
+        "testing": "Comentarios y pruebas durante el desarrollo de la versión inicial, conceptos de diseño.",
+        "title": "Salón de la Fama",
+        "translation": {
+          "es": "Español",
+          "fr": "Francés",
+          "ko": "Coreano",
+          "pl": "Polaco",
+          "ru": "Ruso",
+          "title": "Esta aplicación está disponible en múltiples idiomas gracias a los siguientes contribuidores",
+          "zh": "Chino simplificado"
+        },
+        "zzorba": "Acceso a la API e iconos de ArkhamCards, ayuda con preguntas e inspiración para el constructor de mazos. Sin ti, este proyecto no habría sido posible."
+      },
+      "image_credits": {
+        "404": "404 illustration (edit)",
+        "arkham_cards_icons": "Iconos reutilizados de ArkhamCards",
+        "card_icons": "Iconos de cartas",
+        "logo": "Diseño del logo",
+        "other": "Otros iconos",
+        "title": "Créditos de imágenes / iconos"
+      },
       "title": "Acerca de"
     },
     "app": {
       "actions": {
-        "close_modal": "Cerrar ventana modal",
+        "close_modal": "Cerrar ventana",
         "legend": "Mostrar atajos de teclado"
       },
       "home": "Inicio",
@@ -32,6 +61,8 @@
         "faq": "Ver preguntas frecuentes (FAQ)",
         "open_on_arkhamdb": "Abrir en ArkhamDB",
         "reviews": "Ver reseñas",
+        "show_original_image": "Mostrar imagen original de la carta",
+        "show_taboo_image": "Mostrar imagen tabú de la carta",
         "usable_by": "Cartas permitidas de {{prefix}}{{name}}",
         "usable_by_interpolated": "Cartas permitidas de <tooltip>{{name}}</tooltip>",
         "view_backside": "Reverso",
@@ -47,6 +78,7 @@
       "section_actions": "Acciones",
       "section_deckbuilding": "Construcción de mazos",
       "section_faq": "FAQ",
+      "section_printings": "Ediciones",
       "thumbnail": "Miniatura de {{code}}"
     },
     "choose_investigator": {
@@ -55,7 +87,7 @@
     },
     "collection_stats": {
       "counts": "Tienes <strong>{{player_count}}</strong> cartas de jugador y <strong>{{encounter_count}}</strong> cartas de encuentros.",
-      "description": "Esta página muestra tu colección y el recuento de cartas según tus ajustes de colección. Para actualizar tus ajustes de colección, visita la página de <a>Settings</a>.",
+      "description": "Esta página muestra tu colección y el recuento de cartas según tus ajustes de colección. Para actualizar tus ajustes de colección, visita la página de <a>Ajustes</a>.",
       "title": "Estadísticas de tu colección",
       "tooltip_count_encounter": "Número total de cartas de encuentros en {{type}}",
       "tooltip_count_player": "Número total de cartas de Jugador en {{type}}"
@@ -73,6 +105,7 @@
       },
       "back": "Atrás",
       "cancel": "Cancelar",
+      "card_back": "{{name}} - Reverso",
       "card_one": "carta",
       "card_other": "cartas",
       "clear": "Limpiar",
@@ -98,7 +131,7 @@
         "Fortune": "Fortuna",
         "Gambit": "Gambito",
         "Improvised": "Improvisado",
-        "No permanents except story and signature permanents": "Sin cartas permanentes, excepto cartas de historia o caracterísitcas",
+        "No permanents except story and signature permanents": "Sin cartas permanentes, excepto cartas de historia o características",
         "Secondary Class": "Clase secundaria",
         "Too many off-class cards for Versatile.": "Demasiadas cartas de otra clase para Versátil.",
         "Too many off-class cards.": "Demasiadas cartas de otra clase.",
@@ -162,7 +195,9 @@
         "value": "Nivel {{level}}"
       },
       "more_actions": "Más acciones",
+      "myriad": "Miríada",
       "no_entries": "No hay entradas",
+      "non_collection_cards": "{{count}} cartas fuera de la colección",
       "none": "Ninguno",
       "nonexceptional": "No excepcional",
       "ok": "Aceptar",
@@ -176,6 +211,7 @@
       "permanent": "Permanente",
       "player_cards": "Cartas de jugador",
       "player_cards_short": "Jugador",
+      "proceed": "Continuar",
       "relations": {
         "advanced": "Cartas características avanzadas",
         "base": "Investigador original",
@@ -188,13 +224,15 @@
         "parallel": "Investigador paralelo",
         "parallelCards": "Cartas paralelas",
         "replacement": "Reemplazos",
-        "requiredCards": "Cartas característas",
+        "requiredCards": "Cartas características",
         "restrictedTo": "Restringida a",
         "specialist": "Especialista",
         "specialist_investigators": "Investigadores especialistas"
       },
       "reset": "Limpiar",
       "seal": "Sello",
+      "select": "Seleccionar",
+      "set_as_default": "Establecer por defecto",
       "shroud": "Velo",
       "skill": {
         "agility": "Agilidad",
@@ -212,9 +250,12 @@
         "body": "Cuerpo",
         "hand": "Mano",
         "hand x2": "Mano x2",
+        "head": "Cabeza",
         "none": "No ocupa espacio",
         "tarot": "Tarot"
       },
+      "sort_asc": "Orden ascendente",
+      "sort_desc": "Orden descendente",
       "specialist": "Especialista",
       "subtype": {
         "basicweakness": "Debilidad Básica",
@@ -250,6 +291,7 @@
       "taboo_chained": "Cuesta {{xp}} puntos de experiencia adicionales.",
       "taboo_mutated": "Mutada",
       "taboo_none": "ninguno",
+      "taboo_original_text": "Texto original de la carta",
       "taboo_unchained": "Cuesta {{xp}} puntos de experiencia menos.",
       "total": "total",
       "trait_one": "Rasgo",
@@ -268,9 +310,11 @@
         "Altered": "Alterado",
         "Ancient": "Antiguo",
         "Ancient One": "Primigenio",
+        "Apiary": "Apiario",
         "Arkham": "Arkham",
         "Arkham Asylum": "Manicomio Arkham",
         "Armor": "Protección",
+        "Artifact": "Artefacto",
         "Artist": "Artista (Artist)",
         "Assistant": "Ayudante",
         "Attack": "Ataque",
@@ -310,6 +354,7 @@
         "Clover Club": "Clover Club",
         "Coastal": "Costero",
         "Colour": "Color",
+        "Completed": "Completado",
         "Composure": "Compostura",
         "Condition": "Estado",
         "Connection": "Contacto",
@@ -319,9 +364,10 @@
         "Coterie": "Coterie",
         "Covenant": "Acuerdo",
         "Creature": "Criatura",
-        "Crew": "Crew",
+        "Crew": "Banda",
         "Crime Scene": "Escena del crimen",
         "Criminal": "Criminal",
+        "Cthulhu": "Cthulhu",
         "Cultist": "Sectario",
         "Curse": "Maldición",
         "Cursed": "Maldito",
@@ -347,7 +393,9 @@
         "Eldritch": "Eldritch",
         "Elite": "Élite",
         "Emissary": "Emisario",
+        "Enclave": "Enclave",
         "Endtimes": "Fin de los tiempos",
+        "Enraged": "Enfurecido",
         "Entrepreneur": "Emprendedor",
         "Evidence": "Prueba",
         "Exhibit": "Exposición",
@@ -370,6 +418,7 @@
         "Forest": "Bosque",
         "Forgotten": "Olvidado",
         "Fortune": "Fortuna",
+        "Front": "Tapadera",
         "Future": "Futuro",
         "Gambit": "Gambito",
         "Game": "Juego",
@@ -377,6 +426,7 @@
         "Ghast": "Ghast",
         "Ghoul": "Ghoul",
         "Glacier": "Glaciar",
+        "Glyph": "Símbolo",
         "Government": "Gobierno",
         "Grant": "Beca",
         "Graveyard": "Cementerio",
@@ -397,6 +447,7 @@
         "Hybrid": "Híbrido",
         "Illicit": "Ilegal",
         "Improvised": "Improvisado",
+        "Incomplete": "Incompleto",
         "Inconspicuous": "Discreto",
         "Injury": "Lesión",
         "Innate": "Innato",
@@ -411,6 +462,7 @@
         "Job": "Trabajo",
         "Jungle": "Jungla",
         "Kadath": "Kadath",
+        "Keeper": "Cuidador",
         "Key": "Llave",
         "Kingsport": "Kingsport",
         "Kuala Lumpur": "Kuala Lumpur",
@@ -419,6 +471,7 @@
         "Lead": "Indicio",
         "Leader": "Líder",
         "Leng": "Leng",
+        "Lift": "Ascensor",
         "Lit": "Encendido",
         "Locus Site": "Ubicación de Locus",
         "Lodge": "Logia",
@@ -445,6 +498,7 @@
         "Mountains": "Montañas",
         "Mutated": "Mutado",
         "Mystery": "Misterio",
+        "Nest": "Nido",
         "New Orleans": "Nueva Orleans",
         "New York City": "Nueva York",
         "Nightgaunt": "Ángel descarnado",
@@ -481,6 +535,7 @@
         "Private": "Privado",
         "Providence": "Providence",
         "Public": "Público",
+        "R'lyeh": "R'lyeh",
         "Rail": "Ferrocarril",
         "Ranged": "A distancia",
         "Relic": "Reliquia",
@@ -498,8 +553,10 @@
         "Riverside": "Ribera",
         "Road": "Carretera",
         "Role": "Rol",
+        "Rooftop": "Tejado",
         "Room": "Habitación",
         "Rot": "Putrefacción",
+        "Ruined": "En ruinas",
         "Ruins": "Ruinas",
         "Salem": "Salem",
         "Sanctum": "Santuario",
@@ -509,6 +566,7 @@
         "Scientist": "Científico",
         "Scion": "Vástago",
         "Script": "Escritura",
+        "Seafloor": "Fondo marino",
         "Second Floor": "Primer piso",
         "Sentinel Hill": "Sentinel Hill",
         "Serpent": "Serpiente",
@@ -530,8 +588,11 @@
         "St Mary's": "Hospital de Santa María",
         "Stable": "Estable",
         "Staff": "Personal",
+        "Star Spawn": "Semilla estelar",
         "Station": "Estación",
         "Steps": "Peldaños",
+        "Stowaway": "Polizón",
+        "Summit": "Cumbre",
         "Summon": "Invocación",
         "Sunken": "Hundida",
         "Supply": "Suministros",
@@ -564,10 +625,12 @@
         "Unstable": "Inestable",
         "Upgrade": "Mejora",
         "Vale": "Valle",
+        "Vault": "Cámara",
         "Vehicle": "Vehículo",
         "Venice": "Venecia",
         "Veteran": "Veterano",
         "Void": "Vacío",
+        "Walkway": "Pasarela",
         "Warden": "Protector",
         "Wastes": "Páramos",
         "Wayfarer": "Viajero",
@@ -601,22 +664,28 @@
       },
       "undo": "Deshacer",
       "unique": "Única",
+      "update_default_settings": "Actualizar ajustes por defecto",
       "uses": {
         "aether": "Éter",
         "ammo": "Munición",
         "bounties": "Recompensas",
         "brilliance": "Brillo",
+        "chances": "Oportunidades",
         "charges": "Cargas",
+        "discoveries": "Descubrimientos",
         "durability": "Durabilidad",
-        "evidence": "Evidence",
-        "inspiration": "Inspiration",
+        "evidence": "Pruebas",
+        "inspiration": "Inspiración",
         "keys": "Llaves",
         "leylines": "Líneas ley",
+        "obligations": "Obligaciones",
+        "obsessions": "Obsesiones",
         "offerings": "Ofrendas",
         "portents": "Portentos",
         "resources": "Recursos",
         "secrets": "Secretos",
         "shell": "Proyectil",
+        "signs": "Señales",
         "supplies": "Suministros",
         "tickets": "Billetes",
         "time": "Tiempo",
@@ -635,6 +704,7 @@
     },
     "deck": {
       "actions": {
+        "archive": "Archivar mazo",
         "copy_id": "Copiar ID del mazo",
         "create": "Crear mazo",
         "delete": "Eliminar mazo",
@@ -645,6 +715,7 @@
         "edit_short": "Editar",
         "export_json": "Exportar JSON",
         "export_text": "Exportar texto",
+        "unarchive": "Desarchivar mazo",
         "upgrade": "Mejorar mazo",
         "upgrade_short": "Mejorar"
       },
@@ -654,13 +725,16 @@
         "Bewitching": "Encantadora",
         "Eldritch Brand": "Marca de Eldritch",
         "Hunch deck": "Mazo de Corazonadas",
-        "Stick to the Plan": "Ceñirse al plan",
-        "Market deck": "Mazo de Mercado"
+        "Market deck": "Mazo de Mercado",
+        "Stick to the Plan": "Ceñirse al plan"
       },
+      "cards": "Cartas del mazo",
       "customization_sheet": "Hoja de personalización para {{name}}",
       "id": "ID del mazo",
       "latest_upgrade": {
         "add_to_deck": "Añadir al mazo actual",
+        "decrement_xp": "Reducir la cantidad de XP disponible para esta mejora",
+        "increment_xp": "Aumentar la cantidad de XP disponible para esta mejora",
         "no_changes": "Sin cambios.",
         "summary": "{{xpSpent}} de {{xp}} XP gastados",
         "title": "Última mejora",
@@ -701,15 +775,19 @@
       },
       "tools": {
         "cards": "Cartas",
+        "count": "Cantidad",
         "factions": "Clases",
+        "factions_tooltip": "{{count}} {{faction}} {{cards}}",
         "loading": "Cargando herramientas de mazo...",
         "resource_cost": "Coste de recursos",
         "resource_cost_tooltip": "{{count}} {{cards}} de coste {{cost}}",
         "resource_costs": "Costes de recursos",
         "skill_icons": "Iconos de habilidad",
+        "skill_icons_tooltip": "{{count}} {{skill}} {{icons}}",
         "title": "Herramientas de mazo"
       },
       "validation": {
+        "card_not_in_limited_pool": "Las siguientes cartas no forman parte del conjunto de cartas de este mazo:",
         "forbidden_cards": "El mazo contiene cartas prohibidas (cartas no permitidas por el Investigador):",
         "invalid": "El mazo no es válido.",
         "invalid_card_count": "El mazo contiene un número erróneo de copias de las siguientes cartas:",
@@ -720,6 +798,7 @@
       }
     },
     "deck_collection": {
+      "archive": "Archivo",
       "collection_empty": "Colección vacía",
       "connect_arkhamdb": "Conectar con ArkhamDB",
       "count": "{{count}} mazos",
@@ -760,7 +839,7 @@
       },
       "error": "Error al crear el mazo: {{error}}",
       "help_advanced": "<p>Las cartas características con \"Avanzada\" son versiones más fuertes de las cartas personales de un investigador que se listan bajo \"Requisitos del Mazo\".</p><p>En cualquier momento durante una campaña (incluso al crear el mazo) puedes elegir incluir opcionalmente estas cartas características avanzadas <strong>en lugar de</strong> las cartas originales.</p>",
-      "help_replacements": "<p>Las cartas características con \"Reemplazo\" pueden reemplazar las cartas características listadas bajo \"Requisitos de creación de mazos”\". Hacer esto los requisitos de creación de mazos.</p><p>Si lo haces, <strong>ambas</strong> cartas características deben ser reemplazadas, y si lo haces para una campaña, no podrás revertir mas tarde.</p><p>Alternativamente, las cartas de \"Reemplazo\" pueden incluirse junto con las cartas características.</p>",
+      "help_replacements": "<p>Las cartas características con \"Reemplazo\" pueden reemplazar las cartas características listadas bajo \"Requisitos de creación de mazos\". Hacer esto satisface los requisitos y el mazo sigue siendo válido.</p><p>Si lo haces, <strong>ambas</strong> cartas características deben ser reemplazadas, y si lo haces durante una campaña, no podrás revertir a las cartas originales más tarde.</p><p>Alternativamente, las cartas de \"Reemplazo\" pueden incluirse junto con las cartas características.</p>",
       "loading": "Creando mazo...",
       "random_basic_weakness": "Debilidad básica aleatoria",
       "sealed_deck": {
@@ -770,9 +849,12 @@
     },
     "deck_edit": {
       "actions": {
+        "add_to_notes": "Añadir a las notas",
         "cycle_decks": "Ir al siguiente mazo",
         "decrement_quantity": "Disminuir cantidad del mazo",
         "decrement_side_quantity": "Disminuir cantidad del mazo secundario",
+        "draft_random_basic_weakness": "Seleccionar debilidad básica aleatoria",
+        "draft_random_basic_weakness_success": "<strong>{{name}}</strong> fue añadida a tu mazo.",
         "draw_random_basic_weakness": "Robar debilidad básica aleatoria",
         "draw_random_basic_weakness_success": "<strong>{{name}}</strong> es tu debilidad básica aleatoria.",
         "edit_annotation": "Editar anotación",
@@ -789,15 +871,25 @@
       "changes_restored": "Se restauraron los cambios no guardados.",
       "config": {
         "card_pool": {
-          "campaign": "Campaña",
-          "choose_campaign": "Elegir campaña",
-          "choose_campaign_placeholder": "Seleccionar campaña...",
-          "cpa_help": "La 'Campaña Colaborativa' (Campaign Play-Along) es un evento continuo organizado en el servidor de Discord de Mythos Busters. Está diseñado para jugar campañas de Arkham juntos, compartir historias y, en general, crear un sentido de comunidad.",
+          "apply_environment": "Aplicar entorno {{environment}}",
+          "campaign_playalong": "Campaña Colaborativa",
+          "campaign_playalong_help": "La Campaña Colaborativa (Campaign Play-Along) es un evento continuo organizado en el servidor de Discord de Mythos Busters. Está diseñado para jugar campañas de Arkham juntos, compartir historias y, en general, crear un sentido de comunidad.",
+          "choose_cycle_placeholder": "Seleccionar ciclos...",
+          "collection": "Colección",
+          "collection_help": "Establece tu <settings_link>colección</settings_link> actual como el conjunto de cartas de este mazo. Esto puede ser útil para congelar el conjunto de cartas del mazo, o para compartir un \"ajuste predefinido\" con personas que compartan una colección física.",
+          "configure_environment": "Configurar entorno",
+          "current": "Actual",
+          "current_help": "En el entorno Actual, los jugadores solo pueden construir mazos con cartas básicas, los cinco mazos iniciales y las tres expansiones de investigador más recientes.",
+          "custom": "Personalizado",
           "help": "Los Investigadores, las cartas Personales y los Apoyos de historia no se ven afectados por esta selección.",
+          "legacy": "Legado",
+          "legacy_help": "En el entorno Legado, los jugadores pueden construir sus mazos y usar investigadores, cartas de jugador y debilidades de cualquier producto de Arkham Horror: The Card Game™. No hay ninguna restricción.",
+          "limited": "Limitado",
+          "limited_help": "En el entorno Limitado, los jugadores solo pueden construir sus mazos con cartas del set básico, los cinco mazos iniciales y tres expansiones de investigador diferentes a su elección.",
           "placeholder": "Seleccionar packs...",
           "section_title": "Ajustes del conjunto de cartas",
-          "title": "Limitar conjunto de cartas",
-          "use_preset": "Usar el ajuste predefinido de campaña colaborativa"
+          "selected_cards": "Cartas seleccionadas",
+          "title": "Limitar conjunto de cartas"
         },
         "name": "Nombre del mazo",
         "sealed": {
@@ -815,11 +907,13 @@
         },
         "storage_provider": {
           "local": "Privado",
+          "shared": "Compartido",
           "title": "Almacenamiento"
         },
         "taboo": "Lista de Tabúes",
         "tags": "Etiquetas",
         "tags_help": "Introduce etiquetas, separadas por espacios",
+        "title_and_tags": "Editar título y etiquetas",
         "version": {
           "switch": "Cambiar",
           "title": "Otras versiones"
@@ -834,14 +928,46 @@
       },
       "discard": "Descartar cambios",
       "discard_confirm": "¿Seguro que quieres descartar los cambios?",
+      "draft_weakness_modal": {
+        "cancel_button": "Cancelar",
+        "choice_title": "Elige una debilidad para cancelar",
+        "confirm_button": "Confirmar",
+        "explanation_body": "Esta es una regla casera común para dar al jugador más control sobre la debilidad básica en comparación con la aleatorización total. Se roban tres debilidades básicas al azar, el jugador puede cancelar una de ellas y luego una de las dos restantes se añade al mazo al azar.",
+        "explanation_title": "Explicación",
+        "title": "Seleccionando una debilidad básica",
+        "too_few_rbw": "No hay suficientes debilidades básicas aleatorias disponibles para realizar el sorteo."
+      },
       "notes": {
         "banner_url": "URL del banner",
         "banner_url_help": "Imagen de banner para el mazo. Se mostrará en la vista del mazo y en las vistas previas de redes sociales. La relación de aspecto es 4:1, el ancho óptimo es 1440px.",
         "banner_url_placeholder": "Introduce URL",
         "description": "Descripción",
         "description_help": "Compatible con markdown estilo ArkhamDB.",
+        "description_placeholder": "Escribe las notas...",
         "intro": "Introducción",
-        "intro_help": "Una breve introducción al mazo. Se mostrará en la vista del mazo y en las vistas previas de redes sociales. Compatible con markdown estilo ArkhamDB."
+        "intro_help": "Una breve introducción al mazo. Se mostrará en la vista del mazo y en las vistas previas de redes sociales. Compatible con markdown estilo ArkhamDB.",
+        "toolbar": {
+          "card": "Carta",
+          "card_tooltip": "Insertar una carta",
+          "format": "Formato",
+          "formats": {
+            "header": "Encabezado",
+            "header_with_set": "Encabezado (con número de colección)",
+            "paragraph": "Párrafo",
+            "paragraph_colored": "Párrafo (con color)"
+          },
+          "origin": "Cartas disponibles",
+          "origins": {
+            "campaign": "Cartas de campaña",
+            "deck": "Cartas en el mazo",
+            "player": "Todas las cartas de jugador",
+            "usable": "Cartas de jugador utilizables"
+          },
+          "preview": "Vista previa",
+          "symbol": "Símbolo",
+          "symbol_placeholder": "Selecciona un símbolo...",
+          "symbol_tooltip": "Insertar un símbolo"
+        }
       },
       "quick_upgrade": {
         "available_upgrades": "Mejoras disponibles",
@@ -861,7 +987,9 @@
         "no_results": "No hay recomendaciones para esta selección.",
         "publication_date": "Fecha de publicación",
         "relative": "Relativo",
-        "relative_help": "Cuenta en cuántos mazos de {{name}} se usa cada carta en comparación con otros investigadores que tienen acceso a ella"
+        "relative_help": "Cuenta en cuántos mazos de {{name}} se usa cada carta en comparación con otros investigadores que tienen acceso a ella",
+        "tooltip_absolute": "{{name}} se usa en el {{decksPercentage}}% de los mazos de {{investigator}}. ({{decksMatched}}/{{decksAnalyzed}})",
+        "tooltip_relative": "{{investigator}} usa {{name}} con más frecuencia que el {{percentile}}% de todos los investigadores."
       },
       "save": "Guardar mazo",
       "save_error": "Error al guardar el mazo: {{error}}",
@@ -912,19 +1040,24 @@
         "upgrade_xp": "XP disponible: {{xp}}{{adjustment}} (gastado: {{spent}})"
       },
       "import_failed": "Error al importar el mazo: {{error}}",
+      "latest_version": "<a>Ir a la última versión</a>.",
       "list": "Lista",
       "loading": "Obteniendo mazo...",
       "newer_version": "Hay una <a>versión más nueva</a> de este mazo. Este mazo es de sólo lectura.",
       "scans": "Imágenes",
       "sharing": {
         "create": "Crear enlace para compartir",
+        "create_failed": "Error al crear el enlace compartido: {{error}}",
         "create_tooltip": "Crea un enlace público al mazo de sólo lectura. Cualquier persona con el enlace puede ver el mazo, pero no editarlo.<br />Los enlaces compartidos se pueden eliminar en cualquier momento. Eliminar un enlace no afecta al mazo.",
         "delete": "Eliminar enlace compartido",
+        "delete_failed": "Error al eliminar el enlace compartido: {{error}}",
         "description": "El mazo se almacena localmente.",
         "description_present": "Este mazo tiene un enlace público compartido, se puede ver usando <a>este enlace</a>.",
         "title": "Compartir mazo",
-        "update": "Actualizar enlace compartido"
+        "update": "Actualizar enlace compartido",
+        "update_failed": "Error al actualizar el enlace compartido: {{error}}"
       },
+      "show_deck_list": "Mostrar lista de mazos",
       "tab_deck_list": "Mazo",
       "tab_history": "Historial",
       "tab_notes": "Notas y presentación",
@@ -940,8 +1073,39 @@
         "xp_gained": "XP obtenido"
       }
     },
+    "decklists": {
+      "browse": {
+        "loading": "Cargando guías de mazos...",
+        "no_results": "Sin resultados",
+        "results_count": "{{count}} resultados",
+        "title": "Guías de mazos"
+      },
+      "filters": {
+        "author": "Autor",
+        "author_placeholder": "Introduce el nombre del autor (p. ej. Valentin1331)...",
+        "description_length": "Longitud mínima de la guía",
+        "description_length_long": "Larga",
+        "description_length_medium": "Media",
+        "description_length_short": "Corta",
+        "excluded_cards": "Cartas excluidas",
+        "investigator_factions": "Clases del investigador",
+        "name": "Nombre del mazo",
+        "name_placeholder": "Introduce un nombre (p. ej. Guía de mazo)...",
+        "required_cards": "Cartas requeridas",
+        "submit": "Aplicar",
+        "title": "Criterios de filtro"
+      },
+      "sorting": {
+        "date": "Más reciente",
+        "likes": "Más gustados",
+        "popularity": "Más populares",
+        "user_reputation": "Mayor reputación de usuario"
+      }
+    },
     "draw_simulator": {
       "draw_tooltip": "Robar {{count}} {{cards}}.",
+      "mulligan_mode": "Modo mulligan",
+      "mulligan_mode_help": "Cuando está activado, las debilidades que no sean de Tarot y las cartas que empiezan en juego se vuelven a robar automáticamente. Cuando el modo mulligan se desactiva, el mazo se baraja una vez.",
       "redraw": "Volver a robar",
       "redraw_tooltip": "Las cartas seleccionadas se añadirán al final del mazo y luego se reemplazarán con cartas nuevas.",
       "reset": "Reiniciar",
@@ -959,6 +1123,58 @@
       "preview_publish": "El mazo contiene cartas no compatibles con {{provider}}: {{names}}. Por favor, elimínalas antes de subirlo.",
       "report": "Reportar incidencia"
     },
+    "fan_made_content": {
+      "actions": {
+        "import_file": "Importar desde archivo",
+        "import_url": "Importar desde URL",
+        "install": "Instalar contenido",
+        "uninstall": "Desinstalar",
+        "view_cards": "Ver cartas",
+        "view_external": "Más información"
+      },
+      "available_content": "Contenido disponible",
+      "banner_credit": "Ilus. {{credit}}",
+      "content_types": "Tipos de contenido",
+      "content_version": "Versión del contenido",
+      "empty": "No hay contenido instalado",
+      "filter_fan_made_content": "Buscar contenido...",
+      "import_url": {
+        "label": "URL del contenido",
+        "placeholder": "Introduce una URL...",
+        "submit": "Importar"
+      },
+      "installed_content": "Contenido instalado",
+      "messages": {
+        "available_content_loading": "Cargando contenido disponible...",
+        "content_loading": "Cargando contenido...",
+        "fetch_failed": "Error al cargar el contenido: {{error}}",
+        "no_match": "Ningún contenido disponible coincide con tu filtro",
+        "parse_failed": "Error al añadir el contenido: {{error}}",
+        "registry_failed": "Error al cargar el contenido disponible del registro: {{error}}"
+      },
+      "settings": {
+        "card_lists": "Listas de cartas",
+        "card_lists_help": "Este ajuste controla el valor por defecto del filtro \"Contenido de fans\" en las listas de cartas."
+      },
+      "status": {
+        "alpha": "Alfa",
+        "beta": "Beta",
+        "complete": "Completo",
+        "draft": "Borrador",
+        "final": "Final"
+      },
+      "status_installed": "Instalado",
+      "status_update_available": "Actualizar contenido",
+      "tags": "Etiquetas",
+      "title": "Contenido de fans",
+      "types": {
+        "campaign": "Campaña",
+        "investigators": "Investigadores",
+        "player_cards": "Cartas de jugador",
+        "rework": "Revisión",
+        "scenario": "Escenario"
+      }
+    },
     "filters": {
       "action": {
         "placeholder": "Seleccionar acciones...",
@@ -966,6 +1182,7 @@
       },
       "all": "Todos",
       "and": "y",
+      "locked": "Este filtro está bloqueado",
       "asset": {
         "title": "Apoyo"
       },
@@ -975,9 +1192,22 @@
         "odd": "Impar",
         "title": "Coste"
       },
+      "cycle": {
+        "placeholder": "Seleccionar ciclos...",
+        "title": "Ciclo"
+      },
       "encounter_set": {
         "placeholder": "Seleccionar conjuntos de encuentros...",
         "title": "Conjunto de encuentros"
+      },
+      "environment": {
+        "title": "Entorno"
+      },
+      "fan_made_content": {
+        "all": "Mostrar todo",
+        "fan_made": "Solo contenido de fans",
+        "official": "Solo contenido oficial",
+        "title": "Contenido de fans"
       },
       "health": {
         "title": "Salud"
@@ -1053,7 +1283,6 @@
     "help": {
       "about": "Acerca de este sitio",
       "changelog": "Registro de cambios",
-      "collection_stats": "Estadísticas de colección",
       "shortcuts": {
         "group_card_list": "Lista de cartas",
         "group_card_list_search": "Lista de cartas (búsqueda activa)",
@@ -1078,14 +1307,16 @@
         "focus_search": "Enfocar búsqueda",
         "move_down": "Mover abajo",
         "move_up": "Mover arriba",
+        "next_card": "Siguiente carta",
         "open_card_modal": "Abrir vista de la carta seleccionada",
+        "previous_card": "Carta anterior",
         "reset_filters": "Restablecer filtros",
         "show_limited_access": "Mostrar acceso limitado",
         "show_limited_access_help": "Los investigadores pueden tener acceso limitado y opcional a cartas según el nivel, clase, rasgo, tipo y/u otros criterios. Cuando está habilitado, se mostrarán las cartas de ese acceso limitado.",
         "show_unusable_cards": "Mostrar cartas no utilizables",
         "toggle_filter_menu": "Menú de filtros",
-        "toggle_filters": "Filtros (Toggle)",
-        "toggle_sidebar": "Barra lateral (Toggle)"
+        "toggle_filters": "Alternar filtros",
+        "toggle_sidebar": "Alternar barra lateral"
       },
       "all_cards": "Todas las cartas",
       "categories": {
@@ -1112,8 +1343,11 @@
         "display_as_list": "Lista",
         "display_as_list_text": "Lista con texto",
         "display_as_scans": "Imágenes",
+        "display_as_scans_grouped": "Imágenes (agrupadas)",
         "jump_to": "Ir a...",
-        "list_settings": "Ajustes de lista"
+        "list_settings": "Ajustes de lista",
+        "sort": "Ordenar",
+        "sort_default": "Por defecto del usuario"
       },
       "reset": "Restablecer valores por defecto",
       "search": {
@@ -1121,9 +1355,17 @@
         "include_flavor": "Texto de ambientación",
         "include_game_text": "Texto de juego",
         "include_name": "Nombre",
-        "placeholder": "Buscar cartas..."
+        "placeholder": "Buscar cartas...",
+        "title": "Buscar"
       },
       "sort_by": "Ordenar por"
+    },
+    "popular_decks": {
+      "decklists_link": "Ver todas las guías de mazos",
+      "error": "No se pudieron cargar las guías de mazos populares: {{error}}",
+      "no_results": "No se encontraron guías de mazos",
+      "title_card": "Guías de mazos populares con <tooltip>{{name}}</tooltip>",
+      "title_investigator": "Guías de mazos populares de <tooltip>{{name}}</tooltip>"
     },
     "preview_banner": {
       "actions": {
@@ -1132,6 +1374,15 @@
       },
       "description": "Activar los spoilers mostrará cartas de conjuntos futuros en el explorador de cartas. Puedes cambiar esta configuración en cualquier momento en los ajustes de colección.",
       "title": "¡La temporada de spoilers ha llegado!"
+    },
+    "rules": {
+      "title": "Referencia de reglas",
+      "back_to_top": "Volver arriba",
+      "search_placeholder": "Buscar palabras clave...",
+      "toc": "Índice"
+    },
+    "search": {
+      "title": "Resultados de búsqueda"
     },
     "settings": {
       "backup": {
@@ -1159,6 +1410,7 @@
       "collection": {
         "card_collection": "Colección de cartas",
         "card_count": "Número de cartas",
+        "chapter": "Capítulo {{number}}",
         "new_format": "Nuevo formato",
         "old_format": "Antiguo formato",
         "show_all_cards_owned": "Mostrar todas las cartas como propiedad",
@@ -1194,14 +1446,28 @@
         "username": "Nombre de usuario"
       },
       "display": {
+        "card_display": "Ajustes de visualización de cartas",
         "card_level": "Visualización del nivel de carta",
         "card_level_as_dots": "En el icono de carta y como puntos",
         "card_level_as_text": "En el icono de carta y como texto",
         "card_level_icon_only": "Sólo en el icono de carta",
+        "card_show_collection_number": "Mostrar número de colección",
+        "card_show_details": "Mostrar detalles de la carta",
+        "card_show_icon": "Mostrar icono de la carta",
+        "card_show_thumbnail": "Mostrar miniatura de la carta",
+        "card_show_unique_icon": "Mostrar icono de carta única",
+        "card_size": "Tamaño",
+        "card_size_sm": "Compacto",
+        "card_size_standard": "Estándar",
+        "card_skill_icons": "Iconos de habilidad",
+        "card_skill_icons_as_printed": "Como están impresos",
+        "card_skill_icons_simple": "Simple",
         "font_size": "Tamaño de fuente",
         "font_size_preview": "Armitage planteó que el alfabeto pudo haber sido empleado con fines esotéricos por cultos prohibidos surgidos en la antigüedad, que a su vez heredaron gran parte de las prácticas y tradiciones de los magos del mundo sarraceno.",
         "hide_weaknesses": "Ocultar debilidades en listas de cartas de jugador",
         "hide_weaknesses_help": "Cuando está seleccionado, las debilidades se ocultan por defecto en las listas de cartas de jugador y deben habilitarse en el filtro <strong>Subtipo</strong> para ser visibles.",
+        "show_card_modal_popular_decks": "Mostrar mazos populares en las páginas de las cartas",
+        "show_card_modal_popular_decks_help": "Cuando está seleccionado, se mostrarán mazos populares que contengan la carta en la página de la carta.",
         "show_move_to_side_deck": "Mostrar botón \"Mover al mazo secundario\"",
         "show_move_to_side_deck_help": "Mostrar un botón que te permite mover cartas del mazo principal al mazo secundario al editar mazos.",
         "sort_ignore_punctuation": "Ignorar signos de puntuación al ordenar cartas",
@@ -1214,7 +1480,9 @@
       },
       "error": "Error al guardar los ajustes: {{error}}",
       "general": {
+        "default_environment": "Entorno por defecto",
         "default_taboo": "Lista de tabúes por defecto",
+        "latest_taboo": "Más reciente",
         "title": "General",
         "weakness_limited_card_pool": "Usar el conjunto de cartas limitado para robos de debilidad básica aleatoria",
         "weakness_limited_card_pool_help": "Si está seleccionado, el robo de debilidad básica aleatoria respetará el conjunto de cartas limitado de un mazo si está definido."
@@ -1233,6 +1501,18 @@
       "saving": "Guardando ajustes...",
       "title": "Ajustes"
     },
+    "suzi_standalone_setup": {
+      "description": "La FAQ 2.4 define cómo se pueden construir mazos independientes para Suzi. Se roban cartas aleatorias entre nivel 1-5 de tu colección hasta alcanzar la cantidad de XP deseada. Después, se debe eliminar un número equivalente de cartas del mazo.",
+      "draw_cards": "Robar cartas",
+      "limit_collection": "Usar solo cartas de mi colección",
+      "limit_exile": "Usar \"Ultimátum de exilio\" (no permitir cartas de exilio)",
+      "limit_fan_made": "Usar contenido de fans",
+      "results": "Resultados",
+      "reveal_all": "Revelar todas",
+      "title": "Sujeto 5U-21 / \"Suzi\" configuración independiente",
+      "title_short": "Configuración independiente",
+      "xp": "XP objetivo"
+    },
     "ui": {
       "cards_combobox": {
         "placeholder_one": "Selecciona una carta...",
@@ -1243,8 +1523,15 @@
         "expand": "Expandir sección",
         "toggle": "Alternar sección"
       },
+      "combobox": {
+        "unknown_option": "Opción desconocida"
+      },
       "copy_to_clipboard": "Copiar al portapapeles",
-      "copy_to_clipboard_success": "Copiado."
+      "copy_to_clipboard_success": "Copiado.",
+      "pagination": {
+        "next": "Siguiente",
+        "previous": "Anterior"
+      }
     }
   }
 }
