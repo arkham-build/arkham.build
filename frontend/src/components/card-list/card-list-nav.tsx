@@ -98,10 +98,10 @@ export function CardListNav(props: Props) {
           <Button
             data-testid="card-list-export"
             onClick={onExport}
-            size="sm"
-            variant="bare"
+            size="xs"
+            variant="link"
           >
-            Export
+            {t("lists.nav.export")}
           </Button>
         )}
       </output>

@@ -196,6 +196,9 @@ function SettingsInner({
                   setSettings={setSettings}
                 />
               </Section>
+              <Section title={t("settings.developer.title")}>
+                <DevModeSetting settings={settings} setSettings={setSettings} />
+              </Section>
               <Section title={t("settings.lists.title")}>
                 <div className={css["lists"]}>
                   <ListSettings

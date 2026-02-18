@@ -105,7 +105,7 @@ export function Sidebar(props: Props) {
         {origin === "local" && <SidebarUpgrade deck={deck} />}
 
         {(origin === "arkhamdb" || deck.source === "arkhamdb") && (
-          <ArkhamDBDetails deck={deck} />
+          <ArkhamDBDetails deck={deck} type={type} />
         )}
 
         {deck.source !== "arkhamdb" && (
@@ -519,16 +519,9 @@ function Sharing(props: {
           <div className={css["share"]}>
             <ShareInfo id={deck.id} path={`/share/${deck.id}`} />
             {devModeEnabled && (
-              <Button
-                as="a"
-                data-testid="share-api-link"
+              <DevModeApiLinkButton
                 href={`${import.meta.env.VITE_API_LEGACY_URL}/v1/public/share/${deck.id}`}
-                rel="noreferrer"
-                size="sm"
-                target="_blank"
-              >
-                API link
-              </Button>
+              />
             )}
             {origin === "local" && (
               <nav className={css["share-actions"]}>
@@ -631,9 +624,27 @@ function ShareInfo(props: { id: Id; path: string }) {
   );
 }
 
-function ArkhamDBDetails(props: { deck: ResolvedDeck }) {
-  const { deck } = props;
+function DevModeApiLinkButton({ href }: { href: string }) {
   const { t } = useTranslation();
+  return (
+    <Button
+      as="a"
+      data-testid="share-api-link"
+      href={href}
+      rel="noreferrer"
+      target="_blank"
+      variant="link"
+    >
+      {t("deck_view.sharing.api_link")}
+    </Button>
+  );
+}
+
+function ArkhamDBDetails(props: { deck: ResolvedDeck; type: DeckDisplayType }) {
+  const { deck, type } = props;
+  const { t } = useTranslation();
+
+  const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
 
   return (
     <>
@@ -655,6 +666,11 @@ function ArkhamDBDetails(props: { deck: ResolvedDeck }) {
           >
             {t("deck_view.connections.view", { provider: "ArkhamDB" })}
           </Button>
+          {devModeEnabled && (
+            <DevModeApiLinkButton
+              href={`${import.meta.env.VITE_API_LEGACY_URL}/v1/public/arkhamdb/${type}/${deck.id}`}
+            />
+          )}
         </DeckDetail>
       </section>
       <section className={css["details"]} data-testid="share">
