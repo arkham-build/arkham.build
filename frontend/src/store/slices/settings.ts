@@ -98,6 +98,7 @@ export function getInitialSettings(): SettingsState {
     cardSkillIconsDisplay: "simple",
     defaultEnvironment: "legacy",
     defaultStorageProvider: "local",
+    devModeEnabled: false,
     cardShowIcon: true,
     cardShowDetails: true,
     cardSize: "standard",

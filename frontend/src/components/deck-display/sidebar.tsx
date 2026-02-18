@@ -466,6 +466,7 @@ function Sharing(props: {
 
   const deckData = useStore((state) => state.data.decks[props.deck.id]);
   const share = useStore((state) => state.sharing.decks[props.deck.id]);
+  const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
 
   const connectionLock = useStore(selectConnectionLock);
 
@@ -517,6 +518,18 @@ function Sharing(props: {
         {share || origin !== "local" ? (
           <div className={css["share"]}>
             <ShareInfo id={deck.id} path={`/share/${deck.id}`} />
+            {devModeEnabled && (
+              <Button
+                as="a"
+                data-testid="share-api-link"
+                href={`${import.meta.env.VITE_API_LEGACY_URL}/v1/public/share/${deck.id}`}
+                rel="noreferrer"
+                size="sm"
+                target="_blank"
+              >
+                API link
+              </Button>
+            )}
             {origin === "local" && (
               <nav className={css["share-actions"]}>
                 {deck.date_update !== share && (

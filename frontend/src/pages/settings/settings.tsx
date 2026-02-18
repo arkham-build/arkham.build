@@ -25,6 +25,7 @@ import type { SettingsState } from "@/store/slices/settings.types";
 import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
 import { BackupRestore } from "./backup-restore";
+import { DevModeSetting } from "./dev-mode";
 import { CardDataSync } from "./card-data-sync";
 import { CardDisplaySettings } from "./card-display";
 import { CardModalPopularDecksSetting } from "./card-modal-popular-decks";
@@ -234,6 +235,9 @@ function SettingsInner({
                     setSettings={setSettings}
                   />
                 </div>
+              </Section>
+              <Section title={t("settings.developer.title")}>
+                <DevModeSetting settings={settings} setSettings={setSettings} />
               </Section>
             </TabsContent>
             <TabsContent value="collection">

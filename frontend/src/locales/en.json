@@ -1478,6 +1478,10 @@
         "theme_system": "System",
         "title": "Display"
       },
+      "developer": {
+        "dev_mode_enabled": "Enable developer mode",
+        "title": "Developer"
+      },
       "error": "Failed to save settings: {{error}}",
       "general": {
         "default_environment": "Default environment",
