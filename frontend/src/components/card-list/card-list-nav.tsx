@@ -49,7 +49,11 @@ export function CardListNav(props: Props) {
 
   const onExport = useCallback(() => {
     if (!data) return;
-    download(JSON.stringify(data.cards, null, 2), "cards.json", "application/json");
+    download(
+      JSON.stringify(data.cards, null, 2),
+      "cards.json",
+      "application/json",
+    );
   }, [data]);
 
   const hasAssetGroup = data?.groups.some((group) =>
@@ -94,7 +98,7 @@ export function CardListNav(props: Props) {
           </DeckTagsContainer>
         )}
         <CardlistCount data={data} />
-        {devModeEnabled && (
+        {devModeEnabled && !deck && (
           <Button
             data-testid="card-list-export"
             onClick={onExport}

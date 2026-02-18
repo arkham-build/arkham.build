@@ -25,12 +25,12 @@ import type { SettingsState } from "@/store/slices/settings.types";
 import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
 import { BackupRestore } from "./backup-restore";
-import { DevModeSetting } from "./dev-mode";
 import { CardDataSync } from "./card-data-sync";
 import { CardDisplaySettings } from "./card-display";
 import { CardModalPopularDecksSetting } from "./card-modal-popular-decks";
 import { Connections } from "./connections";
 import { DefaultEnvironmentSetting } from "./default-environment";
+import { DevModeSetting } from "./dev-mode";
 import { FontSizeSetting } from "./font-size";
 import { ListSettings } from "./list-settings";
 import { LocaleSetting } from "./locale-setting";
@@ -196,9 +196,6 @@ function SettingsInner({
                   setSettings={setSettings}
                 />
               </Section>
-              <Section title={t("settings.developer.title")}>
-                <DevModeSetting settings={settings} setSettings={setSettings} />
-              </Section>
               <Section title={t("settings.lists.title")}>
                 <div className={css["lists"]}>
                   <ListSettings
@@ -239,9 +236,6 @@ function SettingsInner({
                   />
                 </div>
               </Section>
-              <Section title={t("settings.developer.title")}>
-                <DevModeSetting settings={settings} setSettings={setSettings} />
-              </Section>
             </TabsContent>
             <TabsContent value="collection">
               <Section title={t("settings.collection.title")}>
@@ -267,6 +261,9 @@ function SettingsInner({
             <TabsContent value="backup">
               <Section title={t("settings.backup.title")}>
                 <BackupRestore />
+              </Section>
+              <Section title={t("settings.developer.title")}>
+                <DevModeSetting settings={settings} setSettings={setSettings} />
               </Section>
             </TabsContent>
           </Tabs>
