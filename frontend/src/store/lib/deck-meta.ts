@@ -56,13 +56,14 @@ export function decodeSelections(
           name: option.name ?? key,
           value:
             (option.id
-              ? deckMeta[
+              ? (deckMeta[
                   option.id as keyof Omit<
                     DeckMeta,
-                    "fan_made_content" | "hidden_slots"
+                    "fan_made_content" | "hidden_slots" | "is_draft"
                   >
-                ]
-              : deckMeta.faction_selected) ?? undefined,
+                ] as string | null | undefined)
+              : (deckMeta.faction_selected as string | null | undefined)) ??
+            undefined,
         };
       } else if (option.option_select) {
         key = option.id ?? "option_selected";

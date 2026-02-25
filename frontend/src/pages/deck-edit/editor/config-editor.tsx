@@ -3,13 +3,14 @@ import type {
   SealedDeckResponse,
 } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
-import { useCallback, useMemo } from "react";
+import { useCallback, useId, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { CardPoolExtensionFields } from "@/components/limited-card-pool/card-pool-extension";
 import { LimitedCardPoolField } from "@/components/limited-card-pool/limited-card-pool-field";
 import { SealedDeckField } from "@/components/limited-card-pool/sealed-deck-field";
 import { TabooSelect } from "@/components/taboo-select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldLabel } from "@/components/ui/field";
 import type { SelectOption } from "@/components/ui/select";
 import { Select } from "@/components/ui/select";
@@ -68,6 +69,7 @@ export function MetaEditor(props: Props) {
   const { deck } = props;
 
   const { t } = useTranslation();
+  const draftCheckboxId = useId();
 
   const selectedPacks = useStore((state) =>
     selectLimitedPoolPacks(state, deck.cardPool),
@@ -175,6 +177,13 @@ export function MetaEditor(props: Props) {
     [deck.id, updateMetaProperty],
   );
 
+  const onDraftChange = useCallback(
+    (checked: boolean) => {
+      updateMetaProperty(deck.id, "is_draft", checked ? true : null);
+    },
+    [deck.id, updateMetaProperty],
+  );
+
   return (
     <div className={css["meta"]}>
       <Field full padded>
@@ -192,6 +201,15 @@ export function MetaEditor(props: Props) {
           defaultValue={deck.tags ?? ""}
           onChange={onTagsChange}
           type="text"
+        />
+      </Field>
+
+      <Field full padded>
+        <Checkbox
+          checked={deck.metaParsed.is_draft === true}
+          id={draftCheckboxId}
+          label={t("deck_edit.config.draft_deck")}
+          onCheckedChange={onDraftChange}
         />
       </Field>
 

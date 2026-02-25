@@ -102,7 +102,7 @@ export type DeckEditsSlice = {
   updateMetaProperty(
     deckId: Id,
     key: string,
-    value: string | null,
+    value: string | boolean | null,
     type?: DeckOptionSelectType,
   ): void;
 

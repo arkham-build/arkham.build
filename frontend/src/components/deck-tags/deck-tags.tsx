@@ -66,6 +66,19 @@ export function SealedDeckTag({ deck }: { deck: ResolvedDeck | undefined }) {
   );
 }
 
+export function DraftTag({ deck }: { deck: ResolvedDeck | undefined }) {
+  const { t } = useTranslation();
+
+  const isDraft = deck?.metaParsed?.is_draft === true;
+  if (!isDraft) return null;
+
+  return (
+    <Tag as="li" size="xs">
+      {t("deck.tags.draft")}
+    </Tag>
+  );
+}
+
 export const providerTagRenderer = (tag: StorageProvider, t: TFunction) => {
   let icon = null;
 

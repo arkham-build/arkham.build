@@ -7,6 +7,7 @@ import { createDataSlice } from "./slices/data";
 import { createDeckCollectionSlice } from "./slices/deck-collection";
 import { createDeckCreateSlice } from "./slices/deck-create";
 import { createDeckEditsSlice } from "./slices/deck-edits";
+import { createDraftSlice } from "./slices/draft";
 import { createFanMadeDataSlice } from "./slices/fan-made-data";
 import { createListsSlice } from "./slices/lists";
 import { createMetadataSlice } from "./slices/metadata";
@@ -27,6 +28,7 @@ const stateCreator = (...args: [any, any, any]) => ({
   ...createUISlice(...args),
   ...createDeckEditsSlice(...args),
   ...createDeckCreateSlice(...args),
+  ...createDraftSlice(...args),
   ...createSharingSlice(...args),
   ...createDeckCollectionSlice(...args),
   ...createConnectionsSlice(...args),

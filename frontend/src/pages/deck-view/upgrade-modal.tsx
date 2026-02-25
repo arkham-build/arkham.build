@@ -16,10 +16,14 @@ import {
   ModalInner,
 } from "@/components/ui/modal";
 import { Scroller } from "@/components/ui/scroller";
+import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import { selectConnectionLockForDeck } from "@/store/selectors/shared";
+import {
+  selectConnectionLockForDeck,
+  selectMetadata,
+} from "@/store/selectors/shared";
 import { decodeExileSlots, displayAttribute } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
@@ -86,6 +90,70 @@ export function UpgradeModal(props: Props) {
   const [xp, setXp] = useState(
     new URLSearchParams(search).get("upgrade_xp")?.toString() ?? "",
   );
+  const [cardsPerPick, setCardsPerPick] = useState(5);
+  const [skipsAllowed, setSkipsAllowed] = useState(0);
+  const [researchedCards, setResearchedCards] = useState<Set<string>>(
+    new Set(),
+  );
+  const isDraftDeck = deck.metaParsed?.is_draft === true;
+
+  const metadata = useStore(selectMetadata);
+
+  // Find base cards for researched upgrades
+  // Only include base cards that exist in the deck
+  const researchedBaseCards = useMemo(() => {
+    if (!isDraftDeck) return [];
+
+    const baseCardsMap = new Map<
+      string,
+      { card: Card; researchedUpgrades: Card[] }
+    >();
+
+    // Check all cards in metadata to find researched cards
+    for (const card of Object.values(metadata.cards)) {
+      // Check if this card has "Researched." in its text
+      if (card.real_text?.includes("Researched.")) {
+        // Find the base version (same real_name without "Researched." text)
+        const baseCard = Object.values(metadata.cards).find(
+          (c) =>
+            c.real_name === card.real_name &&
+            !c.real_text?.includes("Researched."),
+        );
+
+        if (baseCard) {
+          // Only include base cards that exist in the deck
+          if (deck.slots[baseCard.code] && deck.slots[baseCard.code] > 0) {
+            // Get or create entry for this base card
+            if (!baseCardsMap.has(baseCard.code)) {
+              baseCardsMap.set(baseCard.code, {
+                card: baseCard,
+                researchedUpgrades: [],
+              });
+            }
+            // Add this researched upgrade
+            const entry = baseCardsMap.get(baseCard.code);
+            if (entry) {
+              entry.researchedUpgrades.push(card);
+            }
+          }
+        }
+      }
+    }
+
+    return Array.from(baseCardsMap.values());
+  }, [deck.slots, metadata, isDraftDeck]);
+
+  const handleResearchedToggle = useCallback((cardCode: string) => {
+    setResearchedCards((prev) => {
+      const next = new Set(prev);
+      if (next.has(cardCode)) {
+        next.delete(cardCode);
+      } else {
+        next.add(cardCode);
+      }
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     const url = new URL(window.location.toString());
@@ -112,15 +180,54 @@ export function UpgradeModal(props: Props) {
   }, [modalContext]);
 
   const onUpgrade = useCallback(
-    async (path = "edit") => {
+    async (path = "edit", useDraftFlow = true) => {
+      const enteredXp = xp ? +xp : 0;
+      const remainingXp =
+        (deck.xp ?? 0) + (deck.xp_adjustment ?? 0) - (deck.xp_spent ?? 0);
+
+      // For draft decks, navigate to draft upgrade flow (unless useDraftFlow is false)
+      if (isDraftDeck && useDraftFlow) {
+        // Calculate NEW XP (entered + bonuses) - this is what will be spent
+        let newXp = enteredXp;
+        if (hasCharonsObol) newXp += 2;
+        if (hasGreatWork && !usurped) newXp += 1;
+
+        // Total available XP for card pool filtering (remaining + new)
+        const totalAvailableXp = remainingXp + newXp;
+
+        onCloseModal();
+        const params = new URLSearchParams({
+          upgrade_deck: deck.id.toString(),
+          xp: newXp.toString(), // Only pass NEW XP
+          previous_remaining_xp: remainingXp.toString(), // Pass remaining XP separately
+          total_available_xp: totalAvailableXp.toString(), // Total for card pool filtering
+          cards_per_pick: cardsPerPick.toString(),
+          skips_allowed: skipsAllowed.toString(),
+        });
+
+        // Add researched cards as comma-separated list
+        if (researchedCards.size > 0) {
+          params.set("researched", Array.from(researchedCards).join(","));
+        }
+        if (exileString) {
+          params.set("exile", exileString);
+        }
+        navigate(
+          `/deck/draft/${deck.investigatorFront.card.code}?${params.toString()}`,
+        );
+        return;
+      }
+
+      // Normal upgrade flow: only use entered XP + bonuses
+      // Remaining XP will be handled automatically by upgradeDeck via xpCarryover
+      let upgradeXp = enteredXp;
+      if (hasCharonsObol) upgradeXp += 2;
+      if (hasGreatWork && !usurped) upgradeXp += 1;
+
       const toastId = toast.show({
         children: t("deck_view.upgrade_modal.loading"),
         variant: "loading",
       });
-
-      let upgradeXp = xp ? +xp : 0;
-      if (hasCharonsObol) upgradeXp += 2;
-      if (hasGreatWork && !usurped) upgradeXp += 1;
 
       try {
         const newDeck = await upgradeDeck({
@@ -146,6 +253,10 @@ export function UpgradeModal(props: Props) {
     },
     [
       deck.id,
+      deck.xp,
+      deck.xp_adjustment,
+      deck.xp_spent,
+      deck.investigatorFront.card.code,
       upgradeDeck,
       xp,
       onCloseModal,
@@ -155,6 +266,10 @@ export function UpgradeModal(props: Props) {
       usurped,
       hasGreatWork,
       hasCharonsObol,
+      isDraftDeck,
+      cardsPerPick,
+      skipsAllowed,
+      researchedCards,
       t,
     ],
   );
@@ -187,14 +302,21 @@ export function UpgradeModal(props: Props) {
 
   const cssVariables = useAccentColor(deck.cards.investigator.card);
 
-  const disabled = xp === "" || !!connectionLock;
+  // Calculate remaining XP from previous upgrades
+  const remainingXp =
+    (deck.xp ?? 0) + (deck.xp_adjustment ?? 0) - (deck.xp_spent ?? 0);
+  const enteredXp = xp ? Number.parseInt(xp, 10) : 0;
+  const totalAvailableXp = remainingXp + enteredXp;
+
+  const disabled =
+    (xp === "" && remainingXp <= 0) || totalAvailableXp < 1 || !!connectionLock;
 
   const onSave = useCallback(() => {
-    onUpgrade("edit");
+    onUpgrade("edit", true);
   }, [onUpgrade]);
 
   const onSaveClose = useCallback(() => {
-    onUpgrade("view");
+    onUpgrade("view", false);
   }, [onUpgrade]);
 
   useHotkey("cmd+enter", onSave, { disabled, allowInputFocused: true });
@@ -274,7 +396,104 @@ export function UpgradeModal(props: Props) {
                 name="xp-gained"
                 value={xp}
               />
+              {remainingXp > 0 && (
+                <p>
+                  <small>
+                    <em>
+                      {t("deck_view.upgrade_modal.remaining_xp", {
+                        count: remainingXp,
+                      })}
+                    </em>
+                  </small>
+                </p>
+              )}
             </Field>
+            {isDraftDeck && (
+              <>
+                <Field full padded>
+                  <FieldLabel htmlFor="cards-per-pick">
+                    {t("deck_view.upgrade_modal.cards_per_pick")}
+                  </FieldLabel>
+                  <div className={css["slider-container"]}>
+                    <Slider
+                      id="cards-per-pick"
+                      min={2}
+                      max={15}
+                      step={1}
+                      value={[cardsPerPick]}
+                      onValueChange={(value) => setCardsPerPick(value[0])}
+                      className={css["slider-flex"]}
+                    />
+                    <output
+                      htmlFor="cards-per-pick"
+                      className={css["slider-output"]}
+                    >
+                      {cardsPerPick}
+                    </output>
+                  </div>
+                </Field>
+                <Field full padded>
+                  <FieldLabel htmlFor="skips-allowed">
+                    {t("deck_draft.setup.skips_allowed")}
+                  </FieldLabel>
+                  <div className={css["slider-container"]}>
+                    <Slider
+                      id="skips-allowed"
+                      min={0}
+                      max={5}
+                      step={1}
+                      value={[skipsAllowed]}
+                      onValueChange={(value) => setSkipsAllowed(value[0])}
+                      className={css["slider-flex"]}
+                    />
+                    <output
+                      htmlFor="skips-allowed"
+                      className={css["slider-output"]}
+                    >
+                      {skipsAllowed}
+                    </output>
+                  </div>
+                </Field>
+                {researchedBaseCards.length > 0 && (
+                  <Field full padded>
+                    <FieldLabel>
+                      {t("deck_view.upgrade_modal.researched_cards")}
+                    </FieldLabel>
+                    <div className={css["researched-list"]}>
+                      {researchedBaseCards.map(
+                        ({ card, researchedUpgrades }) => (
+                          <Checkbox
+                            key={card.code}
+                            checked={researchedCards.has(card.code)}
+                            id={`researched-${card.code}`}
+                            label={
+                              <>
+                                {displayAttribute(card, "name")}
+                                <span className={css["researched-count"]}>
+                                  {" "}
+                                  ({researchedUpgrades.length}{" "}
+                                  {researchedUpgrades.length === 1
+                                    ? t(
+                                        "deck_view.upgrade_modal.researched_upgrade",
+                                      )
+                                    : t(
+                                        "deck_view.upgrade_modal.researched_upgrades",
+                                      )}
+                                  )
+                                </span>
+                              </>
+                            }
+                            onCheckedChange={() =>
+                              handleResearchedToggle(card.code)
+                            }
+                          />
+                        ),
+                      )}
+                    </div>
+                  </Field>
+                )}
+              </>
+            )}
             {hasGreatWork && (
               <Field
                 bordered

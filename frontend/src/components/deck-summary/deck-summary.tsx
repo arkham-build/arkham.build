@@ -23,6 +23,7 @@ import { DeckStats } from "../deck-stats";
 import {
   DeckTags,
   DeckTagsContainer,
+  DraftTag,
   LimitedCardPoolTag,
   ProviderTag,
   SealedDeckTag,
@@ -130,6 +131,7 @@ export function DeckSummary(props: DeckSummaryProps) {
           <FolderTag deckId={deck.id} />
           <LimitedCardPoolTag deck={deck} omitLegacy />
           <SealedDeckTag deck={deck} />
+          <DraftTag deck={deck} />
           <DeckTags tags={deckTags(deck, type === "decklist" ? ", " : " ")} />
         </DeckTagsContainer>
       </div>

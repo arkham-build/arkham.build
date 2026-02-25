@@ -9,10 +9,10 @@ import { displayAttribute } from "@/utils/card-utils";
 import { isEmpty } from "@/utils/is-empty";
 import { CardScanInner } from "./card-scan";
 
-type Props = { card: Card; deck: ResolvedDeck };
+type Props = { card: Card; deck: ResolvedDeck; disableModal?: boolean };
 
 export function CustomizableSheet(props: Props) {
-  const { card, deck } = props;
+  const { card, deck, disableModal } = props;
 
   const metadata = useStore(selectMetadata);
   const openCardModal = useStore((state) => state.openCardModal);
@@ -20,13 +20,15 @@ export function CustomizableSheet(props: Props) {
   const { t } = useTranslation();
 
   const openModal = useCallback(() => {
-    openCardModal(card.code);
-  }, [openCardModal, card.code]);
+    if (!disableModal) {
+      openCardModal(card.code);
+    }
+  }, [openCardModal, card.code, disableModal]);
 
   return (
     <div>
       <CardScanInner
-        onClick={openModal}
+        onClick={disableModal ? undefined : openModal}
         crossOrigin="anonymous"
         url={customizationSheetUrl(card, deck, metadata)}
         alt={t("deck.customization_sheet", {
@@ -58,7 +60,7 @@ function customizationSheetUrl(
     (acc, choice, index) => {
       if (choice.choice === "choose_card") {
         const choices =
-          deck.customizations?.[card.code][index]?.selections ?? "";
+          deck.customizations?.[card.code]?.[index]?.selections ?? "";
 
         for (const code of choices.split("^")) {
           const name = metadata.cards[code]?.real_name;

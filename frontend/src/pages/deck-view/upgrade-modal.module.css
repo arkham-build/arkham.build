@@ -18,3 +18,30 @@
 .exile {
   height: min(50vh, 20rem);
 }
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.slider-flex {
+  flex: 1;
+}
+
+.slider-output {
+  min-width: 2rem;
+  text-align: right;
+  font-weight: 600;
+}
+
+.researched-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.researched-count {
+  font-size: var(--text-sm);
+  opacity: 0.7;
+}

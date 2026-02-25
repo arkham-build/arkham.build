@@ -101,6 +101,7 @@ export type DeckMeta = {
   transform_into?: string | null;
   banner_url?: string | null;
   intro_md?: string | null;
+  is_draft?: boolean;
 } & {
   [key in `cus_${string}`]: string | null;
 } & {

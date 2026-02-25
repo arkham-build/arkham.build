@@ -22,6 +22,7 @@ import DeckDescription from "../deck-description";
 import {
   DeckTags,
   DeckTagsContainer,
+  DraftTag,
   LimitedCardPoolTag,
   ProviderTag,
   SealedDeckTag,
@@ -150,6 +151,7 @@ export function DeckDisplay(props: DeckDisplayProps) {
               )}
               <LimitedCardPoolTag deck={deck} />
               <SealedDeckTag deck={deck} />
+              <DraftTag deck={deck} />
               <DeckTags tags={deckTags(deck, type === "deck" ? " " : ", ")} />
             </DeckTagsContainer>
           </div>

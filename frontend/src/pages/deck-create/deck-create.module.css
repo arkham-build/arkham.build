@@ -102,3 +102,27 @@
 .provider-default {
   margin-top: 0.25rem;
 }
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.slider-flex {
+  flex: 1;
+}
+
+.slider-output {
+  min-width: 2rem;
+  text-align: right;
+  font-weight: 600;
+}
+
+.error-message {
+  padding: 1rem;
+  background: var(--palette-error-1);
+  border: 1px solid var(--palette-error-3);
+  border-radius: var(--rounded);
+  color: var(--palette-error-9);
+}

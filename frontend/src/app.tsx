@@ -53,6 +53,8 @@ const ChooseInvestigator = lazy(
 
 const DeckCreate = lazy(() => import("./pages/deck-create/deck-create"));
 
+const DeckDraft = lazy(() => import("./pages/deck-draft/deck-draft"));
+
 const DeckView = lazy(() => import("./pages/deck-view/deck-view"));
 
 const Settings = lazy(() => import("./pages/settings/settings"));
@@ -151,6 +153,7 @@ function AppInner() {
               />
               <Route component={ChooseInvestigator} path="/deck/create" />
               <Route component={DeckCreate} path="/deck/create/:code" />
+              <Route component={DeckDraft} path="/deck/draft/:code" />
               <Route component={DeckView} path="/:type/view/:id" />
               <Route component={DeckView} path="/:type/view/:id/:slug" />
               <Route component={DeckEdit} nest path="/deck/edit/:id" />

@@ -1,5 +1,5 @@
 import type { Card } from "@arkham-build/shared";
-import { PlusIcon } from "lucide-react";
+import { DicesIcon, PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
@@ -97,30 +97,49 @@ function ChooseInvestigatorLink(props: { card: Card }) {
   const { t } = useTranslation();
   const cssVariables = useAccentColor(props.card);
 
+  const createLink = props.card.parallel
+    ? `/deck/create/${props.card.alternate_of_code}?initial_investigator=${props.card.code}`
+    : `/deck/create/${props.card.code}`;
+
+  const draftLink = props.card.parallel
+    ? `/deck/draft/${props.card.alternate_of_code}`
+    : `/deck/draft/${props.card.code}`;
+
   return (
-    <Link
-      asChild
-      to={
-        props.card.parallel
-          ? `/deck/create/${props.card.alternate_of_code}?initial_investigator=${props.card.code}`
-          : `/deck/create/${props.card.code}`
-      }
-    >
-      <Button
-        as="a"
-        className={css["choose-investigator-button"]}
-        data-testid="create-choose-investigator"
-        iconOnly
-        size="lg"
-        style={cssVariables}
-        tooltip={t("choose_investigator.create_tooltip", {
-          name: displayAttribute(props.card, "name"),
-        })}
-        variant="primary"
-      >
-        <PlusIcon />
-      </Button>
-    </Link>
+    <div className={css["choose-investigator-buttons"]}>
+      <Link asChild to={createLink}>
+        <Button
+          as="a"
+          className={css["choose-investigator-button"]}
+          data-testid="create-choose-investigator"
+          iconOnly
+          size="lg"
+          style={cssVariables}
+          tooltip={t("choose_investigator.create_tooltip", {
+            name: displayAttribute(props.card, "name"),
+          })}
+          variant="primary"
+        >
+          <PlusIcon />
+        </Button>
+      </Link>
+      <Link asChild to={draftLink}>
+        <Button
+          as="a"
+          className={css["choose-investigator-button"]}
+          data-testid="draft-choose-investigator"
+          iconOnly
+          size="lg"
+          style={cssVariables}
+          tooltip={t("choose_investigator.draft_tooltip", {
+            name: displayAttribute(props.card, "name"),
+          })}
+          variant="bare"
+        >
+          <DicesIcon />
+        </Button>
+      </Link>
+    </div>
   );
 }
 

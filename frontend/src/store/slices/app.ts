@@ -268,8 +268,12 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
         continue;
       }
 
-      meta[key as keyof Omit<DeckMeta, "fan_made_content" | "hidden_slots">] =
-        value;
+      // Type assertion needed because DeckMeta has index signatures that TypeScript
+      // can't properly narrow when using Omit
+      (meta as Record<string, string | null | undefined>)[key] = value as
+        | string
+        | null
+        | undefined;
     }
 
     if (deckSizeOption && !meta.deck_size_selected) {

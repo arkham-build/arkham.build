@@ -84,6 +84,7 @@
     },
     "choose_investigator": {
       "create_tooltip": "Create {{name}} deck",
+      "draft_tooltip": "Draft {{name}} deck",
       "title": "Choose investigator"
     },
     "collection_stats": {
@@ -757,6 +758,7 @@
         "xp_required_help": "Amount of XP required to build this deck from scratch."
       },
       "tags": {
+        "draft": "Draft",
         "limited_pool": "Limited pool",
         "private": "Private",
         "sealed": "Sealed",
@@ -848,6 +850,29 @@
         "loading": "Fetching sealed deck..."
       }
     },
+    "deck_draft": {
+      "title": "Draft Deck",
+      "setup": {
+        "cards_per_pick": "Cards per pick",
+        "cards_per_pick_help": "Number of card options shown each pick",
+        "skips_allowed": "Skips allowed",
+        "start": "Start Draft",
+        "insufficient_cards": "Your collection doesn't have enough legal cards for this investigator. You need at least {{required}} cards but only have {{available}}."
+      },
+      "customization": {
+        "will_add_card_copy": "A copy of this card will be added to your deck."
+      },
+      "picking": {
+        "progress": "{{current}} / {{target}} cards",
+        "pick_card": "Pick a card",
+        "skip": "Skip"
+      },
+      "complete": {
+        "title": "Draft Complete",
+        "save": "Save Deck",
+        "restart": "Start Over"
+      }
+    },
     "deck_edit": {
       "actions": {
         "add_to_notes": "Add to notes",
@@ -893,6 +918,7 @@
           "title": "Limited card pool"
         },
         "name": "Deck name",
+        "draft_deck": "Draft deck",
         "sealed": {
           "add": "Add sealed deck",
           "help": "Upload a sealed deck definition (.csv) to use it. Use <a>ArkhamSealed</a> to generate a sealed deck.",
@@ -1068,10 +1094,15 @@
       "tab_tools": "Tools",
       "upgrade_modal": {
         "automatic_xp_gain": "+{{count}} XP will be automatically added to this upgrade.",
+        "cards_per_pick": "Cards per pick",
         "error": "Failed to upgrade deck: {{error}}",
         "great_work_label": "I was usurped by the homunculus",
         "great_work_status_usurped": "The Great Work will be removed from your deck alongside each of your signature cards. Your investigator will be replaced with the homunculus.",
         "loading": "Upgrading deck",
+        "remaining_xp": "{{count}} XP remaining from previous upgrade",
+        "researched_cards": "Researched cards",
+        "researched_upgrade": "researched upgrade",
+        "researched_upgrades": "researched upgrades",
         "title": "Upgrade deck with XP",
         "xp_gained": "XP gained"
       }
