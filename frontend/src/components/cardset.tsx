@@ -9,6 +9,7 @@ import {
 import { cx } from "@/utils/cx";
 import css from "./cardset.module.css";
 import { ListCard } from "./list-card/list-card";
+import { OwnershipPartitionedCardList } from "./ownership-partitioned-card-list";
 import { Checkbox } from "./ui/checkbox";
 import { DefaultTooltip } from "./ui/tooltip";
 
@@ -58,19 +59,22 @@ export function CardSet(props: Props) {
         )}
       </header>
       <ul className={css["cardset-cards"]}>
-        {set.cards.map(({ card }) => (
-          <ListCard
-            as="li"
-            card={card}
-            key={card.code}
-            omitBorders
-            onChangeCardQuantity={
-              set.canSetQuantity ? onChangeCardQuantity : undefined
-            }
-            ownedCount={canCheckOwnership ? cardOwnedCount(card) : undefined}
-            quantity={set.quantities?.[card.code]}
-          />
-        ))}
+        <OwnershipPartitionedCardList
+          cards={set.cards}
+          cardRenderer={({ card }) => (
+            <ListCard
+              as="li"
+              card={card}
+              key={card.code}
+              omitBorders
+              onChangeCardQuantity={
+                set.canSetQuantity ? onChangeCardQuantity : undefined
+              }
+              ownedCount={canCheckOwnership ? cardOwnedCount(card) : undefined}
+              quantity={set.quantities?.[card.code]}
+            />
+          )}
+        />
       </ul>
     </article>
   );

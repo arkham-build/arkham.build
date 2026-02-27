@@ -32,6 +32,10 @@ export function CardMetaBack(props: { illustrator?: string | null }) {
 export function CardMeta(props: Props) {
   const { linked = true, onPrintingSelect, resolvedCard, size } = props;
 
+  const showCopyId = useStore(
+    (state) => state.settings.devModeEnabled && size !== "tooltip",
+  );
+
   const illustrator = resolvedCard.card.illustrator;
 
   const { card } = resolvedCard;
@@ -49,6 +53,7 @@ export function CardMeta(props: Props) {
           onPrintingSelect={onPrintingSelect}
           resolvedCard={resolvedCard}
           size={size}
+          showCopyId={showCopyId}
         />
       ) : (
         <PlayerEntry
@@ -56,14 +61,15 @@ export function CardMeta(props: Props) {
           onPrintingSelect={onPrintingSelect}
           resolvedCard={resolvedCard}
           size={size}
+          showCopyId={showCopyId}
         />
       )}
     </footer>
   );
 }
 
-function PlayerEntry(props: Props) {
-  const { linked = true, onPrintingSelect, resolvedCard } = props;
+function PlayerEntry(props: Props & { showCopyId: boolean }) {
+  const { linked = true, onPrintingSelect, resolvedCard, showCopyId } = props;
 
   const { t } = useTranslation();
 
@@ -90,6 +96,7 @@ function PlayerEntry(props: Props) {
               key={printing.id}
               linked={linked}
               printing={printing}
+              showCopyId={showCopyId}
               actionNode={
                 !active && hasVersions && onPrintingSelect ? (
                   <Button
@@ -108,8 +115,8 @@ function PlayerEntry(props: Props) {
   );
 }
 
-function EncounterEntry(props: Props) {
-  const { linked = true, resolvedCard } = props;
+function EncounterEntry(props: Props & { showCopyId: boolean }) {
+  const { linked = true, resolvedCard, showCopyId } = props;
 
   const printings = useStore((state) =>
     selectPrintingsForCard(state, resolvedCard.card.code),
@@ -162,6 +169,7 @@ function EncounterEntry(props: Props) {
               key={printing.id}
               linked={linked}
               printing={printing}
+              showCopyId={showCopyId}
             />
           </p>
         );

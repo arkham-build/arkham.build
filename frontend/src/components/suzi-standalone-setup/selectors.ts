@@ -14,6 +14,7 @@ import {
   selectCollection,
   selectLookupTables,
   selectMetadata,
+  selectStaticBuildQlInterpreter,
 } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";
@@ -41,6 +42,7 @@ export const selectAvailableUpgrades = createSelector(
     selectMetadata,
     selectLookupTables,
     selectCollection,
+    selectStaticBuildQlInterpreter,
     (_: StoreState, deck: ResolvedDeck) => deck,
     (_: StoreState, __: ResolvedDeck, options: AvailableUpgradeOptions) =>
       options,
@@ -49,17 +51,18 @@ export const selectAvailableUpgrades = createSelector(
     metadata,
     lookupTables,
     collection,
+    buildQlInterpreter,
     deck,
     { checkOwnership, includeFanMade, ultimatumOfExile },
   ) => {
     const suzi = metadata.cards[SPECIAL_CARD_CODES.SUZI];
 
-    const cardAccessFilter = filterInvestigatorAccess(suzi);
+    const cardAccessFilter = filterInvestigatorAccess(suzi, buildQlInterpreter);
     assert(cardAccessFilter, "expected card access filter to be defined");
 
     const filters = [
       filterDuplicates,
-      filterLevel({ range: [1, 5] }, suzi),
+      filterLevel({ range: [1, 5] }, buildQlInterpreter, suzi),
       cardAccessFilter,
       (c: Card) =>
         !c.real_text?.includes("Researched") && !c.customization_options,

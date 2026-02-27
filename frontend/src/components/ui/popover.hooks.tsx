@@ -27,6 +27,7 @@ export interface PopoverOptions {
   modal?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  strategy?: "absolute" | "fixed";
 }
 
 export function usePopover({

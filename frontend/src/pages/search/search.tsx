@@ -59,7 +59,7 @@ function Search() {
     return null;
   }
 
-  if (!mounted.current && listCards?.totalCardCount === 1) {
+  if (!mounted.current && listCards?.cards.length === 1) {
     return <Redirect to={`/card/${listCards.cards[0].code}`} />;
   }
 

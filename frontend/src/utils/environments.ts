@@ -88,7 +88,7 @@ export function resolveLimitedPoolPacks(
               ...reprints.filter((p) => p.reprint?.type !== "encounter"),
             );
           } else {
-            selectedPacks.push(...cyclePacks);
+            selectedPacks.push(...cyclePacks.filter((p) => !p.preview));
           }
         }
       }

@@ -9,13 +9,14 @@ import {
 } from "../lib/filtering";
 import { resolveCardWithRelations } from "../lib/resolve-card";
 import { makeSortFunction } from "../lib/sorting";
-import type { ResolvedDeck } from "../lib/types";
+import type { CardWithRelations, ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";
 import { selectCanonicalTabooSetId } from "./lists";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
+  selectStaticBuildQlInterpreter,
 } from "./shared";
 
 export const selectCardWithRelations = createSelector(
@@ -54,31 +55,47 @@ export const selectUsableByInvestigators = createSelector(
   selectLookupTables,
   selectMetadata,
   selectLocaleSortingCollator,
+  selectStaticBuildQlInterpreter,
+  (state) => selectCanonicalTabooSetId(state, undefined),
   (_: StoreState, card: Card) => card,
-  (lookupTables, metadata, collator, card) => {
+  (lookupTables, metadata, collator, buildQlInterpreter, tabooSetId, card) => {
     const investigatorCodes = Object.keys(
       lookupTables.typeCode["investigator"],
     );
 
     const cards = investigatorCodes
-      .map((code) => metadata.cards[code])
-      .filter((investigator) => {
+      .map((code) =>
+        resolveCardWithRelations(
+          { metadata, lookupTables },
+          collator,
+          code,
+          tabooSetId,
+          undefined,
+          true,
+        ),
+      )
+      .filter((c) => {
+        if (!c) return false;
+        const investigator = c.card;
         const isValidInvestigator =
           not(filterEncounterCards)(investigator) &&
           filterAlternates(investigator);
 
         if (!isValidInvestigator) return false;
 
-        const access = filterInvestigatorAccess(investigator);
+        const access = filterInvestigatorAccess(
+          investigator,
+          buildQlInterpreter,
+        );
         if (!access) return false;
 
         const weaknessAccess = filterInvestigatorWeaknessAccess(investigator);
 
         return or([access, weaknessAccess])(card);
-      });
+      }) as CardWithRelations[];
 
     const sorting = makeSortFunction(["name", "cycle"], metadata, collator);
 
-    return cards.sort(sorting);
+    return cards.sort((a, b) => sorting(a.card, b.card));
   },
 );

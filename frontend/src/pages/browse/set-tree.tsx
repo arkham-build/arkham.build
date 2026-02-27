@@ -5,20 +5,29 @@ import { Link } from "wouter";
 import EncounterIcon from "@/components/icons/encounter-icon";
 import PackIcon from "@/components/icons/pack-icon";
 import { Scroller } from "@/components/ui/scroller";
-import { useTabUrlState } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  useTabUrlState,
+} from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useStore } from "@/store";
 import { sortByEncounterSet } from "@/store/lib/sorting";
 import type { Cycle } from "@/store/schemas/cycle.schema";
 import type { EncounterSet } from "@/store/schemas/encounter-set.schema";
 import type { Pack } from "@/store/schemas/pack.schema";
-import { selectCyclesAndPacks } from "@/store/selectors/lists";
+import {
+  groupCyclesByChapter,
+  selectCyclesAndPacks,
+} from "@/store/selectors/lists";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
+import { official } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { displayPackName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
@@ -55,60 +64,7 @@ type Tree = TreeItem[];
 
 type FormatChoice = "old" | "new";
 
-const selectCardSetTree = createSelector(
-  selectCyclesAndPacks,
-  selectMetadata,
-  selectLookupTables,
-  selectLocaleSortingCollator,
-  (_: StoreState, formatChoice: FormatChoice) => formatChoice,
-  (cycles, metadata, lookupTables, collator, formatChoice) => {
-    const tree: Tree = cycles.map((c) => {
-      const targetPacks = [];
-
-      const useReprints = formatChoice === "new" && !isEmpty(c.reprintPacks);
-
-      if (!useReprints || c.code === "core") {
-        targetPacks.push(...c.packs);
-      }
-
-      if (useReprints || c.code === "core") {
-        targetPacks.push(...c.reprintPacks);
-      }
-
-      return {
-        data: c,
-        type: "cycle",
-        children: targetPacks.map((pack) => {
-          const encounterSets = Object.keys(
-            lookupTables.encounterCodesByPack[pack.code] ?? {},
-          ).map((code) => metadata.encounterSets[code]);
-
-          encounterSets.sort((a, b) =>
-            sortByEncounterSet(metadata, collator)(a.code, b.code),
-          );
-
-          return {
-            data: pack,
-            type: "pack",
-            children: encounterSets.map((data) => ({
-              data,
-              type: "encounter_set" as const,
-            })),
-          };
-        }),
-      };
-    });
-
-    return {
-      data: {
-        code: "all",
-        name: "All cards",
-      },
-      type: "none" as const,
-      children: tree,
-    };
-  },
-);
+type ChapterTab = "1" | "2" | "fan-made";
 
 type SetTreeProps = {
   activeCode?: string;
@@ -121,10 +77,24 @@ export function SetTree({ activeCode, activeType }: SetTreeProps) {
     "format",
   );
 
+  const initialTab = useStore((state) =>
+    selectInitialTab(state, activeCode, activeType),
+  );
+
+  const [chapterTab, setChapterTab] = useTabUrlState<ChapterTab>(
+    initialTab ? (String(initialTab) as ChapterTab) : "1",
+    "chapter",
+  );
+
   const { t } = useTranslation();
 
+  const hasFanMadeCycles = useStore(selectHasFanMadeCycles);
+
+  const activeChapterTab =
+    chapterTab === "fan-made" && !hasFanMadeCycles ? "1" : chapterTab;
+
   const cardSetTree = useStore((state) =>
-    selectCardSetTree(state, formatSelection),
+    selectCardSetTree(state, formatSelection, activeChapterTab),
   );
 
   const activeKey = activeType ? `${activeType}-${activeCode}` : "none-all";
@@ -138,20 +108,41 @@ export function SetTree({ activeCode, activeType }: SetTreeProps) {
 
   return (
     <Scroller className={css["tree"]}>
-      <div className={css["format-toggle"]}>
-        <ToggleGroup
-          value={formatSelection}
-          onValueChange={setFormatSelection}
-          type="single"
-        >
-          <ToggleGroupItem value="new">
-            {t("settings.collection.new_format")}
-          </ToggleGroupItem>
-          <ToggleGroupItem value="old">
-            {t("settings.collection.old_format")}
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
+      <Tabs
+        className={css["chapter-tabs"]}
+        value={activeChapterTab}
+        onValueChange={setChapterTab}
+      >
+        <TabsList>
+          <TabsTrigger value="1">
+            {t("settings.collection.chapter", { number: 1 })}
+          </TabsTrigger>
+          <TabsTrigger value="2">
+            {t("settings.collection.chapter", { number: 2 })}
+          </TabsTrigger>
+          {hasFanMadeCycles && (
+            <TabsTrigger value="fan-made">
+              {t("fan_made_content.short_title")}
+            </TabsTrigger>
+          )}
+        </TabsList>
+      </Tabs>
+      {activeChapterTab === "1" && (
+        <div className={css["format-toggle"]}>
+          <ToggleGroup
+            value={formatSelection}
+            onValueChange={setFormatSelection}
+            type="single"
+          >
+            <ToggleGroupItem value="new">
+              {t("settings.collection.new_format")}
+            </ToggleGroupItem>
+            <ToggleGroupItem value="old">
+              {t("settings.collection.old_format")}
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+      )}
       <SetTreeNode activeKey={activeKey} item={cardSetTree} depth={0} />
     </Scroller>
   );
@@ -246,4 +237,118 @@ function SetTreeChildren({
       ))}
     </ol>
   );
+}
+
+const selectHasFanMadeCycles = createSelector(selectCyclesAndPacks, (cycles) =>
+  cycles.some((c) => !official(c)),
+);
+
+function selectInitialTab(
+  state: StoreState,
+  activeCode: string | undefined,
+  activeType: TreeItemType | undefined,
+) {
+  if (!activeCode || !activeType || activeType === "none") return undefined;
+
+  if (activeType === "cycle") {
+    const cycle = selectCyclesAndPacks(state).find(
+      (c) => c.code === activeCode,
+    );
+    if (!cycle) return undefined;
+    return official(cycle) ? cycle?.packs[0]?.chapter : "fan-made";
+  }
+
+  const metadata = selectMetadata(state);
+
+  if (activeType === "pack") {
+    const pack = metadata.packs[activeCode];
+    if (!pack) return undefined;
+    return official(pack) ? pack?.chapter : "fan-made";
+  }
+
+  if (activeType === "encounter_set") {
+    const lookupTables = selectLookupTables(state);
+    const packCode = Object.keys(lookupTables.encounterCodesByPack).find(
+      (p) => lookupTables.encounterCodesByPack[p]?.[activeCode],
+    );
+    const pack = packCode ? metadata.packs[packCode] : undefined;
+    if (!pack) return undefined;
+    return official(pack) ? pack?.chapter : "fan-made";
+  }
+
+  return undefined;
+}
+
+const selectCardSetTree = createSelector(
+  selectCyclesAndPacks,
+  selectMetadata,
+  selectLookupTables,
+  selectLocaleSortingCollator,
+  (_: StoreState, formatChoice: FormatChoice) => formatChoice,
+  (_: StoreState, __: FormatChoice, chapterTab: ChapterTab) => chapterTab,
+  (cycles, metadata, lookupTables, collator, formatChoice, chapterTab) => {
+    const filteredCycles =
+      chapterTab === "fan-made"
+        ? cycles.filter((c) => !official(c))
+        : filterByChapter(
+            cycles.filter((c) => official(c)),
+            chapterTab,
+          );
+
+    const tree: Tree = filteredCycles.map((c) => {
+      const targetPacks = [];
+
+      const useReprints = formatChoice === "new" && !isEmpty(c.reprintPacks);
+
+      if (!useReprints || c.code === "core") {
+        targetPacks.push(...c.packs);
+      }
+
+      if (useReprints || c.code === "core") {
+        targetPacks.push(...c.reprintPacks);
+      }
+
+      return {
+        data: c,
+        type: "cycle",
+        children: targetPacks.map((pack) => {
+          const encounterSets = Object.keys(
+            lookupTables.encounterCodesByPack[pack.code] ?? {},
+          ).map((code) => metadata.encounterSets[code]);
+
+          encounterSets.sort((a, b) =>
+            sortByEncounterSet(metadata, collator)(a.code, b.code),
+          );
+
+          return {
+            data: pack,
+            type: "pack",
+            children: encounterSets.map((data) => ({
+              data,
+              type: "encounter_set" as const,
+            })),
+          };
+        }),
+      };
+    });
+
+    return {
+      data: {
+        code: "all",
+        name: "All cards",
+      },
+      type: "none" as const,
+      children: tree,
+    };
+  },
+);
+
+function filterByChapter(
+  cycles: ReturnType<typeof selectCyclesAndPacks>,
+  chapterTab: ChapterTab,
+) {
+  const chapter = Number.parseInt(chapterTab, 10);
+  const grouped = groupCyclesByChapter(cycles);
+  const entry = grouped.find(([key]) => Number.parseInt(key, 10) === chapter);
+  return entry ? entry[1] : [];
 }

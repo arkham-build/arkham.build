@@ -1,16 +1,11 @@
 import type { FactionName } from "@arkham-build/shared";
-import { useMemo, useRef } from "react";
+import type { TFunction } from "i18next";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  VictoryContainer,
-  type VictoryLabelProps,
-  VictoryPie,
-  VictoryTooltip,
-} from "victory";
+import type { PieSectorShapeProps } from "recharts";
+import { Pie, PieChart, Sector, Tooltip } from "recharts";
 import type { ChartableData } from "@/store/lib/deck-charts";
-import { cx } from "@/utils/cx";
-import { useElementSize } from "../../utils/use-element-size";
-import { chartsTheme, containerTheme, tooltipWidth } from "./chart-theme";
+import { ChartTooltip, chartTheme } from "./chart-theme";
 import css from "./deck-tools.module.css";
 
 type Props = {
@@ -18,92 +13,79 @@ type Props = {
 };
 
 export function FactionsChart({ data }: Props) {
-  const ref = useRef(null);
-  const { width } = useElementSize(ref);
   const { t } = useTranslation();
 
-  // Remove factions not in the deck so that they don't show as empty labels
-  const normalizedData = useMemo((): ChartableData<FactionName> => {
+  const normalizedData = useMemo(() => {
     return data.filter((tick) => tick.y !== 0);
   }, [data]);
 
   return (
-    <div ref={ref} className={cx(css["chart-container"], css["chart-victory"])}>
-      {width > 0 && (
-        <>
-          <h4 className={css["chart-title"]}>{t("deck.tools.factions")}</h4>
-          <VictoryPie
-            containerComponent={
-              <VictoryContainer responsive={false} style={containerTheme} />
-            }
-            data={normalizedData}
-            theme={chartsTheme}
-            labelPosition="centroid"
-            labelPlacement={"vertical"}
-            labelComponent={<CustomLabel />}
-            labelRadius={({ radius }) => (radius as number) + 16}
-            width={width}
-            sortKey={"y"}
-            style={{
-              data: {
-                fill: ({ datum }) =>
-                  `var(--${datum.xName === "neutral" ? "text" : "color"}-${
-                    datum.xName
-                  })`,
-              },
-            }}
-          />
-        </>
-      )}
+    <div className={css["chart-container"]}>
+      <h4 className={css["chart-title"]}>{t("deck.tools.factions")}</h4>
+      <PieChart width="100%" height={chartTheme.height} responsive>
+        <Pie
+          data={normalizedData}
+          dataKey="y"
+          nameKey="x"
+          cx="50%"
+          cy="50%"
+          outerRadius="90%"
+          stroke={chartTheme.colors.pieStroke}
+          strokeWidth={chartTheme.strokeWidth.pie}
+          label={renderFactionLabel}
+          labelLine={false}
+          isAnimationActive={false}
+          shape={renderFactionSector}
+        />
+        <Tooltip
+          content={<ChartTooltip formatter={(d) => formatTooltip(t, d)} />}
+        />
+      </PieChart>
     </div>
   );
 }
 
-function CustomLabel(props: VictoryLabelProps) {
-  const { t } = useTranslation();
+function renderFactionSector(props: PieSectorShapeProps) {
+  const faction = props.payload?.x as FactionName | undefined;
+  const fill = faction
+    ? `var(--${faction === "neutral" ? "text" : "color"}-${faction})`
+    : "var(--text)";
+  return <Sector {...props} fill={fill} />;
+}
 
-  const { datum, x, y } = props;
+function renderFactionLabel(props: {
+  cx?: number;
+  cy?: number;
+  midAngle?: number;
+  outerRadius?: number;
+  payload?: { x: FactionName };
+}) {
+  const { cx = 0, cy = 0, midAngle = 0, outerRadius = 0, payload } = props;
+  if (!payload) return null;
 
-  const count = datum?.y ?? 0;
+  const RADIAN = Math.PI / 180;
+  const radius = outerRadius + 16;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  const size = 24;
 
-  const faction = datum?.xName ?? "unknown";
+  return (
+    <foreignObject x={x - size / 2} y={y - size / 2} width={size} height={size}>
+      <i
+        className={`icon-${payload.x} fg-${payload.x}`}
+        style={{ fontSize: "24px" }}
+      />
+    </foreignObject>
+  );
+}
 
-  const text = t("deck.tools.factions_tooltip", {
+function formatTooltip(t: TFunction, data: Record<string, unknown>) {
+  const faction = data.x as string;
+  const count = data.y as number;
+
+  return t("deck.tools.factions_tooltip", {
     count,
     faction: t(`common.factions.${faction}`),
     cards: t("common.card", { count }),
   });
-
-  const size = 24;
-
-  return (
-    <g>
-      <foreignObject
-        x={(x ?? 0) - size / 2}
-        y={(y ?? 0) - size / 2}
-        width={size}
-        height={size}
-      >
-        <i
-          className={`icon-${faction} fg-${faction}`}
-          style={{ fontSize: "24px" }}
-        />
-      </foreignObject>
-      <VictoryTooltip
-        // biome-ignore lint/suspicious/noExplicitAny: wrong library typings.
-        active={(props as any).active}
-        x={props.x}
-        y={props.y}
-        orientation="bottom"
-        angle={0}
-        theme={chartsTheme}
-        labelPlacement="vertical"
-        flyoutWidth={tooltipWidth}
-        constrainToVisibleArea
-        text={text}
-      />
-    </g>
-  );
 }
-
-CustomLabel.defaultEvents = VictoryTooltip.defaultEvents;

@@ -43,8 +43,15 @@
   text-align: center;
 }
 
-.chart-victory .chart-title {
-  margin-bottom: calc(24px + 0.375rem);
+.chart-tooltip {
+  background-color: var(--palette-1);
+  border: 1px solid var(--palette-2);
+  padding: 0.375rem;
+  font-family: var(--font-family-ui);
+  font-size: var(--text-small);
+  line-height: 1rem;
+  color: var(--text);
+  border-radius: var(--rounded);
 }
 
 .table-container {

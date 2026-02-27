@@ -30,6 +30,7 @@ import { CardDisplaySettings } from "./card-display";
 import { CardModalPopularDecksSetting } from "./card-modal-popular-decks";
 import { Connections } from "./connections";
 import { DefaultEnvironmentSetting } from "./default-environment";
+import { DevModeSetting } from "./dev-mode";
 import { FontSizeSetting } from "./font-size";
 import { ListSettings } from "./list-settings";
 import { LocaleSetting } from "./locale-setting";
@@ -260,6 +261,9 @@ function SettingsInner({
             <TabsContent value="backup">
               <Section title={t("settings.backup.title")}>
                 <BackupRestore />
+              </Section>
+              <Section title={t("settings.developer.title")}>
+                <DevModeSetting settings={settings} setSettings={setSettings} />
               </Section>
             </TabsContent>
           </Tabs>

@@ -24,20 +24,20 @@
   "dependencies": {
     "@fast-csv/parse": "5.0.2",
     "@hono/node-server": "1.19.6",
-    "hono": "4.11.7",
+    "hono": "4.11.10",
     "kysely": "0.28.8",
     "nodemailer": "7.0.12",
     "pg": "8.16.3"
   },
   "devDependencies": {
-    "@testcontainers/postgresql": "11.10.0",
-    "@tsconfig/node-ts": "23.6.2",
-    "@tsconfig/node24": "24.0.3",
+    "@testcontainers/postgresql": "11.12.0",
+    "@tsconfig/node-ts": "23.6.4",
+    "@tsconfig/node24": "24.0.4",
     "@tsconfig/strictest": "2.0.8",
     "@types/nodemailer": "7.0.5",
     "@types/pg": "8.16.0",
-    "dbmate": "2.28.0",
-    "kysely-codegen": "0.19.0",
-    "testcontainers": "11.10.0"
+    "dbmate": "2.31.0",
+    "kysely-codegen": "0.20.0",
+    "testcontainers": "11.12.0"
   }
 }

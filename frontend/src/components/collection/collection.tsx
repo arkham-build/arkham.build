@@ -5,10 +5,9 @@ import { Link } from "wouter";
 import PackIcon from "@/components/icons/pack-icon";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { useStore } from "@/store";
-import type { Pack } from "@/store/schemas/pack.schema";
 import { selectCycleCardCounts } from "@/store/selectors/collection";
 import {
-  type CycleWithPacks,
+  groupCyclesByChapter,
   selectCyclesAndPacks,
 } from "@/store/selectors/lists";
 import type { SettingsState } from "@/store/slices/settings.types";
@@ -40,34 +39,10 @@ export function CollectionSettings(props: Props) {
     return officialCycles;
   }, [cyclesWithPacks]);
 
-  const cyclesByChapter = useMemo(() => {
-    const cyclesByChapter = collectionCycles.reduce(
-      (acc, cycle) => {
-        const packsByChapter = cycle.packs.reduce<Record<number, Pack[]>>(
-          (chapterAcc, pack) => {
-            const chapter = pack.chapter ?? 1;
-            chapterAcc[chapter] ??= [];
-            chapterAcc[chapter].push(pack);
-            return chapterAcc;
-          },
-          {},
-        );
-
-        Object.entries(packsByChapter).forEach(([chapterStr, packs]) => {
-          const chapter = Number.parseInt(chapterStr, 10);
-          acc[chapter] ??= [];
-          acc[chapter].push({
-            ...cycle,
-            packs,
-          });
-        });
-        return acc;
-      },
-      {} as Record<number, CycleWithPacks[]>,
-    );
-
-    return Object.entries(cyclesByChapter).sort((a, b) => +b[0] - +a[0]);
-  }, [collectionCycles]);
+  const cyclesByChapter = useMemo(
+    () => groupCyclesByChapter(collectionCycles),
+    [collectionCycles],
+  );
 
   const canEdit = !!setSettings;
 

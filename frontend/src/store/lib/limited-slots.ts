@@ -1,4 +1,5 @@
 import type { Card, DeckOption } from "@arkham-build/shared";
+import type { Interpreter } from "./buildql/interpreter";
 import { getAdditionalDeckOptions } from "./deck-validation";
 import { makeOptionFilter } from "./filtering";
 import type { ResolvedDeck } from "./types";
@@ -7,7 +8,11 @@ type Mapping = {
   [key: number]: Record<string, number>;
 };
 
-function mapCardsToDeckOptions(deck: ResolvedDeck, deckOptions: DeckOption[]) {
+function mapCardsToDeckOptions(
+  deck: ResolvedDeck,
+  deckOptions: DeckOption[],
+  buildQlInterpreter: Interpreter,
+) {
   // number of options with a limit clause.
   // in contrast to the deck validation logic,
   // we append unmatched cards to the last option.
@@ -33,7 +38,7 @@ function mapCardsToDeckOptions(deck: ResolvedDeck, deckOptions: DeckOption[]) {
       limitOptionIndex += 1;
     }
 
-    const filter = makeOptionFilter(option, {
+    const filter = makeOptionFilter(option, buildQlInterpreter, {
       customizable: {
         properties: "actual",
         level: "actual",
@@ -94,6 +99,7 @@ export type LimitedSlotOccupation = {
 
 export function limitedSlotOccupation(
   deck: ResolvedDeck,
+  buildQlInterpreter: Interpreter,
 ): undefined | LimitedSlotOccupation[] {
   const deckOptions = [
     ...(deck.investigatorBack.card.deck_options ?? []),
@@ -106,7 +112,7 @@ export function limitedSlotOccupation(
 
   if (!limitedSlotIndexes?.length) return undefined;
 
-  const mapping = mapCardsToDeckOptions(deck, deckOptions);
+  const mapping = mapCardsToDeckOptions(deck, deckOptions, buildQlInterpreter);
 
   return limitedSlotIndexes.map(({ index, option }) => {
     const matches = mapping?.[index] ?? {};

@@ -237,6 +237,7 @@ function getPackIcon(code?: string) {
       return "return_to_the_forgotten_age";
     case "rttcu":
       return "rttcu";
+
     case "nat":
       return "nate";
     case "har":
@@ -247,6 +248,16 @@ function getPackIcon(code?: string) {
       return "jacqueline";
     case "ste":
       return "stella";
+    case "and":
+      return "and";
+    case "car":
+      return "car";
+    case "mar":
+      return "mar";
+    case "tom":
+      return "tom";
+    case "mig":
+      return "mig";
 
     case "rod":
       return "read_or_die";

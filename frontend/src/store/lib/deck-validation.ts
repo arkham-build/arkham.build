@@ -14,6 +14,7 @@ import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { range } from "@/utils/range";
 import { time, timeEnd } from "@/utils/time";
 import type { Metadata } from "../slices/metadata.types";
+import type { Interpreter } from "./buildql/interpreter";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {
   filterCardPool,
@@ -198,6 +199,7 @@ export function validateDeck(
   deck: ResolvedDeck,
   metadata: Metadata,
   lookupTables: LookupTables,
+  buildQlInterpreter: Interpreter,
 ): DeckValidationResult {
   time("validate_deck");
 
@@ -217,12 +219,20 @@ export function validateDeck(
 
   const errors: DeckValidationError[] = [
     ...validateDeckSize(deck),
-    ...validateSlots(deck, metadata, lookupTables),
+    ...validateSlots(deck, metadata, lookupTables, buildQlInterpreter),
   ];
 
   if (deck.hasExtraDeck) {
     errors.push(...validateExtraDeckSize(deck));
-    errors.push(...validateSlots(deck, metadata, lookupTables, "extraSlots"));
+    errors.push(
+      ...validateSlots(
+        deck,
+        metadata,
+        lookupTables,
+        buildQlInterpreter,
+        "extraSlots",
+      ),
+    );
   }
 
   if (deck.cardPool?.length) {
@@ -327,9 +337,15 @@ function validateDeckSize(deck: ResolvedDeck): DeckValidationError[] {
 function validateExtraDeckSize(deck: ResolvedDeck): DeckValidationError[] {
   const investigatorBack = deck.investigatorBack.card;
 
+  const hasSideDeckSizeOption = investigatorBack.side_deck_options?.some(
+    (o) => !!o.deck_size_select,
+  );
+
   // FIXME: this is a hack. Instead, we should not count signatures towards side deck size.
   const targetDeckSize =
-    (investigatorBack.side_deck_requirements?.size ?? 0) + 1;
+    hasSideDeckSizeOption && deck.metaParsed.deck_size_selected
+      ? Number.parseInt(deck.metaParsed.deck_size_selected, 10) + 1
+      : (investigatorBack.side_deck_requirements?.size ?? 0) + 1;
 
   const deckSize = Object.values(deck.extraSlots ?? {}).reduce(
     (acc, curr) => acc + curr,
@@ -408,16 +424,23 @@ function validateSlots(
   deck: ResolvedDeck,
   metadata: Metadata,
   lookupTables: LookupTables,
+  buildQlInterpreter: Interpreter,
   mode: "slots" | "extraSlots" = "slots",
 ): DeckValidationError[] {
   const validators: SlotValidator[] = [
     new DeckLimitsValidator(deck),
     new DeckRequiredCardsValidator(deck, lookupTables, mode),
-    new DeckOptionsValidator(deck, lookupTables, mode),
+    new DeckOptionsValidator(deck, lookupTables, buildQlInterpreter, mode),
   ];
 
   if (mode === "extraSlots") {
-    validators.push(new SideDeckLimitsValidator());
+    validators.push(
+      new SideDeckLimitsValidator(
+        deck.investigatorBack.card.code === SPECIAL_CARD_CODES.PARALLEL_JIM
+          ? 1
+          : undefined,
+      ),
+    );
   }
 
   const accessor =
@@ -732,6 +755,7 @@ class DeckRequiredCardsValidator implements SlotValidator {
 }
 
 class DeckOptionsValidator implements SlotValidator {
+  buildQlInterpreter: Interpreter;
   cards: Card[] = [];
   signatures: Card[] = [];
   config: InvestigatorAccessConfig;
@@ -746,6 +770,7 @@ class DeckOptionsValidator implements SlotValidator {
   constructor(
     deck: ResolvedDeck,
     lookupTables: LookupTables,
+    buildQlInterpreter: Interpreter,
     mode: "slots" | "extraSlots" = "slots",
   ) {
     const investigatorBack = deck.investigatorBack.card;
@@ -755,9 +780,13 @@ class DeckOptionsValidator implements SlotValidator {
 
     this.config = config;
     this.deckOptions = deckOptions;
+    this.buildQlInterpreter = buildQlInterpreter;
 
-    this.playerCardFilter = filterInvestigatorAccess(investigatorBack, config);
-
+    this.playerCardFilter = filterInvestigatorAccess(
+      investigatorBack,
+      buildQlInterpreter,
+      config,
+    );
     this.weaknessFilter = filterInvestigatorWeaknessAccess(investigatorBack);
   }
 
@@ -959,7 +988,11 @@ class DeckOptionsValidator implements SlotValidator {
     for (const option of options) {
       if (!option.virtual || option.atleast) continue;
 
-      const filter = makeOptionFilter(option as DeckOption, this.config);
+      const filter = makeOptionFilter(
+        option as DeckOption,
+        this.buildQlInterpreter,
+        this.config,
+      );
       if (!filter) continue;
 
       let matchCount = 0;
@@ -1009,7 +1042,11 @@ class DeckOptionsValidator implements SlotValidator {
       const option = options[i];
       if (option.virtual) continue;
 
-      const filter = makeOptionFilter(option as DeckOption, this.config);
+      const filter = makeOptionFilter(
+        option as DeckOption,
+        this.buildQlInterpreter,
+        this.config,
+      );
 
       let matchCount = 0;
 
@@ -1093,7 +1130,12 @@ class DeckOptionsValidator implements SlotValidator {
 
 class SideDeckLimitsValidator implements SlotValidator {
   cards: Card[] = [];
+  limitOverride: number | undefined = undefined;
   quantities: number[] = [];
+
+  constructor(limitOverride?: number) {
+    this.limitOverride = limitOverride;
+  }
 
   add(card: Card, quantity: number) {
     if (card.subtype_code !== "basicweakness") {
@@ -1109,7 +1151,9 @@ class SideDeckLimitsValidator implements SlotValidator {
       const card = this.cards[i];
       const quantity = this.quantities[i];
 
-      if (quantity > 1 && card.xp != null) {
+      const limit = this.limitOverride ?? card.deck_limit ?? 0;
+
+      if (quantity > limit && card.xp != null) {
         errors.push({
           type: "INVALID_CARD_COUNT",
           details: [

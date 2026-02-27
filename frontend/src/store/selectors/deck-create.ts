@@ -59,7 +59,7 @@ export const selectDeckCreateCardSets = createSelector(
     const groupings: CardSet[] = [];
 
     const { back, investigator } = investigators;
-    const { relations } = investigator;
+    const { relations } = back;
 
     const deckSizeRequirement = investigator.card.deck_requirements?.size ?? 30;
 
@@ -103,13 +103,7 @@ export const selectDeckCreateCardSets = createSelector(
       });
     }
 
-    if (
-      relations?.parallelCards?.length &&
-      (deckCreate.investigatorBackCode === SPECIAL_CARD_CODES.PARALLEL_JIM ||
-        deckCreate.investigatorFrontCode ===
-          SPECIAL_CARD_CODES.PARALLEL_WENDY ||
-        deckCreate.investigatorFrontCode === SPECIAL_CARD_CODES.PARALLEL_ROLAND)
-    ) {
+    if (relations?.parallelCards?.length) {
       groupings.push({
         id: "extra",
         title: formatRelationTitle("extra"),
@@ -123,6 +117,23 @@ export const selectDeckCreateCardSets = createSelector(
           (acc, { card }) => {
             acc[card.code] =
               deckCreate.extraCardQuantities[card.code] ?? card.quantity;
+            return acc;
+          },
+          {} as Record<string, number>,
+        ),
+      });
+    }
+
+    if (relations?.sideDeckRequiredCards?.length) {
+      groupings.push({
+        id: "sideDeckRequiredCards",
+        title: formatRelationTitle("sideDeckRequiredCards"),
+        canSelect: false,
+        selected: true,
+        cards: relations.sideDeckRequiredCards,
+        quantities: relations.sideDeckRequiredCards.reduce(
+          (acc, { card }) => {
+            acc[card.code] = card.quantity;
             return acc;
           },
           {} as Record<string, number>,

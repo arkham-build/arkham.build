@@ -99,12 +99,8 @@ export const SPECIAL_CARD_CODES = {
   OCCULT_EVIDENCE: "06008",
   /** Fake-bonded card, should be excluded from things liks draw simulator. */
   ON_THE_MEND: "09006",
-  /** Has option to add cards to ignore deck limit slots. */
-  PARALLEL_AGNES: "90017",
   /** Has spirit deck. */
   PARALLEL_JIM: "90049",
-  /** Has option to add cards to ignore deck limit slots. */
-  PARALLEL_SKIDS: "90008",
   /** Parallel front has deckbuilding impact. */
   PARALLEL_ROLAND: "90024",
   /** Parallel front has deckbuilding impact. */
@@ -125,8 +121,6 @@ export const SPECIAL_CARD_CODES = {
   TIDAL_MEMENTO: "90038",
   /** adds deckbuilding requirements. */
   UNDERWORLD_SUPPORT: "08046",
-  /** Weakness starts in spirit deck. */
-  VENGEFUL_SHADE: "90053",
   /** Exceptions for specialist logic. */
   GENERIC_CUSTOM_INVESTIGATORS: [
     "347ff5d0-8521-4d9b-a0fe-90c06114057d",
@@ -152,6 +146,7 @@ export const CARD_SET_ORDER = [
 export const MQ_FLOATING_SIDEBAR = "(max-width: 52rem)";
 export const MQ_FLOATING_FILTERS = "(max-width: 75rem)";
 export const MQ_MOBILE = "(pointer: coarse)";
+export const MQ_WIDE_PREVIEW = "(min-width: 85rem)";
 
 export const PREVIEW_PACKS = (localPacks as JsonDataPack[])
   .filter((p) => p.date_release && new Date() < new Date(p.date_release))

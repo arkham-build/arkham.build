@@ -122,6 +122,7 @@ export type OptionSelect = z.infer<typeof OptionSelectSchema>;
 const DeckOptionSchema = z.object({
   atleast: AtLeastSchema.nullish(),
   base_level: z.object({ min: z.number(), max: z.number() }).nullish(),
+  buildql_query: z.string().nullish(),
   deck_size_select: z.union([z.string(), z.array(z.string())]).nullish(),
   error: z.string().nullish(),
   faction_select: z.array(z.string()).nullish(),

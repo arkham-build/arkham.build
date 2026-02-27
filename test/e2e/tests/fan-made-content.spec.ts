@@ -269,6 +269,26 @@ test.describe("fan-made content", () => {
         .getByTestId("listcard-cd00bc7f-398e-4f3b-885f-1048cd840086"),
     ).not.toBeVisible();
   });
+
+  test("investigator placeholders can set BuildQL deckbuilding", async ({
+    page,
+  }) => {
+    await page.goto("/settings?tab=fan-made-content");
+    await importPackFromFile(page, "investigator_placeholders.json");
+    await page.getByTestId("masthead-logo").click();
+    await page.getByTestId("collection-create-deck").click();
+    await fillSearch(page, "jane doe");
+    await page.getByTestId("create-choose-investigator").click();
+    await page.getByTestId("create-save").click();
+    await page.getByTestId("editor-tab-config").click();
+    await page
+      .getByTestId("meta-buildql-deck-option")
+      .fill('faction = "rogue" & level = 5');
+    await fillSearch(page, "The Red Clock");
+    await expect(page.getByTestId("listcard-08058")).toBeVisible();
+    await fillSearch(page, "shotgun");
+    await expect(page.getByTestId("listcard-01029")).not.toBeVisible();
+  });
 });
 
 async function createDeckWithFanMadeCard(page: Page) {

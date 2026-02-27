@@ -1,15 +1,13 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import "./styles/main.css";
 import "@fontsource-variable/noto-sans/standard.css";
 import "@fontsource-variable/noto-sans/standard-italic.css";
 import "@fontsource-variable/noto-serif/standard.css";
 import "@fontsource-variable/noto-serif/standard-italic.css";
 import "./styles/icons-encounters.css";
 import "./styles/icons-icon.css";
-import "./styles/main.css";
 
-import "@/utils/i18n";
-
+import React from "react";
+import ReactDOM from "react-dom/client";
 import i18n from "@/utils/i18n";
 import App from "./app";
 import { useStore } from "./store";
@@ -20,13 +18,6 @@ import {
   queryDataVersion,
   queryMetadata,
 } from "./store/services/queries";
-import { retryFailedDynamicImport } from "./utils/retry-failed-dynamic-import";
-import { applyStoredColorTheme } from "./utils/use-color-theme";
-
-// see: https://vite.dev/guide/build.html#load-error-handling
-window.addEventListener("vite:preloadError", () => {
-  retryFailedDynamicImport();
-});
 
 const rootNode = document.getElementById("root");
 
@@ -50,8 +41,6 @@ init().catch((err) => {
 });
 
 async function init() {
-  applyStoredColorTheme();
-
   await useStore
     .getState()
     .init(queryMetadata, queryDataVersion, queryCards, { refresh: false });

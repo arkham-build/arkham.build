@@ -1,6 +1,7 @@
 import type { Card } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { ListCard } from "@/components/list-card/list-card";
+import { OwnershipPartitionedCardList } from "@/components/ownership-partitioned-card-list";
 import { Details } from "@/components/ui/details";
 import { useStore } from "@/store";
 import { selectUsableByInvestigators } from "@/store/selectors/card-view";
@@ -26,11 +27,12 @@ export function UsableBy(props: Props) {
       })}
       scrollHeight="24rem"
     >
-      <ol>
-        {investigators.map((card) => (
+      <OwnershipPartitionedCardList
+        cards={investigators}
+        cardRenderer={({ card }) => (
           <ListCard as="li" card={card} key={card.code} size="investigator" />
-        ))}
-      </ol>
+        )}
+      />
     </Details>
   );
 }

@@ -1,6 +1,20 @@
+.container {
+  height: 100%;
+  min-height: 0;
+
+  @media screen and (min-width: 85rem) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .notes-editor {
   padding-right: 0.625rem;
   max-width: 90ch;
+
+  @media screen and (min-width: 85rem) {
+    max-width: auto;
+  }
 }
 
 .notes-editor > * + * {

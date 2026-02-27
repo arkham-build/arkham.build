@@ -6,6 +6,7 @@ import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
+  selectStaticBuildQlInterpreter,
 } from "../selectors/shared";
 import type { StoreState } from "../slices";
 import { validateDeck } from "./deck-validation";
@@ -283,6 +284,7 @@ function validate(store: StoreApi<StoreState>, deck: Deck) {
   const state = store.getState();
   const metadata = selectMetadata(state);
   const lookupTables = selectLookupTables(state);
+  const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
 
   return validateDeck(
     resolveDeck(
@@ -296,6 +298,7 @@ function validate(store: StoreApi<StoreState>, deck: Deck) {
     ),
     metadata,
     lookupTables,
+    buildQlInterpreter,
   );
 }
 

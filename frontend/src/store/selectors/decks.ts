@@ -26,6 +26,7 @@ import type { Deck, Id } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
 import type { DecklistConfig } from "../slices/settings.types";
 import {
+  selectBuildQlInterpreter,
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
@@ -102,9 +103,10 @@ export const selectDeckValid = createSelector(
   (_: StoreState, deck: ResolvedDeck | undefined) => deck,
   selectLookupTables,
   selectMetadata,
-  (deck, lookupTables, metadata) => {
+  selectBuildQlInterpreter,
+  (deck, lookupTables, metadata, buildQlInterpreter) => {
     return deck
-      ? validateDeck(deck, metadata, lookupTables)
+      ? validateDeck(deck, metadata, lookupTables, buildQlInterpreter)
       : { valid: false, errors: [] };
   },
 );
@@ -380,9 +382,10 @@ export const selectLatestUpgrade = createSelector(
 
 export const selectLimitedSlotOccupation = createSelector(
   (_: StoreState, deck: ResolvedDeck) => deck,
-  (deck) => {
+  selectBuildQlInterpreter,
+  (deck, buildQlInterpreter) => {
     time("limited_slot_occupation");
-    const value = limitedSlotOccupation(deck);
+    const value = limitedSlotOccupation(deck, buildQlInterpreter);
     timeEnd("limited_slot_occupation");
     return value;
   },

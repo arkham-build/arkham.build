@@ -196,7 +196,7 @@ const fieldDefinitions: FieldDefinition[] = [
       if (!otherLevels) return false;
 
       const accessFilter = deck
-        ? filterInvestigatorAccess(deck.investigatorBack.card, {
+        ? filterInvestigatorAccess(deck.investigatorBack.card, undefined, {
             customizable: { properties: "all", level: "all" },
             investigatorFront: deck.investigatorFront.card,
             selections: deck.selections,
@@ -267,7 +267,7 @@ const fieldDefinitions: FieldDefinition[] = [
       const investigator = ctx.metadata.cards[fieldValue];
       if (investigator?.type_code !== "investigator") return false;
 
-      const accessFilter = filterInvestigatorAccess(investigator, {
+      const accessFilter = filterInvestigatorAccess(investigator, undefined, {
         customizable: {
           properties: "all",
           level: "all",
@@ -302,7 +302,7 @@ const fieldDefinitions: FieldDefinition[] = [
       if (!otherLevels) return false;
 
       const accessFilter = deck
-        ? filterInvestigatorAccess(deck.investigatorBack.card, {
+        ? filterInvestigatorAccess(deck.investigatorBack.card, undefined, {
             customizable: { properties: "all", level: "all" },
             investigatorFront: deck.investigatorFront.card,
             selections: deck.selections,

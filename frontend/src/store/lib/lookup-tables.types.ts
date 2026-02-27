@@ -31,6 +31,8 @@ export type LookupTables = {
     level: LookupTable<string>;
     // Roland bannks has parallel card "Directive".
     parallelCards: LookupTable<string>;
+    // Jim Culver requires Vengeful Shade in the spirit deck.
+    sideDeckRequiredCards: LookupTable<string>;
     // Parallel versions of an investigator.
     parallel: LookupTable<string>;
     // Replacement requiredCards for an investigator.

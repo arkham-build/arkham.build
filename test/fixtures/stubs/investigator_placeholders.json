@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "code": "d12a4d9c-8c65-4df0-be0c-c2e14af65a21",
+    "name": "Investigator Placeholders",
+    "description": "A set of placeholder investigators with unrestricted deckbuilding that can be used in place of fan-made investigators. Created by HatfulBob.",
+    "author": "arkham.build",
+    "language": "en",
+    "external_link": "",
+    "banner_url": "https://assets.arkham.build/fan-made/placeholders_banner.png",
+    "banner_credit": "Antonio Maínez, Anders Finér",
+    "types": ["player_cards"],
+    "status": "final",
+    "date_updated": "2025-12-14T10:57:03.318",
+    "generator": "Zoop 3.5, AHLCG plugin 9.91, Strange Eons 3.3.4241"
+  },
+  "data": {
+    "cards": [
+      {
+        "back_flavor": "Originating from Parts Unknown and graduating from Lorem Ipsum University, not much is known about Johnny. Are they your teacher? Your accountant, your lawyer, your professor? All we know is he could be anybody and nobody.",
+        "back_name": "Johnny Anybody",
+        "back_text": "<b>Deck Size</b>: 30.\n<b>Deckbuilding Options</b>:  Guardian cards ([guardian]) level 0-5, Seeker cards ([seeker]) level 0-5, Rogue cards ([rogue]) level 0-5, Mystic cards ([mystic]) level 0-5, Survivor cards ([survivor]) level 0-5, Neutral cards level 0-5.\n<b>Deckbuilding Requirements</b> (do not count toward deck size): 1 random basic weakness.",
+        "code": "347ff5d0-8521-4d9b-a0fe-90c06114057d",
+        "deck_requirements": "size:30, random:subtype:basicweakness",
+        "deck_options": [
+          {
+            "faction": [
+              "guardian",
+              "seeker",
+              "rogue",
+              "survivor",
+              "mystic",
+              "neutral"
+            ],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          }
+        ],
+        "deck_limit": 1,
+        "double_sided": true,
+        "faction_code": "neutral",
+        "flavor": "This front is left intentionally blank.",
+        "health": 7,
+        "illustrator": "Anders Finér",
+        "name": "Johnny Anybody",
+        "pack_code": "d12a4d9c-8c65-4df0-be0c-c2e14af65a21",
+        "position": 1,
+        "quantity": 1,
+        "sanity": 7,
+        "skill_agility": -2,
+        "skill_combat": -2,
+        "skill_intellect": -2,
+        "skill_willpower": -2,
+        "subname": "The Mystery",
+        "text": "This is a custom investigator to allow for building of arbitrary decks.\n[elder_sign] effect: +X, where X is whatever you want it to be.",
+        "traits": "Humanoid.",
+        "type_code": "investigator",
+        "image_url": "https://eons.arkham.build/347ff5d0-8521-4d9b-a0fe-90c06114057d-Front-Johnny%20Anybody-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1765619001012",
+        "thumbnail_url": "https://eons.arkham.build/347ff5d0-8521-4d9b-a0fe-90c06114057d-Front-thumbnail.png?cachebust=1765619001730",
+        "back_image_url": "https://eons.arkham.build/347ff5d0-8521-4d9b-a0fe-90c06114057d-Back-Johnny%20Anybody-resolution-300-compressionquality-0.90-bleed-0.0-Back.jpg?cachebust=1765619002279",
+        "back_thumbnail_url": "https://eons.arkham.build/347ff5d0-8521-4d9b-a0fe-90c06114057d-Back-thumbnail.png?cachebust=1765619002855"
+      },
+      {
+        "back_flavor": "Originating from Parts Unknown and graduating from Lorem Ipsum University, not much is known about Jane. Are they your mechanic? Your federal agent, your detective, your magician? All we know is she could be anybody and nobody.",
+        "back_name": "Jane Doe",
+        "back_text": "<b>Deck Size</b>: 30.\n<b>Deckbuilding Options</b>:  Guardian cards ([guardian]) level 0-5, Seeker cards ([seeker]) level 0-5, Rogue cards ([rogue]) level 0-5, Mystic cards ([mystic]) level 0-5, Survivor cards ([survivor]) level 0-5, Neutral cards level 0-5.\n<b>Deckbuilding Requirements</b> (do not count toward deck size): 1 random basic weakness.",
+        "code": "c13c4114-0769-410c-864b-e43f5a596c0d",
+        "deck_requirements": "size:30, random:subtype:basicweakness",
+        "deck_options": [
+          {
+            "faction": [
+              "guardian",
+              "seeker",
+              "rogue",
+              "survivor",
+              "mystic",
+              "neutral"
+            ],
+            "level": {
+              "min": 0,
+              "max": 5
+            }
+          }
+        ],
+        "deck_limit": 1,
+        "double_sided": true,
+        "faction_code": "neutral",
+        "flavor": "This front is left intentionally blank.",
+        "health": 7,
+        "illustrator": "Antonio Maínez",
+        "name": "Jane Doe",
+        "pack_code": "d12a4d9c-8c65-4df0-be0c-c2e14af65a21",
+        "position": 1,
+        "quantity": 1,
+        "sanity": 7,
+        "skill_agility": -2,
+        "skill_combat": -2,
+        "skill_intellect": -2,
+        "skill_willpower": -2,
+        "subname": "The Mystery",
+        "text": "This is a custom investigator to allow for building of arbitrary decks.\n[elder_sign] effect: +X, where X is whatever you want it to be.",
+        "traits": "Humanoid.",
+        "type_code": "investigator",
+        "image_url": "https://eons.arkham.build/c13c4114-0769-410c-864b-e43f5a596c0d-Front-Jane%20Doe-resolution-300-compressionquality-0.90-bleed-0.0-Front.jpg?cachebust=1765619003339",
+        "thumbnail_url": "https://eons.arkham.build/c13c4114-0769-410c-864b-e43f5a596c0d-Front-thumbnail.png?cachebust=1765619003880",
+        "back_image_url": "https://eons.arkham.build/c13c4114-0769-410c-864b-e43f5a596c0d-Back-Jane%20Doe-resolution-300-compressionquality-0.90-bleed-0.0-Back.jpg?cachebust=1765619004387",
+        "back_thumbnail_url": "https://eons.arkham.build/c13c4114-0769-410c-864b-e43f5a596c0d-Back-thumbnail.png?cachebust=1765619004870"
+      }
+    ],
+    "encounter_sets": [],
+    "packs": [
+      {
+        "code": "d12a4d9c-8c65-4df0-be0c-c2e14af65a21",
+        "name": "Investigator Placeholders",
+        "date_release": "2025-12-13",
+        "icon_url": "https://eons.arkham.build/d12a4d9c-8c65-4df0-be0c-c2e14af65a21-collection-icon.png?cachebust=1765619005353"
+      }
+    ]
+  }
+}

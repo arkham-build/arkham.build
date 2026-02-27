@@ -34,6 +34,7 @@ export type SettingsState = {
   collection: Record<string, number>; // track as "quantity" owned to accomodate the core set.
   defaultEnvironment: "current" | "legacy";
   defaultStorageProvider: StorageProvider;
+  devModeEnabled: boolean;
   flags?: Record<string, boolean>;
   fontSize: number;
   hideWeaknessesByDefault: boolean;

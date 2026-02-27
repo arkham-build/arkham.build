@@ -35,6 +35,7 @@ function getInitialLookupTables(): LookupTables {
       otherVersions: {},
       parallel: {},
       parallelCards: {},
+      sideDeckRequiredCards: {},
       replacement: {},
       reprints: {},
       requiredCards: {},
@@ -200,6 +201,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
 
   const investigatorsByName: Record<string, string[]> = {};
   const canonicalInvestigatorCodes = new Set<string>();
+  const requiredCardCodes = new Set<string>();
 
   // first pass: identify target cards.
   for (const card of cards) {
@@ -242,6 +244,14 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
       investigatorsByName[card.real_name].push(card.code);
       canonicalInvestigatorCodes.add(card.code);
     }
+
+    for (const code of Object.keys(card.deck_requirements?.card ?? {})) {
+      requiredCardCodes.add(code);
+    }
+
+    for (const code of Object.keys(card.side_deck_requirements?.card ?? {})) {
+      requiredCardCodes.add(code);
+    }
   }
 
   // second pass: construct lookup tables.
@@ -249,6 +259,16 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
     if (card.deck_requirements?.card) {
       for (const code of Object.keys(card.deck_requirements.card)) {
         setInLookupTable(code, tables.relations.requiredCards, card.code);
+      }
+    }
+
+    if (card.side_deck_requirements?.card) {
+      for (const code of Object.keys(card.side_deck_requirements.card)) {
+        setInLookupTable(
+          code,
+          tables.relations.sideDeckRequiredCards,
+          card.code,
+        );
       }
     }
 
@@ -273,7 +293,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
         } else if (card.real_text?.includes("Replacement.")) {
           setInLookupTable(card.code, tables.relations.replacement, key);
         } else {
-          if (card.parallel) {
+          if (card.parallel && !requiredCardCodes.has(card.code)) {
             setInLookupTable(card.code, tables.relations.parallelCards, key);
             // Kate has bonded cards restricted to her, these should not be part of the deck.
           }

@@ -71,7 +71,9 @@ export function CardScanControlled(props: Props) {
       : backType;
 
   const tabooSetId =
-    card.taboo_set_id && card.taboo_set_id <= 9 ? card.taboo_set_id : undefined;
+    card.taboo_set_id && card.taboo_set_id <= 10
+      ? card.taboo_set_id
+      : undefined;
 
   const imageCode = useAgathaEasterEggTransform(
     !ignoreTaboo && tabooSetId

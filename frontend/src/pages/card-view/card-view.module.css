@@ -107,7 +107,7 @@
 
 .card-set-nav-title h3 * {
   margin: 0.5rem;
-  vertical-align: middle;
+  vertical-align: baseline;
 }
 
 .printings {

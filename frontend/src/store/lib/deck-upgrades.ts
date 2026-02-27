@@ -186,12 +186,6 @@ function calculateXpSpent(
 ) {
   let xp = 0;
 
-  const investigatorCode = next.investigatorBack.card.code;
-
-  const investigatorCanIgnore =
-    investigatorCode === SPECIAL_CARD_CODES.PARALLEL_AGNES ||
-    investigatorCode === SPECIAL_CARD_CODES.PARALLEL_SKIDS;
-
   const { modifiers, modifiersAvailable, modifierFlags } = getModifiers(
     prev,
     next,
@@ -339,7 +333,6 @@ function calculateXpSpent(
 
       // ignored cards (||Agnes, ||Skids) require full XP cost to purchase, as well as any DtRH penalties.
       if (
-        investigatorCanIgnore &&
         Object.values(next.cards.ignoreDeckLimitSlots).some(
           (x) => x.card.real_name === card.real_name,
         )

@@ -134,6 +134,10 @@ html[data-theme="light"] .toc a {
   text-decoration-style: dotted;
 }
 
+.rules table {
+  width: 100%;
+}
+
 .rules .chart th,
 .rules .chart td {
   padding: 0.375rem;

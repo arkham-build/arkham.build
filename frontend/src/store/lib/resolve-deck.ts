@@ -56,7 +56,7 @@ export function resolveDeck(
     "alternate_front",
   );
 
-  const investigatorBack = getInvestigatorForSide(
+  let investigatorBack = getInvestigatorForSide(
     deps,
     collator,
     deck.taboo_id,
@@ -64,6 +64,18 @@ export function resolveDeck(
     deckMeta,
     "alternate_back",
   );
+
+  if (
+    deckMeta.buildql_deck_options_override &&
+    SPECIAL_CARD_CODES.GENERIC_CUSTOM_INVESTIGATORS.includes(
+      investigatorBack.card.code,
+    )
+  ) {
+    investigatorBack = structuredClone(investigatorBack);
+    investigatorBack.card.deck_options = [
+      { buildql_query: deckMeta.buildql_deck_options_override },
+    ];
+  }
 
   const hasExtraDeck = !!investigatorBack.card.side_deck_options;
   const hasParallel = !!investigator.relations?.parallel;

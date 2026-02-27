@@ -11,6 +11,7 @@ import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
+  selectStaticBuildQlInterpreter,
 } from "../selectors/shared";
 import type { StoreState } from "../slices";
 import {
@@ -29,6 +30,7 @@ function toSnapShot(value: LimitedSlotOccupation) {
 function snapshotResult(state: StoreState, deck: Deck) {
   const metadata = selectMetadata(state);
   const lookupTables = selectLookupTables(state);
+  const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
   const sharing = state.sharing;
 
   return limitedSlotOccupation(
@@ -37,6 +39,7 @@ function snapshotResult(state: StoreState, deck: Deck) {
       selectLocaleSortingCollator(state),
       deck,
     ),
+    buildQlInterpreter,
   )?.map(toSnapShot);
 }
 

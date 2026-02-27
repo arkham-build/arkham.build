@@ -4,6 +4,7 @@ import { cx } from "@/utils/cx";
 import { displayPackName } from "@/utils/formatting";
 import PackIcon from "./icons/pack-icon";
 import css from "./printing.module.css";
+import { CopyToClipboard } from "./ui/copy-to-clipboard";
 
 type Props = {
   active?: boolean;
@@ -11,6 +12,7 @@ type Props = {
   className?: string;
   linked?: boolean;
   printing: PrintingT;
+  showCopyId?: boolean;
 };
 
 export function Printing({
@@ -19,10 +21,13 @@ export function Printing({
   className,
   linked = true,
   printing,
+  showCopyId,
 }: Props) {
   const { pack, card } = printing;
 
   const packName = displayPackName(pack);
+
+  const packFormat = pack.reprint ? "new" : "old";
 
   return (
     <PrintingInner
@@ -35,7 +40,7 @@ export function Printing({
         linked ? (
           <a
             className="link-current"
-            href={`/browse/pack/${pack.code}`}
+            href={`/browse/pack/${pack.code}${packFormat ? `?format=${packFormat}` : ""}`}
             target="_blank"
             rel="noreferrer"
           >
@@ -47,6 +52,7 @@ export function Printing({
       }
       position={card.position}
       quantity={card.quantity}
+      showCopyId={showCopyId}
     />
   );
 }
@@ -60,16 +66,19 @@ type PrintingInnerProps = {
   name: React.ReactNode;
   position: number | string;
   quantity?: number;
+  showCopyId?: boolean;
 };
 
 export function PrintingInner({
   active,
   actionNode,
   className,
+  card,
   icon,
   name,
   position,
   quantity,
+  showCopyId,
 }: PrintingInnerProps) {
   return (
     <span className={cx(css["printing"], active && css["active"], className)}>
@@ -88,6 +97,16 @@ export function PrintingInner({
       )}
       {actionNode && (
         <span className={css["printing-action"]}>{actionNode}</span>
+      )}
+      {showCopyId && (
+        <CopyToClipboard
+          className={css["printing-action"]}
+          text={card.code}
+          variant="bare"
+          iconOnly
+          size="none"
+          tooltip={card.code}
+        />
       )}
     </span>
   );

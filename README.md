@@ -21,6 +21,7 @@ arkham.build extends the _arkhamdb deck schema_ with a few fields for additional
 - `meta.banner_url`: URL to an image to be displayed as banner for the deck. Preferably aspect ratio `4:1`.
 - `meta.intro_md`: Short deck introduction that uses the same markdown format that `description_md` uses.
 - `meta.annotation_{code}`: Annotation for a specific card that uses the same markdown format that `description_md` uses. Annotations are not limited to cards in deck, but can also target cards in the side deck (upgrades, alternatives) or _any_ card (reasoning for exclusion).
+- `meta.buildql_deck_options_override`: A way to set BuildQL-based deckbuilding for the [placeholder investigators](arkham.build/install-fan-made-content?id=d12a4d9c-8c65-4df0-be0c-c2e14af65a21).
 
 ### Additional metadata keys (AMK)
 

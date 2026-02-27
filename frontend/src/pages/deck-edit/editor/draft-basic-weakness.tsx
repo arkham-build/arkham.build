@@ -53,7 +53,13 @@ export function DraftBasicWeakness(props: Props) {
           disabled={!props.quantity || props.targetDeck !== "slots"}
           iconOnly
           size="sm"
-          tooltip={t("deck_edit.actions.draft_random_basic_weakness")}
+          tooltip={
+            <Trans
+              t={t}
+              i18nKey={"deck_edit.actions.draft_random_basic_weakness"}
+              components={{ em: <em /> }}
+            />
+          }
           variant="bare"
         >
           <DicesIcon />
@@ -169,7 +175,13 @@ function DraftBasicWeaknessModal(props: Props) {
           {weaknesses ? (
             <form className={css["container"]} onSubmit={handleSubmit}>
               <h3>{t("deck_edit.draft_weakness_modal.explanation_title")}</h3>
-              <p>{t("deck_edit.draft_weakness_modal.explanation_body")}</p>
+              <p>
+                <Trans
+                  t={t}
+                  i18nKey="deck_edit.draft_weakness_modal.explanation_body"
+                  components={{ em: <em /> }}
+                />
+              </p>
               <h3>{t("deck_edit.draft_weakness_modal.choice_title")}</h3>
               <ol className={css["list-container"]}>
                 {weaknesses.map((weakness) => (

@@ -115,6 +115,7 @@
       }
     },
     "card_view": {
+      "errata_notice": "Errata ({{date}})",
       "actions": {
         "faq": "View FAQ",
         "open_on_arkhamdb": "Open on ArkhamDB",
@@ -255,6 +256,7 @@
       "more_actions": "More actions",
       "myriad": "Myriad",
       "no_entries": "No entries",
+      "non_collection_cards": "{{count}} non-collection cards",
       "none": "None",
       "nonexceptional": "Non-exceptional",
       "ok": "OK",
@@ -283,6 +285,7 @@
         "parallelCards": "Parallel cards",
         "replacement": "Replacements",
         "requiredCards": "Signatures",
+        "sideDeckRequiredCards": "Extra Deck Signatures",
         "restrictedTo": "Restricted to",
         "specialist": "Specialist",
         "specialist_investigators": "Specialist Investigators"
@@ -911,7 +914,7 @@
         "cycle_decks": "Cycle deck lists",
         "decrement_quantity": "Decrement deck quantity",
         "decrement_side_quantity": "Decrement side deck quantity",
-        "draft_random_basic_weakness": "Draft random basic weakness",
+        "draft_random_basic_weakness": "Draft random basic weakness <em>(Boon of the Morrígan)</em>",
         "draft_random_basic_weakness_success": "<strong>{{name}}</strong> was added to your deck.",
         "draw_random_basic_weakness": "Draw random basic weakness",
         "draw_random_basic_weakness_success": "<strong>{{name}}</strong> is your random basic weakness.",
@@ -968,6 +971,7 @@
           "shared": "Shared",
           "title": "Storage provider"
         },
+        "buildql_deck_option": "BuildQL deckbuilding override",
         "taboo": "Taboo list",
         "tags": "Tags",
         "tags_help": "Enter tags, separated by spaces",
@@ -990,7 +994,7 @@
         "cancel_button": "Cancel",
         "choice_title": "Choose one weakness to cancel",
         "confirm_button": "Confirm",
-        "explanation_body": "This is a common house rule to give the player more control over the basic weakness in comparison to fully randomizing it. Three basic weaknesses are drawn at random, the player gets to cancel one of them and then one of the remaining two weaknesses is added to the deck at random.",
+        "explanation_body": "The <em>Boon of the Morrígan</em> gives players more control over the basic weakness in comparison to fully randomizing it. Three basic weaknesses are drawn at random, the player gets to cancel one of them and then one of the remaining two weaknesses is added to the deck at random.",
         "explanation_title": "Explanation",
         "title": "Drafting a basic weakness",
         "too_few_rbw": "Too few random basic weaknesses available to perform draft."
@@ -1104,6 +1108,7 @@
       "newer_version": "There is a <a>newer version</a> of this deck. This deck is read-only.",
       "scans": "Scans",
       "sharing": {
+        "api_link": "Json API",
         "create": "Create share",
         "create_failed": "Failed to create share: {{error}}",
         "create_tooltip": "Sharing creates a publicly accessible, read-only link to the deck. Anyone with the link can view the deck, but not edit it.<br />Shares can be removed at any time. Removing a share does not affect the deck itself.",
@@ -1115,6 +1120,7 @@
         "update": "Update share",
         "update_failed": "Failed to update share: {{error}}"
       },
+      "show_deck_list": "Show deck list",
       "tab_deck_list": "Deck",
       "tab_history": "History",
       "tab_notes": "Notes",
@@ -1223,6 +1229,7 @@
       "status_installed": "Installed",
       "status_update_available": "Update content",
       "tags": "Tags",
+      "short_title": "Fan-made",
       "title": "Fan-made content",
       "types": {
         "campaign": "Campaign",
@@ -1400,6 +1407,7 @@
         "display_as_list_text": "List with card text",
         "display_as_scans": "Scans",
         "display_as_scans_grouped": "Scans (grouped)",
+        "export": "Export",
         "jump_to": "Jump to...",
         "list_settings": "List settings",
         "sort": "Sort",
@@ -1533,6 +1541,10 @@
         "theme_light": "Light",
         "theme_system": "System",
         "title": "Display"
+      },
+      "developer": {
+        "dev_mode_enabled": "Enable developer mode",
+        "title": "Developer"
       },
       "error": "Failed to save settings: {{error}}",
       "general": {

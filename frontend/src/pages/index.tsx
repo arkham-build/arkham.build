@@ -44,7 +44,8 @@ function Index() {
   );
 }
 
-function _PreviewBanner() {
+// biome-ignore lint: unused
+function PreviewBanner() {
   const seen = useStore(
     (state) => state.settings.flags?.["seen-core-2026-val-reveal"],
   );

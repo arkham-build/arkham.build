@@ -78,6 +78,7 @@ export function CardFace(props: Props) {
 
       <div className={css["content"]}>
         <CardText
+          errataDate={card.errata_date}
           flavor={displayAttribute(card, "flavor")}
           size={size}
           text={displayAttribute(card, "text")}

@@ -1,3 +1,11 @@
+.chapter-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin-bottom: 0.375rem;
+  background-color: var(--palette-0);
+}
+
 .format-toggle {
   margin-bottom: 0.375rem;
   text-align: center;
@@ -48,13 +56,13 @@
   background-color: var(--palette-1);
 }
 
-.node:hover:not(:has(.node:hover)) > .node-link {
+.node-link:hover:not(:has(.node:hover)) {
   background-color: var(--palette-point-five);
 }
 
-.node:hover:not(:has(.node:hover)),
+.node-link:hover:not(:has(.node:hover)),
 .node.active {
-  & > .node-link > .node-icon {
+  & .node-icon {
     color: var(--text);
   }
 }

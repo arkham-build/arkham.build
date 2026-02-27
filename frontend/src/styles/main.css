@@ -91,7 +91,7 @@
     --error: var(--nord-11);
   }
 
-  .theme-dark {
+  html[data-theme="dark"] {
     --palette-0: var(--nord-0);
     --palette-point-five: var(--nord-point-five);
     --palette-1: var(--nord-1);
@@ -132,7 +132,7 @@
     --background-select: url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA0LjkgMTAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDQuOSAxMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiNkOGRlZTk7fQo8L3N0eWxlPgo8dGl0bGU+YXJyb3dzPC90aXRsZT4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIxLjQsNC43IDIuNSwzLjIgMy41LDQuNyAiLz4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIzLjUsNS4zIDIuNSw2LjggMS40LDUuMyAiLz4KPC9zdmc+);
   }
 
-  .theme-light {
+  html[data-theme="light"] {
     --palette-0: var(--white);
     --palette-point-five: var(--nord-6);
     --palette-1: var(--nord-5);
@@ -174,16 +174,6 @@
     --background-select: url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA0LjkgMTAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDQuOSAxMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiMyZTM0NDA7fQo8L3N0eWxlPgo8dGl0bGU+YXJyb3dzPC90aXRsZT4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIxLjQsNC43IDIuNSwzLjIgMy41LDQuNyAiLz4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIzLjUsNS4zIDIuNSw2LjggMS40LDUuMyAiLz4KPC9zdmc+);
   }
 
-  .theme-system {
-    @extend .theme-dark;
-  }
-
-  @media (prefers-color-scheme: light) {
-    .theme-system {
-      @extend .theme-light;
-    }
-  }
-
   *,
   *::before,
   *::after {
@@ -194,27 +184,23 @@
     margin: 0;
   }
 
-  html {
-    font-size: 100%;
-  }
-
   /*
   Chrome has an interesting behavior where setting color-scheme to `only` on the :root locks the favicon to that color.
   Set the color-scheme on our application roots to work around.
  */
-  :where(#root, #floating) {
-    color-scheme: only dark;
-  }
 
-  html.theme-system :where(#root, #floating) {
+  html {
+    background: var(--palette-0);
+    color: var(--text);
+    font-size: 100%;
     color-scheme: dark light;
   }
 
-  html.theme-dark :where(#root, #floating) {
+  html[data-theme="dark"] {
     color-scheme: only dark;
   }
 
-  html.theme-light :where(#root, #floating) {
+  html[data-theme="light"] {
     color-scheme: only light;
   }
 
@@ -222,8 +208,6 @@
     font-family: var(--font-family-ui);
     font-size: var(--text-base);
     line-height: 1.45;
-    background: var(--palette-0);
-    color: var(--text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -699,6 +683,7 @@
   .longform {
     font-family: var(--font-family-ui);
     line-height: 1.5;
+    overflow-x: hidden;
   }
 
   .longform :where(h1, h2, h3, h4, h5, h6) {
@@ -740,7 +725,7 @@
   .longform table {
     border-collapse: collapse;
     border-spacing: 0;
-    width: 100%;
+    max-width: 100%;
   }
 
   .longform table :where(td, th) {

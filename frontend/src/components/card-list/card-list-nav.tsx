@@ -10,6 +10,7 @@ import { selectActiveList } from "@/store/selectors/shared";
 import type { ViewMode } from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
+import { download } from "@/utils/download";
 import { useHotkey } from "@/utils/use-hotkey";
 import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import {
@@ -43,6 +44,17 @@ export function CardListNav(props: Props) {
   const { t } = useTranslation();
 
   const { resolvedDeck: deck } = useResolvedDeck();
+
+  const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
+
+  const onExport = useCallback(() => {
+    if (!data) return;
+    download(
+      JSON.stringify(data.cards, null, 2),
+      "cards.json",
+      "application/json",
+    );
+  }, [data]);
 
   const hasAssetGroup = data?.groups.some((group) =>
     group.key.includes("asset"),
@@ -86,6 +98,16 @@ export function CardListNav(props: Props) {
           </DeckTagsContainer>
         )}
         <CardlistCount data={data} />
+        {devModeEnabled && !deck && (
+          <Button
+            data-testid="card-list-export"
+            onClick={onExport}
+            size="xs"
+            variant="link"
+          >
+            {t("lists.nav.export")}
+          </Button>
+        )}
       </output>
       <div className={css["nav-row"]}>
         {data && (

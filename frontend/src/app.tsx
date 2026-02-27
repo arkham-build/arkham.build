@@ -23,6 +23,7 @@ import {
   queryMetadata,
 } from "./store/services/queries";
 import { useAgathaEasterEggHint } from "./utils/easter-egg-agatha";
+import { useColorThemeListener } from "./utils/use-color-theme";
 
 const Index = lazy(() => import("./pages/index"));
 
@@ -125,6 +126,7 @@ function AppInner() {
   const { t } = useTranslation();
   const storeInitialized = useStore(selectIsInitialized);
   const fontSize = useStore((state) => state.settings.fontSize);
+  useColorThemeListener();
 
   useEffect(() => {
     if (storeInitialized) {
