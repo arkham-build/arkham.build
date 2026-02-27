@@ -1,11 +1,10 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, cardLevel } from "@arkham-build/shared";
 import { CheckIcon, DicesIcon, EyeIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import { cardLevel } from "@/utils/card-utils";
 import { isEmpty } from "@/utils/is-empty";
 import { shuffle } from "@/utils/shuffle";
 import { getAccentColorsForFaction } from "@/utils/use-accent-color";

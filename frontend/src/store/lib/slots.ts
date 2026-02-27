@@ -1,10 +1,6 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, countExperience } from "@arkham-build/shared";
 import type { Deck, Slots } from "@/store/schemas/deck.schema";
-import {
-  countExperience,
-  decodeExileSlots,
-  isSpecialCard,
-} from "@/utils/card-utils";
+import { decodeExileSlots, isSpecialCard } from "@/utils/card-utils";
 import { range } from "@/utils/range";
 import type { StoreState } from "../slices";
 import { addCardToDeckCharts, emptyDeckCharts } from "./deck-charts";

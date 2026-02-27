@@ -1,7 +1,7 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, cardLevel } from "@arkham-build/shared";
 import type { LookupTables } from "@/store/lib/lookup-tables.types";
 import type { Metadata } from "@/store/slices/metadata.types";
-import { cardLevel, cycleOrPack, displayAttribute } from "@/utils/card-utils";
+import { cycleOrPack, displayAttribute } from "@/utils/card-utils";
 import { displayPackName } from "@/utils/formatting";
 
 export type CardFormat =

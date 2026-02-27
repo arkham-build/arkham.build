@@ -36,6 +36,7 @@ export {
   type SealedDeckResponse,
   SealedDeckResponseSchema,
 } from "./dtos/sealed-deck-response.schema.ts";
+export { cardLevel, countExperience, realCardLevel } from "./lib/card-utils.ts";
 export {
   ASSET_SLOT_ORDER,
   FACTION_ORDER,

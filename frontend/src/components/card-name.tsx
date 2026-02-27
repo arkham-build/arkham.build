@@ -1,8 +1,7 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, cardLevel } from "@arkham-build/shared";
 import { useStore } from "@/store";
 import { selectMetadata } from "@/store/selectors/shared";
 import {
-  cardLevel,
   cycleOrPack,
   displayAttribute,
   parseCardTextHtml,

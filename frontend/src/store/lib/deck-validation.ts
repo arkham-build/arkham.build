@@ -1,10 +1,10 @@
-import type {
-  ApiDeckRequirements,
-  Card,
-  DeckOption,
+import {
+  type ApiDeckRequirements,
+  type Card,
+  cardLevel,
+  type DeckOption,
 } from "@arkham-build/shared";
 import {
-  cardLevel,
   cardLimit,
   isRandomBasicWeaknessLike,
   isStaticInvestigator,
