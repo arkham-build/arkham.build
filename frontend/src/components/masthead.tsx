@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { KeyboardIcon, LogOutIcon, SettingsIcon } from "lucide-react";
+import { KeyboardIcon, LogOutIcon, MenuIcon, SettingsIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
 import { useStore } from "@/store";
@@ -26,7 +26,11 @@ type Props = {
 export function Masthead(props: Props) {
   const { children, className, hideLocaleSwitch, invert, slotRight } = props;
 
+  const { t } = useTranslation();
+
   const [location] = useLocation();
+
+  const session = useStore(selectSession);
 
   return (
     <header
@@ -46,6 +50,13 @@ export function Masthead(props: Props) {
         {slotRight}
         {location !== "/settings" && !location.includes("/auth") && (
           <>
+            {!session && (
+              <Link asChild href="~/auth/login">
+                <Button as="a" size="sm" variant="primary">
+                  {t("auth.login.title")}
+                </Button>
+              </Link>
+            )}
             {!hideLocaleSwitch && <LocaleQuickSwitch />}
             <AccountMenu />
           </>
@@ -67,65 +78,77 @@ function AccountMenu() {
     mutationFn: logout,
   });
 
-  if (!session) {
-    return (
-      <Link asChild href="~/auth/login">
-        <Button as="a" size="sm" variant="primary">
-          {t("auth.login.title")}
-        </Button>
+  const actionNodes = (
+    <>
+      <Link asChild href="~/settings">
+        <DropdownButton
+          as="a"
+          data-testid="masthead-settings"
+          tooltip={t("settings.title")}
+          variant="bare"
+        >
+          <SettingsIcon /> {t("settings.title")}
+        </DropdownButton>
       </Link>
-    );
-  }
+      <hr />
+      <DropdownButton
+        className={css["action-shortcuts"]}
+        hotkey="?"
+        onClick={toggleKeyboardShortcuts}
+      >
+        <KeyboardIcon /> {t("help.shortcuts.title")}
+      </DropdownButton>
+      <Link asChild href="~/about">
+        <DropdownButton
+          as="a"
+          className={css["about"]}
+          data-testid="masthead-about"
+        >
+          {t("help.about")}
+        </DropdownButton>
+      </Link>
+    </>
+  );
 
   return (
     <Popover>
-      <PopoverTrigger>
-        <Avatar account={session.account} />
-      </PopoverTrigger>
+      {session ? (
+        <PopoverTrigger asChild>
+          <Button variant="bare" iconOnly size="none">
+            <Avatar account={session.account} />
+          </Button>
+        </PopoverTrigger>
+      ) : (
+        <PopoverTrigger asChild>
+          <Button variant="bare" iconOnly>
+            <MenuIcon />
+          </Button>
+        </PopoverTrigger>
+      )}
       <PopoverContent>
         <DropdownMenu>
-          <DropdownItem>
-            <p className={css["logged-in-as"]}>
-              {t("auth.menu.logged_in_as", {
-                name: session.account.name,
-              })}
-            </p>
-          </DropdownItem>
-          <Link asChild href="~/settings">
-            <DropdownButton
-              as="a"
-              data-testid="masthead-settings"
-              tooltip={t("settings.title")}
-              variant="bare"
-            >
-              <SettingsIcon /> {t("settings.title")}
-            </DropdownButton>
-          </Link>
-          <hr />
-          <DropdownButton
-            className={css["action-shortcuts"]}
-            hotkey="?"
-            onClick={toggleKeyboardShortcuts}
-          >
-            <KeyboardIcon /> {t("help.shortcuts.title")}
-          </DropdownButton>
-          <Link asChild href="~/about">
-            <DropdownButton
-              as="a"
-              className={css["about"]}
-              data-testid="masthead-about"
-            >
-              {t("help.about")}
-            </DropdownButton>
-          </Link>
-          <hr />
-          <DropdownButton
-            disabled={logoutMutation.isPending}
-            onClick={() => logoutMutation.mutate()}
-          >
-            <LogOutIcon />
-            {t("auth.logout")}
-          </DropdownButton>
+          {session && (
+            <DropdownItem>
+              <p className={css["logged-in-as"]}>
+                {t("auth.menu.logged_in_as", {
+                  name: session.account.name,
+                })}
+              </p>
+            </DropdownItem>
+          )}
+          {actionNodes}
+          {session && (
+            <>
+              <hr />
+              <DropdownButton
+                disabled={logoutMutation.isPending}
+                onClick={() => logoutMutation.mutate()}
+              >
+                <LogOutIcon />
+                {t("auth.logout")}
+              </DropdownButton>
+            </>
+          )}
         </DropdownMenu>
       </PopoverContent>
     </Popover>
