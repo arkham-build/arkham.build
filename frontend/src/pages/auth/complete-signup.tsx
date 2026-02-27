@@ -6,7 +6,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import {
-  fetchMe,
+  fetchSession,
   postCompleteProfile,
 } from "@/store/services/requests/auth.ts";
 import { AuthForm } from "./auth-form";
@@ -19,9 +19,9 @@ function SignupArkhamDB() {
   const [, navigate] = useLocation();
   const queryClient = useQueryClient();
 
-  const { data: me, isLoading } = useQuery({
-    queryKey: ["auth", "me"],
-    queryFn: fetchMe,
+  const { data: session, isLoading } = useQuery({
+    queryKey: ["auth", "session"],
+    queryFn: fetchSession,
   });
 
   const completeProfileMutation = useMutation({
@@ -43,15 +43,15 @@ function SignupArkhamDB() {
     return <AuthLayout title={t("auth.signup.complete_profile.title")} />;
   }
 
-  if (!me) {
-    navigate("/login");
+  if (!session) {
+    navigate("~/auth/login");
     return null;
   }
 
-  const hasEmail = !!me.account.email;
+  const hasEmail = !!session.account.email;
 
   if (hasEmail) {
-    navigate("/");
+    navigate("~/");
     return null;
   }
 

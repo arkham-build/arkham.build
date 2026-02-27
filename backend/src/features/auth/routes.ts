@@ -3,9 +3,9 @@ import {
   CompleteProfileRequestSchema,
   ForgotPasswordRequestSchema,
   LoginRequestSchema,
-  MeResponseSchema,
   ResendVerificationRequestSchema,
   ResetPasswordRequestSchema,
+  SessionResponseSchema,
   SignupRequestSchema,
   VerifyEmailRequestSchema,
 } from "@arkham-build/shared";
@@ -86,7 +86,7 @@ routes.post("/signup", zodValidator("json", SignupRequestSchema), async (c) => {
 
   await emailService.sendTemplate(
     verificationEmailTemplate({
-      verificationUrl: `${config.FRONTEND_URL}/verify-email?token=${token}`,
+      verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
     }),
     email,
   );
@@ -156,7 +156,7 @@ routes.get("/me", sessionAuth(), async (c) => {
   const accountIdentity = await getAccountIdentityByAccountId(db, account.id);
 
   return c.json(
-    MeResponseSchema.parse({
+    SessionResponseSchema.parse({
       account: {
         id: account.id,
         name: account.name,
@@ -231,7 +231,7 @@ routes.post(
 
       await c.get("emailService").sendTemplate(
         verificationEmailTemplate({
-          verificationUrl: `${config.FRONTEND_URL}/verify-email?token=${token}`,
+          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
         }),
         email,
       );
@@ -278,7 +278,7 @@ routes.post(
 
       await c.get("emailService").sendTemplate(
         passwordResetEmailTemplate({
-          resetUrl: `${config.FRONTEND_URL}/reset-password?token=${token}`,
+          resetUrl: `${config.FRONTEND_URL}/auth/reset-password?token=${token}`,
         }),
         email,
       );

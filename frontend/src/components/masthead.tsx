@@ -1,13 +1,17 @@
-import { SettingsIcon } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { KeyboardIcon, LogOutIcon, SettingsIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
+import { useStore } from "@/store";
+import { selectSession } from "@/store/selectors/auth";
 import { cx } from "@/utils/cx";
-import { HelpMenu } from "./help-menu";
 import { Logo } from "./icons/logo";
 import { LocaleQuickSwitch } from "./locale-quick-switch";
 import css from "./masthead.module.css";
-import { SyncStatus } from "./sync-status";
 import { Button } from "./ui/button";
+import { DropdownButton, DropdownItem, DropdownMenu } from "./ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Avatar } from "./user-account/avatar";
 
 type Props = {
   className?: string;
@@ -20,17 +24,7 @@ type Props = {
 };
 
 export function Masthead(props: Props) {
-  const {
-    children,
-    className,
-    hideLocaleSwitch,
-    hideSettings,
-    hideSyncStatus,
-    invert,
-    slotRight,
-  } = props;
-
-  const { t } = useTranslation();
+  const { children, className, hideLocaleSwitch, invert, slotRight } = props;
 
   const [location] = useLocation();
 
@@ -50,29 +44,90 @@ export function Masthead(props: Props) {
       </div>
       <nav className={css["right"]}>
         {slotRight}
-        {location !== "/settings" && (
+        {location !== "/settings" && !location.includes("/auth") && (
           <>
-            {!hideSyncStatus && <SyncStatus />}
             {!hideLocaleSwitch && <LocaleQuickSwitch />}
-            {!hideSettings && (
-              <Link asChild href="~/settings">
-                <Button
-                  as="a"
-                  className={css["settings"]}
-                  data-testid="masthead-settings"
-                  iconOnly
-                  size="lg"
-                  tooltip={t("settings.title")}
-                  variant="bare"
-                >
-                  <SettingsIcon />
-                </Button>
-              </Link>
-            )}
+            <AccountMenu />
           </>
         )}
-        <HelpMenu />
       </nav>
     </header>
+  );
+}
+
+function AccountMenu() {
+  const { t } = useTranslation();
+  const session = useStore(selectSession);
+  const logout = useStore((state) => state.logout);
+  const toggleKeyboardShortcuts = useStore(
+    (state) => state.toggleKeyboardShortcuts,
+  );
+
+  const logoutMutation = useMutation({
+    mutationFn: logout,
+  });
+
+  if (!session) {
+    return (
+      <Link asChild href="~/auth/login">
+        <Button as="a" size="sm" variant="primary">
+          {t("auth.login.title")}
+        </Button>
+      </Link>
+    );
+  }
+
+  return (
+    <Popover>
+      <PopoverTrigger>
+        <Avatar account={session.account} />
+      </PopoverTrigger>
+      <PopoverContent>
+        <DropdownMenu>
+          <DropdownItem>
+            <p className={css["logged-in-as"]}>
+              {t("auth.menu.logged_in_as", {
+                name: session.account.name,
+              })}
+            </p>
+          </DropdownItem>
+          <Link asChild href="~/settings">
+            <DropdownButton
+              as="a"
+              data-testid="masthead-settings"
+              tooltip={t("settings.title")}
+              variant="bare"
+            >
+              <SettingsIcon /> {t("settings.title")}
+            </DropdownButton>
+          </Link>
+          <hr />
+          <DropdownButton
+            className={css["action-shortcuts"]}
+            hotkey="?"
+            onClick={toggleKeyboardShortcuts}
+          >
+            <KeyboardIcon /> {t("help.shortcuts.title")}
+          </DropdownButton>
+          <Link asChild href="~/about">
+            <DropdownButton
+              as="a"
+              className={css["about"]}
+              data-testid="masthead-about"
+            >
+              {t("help.about")}
+            </DropdownButton>
+          </Link>
+          <hr />
+          <DropdownButton
+            disabled={logoutMutation.isPending}
+            onClick={() => logoutMutation.mutate()}
+          >
+            <LogOutIcon />
+            {t("auth.logout")}
+          </DropdownButton>
+        </DropdownMenu>
+      </PopoverContent>
+    </Popover>
   );
 }

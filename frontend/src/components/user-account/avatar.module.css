@@ -1,0 +1,28 @@
+.avatar {
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  width: var(--avatar-width, 1.875rem);
+  aspect-ratio: 1 / 1;
+}
+
+.avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  color: transparent;
+}
+
+.placeholder {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--health);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,13 +1,17 @@
 import type { StateCreator } from "zustand";
 import { dehydrate } from "../persist/index.ts";
-import { fetchMe, postLogin, postLogout } from "../services/requests/auth.ts";
+import {
+  fetchSession,
+  postLogin,
+  postLogout,
+} from "../services/requests/auth.ts";
 import { ApiError } from "../services/requests/shared.ts";
 import type { AuthSlice, AuthState } from "./auth.types.ts";
 import type { StoreState } from "./index.ts";
 
 function getInitialAuthState(): AuthState {
   return {
-    me: null,
+    session: null,
     status: "idle",
   };
 }
@@ -18,27 +22,29 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
 ) => ({
   auth: getInitialAuthState(),
 
-  async fetchMe() {
+  async initSession() {
     set((state) => ({
       auth: { ...state.auth, status: "loading" },
     }));
 
     try {
-      const me = await fetchMe();
+      const session = await fetchSession();
+
       set({
-        auth: { me, status: "authenticated" },
+        auth: { session, status: "authenticated" },
       });
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
-        set({
-          auth: { me: null, status: "unauthenticated" },
-        });
+        set((state) => ({
+          auth: { ...state.auth, status: "unauthenticated" },
+        }));
       } else {
-        const current = get().auth.me;
+        const session = get().auth.session;
+
         set({
           auth: {
-            me: current,
-            status: current ? "authenticated" : "unauthenticated",
+            session,
+            status: session ? "authenticated" : "unauthenticated",
           },
         });
       }
@@ -49,24 +55,21 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
 
   async login(payload) {
     await postLogin(payload);
-    const me = await fetchMe();
+    const session = await fetchSession();
     set({
-      auth: { me, status: "authenticated" },
+      auth: { session, status: "authenticated" },
     });
     await dehydrate(get(), "app");
   },
 
   async logout() {
-    await postLogout();
-    set({
-      auth: { me: null, status: "unauthenticated" },
-    });
+    try {
+      await postLogout();
+    } finally {
+      set({
+        auth: { session: null, status: "idle" },
+      });
+    }
     await dehydrate(get(), "app");
-  },
-
-  clearAuth() {
-    set({
-      auth: { me: null, status: "unauthenticated" },
-    });
   },
 });

@@ -16,6 +16,7 @@ export type UIState = {
     cardModal: CardModalState;
     fanMadeContentCache: Partial<DeckFanMadeContent>;
     initialized: boolean;
+    keyboardShortcutsOpen: boolean;
     navigationHistory: string[];
     showLimitedAccess: boolean;
     showUnusableCards: boolean;
@@ -28,6 +29,8 @@ export type UISlice = UIState & {
   cacheFanMadeContent(decks: Deck[]): undefined;
   cacheFanMadeProject(content: FanMadeProject): void;
   uncacheFanMadeProject(content: FanMadeProject): void;
+
+  toggleKeyboardShortcuts(): void;
 
   pushHistory(path: string): void;
   pruneHistory(index: number): void;

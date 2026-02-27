@@ -15,6 +15,7 @@ function getInitialUIState(): UIState {
       showUnusableCards: false,
       showLimitedAccess: true,
       fanMadeContentCache: {},
+      keyboardShortcutsOpen: false,
       navigationHistory: [],
       cardModal: {
         code: undefined,
@@ -108,6 +109,14 @@ export const createUISlice: StateCreator<StoreState, [], [], UISlice> = (
             ).filter(([code]) => !encounterSets?.[code]),
           ),
         },
+      },
+    }));
+  },
+  toggleKeyboardShortcuts() {
+    set((state) => ({
+      ui: {
+        ...state.ui,
+        keyboardShortcutsOpen: !state.ui.keyboardShortcutsOpen,
       },
     }));
   },

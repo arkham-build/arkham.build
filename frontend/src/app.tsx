@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { Route, Router, Switch, useLocation, useSearch } from "wouter";
 import { useBrowserLocation } from "wouter/use-browser-location";
 import { ErrorBoundary } from "./components/error-boundary";
+import { KeyboardShortcutsModal } from "./components/keyboard-shortcuts/keyboard-shortcuts-modal";
 import { Loader } from "./components/ui/loader";
 import { ToastProvider } from "./components/ui/toast";
 import { useToast } from "./components/ui/toast.hooks";
@@ -177,12 +178,12 @@ function AppInner() {
                 path="/install-fan-made-content"
               />
               <Route component={Core2026Reveal} path="/blog/core-2026-reveal" />
-              <Route component={Login} path="/login" />
-              <Route component={Signup} path="/signup" />
-              <Route component={CompleteSignup} path="/signup/complete" />
-              <Route component={ForgotPassword} path="/forgot-password" />
-              <Route component={VerifyEmail} path="/verify-email" />
-              <Route component={ResetPassword} path="/reset-password" />
+              <Route component={Login} path="/auth/login" />
+              <Route component={Signup} path="/auth/signup" />
+              <Route component={CompleteSignup} path="/auth/signup/complete" />
+              <Route component={ForgotPassword} path="/auth/forgot-password" />
+              <Route component={VerifyEmail} path="/auth/verify-email" />
+              <Route component={ResetPassword} path="/auth/reset-password" />
               <Route path="*">
                 <ErrorStatus statusCode={404} />
               </Route>
@@ -190,6 +191,7 @@ function AppInner() {
             <RouteReset />
             <CardDataSyncTask />
             <AppTasks />
+            <KeyboardShortcutsModal />
           </Router>
         )}
       </Suspense>

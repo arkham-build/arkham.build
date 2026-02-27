@@ -92,7 +92,9 @@ function Login() {
         </Field>
 
         <div className={css["forgot-link"]}>
-          <Link href="/forgot-password">{t("auth.login.forgot_password")}</Link>
+          <Link href="/auth/forgot-password">
+            {t("auth.login.forgot_password")}
+          </Link>
         </div>
 
         <Button

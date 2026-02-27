@@ -34,7 +34,7 @@ export const ForgotPasswordRequestSchema = z.object({
 
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
 
-export const MeResponseSchema = z.object({
+export const SessionResponseSchema = z.object({
   account: z.object({
     id: z.uuid(),
     name: z.string().max(64),
@@ -42,7 +42,7 @@ export const MeResponseSchema = z.object({
   }),
 });
 
-export type MeResponse = z.infer<typeof MeResponseSchema>;
+export type SessionResponse = z.infer<typeof SessionResponseSchema>;
 
 export const ResetPasswordRequestSchema = z.object({
   token: z.string(),

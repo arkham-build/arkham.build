@@ -46,7 +46,7 @@ function forgotPassword(app: Hono<HonoEnv>, emailOrUsername: string) {
 }
 
 function resetPassword(app: Hono<HonoEnv>, token: string, password: string) {
-  return app.request("/v2/auth/reset-password", {
+  return app.request("/v2/auth/auth/reset-password", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token, password }),

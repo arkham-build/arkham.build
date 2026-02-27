@@ -72,6 +72,10 @@
         "title": "Log in",
         "with_arkhamdb": "Log in with ArkhamDB"
       },
+      "logout": "Logout",
+      "menu": {
+        "logged_in_as": "Logged in as {{name}}"
+      },
       "signup": {
         "title": "Sign up",
         "has_account": "Already have an account?",

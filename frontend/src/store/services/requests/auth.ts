@@ -5,12 +5,12 @@ import {
   ForgotPasswordRequestSchema,
   type LoginRequest,
   LoginRequestSchema,
-  type MeResponse,
-  MeResponseSchema,
   type ResendVerificationRequest,
   ResendVerificationRequestSchema,
   type ResetPasswordRequest,
   ResetPasswordRequestSchema,
+  type SessionResponse,
+  SessionResponseSchema,
   type SignupRequest,
   SignupRequestSchema,
   type VerifyEmailRequest,
@@ -43,12 +43,12 @@ export async function postLogout(): Promise<void> {
   });
 }
 
-export async function fetchMe(): Promise<MeResponse> {
+export async function fetchSession(): Promise<SessionResponse> {
   const res = await apiV2Request("/v2/auth/me", {
     credentials: "include",
   });
 
-  return MeResponseSchema.parse(await res.json());
+  return SessionResponseSchema.parse(await res.json());
 }
 
 export async function postVerifyEmail(

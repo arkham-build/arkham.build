@@ -58,3 +58,12 @@
 .right svg {
   font-size: var(--icon-sm);
 }
+
+.logged-in-as {
+  width: 100%;
+  padding: 0.25rem 0.75rem;
+  text-align: center;
+  color: var(--palette-three-point-five);
+  font-style: italic;
+  word-break: break-all;
+}
