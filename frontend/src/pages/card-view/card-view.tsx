@@ -12,6 +12,7 @@ import { Footer } from "@/components/footer";
 import { Masthead } from "@/components/masthead";
 import { Printing } from "@/components/printing";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/page-title";
 import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
 import { CardViewCards } from "@/pages/card-view/card-view-cards";
 import { useStore } from "@/store";
@@ -34,7 +35,6 @@ import {
   FLOATING_PORTAL_ID,
 } from "@/utils/constants";
 import { cx } from "@/utils/cx";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import { ErrorStatus } from "../errors/404";
 import css from "./card-view.module.css";
 import { Faq } from "./faq";
@@ -46,12 +46,6 @@ function CardView() {
   const { t } = useTranslation();
   const cardWithRelations = useStore((state) =>
     selectCardWithRelations(state, code, true, undefined),
-  );
-
-  useDocumentTitle(
-    cardWithRelations
-      ? `${displayAttribute(cardWithRelations.card, "name")}`
-      : undefined,
   );
 
   if (!cardWithRelations) {
@@ -70,6 +64,7 @@ function CardView() {
 
   return (
     <CardModalProvider>
+      <PageTitle>{displayAttribute(cardWithRelations.card, "name")}</PageTitle>
       <div className={cx(css["layout"], "fade-in")}>
         <Masthead className={css["header"]} />
         <main className={css["main"]}>

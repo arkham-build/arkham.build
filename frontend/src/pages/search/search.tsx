@@ -7,7 +7,6 @@ import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
 import { selectListCards } from "@/store/selectors/lists";
 import { selectIsInitialized } from "@/store/selectors/shared";
-import { useDocumentTitle } from "@/utils/use-document-title";
 
 function Search() {
   const { t } = useTranslation();
@@ -18,7 +17,6 @@ function Search() {
   const isInitalized = useStore(selectIsInitialized);
 
   const title = t("search.title");
-  useDocumentTitle(title);
 
   const activeList = useStore((state) => state.lists[state.activeList ?? ""]);
   const addList = useStore((state) => state.addList);

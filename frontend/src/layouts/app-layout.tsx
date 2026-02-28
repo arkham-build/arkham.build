@@ -1,7 +1,7 @@
 import { Footer } from "@/components/footer";
 import { Masthead } from "@/components/masthead";
+import { PageTitle } from "@/components/ui/page-title";
 import { cx } from "@/utils/cx";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import css from "./app-layout.module.css";
 
 type Props = {
@@ -13,8 +13,6 @@ type Props = {
 export function AppLayout(props: Props) {
   const { children, mainClassName, title, ref, ...rest } = props;
 
-  useDocumentTitle(title);
-
   return (
     <div
       {...rest}
@@ -22,6 +20,7 @@ export function AppLayout(props: Props) {
       data-testid="app-layout"
       ref={ref}
     >
+      <PageTitle>{title}</PageTitle>
       <div className={css["layout-inner"]}>
         <Masthead className={css["header"]} />
         <section className={cx(css["main"], mainClassName)}>{children}</section>

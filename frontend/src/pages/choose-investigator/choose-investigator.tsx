@@ -13,7 +13,6 @@ import { selectCardRelationsResolver } from "@/store/selectors/lists";
 import { selectActiveList } from "@/store/selectors/shared";
 import { displayAttribute } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import css from "./choose-investigator.module.css";
 import { SignatureLink } from "./signature-link";
 
@@ -26,8 +25,6 @@ function DeckCreateChooseInvestigator() {
   const cardResolver = useStore(selectCardRelationsResolver);
 
   const activeList = useStore(selectActiveList);
-
-  useDocumentTitle(t("choose_investigator.title"));
 
   useEffect(() => {
     setActiveList("create_deck");

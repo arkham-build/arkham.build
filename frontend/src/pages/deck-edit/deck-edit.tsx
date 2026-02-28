@@ -19,6 +19,7 @@ import { DeckTools } from "@/components/deck-tools/deck-tools";
 import { DecklistValidation } from "@/components/decklist/decklist-validation";
 import { Filters } from "@/components/filters/filters";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/page-title";
 import {
   Tabs,
   TabsContent,
@@ -38,7 +39,6 @@ import { selectLookupTables } from "@/store/selectors/shared";
 import { mapTabToSlot } from "@/store/slices/deck-edits.types";
 import { isStaticInvestigator } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import { useHotkey } from "@/utils/use-hotkey";
 import {
   ResolvedDeckProvider,
@@ -92,8 +92,6 @@ function DeckEdit() {
 function DeckEditInner() {
   const { canEdit, resolvedDeck: deck } = useResolvedDeckChecked();
   const { t } = useTranslation();
-
-  useDocumentTitle(t("deck_edit.title", { name: deck.name }));
 
   const [currentTab, setCurrentTab] = useTabUrlState("slots", "list");
   const [currentTool, setCurrentTool] = useTabUrlState<string>(
@@ -226,6 +224,7 @@ function DeckEditInner() {
 
   return (
     <ListLayoutContextProvider>
+      <PageTitle>{t("deck_edit.title", { name: deck.name })}</PageTitle>
       <NotesRichTextEditorContextProvider>
         <ListLayout
           filters={

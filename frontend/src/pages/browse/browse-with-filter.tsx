@@ -2,12 +2,12 @@ import { useEffect } from "react";
 import { CardListContainer } from "@/components/card-list/card-list-container";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { Filters } from "@/components/filters/filters";
+import { PageTitle } from "@/components/ui/page-title";
 import { ListLayout } from "@/layouts/list-layout";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { useStore } from "@/store";
 import { selectIsInitialized } from "@/store/selectors/shared";
 import type { FilterKey, FilterMapping } from "@/store/slices/lists.types";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import { SetTree } from "./set-tree";
 
 interface Props {
@@ -26,8 +26,6 @@ export function BrowseWithFilter(props: Props) {
 
   const activeListId = useStore((state) => state.activeList);
   const isInitalized = useStore(selectIsInitialized);
-
-  useDocumentTitle(title);
 
   const activeList = useStore((state) => state.lists[state.activeList ?? ""]);
   const addList = useStore((state) => state.addList);
@@ -70,6 +68,7 @@ export function BrowseWithFilter(props: Props) {
 
   return (
     <CardModalProvider>
+      <PageTitle>{title}</PageTitle>
       <ListLayoutContextProvider>
         <ListLayout
           noFade

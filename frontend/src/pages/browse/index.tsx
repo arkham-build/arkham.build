@@ -6,12 +6,12 @@ import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { Filters } from "@/components/filters/filters";
 import EncounterIcon from "@/components/icons/encounter-icon";
 import PackIcon from "@/components/icons/pack-icon";
+import { PageTitle } from "@/components/ui/page-title";
 import { ListLayout } from "@/layouts/list-layout";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { useStore } from "@/store";
 import { selectIsInitialized, selectMetadata } from "@/store/selectors/shared";
 import { displayPackName } from "@/utils/formatting";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import { BrowseWithFilter } from "./browse-with-filter";
 import { SetTree } from "./set-tree";
 
@@ -24,8 +24,6 @@ export function Browse() {
   const removeList = useStore((state) => state.removeList);
 
   const isInitalized = useStore(selectIsInitialized);
-  useDocumentTitle(t("browse.title"));
-
   useEffect(() => {
     const listKey = "browse-all";
 
@@ -49,6 +47,7 @@ export function Browse() {
 
   return (
     <CardModalProvider>
+      <PageTitle>{t("browse.title")}</PageTitle>
       <ListLayoutContextProvider>
         <ListLayout
           noFade

@@ -10,7 +10,6 @@ import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
 import { selectIsInitialized } from "@/store/selectors/shared";
 import { queryFanMadeProjectData } from "@/store/services/queries";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import { ErrorStatus } from "../errors/404";
 import css from "./fan-made-content-preview.module.css";
 
@@ -65,8 +64,6 @@ function FanMadeContentPreviewInner({ project }: { project: FanMadeProject }) {
   const addList = useStore((state) => state.addList);
   const setActiveList = useStore((state) => state.setActiveList);
   const removeList = useStore((state) => state.removeList);
-
-  useDocumentTitle(project.meta.name);
 
   useEffect(() => {
     const listKey = `fan-made-content-preview-${project.meta.code}`;

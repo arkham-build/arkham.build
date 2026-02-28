@@ -843,6 +843,7 @@
       "help_advanced": "<p>Signature cards with \"Advanced\" are stronger versions of an investigator's signature cards that are listed under \"Deck Requirements\".</p><p>At any point during a campaign (including at deck creation) you may optionally choose to include these advanced signature cards <strong>instead of</strong> the original signature cards.</p>",
       "help_replacements": "<p>Signature cards with \"Replacement\" can replace the signature cards that are listed under \"Deckbuilding Requirements\". Doing so still satisfies the requirement and the deck is valid to play.</p><p>If doing so, <strong>both</strong> signature cards must be replaced and if doing so for a campaign, you cannot later change to using the original signature cards.</p><p>Alternatively, the \"Replacement\" cards can be included in addition to the signature cards.</p>",
       "loading": "Creating deck...",
+      "title": "Create {{name}} deck",
       "random_basic_weakness": "Random basic weakness",
       "sealed_deck": {
         "error": "Failed to fetch sealed deck: {{error}}",

@@ -6,13 +6,13 @@ import { CardScan } from "@/components/card-scan";
 import { Masthead } from "@/components/masthead";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { PageTitle } from "@/components/ui/page-title";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import { parseFanMadeProject } from "@/store/lib/fan-made-content";
 import { selectMetadata } from "@/store/selectors/shared";
 import { cardToApiFormat } from "@/utils/arkhamdb-json-format";
 import { cx } from "@/utils/cx";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import css from "./core-2026-reveal.module.css";
 
 const API_URL = import.meta.env.VITE_SOUVENIR_API_URL || "";
@@ -90,13 +90,12 @@ function Core2026Reveal() {
 
   const metadata = useStore(selectMetadata);
 
-  useDocumentTitle("Core Set 2026 Reveal");
-
   const fingerprintKit = metadata.cards["12031"];
   const goldBug = metadata.cards["12098"];
 
   return (
     <main className={css["layout"]}>
+      <PageTitle>Core Set 2026 Reveal</PageTitle>
       <header className={css["header"]}>
         <div className={css["header-nav"]}>
           <Masthead hideLocaleSwitch hideSyncStatus invert />
