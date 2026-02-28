@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { CenterLayout } from "@/layouts/center-layout";
 import { useStore } from "@/store";
 import {
@@ -19,15 +19,20 @@ import { CardSearch } from "./card-search";
 import type { CardListProps } from "./types";
 
 interface Props extends CardListProps {
+  ref?: React.Ref<HTMLDivElement>;
   topContent?: React.ReactNode;
 }
 
-export const CardListContainer = forwardRef(function CardListContainer(
-  props: Props,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
-  const { className, slotLeft, slotRight, targetDeck, topContent, ...rest } =
-    props;
+export function CardListContainer(props: Props) {
+  const {
+    className,
+    slotLeft,
+    slotRight,
+    targetDeck,
+    topContent,
+    ref,
+    ...rest
+  } = props;
 
   const ctx = useResolvedDeck();
 
@@ -146,4 +151,4 @@ export const CardListContainer = forwardRef(function CardListContainer(
       </div>
     </CenterLayout>
   );
-});
+}

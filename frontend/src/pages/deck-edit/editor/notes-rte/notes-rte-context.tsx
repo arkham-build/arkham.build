@@ -13,7 +13,7 @@ export type CardOrigin = "deck" | "usable" | "player" | "campaign";
 type ToolbarPopover = "symbols" | "cards";
 
 interface TextareaContextType {
-  textareaRef: React.RefObject<HTMLTextAreaElement>;
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 
   cardFormat: CardFormat;
   cardOrigin: CardOrigin;
@@ -36,7 +36,7 @@ export function NotesRichTextEditorContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const { defaultOrigin, defaultFormat } = useStore(
     (state) => state.settings.notesEditor,

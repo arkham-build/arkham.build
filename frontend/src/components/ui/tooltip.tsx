@@ -1,5 +1,5 @@
 import { FloatingPortal, useMergeRefs } from "@floating-ui/react";
-import { cloneElement, forwardRef, isValidElement, memo } from "react";
+import { cloneElement, isValidElement, memo } from "react";
 import { cx } from "@/utils/cx";
 import {
   TooltipContext,
@@ -24,10 +24,14 @@ export const Tooltip = memo(function Tooltip({
   );
 });
 
-export const TooltipTrigger = forwardRef<
-  HTMLElement,
-  React.HTMLProps<HTMLElement> & { asChild?: boolean }
->(function TooltipTrigger({ children, asChild = false, ...props }, propRef) {
+export function TooltipTrigger({
+  children,
+  asChild = false,
+  ref: propRef,
+  ...props
+}: React.HTMLProps<HTMLElement> & {
+  asChild?: boolean;
+}) {
   const context = useTooltipContext();
   // biome-ignore lint/suspicious/noExplicitAny: safe.
   const childrenRef = (children as any).ref;
@@ -40,7 +44,8 @@ export const TooltipTrigger = forwardRef<
       context.getReferenceProps({
         ref,
         ...props,
-        ...(children as React.ReactElement).props,
+        // biome-ignore lint/suspicious/noExplicitAny: safe.
+        ...(children as React.ReactElement<any>).props,
         "data-tooltip-state": context.open ? "open" : "closed",
       } as React.HTMLProps<Element>),
     );
@@ -55,13 +60,13 @@ export const TooltipTrigger = forwardRef<
       {children}
     </button>
   );
-});
+}
 
-export const TooltipContent = forwardRef<
-  HTMLDivElement,
-  React.HTMLProps<HTMLElement>
-  // eslint-disable-next-line react/prop-types
->(function TooltipContent({ style, ...props }, propRef) {
+export function TooltipContent({
+  ref: propRef,
+  style,
+  ...props
+}: React.HTMLProps<HTMLElement>) {
   const context = useTooltipContext();
 
   const ref = useMergeRefs([
@@ -84,7 +89,7 @@ export const TooltipContent = forwardRef<
       />
     </FloatingPortal>
   );
-});
+}
 
 export type DefaultTooltipProps = {
   // Don't accept arrays of items or nullish values

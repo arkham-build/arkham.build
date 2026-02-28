@@ -184,7 +184,7 @@ export function CardList(props: CardListImplementationProps) {
     <Scroller
       className={css["scroller"]}
       data-testid="card-list-scroller"
-      ref={setScrollParent as unknown as React.RefObject<HTMLDivElement>}
+      ref={setScrollParent as unknown as React.RefObject<HTMLDivElement | null>}
       type="always"
     >
       {listDisplay.viewMode !== "scans" &&

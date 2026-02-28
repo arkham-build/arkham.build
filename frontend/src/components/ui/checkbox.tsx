@@ -1,5 +1,5 @@
 import { CheckIcon } from "lucide-react";
-import { forwardRef, useCallback } from "react";
+import { useCallback } from "react";
 import { cx } from "@/utils/cx";
 import css from "./checkbox.module.css";
 
@@ -12,14 +12,12 @@ interface Props
   "data-testid"?: string;
   hideLabel?: boolean;
   id?: string;
+  ref?: React.Ref<HTMLLabelElement>;
   label: React.ReactNode;
   onCheckedChange?: (checked: boolean) => void;
 }
 
-export const Checkbox = forwardRef(function Checkbox(
-  props: Props,
-  ref: React.ForwardedRef<HTMLLabelElement>,
-) {
+export function Checkbox(props: Props) {
   const {
     className,
     "data-testid": testid,
@@ -27,6 +25,7 @@ export const Checkbox = forwardRef(function Checkbox(
     hideLabel,
     label,
     onCheckedChange,
+    ref,
     ...rest
   } = props;
 
@@ -54,4 +53,4 @@ export const Checkbox = forwardRef(function Checkbox(
       <span className={cx(css["label"], hideLabel && "sr-only")}>{label}</span>
     </label>
   );
-});
+}

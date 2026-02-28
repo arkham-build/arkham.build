@@ -4,7 +4,7 @@ import {
   useMergeRefs,
   useTransitionStyles,
 } from "@floating-ui/react";
-import { cloneElement, forwardRef, isValidElement } from "react";
+import { cloneElement, isValidElement } from "react";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import type { PopoverOptions } from "./popover.hooks";
 import {
@@ -36,10 +36,12 @@ interface PopoverTriggerProps {
   asChild?: boolean;
 }
 
-export const PopoverTrigger = forwardRef<
-  HTMLElement,
-  React.HTMLProps<HTMLElement> & PopoverTriggerProps
->(function PopoverTrigger({ children, asChild = false, ...props }, propRef) {
+export function PopoverTrigger({
+  children,
+  asChild = false,
+  ref: propRef,
+  ...props
+}: React.HTMLProps<HTMLElement> & PopoverTriggerProps) {
   const context = usePopoverContextChecked();
   // biome-ignore lint/suspicious/noExplicitAny: safe.
   const childrenRef = (children as any).ref;
@@ -52,7 +54,8 @@ export const PopoverTrigger = forwardRef<
       context.getReferenceProps({
         ref,
         ...props,
-        ...(children as React.ReactElement).props,
+        // biome-ignore lint/suspicious/noExplicitAny: safe.
+        ...(children as React.ReactElement<any>).props,
         "data-state": context.open ? "open" : "closed",
       } as React.HTMLProps<Element>),
     );
@@ -68,13 +71,13 @@ export const PopoverTrigger = forwardRef<
       {children}
     </button>
   );
-});
+}
 
-export const PopoverContent = forwardRef<
-  HTMLDivElement,
-  React.HTMLProps<HTMLElement>
-  // eslint-disable-next-line react/prop-types
->(function PopoverContent({ style, ...props }, propRef) {
+export function PopoverContent({
+  ref: propRef,
+  style,
+  ...props
+}: React.HTMLProps<HTMLElement>) {
   const { context: floatingContext, ...context } = usePopoverContextChecked();
 
   const { isMounted, styles } = useTransitionStyles(floatingContext, {
@@ -109,4 +112,4 @@ export const PopoverContent = forwardRef<
       </FloatingFocusManager>
     </FloatingPortal>
   );
-});
+}

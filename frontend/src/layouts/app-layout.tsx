@@ -1,4 +1,3 @@
-import { forwardRef } from "react";
 import { Footer } from "@/components/footer";
 import { Masthead } from "@/components/masthead";
 import { cx } from "@/utils/cx";
@@ -11,11 +10,8 @@ type Props = {
   title: string;
 } & React.HTMLProps<HTMLDivElement>;
 
-export const AppLayout = forwardRef(function AppLayout(
-  props: Props,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
-  const { children, mainClassName, title, ...rest } = props;
+export function AppLayout(props: Props) {
+  const { children, mainClassName, title, ref, ...rest } = props;
 
   useDocumentTitle(title);
 
@@ -35,4 +31,4 @@ export const AppLayout = forwardRef(function AppLayout(
       </div>
     </div>
   );
-});
+}

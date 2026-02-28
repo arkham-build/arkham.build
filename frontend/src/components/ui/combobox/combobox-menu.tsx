@@ -59,7 +59,7 @@ export function ComboboxMenu<T extends Coded>(props: Props<T>) {
 
   return (
     <Scroller
-      ref={setScrollParent as unknown as React.RefObject<HTMLDivElement>}
+      ref={setScrollParent as unknown as React.RefObject<HTMLDivElement | null>}
       style={cssVariables as React.CSSProperties}
       viewportClassName={css["menu-viewport"]}
     >

@@ -170,8 +170,8 @@ function replaceIcons(node: Element) {
 }
 
 function useClickOutside(
-  ref: React.RefObject<HTMLElement>,
-  tocTriggerRef: React.RefObject<HTMLElement>,
+  ref: React.RefObject<HTMLElement | null>,
+  tocTriggerRef: React.RefObject<HTMLElement | null>,
   onClickOutside: () => void,
   enabled: boolean,
 ) {

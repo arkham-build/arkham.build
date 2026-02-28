@@ -7,7 +7,7 @@ import {
   type RecommendationsResponse,
 } from "@arkham-build/shared";
 import { useQuery } from "@tanstack/react-query";
-import { forwardRef, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ErrorDisplay,
@@ -33,11 +33,12 @@ import { IncludeSideDeckToggle } from "./include-side-deck-toggle";
 import { RecommendationBar } from "./recommendation-bar";
 import { RecommenderRelativityToggle } from "./recommender-relativity-toggle";
 
-export const CardRecommender = forwardRef(function CardRecommender(
-  props: CardListProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
+export function CardRecommender(
+  props: CardListProps & {
+    ref?: React.Ref<HTMLDivElement>;
+  },
 ) {
-  const { slotLeft, slotRight, ...rest } = props;
+  const { ref, slotLeft, slotRight, ...rest } = props;
 
   const { t } = useTranslation();
   const { resolvedDeck } = useResolvedDeck();
@@ -170,7 +171,7 @@ export const CardRecommender = forwardRef(function CardRecommender(
       <Footer />
     </article>
   );
-});
+}
 
 function DeckCount(props: { decksAnalyzed?: number }) {
   const { decksAnalyzed } = props;

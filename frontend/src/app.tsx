@@ -224,7 +224,7 @@ function CardDataSyncTask() {
   const { t } = useTranslation();
 
   const toast = useToast();
-  const toastId = useRef<string | undefined>();
+  const toastId = useRef<string | undefined>(undefined);
 
   const shouldQueryDataVersion =
     !navigator.webdriver && !location.includes("/connect");

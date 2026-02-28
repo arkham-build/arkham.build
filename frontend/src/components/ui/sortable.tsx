@@ -20,7 +20,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripHorizontalIcon } from "lucide-react";
 import type React from "react";
-import { forwardRef, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { cx } from "@/utils/cx";
 import { Button } from "./button";
 import css from "./sortable.module.css";
@@ -161,39 +161,38 @@ interface ItemProps extends React.HTMLAttributes<HTMLLIElement> {
   active?: boolean;
   children: React.ReactNode;
   dragHandleProps?: DraggableAttributes | undefined;
+  ref?: React.Ref<HTMLLIElement>;
 }
 
-const Item = forwardRef(
-  (props: ItemProps, ref: React.ForwardedRef<HTMLLIElement>) => {
-    const { active, children, dragHandleProps, ...rest } = props;
+function Item(props: ItemProps) {
+  const { active, children, dragHandleProps, ref, ...rest } = props;
 
-    return (
-      <li
-        className={cx(css["item"], active && css["active"])}
-        ref={ref}
-        {...rest}
-      >
-        <div className={css["item-handle"]}>
-          <Button
-            className={cx(
-              css["item-handle-button"],
-              !dragHandleProps && css["static"],
-            )}
-            data-testid="sortable-drag-handle"
-            type="button"
-            variant="bare"
-            iconOnly
-            size="lg"
-            {...dragHandleProps}
-          >
-            <GripHorizontalIcon />
-          </Button>
-        </div>
-        <div className={css["item-content"]}>{children}</div>
-      </li>
-    );
-  },
-);
+  return (
+    <li
+      className={cx(css["item"], active && css["active"])}
+      ref={ref}
+      {...rest}
+    >
+      <div className={css["item-handle"]}>
+        <Button
+          className={cx(
+            css["item-handle-button"],
+            !dragHandleProps && css["static"],
+          )}
+          data-testid="sortable-drag-handle"
+          type="button"
+          variant="bare"
+          iconOnly
+          size="lg"
+          {...dragHandleProps}
+        >
+          <GripHorizontalIcon />
+        </Button>
+      </div>
+      <div className={css["item-content"]}>{children}</div>
+    </li>
+  );
+}
 
 function readId<T extends SortableData>(data: T) {
   return typeof data === "object" ? data.id : (data as SortableId);

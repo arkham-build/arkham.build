@@ -67,7 +67,7 @@ function Toast(props: {
   const locationRef = useRef(location);
 
   const toastRef = useRef<HTMLOutputElement>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const removeToast = useCallback(() => {
     return new Promise<void>((resolve) => {

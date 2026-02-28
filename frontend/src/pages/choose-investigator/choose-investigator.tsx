@@ -73,7 +73,7 @@ function ListcardExtra({
   cardResolver: (code: string) => CardWithRelations | undefined;
   code: string;
 }) {
-  const signaturesRef = useRef<HTMLUListElement>(null);
+  const signaturesRef = useRef<HTMLUListElement | null>(null);
 
   const resolved = cardResolver(code);
   const signatures = resolved?.relations?.requiredCards;
@@ -83,11 +83,7 @@ function ListcardExtra({
   return (
     <ul className={css["signatures"]} ref={signaturesRef}>
       {signatures.map(({ card }) => (
-        <SignatureLink
-          card={card}
-          key={card.code}
-          signaturesRef={signaturesRef}
-        />
+        <SignatureLink card={card} key={card.code} ref={signaturesRef} />
       ))}
     </ul>
   );

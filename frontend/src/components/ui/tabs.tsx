@@ -5,7 +5,7 @@ import type {
   TabsTriggerProps,
 } from "@radix-ui/react-tabs";
 import { Content, List, Root, Trigger } from "@radix-ui/react-tabs";
-import { forwardRef, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { cx } from "@/utils/cx";
 import { useHotkey } from "@/utils/use-hotkey";
 import { Button } from "./button";
@@ -13,23 +13,24 @@ import { HotkeyTooltip } from "./hotkey";
 import css from "./tabs.module.css";
 
 type TabsProps = RootProps & {
+  className?: string;
+  ref?: React.Ref<HTMLDivElement>;
   children: React.ReactNode;
 };
 
-export const Tabs = forwardRef(function Tabs(
-  { children, className, ...rest }: TabsProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
+export function Tabs({ children, className, ref, ...rest }: TabsProps) {
   return (
     <Root {...rest} className={cx(css["tabs"], className)} ref={ref}>
       {children}
     </Root>
   );
-});
+}
 
 type ListProps = TabsListProps & {
   children: React.ReactNode;
+  className?: string;
   vertical?: boolean;
+  style?: React.CSSProperties;
 };
 
 export function TabsList({
@@ -51,25 +52,25 @@ export function TabsList({
 
 type TriggerProps = TabsTriggerProps & {
   children: React.ReactNode;
+  className?: string;
   hotkey?: string;
-  tooltip?: string;
   iconOnly?: boolean;
   onTabChange?: (value: string) => void;
+  ref?: React.Ref<HTMLButtonElement>;
+  tooltip?: string;
 };
 
-export const TabsTrigger = forwardRef(function TabsTrigger(
-  {
-    children,
-    className,
-    hotkey,
-    iconOnly,
-    onTabChange,
-    tooltip,
-    value,
-    ...rest
-  }: TriggerProps,
-  ref: React.ForwardedRef<HTMLButtonElement>,
-) {
+export function TabsTrigger({
+  children,
+  className,
+  hotkey,
+  iconOnly,
+  onTabChange,
+  ref,
+  tooltip,
+  value,
+  ...rest
+}: TriggerProps) {
   const inner = (
     <Trigger {...rest} asChild value={value}>
       <Button
@@ -98,10 +99,12 @@ export const TabsTrigger = forwardRef(function TabsTrigger(
   ) : (
     inner
   );
-});
+}
 
 type ContentProps = TabsContentProps & {
+  asChild?: boolean;
   children: React.ReactNode;
+  className?: string;
 };
 
 export function TabsContent({

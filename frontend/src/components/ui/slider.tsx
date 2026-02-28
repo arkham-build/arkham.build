@@ -6,6 +6,8 @@ import css from "./slider.module.css";
 
 export interface Props extends SliderProps {
   className?: string;
+  id?: string;
+  onLostPointerCapture?(event: React.PointerEvent<HTMLElement>): void;
   thumbCount?: number;
 }
 

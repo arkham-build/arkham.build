@@ -145,7 +145,7 @@ export function CustomSelect(props: Props) {
                       <Option
                         {...getItemProps({
                           onClick: () => onSelectItem(index),
-                          onKeyDown(event) {
+                          onKeyDown(event: React.KeyboardEvent<HTMLLIElement>) {
                             if (event.key === "Enter") {
                               event.preventDefault();
                               onSelectItem(index);

@@ -10,15 +10,15 @@ import css from "./choose-investigator.module.css";
 
 type Props = {
   card: Card;
-  signaturesRef: React.RefObject<HTMLElement>;
+  ref?: React.RefObject<HTMLUListElement | null>;
 };
 
 export function SignatureLink(props: Props) {
-  const { card, signaturesRef } = props;
+  const { card, ref } = props;
 
   const tooltip = useRestingTooltip({
     elements: {
-      reference: signaturesRef?.current,
+      reference: ref?.current,
     },
     middleware: [shift({ padding: 5 })],
     placement: "right",
