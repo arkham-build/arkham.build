@@ -80,7 +80,7 @@ export function usePopover({
     enabled: !hoverDisabled,
     restMs: 50,
     handleClose: safePolygon({
-      blockPointerEvents: true,
+      blockPointerEvents: false,
     }),
   });
 
