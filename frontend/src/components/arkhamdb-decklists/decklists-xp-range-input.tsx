@@ -20,7 +20,9 @@ export function DecklistsXpRangeInput({ onValueChange, value }: Props) {
       onValueChange={onValueChange}
       onValueCommit={onValueChange}
       renderLabel={(val) =>
-        val === DECKLIST_SEARCH_MAX_XP ? "50+" : String(val)
+        val === DECKLIST_SEARCH_MAX_XP
+          ? `${DECKLIST_SEARCH_MAX_XP}+`
+          : String(val)
       }
       showLabel
       value={current}
