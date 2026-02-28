@@ -55,6 +55,7 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "5.1.4",
     "autoprefixer": "10.4.27",
+    "babel-plugin-react-compiler": "1.0.0",
     "happy-dom": "20.7.0",
     "rollup-plugin-bundle-stats": "4.21.10",
     "vite": "7.3.1",
