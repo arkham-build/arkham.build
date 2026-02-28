@@ -24,11 +24,7 @@ export function Popover({
   // or other positioning options.
   const popover = usePopover({ modal, ...restOptions });
 
-  return (
-    <PopoverContext.Provider value={popover}>
-      {children}
-    </PopoverContext.Provider>
-  );
+  return <PopoverContext value={popover}>{children}</PopoverContext>;
 }
 
 interface PopoverTriggerProps {

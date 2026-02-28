@@ -91,9 +91,9 @@ export function NotesRichTextEditorContextProvider({
   );
 
   return (
-    <NotesRichTextEditorContext.Provider value={contextValue}>
+    <NotesRichTextEditorContext value={contextValue}>
       {children}
-    </NotesRichTextEditorContext.Provider>
+    </NotesRichTextEditorContext>
   );
 }
 

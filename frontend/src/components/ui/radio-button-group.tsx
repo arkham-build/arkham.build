@@ -30,7 +30,7 @@ export function RadioButtonGroup(props: RadioButtonGroupProps) {
   const ctx = useRadioGroupProvider({ disabled, onValueChange, value });
 
   return (
-    <RadioGroupContext.Provider value={ctx}>
+    <RadioGroupContext value={ctx}>
       <div
         role="radiogroup"
         {...rest}
@@ -43,7 +43,7 @@ export function RadioButtonGroup(props: RadioButtonGroupProps) {
       >
         {children}
       </div>
-    </RadioGroupContext.Provider>
+    </RadioGroupContext>
   );
 }
 

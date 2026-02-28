@@ -110,7 +110,7 @@ export function ToggleGroup({
   );
 
   return (
-    <ToggleGroupContext.Provider value={ctx}>
+    <ToggleGroupContext value={ctx}>
       <div
         {...rest}
         className={cx(
@@ -122,7 +122,7 @@ export function ToggleGroup({
       >
         {children}
       </div>
-    </ToggleGroupContext.Provider>
+    </ToggleGroupContext>
   );
 }
 

@@ -25,9 +25,5 @@ export function ListLayoutContextProvider({
     [sidebarOpen, filtersOpen],
   );
 
-  return (
-    <ListLayoutContext.Provider value={contextValue}>
-      {children}
-    </ListLayoutContext.Provider>
-  );
+  return <ListLayoutContext value={contextValue}>{children}</ListLayoutContext>;
 }

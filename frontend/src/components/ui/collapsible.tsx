@@ -65,7 +65,7 @@ export function Root({
   );
 
   return (
-    <CollapsibleContext.Provider value={contextValue}>
+    <CollapsibleContext value={contextValue}>
       <div
         {...rest}
         className={className}
@@ -73,7 +73,7 @@ export function Root({
       >
         {children}
       </div>
-    </CollapsibleContext.Provider>
+    </CollapsibleContext>
   );
 }
 

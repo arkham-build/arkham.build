@@ -36,9 +36,7 @@ export function ResolvedDeckProvider(props: Props) {
     [resolvedDeck, canEdit],
   );
 
-  return (
-    <DeckIdContext.Provider value={value}>{children}</DeckIdContext.Provider>
-  );
+  return <DeckIdContext value={value}>{children}</DeckIdContext>;
 }
 
 const DEFAULT_DECK_CONTEXT: DeckContextType = {

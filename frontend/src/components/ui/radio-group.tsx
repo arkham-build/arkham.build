@@ -19,11 +19,11 @@ export function RadioGroup(props: RadioGroupProps) {
   const ctx = useRadioGroupProvider({ disabled, onValueChange, value });
 
   return (
-    <RadioGroupContext.Provider value={ctx}>
+    <RadioGroupContext value={ctx}>
       <div role="radiogroup" className={cx(css["root"], className)} {...rest}>
         {children}
       </div>
-    </RadioGroupContext.Provider>
+    </RadioGroupContext>
   );
 }
 

@@ -21,9 +21,7 @@ export function Dialog({
   children: React.ReactNode;
 } & DialogOptions) {
   const dialog = useDialog(options);
-  return (
-    <DialogContext.Provider value={dialog}>{children}</DialogContext.Provider>
-  );
+  return <DialogContext value={dialog}>{children}</DialogContext>;
 }
 
 interface DialogTriggerProps {

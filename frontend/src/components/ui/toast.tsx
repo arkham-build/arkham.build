@@ -37,7 +37,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <ToastContext.Provider value={ctx}>
+    <ToastContext value={ctx}>
       {children}
       <FloatingPortal id={FLOATING_PORTAL_ID}>
         <section className={css["toast-container"]}>
@@ -51,7 +51,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           ))}
         </section>
       </FloatingPortal>
-    </ToastContext.Provider>
+    </ToastContext>
   );
 }
 
