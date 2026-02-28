@@ -6,6 +6,7 @@ import { unlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pipeline } from "node:stream/promises";
+import { type Card, countExperience } from "@arkham-build/shared";
 import { parse } from "@fast-csv/parse";
 import type { Insertable, Transaction } from "kysely";
 import { connectionString, type Database, getDatabase } from "../db/db.ts";
@@ -93,6 +94,13 @@ async function ingest(config: Config, db: Database) {
         { id: number; likeCount: number }[]
       >();
 
+      const cards = Object.fromEntries(
+        (await tx.selectFrom("card").selectAll().execute()).map((c) => [
+          c.id,
+          c,
+        ]),
+      );
+
       await streamCsvAndInsert(
         decklistsFile,
         (deck: ApiDecklist) => {
@@ -160,6 +168,37 @@ async function ingest(config: Config, db: Database) {
               : null,
             next_deck: deck.next_deck ? Number(deck.next_deck) : null,
           };
+
+          const xpRequired = Object.entries(formatted.slots).reduce(
+            (acc, [code, quantity]) => {
+              const dbCard = formatted.taboo_id
+                ? (cards[`${code}-${formatted.taboo_id}`] ?? cards[code])
+                : cards[code];
+
+              if (!dbCard) return acc;
+
+              const card = structuredClone(dbCard) as unknown as Card;
+
+              const customizations: string = meta[`cus_${code}`];
+
+              if (customizations) {
+                try {
+                  card.customization_xp = customizations
+                    .split(",")
+                    .map((p) => {
+                      const x = p.split("|").at(1) ?? "0";
+                      return Number.parseInt(x, 10);
+                    })
+                    .reduce((acc, curr) => acc + curr, 0);
+                } catch {}
+              }
+
+              return acc + countExperience(card, quantity);
+            },
+            0,
+          );
+
+          formatted.xp_required = xpRequired;
 
           return formatted;
         },

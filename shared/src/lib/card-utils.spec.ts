@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { countExperience } from "@arkham-build/shared";
+import { type Card, countExperience } from "@arkham-build/shared";
 import { describe, expect, it } from "vitest";
 
 function allCardsStub() {
@@ -15,7 +15,9 @@ function allCardsStub() {
 }
 
 describe("countExperience", () => {
-  const cards = Object.fromEntries(allCardsStub().map((c) => [c.code, c]));
+  const cards = Object.fromEntries(
+    allCardsStub().map((c: Card) => [c.code, c]),
+  );
 
   it("handles base case", () => {
     const card = cards["60127"];

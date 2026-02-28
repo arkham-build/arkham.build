@@ -1,4 +1,4 @@
-import type { DateRange } from "@arkham-build/shared";
+import { type DateRange, DECKLIST_SEARCH_MAX_XP } from "@arkham-build/shared";
 import type { Context } from "hono";
 import { type Expression, expressionBuilder, sql } from "kysely";
 import type { DB } from "../db/schema.types.ts";
@@ -72,6 +72,21 @@ export function inDateRangeConds(
   ) {
     conds.push(eb(dateCreation, "<=", endDate));
   }
+
+  return conds;
+}
+
+export function inXpRangeConds(
+  xpRequired: Expression<number | null>,
+  xp: [number, number],
+) {
+  const eb = expressionBuilder<DB>();
+  const [min, max] = xp;
+
+  const conds = [eb(xpRequired, "is not", sql.lit(null))];
+
+  if (min > 0) conds.push(eb(xpRequired, ">=", min));
+  if (max < DECKLIST_SEARCH_MAX_XP) conds.push(eb(xpRequired, "<=", max));
 
   return conds;
 }

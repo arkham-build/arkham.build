@@ -1097,7 +1097,8 @@
         "name_placeholder": "Enter name (e.g. Deck Guide)...",
         "required_cards": "Required cards",
         "submit": "Apply",
-        "title": "Filter criteria"
+        "title": "Filter criteria",
+        "xp_range": "XP required"
       },
       "sorting": {
         "date": "Most recent",
