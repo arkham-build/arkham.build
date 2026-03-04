@@ -23,8 +23,8 @@
   },
   "dependencies": {
     "@fast-csv/parse": "5.0.5",
-    "@hono/node-server": "1.19.9",
-    "hono": "4.12.3",
+    "@hono/node-server": "1.19.10",
+    "hono": "4.12.4",
     "kysely": "0.28.11",
     "pg": "8.19.0"
   },
