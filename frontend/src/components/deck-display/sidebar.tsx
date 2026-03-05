@@ -540,6 +540,11 @@ function Sharing(props: {
                 {devModeEnabled && <DevModeApiLinkButton id={deck.id} />}
               </nav>
             )}
+            {origin !== "local" && devModeEnabled && (
+              <nav className={css["share-actions"]}>
+                <DevModeApiLinkButton id={deck.id} />
+              </nav>
+            )}
           </div>
         ) : (
           <div className={css["share-empty"]}>
