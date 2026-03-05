@@ -519,30 +519,29 @@ function Sharing(props: {
         {share || origin !== "local" ? (
           <div className={css["share"]}>
             <ShareInfo id={deck.id} path={`/share/${deck.id}`} />
-            {origin === "local" && (
+            {(origin === "local" || devModeEnabled) && (
               <nav className={css["share-actions"]}>
-                {deck.date_update !== share && (
-                  <Button
-                    disabled={isReadOnly}
-                    onClick={onUpdateShare}
-                    size="sm"
-                  >
-                    {t("deck_view.sharing.update")}
-                  </Button>
+                {origin === "local" && (
+                  <>
+                    {deck.date_update !== share && (
+                      <Button
+                        disabled={isReadOnly}
+                        onClick={onUpdateShare}
+                        size="sm"
+                      >
+                        {t("deck_view.sharing.update")}
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      onClick={onDeleteShare}
+                      data-testid="share-delete"
+                    >
+                      {t("deck_view.sharing.delete")}
+                    </Button>
+                  </>
                 )}
-                <Button
-                  size="sm"
-                  onClick={onDeleteShare}
-                  data-testid="share-delete"
-                >
-                  {t("deck_view.sharing.delete")}
-                </Button>
                 {devModeEnabled && <DevModeApiLinkButton id={deck.id} />}
-              </nav>
-            )}
-            {origin !== "local" && devModeEnabled && (
-              <nav className={css["share-actions"]}>
-                <DevModeApiLinkButton id={deck.id} />
               </nav>
             )}
           </div>
