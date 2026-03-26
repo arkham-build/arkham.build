@@ -31,6 +31,6 @@
     "lefthook": "2.1.1",
     "typescript": "5.9.3",
     "vitest": "4.1.0",
-    "wrangler": "4.69.0"
+    "wrangler": "4.77.0"
   }
 }
