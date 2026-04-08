@@ -54,8 +54,8 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.1",
     "autoprefixer": "10.4.27",
-    "happy-dom": "20.7.0",
+    "happy-dom": "20.8.9",
     "rollup-plugin-bundle-stats": "4.21.10",
-    "vite": "8.0.0"
+    "vite": "8.0.5"
   }
 }
