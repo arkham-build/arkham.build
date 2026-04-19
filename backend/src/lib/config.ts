@@ -1,18 +1,31 @@
 import { z } from "zod";
 
+const repoRefSchema = z.string().transform((value) => {
+  const separatorIndex = value.lastIndexOf("@");
+
+  if (separatorIndex === -1 || separatorIndex === value.length - 1) {
+    throw new Error(`Invalid repo ref: ${value}`);
+  }
+
+  return {
+    repo: value.slice(0, separatorIndex),
+    branch: value.slice(separatorIndex + 1),
+  };
+});
+
 export const configSchema = z.object({
   ADMIN_API_KEY: z.string(),
+  INGEST_JSON_DATA_REPO: repoRefSchema,
+  INGEST_TABOO_DATA_REPO: repoRefSchema,
   INGEST_URL_ARKHAMDB_DECKLISTS: z.string(),
   CORS_ORIGINS: z.string(),
   HOSTNAME: z.string().default("localhost"),
-  INGEST_URL_METADATA: z.string(),
   METADATA_LOCALES: z
     .preprocess(
       (s: string | undefined) => (s ?? "").split(",").map((s) => s.trim()),
       z.array(z.string()),
     )
     .default(["en"]),
-  METADATA_VERSION: z.coerce.number().int().default(9),
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
@@ -25,6 +38,7 @@ export const configSchema = z.object({
 });
 
 export type Config = z.infer<typeof configSchema>;
+export type RepoRef = z.infer<typeof repoRefSchema>;
 
 export function configFromEnv(
   overrides?: Record<string, string | number>,

@@ -32,11 +32,14 @@ export {
   type RecommendationsResponse,
   RecommendationsResponseSchema,
 } from "./dtos/recommendations-response.schema.ts";
+
 export {
   type SealedDeckResponse,
   SealedDeckResponseSchema,
 } from "./dtos/sealed-deck-response.schema.ts";
+
 export { cardLevel, countExperience, realCardLevel } from "./lib/card-utils.ts";
+
 export {
   ASSET_SLOT_ORDER,
   DECKLIST_SEARCH_MAX_XP,
@@ -48,10 +51,19 @@ export {
   type SkillIcon,
   type SkillKey,
 } from "./lib/constants.ts";
+
 export {
   decodeSearch,
   encodeSearch,
 } from "./lib/search-params.ts";
+export {
+  type JsonDataFaction,
+  JsonDataFactionSchema,
+  type JsonDataSubtype,
+  JsonDataSubtypeSchema,
+  type JsonDataType,
+  JsonDataTypeSchema,
+} from "./schemas/base.schema.ts";
 export {
   type ApiCard,
   ApiCardSchema,
@@ -69,6 +81,14 @@ export {
   type OptionSelect,
 } from "./schemas/card.schema.ts";
 export {
+  type JsonDataCycle,
+  JsonDataCycleSchema,
+} from "./schemas/cycle.schema.ts";
+export {
+  type JsonDataEncounterSet,
+  JsonDataEncounterSetSchema,
+} from "./schemas/encounter-set.schema.ts";
+export {
   type FanMadeCard,
   FanMadeCardSchema,
   type FanMadeProject,
@@ -78,3 +98,11 @@ export {
   type FanMadeProjectInfo,
   FanMadeProjectInfoSchema,
 } from "./schemas/fan-made-project-info.schema.ts";
+export {
+  type JsonDataPack,
+  JsonDataPackSchema,
+} from "./schemas/pack.schema.ts";
+export {
+  type JsonDataTabooSet,
+  JsonDataTabooSetSchema,
+} from "./schemas/taboo-set.schema.ts";

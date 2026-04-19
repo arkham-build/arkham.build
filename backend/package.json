@@ -13,8 +13,8 @@
     "dev": "node --watch --experimental-strip-types --env-file=.env src/main.ts",
     "dev:inspect": "node --inspect=localhost:9229 --experimental-strip-types --env-file=.env src/main.ts",
     "generate:database-types": "kysely-codegen --out-file src/db/schema.types.ts",
-    "ingest": "npm run ingest:metadata && npm run ingest:arkhamdb-decklists",
-    "ingest:metadata": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/tasks/ingest-metadata.ts",
+    "ingest": "npm run ingest:json-data && npm run ingest:arkhamdb-decklists",
+    "ingest:json-data": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/tasks/ingest/index.ts",
     "ingest:arkhamdb-decklists": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/tasks/ingest-arkhamdb-decklists.ts",
     "start": "node --experimental-strip-types src/main.ts",
     "test": "vitest run"
@@ -33,6 +33,7 @@
     "@tsconfig/strictest": "2.0.8",
     "@types/pg": "8.16.0",
     "dbmate": "2.31.0",
-    "kysely-codegen": "0.20.0"
+    "kysely-codegen": "0.20.0",
+    "tar": "7.5.13"
   }
 }

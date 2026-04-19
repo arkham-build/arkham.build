@@ -68,26 +68,39 @@ export interface ArkhamdbUser {
 }
 
 export interface Card {
-  alt_art_investigator: Generated<boolean | null>;
-  alternate_of_code: string | null;
+  abbreviation: string | null;
+  alternate_of: string | null;
+  back_flavor: string | null;
   back_illustrator: string | null;
-  back_link_id: string | null;
+  back_link: string | null;
+  back_name: string | null;
+  back_subname: string | null;
+  back_text: string | null;
+  back_traits: string | null;
+  back_type: string | null;
+  bonded_count: number | null;
+  bonded_to: string | null;
   clues: number | null;
   clues_fixed: Generated<boolean | null>;
   code: string;
   cost: number | null;
+  customization_change: string | null;
   customization_options: Json | null;
+  customization_text: string | null;
   deck_limit: number | null;
   deck_options: Json | null;
-  deck_requirements: Json | null;
+  deck_requirements: string | null;
   doom: number | null;
+  doom_per_investigator: boolean | null;
   double_sided: Generated<boolean | null>;
-  duplicate_of_code: string | null;
+  duplicate_of: string | null;
   encounter_code: string | null;
   encounter_position: number | null;
   enemy_damage: number | null;
   enemy_evade: number | null;
+  enemy_evade_per_investigator: boolean | null;
   enemy_fight: number | null;
+  enemy_fight_per_investigator: boolean | null;
   enemy_horror: number | null;
   errata_date: Timestamp | null;
   exceptional: Generated<boolean | null>;
@@ -95,51 +108,45 @@ export interface Card {
   faction_code: string;
   faction2_code: string | null;
   faction3_code: string | null;
-  heals_damage: Generated<boolean | null>;
-  heals_horror: Generated<boolean | null>;
+  flavor: string | null;
   health: number | null;
   health_per_investigator: Generated<boolean | null>;
   hidden: Generated<boolean | null>;
   id: string;
   illustrator: string | null;
   is_unique: Generated<boolean | null>;
-  linked: Generated<boolean | null>;
   myriad: Generated<boolean | null>;
+  name: string;
   official: Generated<boolean>;
   pack_code: string;
   pack_position: number | null;
   permanent: Generated<boolean | null>;
   position: number;
-  preview: Generated<boolean | null>;
   quantity: number;
-  real_back_flavor: string | null;
-  real_back_name: string | null;
-  real_back_text: string | null;
-  real_back_traits: string | null;
-  real_customization_change: string | null;
-  real_customization_text: string | null;
-  real_flavor: string | null;
-  real_name: string;
-  real_slot: string | null;
-  real_subname: string | null;
-  real_taboo_text_change: string | null;
-  real_text: string | null;
-  real_traits: string | null;
-  restrictions: Json | null;
+  restrictions: string | null;
   sanity: number | null;
   shroud: number | null;
+  shroud_per_investigator: boolean | null;
   side_deck_options: Json | null;
-  side_deck_requirements: Json | null;
+  side_deck_requirements: string | null;
   skill_agility: number | null;
   skill_combat: number | null;
   skill_intellect: number | null;
   skill_wild: number | null;
   skill_willpower: number | null;
+  slot: string | null;
   stage: number | null;
+  starts_in_hand: boolean | null;
+  starts_in_play: boolean | null;
+  sticky_mulligan: boolean | null;
+  subname: string | null;
   subtype_code: string | null;
   taboo_set_id: number | null;
+  taboo_text_change: string | null;
   taboo_xp: number | null;
-  tags: string[] | null;
+  tags: string | null;
+  text: string | null;
+  traits: string | null;
   translations: { locale: string; [key: string]: string }[];
   type_code: string;
   vengeance: number | null;
@@ -154,22 +161,23 @@ export interface CardResolution {
 
 export interface Cycle {
   code: string;
+  name: string;
   position: number;
-  real_name: string;
   translations: { locale: string; name: string }[];
 }
 
 export interface DataVersion {
   card_count: number;
   cards_updated_at: Timestamp;
+  ingested_commit_id: string | null;
   locale: string;
   translation_updated_at: Timestamp;
 }
 
 export interface EncounterSet {
   code: string;
+  name: string;
   pack_code: string;
-  real_name: string;
   translations: { locale: string; name: string }[];
 }
 
@@ -177,6 +185,7 @@ export interface Faction {
   code: string;
   is_primary: boolean;
   name: string;
+  translations: { locale: string; name: string }[];
 }
 
 export interface FanMadeProjectInfo {
@@ -186,10 +195,15 @@ export interface FanMadeProjectInfo {
 }
 
 export interface Pack {
+  chapter: number | null;
   code: string;
   cycle_code: string;
+  date_release: Timestamp | null;
+  name: string;
   position: number;
-  real_name: string;
+  reprint_packs: string[] | null;
+  reprint_type: string | null;
+  size: number | null;
   translations: { locale: string; name: string }[];
   type: string | null;
 }
@@ -205,11 +219,13 @@ export interface SchemaMigrations {
 export interface Subtype {
   code: string;
   name: string;
+  translations: { locale: string; name: string }[];
 }
 
 export interface TabooSet {
   card_count: number;
-  date: Timestamp;
+  code: string;
+  date_start: Timestamp;
   id: number;
   name: string | null;
 }
@@ -217,6 +233,7 @@ export interface TabooSet {
 export interface Type {
   code: string;
   name: string;
+  translations: { locale: string; name: string }[];
 }
 
 export interface DB {

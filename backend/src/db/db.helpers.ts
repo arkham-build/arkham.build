@@ -23,3 +23,24 @@ export async function applySqlFiles(db: Database, pathToFolder: string) {
     await db.executeQuery(sql.raw(sqlText).compile(db));
   }
 }
+
+/**
+ * Serialize objects to format that the postgres npm library can handle.
+ */
+export function serializeRecords<T extends object>(
+  data: ReadonlyArray<object>,
+): T[] {
+  return data.map((row) => {
+    const serializedRow: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(row)) {
+      if (typeof value === "object" && value != null) {
+        serializedRow[key] = JSON.stringify(value);
+      } else {
+        serializedRow[key] = value ?? null;
+      }
+    }
+
+    return serializedRow as T;
+  });
+}

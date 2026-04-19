@@ -225,6 +225,9 @@ export const JsonDataCardSchema = z.object({
   sticky_mulligan: z.boolean().nullish(),
   subname: z.string().nullish(),
   subtype_code: z.enum(["basicweakness", "weakness"]).nullish(),
+  taboo_set_id: z.number().nullish(),
+  taboo_text_change: z.string().nullish(),
+  taboo_xp: z.number().nullish(),
   tags: z.string().nullish(),
   text: z.string().nullish(),
   traits: z.string().nullish(),
@@ -269,7 +272,6 @@ export const ApiCardSchema = JsonDataCardSchema.omit({
   back_link_id: z.string().nullish(),
   deck_requirements: ApiDeckRequirementsSchema.nullish(),
   duplicate_of_code: z.string().nullish(),
-  id: z.string(), // {code} or {code}-{taboo_set_id}
   locale: z.string().nullish(),
   preview: z.boolean().nullish(),
   real_back_flavor: z.string().nullish(),
@@ -288,9 +290,6 @@ export const ApiCardSchema = JsonDataCardSchema.omit({
   real_traits: z.string().nullish(),
   restrictions: ApiRestrictionsSchema.nullish(),
   side_deck_requirements: ApiDeckRequirementsSchema.nullish(),
-  taboo_set_id: z.number().nullish(),
-  taboo_text_change: z.string().nullish(),
-  taboo_xp: z.number().nullish(),
   tags: z.array(z.string()).nullish(),
 });
 
