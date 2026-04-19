@@ -32,6 +32,11 @@ export function resolveCards(
       const expanded = { ...source, ...card, id };
       cards.push(expanded);
       cardMapping.set(id, expanded);
+    } else if (card.reprint_of) {
+      const source = cardMapping.get(card.reprint_of);
+      const expanded = { ...source, ...card, id };
+      cards.push(expanded);
+      cardMapping.set(id, expanded);
     } else {
       cards.push({ ...card, id });
     }

@@ -1,0 +1,37 @@
+[
+  {
+    "code": "05014",
+    "starts_in_hand": true,
+    "patch": true
+  },
+  {
+    "code": "09016",
+    "starts_in_play": true,
+    "patch": true
+  },
+  {
+    "code": "10005",
+    "starts_in_play": true,
+    "patch": true
+  },
+  {
+    "code": "06013",
+    "starts_in_play": true,
+    "patch": true
+  },
+  {
+    "code": "03009",
+    "starts_in_play": true,
+    "patch": true
+  },
+  {
+    "code": "54015",
+    "sticky_mulligan": true,
+    "patch": true
+  },
+  {
+    "code": "05042",
+    "sticky_mulligan": true,
+    "patch": true
+  }
+]

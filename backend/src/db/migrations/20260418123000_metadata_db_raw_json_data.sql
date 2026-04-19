@@ -38,7 +38,9 @@ ALTER TABLE card
   ADD COLUMN shroud_per_investigator BOOLEAN,
   ADD COLUMN starts_in_hand BOOLEAN,
   ADD COLUMN starts_in_play BOOLEAN,
-  ADD COLUMN sticky_mulligan BOOLEAN;
+  ADD COLUMN sticky_mulligan BOOLEAN,
+  ADD COLUMN attachments JSONB,
+  ADD COLUMN reprint_of VARCHAR(255);
 
 ALTER TABLE card
   ALTER COLUMN deck_requirements TYPE TEXT USING deck_requirements::text,
@@ -50,8 +52,7 @@ ALTER TABLE card
   DROP COLUMN alt_art_investigator,
   DROP COLUMN linked,
   DROP COLUMN heals_damage,
-  DROP COLUMN heals_horror,
-  DROP COLUMN preview;
+  DROP COLUMN heals_horror;
 
 ALTER TABLE cycle RENAME COLUMN real_name TO name;
 

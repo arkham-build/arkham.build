@@ -21,6 +21,7 @@ import {
   downloadJsonDataRepo,
   getMetadataWithTranslations,
 } from "./lib/json-data.ts";
+import { applyLocalData } from "./lib/local-data.ts";
 import { resolvePacks } from "./lib/packs.ts";
 import {
   downloadTabooRepo,
@@ -97,18 +98,22 @@ async function ingest() {
       tabooSets,
       ...cardPacks
     ]) => {
-      const { cardResolutions, cards } = resolveCards(
-        cardPacks.flat(),
-        tabooSets,
-      );
+      const data = applyLocalData({
+        cards: cardPacks.flat(),
+        cycles,
+        encounterSets,
+        packs,
+      });
+
+      const { cardResolutions, cards } = resolveCards(data.cards, tabooSets);
 
       return {
         cardResolutions,
         cards,
-        cycles: resolveCycles(cycles),
-        encounterSets: resolveEncounterSets(encounterSets, cards),
+        cycles: resolveCycles(data.cycles),
+        encounterSets: resolveEncounterSets(data.encounterSets, cards),
         factions: resolveFactions(factions),
-        packs: resolvePacks(packs),
+        packs: resolvePacks(data.packs),
         subtypes: subtypes,
         tabooSets: resolveTabooSets(tabooSets),
         types: types,

@@ -155,20 +155,21 @@ export type DeckOptionSelectType = "deckSize" | "faction" | "option";
 const Faction = z.enum(FACTION_ORDER);
 
 export const JsonDataCardSchema = z.object({
-  alternate_of: z.string().nullish(),
   abbreviation: z.string().nullish(),
+  alternate_of: z.string().nullish(),
+  attachments: AttachmentsSchema.nullish(),
   back_flavor: z.string().nullish(),
   back_illustrator: z.string().nullish(),
   back_link: z.string().nullish(),
   back_name: z.string().nullish(),
   back_subname: z.string().nullish(),
   back_text: z.string().nullish(),
-  back_type: z.string().nullish(),
   back_traits: z.string().nullish(),
+  back_type: z.string().nullish(),
   bonded_count: z.number().nullish(),
   bonded_to: z.string().nullish(),
-  clues_fixed: z.boolean().nullish(),
   clues: z.number().nullish(),
+  clues_fixed: z.boolean().nullish(),
   code: z.string(),
   cost: z.number().nullish(),
   customization_change: z.string().nullish(),
@@ -192,12 +193,12 @@ export const JsonDataCardSchema = z.object({
   errata_date: z.string().nullish(),
   exceptional: z.boolean().nullish(),
   exile: z.boolean().nullish(),
-  faction_code: Faction,
   faction2_code: Faction.nullish(),
   faction3_code: Faction.nullish(),
+  faction_code: Faction,
   flavor: z.string().nullish(),
-  health_per_investigator: z.boolean().nullish(),
   health: z.number().nullish(),
+  health_per_investigator: z.boolean().nullish(),
   hidden: z.boolean().nullish(),
   illustrator: z.string().nullish(),
   is_unique: z.boolean().nullish(),
@@ -206,7 +207,9 @@ export const JsonDataCardSchema = z.object({
   pack_code: z.string(),
   permanent: z.boolean().nullish(),
   position: z.number(),
+  preview: z.boolean().nullish(),
   quantity: z.number(),
+  reprint_of: z.string().nullish(),
   restrictions: z.string().nullish(),
   sanity: z.number().nullish(),
   shroud: z.number().nullish(),
@@ -305,13 +308,10 @@ const CardPoolExtensionSchema = z.object({
 });
 
 export const AdditionalAttributes = {
-  attachments: AttachmentsSchema.nullish(),
   back_image_url: z.url().nullish(),
   back_thumbnail_url: z.url().nullish(),
   card_pool_extension: CardPoolExtensionSchema.optional(),
   image_url: z.url().nullish(),
-  reprint_of: z.string().nullish(),
-  taboo_xp: z.number().nullish(),
   thumbnail_url: z.url().nullish(),
 };
 

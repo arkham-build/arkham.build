@@ -70,6 +70,7 @@ export interface ArkhamdbUser {
 export interface Card {
   abbreviation: string | null;
   alternate_of: string | null;
+  attachments: Json | null;
   back_flavor: string | null;
   back_illustrator: string | null;
   back_link: string | null;
@@ -122,7 +123,9 @@ export interface Card {
   pack_position: number | null;
   permanent: Generated<boolean | null>;
   position: number;
+  preview: Generated<boolean | null>;
   quantity: number;
+  reprint_of: string | null;
   restrictions: string | null;
   sanity: number | null;
   shroud: number | null;
@@ -185,7 +188,7 @@ export interface Faction {
   code: string;
   is_primary: boolean;
   name: string;
-  translations: { locale: string; name: string }[];
+  translations: Json;
 }
 
 export interface FanMadeProjectInfo {
@@ -219,7 +222,7 @@ export interface SchemaMigrations {
 export interface Subtype {
   code: string;
   name: string;
-  translations: { locale: string; name: string }[];
+  translations: Json;
 }
 
 export interface TabooSet {
@@ -233,7 +236,7 @@ export interface TabooSet {
 export interface Type {
   code: string;
   name: string;
-  translations: { locale: string; name: string }[];
+  translations: Json;
 }
 
 export interface DB {

@@ -1,0 +1,72 @@
+[
+  {
+    "code": "98001",
+    "duplicate_of": "02003",
+    "hidden": false,
+    "patch": true
+  },
+  {
+    "code": "98004",
+    "duplicate_of": "01001",
+    "hidden": false,
+    "patch": true
+  },
+  {
+    "code": "98007",
+    "duplicate_of": "08004",
+    "hidden": false,
+    "patch": true
+  },
+  {
+    "code": "98010",
+    "duplicate_of": "05001",
+    "hidden": false,
+    "patch": true
+  },
+  {
+    "code": "98013",
+    "duplicate_of": "07005",
+    "hidden": false,
+    "patch": true
+  },
+  {
+    "code": "98016",
+    "duplicate_of": "07004",
+    "hidden": false,
+    "patch": true
+  },
+  {
+    "code": "98019",
+    "duplicate_of": "11014",
+    "hidden": false,
+    "patch": true
+  },
+  {
+    "code": "98020",
+    "restrictions": "investigator:11014",
+    "patch": true
+  },
+  {
+    "code": "98021",
+    "restrictions": "investigator:11014",
+    "patch": true
+  },
+  {
+    "code": "99001",
+    "duplicate_of": "05006",
+    "deck_requirements": "size:30, card:05018, card:05019, random:subtype:basicweakness",
+    "patch": true
+  },
+  {
+    "code": "99002",
+    "duplicate_of": "05018",
+    "restrictions": "investigator:05006",
+    "patch": true
+  },
+  {
+    "code": "99003",
+    "duplicate_of": "05019",
+    "restrictions": "investigator:05006",
+    "patch": true
+  }
+]
