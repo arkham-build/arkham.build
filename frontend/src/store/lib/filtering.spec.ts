@@ -80,6 +80,12 @@ describe("filter: investigator access", () => {
       expect(applyFilter(state, "06002", "11099")).toBeTruthy();
       expect(applyFilter(state, "01001", "11099")).toBeFalsy();
     });
+
+    it("handles case: faction-restricted basic weaknesses", () => {
+      const state = store.getState();
+      expect(applyFilter(state, "01001", "09124")).toBeTruthy();
+      expect(applyFilter(state, "01001", "09128")).toBeFalsy();
+    });
   });
 
   describe("class <> level filters", () => {
@@ -1072,6 +1078,12 @@ describe("filter: investigator weakness access", () => {
     const state = store.getState();
     expect(applyFilter(state, "60101", "01000")).toBeTruthy();
     expect(applyFilter(state, "60101", "01100")).toBeTruthy();
+  });
+
+  it("handles case: weakness is a faction-restricted basic weakness", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "01001", "09124")).toBeTruthy();
+    expect(applyFilter(state, "01001", "09128")).toBeFalsy();
   });
 
   it("handles case: weakness is multi-stage weakness", () => {

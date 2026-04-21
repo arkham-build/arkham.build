@@ -169,6 +169,7 @@
   },
   {
     "code": "12100",
+    "deck_limit": 1,
     "reprint_of": "03040",
     "duplicate_of": null,
     "patch": true

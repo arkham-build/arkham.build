@@ -61,8 +61,6 @@ export function ownedCardCount(options: CardOwnershipOptions) {
     const duplicate = metadata.cards[code];
 
     if (!duplicate) {
-      // biome-ignore lint: debug
-      console.log("@@@", code);
       continue;
     }
 
