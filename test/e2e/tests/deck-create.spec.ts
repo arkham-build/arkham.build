@@ -122,7 +122,7 @@ test.describe("deck create", () => {
 
     await page.getByTestId("filters-faction-seeker").click();
     await expect(page.getByTestId("cardlist-count").first()).toContainText(
-      "52 cards",
+      "58 cards",
     );
 
     await page.getByTestId("filters-faction-seeker").click();

@@ -188,7 +188,7 @@ function Printings(props: { code: string }) {
               active={
                 printing.card.code === props.code &&
                 (CYCLES_WITH_STANDALONE_PACKS.includes(printing.cycle.code) ||
-                  oldFormat === !printing.pack.reprint)
+                  oldFormat === !printing.pack.reprint_type)
               }
               printing={printing}
               oldFormat={!!reprintPackCode}

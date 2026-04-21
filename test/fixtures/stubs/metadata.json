@@ -2,580 +2,1360 @@
   "data": {
     "pack": [
       {
-        "code": "ltr",
-        "cycle_code": "parallel",
-        "position": 7,
-        "real_name": "Laid to Rest"
-      },
-      {
-        "code": "bota",
-        "cycle_code": "dwl",
-        "position": 4,
-        "real_name": "Blood on the Altar"
-      },
-      {
-        "code": "uau",
-        "cycle_code": "dwl",
-        "position": 5,
-        "real_name": "Undimensioned and Unseen"
-      },
-      {
-        "code": "wda",
-        "cycle_code": "dwl",
-        "position": 6,
-        "real_name": "Where Doom Awaits"
-      },
-      {
-        "code": "litas",
-        "cycle_code": "dwl",
-        "position": 7,
-        "real_name": "Lost in Time and Space"
-      },
-      {
-        "code": "ptc",
-        "cycle_code": "ptc",
-        "position": 1,
-        "real_name": "The Path to Carcosa"
-      },
-      {
-        "code": "hoth",
-        "cycle_code": "promotional",
-        "position": 20,
-        "real_name": "Hour of the Huntress"
-      },
-      {
-        "code": "ptr",
-        "cycle_code": "parallel",
-        "position": 8,
-        "real_name": "Path of the Righteous"
-      },
-      {
         "code": "core",
         "cycle_code": "core",
         "position": 1,
+        "type": "core_set",
+        "chapter": 1,
+        "date_release": "2016-11-10T00:00:00.000Z",
+        "size": 184,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "Core Set"
-      },
-      {
-        "code": "cotr",
-        "cycle_code": "side_stories",
-        "position": 1,
-        "real_name": "Curse of the Rougarou"
-      },
-      {
-        "code": "eotp",
-        "cycle_code": "ptc",
-        "position": 2,
-        "real_name": "Echoes of the Past"
-      },
-      {
-        "code": "rop",
-        "cycle_code": "parallel",
-        "position": 9,
-        "real_name": "Relics of the Past"
-      },
-      {
-        "code": "hfa",
-        "cycle_code": "parallel",
-        "position": 10,
-        "real_name": "Hunting for Answers"
-      },
-      {
-        "code": "pap",
-        "cycle_code": "parallel",
-        "position": 11,
-        "real_name": "Pistols and Pearls"
-      },
-      {
-        "code": "tuo",
-        "cycle_code": "ptc",
-        "position": 3,
-        "real_name": "The Unspeakable Oath"
       },
       {
         "code": "rcore",
         "cycle_code": "core",
         "position": 2,
+        "type": "core_set",
+        "chapter": 1,
+        "date_release": "2020-10-01T00:00:00.000Z",
+        "size": 195,
+        "reprint_type": "rcore",
+        "reprint_packs": ["core"],
         "real_name": "Revised Core Set"
       },
       {
-        "code": "tmg",
-        "cycle_code": "side_stories",
-        "position": 11,
-        "real_name": "The Midwinter Gala"
-      },
-      {
-        "code": "aof",
-        "cycle_code": "parallel",
-        "position": 12,
-        "real_name": "Aura of Faith"
-      },
-      {
-        "code": "film_fatale",
-        "cycle_code": "side_stories",
-        "position": 12,
-        "real_name": "Film Fatale"
-      },
-      {
-        "code": "enc",
-        "cycle_code": "parallel",
-        "position": 12,
-        "real_name": "Enthralling Encore"
-      },
-      {
         "code": "core_2026",
-        "cycle_code": "core",
+        "cycle_code": "core_ch2",
         "position": 3,
-        "real_name": "Core Set 2026"
-      },
-      {
-        "code": "tic",
-        "cycle_code": "tic",
-        "position": 1,
-        "real_name": "The Innsmouth Conspiracy"
-      },
-      {
-        "code": "dre",
-        "cycle_code": "promotional",
-        "position": 26,
-        "real_name": "Dark Revelations"
-      },
-      {
-        "code": "bad",
-        "cycle_code": "parallel",
-        "position": 3,
-        "real_name": "Bad Blood"
-      },
-      {
-        "code": "def",
-        "cycle_code": "tic",
-        "position": 3,
-        "real_name": "Devil Reef"
-      },
-      {
-        "code": "hhg",
-        "cycle_code": "tic",
-        "position": 4,
-        "real_name": "Horror in High Gear"
-      },
-      {
-        "code": "tdcc",
-        "cycle_code": "tdc",
-        "position": 2,
-        "real_name": "The Drowned City Campaign Expansion"
-      },
-      {
-        "code": "lif",
-        "cycle_code": "tic",
-        "position": 5,
-        "real_name": "A Light in the Fog"
-      },
-      {
-        "code": "fhvp",
-        "cycle_code": "fhv",
-        "position": 1,
-        "real_name": "The Feast of Hemlock Vale Investigator Expansion"
-      },
-      {
-        "code": "lod",
-        "cycle_code": "tic",
-        "position": 6,
-        "real_name": "The Lair of Dagon"
-      },
-      {
-        "code": "itm",
-        "cycle_code": "tic",
-        "position": 7,
-        "real_name": "Into the Maelstrom"
-      },
-      {
-        "code": "btb",
-        "cycle_code": "parallel",
-        "position": 4,
-        "real_name": "By the Book"
-      },
-      {
-        "code": "rttcu",
-        "cycle_code": "return",
-        "position": 5,
-        "real_name": "Return to the Circle Undone"
-      },
-      {
-        "code": "eoep",
-        "cycle_code": "eoe",
-        "position": 1,
-        "real_name": "Edge of the Earth Investigator Expansion"
-      },
-      {
-        "code": "eoec",
-        "cycle_code": "eoe",
-        "position": 2,
-        "real_name": "Edge of the Earth Campaign Expansion"
-      },
-      {
-        "code": "rtr",
-        "cycle_code": "parallel",
-        "position": 5,
-        "real_name": "Red Tide Rising"
-      },
-      {
-        "code": "mtt",
-        "cycle_code": "side_stories",
-        "position": 8,
-        "real_name": "Machinations Through Time"
-      },
-      {
-        "code": "tskp",
-        "cycle_code": "tsk",
-        "position": 1,
-        "real_name": "The Scarlet Keys Investigator Expansion"
-      },
-      {
-        "code": "coh",
-        "cycle_code": "side_stories",
-        "position": 2,
-        "real_name": "Carnevale of Horrors"
-      },
-      {
-        "code": "promo",
-        "cycle_code": "promotional",
-        "position": 30,
-        "real_name": "Promo"
-      },
-      {
-        "code": "tskc",
-        "cycle_code": "tsk",
-        "position": 2,
-        "real_name": "The Scarlet Keys Campaign Expansion"
-      },
-      {
-        "code": "fof",
-        "cycle_code": "side_stories",
-        "position": 9,
-        "real_name": "Fortune and Folly"
-      },
-      {
-        "code": "otr",
-        "cycle_code": "parallel",
-        "position": 6,
-        "real_name": "On the Road Again"
+        "type": "mythos_pack",
+        "chapter": 2,
+        "date_release": "2026-03-20T00:00:00.000Z",
+        "size": 195,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Core Set (2026)"
       },
       {
         "code": "dwl",
         "cycle_code": "dwl",
         "position": 1,
+        "type": "deluxe_expansion",
+        "chapter": 1,
+        "date_release": "2017-01-12T00:00:00.000Z",
+        "size": 104,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Dunwich Legacy"
-      },
-      {
-        "code": "blbe",
-        "cycle_code": "side_stories",
-        "position": 10,
-        "real_name": "The Blob That Ate Everything ELSE!"
       },
       {
         "code": "tmm",
         "cycle_code": "dwl",
         "position": 2,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2017-02-16T00:00:00.000Z",
+        "size": 42,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Miskatonic Museum"
       },
       {
         "code": "tece",
         "cycle_code": "dwl",
         "position": 3,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2017-03-16T00:00:00.000Z",
+        "size": 37,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Essex County Express"
       },
       {
-        "code": "wgd",
-        "cycle_code": "tde",
-        "position": 6,
-        "real_name": "Where the Gods Dwell"
-      },
-      {
-        "code": "rod",
-        "cycle_code": "parallel",
-        "position": 1,
-        "real_name": "Read or Die"
-      },
-      {
-        "code": "woc",
-        "cycle_code": "tde",
-        "position": 7,
-        "real_name": "Weaver of the Cosmos"
-      },
-      {
-        "code": "bob",
-        "cycle_code": "promotional",
-        "position": 25,
-        "real_name": "Blood of Baalshandor"
-      },
-      {
-        "code": "blob",
-        "cycle_code": "side_stories",
-        "position": 6,
-        "real_name": "The Blob That Ate Everything"
-      },
-      {
-        "code": "wog",
-        "cycle_code": "side_stories",
-        "position": 7,
-        "real_name": "War of the Outer Gods"
-      },
-      {
-        "code": "rttfa",
-        "cycle_code": "return",
+        "code": "bota",
+        "cycle_code": "dwl",
         "position": 4,
-        "real_name": "Return to the Forgotten Age"
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2017-04-13T00:00:00.000Z",
+        "size": 41,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Blood on the Altar"
       },
       {
-        "code": "aon",
-        "cycle_code": "parallel",
-        "position": 2,
-        "real_name": "All or Nothing"
-      },
-      {
-        "code": "nat",
-        "cycle_code": "investigator",
-        "position": 1,
-        "real_name": "Nathaniel Cho"
-      },
-      {
-        "code": "har",
-        "cycle_code": "investigator",
-        "position": 2,
-        "real_name": "Harvey Walters"
-      },
-      {
-        "code": "win",
-        "cycle_code": "investigator",
-        "position": 3,
-        "real_name": "Winifred Habbamock"
-      },
-      {
-        "code": "jac",
-        "cycle_code": "investigator",
-        "position": 4,
-        "real_name": "Jacqueline Fine"
-      },
-      {
-        "code": "ste",
-        "cycle_code": "investigator",
+        "code": "uau",
+        "cycle_code": "dwl",
         "position": 5,
-        "real_name": "Stella Clark"
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2017-05-11T00:00:00.000Z",
+        "size": 35,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Undimensioned and Unseen"
       },
       {
-        "code": "itd",
-        "cycle_code": "tic",
+        "code": "wda",
+        "cycle_code": "dwl",
+        "position": 6,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2017-06-08T00:00:00.000Z",
+        "size": 39,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Where Doom Awaits"
+      },
+      {
+        "code": "litas",
+        "cycle_code": "dwl",
+        "position": 7,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2017-07-06T00:00:00.000Z",
+        "size": 35,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Lost in Time and Space"
+      },
+      {
+        "code": "ptc",
+        "cycle_code": "ptc",
+        "position": 1,
+        "type": "deluxe_expansion",
+        "chapter": 1,
+        "date_release": "2017-09-14T00:00:00.000Z",
+        "size": 110,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Path to Carcosa"
+      },
+      {
+        "code": "eotp",
+        "cycle_code": "ptc",
         "position": 2,
-        "real_name": "In Too Deep"
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2017-10-26T00:00:00.000Z",
+        "size": 41,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Echoes of the Past"
       },
       {
-        "code": "iotv",
-        "cycle_code": "promotional",
-        "position": 22,
-        "real_name": "Ire of the Void"
+        "code": "tuo",
+        "cycle_code": "ptc",
+        "position": 3,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2017-11-24T00:00:00.000Z",
+        "size": 43,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Unspeakable Oath"
       },
       {
         "code": "apot",
         "cycle_code": "ptc",
         "position": 4,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2017-12-21T00:00:00.000Z",
+        "size": 39,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "A Phantom of Truth"
       },
       {
         "code": "tpm",
         "cycle_code": "ptc",
         "position": 5,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2018-01-25T00:00:00.000Z",
+        "size": 35,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Pallid Mask"
       },
       {
         "code": "bsr",
         "cycle_code": "ptc",
         "position": 6,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2018-02-22T00:00:00.000Z",
+        "size": 43,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "Black Stars Rise"
-      },
-      {
-        "code": "tdor",
-        "cycle_code": "promotional",
-        "position": 21,
-        "real_name": "The Dirge of Reason"
-      },
-      {
-        "code": "fhvc",
-        "cycle_code": "fhv",
-        "position": 2,
-        "real_name": "The Feast of Hemlock Vale Campaign Expansion"
       },
       {
         "code": "dca",
         "cycle_code": "ptc",
         "position": 7,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2018-03-22T00:00:00.000Z",
+        "size": 45,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "Dim Carcosa"
-      },
-      {
-        "code": "tftbw",
-        "cycle_code": "promotional",
-        "position": 24,
-        "real_name": "To Fight the Black Wind"
       },
       {
         "code": "tfa",
         "cycle_code": "tfa",
         "position": 1,
+        "type": "deluxe_expansion",
+        "chapter": 1,
+        "date_release": "2018-05-10T00:00:00.000Z",
+        "size": 102,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Forgotten Age"
-      },
-      {
-        "code": "lol",
-        "cycle_code": "side_stories",
-        "position": 3,
-        "real_name": "The Labyrinths of Lunacy"
-      },
-      {
-        "code": "tdg",
-        "cycle_code": "promotional",
-        "position": 23,
-        "real_name": "The Deep Gate"
       },
       {
         "code": "tof",
         "cycle_code": "tfa",
         "position": 2,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2018-06-14T00:00:00.000Z",
+        "size": 47,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "Threads of Fate"
-      },
-      {
-        "code": "rtnotz",
-        "cycle_code": "return",
-        "position": 1,
-        "real_name": "Return to the Night of the Zealot"
       },
       {
         "code": "tbb",
         "cycle_code": "tfa",
         "position": 3,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2018-07-19T00:00:00.000Z",
+        "size": 43,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Boundary Beyond"
       },
       {
         "code": "hote",
         "cycle_code": "tfa",
         "position": 4,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2018-08-16T00:00:00.000Z",
+        "size": 38,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "Heart of the Elders"
       },
       {
         "code": "tcoa",
         "cycle_code": "tfa",
         "position": 5,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2018-09-13T00:00:00.000Z",
+        "size": 36,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The City of Archives"
       },
       {
         "code": "tdoy",
         "cycle_code": "tfa",
         "position": 6,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2018-10-11T00:00:00.000Z",
+        "size": 39,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Depths of Yoth"
       },
       {
         "code": "sha",
         "cycle_code": "tfa",
         "position": 7,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2018-11-15T00:00:00.000Z",
+        "size": 46,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "Shattered Aeons"
-      },
-      {
-        "code": "guardians",
-        "cycle_code": "side_stories",
-        "position": 4,
-        "real_name": "Guardians of the Abyss"
-      },
-      {
-        "code": "rtdwl",
-        "cycle_code": "return",
-        "position": 2,
-        "real_name": "Return to the Dunwich Legacy"
       },
       {
         "code": "tcu",
         "cycle_code": "tcu",
         "position": 1,
+        "type": "deluxe_expansion",
+        "chapter": 1,
+        "date_release": "2019-01-31T00:00:00.000Z",
+        "size": 109,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Circle Undone"
       },
       {
         "code": "tsn",
         "cycle_code": "tcu",
         "position": 2,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2019-03-14T00:00:00.000Z",
+        "size": 42,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Secret Name"
       },
       {
         "code": "wos",
         "cycle_code": "tcu",
         "position": 3,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2019-04-04T00:00:00.000Z",
+        "size": 40,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Wages of Sin"
       },
       {
         "code": "fgg",
         "cycle_code": "tcu",
         "position": 4,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2019-05-02T00:00:00.000Z",
+        "size": 43,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "For the Greater Good"
       },
       {
         "code": "uad",
         "cycle_code": "tcu",
         "position": 5,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2019-06-06T00:00:00.000Z",
+        "size": 44,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "Union and Disillusion"
       },
       {
         "code": "icc",
         "cycle_code": "tcu",
         "position": 6,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2019-07-05T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "In the Clutches of Chaos"
       },
       {
         "code": "bbt",
         "cycle_code": "tcu",
         "position": 7,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2019-07-26T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "Before the Black Throne"
-      },
-      {
-        "code": "rtptc",
-        "cycle_code": "return",
-        "position": 3,
-        "real_name": "Return to the Path to Carcosa"
-      },
-      {
-        "code": "tdcp",
-        "cycle_code": "tdc",
-        "position": 1,
-        "real_name": "The Drowned City Investigator Expansion"
       },
       {
         "code": "tde",
         "cycle_code": "tde",
         "position": 1,
+        "type": "deluxe_expansion",
+        "chapter": 1,
+        "date_release": "2019-09-27T00:00:00.000Z",
+        "size": 109,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Dream-Eaters"
-      },
-      {
-        "code": "hotel",
-        "cycle_code": "side_stories",
-        "position": 5,
-        "real_name": "Murder at the Excelsior Hotel"
       },
       {
         "code": "sfk",
         "cycle_code": "tde",
         "position": 2,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2019-11-15T00:00:00.000Z",
+        "size": 45,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "The Search for Kadath"
       },
       {
         "code": "tsh",
         "cycle_code": "tde",
         "position": 3,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2019-12-13T00:00:00.000Z",
+        "size": 40,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "A Thousand Shapes of Horror"
       },
       {
         "code": "dsm",
         "cycle_code": "tde",
         "position": 4,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2020-01-10T00:00:00.000Z",
+        "size": 39,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "Dark Side of the Moon"
       },
       {
         "code": "pnr",
         "cycle_code": "tde",
         "position": 5,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2020-02-07T00:00:00.000Z",
+        "size": 42,
+        "reprint_type": null,
+        "reprint_packs": null,
         "real_name": "Point of No Return"
+      },
+      {
+        "code": "wgd",
+        "cycle_code": "tde",
+        "position": 6,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2020-03-06T00:00:00.000Z",
+        "size": 47,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Where the Gods Dwell"
+      },
+      {
+        "code": "woc",
+        "cycle_code": "tde",
+        "position": 7,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2020-06-05T00:00:00.000Z",
+        "size": 32,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Weaver of the Cosmos"
+      },
+      {
+        "code": "tic",
+        "cycle_code": "tic",
+        "position": 1,
+        "type": "deluxe_expansion",
+        "chapter": 1,
+        "date_release": "2020-10-02T00:00:00.000Z",
+        "size": 108,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Innsmouth Conspiracy"
+      },
+      {
+        "code": "itd",
+        "cycle_code": "tic",
+        "position": 2,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2020-11-06T00:00:00.000Z",
+        "size": 44,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "In Too Deep"
+      },
+      {
+        "code": "def",
+        "cycle_code": "tic",
+        "position": 3,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2020-12-04T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Devil Reef"
+      },
+      {
+        "code": "hhg",
+        "cycle_code": "tic",
+        "position": 4,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2021-01-08T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Horror in High Gear"
+      },
+      {
+        "code": "lif",
+        "cycle_code": "tic",
+        "position": 5,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2021-02-19T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "A Light in the Fog"
+      },
+      {
+        "code": "lod",
+        "cycle_code": "tic",
+        "position": 6,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2021-03-19T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Lair of Dagon"
+      },
+      {
+        "code": "itm",
+        "cycle_code": "tic",
+        "position": 7,
+        "type": "mythos_pack",
+        "chapter": 1,
+        "date_release": "2021-05-21T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Into the Maelstrom"
+      },
+      {
+        "code": "eoep",
+        "cycle_code": "eoe",
+        "position": 1,
+        "type": "investigator_expansion",
+        "chapter": 1,
+        "date_release": "2021-09-10T00:00:00.000Z",
+        "size": 300,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Edge of the Earth Investigator Expansion"
+      },
+      {
+        "code": "eoec",
+        "cycle_code": "eoe",
+        "position": 2,
+        "type": "campaign_expansion",
+        "chapter": 1,
+        "date_release": "2021-11-12T00:00:00.000Z",
+        "size": 300,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Edge of the Earth Campaign Expansion"
+      },
+      {
+        "code": "tskp",
+        "cycle_code": "tsk",
+        "position": 1,
+        "type": "investigator_expansion",
+        "chapter": 1,
+        "date_release": "2022-09-30T00:00:00.000Z",
+        "size": 300,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Scarlet Keys Investigator Expansion"
+      },
+      {
+        "code": "tskc",
+        "cycle_code": "tsk",
+        "position": 2,
+        "type": "campaign_expansion",
+        "chapter": 1,
+        "date_release": "2022-11-18T00:00:00.000Z",
+        "size": 300,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Scarlet Keys Campaign Expansion"
+      },
+      {
+        "code": "fhvp",
+        "cycle_code": "fhv",
+        "position": 1,
+        "type": "investigator_expansion",
+        "chapter": 1,
+        "date_release": "2023-02-16T00:00:00.000Z",
+        "size": 300,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Feast of Hemlock Vale Investigator Expansion"
+      },
+      {
+        "code": "fhvc",
+        "cycle_code": "fhv",
+        "position": 2,
+        "type": "campaign_expansion",
+        "chapter": 1,
+        "date_release": "2022-02-24T00:00:00.000Z",
+        "size": 300,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Feast of Hemlock Vale Campaign Expansion"
+      },
+      {
+        "code": "tdcp",
+        "cycle_code": "tdc",
+        "position": 1,
+        "type": "investigator_expansion",
+        "chapter": 1,
+        "date_release": "2025-02-07T00:00:00.000Z",
+        "size": 300,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Drowned City Investigator Expansion"
+      },
+      {
+        "code": "tdcc",
+        "cycle_code": "tdc",
+        "position": 2,
+        "type": "campaign_expansion",
+        "chapter": 1,
+        "date_release": "2025-03-31T00:00:00.000Z",
+        "size": 300,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Drowned City Campaign Expansion"
+      },
+      {
+        "code": "cotr",
+        "cycle_code": "side_stories",
+        "position": 1,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2016-11-17T00:00:00.000Z",
+        "size": 36,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Curse of the Rougarou"
+      },
+      {
+        "code": "coh",
+        "cycle_code": "side_stories",
+        "position": 2,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2016-12-08T00:00:00.000Z",
+        "size": 40,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Carnevale of Horrors"
+      },
+      {
+        "code": "lol",
+        "cycle_code": "side_stories",
+        "position": 3,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2018-06-07T00:00:00.000Z",
+        "size": 70,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Labyrinths of Lunacy"
+      },
+      {
+        "code": "guardians",
+        "cycle_code": "side_stories",
+        "position": 4,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2018-12-06T00:00:00.000Z",
+        "size": 58,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Guardians of the Abyss"
+      },
+      {
+        "code": "hotel",
+        "cycle_code": "side_stories",
+        "position": 5,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2019-10-25T00:00:00.000Z",
+        "size": 78,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Murder at the Excelsior Hotel"
+      },
+      {
+        "code": "blob",
+        "cycle_code": "side_stories",
+        "position": 6,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2020-07-03T00:00:00.000Z",
+        "size": 78,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Blob That Ate Everything"
+      },
+      {
+        "code": "wog",
+        "cycle_code": "side_stories",
+        "position": 7,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2020-07-03T00:00:00.000Z",
+        "size": 78,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "War of the Outer Gods"
+      },
+      {
+        "code": "mtt",
+        "cycle_code": "side_stories",
+        "position": 8,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2022-02-04T00:00:00.000Z",
+        "size": 78,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Machinations Through Time"
+      },
+      {
+        "code": "fof",
+        "cycle_code": "side_stories",
+        "position": 9,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2023-04-01T00:00:00.000Z",
+        "size": 78,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Fortune and Folly"
+      },
+      {
+        "code": "blbe",
+        "cycle_code": "side_stories",
+        "position": 10,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2023-08-01T00:00:00.000Z",
+        "size": 78,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Blob That Ate Everything ELSE!"
+      },
+      {
+        "code": "hoth",
+        "cycle_code": "promotional",
+        "position": 20,
+        "type": "promo",
+        "chapter": 1,
+        "date_release": "2017-10-13T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Hour of the Huntress"
+      },
+      {
+        "code": "tdor",
+        "cycle_code": "promotional",
+        "position": 21,
+        "type": "promo",
+        "chapter": 1,
+        "date_release": "2018-02-22T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Dirge of Reason"
+      },
+      {
+        "code": "iotv",
+        "cycle_code": "promotional",
+        "position": 22,
+        "type": "promo",
+        "chapter": 1,
+        "date_release": "2017-12-07T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Ire of the Void"
+      },
+      {
+        "code": "tdg",
+        "cycle_code": "promotional",
+        "position": 23,
+        "type": "promo",
+        "chapter": 1,
+        "date_release": "2018-06-07T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Deep Gate"
+      },
+      {
+        "code": "tftbw",
+        "cycle_code": "promotional",
+        "position": 24,
+        "type": "promo",
+        "chapter": 1,
+        "date_release": "2018-04-05T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "To Fight the Black Wind"
+      },
+      {
+        "code": "bob",
+        "cycle_code": "promotional",
+        "position": 25,
+        "type": "promo",
+        "chapter": 1,
+        "date_release": "2020-06-05T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Blood of Baalshandor"
+      },
+      {
+        "code": "dre",
+        "cycle_code": "promotional",
+        "position": 26,
+        "type": "promo",
+        "chapter": 1,
+        "date_release": "2020-11-06T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Dark Revelations"
+      },
+      {
+        "code": "promo",
+        "cycle_code": "promotional",
+        "position": 30,
+        "type": "promo",
+        "chapter": 1,
+        "date_release": "2016-12-14T00:00:00.000Z",
+        "size": 9,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Promo"
+      },
+      {
+        "code": "rtnotz",
+        "cycle_code": "return",
+        "position": 1,
+        "type": "return_to",
+        "chapter": 1,
+        "date_release": "2018-06-28T00:00:00.000Z",
+        "size": 48,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Return to the Night of the Zealot"
+      },
+      {
+        "code": "rtdwl",
+        "cycle_code": "return",
+        "position": 2,
+        "type": "return_to",
+        "chapter": 1,
+        "date_release": "2019-01-10T00:00:00.000Z",
+        "size": 73,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Return to the Dunwich Legacy"
+      },
+      {
+        "code": "rtptc",
+        "cycle_code": "return",
+        "position": 3,
+        "type": "return_to",
+        "chapter": 1,
+        "date_release": "2019-09-06T00:00:00.000Z",
+        "size": 78,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Return to the Path to Carcosa"
+      },
+      {
+        "code": "rttfa",
+        "cycle_code": "return",
+        "position": 4,
+        "type": "return_to",
+        "chapter": 1,
+        "date_release": "2020-08-07T00:00:00.000Z",
+        "size": 80,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Return to the Forgotten Age"
+      },
+      {
+        "code": "rttcu",
+        "cycle_code": "return",
+        "position": 5,
+        "type": "return_to",
+        "chapter": 1,
+        "date_release": "2021-06-24T00:00:00.000Z",
+        "size": 80,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Return to the Circle Undone"
+      },
+      {
+        "code": "nat",
+        "cycle_code": "investigator",
+        "position": 1,
+        "type": "investigator_starter_deck",
+        "chapter": 1,
+        "date_release": "2020-08-28T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Nathaniel Cho"
+      },
+      {
+        "code": "har",
+        "cycle_code": "investigator",
+        "position": 2,
+        "type": "investigator_starter_deck",
+        "chapter": 1,
+        "date_release": "2020-08-28T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Harvey Walters"
+      },
+      {
+        "code": "win",
+        "cycle_code": "investigator",
+        "position": 3,
+        "type": "investigator_starter_deck",
+        "chapter": 1,
+        "date_release": "2020-08-28T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Winifred Habbamock"
+      },
+      {
+        "code": "jac",
+        "cycle_code": "investigator",
+        "position": 4,
+        "type": "investigator_starter_deck",
+        "chapter": 1,
+        "date_release": "2020-08-28T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Jacqueline Fine"
+      },
+      {
+        "code": "ste",
+        "cycle_code": "investigator",
+        "position": 5,
+        "type": "investigator_starter_deck",
+        "chapter": 1,
+        "date_release": "2020-08-28T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Stella Clark"
+      },
+      {
+        "code": "tom",
+        "cycle_code": "investigator_decks_ch2",
+        "position": 1,
+        "type": "deluxe_expansion",
+        "chapter": 2,
+        "date_release": "2026-04-17T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Tommy Muldoon"
+      },
+      {
+        "code": "car",
+        "cycle_code": "investigator_decks_ch2",
+        "position": 2,
+        "type": "mythos_pack",
+        "chapter": 2,
+        "date_release": "2026-04-17T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Carolyn Fern"
+      },
+      {
+        "code": "and",
+        "cycle_code": "investigator_decks_ch2",
+        "position": 3,
+        "type": "mythos_pack",
+        "chapter": 2,
+        "date_release": "2026-04-17T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "André Patel"
+      },
+      {
+        "code": "mar",
+        "cycle_code": "investigator_decks_ch2",
+        "position": 4,
+        "type": "mythos_pack",
+        "chapter": 2,
+        "date_release": "2026-04-17T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Marie Lambeau"
+      },
+      {
+        "code": "mig",
+        "cycle_code": "investigator_decks_ch2",
+        "position": 5,
+        "type": "mythos_pack",
+        "chapter": 2,
+        "date_release": "2026-04-17T00:00:00.000Z",
+        "size": 60,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Miguel de la Cruz"
+      },
+      {
+        "code": "rod",
+        "cycle_code": "parallel",
+        "position": 1,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2020-05-05T00:00:00.000Z",
+        "size": 7,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Read or Die"
+      },
+      {
+        "code": "aon",
+        "cycle_code": "parallel",
+        "position": 2,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2020-08-13T00:00:00.000Z",
+        "size": 9,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "All or Nothing"
+      },
+      {
+        "code": "bad",
+        "cycle_code": "parallel",
+        "position": 3,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2020-12-03T00:00:00.000Z",
+        "size": 7,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Bad Blood"
+      },
+      {
+        "code": "btb",
+        "cycle_code": "parallel",
+        "position": 4,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2021-06-18T00:00:00.000Z",
+        "size": 13,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "By the Book"
+      },
+      {
+        "code": "rtr",
+        "cycle_code": "parallel",
+        "position": 5,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2021-12-30T00:00:00.000Z",
+        "size": 9,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Red Tide Rising"
+      },
+      {
+        "code": "otr",
+        "cycle_code": "parallel",
+        "position": 6,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2023-07-28T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "On the Road Again"
+      },
+      {
+        "code": "ltr",
+        "cycle_code": "parallel",
+        "position": 7,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2023-10-13T00:00:00.000Z",
+        "size": 13,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Laid to Rest"
+      },
+      {
+        "code": "ptr",
+        "cycle_code": "parallel",
+        "position": 8,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2023-10-30T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Path of the Righteous"
+      },
+      {
+        "code": "rop",
+        "cycle_code": "parallel",
+        "position": 9,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2024-01-01T00:00:00.000Z",
+        "size": 16,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Relics of the Past"
+      },
+      {
+        "code": "hfa",
+        "cycle_code": "parallel",
+        "position": 10,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2024-03-21T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Hunting for Answers"
+      },
+      {
+        "code": "pap",
+        "cycle_code": "parallel",
+        "position": 11,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2024-08-07T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Pistols and Pearls"
+      },
+      {
+        "code": "enc",
+        "cycle_code": "parallel",
+        "position": 12,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2025-10-29T00:00:00.000Z",
+        "size": 11,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Enthralling Encore"
+      },
+      {
+        "code": "tmg",
+        "cycle_code": "side_stories",
+        "position": 11,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2024-08-23T00:00:00.000Z",
+        "size": 78,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "The Midwinter Gala"
+      },
+      {
+        "code": "aof",
+        "cycle_code": "parallel",
+        "position": 12,
+        "type": "parallel_investigator",
+        "chapter": 1,
+        "date_release": "2024-10-30T00:00:00.000Z",
+        "size": 3,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Aura of Faith"
+      },
+      {
+        "code": "film_fatale",
+        "cycle_code": "side_stories",
+        "position": 12,
+        "type": "standalone_scenario",
+        "chapter": 1,
+        "date_release": "2025-08-15T00:00:00.000Z",
+        "size": 78,
+        "reprint_type": null,
+        "reprint_packs": null,
+        "real_name": "Film Fatale"
+      },
+      {
+        "code": "dwlp",
+        "cycle_code": "dwl",
+        "position": 1,
+        "type": "investigator_expansion",
+        "chapter": 1,
+        "date_release": "2024-01-12T00:00:00.000Z",
+        "size": 104,
+        "reprint_type": "player",
+        "reprint_packs": ["dwl", "tmm", "tece", "bota", "uau", "wda", "litas"],
+        "real_name": "The Dunwich Legacy Investigator Expansion"
+      },
+      {
+        "code": "dwlc",
+        "cycle_code": "dwl",
+        "position": 2,
+        "type": "campaign_expansion",
+        "chapter": 1,
+        "date_release": "2024-01-12T00:00:00.000Z",
+        "size": 104,
+        "reprint_type": "campaign",
+        "reprint_packs": ["dwl", "tmm", "tece", "bota", "uau", "wda", "litas"],
+        "real_name": "The Dunwich Legacy Campaign Expansion"
+      },
+      {
+        "code": "ptcp",
+        "cycle_code": "ptc",
+        "position": 1,
+        "type": "investigator_expansion",
+        "chapter": 1,
+        "date_release": "2024-01-25T00:00:00.000Z",
+        "size": 110,
+        "reprint_type": "player",
+        "reprint_packs": ["ptc", "eotp", "tuo", "apot", "tpm", "bsr", "dca"],
+        "real_name": "The Path to Carcosa Investigator Expansion"
+      },
+      {
+        "code": "ptcc",
+        "cycle_code": "ptc",
+        "position": 2,
+        "type": "campaign_expansion",
+        "chapter": 1,
+        "date_release": "2024-01-25T00:00:00.000Z",
+        "size": 110,
+        "reprint_type": "campaign",
+        "reprint_packs": ["ptc", "eotp", "tuo", "apot", "tpm", "bsr", "dca"],
+        "real_name": "The Path to Carcosa Campaign Expansion"
+      },
+      {
+        "code": "tfap",
+        "cycle_code": "tfa",
+        "position": 1,
+        "type": "investigator_expansion",
+        "chapter": 1,
+        "date_release": "2024-05-10T00:00:00.000Z",
+        "size": 102,
+        "reprint_type": "player",
+        "reprint_packs": ["tfa", "tof", "tbb", "hote", "tcoa", "tdoy", "sha"],
+        "real_name": "The Forgotten Age Investigator Expansion"
+      },
+      {
+        "code": "tfac",
+        "cycle_code": "tfa",
+        "position": 2,
+        "type": "campaign_expansion",
+        "chapter": 1,
+        "date_release": "2024-05-10T00:00:00.000Z",
+        "size": 102,
+        "reprint_type": "campaign",
+        "reprint_packs": ["tfa", "tof", "tbb", "hote", "tcoa", "tdoy", "sha"],
+        "real_name": "The Forgotten Age Campaign Expansion"
+      },
+      {
+        "code": "tcup",
+        "cycle_code": "tcu",
+        "position": 1,
+        "type": "investigator_expansion",
+        "chapter": 1,
+        "date_release": "2024-01-31T00:00:00.000Z",
+        "size": 109,
+        "reprint_type": "player",
+        "reprint_packs": ["tcu", "tsn", "wos", "fgg", "uad", "icc", "bbt"],
+        "real_name": "The Circle Undone Investigator Expansion"
+      },
+      {
+        "code": "tcuc",
+        "cycle_code": "tcu",
+        "position": 2,
+        "type": "campaign_expansion",
+        "chapter": 1,
+        "date_release": "2024-01-31T00:00:00.000Z",
+        "size": 109,
+        "reprint_type": "campaign",
+        "reprint_packs": ["tcu", "tsn", "wos", "fgg", "uad", "icc", "bbt"],
+        "real_name": "The Circle Undone Campaign Expansion"
+      },
+      {
+        "code": "tdep",
+        "cycle_code": "tde",
+        "position": 1,
+        "type": "investigator_expansion",
+        "chapter": 1,
+        "date_release": "2024-09-27T00:00:00.000Z",
+        "size": 109,
+        "reprint_type": "player",
+        "reprint_packs": ["tde", "sfk", "tsh", "dsm", "pnr", "wgd", "woc"],
+        "real_name": "The Dream-Eaters Investigator Expansion"
+      },
+      {
+        "code": "tdec",
+        "cycle_code": "tde",
+        "position": 2,
+        "type": "campaign_expansion",
+        "chapter": 1,
+        "date_release": "2024-09-27T00:00:00.000Z",
+        "size": 109,
+        "reprint_type": "campaign",
+        "reprint_packs": ["tde", "sfk", "tsh", "dsm", "pnr", "wgd", "woc"],
+        "real_name": "The Dream-Eaters Campaign Expansion"
+      },
+      {
+        "code": "ticp",
+        "cycle_code": "tic",
+        "position": 1,
+        "type": "investigator_expansion",
+        "chapter": 1,
+        "date_release": "2024-10-02T00:00:00.000Z",
+        "size": 108,
+        "reprint_type": "player",
+        "reprint_packs": ["tic", "itd", "def", "hhg", "lif", "lod", "itm"],
+        "real_name": "The Innsmouth Conspiracy Investigator Expansion"
+      },
+      {
+        "code": "ticc",
+        "cycle_code": "tic",
+        "position": 2,
+        "type": "campaign_expansion",
+        "chapter": 1,
+        "date_release": "2024-10-02T00:00:00.000Z",
+        "size": 108,
+        "reprint_type": "campaign",
+        "reprint_packs": ["tic", "itd", "def", "hhg", "lif", "lod", "itm"],
+        "real_name": "The Innsmouth Conspiracy Campaign Expansion"
       }
     ],
     "cycle": [
@@ -594,6 +1374,7 @@
         "real_name": "The Feast of Hemlock Vale"
       },
       { "code": "tdc", "position": 11, "real_name": "The Drowned City" },
+      { "code": "core_ch2", "position": 12, "real_name": "Core (2026)" },
       { "code": "promotional", "position": 80, "real_name": "Promotional" },
       { "code": "return", "position": 50, "real_name": "Return to..." },
       {
@@ -601,1106 +1382,1626 @@
         "position": 60,
         "real_name": "Investigator Starter Decks"
       },
+      {
+        "code": "investigator_decks_ch2",
+        "position": 61,
+        "real_name": "Investigator Decks"
+      },
       { "code": "side_stories", "position": 70, "real_name": "Side Stories" },
       { "code": "parallel", "position": 90, "real_name": "Parallel" }
     ],
     "card_encounter_set": [
-      { "code": "one_last_job", "locale": "en", "name": "One Last Job" },
+      { "code": "torch", "pack_code": "core", "real_name": "The Gathering" },
       {
-        "code": "blob_that_ate_everything_else",
-        "locale": "en",
-        "name": "The Blob That Ate Everything Else"
+        "code": "arkham",
+        "pack_code": "core",
+        "real_name": "The Midnight Masks"
       },
       {
-        "code": "the_vanishing_of_elina_harper",
-        "locale": "en",
-        "name": "The Vanishing of Elina Harper"
+        "code": "cultists",
+        "pack_code": "core",
+        "real_name": "Cult of Umôrdhoth"
       },
       {
-        "code": "brotherhood_of_the_beast",
-        "locale": "en",
-        "name": "Brotherhood of the Beast"
+        "code": "tentacles",
+        "pack_code": "core",
+        "real_name": "The Devourer Below"
       },
-      { "code": "domination", "locale": "en", "name": "Domination" },
+      { "code": "rats", "pack_code": "core", "real_name": "Rats" },
+      { "code": "ghouls", "pack_code": "core", "real_name": "Ghouls" },
       {
-        "code": "blob",
-        "locale": "en",
-        "name": "The Blob That Ate Everything"
-      },
-      { "code": "deep_ones", "locale": "en", "name": "Deep Ones" },
-      { "code": "by_the_book", "locale": "en", "name": "By the Book" },
-      {
-        "code": "beyond_the_threshold",
-        "locale": "en",
-        "name": "Beyond the Threshold"
-      },
-      { "code": "rlyeh", "locale": "en", "name": "R'lyeh" },
-      {
-        "code": "agents_of_atlach_nacha",
-        "locale": "en",
-        "name": "Agents of Atlach-Nacha"
+        "code": "striking_fear",
+        "pack_code": "core",
+        "real_name": "Striking Fear"
       },
       {
-        "code": "obsidian_canyons",
-        "locale": "en",
-        "name": "Obsidian Canyons"
+        "code": "ancient_evils",
+        "pack_code": "core",
+        "real_name": "Ancient Evils"
       },
       {
-        "code": "court_of_the_ancients",
-        "locale": "en",
-        "name": "Court of the Ancients"
+        "code": "chilling_cold",
+        "pack_code": "core",
+        "real_name": "Chilling Cold"
       },
-      { "code": "byakhee", "locale": "en", "name": "Byakhee" },
-      { "code": "tdc_flood", "locale": "en", "name": "Flood" },
-      { "code": "dark_veiling", "locale": "en", "name": "Dark Veiling" },
-      { "code": "day_of_rain", "locale": "en", "name": "Day of Rain" },
+      { "code": "pentagram", "pack_code": "core", "real_name": "Dark Cult" },
       {
-        "code": "creatures_of_the_deep",
-        "locale": "en",
-        "name": "Creatures of the Deep"
+        "code": "nightgaunts",
+        "pack_code": "core",
+        "real_name": "Nightgaunts"
       },
       {
-        "code": "creatures_of_the_underworld",
-        "locale": "en",
-        "name": "Creatures of the Underworld"
+        "code": "locked_doors",
+        "pack_code": "core",
+        "real_name": "Locked Doors"
       },
       {
-        "code": "dealings_in_the_dark",
-        "locale": "en",
-        "name": "Dealings in the Dark"
+        "code": "agents_of_hastur",
+        "pack_code": "core",
+        "real_name": "Agents of Hastur"
       },
       {
-        "code": "the_doom_of_arkham_part_2",
-        "locale": "en",
-        "name": "The Doom of Arkham Part II"
-      },
-      { "code": "film_fatale", "locale": "en", "name": "Film Fatale" },
-      { "code": "creeping_cold", "locale": "en", "name": "Creeping Cold" },
-      {
-        "code": "decaying_reality",
-        "locale": "en",
-        "name": "Decaying Reality"
-      },
-      { "code": "elder_mist", "locale": "en", "name": "Elder Mist" },
-      { "code": "the_grand_vault", "locale": "en", "name": "The Grand Vault" },
-      { "code": "death_of_stars", "locale": "en", "name": "Death of Stars" },
-      { "code": "dogs_of_war", "locale": "en", "name": "Dogs of War" },
-      {
-        "code": "the_drowned_quarter",
-        "locale": "en",
-        "name": "The Drowned Quarter"
-      },
-      { "code": "devil_reef", "locale": "en", "name": "Devil Reef" },
-      {
-        "code": "doomed_expedition",
-        "locale": "en",
-        "name": "Doomed Expedition"
+        "code": "agents_of_yog",
+        "pack_code": "core",
+        "real_name": "Agents of Yog-Sothoth"
       },
       {
-        "code": "forgotten_island",
-        "locale": "en",
-        "name": "Forgotten Island"
+        "code": "agents_of_shub",
+        "pack_code": "core",
+        "real_name": "Agents of Shub-Niggurath"
       },
       {
-        "code": "echoes_of_the_past",
-        "locale": "en",
-        "name": "Echoes of the Past"
-      },
-      { "code": "the_inescapable", "locale": "en", "name": "The Inescapable" },
-      { "code": "flooded_caverns", "locale": "en", "name": "Flooded Caverns" },
-      { "code": "decay", "locale": "en", "name": "Decay & Filth" },
-      { "code": "pilgrims", "locale": "en", "name": "Pilgrims" },
-      {
-        "code": "fate_of_the_vale",
-        "locale": "en",
-        "name": "Fate of the Vale"
-      },
-      { "code": "fatal_mirage", "locale": "en", "name": "Fatal Mirage" },
-      {
-        "code": "the_western_wall",
-        "locale": "en",
-        "name": "The Western Wall"
-      },
-      {
-        "code": "for_the_greater_good",
-        "locale": "en",
-        "name": "For the Greater Good"
-      },
-      {
-        "code": "abominable_contessa",
-        "locale": "en",
-        "name": "Abominable Contessa"
-      },
-      {
-        "code": "fog_over_innsmouth",
-        "locale": "en",
-        "name": "Fog over Innsmouth"
+        "code": "agents_of_cthulhu",
+        "pack_code": "core",
+        "real_name": "Agents of Cthulhu"
       },
       {
         "code": "sepulchre_of_the_sleeper",
-        "locale": "en",
-        "name": "Sepulchre of the Sleeper"
+        "pack_code": "tdcc",
+        "real_name": "Sepulchre of the Sleeper"
       },
-      { "code": "stowaways", "locale": "en", "name": "Stowaways" },
-      { "code": "cosmic_journey", "locale": "en", "name": "Cosmic Journey" },
-      { "code": "star_spawn", "locale": "en", "name": "Star Spawn" },
+      { "code": "star_spawn", "pack_code": "tdcc", "real_name": "Star Spawn" },
+      { "code": "bayou", "pack_code": "cotr", "real_name": "The Bayou" },
       {
-        "code": "fortune_and_folly",
-        "locale": "en",
-        "name": "Fortune and Folly"
+        "code": "rougarou",
+        "pack_code": "cotr",
+        "real_name": "Curse of the Rougarou"
       },
-      { "code": "flux", "locale": "en", "name": "Temporal Flux" },
+      { "code": "byakhee", "pack_code": "ptc", "real_name": "Byakhee" },
       {
-        "code": "agents_of_azathoth",
-        "locale": "en",
-        "name": "Agents of Azathoth"
+        "code": "venice",
+        "pack_code": "coh",
+        "real_name": "Carnevale of Horrors"
       },
+      { "code": "stowaways", "pack_code": "tdcc", "real_name": "Stowaways" },
+      { "code": "tasks", "pack_code": "tdcc", "real_name": "Tasks" },
       {
         "code": "undersea_creatures",
-        "locale": "en",
-        "name": "Undersea Creatures"
-      },
-      { "code": "dim_carcosa", "locale": "en", "name": "Dim Carcosa" },
-      { "code": "bad_blood", "locale": "en", "name": "Bad Blood" },
-      {
-        "code": "a_thousand_shapes_of_horror",
-        "locale": "en",
-        "name": "A Thousand Shapes of Horror"
+        "pack_code": "tdcc",
+        "real_name": "Undersea Creatures"
       },
       {
-        "code": "beyond_the_beyond",
-        "locale": "en",
-        "name": "Beyond the Beyond"
-      },
-      { "code": "tdc_expedition", "locale": "en", "name": "Expedition" },
-      { "code": "fortunes_chosen", "locale": "en", "name": "Fortune's Chosen" },
-      { "code": "hasturs_envoys", "locale": "en", "name": "Hastur's Envoys" },
-      { "code": "tasks", "locale": "en", "name": "Tasks" },
-      { "code": "ghouls", "locale": "en", "name": "Ghouls" },
-      {
-        "code": "ghouls_of_umôrdhoth",
-        "locale": "en",
-        "name": "Ghouls of Umôrdhoth"
-      },
-      { "code": "dreams", "locale": "en", "name": "Dreams" },
-      { "code": "hauntings", "locale": "en", "name": "Hauntings" },
-      { "code": "hasturs_gift", "locale": "en", "name": "Hastur's Gift" },
-      { "code": "the_apiary", "locale": "en", "name": "The Apiary" },
-      { "code": "globetrotting", "locale": "en", "name": "Globetrotting" },
-      { "code": "cosmic_legacy", "locale": "en", "name": "Cosmic Legacy" },
-      {
-        "code": "guardians_of_time",
-        "locale": "en",
-        "name": "Guardians of Time"
-      },
-      { "code": "bad_luck", "locale": "en", "name": "Bad Luck" },
-      { "code": "alien_machinery", "locale": "en", "name": "Alien Machinery" },
-      {
-        "code": "in_the_clutches_of_chaos",
-        "locale": "en",
-        "name": "In the Clutches of Chaos"
-      },
-      { "code": "inexorable_fate", "locale": "en", "name": "Inexorable Fate" },
-      {
-        "code": "the_doom_of_arkham_part_1",
-        "locale": "en",
-        "name": "The Doom of Arkham Part I"
-      },
-      { "code": "impending_evils", "locale": "en", "name": "Impending Evils" },
-      {
-        "code": "lost_in_time_and_space",
-        "locale": "en",
-        "name": "Lost in Time and Space"
-      },
-      { "code": "knyan", "locale": "en", "name": "K'n-yan" },
-      {
-        "code": "in_the_labyrinths_of_lunacy",
-        "locale": "en",
-        "name": "The Labyrinths of Lunacy"
-      },
-      { "code": "left_behind", "locale": "en", "name": "Left Behind" },
-      { "code": "laid_to_rest", "locale": "en", "name": "Laid to Rest" },
-      {
-        "code": "machinations_through_time",
-        "locale": "en",
-        "name": "Machinations Through Time"
-      },
-      { "code": "in_too_deep", "locale": "en", "name": "In Too Deep" },
-      {
-        "code": "into_the_maelstrom",
-        "locale": "en",
-        "name": "Into the Maelstrom"
+        "code": "armitages_fate",
+        "pack_code": "dwl",
+        "real_name": "Armitage's Fate"
       },
       {
-        "code": "machinations_through_time_epic_multiplayer",
-        "locale": "en",
-        "name": "Epic Multiplayer"
-      },
-      { "code": "malfunction", "locale": "en", "name": "Malfunction" },
-      {
-        "code": "machinations_through_time_single_group",
-        "locale": "en",
-        "name": "Single Group"
+        "code": "bishops_thralls",
+        "pack_code": "dwl",
+        "real_name": "Bishop's Thralls"
       },
       {
-        "code": "agents_of_the_outside",
-        "locale": "en",
-        "name": "Agents of the Outside"
+        "code": "beast_thralls",
+        "pack_code": "dwl",
+        "real_name": "Beast Thralls"
       },
       {
-        "code": "memorials_of_the_lost",
-        "locale": "en",
-        "name": "Memorials of the Lost"
-      },
-      {
-        "code": "maddening_delusions",
-        "locale": "en",
-        "name": "Maddening Delusions"
-      },
-      {
-        "code": "merging_realities",
-        "locale": "en",
-        "name": "Merging Realities"
-      },
-      { "code": "arkham", "locale": "en", "name": "The Midnight Masks" },
-      { "code": "miasma", "locale": "en", "name": "Miasma" },
-      {
-        "code": "a_phantom_of_truth",
-        "locale": "en",
-        "name": "A Phantom of Truth"
-      },
-      {
-        "code": "black_stars_rise",
-        "locale": "en",
-        "name": "Black Stars Rise"
-      },
-      {
-        "code": "migo_incursion_2",
-        "locale": "en",
-        "name": "Mi-Go Incursion II"
-      },
-      {
-        "code": "blood_on_the_altar",
-        "locale": "en",
-        "name": "Blood on the Altar"
-      },
-      {
-        "code": "beyond_the_gates_of_sleep",
-        "locale": "en",
-        "name": "Beyond the Gates of Sleep"
-      },
-      { "code": "migo_incursion", "locale": "en", "name": "Mi-Go Incursion" },
-      {
-        "code": "bloodthirsty_spirits",
-        "locale": "en",
-        "name": "Bloodthirsty Spirits"
-      },
-      { "code": "chilling_cold", "locale": "en", "name": "Chilling Cold" },
-      {
-        "code": "murder_at_the_excelsior_hotel",
-        "locale": "en",
-        "name": "Murder at the Excelsior Hotel"
-      },
-      {
-        "code": "children_of_paradise",
-        "locale": "en",
-        "name": "Children of Paradise"
+        "code": "naomis_crew",
+        "pack_code": "dwl",
+        "real_name": "Naomi's Crew"
       },
       {
         "code": "extracurricular_activity",
-        "locale": "en",
-        "name": "Extracurricular Activity"
+        "pack_code": "dwl",
+        "real_name": "Extracurricular Activity"
       },
       {
-        "code": "undimensioned_and_unseen",
-        "locale": "en",
-        "name": "Undimensioned and Unseen"
+        "code": "the_house_always_wins",
+        "pack_code": "dwl",
+        "real_name": "The House Always Wins"
       },
+      { "code": "sorcery", "pack_code": "dwl", "real_name": "Sorcery" },
+      { "code": "dunwich", "pack_code": "dwl", "real_name": "Dunwich" },
       {
-        "code": "creatures_in_the_ice",
-        "locale": "en",
-        "name": "Creatures in the Ice"
+        "code": "whippoorwills",
+        "pack_code": "dwl",
+        "real_name": "Whippoorwills"
       },
+      { "code": "bad_luck", "pack_code": "dwl", "real_name": "Bad Luck" },
+      { "code": "the_beyond", "pack_code": "dwl", "real_name": "The Beyond" },
       {
-        "code": "city_of_the_elder_things",
-        "locale": "en",
-        "name": "City of the Elder Things"
-      },
-      {
-        "code": "mysteries_abound",
-        "locale": "en",
-        "name": "Mysteries Abound"
-      },
-      { "code": "cleanup_crew", "locale": "en", "name": "Cleanup Crew" },
-      { "code": "myconids", "locale": "en", "name": "Myconids" },
-      { "code": "naomis_crew", "locale": "en", "name": "Naomi's Crew" },
-      {
-        "code": "the_miskatonic_museum",
-        "locale": "en",
-        "name": "The Miskatonic Museum"
-      },
-      {
-        "code": "essex_county_express",
-        "locale": "en",
-        "name": "The Essex County Express"
-      },
-      {
-        "code": "cult_of_pnakotus",
-        "locale": "en",
-        "name": "Cult of Pnakotus"
-      },
-      {
-        "code": "nameless_horrors",
-        "locale": "en",
-        "name": "Nameless Horrors"
-      },
-      { "code": "outsiders", "locale": "en", "name": "Outsiders" },
-      { "code": "cultists", "locale": "en", "name": "Cult of Umôrdhoth" },
-      {
-        "code": "point_of_no_return",
-        "locale": "en",
-        "name": "Point of No Return"
-      },
-      {
-        "code": "dark_side_of_the_moon",
-        "locale": "en",
-        "name": "Dark Side of the Moon"
-      },
-      { "code": "agents_of_dagon", "locale": "en", "name": "Agents of Dagon" },
-      {
-        "code": "plan_in_shambles",
-        "locale": "en",
-        "name": "Plan in Shambles"
-      },
-      {
-        "code": "pillars_of_judgment",
-        "locale": "en",
-        "name": "Pillars of Judgment"
-      },
-      {
-        "code": "pnakotic_brotherhood",
-        "locale": "en",
-        "name": "Pnakotic Brotherhood"
-      },
-      {
-        "code": "inhabitants_of_carcosa",
-        "locale": "en",
-        "name": "Inhabitants of Carcosa"
-      },
-      { "code": "agents_of_hydra", "locale": "en", "name": "Agents of Hydra" },
-      {
-        "code": "agents_of_hastur",
-        "locale": "en",
-        "name": "Agents of Hastur"
-      },
-      { "code": "poison", "locale": "en", "name": "Poison" },
-      { "code": "delusions", "locale": "en", "name": "Delusions" },
-      { "code": "read_or_die", "locale": "en", "name": "Read or Die" },
-      { "code": "realm_of_death", "locale": "en", "name": "Realm of Death" },
-      { "code": "rats", "locale": "en", "name": "Rats" },
-      {
-        "code": "agents_of_nyarlathotep",
-        "locale": "en",
-        "name": "Agents of Nyarlathotep"
-      },
-      { "code": "rainforest", "locale": "en", "name": "Rainforest" },
-      { "code": "bayou", "locale": "en", "name": "The Bayou" },
-      { "code": "armitages_fate", "locale": "en", "name": "Armitage's Fate" },
-      { "code": "bishops_thralls", "locale": "en", "name": "Bishop's Thralls" },
-      {
-        "code": "agents_of_the_colour",
-        "locale": "en",
-        "name": "Agents of the Colour"
-      },
-      { "code": "blight", "locale": "en", "name": "Blight" },
-      {
-        "code": "blob_epic_multiplayer",
-        "locale": "en",
-        "name": "Epic Multiplayer"
-      },
-      { "code": "blob_single_group", "locale": "en", "name": "Single Group" },
-      {
-        "code": "agents_of_shub",
-        "locale": "en",
-        "name": "Agents of Shub-Niggurath"
-      },
-      { "code": "city_of_sins", "locale": "en", "name": "City of Sins" },
-      {
-        "code": "city_of_the_damned",
-        "locale": "en",
-        "name": "City of the Damned"
-      },
-      { "code": "chilling_mists", "locale": "en", "name": "Chilling Mists" },
-      { "code": "curtain_call", "locale": "en", "name": "Curtain Call" },
-      { "code": "dark_rituals", "locale": "en", "name": "Dark Rituals" },
-      { "code": "dancing_mad", "locale": "en", "name": "Dancing Mad" },
-      {
-        "code": "crimson_conspiracy",
-        "locale": "en",
-        "name": "Crimson Conspiracy"
-      },
-      { "code": "dead_heat", "locale": "en", "name": "Dead Heat" },
-      { "code": "day_of_rest", "locale": "en", "name": "Day of Rest" },
-      {
-        "code": "day_of_the_feast",
-        "locale": "en",
-        "name": "Day of the Feast"
-      },
-      {
-        "code": "disappearance_at_the_twilight_estate",
-        "locale": "en",
-        "name": "Disappearance at the Twilight Estate"
-      },
-      { "code": "ice_and_death", "locale": "en", "name": "Ice and Death" },
-      {
-        "code": "enthralling_encore",
-        "locale": "en",
-        "name": "Enthralling Encore"
-      },
-      { "code": "dreamers_curse", "locale": "en", "name": "Dreamer's Curse" },
-      { "code": "neurotic_fear", "locale": "en", "name": "Neurotic Fear" },
-      { "code": "nightgaunts", "locale": "en", "name": "Nightgaunts" },
-      {
-        "code": "epic_multiplayer",
-        "locale": "en",
-        "name": "Epic Multiplayer"
-      },
-      { "code": "erratic_fear", "locale": "en", "name": "Erratic Fear" },
-      { "code": "deadly_weather", "locale": "en", "name": "Deadly Weather" },
-      { "code": "elder_things", "locale": "en", "name": "Elder Things" },
-      { "code": "penguins", "locale": "en", "name": "Penguins" },
-      {
-        "code": "agents_of_cthulhu",
-        "locale": "en",
-        "name": "Agents of Cthulhu"
-      },
-      {
-        "code": "agents_of_the_unknown",
-        "locale": "en",
-        "name": "Agents of the Unknown"
-      },
-      {
-        "code": "agents_of_yuggoth",
-        "locale": "en",
-        "name": "Agents of Yuggoth"
-      },
-      {
-        "code": "alien_interference",
-        "locale": "en",
-        "name": "Alien Interference"
-      },
-      { "code": "abyssal_gifts", "locale": "en", "name": "Abyssal Gifts" },
-      { "code": "all_or_nothing", "locale": "en", "name": "All or Nothing" },
-      {
-        "code": "a_light_in_the_fog",
-        "locale": "en",
-        "name": "A Light in the Fog"
-      },
-      { "code": "sorcery", "locale": "en", "name": "Sorcery" },
-      { "code": "ancient_evils", "locale": "en", "name": "Ancient Evils" },
-      { "code": "pentagram", "locale": "en", "name": "Dark Cult" },
-      { "code": "anettes_coven", "locale": "en", "name": "Anette's Coven" },
-      {
-        "code": "at_deaths_doorstep",
-        "locale": "en",
-        "name": "At Death's Doorstep"
-      },
-      { "code": "beast_thralls", "locale": "en", "name": "Beast Thralls" },
-      { "code": "dunwich", "locale": "en", "name": "Dunwich" },
-      { "code": "dreamlands", "locale": "en", "name": "Dreamlands" },
-      { "code": "red_tide_rising", "locale": "en", "name": "Red Tide Rising" },
-      { "code": "on_thin_ice", "locale": "en", "name": "On Thin Ice" },
-      { "code": "red_coterie", "locale": "en", "name": "Red Coterie" },
-      {
-        "code": "return_to_black_stars_rise",
-        "locale": "en",
-        "name": "Return to Black Stars Rise"
-      },
-      {
-        "code": "before_the_black_throne",
-        "locale": "en",
-        "name": "Before the Black Throne"
-      },
-      { "code": "refractions", "locale": "en", "name": "Refractions" },
-      {
-        "code": "return_to_a_phantom_of_truth",
-        "locale": "en",
-        "name": "Return to A Phantom of Truth"
-      },
-      {
-        "code": "return_to_at_deaths_doorstep",
-        "locale": "en",
-        "name": "Return to At Death's Doorstep"
-      },
-      { "code": "resurgent_evils", "locale": "en", "name": "Resurgent Evils" },
-      {
-        "code": "relics_of_the_past",
-        "locale": "en",
-        "name": "Relics of the Past"
-      },
-      {
-        "code": "return_to_before_the_black_throne",
-        "locale": "en",
-        "name": "Return to Before the Black Throne"
-      },
-      {
-        "code": "return_cult",
-        "locale": "en",
-        "name": "Return Cult of Umôrdhoth"
-      },
-      { "code": "residents", "locale": "en", "name": "Residents" },
-      {
-        "code": "return_to_knyan",
-        "locale": "en",
-        "name": "Return to K'n-yan"
-      },
-      {
-        "code": "return_to_blood_on_the_altar",
-        "locale": "en",
-        "name": "Return to Blood on the Altar"
-      },
-      {
-        "code": "return_to_disappearance_at_the_twilight_estate",
-        "locale": "en",
-        "name": "Return to Disappearance at the Twilight Estate"
-      },
-      {
-        "code": "return_to_curtain_call",
-        "locale": "en",
-        "name": "Return to Curtain Call"
-      },
-      {
-        "code": "return_to_echoes_of_the_past",
-        "locale": "en",
-        "name": "Return to Echoes of the Past"
-      },
-      {
-        "code": "return_to_dim_carcosa",
-        "locale": "en",
-        "name": "Return to Dim Carcosa"
-      },
-      {
-        "code": "return_to_lost_in_time_and_space",
-        "locale": "en",
-        "name": "Return to Lost in Time and Space"
-      },
-      {
-        "code": "return_to_for_the_greater_good",
-        "locale": "en",
-        "name": "Return to For the Greater Good"
-      },
-      { "code": "corsairs", "locale": "en", "name": "Corsairs" },
-      {
-        "code": "return_to_pillars_of_judgment",
-        "locale": "en",
-        "name": "Return to Pillars of Judgment"
-      },
-      {
-        "code": "return_to_the_city_of_archives",
-        "locale": "en",
-        "name": "Return to the City of Archives"
-      },
-      {
-        "code": "return_to_the_depths_of_yoth",
-        "locale": "en",
-        "name": "Return to the Depths of Yoth"
-      },
-      {
-        "code": "congress_of_the_keys",
-        "locale": "en",
-        "name": "Congress of the Keys"
-      },
-      {
-        "code": "return_to_the_essex_county_express",
-        "locale": "en",
-        "name": "Return to The Essex County Express"
-      },
-      {
-        "code": "return_to_the_miskatonic_museum",
-        "locale": "en",
-        "name": "Return to The Miskatonic Museum"
-      },
-      {
-        "code": "cult_of_the_yellow_sign",
-        "locale": "en",
-        "name": "Cult of the Yellow Sign"
-      },
-      {
-        "code": "return_to_the_house_always_wins",
-        "locale": "en",
-        "name": "Return to The House Always Wins"
-      },
-      {
-        "code": "return_to_the_midnight_masks",
-        "locale": "en",
-        "name": "Return to the Midnight Masks"
-      },
-      {
-        "code": "return_to_the_devourer_below",
-        "locale": "en",
-        "name": "Return to the Devourer Below"
-      },
-      {
-        "code": "return_to_the_last_king",
-        "locale": "en",
-        "name": "Return to The Last King"
-      },
-      {
-        "code": "return_to_the_gathering",
-        "locale": "en",
-        "name": "Return to the Gathering"
-      },
-      {
-        "code": "return_to_the_doom_of_eztli",
-        "locale": "en",
-        "name": "Return to the Doom of Eztli"
-      },
-      {
-        "code": "return_to_the_witching_hour",
-        "locale": "en",
-        "name": "Return to The Witching Hour"
-      },
-      { "code": "delusory_evils", "locale": "en", "name": "Delusory Evils" },
-      {
-        "code": "descent_into_the_pitch",
-        "locale": "en",
-        "name": "Descent into the Pitch"
-      },
-      {
-        "code": "return_to_the_wages_of_sin",
-        "locale": "en",
-        "name": "Return to The Wages of Sin"
-      },
-      {
-        "code": "return_to_the_untamed_wilds",
-        "locale": "en",
-        "name": "Return to the Untamed Wilds"
-      },
-      {
-        "code": "return_to_the_rainforest",
-        "locale": "en",
-        "name": "Return to the Rainforest"
-      },
-      {
-        "code": "return_to_the_pallid_mask",
-        "locale": "en",
-        "name": "Return to The Pallid Mask"
-      },
-      { "code": "evil_portents", "locale": "en", "name": "Evil Portents" },
-      { "code": "expedition", "locale": "en", "name": "Expedition" },
-      { "code": "eztli", "locale": "en", "name": "The Doom of Eztli" },
-      {
-        "code": "return_to_undimensioned_and_unseen",
-        "locale": "en",
-        "name": "Return to Undimensioned and Unseen"
-      },
-      {
-        "code": "excelsior_management",
-        "locale": "en",
-        "name": "Excelsior Management"
-      },
-      { "code": "expedition_team", "locale": "en", "name": "Expedition Team" },
-      {
-        "code": "sanguine_shadows",
-        "locale": "en",
-        "name": "Sanguine Shadows"
-      },
-      {
-        "code": "return_to_where_doom_awaits",
-        "locale": "en",
-        "name": "Return to Where Doom Awaits"
-      },
-      { "code": "sands_of_egypt", "locale": "en", "name": "Sands of Egypt" },
-      { "code": "rougarou", "locale": "en", "name": "Curse of the Rougarou" },
-      { "code": "secret_doors", "locale": "en", "name": "Secret Doors" },
-      { "code": "fire", "locale": "en", "name": "Fire!" },
-      {
-        "code": "return_to_union_and_disillusion",
-        "locale": "en",
-        "name": "Return to Union and Disillusion"
-      },
-      { "code": "scarlet_sorcery", "locale": "en", "name": "Scarlet Sorcery" },
-      { "code": "ruins", "locale": "en", "name": "Forgotten Ruins" },
-      { "code": "rising_tide", "locale": "en", "name": "Rising Tide" },
-      { "code": "flood", "locale": "en", "name": "The Flood Below" },
-      {
-        "code": "riddles_and_rain",
-        "locale": "en",
-        "name": "Riddles and Rain"
-      },
-      {
-        "code": "heart_of_the_elders",
-        "locale": "en",
-        "name": "Heart of the Elders"
-      },
-      {
-        "code": "secrets_of_the_universe",
-        "locale": "en",
-        "name": "Secrets of the Universe"
-      },
-      {
-        "code": "return_to_threads_of_fate",
-        "locale": "en",
-        "name": "Return to Threads of Fate"
-      },
-      {
-        "code": "return_to_turn_back_time",
-        "locale": "en",
-        "name": "Return to Turn Back Time"
-      },
-      {
-        "code": "hazards_of_antarctica",
-        "locale": "en",
-        "name": "Hazards of Antarctica"
+        "code": "the_western_wall",
+        "pack_code": "tdcc",
+        "real_name": "The Western Wall"
       },
       {
         "code": "hideous_abominations",
-        "locale": "en",
-        "name": "Hideous Abominations"
+        "pack_code": "dwl",
+        "real_name": "Hideous Abominations"
       },
       {
-        "code": "return_to_the_boundary_beyond",
-        "locale": "en",
-        "name": "Return to the Boundary Beyond"
+        "code": "the_miskatonic_museum",
+        "pack_code": "tmm",
+        "real_name": "The Miskatonic Museum"
       },
       {
-        "code": "return_to_shattered_aeons",
-        "locale": "en",
-        "name": "Return to Shattered Aeons"
+        "code": "essex_county_express",
+        "pack_code": "tece",
+        "real_name": "The Essex County Express"
       },
       {
-        "code": "horror_in_high_gear",
-        "locale": "en",
-        "name": "Horror in High Gear"
-      },
-      { "code": "hexcraft", "locale": "en", "name": "Hexcraft" },
-      { "code": "secret_war", "locale": "en", "name": "Secret War" },
-      { "code": "heirlooms", "locale": "en", "name": "Heirlooms" },
-      { "code": "hemlock_house", "locale": "en", "name": "Hemlock House" },
-      {
-        "code": "seeping_nightmares",
-        "locale": "en",
-        "name": "Seeping Nightmares"
-      },
-      { "code": "shoggoths", "locale": "en", "name": "Shoggoths" },
-      {
-        "code": "shades_of_suffering",
-        "locale": "en",
-        "name": "Shades of Suffering"
+        "code": "blood_on_the_altar",
+        "pack_code": "bota",
+        "real_name": "Blood on the Altar"
       },
       {
-        "code": "shadow_of_a_doubt",
-        "locale": "en",
-        "name": "Shadow of a Doubt"
+        "code": "undimensioned_and_unseen",
+        "pack_code": "uau",
+        "real_name": "Undimensioned and Unseen"
       },
       {
-        "code": "horrors_in_the_rock",
-        "locale": "en",
-        "name": "Horrors in the Rock"
-      },
-      { "code": "serpents", "locale": "en", "name": "Serpents" },
-      { "code": "shattered_aeons", "locale": "en", "name": "Shattered Aeons" },
-      { "code": "abyssal_tribute", "locale": "en", "name": "Abyssal Tribute" },
-      {
-        "code": "shattered_memories",
-        "locale": "en",
-        "name": "Shattered Memories"
-      },
-      { "code": "locked_doors", "locale": "en", "name": "Locked Doors" },
-      {
-        "code": "agents_of_yog",
-        "locale": "en",
-        "name": "Agents of Yog-Sothoth"
-      },
-      { "code": "agents_of_yig", "locale": "en", "name": "Agents of Yig" },
-      {
-        "code": "silence_and_mystery",
-        "locale": "en",
-        "name": "Silence and Mystery"
+        "code": "where_doom_awaits",
+        "pack_code": "wda",
+        "real_name": "Where Doom Awaits"
       },
       {
-        "code": "lost_in_the_night",
-        "locale": "en",
-        "name": "Lost in the Night"
+        "code": "lost_in_time_and_space",
+        "pack_code": "litas",
+        "real_name": "Lost in Time and Space"
       },
       {
-        "code": "silver_twilight_lodge",
-        "locale": "en",
-        "name": "Silver Twilight Lodge"
-      },
-      { "code": "single_group", "locale": "en", "name": "Single Group" },
-      {
-        "code": "strange_happenings",
-        "locale": "en",
-        "name": "Strange Happenings"
+        "code": "curtain_call",
+        "pack_code": "ptc",
+        "real_name": "Curtain Call"
       },
       {
-        "code": "stirring_in_the_deep",
-        "locale": "en",
-        "name": "Stirring in the Deep"
+        "code": "the_last_king",
+        "pack_code": "ptc",
+        "real_name": "The Last King"
       },
-      { "code": "spatial_anomaly", "locale": "en", "name": "Spatial Anomaly" },
+      { "code": "delusions", "pack_code": "ptc", "real_name": "Delusions" },
       {
-        "code": "sins_of_the_past",
-        "locale": "en",
-        "name": "Sins of the Past"
-      },
-      { "code": "spiders", "locale": "en", "name": "Spiders" },
-      {
-        "code": "spectral_predators",
-        "locale": "en",
-        "name": "Spectral Predators"
+        "code": "film_fatale",
+        "pack_code": "film_fatale",
+        "real_name": "Film Fatale"
       },
       {
-        "code": "spreading_corruption",
-        "locale": "en",
-        "name": "Spreading Corruption"
-      },
-      { "code": "stranger", "locale": "en", "name": "The Stranger" },
-      {
-        "code": "terror_of_the_vale",
-        "locale": "en",
-        "name": "Terror of the Vale"
+        "code": "inhabitants_of_carcosa",
+        "pack_code": "ptc",
+        "real_name": "Inhabitants of Carcosa"
       },
       {
-        "code": "music_of_the_damned",
-        "locale": "en",
-        "name": "Music of the Damned"
+        "code": "evil_portents",
+        "pack_code": "ptc",
+        "real_name": "Evil Portents"
       },
-      { "code": "mutations", "locale": "en", "name": "Mutations" },
-      { "code": "the_beyond", "locale": "en", "name": "The Beyond" },
-      { "code": "tekelili", "locale": "en", "name": "Tekeli-Li" },
-      { "code": "syzygy", "locale": "en", "name": "Syzygy" },
-      { "code": "tentacles", "locale": "en", "name": "The Devourer Below" },
+      { "code": "hauntings", "pack_code": "ptc", "real_name": "Hauntings" },
+      {
+        "code": "hasturs_gift",
+        "pack_code": "ptc",
+        "real_name": "Hastur's Gift"
+      },
+      {
+        "code": "cult_of_the_yellow_sign",
+        "pack_code": "ptc",
+        "real_name": "Cult of the Yellow Sign"
+      },
+      { "code": "decay", "pack_code": "ptc", "real_name": "Decay & Filth" },
+      { "code": "stranger", "pack_code": "ptc", "real_name": "The Stranger" },
+      {
+        "code": "echoes_of_the_past",
+        "pack_code": "eotp",
+        "real_name": "Echoes of the Past"
+      },
+      {
+        "code": "the_unspeakable_oath",
+        "pack_code": "tuo",
+        "real_name": "The Unspeakable Oath"
+      },
+      {
+        "code": "a_phantom_of_truth",
+        "pack_code": "apot",
+        "real_name": "A Phantom of Truth"
+      },
+      { "code": "poison", "pack_code": "tfa", "real_name": "Poison" },
+      {
+        "code": "the_pallid_mask",
+        "pack_code": "tpm",
+        "real_name": "The Pallid Mask"
+      },
+      {
+        "code": "black_stars_rise",
+        "pack_code": "bsr",
+        "real_name": "Black Stars Rise"
+      },
+      { "code": "flood", "pack_code": "bsr", "real_name": "The Flood Below" },
+      { "code": "vortex", "pack_code": "bsr", "real_name": "The Vortex Above" },
+      { "code": "dim_carcosa", "pack_code": "dca", "real_name": "Dim Carcosa" },
+      {
+        "code": "agents_of_yig",
+        "pack_code": "tfa",
+        "real_name": "Agents of Yig"
+      },
+      { "code": "traps", "pack_code": "tfa", "real_name": "Deadly Traps" },
+      { "code": "expedition", "pack_code": "tfa", "real_name": "Expedition" },
+      { "code": "ruins", "pack_code": "tfa", "real_name": "Forgotten Ruins" },
+      {
+        "code": "guardians_of_time",
+        "pack_code": "tfa",
+        "real_name": "Guardians of Time"
+      },
+      {
+        "code": "pnakotic_brotherhood",
+        "pack_code": "tfa",
+        "real_name": "Pnakotic Brotherhood"
+      },
+      {
+        "code": "forgotten_island",
+        "pack_code": "film_fatale",
+        "real_name": "Forgotten Island"
+      },
+      { "code": "rainforest", "pack_code": "tfa", "real_name": "Rainforest" },
+      { "code": "serpents", "pack_code": "tfa", "real_name": "Serpents" },
+      { "code": "flux", "pack_code": "tfa", "real_name": "Temporal Flux" },
+      { "code": "eztli", "pack_code": "tfa", "real_name": "The Doom of Eztli" },
+      { "code": "wilds", "pack_code": "tfa", "real_name": "The Untamed Wilds" },
+      { "code": "venom", "pack_code": "tfa", "real_name": "Yig's Venom" },
+      {
+        "code": "threads_of_fate",
+        "pack_code": "tof",
+        "real_name": "Threads of Fate"
+      },
       {
         "code": "the_boundary_beyond",
-        "locale": "en",
-        "name": "The Boundary Beyond"
-      },
-      { "code": "striking_fear", "locale": "en", "name": "Striking Fear" },
-      {
-        "code": "swarm_of_assimilation",
-        "locale": "en",
-        "name": "Swarm of Assimilation"
-      },
-      { "code": "the_pallid_mask", "locale": "en", "name": "The Pallid Mask" },
-      { "code": "the_second_day", "locale": "en", "name": "The Second Day" },
-      {
-        "code": "the_nights_usurper",
-        "locale": "en",
-        "name": "The Night's Usurper"
+        "pack_code": "tbb",
+        "real_name": "The Boundary Beyond"
       },
       {
-        "code": "the_search_for_kadath",
-        "locale": "en",
-        "name": "The Search for Kadath"
+        "code": "heart_of_the_elders",
+        "pack_code": "hote",
+        "real_name": "Heart of the Elders"
       },
       {
-        "code": "the_pit_of_despair",
-        "locale": "en",
-        "name": "The Pit of Despair"
+        "code": "pillars_of_judgment",
+        "pack_code": "hote",
+        "real_name": "Pillars of Judgment"
       },
+      { "code": "knyan", "pack_code": "hote", "real_name": "K'n-yan" },
       {
-        "code": "the_depths_of_yoth",
-        "locale": "en",
-        "name": "The Depths of Yoth"
-      },
-      {
-        "code": "the_longest_night",
-        "locale": "en",
-        "name": "The Longest Night"
-      },
-      { "code": "the_locals", "locale": "en", "name": "The Locals" },
-      {
-        "code": "the_devourers_cult",
-        "locale": "en",
-        "name": "The Devourers Cult"
+        "code": "realm_of_death",
+        "pack_code": "tcu",
+        "real_name": "Realm of Death"
       },
       {
         "code": "the_city_of_archives",
-        "locale": "en",
-        "name": "The City of Archives"
+        "pack_code": "tcoa",
+        "real_name": "The City of Archives"
       },
-      { "code": "the_crash", "locale": "en", "name": "The Crash" },
+      {
+        "code": "the_depths_of_yoth",
+        "pack_code": "tdoy",
+        "real_name": "The Depths of Yoth"
+      },
+      {
+        "code": "shattered_aeons",
+        "pack_code": "sha",
+        "real_name": "Shattered Aeons"
+      },
+      {
+        "code": "turn_back_time",
+        "pack_code": "sha",
+        "real_name": "Turn Back Time"
+      },
+      {
+        "code": "agents_of_azathoth",
+        "pack_code": "tcu",
+        "real_name": "Agents of Azathoth"
+      },
+      {
+        "code": "anettes_coven",
+        "pack_code": "tcu",
+        "real_name": "Anette's Coven"
+      },
+      {
+        "code": "at_deaths_doorstep",
+        "pack_code": "tcu",
+        "real_name": "At Death's Doorstep"
+      },
+      {
+        "code": "city_of_sins",
+        "pack_code": "tcu",
+        "real_name": "City of Sins"
+      },
+      {
+        "code": "disappearance_at_the_twilight_estate",
+        "pack_code": "tcu",
+        "real_name": "Disappearance at the Twilight Estate"
+      },
+      {
+        "code": "inexorable_fate",
+        "pack_code": "tcu",
+        "real_name": "Inexorable Fate"
+      },
+      {
+        "code": "silver_twilight_lodge",
+        "pack_code": "tcu",
+        "real_name": "Silver Twilight Lodge"
+      },
+      {
+        "code": "spectral_predators",
+        "pack_code": "tcu",
+        "real_name": "Spectral Predators"
+      },
+      { "code": "the_watcher", "pack_code": "tcu", "real_name": "The Watcher" },
       {
         "code": "the_witching_hour",
-        "locale": "en",
-        "name": "The Witching Hour"
+        "pack_code": "tcu",
+        "real_name": "The Witching Hour"
       },
-      { "code": "threads_of_fate", "locale": "en", "name": "Threads of Fate" },
       {
-        "code": "the_thing_in_the_depths",
-        "locale": "en",
-        "name": "The Thing in the Depths"
+        "code": "trapped_spirits",
+        "pack_code": "tcu",
+        "real_name": "Trapped Spirits"
       },
-      { "code": "the_secret_name", "locale": "en", "name": "The Secret Name" },
-      { "code": "the_vale", "locale": "en", "name": "The Vale" },
+      { "code": "witchcraft", "pack_code": "tcu", "real_name": "Witchcraft" },
       {
-        "code": "the_silent_heath",
-        "locale": "en",
-        "name": "The Silent Heath"
+        "code": "the_secret_name",
+        "pack_code": "tsn",
+        "real_name": "The Secret Name"
       },
       {
         "code": "the_wages_of_sin",
-        "locale": "en",
-        "name": "The Wages of Sin"
-      },
-      { "code": "the_watcher", "locale": "en", "name": "The Watcher" },
-      { "code": "torch", "locale": "en", "name": "The Gathering" },
-      {
-        "code": "the_unspeakable_oath",
-        "locale": "en",
-        "name": "The Unspeakable Oath"
+        "pack_code": "wos",
+        "real_name": "The Wages of Sin"
       },
       {
-        "code": "the_twisted_hollow",
-        "locale": "en",
-        "name": "The Twisted Hollow"
+        "code": "for_the_greater_good",
+        "pack_code": "fgg",
+        "real_name": "For the Greater Good"
       },
+      {
+        "code": "union_and_disillusion",
+        "pack_code": "uad",
+        "real_name": "Union and Disillusion"
+      },
+      {
+        "code": "abominable_contessa",
+        "pack_code": "film_fatale",
+        "real_name": "Abominable Contessa"
+      },
+      {
+        "code": "cosmic_journey",
+        "pack_code": "film_fatale",
+        "real_name": "Cosmic Journey"
+      },
+      {
+        "code": "enthralling_encore",
+        "pack_code": "enc",
+        "real_name": "Enthralling Encore"
+      },
+      {
+        "code": "in_the_clutches_of_chaos",
+        "pack_code": "icc",
+        "real_name": "In the Clutches of Chaos"
+      },
+      {
+        "code": "music_of_the_damned",
+        "pack_code": "icc",
+        "real_name": "Music of the Damned"
+      },
+      {
+        "code": "secrets_of_the_universe",
+        "pack_code": "icc",
+        "real_name": "Secrets of the Universe"
+      },
+      {
+        "code": "before_the_black_throne",
+        "pack_code": "bbt",
+        "real_name": "Before the Black Throne"
+      },
+      {
+        "code": "agents_of_atlach_nacha",
+        "pack_code": "tde",
+        "real_name": "Agents of Atlach-Nacha"
+      },
+      {
+        "code": "agents_of_nyarlathotep",
+        "pack_code": "tde",
+        "real_name": "Agents of Nyarlathotep"
+      },
+      { "code": "corsairs", "pack_code": "tde", "real_name": "Corsairs" },
+      {
+        "code": "creatures_of_the_underworld",
+        "pack_code": "tde",
+        "real_name": "Creatures of the Underworld"
+      },
+      {
+        "code": "dreamers_curse",
+        "pack_code": "tde",
+        "real_name": "Dreamer's Curse"
+      },
+      { "code": "dreamlands", "pack_code": "tde", "real_name": "Dreamlands" },
+      {
+        "code": "arcane_lock",
+        "pack_code": "core_2026",
+        "real_name": "Arcane Lock"
+      },
+      {
+        "code": "merging_realities",
+        "pack_code": "tde",
+        "real_name": "Merging Realities"
+      },
+      { "code": "spiders", "pack_code": "tde", "real_name": "Spiders" },
+      {
+        "code": "whispers_of_hypnos",
+        "pack_code": "tde",
+        "real_name": "Whispers of Hypnos"
+      },
+      { "code": "zoogs", "pack_code": "tde", "real_name": "Zoogs" },
+      {
+        "code": "in_the_labyrinths_of_lunacy",
+        "pack_code": "lol",
+        "real_name": "The Labyrinths of Lunacy"
+      },
+      {
+        "code": "epic_multiplayer",
+        "pack_code": "lol",
+        "real_name": "Epic Multiplayer"
+      },
+      {
+        "code": "single_group",
+        "pack_code": "lol",
+        "real_name": "Single Group"
+      },
+      {
+        "code": "abyssal_gifts",
+        "pack_code": "guardians",
+        "real_name": "Abyssal Gifts"
+      },
+      {
+        "code": "abyssal_tribute",
+        "pack_code": "guardians",
+        "real_name": "Abyssal Tribute"
+      },
+      {
+        "code": "brotherhood_of_the_beast",
+        "pack_code": "guardians",
+        "real_name": "Brotherhood of the Beast"
+      },
+      {
+        "code": "sands_of_egypt",
+        "pack_code": "guardians",
+        "real_name": "Sands of Egypt"
+      },
+      { "code": "arkham_ch2", "pack_code": "core_2026", "real_name": "Arkham" },
       {
         "code": "the_eternal_slumber",
-        "locale": "en",
-        "name": "The Eternal Slumber"
+        "pack_code": "guardians",
+        "real_name": "The Eternal Slumber"
+      },
+      {
+        "code": "the_nights_usurper",
+        "pack_code": "guardians",
+        "real_name": "The Night's Usurper"
+      },
+      {
+        "code": "return_to_the_gathering",
+        "pack_code": "rtnotz",
+        "real_name": "Return to the Gathering"
+      },
+      {
+        "code": "return_to_the_midnight_masks",
+        "pack_code": "rtnotz",
+        "real_name": "Return to the Midnight Masks"
+      },
+      {
+        "code": "return_to_the_devourer_below",
+        "pack_code": "rtnotz",
+        "real_name": "Return to the Devourer Below"
+      },
+      {
+        "code": "ghouls_of_umôrdhoth",
+        "pack_code": "rtnotz",
+        "real_name": "Ghouls of Umôrdhoth"
+      },
+      {
+        "code": "the_devourers_cult",
+        "pack_code": "rtnotz",
+        "real_name": "The Devourers Cult"
+      },
+      {
+        "code": "return_cult",
+        "pack_code": "rtnotz",
+        "real_name": "Return Cult of Umôrdhoth"
       },
       {
         "code": "return_to_extracurricular_activities",
-        "locale": "en",
-        "name": "Return to Extracurricular Activity"
+        "pack_code": "rtdwl",
+        "real_name": "Return to Extracurricular Activity"
       },
       {
-        "code": "return_to_heart_of_the_elders",
-        "locale": "en",
-        "name": "Return to Heart of the Elders"
+        "code": "arkham_sewers",
+        "pack_code": "core_2026",
+        "real_name": "Sewers"
       },
       {
-        "code": "to_the_forbidden_peaks",
-        "locale": "en",
-        "name": "To the Forbidden Peaks"
-      },
-      { "code": "the_final_day", "locale": "en", "name": "The Final Day" },
-      { "code": "unstable_realm", "locale": "en", "name": "Unstable Realm" },
-      {
-        "code": "union_and_disillusion",
-        "locale": "en",
-        "name": "Union and Disillusion"
+        "code": "ashen_pilgrims",
+        "pack_code": "core_2026",
+        "real_name": "Ashen Pilgrims"
       },
       {
-        "code": "return_to_in_the_clutches_of_chaos",
-        "locale": "en",
-        "name": "Return to In the Clutches of Chaos"
-      },
-      { "code": "transfiguration", "locale": "en", "name": "Transfiguration" },
-      { "code": "unknown", "locale": "en", "name": "Unknown" },
-      { "code": "turn_back_time", "locale": "en", "name": "Turn Back Time" },
-      {
-        "code": "unspeakable_fate",
-        "locale": "en",
-        "name": "Unspeakable Fate"
-      },
-      { "code": "trapped_spirits", "locale": "en", "name": "Trapped Spirits" },
-      { "code": "venice", "locale": "en", "name": "Carnevale of Horrors" },
-      { "code": "vortex", "locale": "en", "name": "The Vortex Above" },
-      { "code": "venom", "locale": "en", "name": "Yig's Venom" },
-      { "code": "zoogs", "locale": "en", "name": "Zoogs" },
-      {
-        "code": "waking_nightmare",
-        "locale": "en",
-        "name": "Waking Nightmare"
+        "code": "return_to_the_house_always_wins",
+        "pack_code": "rtdwl",
+        "real_name": "Return to The House Always Wins"
       },
       {
-        "code": "vile_experiments",
-        "locale": "en",
-        "name": "Vile Experiments"
-      },
-      { "code": "venomous_hate", "locale": "en", "name": "Venomous Hate" },
-      {
-        "code": "return_to_the_unspeakable_oath",
-        "locale": "en",
-        "name": "Return to The Unspeakable Oath"
+        "code": "return_to_the_miskatonic_museum",
+        "pack_code": "rtdwl",
+        "real_name": "Return to The Miskatonic Museum"
       },
       {
-        "code": "return_to_the_secret_name",
-        "locale": "en",
-        "name": "Return to The Secret Name"
-      },
-      { "code": "the_great_seal", "locale": "en", "name": "The Great Seal" },
-      {
-        "code": "the_heart_of_madness",
-        "locale": "en",
-        "name": "The Heart of Madness"
-      },
-      { "code": "the_first_day", "locale": "en", "name": "The First Day" },
-      { "code": "the_forest", "locale": "en", "name": "The Forest" },
-      {
-        "code": "the_house_always_wins",
-        "locale": "en",
-        "name": "The House Always Wins"
-      },
-      { "code": "the_last_king", "locale": "en", "name": "The Last King" },
-      {
-        "code": "the_lair_of_dagon",
-        "locale": "en",
-        "name": "The Lair of Dagon"
-      },
-      { "code": "the_lost_sister", "locale": "en", "name": "The Lost Sister" },
-      {
-        "code": "the_midwinter_gala",
-        "locale": "en",
-        "name": "The Midwinter Gala"
+        "code": "return_to_the_essex_county_express",
+        "pack_code": "rtdwl",
+        "real_name": "Return to The Essex County Express"
       },
       {
-        "code": "temporal_hunters",
-        "locale": "en",
-        "name": "Temporal Hunters"
-      },
-      { "code": "whippoorwills", "locale": "en", "name": "Whippoorwills" },
-      { "code": "written_in_rock", "locale": "en", "name": "Written in Rock" },
-      { "code": "traps", "locale": "en", "name": "Deadly Traps" },
-      {
-        "code": "where_doom_awaits",
-        "locale": "en",
-        "name": "Where Doom Awaits"
+        "code": "return_to_blood_on_the_altar",
+        "pack_code": "rtdwl",
+        "real_name": "Return to Blood on the Altar"
       },
       {
-        "code": "where_the_gods_dwell",
-        "locale": "en",
-        "name": "Where the Gods Dwell"
+        "code": "return_to_undimensioned_and_unseen",
+        "pack_code": "rtdwl",
+        "real_name": "Return to Undimensioned and Unseen"
       },
       {
-        "code": "weaver_of_the_cosmos",
-        "locale": "en",
-        "name": "Weaver of the Cosmos"
+        "code": "return_to_where_doom_awaits",
+        "pack_code": "rtdwl",
+        "real_name": "Return to Where Doom Awaits"
       },
       {
-        "code": "war_of_the_outer_gods",
-        "locale": "en",
-        "name": "War of the Outer Gods"
+        "code": "return_to_lost_in_time_and_space",
+        "pack_code": "rtdwl",
+        "real_name": "Return to Lost in Time and Space"
       },
-      { "code": "wilds", "locale": "en", "name": "The Untamed Wilds" },
-      { "code": "witchcraft", "locale": "en", "name": "Witchcraft" },
       {
-        "code": "whispers_of_hypnos",
-        "locale": "en",
-        "name": "Whispers of Hypnos"
+        "code": "resurgent_evils",
+        "pack_code": "rtdwl",
+        "real_name": "Resurgent Evils"
+      },
+      {
+        "code": "erratic_fear",
+        "pack_code": "rtdwl",
+        "real_name": "Erratic Fear"
+      },
+      {
+        "code": "creeping_cold",
+        "pack_code": "rtdwl",
+        "real_name": "Creeping Cold"
+      },
+      {
+        "code": "secret_doors",
+        "pack_code": "rtdwl",
+        "real_name": "Secret Doors"
       },
       {
         "code": "yog_sothoths_emissaries",
-        "locale": "en",
-        "name": "Yog-Sothoth's Emissaries"
+        "pack_code": "rtdwl",
+        "real_name": "Yog-Sothoth's Emissaries"
       },
-      { "code": "without_a_trace", "locale": "en", "name": "Without a Trace" }
+      {
+        "code": "beyond_the_threshold",
+        "pack_code": "rtdwl",
+        "real_name": "Beyond the Threshold"
+      },
+      {
+        "code": "return_to_curtain_call",
+        "pack_code": "rtptc",
+        "real_name": "Return to Curtain Call"
+      },
+      {
+        "code": "return_to_the_last_king",
+        "pack_code": "rtptc",
+        "real_name": "Return to The Last King"
+      },
+      {
+        "code": "return_to_echoes_of_the_past",
+        "pack_code": "rtptc",
+        "real_name": "Return to Echoes of the Past"
+      },
+      {
+        "code": "return_to_the_unspeakable_oath",
+        "pack_code": "rtptc",
+        "real_name": "Return to The Unspeakable Oath"
+      },
+      {
+        "code": "bad_weather",
+        "pack_code": "core_2026",
+        "real_name": "Bad Weather"
+      },
+      {
+        "code": "bystanders",
+        "pack_code": "core_2026",
+        "real_name": "Bystanders"
+      },
+      {
+        "code": "cosmic_evils",
+        "pack_code": "core_2026",
+        "real_name": "Cosmic Evils"
+      },
+      {
+        "code": "cultists_ch2",
+        "pack_code": "core_2026",
+        "real_name": "Cultists"
+      },
+      {
+        "code": "dead_ends",
+        "pack_code": "core_2026",
+        "real_name": "Dead Ends"
+      },
+      {
+        "code": "eldritch_lore",
+        "pack_code": "core_2026",
+        "real_name": "Eldritch Lore"
+      },
+      { "code": "fire_ch2", "pack_code": "core_2026", "real_name": "Fire!" },
+      {
+        "code": "return_to_a_phantom_of_truth",
+        "pack_code": "rtptc",
+        "real_name": "Return to A Phantom of Truth"
+      },
+      {
+        "code": "return_to_the_pallid_mask",
+        "pack_code": "rtptc",
+        "real_name": "Return to The Pallid Mask"
+      },
+      {
+        "code": "return_to_black_stars_rise",
+        "pack_code": "rtptc",
+        "real_name": "Return to Black Stars Rise"
+      },
+      {
+        "code": "return_to_dim_carcosa",
+        "pack_code": "rtptc",
+        "real_name": "Return to Dim Carcosa"
+      },
+      {
+        "code": "delusory_evils",
+        "pack_code": "rtptc",
+        "real_name": "Delusory Evils"
+      },
+      {
+        "code": "neurotic_fear",
+        "pack_code": "rtptc",
+        "real_name": "Neurotic Fear"
+      },
+      {
+        "code": "hasturs_envoys",
+        "pack_code": "rtptc",
+        "real_name": "Hastur's Envoys"
+      },
+      {
+        "code": "decaying_reality",
+        "pack_code": "rtptc",
+        "real_name": "Decaying Reality"
+      },
+      {
+        "code": "maddening_delusions",
+        "pack_code": "rtptc",
+        "real_name": "Maddening Delusions"
+      },
+      {
+        "code": "flying_terrors",
+        "pack_code": "core_2026",
+        "real_name": "Flying Terrors"
+      },
+      {
+        "code": "gangs_of_arkham",
+        "pack_code": "core_2026",
+        "real_name": "Gangs of Arkham"
+      },
+      {
+        "code": "hallucinations",
+        "pack_code": "core_2026",
+        "real_name": "Hallucinations"
+      },
+      {
+        "code": "mad_science",
+        "pack_code": "core_2026",
+        "real_name": "Mad Science"
+      },
+      {
+        "code": "miskatonic_university",
+        "pack_code": "core_2026",
+        "real_name": "Miskatonic University"
+      },
+      {
+        "code": "people_of_arkham",
+        "pack_code": "core_2026",
+        "real_name": "People of Arkham"
+      },
+      {
+        "code": "beyond_the_gates_of_sleep",
+        "pack_code": "tde",
+        "real_name": "Beyond the Gates of Sleep"
+      },
+      {
+        "code": "waking_nightmare",
+        "pack_code": "tde",
+        "real_name": "Waking Nightmare"
+      },
+      {
+        "code": "a_thousand_shapes_of_horror",
+        "pack_code": "tsh",
+        "real_name": "A Thousand Shapes of Horror"
+      },
+      {
+        "code": "the_search_for_kadath",
+        "pack_code": "sfk",
+        "real_name": "The Search for Kadath"
+      },
+      {
+        "code": "dark_side_of_the_moon",
+        "pack_code": "dsm",
+        "real_name": "Dark Side of the Moon"
+      },
+      {
+        "code": "point_of_no_return",
+        "pack_code": "pnr",
+        "real_name": "Point of No Return"
+      },
+      {
+        "code": "where_the_gods_dwell",
+        "pack_code": "wgd",
+        "real_name": "Where the Gods Dwell"
+      },
+      {
+        "code": "weaver_of_the_cosmos",
+        "pack_code": "woc",
+        "real_name": "Weaver of the Cosmos"
+      },
+      {
+        "code": "terror_of_the_vale",
+        "pack_code": "pnr",
+        "real_name": "Terror of the Vale"
+      },
+      {
+        "code": "migo_incursion",
+        "pack_code": "blob",
+        "real_name": "Mi-Go Incursion"
+      },
+      {
+        "code": "descent_into_the_pitch",
+        "pack_code": "pnr",
+        "real_name": "Descent into the Pitch"
+      },
+      {
+        "code": "murder_at_the_excelsior_hotel",
+        "pack_code": "hotel",
+        "real_name": "Murder at the Excelsior Hotel"
+      },
+      {
+        "code": "alien_interference",
+        "pack_code": "hotel",
+        "real_name": "Alien Interference"
+      },
+      {
+        "code": "dark_rituals",
+        "pack_code": "hotel",
+        "real_name": "Dark Rituals"
+      },
+      {
+        "code": "excelsior_management",
+        "pack_code": "hotel",
+        "real_name": "Excelsior Management"
+      },
+      {
+        "code": "sins_of_the_past",
+        "pack_code": "hotel",
+        "real_name": "Sins of the Past"
+      },
+      {
+        "code": "vile_experiments",
+        "pack_code": "hotel",
+        "real_name": "Vile Experiments"
+      },
+      {
+        "code": "blob",
+        "pack_code": "blob",
+        "real_name": "The Blob That Ate Everything"
+      },
+      {
+        "code": "blob_epic_multiplayer",
+        "pack_code": "blob",
+        "real_name": "Epic Multiplayer"
+      },
+      {
+        "code": "blob_single_group",
+        "pack_code": "blob",
+        "real_name": "Single Group"
+      },
+      {
+        "code": "queen_of_ash",
+        "pack_code": "core_2026",
+        "real_name": "Queen of Ash"
+      },
+      {
+        "code": "reeking_decay",
+        "pack_code": "core_2026",
+        "real_name": "Reeking Decay"
+      },
+      { "code": "read_or_die", "pack_code": "rod", "real_name": "Read or Die" },
+      {
+        "code": "all_or_nothing",
+        "pack_code": "aon",
+        "real_name": "All or Nothing"
+      },
+      { "code": "bad_blood", "pack_code": "bad", "real_name": "Bad Blood" },
+      { "code": "by_the_book", "pack_code": "btb", "real_name": "By the Book" },
+      {
+        "code": "red_tide_rising",
+        "pack_code": "rtr",
+        "real_name": "Red Tide Rising"
+      },
+      {
+        "code": "return_to_the_untamed_wilds",
+        "pack_code": "rttfa",
+        "real_name": "Return to the Untamed Wilds"
+      },
+      {
+        "code": "return_to_the_doom_of_eztli",
+        "pack_code": "rttfa",
+        "real_name": "Return to the Doom of Eztli"
+      },
+      {
+        "code": "return_to_threads_of_fate",
+        "pack_code": "rttfa",
+        "real_name": "Return to Threads of Fate"
+      },
+      {
+        "code": "return_to_the_boundary_beyond",
+        "pack_code": "rttfa",
+        "real_name": "Return to the Boundary Beyond"
+      },
+      {
+        "code": "temporal_hunters",
+        "pack_code": "rttfa",
+        "real_name": "Temporal Hunters"
+      },
+      {
+        "code": "return_to_pillars_of_judgment",
+        "pack_code": "rttfa",
+        "real_name": "Return to Pillars of Judgment"
+      },
+      {
+        "code": "return_to_knyan",
+        "pack_code": "rttfa",
+        "real_name": "Return to K'n-yan"
+      },
+      {
+        "code": "return_to_the_city_of_archives",
+        "pack_code": "rttfa",
+        "real_name": "Return to the City of Archives"
+      },
+      {
+        "code": "return_to_the_depths_of_yoth",
+        "pack_code": "rttfa",
+        "real_name": "Return to the Depths of Yoth"
+      },
+      {
+        "code": "return_to_shattered_aeons",
+        "pack_code": "rttfa",
+        "real_name": "Return to Shattered Aeons"
+      },
+      {
+        "code": "return_to_turn_back_time",
+        "pack_code": "rttfa",
+        "real_name": "Return to Turn Back Time"
+      },
+      {
+        "code": "return_to_the_rainforest",
+        "pack_code": "rttfa",
+        "real_name": "Return to the Rainforest"
+      },
+      {
+        "code": "cult_of_pnakotus",
+        "pack_code": "rttfa",
+        "real_name": "Cult of Pnakotus"
+      },
+      {
+        "code": "doomed_expedition",
+        "pack_code": "rttfa",
+        "real_name": "Doomed Expedition"
+      },
+      {
+        "code": "smoke_and_mirrors",
+        "pack_code": "core_2026",
+        "real_name": "Smoke and Mirrors"
+      },
+      {
+        "code": "venomous_hate",
+        "pack_code": "rttfa",
+        "real_name": "Venomous Hate"
+      },
+      {
+        "code": "the_pit_of_despair",
+        "pack_code": "tic",
+        "real_name": "The Pit of Despair"
+      },
+      {
+        "code": "creatures_of_the_deep",
+        "pack_code": "tic",
+        "real_name": "Creatures of the Deep"
+      },
+      {
+        "code": "flooded_caverns",
+        "pack_code": "tic",
+        "real_name": "Flooded Caverns"
+      },
+      { "code": "rising_tide", "pack_code": "tic", "real_name": "Rising Tide" },
+      {
+        "code": "shattered_memories",
+        "pack_code": "tic",
+        "real_name": "Shattered Memories"
+      },
+      {
+        "code": "agents_of_dagon",
+        "pack_code": "tic",
+        "real_name": "Agents of Dagon"
+      },
+      {
+        "code": "agents_of_hydra",
+        "pack_code": "tic",
+        "real_name": "Agents of Hydra"
+      },
+      { "code": "the_locals", "pack_code": "tic", "real_name": "The Locals" },
+      {
+        "code": "fog_over_innsmouth",
+        "pack_code": "tic",
+        "real_name": "Fog over Innsmouth"
+      },
+      {
+        "code": "red_coterie",
+        "pack_code": "tskc",
+        "real_name": "Red Coterie"
+      },
+      {
+        "code": "the_vanishing_of_elina_harper",
+        "pack_code": "tic",
+        "real_name": "The Vanishing of Elina Harper"
+      },
+      { "code": "syzygy", "pack_code": "tic", "real_name": "Syzygy" },
+      { "code": "malfunction", "pack_code": "tic", "real_name": "Malfunction" },
+      { "code": "in_too_deep", "pack_code": "itd", "real_name": "In Too Deep" },
+      { "code": "devil_reef", "pack_code": "def", "real_name": "Devil Reef" },
+      {
+        "code": "horror_in_high_gear",
+        "pack_code": "hhg",
+        "real_name": "Horror in High Gear"
+      },
+      {
+        "code": "a_light_in_the_fog",
+        "pack_code": "lif",
+        "real_name": "A Light in the Fog"
+      },
+      {
+        "code": "the_lair_of_dagon",
+        "pack_code": "lod",
+        "real_name": "The Lair of Dagon"
+      },
+      {
+        "code": "into_the_maelstrom",
+        "pack_code": "itm",
+        "real_name": "Into the Maelstrom"
+      },
+      {
+        "code": "war_of_the_outer_gods",
+        "pack_code": "wog",
+        "real_name": "War of the Outer Gods"
+      },
+      {
+        "code": "spreading_flames",
+        "pack_code": "core_2026",
+        "real_name": "Spreading Flames"
+      },
+      { "code": "torment", "pack_code": "core_2026", "real_name": "Torment" },
+      {
+        "code": "whippoorwills_ch2",
+        "pack_code": "core_2026",
+        "real_name": "Whippoorwills"
+      },
+      {
+        "code": "death_of_stars",
+        "pack_code": "wog",
+        "real_name": "Death of Stars"
+      },
+      {
+        "code": "children_of_paradise",
+        "pack_code": "wog",
+        "real_name": "Children of Paradise"
+      },
+      {
+        "code": "swarm_of_assimilation",
+        "pack_code": "wog",
+        "real_name": "Swarm of Assimilation"
+      },
+      {
+        "code": "machinations_through_time",
+        "pack_code": "mtt",
+        "real_name": "Machinations Through Time"
+      },
+      {
+        "code": "machinations_through_time_epic_multiplayer",
+        "pack_code": "mtt",
+        "real_name": "Epic Multiplayer"
+      },
+      {
+        "code": "machinations_through_time_single_group",
+        "pack_code": "mtt",
+        "real_name": "Single Group"
+      },
+      {
+        "code": "return_to_disappearance_at_the_twilight_estate",
+        "pack_code": "rttcu",
+        "real_name": "Return to Disappearance at the Twilight Estate"
+      },
+      {
+        "code": "return_to_the_witching_hour",
+        "pack_code": "rttcu",
+        "real_name": "Return to The Witching Hour"
+      },
+      {
+        "code": "sanguine_shadows",
+        "pack_code": "tskc",
+        "real_name": "Sanguine Shadows"
+      },
+      {
+        "code": "return_to_at_deaths_doorstep",
+        "pack_code": "rttcu",
+        "real_name": "Return to At Death's Doorstep"
+      },
+      {
+        "code": "return_to_the_secret_name",
+        "pack_code": "rttcu",
+        "real_name": "Return to The Secret Name"
+      },
+      {
+        "code": "return_to_the_wages_of_sin",
+        "pack_code": "rttcu",
+        "real_name": "Return to The Wages of Sin"
+      },
+      {
+        "code": "return_to_for_the_greater_good",
+        "pack_code": "rttcu",
+        "real_name": "Return to For the Greater Good"
+      },
+      {
+        "code": "return_to_union_and_disillusion",
+        "pack_code": "rttcu",
+        "real_name": "Return to Union and Disillusion"
+      },
+      {
+        "code": "return_to_in_the_clutches_of_chaos",
+        "pack_code": "rttcu",
+        "real_name": "Return to In the Clutches of Chaos"
+      },
+      {
+        "code": "return_to_before_the_black_throne",
+        "pack_code": "rttcu",
+        "real_name": "Return to Before the Black Throne"
+      },
+      { "code": "hexcraft", "pack_code": "rttcu", "real_name": "Hexcraft" },
+      {
+        "code": "bloodthirsty_spirits",
+        "pack_code": "rttcu",
+        "real_name": "Bloodthirsty Spirits"
+      },
+      {
+        "code": "unspeakable_fate",
+        "pack_code": "rttcu",
+        "real_name": "Unspeakable Fate"
+      },
+      {
+        "code": "unstable_realm",
+        "pack_code": "rttcu",
+        "real_name": "Unstable Realm"
+      },
+      {
+        "code": "city_of_the_damned",
+        "pack_code": "rttcu",
+        "real_name": "City of the Damned"
+      },
+      {
+        "code": "chilling_mists",
+        "pack_code": "rttcu",
+        "real_name": "Chilling Mists"
+      },
+      {
+        "code": "impending_evils",
+        "pack_code": "rttcu",
+        "real_name": "Impending Evils"
+      },
+      {
+        "code": "ice_and_death",
+        "pack_code": "eoec",
+        "real_name": "Ice and Death"
+      },
+      { "code": "the_crash", "pack_code": "eoec", "real_name": "The Crash" },
+      {
+        "code": "creatures_in_the_ice",
+        "pack_code": "eoec",
+        "real_name": "Creatures in the Ice"
+      },
+      {
+        "code": "deadly_weather",
+        "pack_code": "eoec",
+        "real_name": "Deadly Weather"
+      },
+      {
+        "code": "the_final_day",
+        "pack_code": "fhvc",
+        "real_name": "The Final Day"
+      },
+      {
+        "code": "hazards_of_antarctica",
+        "pack_code": "eoec",
+        "real_name": "Hazards of Antarctica"
+      },
+      {
+        "code": "silence_and_mystery",
+        "pack_code": "eoec",
+        "real_name": "Silence and Mystery"
+      },
+      {
+        "code": "to_the_forbidden_peaks",
+        "pack_code": "eoec",
+        "real_name": "To the Forbidden Peaks"
+      },
+      {
+        "code": "the_great_seal",
+        "pack_code": "eoec",
+        "real_name": "The Great Seal"
+      },
+      {
+        "code": "city_of_the_elder_things",
+        "pack_code": "eoec",
+        "real_name": "City of the Elder Things"
+      },
+      {
+        "code": "seeping_nightmares",
+        "pack_code": "eoec",
+        "real_name": "Seeping Nightmares"
+      },
+      {
+        "code": "nameless_horrors",
+        "pack_code": "eoec",
+        "real_name": "Nameless Horrors"
+      },
+      {
+        "code": "memorials_of_the_lost",
+        "pack_code": "eoec",
+        "real_name": "Memorials of the Lost"
+      },
+      {
+        "code": "fatal_mirage",
+        "pack_code": "eoec",
+        "real_name": "Fatal Mirage"
+      },
+      {
+        "code": "elder_things",
+        "pack_code": "eoec",
+        "real_name": "Elder Things"
+      },
+      { "code": "rlyeh", "pack_code": "tdcc", "real_name": "R'lyeh" },
+      {
+        "code": "the_heart_of_madness",
+        "pack_code": "eoec",
+        "real_name": "The Heart of Madness"
+      },
+      {
+        "code": "stirring_in_the_deep",
+        "pack_code": "eoec",
+        "real_name": "Stirring in the Deep"
+      },
+      { "code": "shoggoths", "pack_code": "eoec", "real_name": "Shoggoths" },
+      { "code": "penguins", "pack_code": "eoec", "real_name": "Penguins" },
+      { "code": "miasma", "pack_code": "eoec", "real_name": "Miasma" },
+      {
+        "code": "lost_in_the_night",
+        "pack_code": "eoec",
+        "real_name": "Lost in the Night"
+      },
+      {
+        "code": "left_behind",
+        "pack_code": "eoec",
+        "real_name": "Left Behind"
+      },
+      {
+        "code": "expedition_team",
+        "pack_code": "eoec",
+        "real_name": "Expedition Team"
+      },
+      {
+        "code": "agents_of_the_unknown",
+        "pack_code": "eoec",
+        "real_name": "Agents of the Unknown"
+      },
+      { "code": "tekelili", "pack_code": "eoec", "real_name": "Tekeli-Li" },
+      {
+        "code": "riddles_and_rain",
+        "pack_code": "tskc",
+        "real_name": "Riddles and Rain"
+      },
+      {
+        "code": "mysteries_abound",
+        "pack_code": "tskc",
+        "real_name": "Mysteries Abound"
+      },
+      {
+        "code": "shades_of_suffering",
+        "pack_code": "tskc",
+        "real_name": "Shades of Suffering"
+      },
+      {
+        "code": "agents_of_the_outside",
+        "pack_code": "tskc",
+        "real_name": "Agents of the Outside"
+      },
+      {
+        "code": "beyond_the_beyond",
+        "pack_code": "tskc",
+        "real_name": "Beyond the Beyond"
+      },
+      {
+        "code": "congress_of_the_keys",
+        "pack_code": "tskc",
+        "real_name": "Congress of the Keys"
+      },
+      {
+        "code": "dancing_mad",
+        "pack_code": "tskc",
+        "real_name": "Dancing Mad"
+      },
+      { "code": "dead_heat", "pack_code": "tskc", "real_name": "Dead Heat" },
+      {
+        "code": "dogs_of_war",
+        "pack_code": "tskc",
+        "real_name": "Dogs of War"
+      },
+      { "code": "outsiders", "pack_code": "tskc", "real_name": "Outsiders" },
+      {
+        "code": "scarlet_sorcery",
+        "pack_code": "tskc",
+        "real_name": "Scarlet Sorcery"
+      },
+      {
+        "code": "spatial_anomaly",
+        "pack_code": "tskc",
+        "real_name": "Spatial Anomaly"
+      },
+      {
+        "code": "strange_happenings",
+        "pack_code": "tskc",
+        "real_name": "Strange Happenings"
+      },
+      { "code": "secret_war", "pack_code": "tskc", "real_name": "Secret War" },
+      {
+        "code": "shadow_of_a_doubt",
+        "pack_code": "tskc",
+        "real_name": "Shadow of a Doubt"
+      },
+      {
+        "code": "without_a_trace",
+        "pack_code": "tskc",
+        "real_name": "Without a Trace"
+      },
+      {
+        "code": "agents_of_yuggoth",
+        "pack_code": "tskc",
+        "real_name": "Agents of Yuggoth"
+      },
+      {
+        "code": "cleanup_crew",
+        "pack_code": "tskc",
+        "real_name": "Cleanup Crew"
+      },
+      {
+        "code": "crimson_conspiracy",
+        "pack_code": "tskc",
+        "real_name": "Crimson Conspiracy"
+      },
+      {
+        "code": "dark_veiling",
+        "pack_code": "tskc",
+        "real_name": "Dark Veiling"
+      },
+      {
+        "code": "dealings_in_the_dark",
+        "pack_code": "tskc",
+        "real_name": "Dealings in the Dark"
+      },
+      {
+        "code": "globetrotting",
+        "pack_code": "tskc",
+        "real_name": "Globetrotting"
+      },
+      {
+        "code": "on_thin_ice",
+        "pack_code": "tskc",
+        "real_name": "On Thin Ice"
+      },
+      {
+        "code": "spreading_corruption",
+        "pack_code": "tskc",
+        "real_name": "Spreading Corruption"
+      },
+      {
+        "code": "fortune_and_folly",
+        "pack_code": "fof",
+        "real_name": "Fortune and Folly"
+      },
+      {
+        "code": "fortunes_chosen",
+        "pack_code": "fof",
+        "real_name": "Fortune's Chosen"
+      },
+      {
+        "code": "plan_in_shambles",
+        "pack_code": "fof",
+        "real_name": "Plan in Shambles"
+      },
+      {
+        "code": "blob_that_ate_everything_else",
+        "pack_code": "blbe",
+        "real_name": "The Blob That Ate Everything Else"
+      },
+      {
+        "code": "migo_incursion_2",
+        "pack_code": "blbe",
+        "real_name": "Mi-Go Incursion II"
+      },
+      {
+        "code": "laid_to_rest",
+        "pack_code": "ltr",
+        "real_name": "Laid to Rest"
+      },
+      {
+        "code": "relics_of_the_past",
+        "pack_code": "rop",
+        "real_name": "Relics of the Past"
+      },
+      {
+        "code": "the_first_day",
+        "pack_code": "fhvc",
+        "real_name": "The First Day"
+      },
+      {
+        "code": "the_second_day",
+        "pack_code": "fhvc",
+        "real_name": "The Second Day"
+      },
+      {
+        "code": "agents_of_the_colour",
+        "pack_code": "fhvc",
+        "real_name": "Agents of the Colour"
+      },
+      {
+        "code": "fate_of_the_vale",
+        "pack_code": "fhvc",
+        "real_name": "Fate of the Vale"
+      },
+      { "code": "heirlooms", "pack_code": "fhvc", "real_name": "Heirlooms" },
+      {
+        "code": "horrors_in_the_rock",
+        "pack_code": "fhvc",
+        "real_name": "Horrors in the Rock"
+      },
+      { "code": "myconids", "pack_code": "fhvc", "real_name": "Myconids" },
+      { "code": "residents", "pack_code": "fhvc", "real_name": "Residents" },
+      {
+        "code": "the_longest_night",
+        "pack_code": "fhvc",
+        "real_name": "The Longest Night"
+      },
+      {
+        "code": "the_silent_heath",
+        "pack_code": "fhvc",
+        "real_name": "The Silent Heath"
+      },
+      {
+        "code": "the_twisted_hollow",
+        "pack_code": "fhvc",
+        "real_name": "The Twisted Hollow"
+      },
+      {
+        "code": "transfiguration",
+        "pack_code": "fhvc",
+        "real_name": "Transfiguration"
+      },
+      {
+        "code": "day_of_rest",
+        "pack_code": "fhvc",
+        "real_name": "Day of Rest"
+      },
+      {
+        "code": "day_of_rain",
+        "pack_code": "fhvc",
+        "real_name": "Day of Rain"
+      },
+      {
+        "code": "day_of_the_feast",
+        "pack_code": "fhvc",
+        "real_name": "Day of the Feast"
+      },
+      { "code": "blight", "pack_code": "fhvc", "real_name": "Blight" },
+      { "code": "fire", "pack_code": "fhvc", "real_name": "Fire!" },
+      {
+        "code": "hemlock_house",
+        "pack_code": "fhvc",
+        "real_name": "Hemlock House"
+      },
+      { "code": "mutations", "pack_code": "fhvc", "real_name": "Mutations" },
+      {
+        "code": "refractions",
+        "pack_code": "fhvc",
+        "real_name": "Refractions"
+      },
+      { "code": "the_forest", "pack_code": "fhvc", "real_name": "The Forest" },
+      {
+        "code": "the_lost_sister",
+        "pack_code": "fhvc",
+        "real_name": "The Lost Sister"
+      },
+      {
+        "code": "the_thing_in_the_depths",
+        "pack_code": "fhvc",
+        "real_name": "The Thing in the Depths"
+      },
+      { "code": "the_vale", "pack_code": "fhvc", "real_name": "The Vale" },
+      {
+        "code": "written_in_rock",
+        "pack_code": "fhvc",
+        "real_name": "Written in Rock"
+      },
+      {
+        "code": "the_midwinter_gala",
+        "pack_code": "tmg",
+        "real_name": "The Midwinter Gala"
+      },
+      {
+        "code": "alien_machinery",
+        "pack_code": "tdcc",
+        "real_name": "Alien Machinery"
+      },
+      { "code": "the_apiary", "pack_code": "tdcc", "real_name": "The Apiary" },
+      {
+        "code": "cosmic_legacy",
+        "pack_code": "tdcc",
+        "real_name": "Cosmic Legacy"
+      },
+      {
+        "code": "court_of_the_ancients",
+        "pack_code": "tdcc",
+        "real_name": "Court of the Ancients"
+      },
+      { "code": "deep_ones", "pack_code": "tdcc", "real_name": "Deep Ones" },
+      { "code": "domination", "pack_code": "tdcc", "real_name": "Domination" },
+      {
+        "code": "the_doom_of_arkham_part_1",
+        "pack_code": "tdcc",
+        "real_name": "The Doom of Arkham Part I"
+      },
+      {
+        "code": "the_doom_of_arkham_part_2",
+        "pack_code": "tdcc",
+        "real_name": "The Doom of Arkham Part II"
+      },
+      { "code": "dreams", "pack_code": "tdcc", "real_name": "Dreams" },
+      {
+        "code": "the_drowned_quarter",
+        "pack_code": "tdcc",
+        "real_name": "The Drowned Quarter"
+      },
+      { "code": "elder_mist", "pack_code": "tdcc", "real_name": "Elder Mist" },
+      {
+        "code": "tdc_expedition",
+        "pack_code": "tdcc",
+        "real_name": "Expedition"
+      },
+      { "code": "tdc_flood", "pack_code": "tdcc", "real_name": "Flood" },
+      {
+        "code": "the_grand_vault",
+        "pack_code": "tdcc",
+        "real_name": "The Grand Vault"
+      },
+      {
+        "code": "the_inescapable",
+        "pack_code": "tdcc",
+        "real_name": "The Inescapable"
+      },
+      {
+        "code": "obsidian_canyons",
+        "pack_code": "tdcc",
+        "real_name": "Obsidian Canyons"
+      },
+      {
+        "code": "one_last_job",
+        "pack_code": "tdcc",
+        "real_name": "One Last Job"
+      },
+      { "code": "pilgrims", "pack_code": "tdcc", "real_name": "Pilgrims" }
     ],
     "taboo_set": [
-      { "name": "1.5", "card_count": 13, "id": 1, "date": "2019-04-20" },
-      { "name": "1.6", "card_count": 16, "id": 2, "date": "2019-09-27" },
-      { "name": "1.8", "card_count": 27, "id": 3, "date": "2020-10-15" },
-      { "name": "1.9", "card_count": 32, "id": 4, "date": "2021-06-28" },
-      { "name": "2.0", "card_count": 51, "id": 5, "date": "2022-08-26" },
-      { "name": "2.1", "card_count": 61, "id": 6, "date": "2023-08-30" },
-      { "name": "2.2", "card_count": 68, "id": 7, "date": "2024-02-20" },
-      { "name": "2.3", "card_count": 73, "id": 8, "date": "2024-10-23" },
-      { "name": "2.4", "card_count": 83, "id": 9, "date": "2025-07-11" },
-      { "name": "2.5", "card_count": 97, "id": 10, "date": "2026-02-21" }
+      {
+        "id": 1,
+        "card_count": 13,
+        "name": "1.5",
+        "date": "2019-04-20T00:00:00.000Z"
+      },
+      {
+        "id": 2,
+        "card_count": 16,
+        "name": "1.6",
+        "date": "2019-09-27T00:00:00.000Z"
+      },
+      {
+        "id": 3,
+        "card_count": 27,
+        "name": "1.8",
+        "date": "2020-10-15T00:00:00.000Z"
+      },
+      {
+        "id": 4,
+        "card_count": 32,
+        "name": "1.9",
+        "date": "2021-06-28T00:00:00.000Z"
+      },
+      {
+        "id": 5,
+        "card_count": 51,
+        "name": "2.0",
+        "date": "2022-08-26T00:00:00.000Z"
+      },
+      {
+        "id": 6,
+        "card_count": 61,
+        "name": "2.1",
+        "date": "2023-08-30T00:00:00.000Z"
+      },
+      {
+        "id": 7,
+        "card_count": 68,
+        "name": "2.2",
+        "date": "2024-02-20T00:00:00.000Z"
+      },
+      {
+        "id": 8,
+        "card_count": 73,
+        "name": "2.3",
+        "date": "2024-10-23T00:00:00.000Z"
+      },
+      {
+        "id": 9,
+        "card_count": 83,
+        "name": "2.4",
+        "date": "2025-07-11T00:00:00.000Z"
+      },
+      {
+        "id": 10,
+        "card_count": 97,
+        "name": "2.5",
+        "date": "2026-02-21T00:00:00.000Z"
+      }
     ]
   }
 }

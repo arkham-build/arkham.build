@@ -1,5 +1,15 @@
 [
   {
+    "code": "03006",
+    "deck_requirements": "size:35, card:03018:90088:90089:90090:90091:90092, card:03019:90093, random:subtype:basicweakness",
+    "patch": true
+  },
+  {
+    "code": "90087",
+    "deck_requirements": "size:40, card:03018:90088:90089:90090:90091:90092, card:03019:90093, random:subtype:basicweakness",
+    "patch": true
+  },
+  {
     "code": "98001",
     "duplicate_of": "02003",
     "hidden": false,

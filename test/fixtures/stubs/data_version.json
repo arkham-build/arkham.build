@@ -2,11 +2,11 @@
   "data": {
     "all_card_updated": [
       {
-        "card_count": 8069,
-        "cards_updated_at": "2026-03-19T10:56:09.171263",
+        "card_count": 6501,
+        "cards_updated_at": "2026-04-21T11:30:21.644Z",
         "locale": "en",
-        "translation_updated_at": "2026-03-19T10:56:09.41904",
-        "version": 9
+        "translation_updated_at": "2026-04-21T11:30:21.644Z",
+        "ingested_commit_id": "5c480a10f2a4674cb59743083647ebf195feb624:7e51b07b38b0707567aa016dd330f8a936a92814"
       }
     ]
   }

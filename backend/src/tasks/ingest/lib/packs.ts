@@ -44,6 +44,8 @@ function reprintPackTranslations(
   pack: WithItemTranslations<JsonDataPack>,
   referencePacks: WithItemTranslations<JsonDataPack>[],
 ) {
+  if (!pack.reprint_type) return pack.translations;
+
   const ref = referencePacks.find((p) => p.code === pack.code.slice(0, -1));
   if (!ref) return [];
 

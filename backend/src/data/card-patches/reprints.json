@@ -178,5 +178,89 @@
     "reprint_of": "01097",
     "duplicate_of": null,
     "patch": true
+  },
+  {
+    "code": "60176",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "02299"
+  },
+  {
+    "code": "60263",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "02186"
+  },
+  {
+    "code": "60267",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "01039"
+  },
+  {
+    "code": "60270",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "01040"
+  },
+  {
+    "code": "60275",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "02150"
+  },
+  {
+    "code": "60361",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "60305"
+  },
+  {
+    "code": "60371",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "03233"
+  },
+  {
+    "code": "60372",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "03031"
+  },
+  {
+    "code": "60379",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "08057"
+  },
+  {
+    "code": "60381",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "54006"
+  },
+  {
+    "code": "60384",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "08058"
+  },
+  {
+    "code": "60455",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "01063"
+  },
+  {
+    "code": "60469",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "03235"
+  },
+  {
+    "code": "60560",
+    "patch": true,
+    "duplicate_of": null,
+    "reprint_of": "01075"
   }
 ]

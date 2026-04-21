@@ -13,7 +13,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
-      - ./src/scripts:/scripts
+      - ./src/tasks/dump-test-seeds.sh:/scripts/dump-test-seeds.sh
       - ./src/tests/seeds:/app/src/tests/seeds
 
 volumes:

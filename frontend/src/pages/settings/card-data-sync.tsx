@@ -32,7 +32,7 @@ export function CardDataSync(props: Props) {
     data.locale === dataVersion.locale &&
     data.cards_updated_at === dataVersion.cards_updated_at &&
     data.translation_updated_at === dataVersion.translation_updated_at &&
-    data.version === dataVersion.version;
+    data.ingested_commit_id === dataVersion.ingested_commit_id;
 
   const loading = isPending;
 
@@ -64,6 +64,8 @@ export function CardDataSync(props: Props) {
           <dd>{dataVersion.cards_updated_at.split(".")[0]}</dd>
           <dt>{t("settings.card_data.card_count")}:</dt>
           <dd>{dataVersion.card_count}</dd>
+          <dt>{t("settings.card_data.data_version")}:</dt>
+          <dd>{dataVersion.ingested_commit_id.slice(0, 7)}</dd>
           <dt>{t("settings.card_data.locale")}:</dt>
           <dd>{dataVersion.locale}</dd>
         </dl>

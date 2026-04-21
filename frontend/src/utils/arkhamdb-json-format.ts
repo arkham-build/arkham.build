@@ -3,9 +3,9 @@ import type {
   ApiDeckRequirements,
   ApiRestrictions,
   JsonDataCard,
+  JsonDataCycle,
+  JsonDataPack,
 } from "@arkham-build/shared";
-import type { JsonDataCycle } from "@/store/schemas/cycle.schema";
-import type { JsonDataPack } from "@/store/schemas/pack.schema";
 
 export function packToApiFormat(pack: JsonDataPack & { official?: boolean }) {
   return {

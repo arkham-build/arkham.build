@@ -41,7 +41,7 @@ export function CollectionPack(props: Props) {
 
   return (
     <li
-      className={cx(css["pack"], pack.reprint && css["reprint"])}
+      className={cx(css["pack"], pack.reprint_type && css["reprint"])}
       key={pack.code}
     >
       {hasQuantity ? (

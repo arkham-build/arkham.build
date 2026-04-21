@@ -2,6 +2,8 @@ import type {
   Attachments,
   Card,
   FactionName,
+  JsonDataSubtype,
+  JsonDataType,
   OptionSelect,
   SealedDeckResponse,
   SkillIcon,
@@ -9,7 +11,6 @@ import type {
 import type { Cycle } from "../schemas/cycle.schema";
 import type { Deck, Slots } from "../schemas/deck.schema";
 import type { EncounterSet } from "../schemas/encounter-set.schema";
-import type { SubType, Type } from "../schemas/metadata.schema";
 import type { Pack } from "../schemas/pack.schema";
 import type { TabooSet } from "../schemas/taboo-set.schema";
 import type { AttachmentQuantities } from "../slices/deck-edits.types";
@@ -24,8 +25,8 @@ export type ResolvedCard = {
   encounterSet?: EncounterSet;
   cycle: Cycle;
   pack: Pack;
-  subtype?: SubType;
-  type: Type;
+  subtype?: JsonDataSubtype;
+  type: JsonDataType;
 };
 
 export type CardWithRelations = ResolvedCard & {

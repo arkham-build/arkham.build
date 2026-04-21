@@ -23,7 +23,6 @@ import {
   encodeSealedDeck,
 } from "../lib/deck-meta";
 import { buildCacheFromDecks } from "../lib/fan-made-content";
-import { applyLocalData } from "../lib/local-data";
 import { mappedByCode, mappedById } from "../lib/metadata-utils";
 import { resolveDeck } from "../lib/resolve-deck";
 import { decodeExtraSlots, encodeExtraSlots } from "../lib/slots";
@@ -76,7 +75,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
 
     if (!refresh && persistedState?.metadata?.dataVersion?.cards_updated_at) {
       const metadata = {
-        ...applyLocalData(persistedState.metadata),
+        ...persistedState.metadata,
         factions: mappedByCode(factions),
         subtypes: mappedByCode(subTypes),
         types: mappedByCode(types),
@@ -114,28 +113,19 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     timeEnd("query_data");
 
     time("create_store_data");
-    let metadata: Metadata = {
+    const metadata: Metadata = {
       ...getInitialMetadata(),
       dataVersion: dataVersionResponse,
       cards: {},
       taboos: {},
       cycles: mappedByCode(metadataResponse.cycle),
-      packs: {
-        ...mappedByCode(metadataResponse.pack),
-        ...mappedByCode(metadataResponse.reprint_pack),
-      },
+      packs: mappedByCode(metadataResponse.pack),
       encounterSets: mappedByCode(metadataResponse.card_encounter_set),
       factions: mappedByCode(factions),
       subtypes: mappedByCode(subTypes),
       types: mappedByCode(types),
       tabooSets: mappedById(metadataResponse.taboo_set),
     };
-
-    if (metadata.packs["rcore"]) {
-      metadata.packs["rcore"].reprint = {
-        type: "rcore",
-      };
-    }
 
     for (const c of cards) {
       if (c.taboo_set_id) {
@@ -192,8 +182,6 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
         }
       }
     }
-
-    metadata = applyLocalData(metadata);
 
     for (const code of Object.keys(metadata.encounterSets)) {
       if (!metadata.encounterSets[code].pack_code) {

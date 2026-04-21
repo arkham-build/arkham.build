@@ -258,7 +258,7 @@ function CardDataSyncTask() {
       remoteDataVersion.cards_updated_at === dataVersion.cards_updated_at &&
       remoteDataVersion.translation_updated_at ===
         dataVersion.translation_updated_at &&
-      remoteDataVersion.version === dataVersion.version;
+      remoteDataVersion.ingested_commit_id === dataVersion.ingested_commit_id;
 
     if (!upToDate) {
       toastId.current = toast.show({

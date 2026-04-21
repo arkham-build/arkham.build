@@ -184,7 +184,7 @@ function CollectionTab({ dialogCtx, onValueChange }: TabProps) {
   const ignored = cycles.reduce((acc, cycle) => {
     if (cycle.reprintPacks) {
       cycle.reprintPacks.forEach((pack) => {
-        if (pack.reprint?.type === "encounter") {
+        if (pack.reprint_type === "campaign") {
           acc.add(pack.code);
         }
       });

@@ -914,11 +914,11 @@ export const selectListFilterProperties = createSelector(
         packs.add(card.pack_code);
         const pack = metadata.packs[card.pack_code];
 
-        if (official(pack) && !pack?.reprint) {
+        if (official(pack) && !pack?.reprint_type) {
           const cycle = metadata.cycles[pack?.cycle_code];
           const reprintPackId = `${cycle?.code}${card.encounter_code ? "c" : "p"}`;
           const reprintPack = metadata.packs[reprintPackId];
-          if (reprintPack?.reprint) packs.add(reprintPack.code);
+          if (reprintPack?.reprint_type) packs.add(reprintPack.code);
         }
 
         if (card.encounter_code) {
@@ -1291,7 +1291,7 @@ export const selectCyclesAndPacks = createSelector(
 
         for (const code of Object.keys(packTable)) {
           const pack = metadata.packs[code];
-          (pack.reprint ? reprintPacks : packs).push(pack);
+          (pack.reprint_type ? reprintPacks : packs).push(pack);
         }
 
         reprintPacks.sort((a, b) => a.position - b.position);

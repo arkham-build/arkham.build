@@ -90,6 +90,12 @@ function applyLocalEncounterSets(encounterSets: EncounterSet[]) {
 function applyLocalPacks(packs: Pack[]) {
   const merged = new Map(packs.map((pack) => [pack.code, pack]));
 
+  const rcore = merged.get("rcore");
+  if (rcore) {
+    rcore.reprint_type = "rcore";
+    rcore.reprint_packs = ["core"];
+  }
+
   for (const pack of localPacks) {
     merged.set((pack as JsonDataPack).code, normalizeLocalPack(pack));
   }

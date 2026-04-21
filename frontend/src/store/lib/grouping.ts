@@ -311,7 +311,7 @@ function groupByPack(cards: Card[], metadata: Metadata) {
       const reprintPackCode = `${pack.cycle_code}${cardType === "encounter" ? "c" : "p"}`;
       const reprintPack = metadata.packs[reprintPackCode];
 
-      if (reprintPack?.reprint) {
+      if (reprintPack?.reprint_type) {
         pack = reprintPack;
       }
 

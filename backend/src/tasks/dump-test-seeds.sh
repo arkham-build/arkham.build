@@ -23,9 +23,11 @@ pg_dump \
   --table=cycle \
   --table=data_version \
   --table=encounter_set \
+  --table=faction \
   --table=pack \
-  --table=pack_type \
-  --table=taboo_set
+  --table=subtype \
+  --table=taboo_set \
+  --table=type
 
 # Create temp tables for filtered data
 psql -h localhost -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "

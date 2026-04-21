@@ -4,6 +4,7 @@ import { useStore } from "@/store";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
 import { selectPrintingsForCard } from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
+import { displayPackName } from "@/utils/formatting";
 import EncounterIcon from "../icons/encounter-icon";
 import { Printing, PrintingInner } from "../printing";
 import { Button } from "../ui/button";
@@ -143,10 +144,10 @@ function EncounterEntry(props: Props & { showCopyId: boolean }) {
                 target="_blank"
                 rel="noreferrer"
               >
-                {encounterSet.name}
+                {displayPackName(encounterSet)}
               </a>
             ) : (
-              <span>{encounterSet.name}</span>
+              <span>{displayPackName(encounterSet)}</span>
             )
           }
           position={getEncounterPositions(

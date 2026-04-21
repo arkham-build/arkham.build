@@ -1,7 +1,6 @@
 import type { Card } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import { official } from "@/utils/card-utils";
-import { PREVIEW_PACKS } from "@/utils/constants";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import { time, timeEnd } from "@/utils/time";
@@ -106,13 +105,15 @@ export const selectCollection = createSelector(
     return settings.showPreviews
       ? {
           ...collection,
-          ...PREVIEW_PACKS.reduce(
-            (acc, code) => {
-              acc[code] = 1;
-              return acc;
-            },
-            {} as Record<string, number>,
-          ),
+          ...Object.values(metadata.packs)
+            .filter((p) => p.preview)
+            .reduce(
+              (acc, { code }) => {
+                acc[code] = 1;
+                return acc;
+              },
+              {} as Record<string, number>,
+            ),
         }
       : collection;
   },
@@ -304,10 +305,10 @@ export const selectPrintingsForCard = createSelector(
       if (card) {
         if (reprintPacks) {
           Object.keys(reprintPacks).forEach((reprintCode) => {
-            const targetType = card.encounter_code ? "encounter" : "player";
-            const reprintPack = metadata.packs[reprintCode];
-            const reprintType = reprintPack.reprint?.type;
-            if (reprintType === targetType) acc.set(reprintCode, card);
+            const targetType = card.encounter_code ? "campaign" : "player";
+            if (metadata.packs[reprintCode]?.reprint_type === targetType) {
+              acc.set(reprintCode, card);
+            }
           });
         }
       }

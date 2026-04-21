@@ -481,7 +481,7 @@ export function filterPackCode(
         const reprint = metadata.packs[reprintCode];
 
         const typeMatches =
-          !!(reprint.reprint?.type === "encounter") === !!card.encounter_code;
+          !!(reprint.reprint_type === "campaign") === !!card.encounter_code;
 
         return typeMatches && value.includes(reprintCode);
       });

@@ -85,6 +85,10 @@ export {
   JsonDataCycleSchema,
 } from "./schemas/cycle.schema.ts";
 export {
+  type DataVersion,
+  DataVersionSchema,
+} from "./schemas/data-version.schema.ts";
+export {
   type JsonDataEncounterSet,
   JsonDataEncounterSetSchema,
 } from "./schemas/encounter-set.schema.ts";

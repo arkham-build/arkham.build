@@ -1,12 +1,5 @@
+import { JsonDataCycleSchema } from "@arkham-build/shared";
 import { z } from "zod";
-
-const JsonDataCycleSchema = z.object({
-  code: z.string(),
-  name: z.string(),
-  position: z.number(),
-});
-
-export type JsonDataCycle = z.infer<typeof JsonDataCycleSchema>;
 
 const CycleSchema = JsonDataCycleSchema.extend({
   image_url: z.string().nullish(),

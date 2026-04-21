@@ -13,13 +13,15 @@ import { serializeRecords } from "../../db/db.helpers.ts";
 import { connectionString, getDatabase } from "../../db/db.ts";
 import { chunkArray } from "../../lib/chunk-array.ts";
 import { configFromEnv } from "../../lib/config.ts";
-import { resolveCards } from "./lib/cards.ts";
+import { mergeTranslations, resolveCards } from "./lib/cards.ts";
 import { resolveCycles } from "./lib/cycles.ts";
+import { syncDataVersions } from "./lib/data-version.ts";
 import { resolveEncounterSets } from "./lib/encounter-sets.ts";
 import { resolveFactions } from "./lib/factions.ts";
 import {
   downloadJsonDataRepo,
   getMetadataWithTranslations,
+  withTranslations,
 } from "./lib/json-data.ts";
 import { applyLocalData } from "./lib/local-data.ts";
 import { resolvePacks } from "./lib/packs.ts";
@@ -33,10 +35,11 @@ async function ingest() {
   const config = configFromEnv();
   const db = getDatabase(connectionString(config));
 
-  const [dir, tabooDir] = await Promise.all([
-    downloadJsonDataRepo(config),
-    downloadTabooRepo(config),
-  ]);
+  const [{ path: dir, sha: jsonDataSha }, { path: tabooDir, sha: tabooSha }] =
+    await Promise.all([
+      downloadJsonDataRepo(config),
+      downloadTabooRepo(config),
+    ]);
 
   const packFiles = await readdir(path.join(dir, "pack"), {
     recursive: true,
@@ -98,11 +101,19 @@ async function ingest() {
       tabooSets,
       ...cardPacks
     ]) => {
+      const allCardTranslations = mergeTranslations(cardPacks);
+
       const data = applyLocalData({
-        cards: cardPacks.flat(),
-        cycles,
-        encounterSets,
-        packs,
+        cards: cardPacks.flatMap((pack) =>
+          pack.data.map((c) => withTranslations(c, allCardTranslations)),
+        ),
+        cycles: cycles.data.map((c) =>
+          withTranslations(c, cycles.translations),
+        ),
+        encounterSets: encounterSets.data.map((e) =>
+          withTranslations(e, encounterSets.translations),
+        ),
+        packs: packs.data.map((p) => withTranslations(p, packs.translations)),
       });
 
       const { cardResolutions, cards } = resolveCards(data.cards, tabooSets);
@@ -112,11 +123,15 @@ async function ingest() {
         cards,
         cycles: resolveCycles(data.cycles),
         encounterSets: resolveEncounterSets(data.encounterSets, cards),
-        factions: resolveFactions(factions),
+        factions: resolveFactions(
+          factions.data.map((f) => withTranslations(f, factions.translations)),
+        ),
         packs: resolvePacks(data.packs),
-        subtypes: subtypes,
+        subtypes: subtypes.data.map((s) =>
+          withTranslations(s, subtypes.translations),
+        ),
         tabooSets: resolveTabooSets(tabooSets),
-        types: types,
+        types: types.data.map((t) => withTranslations(t, types.translations)),
       };
     },
   );
@@ -158,6 +173,12 @@ async function ingest() {
         .values(serializeRecords(chunk))
         .execute();
     }
+
+    await syncDataVersions(tx, {
+      locales: config.METADATA_LOCALES,
+      sha: `${jsonDataSha}:${tabooSha}`,
+      cardCount: cards.length,
+    });
   });
 
   await db.destroy();

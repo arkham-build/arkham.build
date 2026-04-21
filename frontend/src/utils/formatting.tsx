@@ -1,6 +1,7 @@
 import i18next from "i18next";
 import { createSelector } from "reselect";
 import type { Cycle } from "@/store/schemas/cycle.schema";
+import type { EncounterSet } from "@/store/schemas/encounter-set.schema";
 import type { Pack } from "@/store/schemas/pack.schema";
 import type { TabooSet } from "@/store/schemas/taboo-set.schema";
 import i18n from "@/utils/i18n";
@@ -85,7 +86,7 @@ export function formatProviderName(name: StorageProvider) {
   }
 }
 
-export function displayPackName(pack: Pack | Cycle) {
+export function displayPackName(pack: Pack | Cycle | EncounterSet) {
   return pack.name ?? pack.real_name ?? "";
 }
 

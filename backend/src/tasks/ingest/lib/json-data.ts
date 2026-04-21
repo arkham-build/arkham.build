@@ -24,8 +24,7 @@ export async function getMetadataWithTranslations<T extends Coded>(
   opts: Opts,
 ) {
   const { data, translations } = await readDataWithTranslations<T>(root, opts);
-  const table = translationTable(translations);
-  return data.map((item) => withTranslations(item, table));
+  return { data, translations: translationTable(translations) };
 }
 
 async function readDataWithTranslations<T>(root: string, opts: Opts) {
@@ -66,17 +65,20 @@ function translationTable<T>(translations: WrappedTranslation<T>[]) {
   return table;
 }
 
-function withTranslations<T extends Coded>(
+export function withTranslations<T extends Coded>(
   item: T,
   table: TranslationTable<T>,
 ) {
   const translations = Object.entries(table).reduce((acc, [locale, data]) => {
-    const t = data[item.code];
+    // biome-ignore lint/suspicious/noExplicitAny: FIXME: hack.
+    const duplicateId = (item as any)?.duplicate_of;
+
+    const t = data[item.code] ?? (duplicateId ? data[duplicateId] : undefined);
     if (!t) return acc;
 
     const entries = Object.entries(t).reduce(
       (acc, [key, value]) => {
-        if (value != null && value !== item[key as keyof T]) {
+        if (value) {
           acc[key as keyof Translatable<T>] = value;
         }
         return acc;

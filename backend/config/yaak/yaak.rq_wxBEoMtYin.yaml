@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_wxBEoMtYin
+createdAt: 2026-04-20T09:57:33.160456
+updatedAt: 2026-04-21T13:48:31.668989
+workspaceId: wk_bBoraEVHnK
+folderId: fl_AnZTrE4WyY
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Cards
+sortPriority: 4000.0
+url: ${[ base_url ]}/v1/cache/cards
+urlParameters: []

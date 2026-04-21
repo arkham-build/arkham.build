@@ -6,7 +6,21 @@ import { readPoFile } from "./gettext.ts";
 import { downloadRepo } from "./github.ts";
 import type { WithItemTranslations } from "./json-data.types.ts";
 
-export function tabooSetName(id: number) {
+export function downloadTabooRepo(config: Config) {
+  return downloadRepo(config.INGEST_TABOO_DATA_REPO, "taboo-data");
+}
+
+export function resolveTabooSets(taboos: JsonDataTabooSet[]) {
+  return taboos.map((t) => ({
+    id: t.id,
+    name: tabooSetName(t.id),
+    card_count: t.cards.length,
+    date_start: t.date_start,
+    code: t.code,
+  }));
+}
+
+function tabooSetName(id: number) {
   switch (id) {
     case 1:
       return "1.5";
@@ -33,20 +47,6 @@ export function tabooSetName(id: number) {
   }
 }
 
-export function resolveTabooSets(taboos: JsonDataTabooSet[]) {
-  return taboos.map((t) => ({
-    id: t.id,
-    name: tabooSetName(t.id),
-    card_count: t.cards.length,
-    date_start: t.date_start,
-    code: t.code,
-  }));
-}
-
-export function downloadTabooRepo(config: Config) {
-  return downloadRepo(config.INGEST_TABOO_DATA_REPO, "json-data");
-}
-
 type Opts = {
   file: string;
   locales: string[];
@@ -68,8 +68,8 @@ export async function getTabooDataWithTranslations(root: string, opts: Opts) {
               const translatedKeys: Record<string, string> = {};
 
               for (const [k, v] of Object.entries(tabooCard)) {
-                if (typeof v === "string" && catalog[v] && catalog[v] !== v) {
-                  translatedKeys[k] = catalog[v];
+                if (typeof v === "string") {
+                  translatedKeys[k] = catalog[v] ?? v;
                 }
               }
 

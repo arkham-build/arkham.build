@@ -10,6 +10,7 @@ import {
 } from "@/store/selectors/lists";
 import { isEncounterSetFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
+import { displayPackName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import EncounterIcon from "../icons/encounter-icon";
 import type { FilterProps } from "./filters.types";
@@ -72,7 +73,7 @@ function EncounterSetName({ set }: { set: EncounterSet }) {
   return (
     <>
       <EncounterIcon code={set.code} />
-      {set.name}
+      {displayPackName(set)}
     </>
   );
 }

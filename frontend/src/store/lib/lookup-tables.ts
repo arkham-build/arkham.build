@@ -495,7 +495,7 @@ function addPacksToLookupTables(
   const packs = Object.values(metadata.packs);
 
   for (const pack of packs) {
-    if (pack.reprint && pack.reprint.type !== "rcore") {
+    if (pack.reprint_type && pack.reprint_type !== "rcore") {
       reprintsByCycleCode[pack.cycle_code] ??= [];
       reprintsByCycleCode[pack.cycle_code].push(pack.code);
     }
@@ -510,14 +510,14 @@ function addPacksToLookupTables(
       for (const reprintPackCode of reprintsByCycleCode[pack.cycle_code]) {
         const reprintPack = metadata.packs[reprintPackCode];
 
-        if (!pack.reprint && reprintPackCode !== pack.code) {
+        if (!pack.reprint_type && reprintPackCode !== pack.code) {
           setInLookupTable(
             reprintPackCode,
             lookupTables.reprintPacksByPack,
             pack.code,
           );
 
-          if (reprintPack.reprint?.type !== "player") {
+          if (reprintPack.reprint_type !== "player") {
             lookupTables.encounterCodesByPack[reprintPackCode] = {
               ...lookupTables.encounterCodesByPack[reprintPackCode],
               ...lookupTables.encounterCodesByPack[pack.code],

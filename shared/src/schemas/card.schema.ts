@@ -275,6 +275,7 @@ export const ApiCardSchema = JsonDataCardSchema.omit({
   back_link_id: z.string().nullish(),
   deck_requirements: ApiDeckRequirementsSchema.nullish(),
   duplicate_of_code: z.string().nullish(),
+  id: z.string(),
   locale: z.string().nullish(),
   preview: z.boolean().nullish(),
   real_back_flavor: z.string().nullish(),

@@ -94,11 +94,11 @@ export function resolveLimitedPoolPacks(
         if (cycle.code === "core") {
           selectedPacks.push(...cyclePacks);
         } else {
-          const reprints = cyclePacks.filter((p) => p.reprint);
+          const reprints = cyclePacks.filter((p) => p.reprint_type);
 
           if (reprints.length) {
             selectedPacks.push(
-              ...reprints.filter((p) => p.reprint?.type !== "encounter"),
+              ...reprints.filter((p) => p.reprint_type !== "campaign"),
             );
           } else {
             selectedPacks.push(...cyclePacks);
