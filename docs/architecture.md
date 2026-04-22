@@ -8,11 +8,10 @@ The Node.js backend (`./backend`) currently handles recommendations and deck gui
 
 There is a separate, private Cloudflare Function backend that is being phased out. It currently still serves a few functions:
 
-1. a cache for metadata  such as cards and sets.
-2. a cached proxy for public ArkhamDB endpoints.
-3. a [token-mediating backend](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps#name-token-mediating-backend) for authenticated ArkhamDB endpoints.
-4. a CRUD API for public _shares_.
-5. a generator for opengraph previews.
+1. a cached proxy for public ArkhamDB endpoints.
+2. a [token-mediating backend](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps#name-token-mediating-backend) for authenticated ArkhamDB endpoints.
+3. a CRUD API for public _shares_.
+4. a generator for opengraph previews.
 
 ## Cloudflare Pages functions
 
