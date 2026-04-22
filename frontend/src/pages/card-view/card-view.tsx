@@ -35,6 +35,7 @@ import {
   FLOATING_PORTAL_ID,
 } from "@/utils/constants";
 import { cx } from "@/utils/cx";
+import { groupPrintingsByChapter } from "@/utils/group-printings-by-chapter";
 import { ErrorStatus } from "../errors/404";
 import css from "./card-view.module.css";
 import { Faq } from "./faq";
@@ -171,32 +172,45 @@ function Printings(props: { code: string }) {
     selectPrintingsForCard(state, props.code),
   );
 
+  const { t } = useTranslation();
   const [search] = useSearchParams();
   const oldFormat = search.get("old_format") === "true";
 
   const lookupTables = useStore(selectLookupTables);
+  const printingsByChapter = groupPrintingsByChapter(printings);
 
   return (
-    <ul className={css["printings"]}>
-      {printings.map((printing) => {
-        const reprintPackCode =
-          lookupTables.reprintPacksByPack[printing.pack.code];
+    <div className={css["printings-groups"]}>
+      {printingsByChapter.map(([chapter, chapterPrintings]) => (
+        <section className={css["printings-group"]} key={chapter}>
+          <h3 className={css["printings-chapter-title"]}>
+            {t("settings.collection.chapter", { number: chapter })}
+          </h3>
+          <ul className={css["printings"]}>
+            {chapterPrintings.map((printing) => {
+              const reprintPackCode =
+                lookupTables.reprintPacksByPack[printing.pack.code];
 
-        return (
-          <li key={`${printing.pack.code}-${printing.card.code}`}>
-            <ListPrinting
-              active={
-                printing.card.code === props.code &&
-                (CYCLES_WITH_STANDALONE_PACKS.includes(printing.cycle.code) ||
-                  oldFormat === !printing.pack.reprint_type)
-              }
-              printing={printing}
-              oldFormat={!!reprintPackCode}
-            />
-          </li>
-        );
-      })}
-    </ul>
+              return (
+                <li key={`${printing.pack.code}-${printing.card.code}`}>
+                  <ListPrinting
+                    active={
+                      printing.card.code === props.code &&
+                      (CYCLES_WITH_STANDALONE_PACKS.includes(
+                        printing.cycle.code,
+                      ) ||
+                        oldFormat === !printing.pack.reprint_type)
+                    }
+                    printing={printing}
+                    oldFormat={!!reprintPackCode}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+    </div>
   );
 }
 

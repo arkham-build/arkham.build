@@ -2,9 +2,13 @@ import type { Card } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
-import { selectPrintingsForCard } from "@/store/selectors/shared";
+import {
+  type Printing as CardPrinting,
+  selectPrintingsForCard,
+} from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
 import { displayPackName } from "@/utils/formatting";
+import { groupPrintingsByChapter } from "@/utils/group-printings-by-chapter";
 import EncounterIcon from "../icons/encounter-icon";
 import { Printing, PrintingInner } from "../printing";
 import { Button } from "../ui/button";
@@ -83,35 +87,14 @@ function PlayerEntry(props: Props & { showCopyId: boolean }) {
   return (
     <>
       <hr className={css["meta-divider"]} />
-
-      {printings?.map((printing) => {
-        const active = cardCode === printing.card.code;
-
-        const hasVersions =
-          printings.filter((p) => p.card.code !== cardCode).length > 0;
-
-        return (
-          <p className={css["meta-property"]} key={printing.id}>
-            <Printing
-              active={active && hasVersions}
-              key={printing.id}
-              linked={linked}
-              printing={printing}
-              showCopyId={showCopyId}
-              actionNode={
-                !active && hasVersions && onPrintingSelect ? (
-                  <Button
-                    size="xxs"
-                    onClick={() => onPrintingSelect(printing.card)}
-                  >
-                    {t("common.select")}
-                  </Button>
-                ) : undefined
-              }
-            />
-          </p>
-        );
-      })}
+      <PrintingGroups
+        cardCode={cardCode}
+        linked={linked}
+        onPrintingSelect={onPrintingSelect}
+        printings={printings}
+        showCopyId={showCopyId}
+        selectLabel={t("common.select")}
+      />
     </>
   );
 }
@@ -157,11 +140,45 @@ function EncounterEntry(props: Props & { showCopyId: boolean }) {
         />
       </p>
       <hr className={css["meta-divider"]} />
-      {printings?.map((printing) => {
-        const active = cardCode === printing.card.code;
+      <PrintingGroups
+        cardCode={cardCode}
+        linked={linked}
+        printings={printings}
+        showCopyId={showCopyId}
+      />
+    </>
+  );
+}
 
-        const hasVersions =
-          printings.filter((p) => p.card.code !== cardCode).length > 0;
+function PrintingGroups(props: {
+  cardCode: string;
+  linked: boolean;
+  onPrintingSelect?: (card: Card) => void;
+  printings: CardPrinting[];
+  selectLabel?: string;
+  showCopyId: boolean;
+}) {
+  const {
+    cardCode,
+    linked,
+    onPrintingSelect,
+    printings,
+    selectLabel,
+    showCopyId,
+  } = props;
+
+  const hasVersions = printings.some(
+    (printing) => printing.card.code !== cardCode,
+  );
+  const printingsByChapter = groupPrintingsByChapter(printings);
+
+  return printingsByChapter.map(([chapter, chapterPrintings]) => (
+    <div className={css["meta-printing-group"]} key={chapter}>
+      <p className={cx(css["meta-property"], css["meta-chapter"])}>
+        {`Chapter ${chapter}`}
+      </p>
+      {chapterPrintings.map((printing) => {
+        const active = cardCode === printing.card.code;
 
         return (
           <p className={css["meta-property"]} key={printing.id}>
@@ -171,12 +188,22 @@ function EncounterEntry(props: Props & { showCopyId: boolean }) {
               linked={linked}
               printing={printing}
               showCopyId={showCopyId}
+              actionNode={
+                !active && hasVersions && onPrintingSelect ? (
+                  <Button
+                    size="xxs"
+                    onClick={() => onPrintingSelect(printing.card)}
+                  >
+                    {selectLabel}
+                  </Button>
+                ) : undefined
+              }
             />
           </p>
         );
       })}
-    </>
-  );
+    </div>
+  ));
 }
 
 function getEncounterPositions(position: number, quantity: number) {
