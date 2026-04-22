@@ -215,9 +215,9 @@ export function extractHiddenSlots(deck: Deck, metadata: Metadata) {
         metadata.cards[code].pack_code === "core_2026" &&
         !!metadata.cards[code].encounter_code;
 
-      const isPreview =
-        metadata.cards[code]?.preview &&
-        metadata.cards[code].pack_code !== "core_2026";
+      const isPreview = ["mar", "tom", "mig", "and", "car"].includes(
+        metadata.cards[code].pack_code,
+      );
 
       if (isFanMade || isUnreleasedEncounter || isPreview) {
         hiddenSlots[key] ??= {};

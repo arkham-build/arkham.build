@@ -9,6 +9,7 @@ import { Interpreter } from "../lib/buildql/interpreter";
 import { ownedCardCount } from "../lib/card-ownership";
 import { addProjectToMetadata, cloneMetadata } from "../lib/fan-made-content";
 import { createLookupTables } from "../lib/lookup-tables";
+import type { LookupTables } from "../lib/lookup-tables.types";
 import type { ResolvedDeck } from "../lib/types";
 import type { Cycle } from "../schemas/cycle.schema";
 import type { Pack } from "../schemas/pack.schema";
@@ -276,33 +277,21 @@ export const selectPrintingsForCard = createSelector(
     showFanMadeRelations,
     cardCode,
   ) => {
-    const duplicates = Object.keys(
-      lookupTables.relations.duplicates[cardCode] ?? {},
-    );
+    const packCodes = collectPrintingCodes(cardCode, lookupTables).reduce(
+      (acc, code) => {
+        const card = metadata.cards[code];
 
-    const reprints = Object.keys(
-      lookupTables.relations.reprints[cardCode] ?? {},
-    );
+        if (!card) return acc;
 
-    const basePrints = Object.keys(
-      lookupTables.relations.basePrints[cardCode] ?? {},
-    );
+        const canShow =
+          (showFanMadeRelations || official(card)) &&
+          (showPreviews || !card.preview);
 
-    const packCodes = Array.from(
-      new Set([cardCode, ...duplicates, ...reprints, ...basePrints]),
-    ).reduce((acc, code) => {
-      const card = metadata.cards[code];
+        if (!canShow) return acc;
 
-      const canShow =
-        (showFanMadeRelations || official(card)) &&
-        (showPreviews || !card.preview);
+        acc.set(card.pack_code, card);
+        const reprintPacks = lookupTables.reprintPacksByPack[card.pack_code];
 
-      if (!canShow) return acc;
-
-      acc.set(card.pack_code, card);
-      const reprintPacks = lookupTables.reprintPacksByPack[card.pack_code];
-
-      if (card) {
         if (reprintPacks) {
           Object.keys(reprintPacks).forEach((reprintCode) => {
             const targetType = card.encounter_code ? "campaign" : "player";
@@ -311,9 +300,11 @@ export const selectPrintingsForCard = createSelector(
             }
           });
         }
-      }
-      return acc;
-    }, new Map<string, Card>());
+
+        return acc;
+      },
+      new Map<string, Card>(),
+    );
 
     const printings = Array.from(packCodes.entries())
       .map(([packCode, card]) => {
@@ -394,3 +385,27 @@ export const selectStaticBuildQlInterpreter = createSelector(
     });
   },
 );
+
+function collectPrintingCodes(cardCode: string, lookupTables: LookupTables) {
+  const firstHop = collectPrintingNeighborCodes([cardCode], lookupTables);
+  const secondHop = collectPrintingNeighborCodes(firstHop, lookupTables);
+
+  return Array.from(new Set([cardCode, ...firstHop, ...secondHop]));
+}
+
+function collectPrintingNeighborCodes(
+  cardCodes: string[],
+  lookupTables: LookupTables,
+) {
+  return cardCodes.flatMap((code) => {
+    const duplicates = Object.keys(
+      lookupTables.relations.duplicates[code] ?? {},
+    );
+    const reprints = Object.keys(lookupTables.relations.reprints[code] ?? {});
+    const basePrints = Object.keys(
+      lookupTables.relations.basePrints[code] ?? {},
+    );
+
+    return [...duplicates, ...reprints, ...basePrints];
+  });
+}

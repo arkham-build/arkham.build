@@ -195,8 +195,8 @@
   {
     "code": "60267",
     "patch": true,
-    "duplicate_of": null,
-    "reprint_of": "01039"
+    "duplicate_of": "12039",
+    "reprint_of": null
   },
   {
     "code": "60270",

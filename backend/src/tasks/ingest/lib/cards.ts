@@ -51,8 +51,19 @@ export function resolveCards(
     // expand cards that should resolve to another printing.
     if (card.duplicate_of) {
       cardResolutions.push({ id, resolves_to: card.duplicate_of });
-      const source = cardMapping.get(card.duplicate_of);
+      let source = cardMapping.get(card.duplicate_of);
+
+      if (source?.duplicate_of || source?.reprint_of) {
+        source = {
+          ...cardMapping.get(
+            (source?.duplicate_of || source?.reprint_of) as string,
+          ),
+          ...source,
+        };
+      }
+
       const expanded = { ...source, ...card, id } as Out;
+
       cards.push(expanded);
       cardMapping.set(id, expanded);
       // expand reprint cards. these are not duplicates due to chapter switch.

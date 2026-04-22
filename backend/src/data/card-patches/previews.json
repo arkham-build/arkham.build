@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "code": "60169",
+    "duplicate_of": "12025",
+    "pack_code": "tom",
+    "position": 19
+  },
+  {
+    "code": "60459",
+    "duplicate_of": "12059",
+    "pack_code": "mar",
+    "position": 9
+  }
+]
