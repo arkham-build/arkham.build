@@ -13,7 +13,7 @@ export function applyCacheHeaders(
   options: ApplyCacheHeadersOptions,
 ) {
   c.header("Cache-Control", cacheControlHeader(options.resource));
-  c.header("ETag", options.etag);
+  c.header("ETag", formatEtag(options.etag));
 }
 
 function cacheControlHeader(resource: CacheResource) {
@@ -34,4 +34,10 @@ function cacheControlHeader(resource: CacheResource) {
     "s-maxage=86400",
     "stale-while-revalidate=604800",
   ].join(", ");
+}
+
+function formatEtag(etag: string) {
+  if (etag.startsWith('W/"') && etag.endsWith('"')) return etag;
+  if (etag.startsWith('"') && etag.endsWith('"')) return etag;
+  return `"${etag}"`;
 }
