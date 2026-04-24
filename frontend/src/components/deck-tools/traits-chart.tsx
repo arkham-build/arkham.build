@@ -1,8 +1,8 @@
 import type { Card } from "@arkham-build/shared";
-import { Content, Root, Trigger } from "@radix-ui/react-collapsible";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Content, Root, Trigger } from "@/components/ui/collapsible";
 import { useStore } from "@/store";
 import type { ChartableData } from "@/store/lib/deck-charts";
 import { makeSortFunction } from "@/store/lib/sorting";

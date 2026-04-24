@@ -18,8 +18,8 @@ test.describe("settings", () => {
 
     await page.getByTestId("settings-show-all").click();
 
-    await page.getByLabel("The Dunwich Legacy Investigator Expansion").click();
-    await page.getByLabel("The Dunwich Legacy Campaign").click();
+    await page.getByText("The Dunwich Legacy Investigator Expansion").click();
+    await page.getByText("The Dunwich Legacy Campaign").click();
     await page.getByTestId("settings-save").click();
     await page.getByTestId("settings-back").click();
 
@@ -64,7 +64,7 @@ test.describe("settings", () => {
     await page.getByTestId("search-input").focus();
     await page.getByTestId("search-game-text").click();
 
-    await fillSearch(page, "Mutated");
+    await fillSearch(page, 'text == "Mutated"');
 
     await expect(page.getByTestId("cardlist-count").first()).toContainText(
       "0 cards",
@@ -211,7 +211,7 @@ test.describe("settings", () => {
     await page.getByTestId("create-choose-investigator").click();
 
     await expect(page.getByTestId("limited-card-pool-field")).toBeVisible();
-    await expect(page.getByText("Revised Core Set")).toBeVisible();
+    await expect(page.getByText("Core Set (2026)")).toBeVisible();
   });
 
   test("rbw are limited to card pool when configured", async ({ page }) => {

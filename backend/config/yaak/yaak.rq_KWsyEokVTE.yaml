@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_KWsyEokVTE
+createdAt: 2026-04-20T09:56:29.610325
+updatedAt: 2026-04-21T13:48:36.888305
+workspaceId: wk_bBoraEVHnK
+folderId: fl_AnZTrE4WyY
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: Data Version (Localized)
+sortPriority: 1000.0
+url: ${[ base_url ]}/v1/cache/version/de
+urlParameters: []

@@ -103,7 +103,12 @@ export const selectDeckCreateCardSets = createSelector(
       });
     }
 
-    if (relations?.parallelCards?.length) {
+    const showParallelCards =
+      deckCreate.investigatorFrontCode === SPECIAL_CARD_CODES.PARALLEL_ROLAND ||
+      deckCreate.investigatorFrontCode === SPECIAL_CARD_CODES.PARALLEL_WENDY ||
+      deckCreate.investigatorBackCode === SPECIAL_CARD_CODES.PARALLEL_JIM;
+
+    if (showParallelCards && relations?.parallelCards?.length) {
       groupings.push({
         id: "extra",
         title: formatRelationTitle("extra"),
@@ -112,7 +117,7 @@ export const selectDeckCreateCardSets = createSelector(
           deckCreate.investigatorFrontCode ===
           SPECIAL_CARD_CODES.PARALLEL_ROLAND,
         canSelect: false,
-        selected: true,
+        selected: showParallelCards,
         quantities: relations.parallelCards.reduce(
           (acc, { card }) => {
             acc[card.code] =

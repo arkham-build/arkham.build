@@ -148,7 +148,7 @@ export function CardGrid(props: CardListImplementationProps) {
     <Scroller
       className={css["scroller"]}
       data-testid="card-list-scroller"
-      ref={setScrollParent as unknown as React.RefObject<HTMLDivElement>}
+      ref={setScrollParent as unknown as React.RefObject<HTMLDivElement | null>}
       type="always"
     >
       {rect?.width && data && (

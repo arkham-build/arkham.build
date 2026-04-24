@@ -30,7 +30,7 @@ function ForgotPassword() {
         description={
           <>
             <div>{t("auth.forgot_password.success")}</div>
-            <Link href="/login" asChild>
+            <Link href="/auth/login" asChild>
               <Button as="a" variant="primary" size="full">
                 {t("auth.login.title")}
               </Button>
@@ -44,7 +44,7 @@ function ForgotPassword() {
   return (
     <AuthLayout
       footer={
-        <Link href="/login" asChild>
+        <Link href="/auth/login" asChild>
           <Button as="a" variant="bare" size="sm">
             {t("auth.login.title")}
           </Button>

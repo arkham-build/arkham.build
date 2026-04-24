@@ -8,10 +8,10 @@ node_modules
 !.env.example
 !.env.test
 
-.claude
 .vscode/*
 !.vscode/extensions.json
 
+.wrangler
 coverage
 dist
 

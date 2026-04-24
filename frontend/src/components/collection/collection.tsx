@@ -18,6 +18,7 @@ import { isEmpty } from "@/utils/is-empty";
 import { Button } from "../ui/button";
 import { MediaCard } from "../ui/media-card";
 import css from "./collection.module.css";
+import { CollectionChapterActions } from "./collection-chapter-actions";
 import { CollectionCount } from "./collection-count";
 import { CollectionCycleActions } from "./collection-cycle-actions";
 import { CollectionPack } from "./collection-pack";
@@ -57,6 +58,35 @@ export function CollectionSettings(props: Props) {
       }));
     },
     [setSettings],
+  );
+
+  const onToggleChapter = useCallback(
+    (evt: React.MouseEvent) => {
+      if (evt.currentTarget instanceof HTMLButtonElement) {
+        const chapter = evt.currentTarget.dataset.chapter;
+
+        const val = Number.parseInt(
+          evt.currentTarget.dataset.val as string,
+          10,
+        );
+
+        const cycles = cyclesByChapter.find(([c]) => c === chapter)?.[1] ?? [];
+
+        setSettings?.((prev) => ({
+          ...prev,
+          collection: {
+            ...prev.collection,
+            ...cycles.reduce<SettingsState["collection"]>((acc, cycle) => {
+              for (const pack of [...cycle.packs, ...cycle.reprintPacks]) {
+                acc[pack.code] = val;
+              }
+              return acc;
+            }, {}),
+          },
+        }));
+      }
+    },
+    [cyclesByChapter, setSettings],
   );
 
   const onToggleCycle = useCallback(
@@ -120,11 +150,19 @@ export function CollectionSettings(props: Props) {
       >
         {cyclesByChapter.map(([chapter, cycles]) => (
           <div className={css["chapter"]} key={chapter}>
-            <h3 className={css["chapter-title"]}>
-              {t("settings.collection.chapter", {
-                number: chapter,
-              })}
-            </h3>
+            <div className={css["chapter-header"]}>
+              <h3 className={css["chapter-title"]}>
+                {t("settings.collection.chapter", {
+                  number: chapter,
+                })}
+              </h3>
+              {canEdit && (
+                <CollectionChapterActions
+                  chapter={chapter}
+                  onToggleChapter={onToggleChapter}
+                />
+              )}
+            </div>
             <div className={css["cycles"]}>
               {cycles.map((cycle) => (
                 <MediaCard

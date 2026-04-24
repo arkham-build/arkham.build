@@ -21,10 +21,11 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   card: ResolvedCard["card"];
   ignoreTaboo?: boolean;
   size: "compact" | "tooltip" | "full";
+  titleLinks?: "card" | "card-modal" | "dialog";
 }
 
 export function CardBack(props: Props) {
-  const { className, card, ignoreTaboo, size, ...rest } = props;
+  const { className, card, ignoreTaboo, size, titleLinks, ...rest } = props;
 
   const { t } = useTranslation();
 
@@ -64,7 +65,7 @@ export function CardBack(props: Props) {
       data-testid="card-back"
       {...rest}
     >
-      {hasHeader && <CardHeader card={backCard} />}
+      {hasHeader && <CardHeader card={backCard} titleLinks={titleLinks} />}
 
       {card.type_code !== "investigator" && (
         <div className={css["pre"]}>

@@ -10,6 +10,7 @@ import { ListCard } from "@/components/list-card/list-card";
 import { TabooSelect } from "@/components/taboo-select";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { PageTitle } from "@/components/ui/page-title";
 import type { SelectOption } from "@/components/ui/select";
 import { Select } from "@/components/ui/select";
 import { useToast } from "@/components/ui/toast.hooks";
@@ -26,7 +27,6 @@ import { selectConnectionLock } from "@/store/selectors/shared";
 import type { StorageProvider } from "@/utils/constants";
 import { formatProviderName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import { useGoBack } from "@/utils/use-go-back";
 import { useAccentColor } from "../../utils/use-accent-color";
 import { SelectionEditor } from "../deck-edit/editor/selection-editor";
@@ -37,8 +37,6 @@ export function DeckCreateEditor() {
 
   const deckCreate = useStore(selectDeckCreateChecked);
   const { back, investigator } = useStore(selectDeckCreateInvestigators);
-
-  useDocumentTitle(`Create ${investigator.card.real_name} deck`);
 
   const connections = useStore(selectConnectionsData);
   const connectionLock = useStore(selectConnectionLock);
@@ -164,6 +162,9 @@ export function DeckCreateEditor() {
 
   return (
     <div className={css["editor"]} style={cssVariables}>
+      <PageTitle>
+        {t("deck_create.title", { name: investigator.card.real_name })}
+      </PageTitle>
       <Field full padded>
         <FieldLabel htmlFor="provider">
           {t("deck_edit.config.storage_provider.title")}

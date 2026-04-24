@@ -68,6 +68,7 @@
         "view_backside": "Rückseite",
         "who_can_take": "Wer kann {{name}} verwenden?"
       },
+      "errata_notice": "Errata ({{date}})",
       "faq": {
         "empty": "Keine FAQ-Einträge vorhanden.",
         "error": "FAQ-Einträge konnten nicht geladen werden.",
@@ -137,14 +138,14 @@
         "Too many off-class cards for Versatile.": "Zu viele Off-Class-Karten für \"Vielseitig\".",
         "Too many off-class cards.": "Zu viele Off-Class-Karten.",
         "Trait Choice": "Ausgewähltes Merkmal",
-        "You cannot have assets that take up an ally slot.": "Du kannst keine Vorteile haben, die einen Verbündeten-Slot belegen.",
+        "You cannot have assets that take up an ally slot.": "Du kannst keine Vorteile haben, die einen Verbündeten-Slot belegen",
         "You cannot have more than 15 level 0-1 Guardian and/or Survivor cards": "Du kannst nicht mehr als 15 Level 0-1 Wächter und/oder Überlebende Karten haben",
         "You cannot have more than 15 level 0-1 Seeker and/or Mystic cards": "Du kannst nicht mehr als 15 Stufe 0-1 Sucher- und/oder Mystikerkarten haben",
         "You cannot have more than 5 Guardian and/or Mystic cards": "Du kannst nicht mehr als 5 Wächter- und/oder Mystikerkarten haben",
         "You cannot have more than 5 Mystic cards.": "Du kannst nicht mehr als 5 Mystiker Karten haben.",
-        "You cannot have more than 5 Rogue cards.": "Du kannst nicht mehr als 5 Schurken Karten haben.",
-        "You cannot have more than 5 Seeker and/or Survivor cards": "Du kannst nicht mehr als 5 Sucher und/oder Überlebender Karten haben.",
-        "You cannot have more than 5 Survivor cards.": "Du kannst nicht mehr als 5 Überlebender Karten haben.",
+        "You cannot have more than 5 Rogue cards.": "Du kannst nicht mehr als 5 Schurken Karten haben",
+        "You cannot have more than 5 Seeker and/or Survivor cards": "Du kannst nicht mehr als 5 Sucher und/oder Überlebender Karten haben",
+        "You cannot have more than 5 Survivor cards.": "Du kannst nicht mehr als 5 Überlebender Karten haben",
         "You cannot have more than 5 cards that are not Guardian or Neutral": "Du kannst nicht mehr als 5 Karten haben die nicht Wächter oder Neutral sind",
         "You cannot have more than 5 cards that are not Mystic or Neutral": "Du kannst nicht mehr als 5 Karten haben die nicht Mystiker oder Neutral sind",
         "You cannot have more than 5 cards that are not Rogue or Neutral": "Du kannst nicht mehr als 5 Karten haben die nicht Schurke oder Neutral sind",
@@ -155,7 +156,8 @@
         "You cannot have more than 5 level 0 Rogue cards": "Du darfst nicht mehr als 5 Level 0 Schurken Karten haben",
         "You cannot have more than 5 level 0 Seeker cards": "Du darfst nicht mehr als 5 Level 0 Sucher Karten haben",
         "You cannot have more than 5 level 0 Survivor cards": "Du darfst nicht mehr als 5 Level 0 Überlebender Karten haben",
-        "You cannot have more than one Covenant in your deck.": "Du kannst nicht mehr als einen Bund in deinem Deck haben.",
+        "You cannot have more than one Covenant in your deck.": "Du kannst nicht mehr als einen Bund in deinem Deck haben",
+        "You must have at least 6 cards from each faction.": "Du musst mindestens 6 Karten von jeder Klasse haben",
         "You must have at least 7 cards from 3 different factions": "Du musst mindestens 7 Karten von 3 verschiedenen Klassen haben",
         "You must have at least 7 cards from each class": "Du musst mindestens 7 Karten von jeder Klasse haben"
       },
@@ -198,6 +200,7 @@
       "more_actions": "Weitere Aktionen",
       "myriad": "Unzählig",
       "no_entries": "Keine Einträge",
+      "non_collection_cards": "{{count}} nicht im Besitz",
       "none": "Keine Auswahl",
       "nonexceptional": "Nicht-Außergewöhnlich",
       "ok": "OK",
@@ -226,8 +229,9 @@
         "replacement": "Ersatz-Signaturkarten",
         "requiredCards": "Signaturkarten",
         "restrictedTo": "Limitiert auf",
-        "specialist": "Specialist",
-        "specialist_investigators": "Specialist Investigators"
+        "sideDeckRequiredCards": "Extra Deck Signaturen",
+        "specialist": "Spezialistenkarten",
+        "specialist_investigators": "Spezialisten-Ermittler"
       },
       "reset": "Zurücksetzen",
       "seal": "Versiegeln",
@@ -304,6 +308,7 @@
         "Act 1": "Szene 1",
         "Act 2": "Szene 2",
         "Agency": "Behörde",
+        "Alchemy": "Alchemy",
         "Alexandria": "Alexandria",
         "Allied": "Verbündet",
         "Ally": "Verbündeter",
@@ -311,10 +316,11 @@
         "Ancient": "Uralt",
         "Ancient One": "Großer Alter",
         "Apiary": "Apiary",
+        "Apparel": "Apparel",
         "Arkham": "Arkham",
         "Arkham Asylum": "Arkham Sanatorium",
         "Armor": "Rüstung",
-        "Artifact": "Artifact",
+        "Artifact": "Artefakt",
         "Artist": "Künstler",
         "Assistant": "Assistent",
         "Attack": "Angriff",
@@ -342,6 +348,7 @@
         "Carnevale": "Karneval",
         "Cart": "Karren",
         "Casino": "Casino",
+        "Castle": "Castle",
         "Cave": "Höhle",
         "Central": "Zentral",
         "Charm": "Glücksbringer",
@@ -354,13 +361,14 @@
         "Clover Club": "Clover Club",
         "Coastal": "Küste",
         "Colour": "Farbe",
-        "Completed": "Completed",
+        "Completed": "Vollendet",
         "Composure": "Gelassenheit",
         "Condition": "Zustand",
         "Connection": "Verbindung",
         "Conspirator": "Verschwörer",
         "Construct": "Konstrukt",
         "Corruption": "Verderbnis",
+        "Cosmos": "Cosmos",
         "Coterie": "Coterie",
         "Covenant": "Bund",
         "Creature": "Kreatur",
@@ -381,6 +389,8 @@
         "Developed": "Entwickelt",
         "Dhole": "Dhole",
         "Dilemma": "Dilemma",
+        "Dinosaur": "Dinosaur",
+        "Dionsaur": "Dionsaur",
         "Distortion": "Verzerrung",
         "Dormant": "Ruhend",
         "Double": "Doppelt",
@@ -398,7 +408,7 @@
         "Enraged": "Enraged",
         "Entrepreneur": "Unternehmer",
         "Evidence": "Beweis",
-        "Exhibit": "Austellung",
+        "Exhibit": "Ausstellung",
         "Expedition": "Expedition",
         "Expert": "Experte",
         "Extradimensional": "Außerdimensional",
@@ -426,7 +436,7 @@
         "Ghast": "Ghast",
         "Ghoul": "Ghoul",
         "Glacier": "Gletscher",
-        "Glyph": "Glyph",
+        "Glyph": "Glyphe",
         "Government": "Regierung",
         "Grant": "Zuschuss",
         "Graveyard": "Friedhof",
@@ -438,6 +448,7 @@
         "Haunted": "Heimgesucht",
         "Havana": "Havana",
         "Hazard": "Gefahr",
+        "Headwear": "Headwear",
         "Hemlock Vale": "Hemlock Vale",
         "Hex": "Verwünschung",
         "Hideout": "Versteck",
@@ -447,8 +458,8 @@
         "Hybrid": "Hybrid",
         "Illicit": "Illegal",
         "Improvised": "Improvisiert",
-        "Incomplete": "Incomplete",
-        "Inconspicuous": "Inconspicuous",
+        "Incomplete": "Unvollendet",
+        "Inconspicuous": "Unauffällig",
         "Injury": "Verletzung",
         "Innate": "Angeboren",
         "Innocent": "Unschuldig",
@@ -502,7 +513,7 @@
         "New Orleans": "New Orleans",
         "New York City": "New York City",
         "Nightgaunt": "Dunkeldürrer",
-        "Obstacle": "Hinderniss",
+        "Obstacle": "Hindernis",
         "Occult": "Okkult",
         "Ocean": "Ozean",
         "Omen": "Omen",
@@ -520,7 +531,7 @@
         "Past": "Vergangenheit",
         "Patron": "Mäzen",
         "Performer": "Performer",
-        "Plot": "Plot",
+        "Plot": "Handlung",
         "Pnakotus": "Pnakotus",
         "Poison": "Gift",
         "Police": "Polizei",
@@ -533,9 +544,11 @@
         "Present-Day": "Gegenwart",
         "Prison": "Gefängnis",
         "Private": "Privat",
+        "Profession": "Profession",
+        "Prop": "Prop",
         "Providence": "Providence",
         "Public": "Öffentlich",
-        "R'lyeh": "R'lyeh",
+        "R'lyeh": "R’lyeh",
         "Rail": "Bahngleis",
         "Ranged": "Fernkampf",
         "Relic": "Relikt",
@@ -560,6 +573,8 @@
         "Ruins": "Ruinen",
         "Salem": "Salem",
         "Sanctum": "Heiligtum",
+        "Satellite": "Satellite",
+        "Saturnite": "Saturnite",
         "Scheme": "Komplott",
         "Scholar": "Gelehrter",
         "Science": "Wissenschaft",
@@ -572,6 +587,7 @@
         "Serpent": "Schlange",
         "Service": "Dienstleistung",
         "Servitor": "Diener",
+        "Set": "Set",
         "Shantak": "Shantak",
         "Shattered": "Zerstört",
         "Ship": "Schiff",
@@ -588,10 +604,10 @@
         "St Mary's": "St Mary's",
         "Stable": "Stabil",
         "Staff": "Personal",
-        "Star Spawn": "Star Spawn",
+        "Star Spawn": "Sternengezücht",
         "Station": "Haltestelle",
         "Steps": "Stufen",
-        "Stowaway": "Stowaway",
+        "Stowaway": "Blinder Passagier",
         "Summit": "Summit",
         "Summon": "Beschwörung",
         "Sunken": "Versunken",
@@ -639,8 +655,9 @@
         "Witch": "Hexe",
         "Witch House": "Hexenhaus",
         "Woods": "Wälder",
-        "Y'ha-nthlei": "Y'ha-nthlei",
-        "Yithian": "Yithian",
+        "Worker": "Worker",
+        "Y'ha-nthlei": "Y-ha'nthlei",
+        "Yithian": "Yith",
         "Yoth": "Yoth",
         "Yuggoth": "Yuggoth",
         "Zoog": "Zoog"
@@ -682,8 +699,11 @@
         "obsessions": "Obsessions",
         "offerings": "Angebote",
         "portents": "Vorzeichen",
+        "renown": "Renown",
         "resources": "Ressourcen",
+        "rumors": "Rumors",
         "secrets": "Geheimnisse",
+        "shards": "Shards",
         "shell": "Shell",
         "signs": "Signs",
         "supplies": "Ausrüstung",
@@ -733,12 +753,15 @@
       "id": "Deck Id",
       "latest_upgrade": {
         "add_to_deck": "Zum Deck hinzufügen",
+        "decrement_xp": "Reduziere die Anzahl an verfügbaren EP",
+        "increment_xp": "Erhöhe die Anzahl an verfügbaren EP",
         "no_changes": "Keine Änderungen.",
         "summary": "{{xpSpent}} von {{xp}} EP ausgegeben",
         "title": "Aktuelle Verbesserung",
         "xp_spent": "EP ausgegeben"
       },
       "limited_decks": {
+        "Collector": "Collector",
         "Secondary Class": "Sekundärklasse",
         "Versatile": "Vielseitig"
       },
@@ -843,7 +866,8 @@
       "sealed_deck": {
         "error": "Versiegeltes Deck konnte nicht geladen werden: {{error}}",
         "loading": "Versiegeltes Deck wird geladen..."
-      }
+      },
+      "title": "{{name}} Deck erstellen"
     },
     "deck_edit": {
       "actions": {
@@ -868,6 +892,7 @@
       },
       "changes_restored": "Ungespeicherte Änderungen wurden wiederhergestellt.",
       "config": {
+        "buildql_deck_option": "BuildQL deckbuilding override",
         "card_pool": {
           "apply_environment": "{{environment}} Umgebung anwenden",
           "campaign_playalong": "Campaign Play-Along",
@@ -876,14 +901,19 @@
           "collection": "Sammlung",
           "collection_help": "Setze deine aktuelle <settings_link>Sammlung</settings_link> als Kartenpool für dieses Deck. Dies kann praktisch sein während du deine Sammlung aufbaust - oder wenn mehrere Spieler eine Sammlung teilen.",
           "configure_environment": "Umgebung auswählen",
-          "current": "Current",
-          "current_help": "In der \"Current\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und den drei neuesten Ermittlererweiterungen verwenden.",
+          "current": "Aktuell",
+          "current_faq25": "Aktuell (FAQ 2.5)",
+          "current_faq25_help": "In der \"aktuellen\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und den drei neuesten Ermittlererweiterungen verwenden.",
+          "current_help": "In der \"aktuellen\" Umgebung dürfen Decks Karten der folgenden Produkte enthalten: Grundspiel (2026), 5 Ermittlerdecks, die 2 neuesten Deckbau-Erweiterungen und die 2 neuesten Ermittler-Erweiterungen nach dem Grundspiel (2026).",
           "custom": "Benutzerdefinierte Umgebung",
           "help": "Auswahl gilt nicht für Ermittler, Signaturkarten und Schwächen.",
+          "help_chapter_1": "Diese Umgebung ist auf Kapitel 1 beschränkt.",
           "legacy": "Legacy",
           "legacy_help": "In der \"Legacy\" Umgebung dürfen Decks alle erschienenen Karten ohne Einschränkungen verwenden.",
-          "limited": "Limited",
-          "limited_help": "In der \"Limited\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und bis zu drei weiteren Ermittlererweiterungen verwenden.",
+          "limited": "Limitiert",
+          "limited_faq25": "Limitiert (FAQ 2.5)",
+          "limited_faq25_help": "In der \"limitierten\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und bis zu drei weiteren Ermittlererweiterungen verwenden.",
+          "limited_help": "In der \"limitierten\" Umgebung dürfen Decks Karten der folgenden Produkte enthalten: Grundspiel (2026), 5 Ermittlerdecks, 3 verschiedene Spielerkarten-Erweiterungen deiner Wahl.",
           "placeholder": "Packs auswählen...",
           "section_title": "Kartenpooleinstellungen",
           "selected_cards": "Ausgewählte Karten",
@@ -1044,6 +1074,7 @@
       "newer_version": "Dieses Deck ist schreibgeschützt, da eine <a>aktuellere Version</a> verfügbar ist.",
       "scans": "Scans",
       "sharing": {
+        "api_link": "Json API",
         "create": "Freigeben",
         "create_failed": "Erstellen der Freigabe fehlgeschlagen: {{error}}",
         "create_tooltip": "Eine Freigabe ist ein öffentlich verfügbarer, schreibgeschützter Link zu diesem Deck. Jeder, der über diesen Link verfügt, kann das Deck ansehen, es aber nicht bearbeiten.<br />Die Freigabe kann jederzeit aufgehoben werden, ohne das lokale Deck zu löschen.",
@@ -1055,6 +1086,7 @@
         "update": "Freigabe aktualisieren",
         "update_failed": "Aktualisieren der Freigabe fehlgeschlagen: {{error}}"
       },
+      "show_deck_list": "Show deck list",
       "tab_deck_list": "Deck",
       "tab_history": "Verlauf",
       "tab_notes": "Notizen",
@@ -1090,7 +1122,8 @@
         "name_placeholder": "Name eingeben...",
         "required_cards": "Benötigte Karten",
         "submit": "Anwenden",
-        "title": "Suchkriterien"
+        "title": "Suchkriterien",
+        "xp_range": "XP required"
       },
       "sorting": {
         "date": "Most recent",
@@ -1134,6 +1167,7 @@
       "content_types": "Inhaltstypen",
       "content_version": "Inhaltsversion",
       "empty": "Keine Inhalte installiert",
+      "filter_fan_made_content": "Search content...",
       "import_url": {
         "label": "Inhalts-URL",
         "placeholder": "Gib eine URL ein...",
@@ -1144,6 +1178,7 @@
         "available_content_loading": "Verfügbare Inhalte werden geladen...",
         "content_loading": "Lade Inhalte...",
         "fetch_failed": "Inhalt konnte nicht geladen werden: {{error}}",
+        "no_match": "No available content matches your filter",
         "parse_failed": "Inhalt konnte nicht hinzugefügt werden: {{error}}",
         "registry_failed": "Verfügbare Inhalte konnten nicht geladen werden: {{error}}"
       },
@@ -1151,6 +1186,7 @@
         "card_lists": "Kartenlisten",
         "card_lists_help": "Standardwert für den \"Inoffizielle Inhalte\" Filter in den Kartenlisten."
       },
+      "short_title": "Fan-made",
       "status": {
         "alpha": "Alpha",
         "beta": "Beta",
@@ -1226,6 +1262,8 @@
         "no_level": "Keine Stufe",
         "title": "Stufe"
       },
+      "locked": "This filter is locked",
+      "or": "oder",
       "ownership": {
         "owned": "In Besitz",
         "title": "Kartensammlung",
@@ -1337,6 +1375,7 @@
         "display_as_list_text": "Liste mit Kartentext",
         "display_as_scans": "Scans",
         "display_as_scans_grouped": "Scans (gruppiert)",
+        "export": "Export",
         "jump_to": "Springe zu...",
         "list_settings": "Listenoptionen",
         "sort": "Sortierung",
@@ -1369,7 +1408,10 @@
       "title": "Kartenvorschau"
     },
     "rules": {
-      "title": "Spielregeln"
+      "back_to_top": "Back to top",
+      "search_placeholder": "Search keywords...",
+      "title": "Spielregeln",
+      "toc": "Table of contents"
     },
     "search": {
       "title": "Ergebnisse"
@@ -1400,6 +1442,7 @@
       "collection": {
         "card_collection": "Kartensammlung",
         "card_count": "Kartenanzahl",
+        "chapter": "Chapter {{number}}",
         "new_format": "Neues Format",
         "old_format": "Altes Format",
         "show_all_cards_owned": "Alle Karten anzeigen",
@@ -1433,6 +1476,10 @@
         "title": "Verbundene Konten",
         "user_id": "Nutzer ID",
         "username": "Nutzername"
+      },
+      "developer": {
+        "dev_mode_enabled": "Enable developer mode",
+        "title": "Developer"
       },
       "display": {
         "card_display": "Kartenanzeige",

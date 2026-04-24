@@ -25,23 +25,23 @@ export type Item = {
   value: Value;
 };
 
-type Props = {
+type Props<T extends Item> = {
   className?: string;
   disabled?: boolean;
   id?: string;
-  items: Item[];
-  itemToString?: (item: Item) => string;
+  items: T[];
+  itemToString?: (item: T) => string;
   initialOpen?: boolean;
   menuClassName?: string;
   onOpenChange?: (open: boolean) => void;
   onValueChange: (value: Value) => void;
-  renderItem?: (item: Item | undefined) => React.ReactNode;
-  renderControl?: (item: Item | undefined) => React.ReactNode;
+  renderItem?: (item: T | undefined) => React.ReactNode;
+  renderControl?: (item: T | undefined) => React.ReactNode;
   value: Value;
   variant?: "compact";
 };
 
-export function CustomSelect(props: Props) {
+export function CustomSelect<T extends Item>(props: Props<T>) {
   const {
     className,
     disabled,
@@ -145,7 +145,7 @@ export function CustomSelect(props: Props) {
                       <Option
                         {...getItemProps({
                           onClick: () => onSelectItem(index),
-                          onKeyDown(event) {
+                          onKeyDown(event: React.KeyboardEvent<HTMLLIElement>) {
                             if (event.key === "Enter") {
                               event.preventDefault();
                               onSelectItem(index);
@@ -177,7 +177,7 @@ export function CustomSelect(props: Props) {
   );
 }
 
-function Option({
+function Option<T extends Item>({
   activeIndex,
   item,
   itemToString,
@@ -186,9 +186,9 @@ function Option({
   ...rest
 }: {
   activeIndex: number | null;
-  item: Item;
-  itemToString: (item: Item) => string;
-  renderItem: (item: Item) => React.ReactNode;
+  item: T;
+  itemToString: (item: T) => string;
+  renderItem: (item: T) => React.ReactNode;
   selectedIndex: number;
 } & React.HTMLAttributes<HTMLButtonElement>) {
   const { ref, index } = useListItem({
@@ -216,10 +216,10 @@ function Option({
   );
 }
 
-function defaultItemToString(item: Item) {
+function defaultItemToString<T extends Item>(item: T) {
   return item ? item.label : "";
 }
 
-function defaultRenderItem(item: Item) {
+function defaultRenderItem<T extends Item>(item: T) {
   return <span>{item.label}</span>;
 }

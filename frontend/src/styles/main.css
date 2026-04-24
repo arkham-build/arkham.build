@@ -1,4 +1,5 @@
-@layer base, ui-base, ui-components, app, overrides;
+/** biome-ignore-all lint/a11y: icomoon icons. */
+/** biome-ignore-all lint/complexity/noImportantStyles: icomoon icons. */
 
 @layer base {
   :root {
@@ -309,8 +310,12 @@
     position: absolute;
     width: 1px;
     height: 1px;
+    padding: 0;
+    margin: -1px;
     overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
   }
 
   input,
@@ -389,9 +394,11 @@
     font-size: var(--text-xs);
   }
 
-  * {
-    scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar);
-    scrollbar-width: thin;
+  @supports (scrollbar-color: auto) {
+    * {
+      scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar);
+      scrollbar-width: thin;
+    }
   }
 
   .color-health {
@@ -892,6 +899,58 @@
   }
 
   /**
+   * Icon fonts
+   */
+
+  @font-face {
+    font-family: "encounters";
+    src: url("../assets/fonts/encounters.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+  }
+
+  [class^="encounters-"],
+  [class*=" encounters-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: "encounters" !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  @font-face {
+    font-family: "icon";
+    src: url("../assets/fonts/icon.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+  }
+
+  [class^="icon-"],
+  [class*=" icon-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: "icon" !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /**
    * Custom icons
    */
 
@@ -913,8 +972,8 @@
   }
 
   /**
- Locale-specific styles
-*/
+  Locale-specific styles
+ */
 
   @font-face {
     font-family: "Gapyeong Hanseokbong";

@@ -2,8 +2,7 @@ import { execSync } from "node:child_process";
 import { promises as fs } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { applyLocalData } from "../src/store/lib/local-data.ts";
-import type { Card } from "../src/store/schemas/card.schema.ts";
+import type { Card } from "../../shared/src/index";
 import { cardUses } from "../src/utils/card-utils.ts";
 
 type JsonObject = { [key: string]: JsonValue };
@@ -108,17 +107,10 @@ async function cloneRepo() {
   return localPath;
 }
 
-async function queryCards() {
-  const apiCards = await fetch("https://api.arkham.build/v1/cache/cards")
+function queryCards() {
+  return fetch("https://api.arkham.build/v1/cache/cards")
     .then((res) => res.json())
     .then((data) => data.data.all_card);
-
-  return Object.values(
-    applyLocalData({
-      cards: apiCards,
-      // biome-ignore lint/suspicious/noExplicitAny: safe.
-    } as any).cards,
-  );
 }
 
 function listTraits(cards: Card[]) {

@@ -12,6 +12,7 @@
     "shared"
   ],
   "scripts": {
+    "dev:functions": "wrangler pages dev",
     "fmt": "biome check --write",
     "lint": "biome check",
     "prepare:e2e": "playwright install --with-deps",
@@ -26,9 +27,10 @@
     "@biomejs/biome": "2.4.4",
     "@playwright/test": "1.57.0",
     "@types/node": "24.10.15",
-    "@vitest/coverage-v8": "4.0.18",
+    "@vitest/coverage-v8": "4.1.3",
     "lefthook": "2.1.1",
     "typescript": "5.9.3",
-    "vitest": "4.0.18"
+    "vitest": "4.1.3",
+    "wrangler": "4.77.0"
   }
 }

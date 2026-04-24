@@ -8,7 +8,7 @@
 
 .scroller {
   flex: 1 1 auto;
-  padding-inline: 0.75rem;
+  padding-left: 0.625rem;
   padding-bottom: 0.75rem;
 }
 

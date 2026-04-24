@@ -5,7 +5,7 @@ import { useStore } from "@/store";
 import { filterAttribute } from "@/store/lib/filtering";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { cardLimit } from "@/utils/card-utils";
-import { useResolvedDeckChecked } from "@/utils/use-resolved-deck";
+import { useResolvedDeckChecked } from "../resolved-deck-context";
 
 export function canAttach(card: Card, definition: Attachments) {
   return (

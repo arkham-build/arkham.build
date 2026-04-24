@@ -1,4 +1,5 @@
 import {
+  DECKLIST_SEARCH_MAX_XP,
   type DecklistMetaResponse,
   DecklistMetaResponseSchema,
   type DecklistSearchRequest,
@@ -12,6 +13,7 @@ import {
   deckFilterConds,
   excludedSlotsCond,
   inDateRangeConds,
+  inXpRangeConds,
   requiredSlotsCond,
 } from "../../lib/decklist-query-helpers.ts";
 
@@ -123,6 +125,15 @@ export async function search(db: Database, search: DecklistSearchRequest) {
           ">=",
           search.description_length,
         ),
+      );
+    }
+
+    if (
+      search.xp &&
+      (search.xp[0] > 0 || search.xp[1] < DECKLIST_SEARCH_MAX_XP)
+    ) {
+      conditions.push(
+        ...inXpRangeConds(eb.ref("arkhamdb_decklist.xp_required"), search.xp),
       );
     }
 

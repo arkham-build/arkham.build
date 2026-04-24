@@ -1,4 +1,5 @@
 import type { Card } from "@arkham-build/shared";
+import { inferChapterNumber } from "@/utils/chapters";
 import {
   displayPackName,
   formatSlots,
@@ -262,6 +263,8 @@ function groupByCost(cards: Card[]) {
 }
 
 function groupByCycle(cards: Card[], metadata: Metadata) {
+  const chapterCycles: Record<string, number | undefined> = {};
+
   const results = cards.reduce<Grouping>(
     (acc, card) => {
       const pack = metadata.packs[card.pack_code];
@@ -270,6 +273,7 @@ function groupByCycle(cards: Card[], metadata: Metadata) {
       if (!acc.data[cycle]) {
         acc.data[cycle] = [card];
         acc.groupings.push(cycle);
+        chapterCycles[cycle] = pack.chapter ?? undefined;
       } else {
         acc.data[cycle].push(card);
       }
@@ -280,9 +284,20 @@ function groupByCycle(cards: Card[], metadata: Metadata) {
   );
 
   omitEmptyGroupings(results);
-  results.groupings.sort(
-    (a, b) => metadata.cycles[a].position - metadata.cycles[b].position,
-  );
+
+  results.groupings.sort((a, b) => {
+    const aCycle = metadata.cycles[a];
+    const bCycle = metadata.cycles[b];
+
+    const aChapter = chapterCycles[a] ?? 1;
+    const bChapter = chapterCycles[b] ?? 1;
+
+    if (aChapter !== bChapter) {
+      return aChapter - bChapter;
+    }
+
+    return aCycle.position - bCycle.position;
+  });
 
   return toGroupingResult(results);
 }
@@ -297,7 +312,7 @@ function groupByPack(cards: Card[], metadata: Metadata) {
       const reprintPackCode = `${pack.cycle_code}${cardType === "encounter" ? "c" : "p"}`;
       const reprintPack = metadata.packs[reprintPackCode];
 
-      if (reprintPack?.reprint) {
+      if (reprintPack?.reprint_type) {
         pack = reprintPack;
       }
 
@@ -318,6 +333,13 @@ function groupByPack(cards: Card[], metadata: Metadata) {
   results.groupings.sort((a, b) => {
     const aCycle = metadata.cycles[metadata.packs[a].cycle_code];
     const bCycle = metadata.cycles[metadata.packs[b].cycle_code];
+
+    const aChapter = inferChapterNumber(metadata.packs[a]);
+    const bChapter = inferChapterNumber(metadata.packs[b]);
+
+    if (aChapter !== bChapter) {
+      return aChapter - bChapter;
+    }
 
     if (aCycle.position !== bCycle.position) {
       return aCycle.position - bCycle.position;
@@ -490,7 +512,7 @@ export function getGroupingKeyLabel(
     }
 
     case "encounter_set": {
-      return metadata.encounterSets[segment]?.name ?? "";
+      return displayPackName(metadata.encounterSets[segment]) ?? "";
     }
 
     case "slot": {

@@ -27,7 +27,7 @@ export function randomBasicWeaknessForDeck(
 
   const collection = useLimitedPool
     ? limitedPool.reduce<Record<string, number>>((acc, curr) => {
-        acc[curr] = settings.collection?.[curr] ?? 1;
+        acc[curr] = settings.collection?.[curr] || 1;
         return acc;
       }, {})
     : settings.collection;

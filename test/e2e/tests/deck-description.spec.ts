@@ -15,11 +15,17 @@ test.describe("deck description", () => {
     await page.getByTestId("tab-notes").click();
 
     await page.getByRole("link", { name: "Colt" }).first().click();
-    await expect(page.getByTestId("card-face")).toBeVisible();
+
+    await expect(
+      page.getByTestId("card-modal").getByTestId("card-face"),
+    ).toBeVisible();
 
     await expect(page.getByTestId("card-modal")).toBeVisible();
     await expect(
-      page.getByTestId("card-face").getByTestId("card-name"),
+      page
+        .getByTestId("card-modal")
+        .getByTestId("card-face")
+        .getByTestId("card-name"),
     ).toContainText(".32 Colt");
   });
 
@@ -82,7 +88,10 @@ test.describe("deck description", () => {
 
     await expect(page.getByTestId("card-modal")).toBeVisible();
     await expect(
-      page.getByTestId("card-face").getByTestId("card-name"),
+      page
+        .getByTestId("card-modal")
+        .getByTestId("card-face")
+        .getByTestId("card-name"),
     ).toContainText("Let me handle this");
   });
 });

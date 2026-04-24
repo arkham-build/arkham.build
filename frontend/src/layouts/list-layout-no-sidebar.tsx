@@ -6,8 +6,8 @@ import { CardListContainer } from "@/components/card-list/card-list-container";
 import { Filters } from "@/components/filters/filters";
 import { Masthead } from "@/components/masthead";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/page-title";
 import { cx } from "@/utils/cx";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import { useGoBack } from "@/utils/use-go-back";
 import { useMedia } from "@/utils/use-media";
 import { useListLayoutContext } from "./list-layout-context";
@@ -30,8 +30,6 @@ export function ListLayoutNoSidebar(props: Props) {
   const { filtersOpen, setFiltersOpen } = useListLayoutContext();
 
   const floatingFilters = useMedia("(max-width: 52rem)");
-
-  useDocumentTitle(titleString);
 
   const goBack = useGoBack();
 
@@ -69,6 +67,7 @@ export function ListLayoutNoSidebar(props: Props) {
       )}
       onClick={onContentClick}
     >
+      <PageTitle>{titleString}</PageTitle>
       <Masthead className={css["masthead"]}>
         {!omitBackButton && (
           <Button onClick={goBack} variant="bare" size="sm">

@@ -1,11 +1,8 @@
-import type { JsonDataPack } from "@/store/schemas/pack.schema";
-import localPacks from "@/store/services/data/packs.json";
-
 type Locale = {
   value: string;
   label: string;
   unicode?: boolean;
-  dataLocale?: string; // TECH DEBT: For mixed locales like zh-Hans/zh-Hant
+  displayValue?: string; // TECH DEBT: For mixed locales like zh-Hans/zh-Hant
   additionalCharacters?: string; // For languages with additional characters like ß or ñ
 };
 
@@ -25,11 +22,17 @@ export const LOCALES: Record<string, Locale> = {
   ko: { value: "ko", label: "한국어/Korean (ko)", unicode: true },
   pl: { value: "pl", label: "Polski (pl)" },
   ru: { value: "ru", label: "Русский (ru)", unicode: true },
+  "zh-cn": {
+    value: "zh-cn",
+    displayValue: "zh-Hans",
+    label: "简体中文/Chinese (zh-Hans)",
+    unicode: true,
+  },
   zh: {
     value: "zh",
-    label: "简体中文/Chinese (zh)",
+    displayValue: "zh-Hant",
+    label: "繁體中文/Chinese (zh-Hant)",
     unicode: true,
-    dataLocale: "zh-Hant",
   },
 };
 
@@ -64,9 +67,10 @@ export const SIDEWAYS_TYPE_CODES = ["act", "agenda", "investigator"];
 
 export const CYCLES_WITH_STANDALONE_PACKS = [
   "core",
-  "core_2026",
+  "core_ch2",
   "return",
   "investigator",
+  "investigator_decks_ch2",
   "promotional",
   "parallel",
   "side_stories",
@@ -148,10 +152,6 @@ export const MQ_FLOATING_FILTERS = "(max-width: 75rem)";
 export const MQ_MOBILE = "(pointer: coarse)";
 export const MQ_WIDE_PREVIEW = "(min-width: 85rem)";
 
-export const PREVIEW_PACKS = (localPacks as JsonDataPack[])
-  .filter((p) => p.date_release && new Date() < new Date(p.date_release))
-  .map((pack) => pack.code);
-
 export const NO_SLOT_STRING = "none";
 
 export const RETURN_TO_CYCLES: Record<string, string> = {
@@ -169,10 +169,6 @@ export const TAG_REGEX_FALLBACKS: Record<string, RegExp> = {
   pa: /[Pp]arley/,
   se: /[Ss]eal(?! of the)/,
 };
-
-export const CURRENT_CYCLE_POSITION = 11;
-
-export const EVERGREEN_CYCLES = ["core", "investigator", "return"];
 
 export const ARCHIVE_FOLDER_ID = "archive";
 

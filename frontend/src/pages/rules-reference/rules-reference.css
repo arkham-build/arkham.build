@@ -8,9 +8,8 @@ html[data-theme="light"] {
 }
 
 .container {
-  max-width: 80rem;
-  margin-inline: auto;
   position: relative;
+  padding: 1rem;
 
   @media screen and (min-width: 58rem) {
     display: grid;
@@ -35,7 +34,7 @@ html[data-theme="light"] {
 .toc-container {
   background: var(--palette-point-five);
   border-radius: var(--rounded);
-  padding: 0.625rem 0 0.625rem 0.625rem;
+  padding: 0.625rem;
   border: 1px solid var(--palette-2);
   position: fixed;
   top: 0.25rem;
@@ -81,7 +80,6 @@ html[data-theme="light"] {
 
 .toc-inner {
   flex: 1 1 auto;
-  padding-right: 0.625rem;
 }
 
 .toc-container > * + * {
@@ -107,6 +105,10 @@ html[data-theme="light"] {
 
 html[data-theme="light"] .toc a {
   color: var(--nord-10);
+}
+
+.rules-container {
+  padding-block: 1rem;
 }
 
 .rules-container > * + * {
@@ -153,4 +155,10 @@ html[data-theme="light"] .toc a {
   padding: 0.25rem;
   background: var(--palette-point-five);
   box-shadow: var(--shadow);
+}
+
+.grimoire {
+  max-width: 90ch;
+  margin-inline: auto;
+  padding-block: 1rem;
 }

@@ -2,6 +2,7 @@ import type { Card } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { Link } from "wouter";
 import { useStore } from "@/store";
+import { selectLookupTables } from "@/store/selectors/shared";
 import { displayAttribute, parseCardTitle } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { preventLeftClick } from "@/utils/prevent-links";
@@ -18,6 +19,7 @@ export function CardNames(props: Props) {
   const { card, titleLinks } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
+  const lookupTables = useStore(selectLookupTables);
 
   const dialogContext = useDialogContext();
   const settings = useStore((state) => state.settings);
@@ -46,28 +48,33 @@ export function CardNames(props: Props) {
   const hasModal =
     titleLinks === "card-modal" || (titleLinks === "dialog" && dialogContext);
 
+  const cardLinkCode = card.hidden
+    ? (Object.keys(lookupTables.relations.fronts[card.code] ?? {})?.[0] ??
+      card.code)
+    : card.code;
+
   const onCardTitleClick = useCallback(
     (evt: React.MouseEvent<HTMLAnchorElement>) => {
       const linkPrevented = preventLeftClick(evt);
       if (linkPrevented) {
         if (titleLinks === "card-modal") {
-          openCardModal(card.code);
+          openCardModal(cardLinkCode);
         } else if (dialogContext) {
           dialogContext.setOpen(true);
         }
       }
     },
-    [card.code, openCardModal, dialogContext, titleLinks],
+    [cardLinkCode, openCardModal, dialogContext, titleLinks],
   );
 
   return (
     <div className={css["name-row"]}>
       <h1 className={css["name"]} data-testid="card-name">
         {titleLinks === "card" && (
-          <Link href={`/card/${card.code}`}>{cardName}</Link>
+          <Link href={`/card/${cardLinkCode}`}>{cardName}</Link>
         )}
         {hasModal && (
-          <Link href={`~/card/${card.code}`} onClick={onCardTitleClick}>
+          <Link href={`~/card/${cardLinkCode}`} onClick={onCardTitleClick}>
             {cardName}
           </Link>
         )}

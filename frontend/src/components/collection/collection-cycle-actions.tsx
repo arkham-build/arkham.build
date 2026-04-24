@@ -14,7 +14,6 @@ export function CollectionCycleActions(props: Props) {
   return (
     <div className={css["cycle-actions"]}>
       <Button
-        className={css["collection-cycle-toggle"]}
         data-cycle={cycleCode}
         data-reprint={reprint ? "true" : "false"}
         data-val={1}
@@ -26,7 +25,6 @@ export function CollectionCycleActions(props: Props) {
         <PlusIcon />
       </Button>
       <Button
-        className={css["cycle-toggle"]}
         data-cycle={cycleCode}
         data-val={0}
         data-reprint={reprint ? "true" : "false"}

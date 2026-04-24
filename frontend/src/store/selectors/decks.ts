@@ -1,6 +1,6 @@
 import type { Card } from "@arkham-build/shared";
 import { createSelector } from "reselect";
-import { resolveDeck } from "@/store/lib/resolve-deck";
+import { resolveDeck, resolveDeckSummary } from "@/store/lib/resolve-deck";
 import { time, timeEnd } from "@/utils/time";
 import { applyCardChanges } from "../lib/card-edits";
 import {
@@ -21,7 +21,7 @@ import {
 import { limitedSlotOccupation } from "../lib/limited-slots";
 import type { LookupTables } from "../lib/lookup-tables.types";
 import { makeSortFunction, sortAlphabeticalLatin } from "../lib/sorting";
-import type { Customization, ResolvedDeck } from "../lib/types";
+import type { Customization, DeckSummary, ResolvedDeck } from "../lib/types";
 import type { Deck, Id } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
 import type { DecklistConfig } from "../slices/settings.types";
@@ -57,32 +57,33 @@ export const selectResolvedDeckById = createSelector(
   },
 );
 
-export const selectLocalDecks = createSelector(
+export const selectLocalDeckSummaries = createSelector(
   (state: StoreState) => state.data,
   selectMetadata,
   selectLookupTables,
   (state: StoreState) => state.sharing,
   selectLocaleSortingCollator,
   (data, metadata, lookupTables, sharing, collator) => {
-    time("select_local_decks");
+    time("select_local_deck_summaries");
 
-    const resolvedDecks = Object.keys(data.history).reduce<ResolvedDeck[]>(
+    const summaries = Object.keys(data.history).reduce<DeckSummary[]>(
       (acc, id) => {
         const deck = data.decks[id];
 
         try {
           if (deck) {
-            const resolved = resolveDeck(
-              { metadata, lookupTables, sharing },
-              collator,
-              deck,
+            acc.push(
+              resolveDeckSummary(
+                { metadata, lookupTables, sharing },
+                collator,
+                deck,
+              ),
             );
-            acc.push(resolved);
           } else {
             console.warn(`Could not find deck ${id} in local storage.`);
           }
         } catch (err) {
-          console.error(`Error resolving deck ${id}: ${err}`);
+          console.error(`Error resolving deck summary ${id}: ${err}`);
         }
 
         return acc;
@@ -90,12 +91,12 @@ export const selectLocalDecks = createSelector(
       [],
     );
 
-    resolvedDecks.sort((a, b) =>
+    summaries.sort((a, b) =>
       sortAlphabeticalLatin(b.date_update, a.date_update),
     );
 
-    timeEnd("select_local_decks");
-    return resolvedDecks;
+    timeEnd("select_local_deck_summaries");
+    return summaries;
   },
 );
 

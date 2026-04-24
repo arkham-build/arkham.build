@@ -93,7 +93,7 @@ test.describe("deck create", () => {
   test("select advanced signatures", async ({ page }) => {
     await page.goto("/deck/create/02003");
 
-    await page.getByLabel("Advanced Signatures", { exact: true }).click();
+    await page.getByText("Advanced Signatures", { exact: true }).click();
 
     await page.getByTestId("create-save").click();
 
@@ -122,7 +122,7 @@ test.describe("deck create", () => {
 
     await page.getByTestId("filters-faction-seeker").click();
     await expect(page.getByTestId("cardlist-count").first()).toContainText(
-      "49 cards",
+      "58 cards",
     );
 
     await page.getByTestId("filters-faction-seeker").click();

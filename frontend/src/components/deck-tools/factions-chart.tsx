@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import type { PieSectorShapeProps } from "recharts";
 import { Pie, PieChart, Sector, Tooltip } from "recharts";
 import type { ChartableData } from "@/store/lib/deck-charts";
-import { ChartTooltip, chartTheme } from "./chart-theme";
+import { chartTheme } from "./chart-theme";
+import { ChartTooltip } from "./chart-tooltip";
 import css from "./deck-tools.module.css";
 
 type Props = {

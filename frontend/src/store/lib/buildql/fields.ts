@@ -52,11 +52,7 @@ const fieldDefinitions: FieldDefinition[] = [
   {
     aliases: ["ch"],
     name: "chapter",
-    lookup: backResolver((card, { metadata }) => {
-      const pack = metadata.packs[card.pack_code];
-      if (!pack?.chapter) return 1;
-      return pack.chapter;
-    }),
+    lookup: backResolver((card) => card.chapter ?? 1),
     type: "number",
   },
   {
@@ -130,7 +126,7 @@ const fieldDefinitions: FieldDefinition[] = [
         const encounterSet = metadata.encounterSets[card.encounter_code];
         if (!encounterSet) return null;
 
-        return [card.encounter_code, encounterSet.name];
+        return [card.encounter_code, displayPackName(encounterSet)];
       },
     name: "encounter_set",
     type: "string",
@@ -335,7 +331,10 @@ const fieldDefinitions: FieldDefinition[] = [
   },
   {
     aliases: ["na"],
-    lookup: backResolver((card) => displayAttribute(card, "name")),
+    lookup: backResolver((card) => {
+      const name = displayAttribute(card, "name");
+      return card.abbreviation ? [name, card.abbreviation] : name;
+    }),
     name: "name",
     type: "string",
   },

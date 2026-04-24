@@ -25,7 +25,6 @@ import { formatRelationTitle } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
 import { useMedia } from "@/utils/use-media";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { Annotation } from "../annotations/annotation";
 import { PopularDecks } from "../arkhamdb-decklists/popular-decks";
 import { Card } from "../card/card";
@@ -34,6 +33,7 @@ import { Customizations } from "../customizations/customizations";
 import { CustomizationsEditor } from "../customizations/customizations-editor";
 import { AttachableCards } from "../deck-tools/attachable-cards";
 import { CardPoolExtension } from "../limited-card-pool/card-pool-extension";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { Button } from "../ui/button";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { HotkeyTooltip } from "../ui/hotkey";
@@ -126,6 +126,7 @@ export function CardModal(props: Props) {
         resolvedCard={cardWithRelations}
         onPrintingSelect={handlePrintingSelect}
         size={canRenderFull ? "full" : "compact"}
+        titleLinks="card"
         slotCardFooter={
           <>
             {ctx.resolvedDeck &&

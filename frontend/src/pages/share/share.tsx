@@ -4,6 +4,7 @@ import { createSelector } from "reselect";
 import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { DeckDisplay } from "@/components/deck-display/deck-display";
+import { ResolvedDeckProvider } from "@/components/resolved-deck-context-provider";
 import { Loader } from "@/components/ui/loader";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";
@@ -17,7 +18,6 @@ import {
 import { getShare } from "@/store/services/queries";
 import { ApiError } from "@/store/services/requests/shared";
 import type { StoreState } from "@/store/slices";
-import { ResolvedDeckProvider } from "@/utils/use-resolved-deck";
 import { ErrorStatus } from "../errors/404";
 
 const selectResolvedShare = createSelector(

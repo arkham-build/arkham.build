@@ -12,6 +12,7 @@ import { Footer } from "@/components/footer";
 import { Masthead } from "@/components/masthead";
 import { Printing } from "@/components/printing";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/page-title";
 import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
 import { CardViewCards } from "@/pages/card-view/card-view-cards";
 import { useStore } from "@/store";
@@ -29,12 +30,12 @@ import {
   isStaticInvestigator,
   oldFormatCardUrl,
 } from "@/utils/card-utils";
+import { groupPrintingsByChapter } from "@/utils/chapters";
 import {
   CYCLES_WITH_STANDALONE_PACKS,
   FLOATING_PORTAL_ID,
 } from "@/utils/constants";
 import { cx } from "@/utils/cx";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import { ErrorStatus } from "../errors/404";
 import css from "./card-view.module.css";
 import { Faq } from "./faq";
@@ -46,12 +47,6 @@ function CardView() {
   const { t } = useTranslation();
   const cardWithRelations = useStore((state) =>
     selectCardWithRelations(state, code, true, undefined),
-  );
-
-  useDocumentTitle(
-    cardWithRelations
-      ? `${displayAttribute(cardWithRelations.card, "name")}`
-      : undefined,
   );
 
   if (!cardWithRelations) {
@@ -70,6 +65,7 @@ function CardView() {
 
   return (
     <CardModalProvider>
+      <PageTitle>{displayAttribute(cardWithRelations.card, "name")}</PageTitle>
       <div className={cx(css["layout"], "fade-in")}>
         <Masthead className={css["header"]} />
         <main className={css["main"]}>
@@ -176,32 +172,45 @@ function Printings(props: { code: string }) {
     selectPrintingsForCard(state, props.code),
   );
 
+  const { t } = useTranslation();
   const [search] = useSearchParams();
   const oldFormat = search.get("old_format") === "true";
 
   const lookupTables = useStore(selectLookupTables);
+  const printingsByChapter = groupPrintingsByChapter(printings);
 
   return (
-    <ul className={css["printings"]}>
-      {printings.map((printing) => {
-        const reprintPackCode =
-          lookupTables.reprintPacksByPack[printing.pack.code];
+    <div className={css["printings-groups"]}>
+      {printingsByChapter.map(([chapter, chapterPrintings]) => (
+        <section className={css["printings-group"]} key={chapter}>
+          <h3 className={css["printings-chapter-title"]}>
+            {t("settings.collection.chapter", { number: chapter })}
+          </h3>
+          <ul className={css["printings"]}>
+            {chapterPrintings.map((printing) => {
+              const reprintPackCode =
+                lookupTables.reprintPacksByPack[printing.pack.code];
 
-        return (
-          <li key={`${printing.pack.code}-${printing.card.code}`}>
-            <ListPrinting
-              active={
-                printing.card.code === props.code &&
-                (CYCLES_WITH_STANDALONE_PACKS.includes(printing.cycle.code) ||
-                  oldFormat === !printing.pack.reprint)
-              }
-              printing={printing}
-              oldFormat={!!reprintPackCode}
-            />
-          </li>
-        );
-      })}
-    </ul>
+              return (
+                <li key={`${printing.pack.code}-${printing.card.code}`}>
+                  <ListPrinting
+                    active={
+                      printing.card.code === props.code &&
+                      (CYCLES_WITH_STANDALONE_PACKS.includes(
+                        printing.cycle.code,
+                      ) ||
+                        oldFormat === !printing.pack.reprint_type)
+                    }
+                    printing={printing}
+                    oldFormat={!!reprintPackCode}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+    </div>
   );
 }
 

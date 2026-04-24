@@ -12,6 +12,7 @@ import {
   official,
   splitMultiValue,
 } from "@/utils/card-utils";
+import { inferChapterNumber } from "@/utils/chapters";
 import {
   CYCLES_WITH_STANDALONE_PACKS,
   NO_SLOT_STRING,
@@ -737,6 +738,7 @@ export const selectListCards = createSelector(
     targetDeck: TargetDeck | undefined,
   ) => targetDeck,
   (state: StoreState) => state.ui.showUnusableCards,
+  (state: StoreState) => state.settings.collection,
   (
     metadata,
     lookupTables,
@@ -747,6 +749,7 @@ export const selectListCards = createSelector(
     deck,
     targetDeck,
     showUnusableCards,
+    collection,
   ) => {
     if (!baseFilterResult || !activeList) return undefined;
 
@@ -765,6 +768,7 @@ export const selectListCards = createSelector(
           metadata,
           lookupTables,
           deck,
+          collection,
         ),
       );
 
@@ -911,11 +915,11 @@ export const selectListFilterProperties = createSelector(
         packs.add(card.pack_code);
         const pack = metadata.packs[card.pack_code];
 
-        if (official(pack) && !pack?.reprint) {
+        if (official(pack) && !pack?.reprint_type) {
           const cycle = metadata.cycles[pack?.cycle_code];
           const reprintPackId = `${cycle?.code}${card.encounter_code ? "c" : "p"}`;
           const reprintPack = metadata.packs[reprintPackId];
-          if (reprintPack?.reprint) packs.add(reprintPack.code);
+          if (reprintPack?.reprint_type) packs.add(reprintPack.code);
         }
 
         if (card.encounter_code) {
@@ -1288,7 +1292,7 @@ export const selectCyclesAndPacks = createSelector(
 
         for (const code of Object.keys(packTable)) {
           const pack = metadata.packs[code];
-          (pack.reprint ? reprintPacks : packs).push(pack);
+          (pack.reprint_type ? reprintPacks : packs).push(pack);
         }
 
         reprintPacks.sort((a, b) => a.position - b.position);
@@ -1323,7 +1327,7 @@ export function groupCyclesByChapter(
     (acc, cycle) => {
       const packsByChapter = cycle.packs.reduce<Record<number, Pack[]>>(
         (chapterAcc, pack) => {
-          const chapter = pack.chapter ?? 1;
+          const chapter = inferChapterNumber(pack);
           chapterAcc[chapter] ??= [];
           chapterAcc[chapter].push(pack);
           return chapterAcc;
@@ -1389,7 +1393,11 @@ export const selectPackOptions = createSelector(
             listFilterProperties.packs.has(p.code),
           ),
         );
-      } else if (official(cycle) && cycle.packs.length === 2) {
+      } else if (
+        official(cycle) &&
+        cycle.packs.length === 2 &&
+        cycle.position <= 11
+      ) {
         acc.push(
           ...cycle.packs.filter((p) => listFilterProperties.packs.has(p.code)),
         );
@@ -1413,12 +1421,26 @@ function newFormatPlayerPack(pack: Pack) {
 export const selectLimitedPoolPackOptions = createSelector(
   selectCyclesAndPacks,
   (state: StoreState) => state.fanMadeData.projects,
-  (cycles, fanMadeProjects) => {
+  (_: StoreState, filter?: (cycle: Cycle) => boolean) => filter,
+  (cycles, fanMadeProjects, filter) => {
     return cycles.flatMap((cycle) => {
+      if (filter && !filter(cycle)) {
+        return [];
+      }
+
       // Fan-made content
       if (!official(cycle)) {
         if (!fanMadeProjects?.[cycle.code]) return [];
         return cycle.packs;
+      }
+
+      // Non-deckbuilding
+      if (
+        cycle.code === "parallel" ||
+        cycle.code === "promotional" ||
+        cycle.code === "side_stories"
+      ) {
+        return [];
       }
 
       // Core set
@@ -1432,11 +1454,10 @@ export const selectLimitedPoolPackOptions = createSelector(
       }
 
       // New format
-      if (cycle.packs.length === 2) {
+      if (cycle.packs.length === 2 && cycle.position <= 11) {
         return cycle.packs.filter(newFormatPlayerPack);
       }
 
-      // Everything else
       return cycle.packs;
     });
   },
@@ -1773,7 +1794,7 @@ const selectEncounterSetChanges = createSelector(
   selectMetadata,
   (value, metadata) => {
     return value
-      .map((id) => metadata.encounterSets[id].name)
+      .map((id) => displayPackName(metadata.encounterSets[id]))
       .join(` ${i18n.t("common.or")} `);
   },
 );

@@ -26,7 +26,7 @@ export function CardDetails(props: Props) {
     face !== "simple-back" &&
     (card.type_code === "enemy_location" || card.type_code === "location");
 
-  const showDoom = face !== "simple-back" && !!card.doom;
+  const showDoom = face !== "simple-back" && card.doom != null;
 
   return (
     <div className={css["details"]}>
@@ -46,6 +46,12 @@ export function CardDetails(props: Props) {
         {card.real_traits && (
           <p className={css["details-traits"]}>
             {displayAttribute(card, "traits")}
+          </p>
+        )}
+
+        {card.stage != null && (
+          <p>
+            {t("common.stage")}: {card.stage}
           </p>
         )}
 

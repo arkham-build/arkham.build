@@ -1,57 +1,100 @@
-import type {
-  RadioGroupItemProps,
-  RadioGroupProps,
-} from "@radix-ui/react-radio-group";
-import { Item, Root } from "@radix-ui/react-radio-group";
 import { cx } from "@/utils/cx";
 import css from "./radio-button-group.module.css";
+import {
+  RadioGroupContext,
+  useRadioGroupItem,
+  useRadioGroupProvider,
+} from "./radio-group.context";
 import { DefaultTooltip } from "./tooltip";
 
-interface Props extends RadioGroupProps {
+export interface RadioButtonGroupProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+  disabled?: boolean;
   full?: boolean;
   icons?: boolean;
+  onValueChange?(value: string): void;
+  value?: string;
 }
 
-export function RadioButtonGroup(props: Props) {
-  const { full, icons, className, ...rest } = props;
+export function RadioButtonGroup(props: RadioButtonGroupProps) {
+  const {
+    full,
+    icons,
+    className,
+    disabled,
+    onValueChange,
+    value,
+    children,
+    ...rest
+  } = props;
+  const ctx = useRadioGroupProvider({ disabled, onValueChange, value });
 
   return (
-    <Root
-      {...rest}
-      className={cx(
-        css["radio-button-group"],
-        className,
-        full && css["is-full"],
-        icons && css["is-icons"],
-      )}
-    />
+    <RadioGroupContext value={ctx}>
+      <div
+        role="radiogroup"
+        {...rest}
+        className={cx(
+          css["radio-button-group"],
+          className,
+          full && css["is-full"],
+          icons && css["is-icons"],
+        )}
+      >
+        {children}
+      </div>
+    </RadioGroupContext>
   );
 }
 
-type GroupItemProps = RadioGroupItemProps & {
+export interface RadioButtonGroupItemProps
+  extends Omit<React.HTMLAttributes<HTMLLabelElement>, "onChange"> {
+  disabled?: boolean;
   size?: "small" | "default";
-  variant?: "bare";
   tooltip?: React.ReactNode;
-};
+  value: string;
+  variant?: "bare";
+}
 
 export function RadioButtonGroupItem({
   className,
   size,
   tooltip,
   variant,
+  value,
+  disabled: itemDisabled,
+  children,
   ...rest
-}: GroupItemProps) {
+}: RadioButtonGroupItemProps) {
+  const { checked, disabled, handleChange, id, name } = useRadioGroupItem(
+    value,
+    itemDisabled,
+  );
+
   return (
     <DefaultTooltip tooltip={tooltip}>
-      <Item
+      <label
         {...rest}
+        htmlFor={id}
         className={cx(
           css["item"],
           size && css[size],
           variant && css[variant],
           className,
         )}
-      />
+      >
+        <input
+          type="radio"
+          className={cx(css["input"], "sr-only")}
+          id={id}
+          name={name}
+          value={value}
+          checked={checked}
+          disabled={disabled}
+          onChange={handleChange}
+        />
+        {children}
+      </label>
     </DefaultTooltip>
   );
 }

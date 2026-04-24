@@ -12,7 +12,7 @@ import { Link, useLocation } from "wouter";
 import { useStore } from "@/store";
 import type { DeckValidationResult } from "@/store/lib/deck-validation";
 import { deckTags } from "@/store/lib/resolve-deck";
-import type { ResolvedDeck } from "@/store/lib/types";
+import type { DeckSummary as DeckSummaryType } from "@/store/lib/types";
 import type { Id } from "@/store/schemas/deck.schema";
 import { selectConnectionLockForDeck } from "@/store/selectors/shared";
 import { displayAttribute, getCardColor } from "@/utils/card-utils";
@@ -35,7 +35,7 @@ import css from "./deck-summary.module.css";
 
 type DeckSummaryProps = {
   children?: React.ReactNode;
-  deck: ResolvedDeck;
+  deck: DeckSummaryType;
   elevation?: "normal" | "elevated";
   interactive?: boolean;
   showThumbnail?: boolean;
@@ -138,7 +138,7 @@ export function DeckSummary(props: DeckSummaryProps) {
 }
 
 type DeckSummaryQuickActionsProps = {
-  deck: ResolvedDeck;
+  deck: DeckSummaryType;
   onDeleteDeck?: (id: Id) => Promise<void>;
   onDuplicateDeck?: (id: Id) => void;
 };

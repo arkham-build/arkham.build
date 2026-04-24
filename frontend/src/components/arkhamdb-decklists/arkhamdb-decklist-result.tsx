@@ -8,10 +8,10 @@ import {
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
-import { ResolvedDeckProvider } from "@/utils/use-resolved-deck";
 import { DeckDetails } from "../deck-details";
 import { DeckSummary } from "../deck-summary/deck-summary";
 import { Decklist } from "../decklist/decklist";
+import { ResolvedDeckProvider } from "../resolved-deck-context-provider";
 import { Collapsible, CollapsibleContent } from "../ui/collapsible";
 import { ArkhamdbDecklistMeta } from "./arkhamdb-decklist-meta";
 import css from "./arkhamdb-decklist-result.module.css";

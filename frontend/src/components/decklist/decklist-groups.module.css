@@ -91,7 +91,7 @@
   cursor: pointer;
 }
 
-.scan-images > *:not:not(:last-child) img:not(:global(.external-icon)) {
+.scan-images > *:not(:last-child) img:not(:global(.external-icon)) {
   filter: drop-shadow(0 -2px 2px rgba(8, 10, 12, 0.7));
 }
 

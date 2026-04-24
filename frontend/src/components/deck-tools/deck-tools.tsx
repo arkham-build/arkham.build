@@ -1,4 +1,4 @@
-import { forwardRef, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { cx } from "@/utils/cx";
@@ -12,6 +12,7 @@ import { LimitedSlots } from "./limited-slots";
 type Props = {
   deck: ResolvedDeck;
   readonly?: boolean;
+  ref?: React.Ref<HTMLDivElement>;
   scrollable?: boolean;
   showTitle?: boolean;
   slotLeft?: React.ReactNode;
@@ -20,11 +21,8 @@ type Props = {
 
 const LazyChartContainer = lazy(() => import("./chart-container"));
 
-export const DeckTools = forwardRef(function DeckTools(
-  props: Props,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
-  const { deck, readonly, scrollable } = props;
+export function DeckTools(props: Props) {
+  const { deck, readonly, ref, scrollable } = props;
 
   const { t } = useTranslation();
 
@@ -46,4 +44,4 @@ export const DeckTools = forwardRef(function DeckTools(
   ) : (
     node
   );
-});
+}

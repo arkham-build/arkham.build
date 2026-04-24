@@ -3,14 +3,6 @@ import type { HonoEnv } from "./hono-env.ts";
 
 type LogLevel = "debug" | "info" | "warn" | "error";
 
-export type LogMessage = {
-  level: LogLevel;
-  message: string;
-  details?: {
-    [key: string]: unknown;
-  };
-};
-
 export type Logger = (
   level: LogLevel,
   message: string,

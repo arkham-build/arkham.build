@@ -1,4 +1,3 @@
-import { forwardRef } from "react";
 import { cx } from "@/utils/cx";
 import css from "./button.module.css";
 import { DefaultTooltip } from "./tooltip";
@@ -11,24 +10,25 @@ export type Props<T extends ButtonType> = React.ComponentProps<T> & {
   className?: string;
   disabled?: boolean;
   iconOnly?: boolean;
-  variant?: "primary" | "secondary" | "bare" | "link";
+  round?: boolean;
   size?: "xxs" | "xs" | "sm" | "lg" | "xl" | "full" | "none";
   tooltip?: React.ReactNode;
-  round?: boolean;
+  variant?: "primary" | "secondary" | "bare" | "link";
 };
 
-export const Button = forwardRef(function Button<
-  T extends "a" | "button" | "summary" | "label",
->(props: Props<T>, ref: React.ForwardedRef<Element>) {
+export function Button<T extends "a" | "button" | "summary" | "label">(
+  props: Props<T>,
+) {
   const {
     as,
     children,
     disabled,
     iconOnly,
-    variant = "secondary",
+    ref,
+    round,
     size,
     tooltip,
-    round,
+    variant = "secondary",
     ...rest
   } = props;
   // biome-ignore lint/suspicious/noExplicitAny: safe.
@@ -58,4 +58,4 @@ export const Button = forwardRef(function Button<
       </Element>
     </DefaultTooltip>
   );
-});
+}

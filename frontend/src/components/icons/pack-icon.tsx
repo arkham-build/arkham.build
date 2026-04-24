@@ -37,8 +37,10 @@ function getPackIcon(code?: string) {
     case "core":
     case "core2":
     case "return":
+    case "investigator_decks_ch2":
       return "core";
 
+    case "core_ch2":
     case "core_2026":
       return "core_2026";
 

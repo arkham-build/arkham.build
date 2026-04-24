@@ -1,7 +1,7 @@
 import type { Card } from "@arkham-build/shared";
-import type { ResolvedDeck } from "@/store/lib/types";
+import type { DeckSummary, ResolvedDeck } from "@/store/lib/types";
 
-type Filterable = Card | ResolvedDeck;
+type Filterable = Card | DeckSummary | ResolvedDeck;
 export type Filter<T extends Filterable = Card> = (x: T) => boolean;
 
 export function and<T extends Filterable = Card>(fns: Filter<T>[]) {

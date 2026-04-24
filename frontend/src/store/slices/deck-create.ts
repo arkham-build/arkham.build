@@ -1,7 +1,7 @@
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import { displayAttribute } from "@/utils/card-utils";
-import { currentEnvironmentPacks } from "@/utils/environments";
+import { environments } from "@/utils/environments";
 import { getDefaultDeckName } from "../lib/deck-factory";
 import { selectConnectionsData } from "../selectors/connections";
 import { selectMetadata, selectSettingsTabooId } from "../selectors/shared";
@@ -54,7 +54,7 @@ export const createDeckCreateSlice: StateCreator<
       // Apply current environment packs if default environment is set to "current"
       const cardPool =
         settings.defaultEnvironment === "current"
-          ? currentEnvironmentPacks(Object.values(metadata.cycles))
+          ? environments.current()
           : undefined;
 
       return {

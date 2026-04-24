@@ -36,10 +36,6 @@
     font-size: var(--text-sm);
   }
 
-  .content > * + * {
-    margin-top: 0.5rem;
-  }
-
   .header {
     flex: 1 1 auto;
   }
@@ -58,5 +54,9 @@
   .sub {
     font-size: var(--text-xs);
     color: var(--palette-three-point-five);
+  }
+
+  .content > * + * {
+    margin-top: 0.5rem;
   }
 }

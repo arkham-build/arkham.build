@@ -295,7 +295,13 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
         } else {
           if (card.parallel && !requiredCardCodes.has(card.code)) {
             setInLookupTable(card.code, tables.relations.parallelCards, key);
+          } else if (
+            !requiredCardCodes.has(card.code) &&
+            !card.duplicate_of_code &&
             // Kate has bonded cards restricted to her, these should not be part of the deck.
+            card.deck_limit
+          ) {
+            setInLookupTable(card.code, tables.relations.requiredCards, key);
           }
         }
       }
@@ -489,7 +495,7 @@ function addPacksToLookupTables(
   const packs = Object.values(metadata.packs);
 
   for (const pack of packs) {
-    if (pack.reprint && pack.reprint.type !== "rcore") {
+    if (pack.reprint_type && pack.reprint_type !== "rcore") {
       reprintsByCycleCode[pack.cycle_code] ??= [];
       reprintsByCycleCode[pack.cycle_code].push(pack.code);
     }
@@ -504,14 +510,14 @@ function addPacksToLookupTables(
       for (const reprintPackCode of reprintsByCycleCode[pack.cycle_code]) {
         const reprintPack = metadata.packs[reprintPackCode];
 
-        if (!pack.reprint && reprintPackCode !== pack.code) {
+        if (!pack.reprint_type && reprintPackCode !== pack.code) {
           setInLookupTable(
             reprintPackCode,
             lookupTables.reprintPacksByPack,
             pack.code,
           );
 
-          if (reprintPack.reprint?.type !== "player") {
+          if (reprintPack.reprint_type !== "player") {
             lookupTables.encounterCodesByPack[reprintPackCode] = {
               ...lookupTables.encounterCodesByPack[reprintPackCode],
               ...lookupTables.encounterCodesByPack[pack.code],

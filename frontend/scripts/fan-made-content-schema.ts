@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ApiCardSchema } from "../src/store/schemas/card.schema.ts";
+import { ApiCardSchema } from "../../shared/src/index";
 
 // biome-ignore lint/suspicious/noConsole: schema generation script
 console.log(

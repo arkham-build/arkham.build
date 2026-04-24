@@ -30,6 +30,5 @@ jobs:
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           INGEST_URL_ARKHAMDB_DECKLISTS: ${{ secrets.INGEST_URL_ARKHAMDB_DECKLISTS }}
-          INGEST_URL_METADATA: ${{ secrets.INGEST_URL_METADATA }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: kamal deploy

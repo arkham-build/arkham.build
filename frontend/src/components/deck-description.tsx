@@ -29,7 +29,6 @@ function DeckDescription(props: Props) {
 
   const openCardModal = useStore((state) => state.openCardModal);
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const [cardTooltip, setCardTooltip] = useState<string>("");
 
   const restTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -52,65 +51,48 @@ function DeckDescription(props: Props) {
 
   const { isMounted, styles: transitionStyles } = useTransitionStyles(context);
 
-  const onMouseMove = useCallback(
-    (evt: MouseEvent) => {
-      const code = getCardCodeForEvent(evt);
+  const onPointerMove = useCallback(
+    (evt: React.PointerEvent) => {
+      const anchor = (evt.target as HTMLElement)?.closest("a");
 
-      if (code) {
-        clearTimeout(restTimeoutRef.current);
+      if (anchor instanceof HTMLAnchorElement) {
+        const code = /\/card\/(.*)$/.exec(anchor.href)?.[1];
 
-        restTimeoutRef.current = setTimeout(() => {
-          refs.setReference(evt.target as HTMLAnchorElement);
-          setCardTooltip(code);
-        }, 25);
+        if (code) {
+          clearTimeout(restTimeoutRef.current);
+
+          const rect = anchor.getBoundingClientRect();
+          refs.setPositionReference({
+            getBoundingClientRect: () => rect,
+          });
+
+          restTimeoutRef.current = setTimeout(() => {
+            setCardTooltip(code);
+          }, 25);
+          return;
+        }
       }
+
+      clearTimeout(restTimeoutRef.current);
+      setCardTooltip("");
     },
     [refs],
   );
 
-  const onMouseLeave = useCallback(
-    (evt: MouseEvent) => {
-      clearTimeout(restTimeoutRef.current);
-
-      const code = getCardCodeForEvent(evt);
-      if (code === cardTooltip || !code) {
-        evt.preventDefault();
-        setCardTooltip("");
-      }
-    },
-    [cardTooltip],
-  );
-
-  useEffect(() => {
-    const div = containerRef.current;
-    if (!div) return;
-
-    const links = div.querySelectorAll("a");
-
-    for (const link of links) {
-      link.addEventListener("pointermove", onMouseMove);
-      link.addEventListener("pointerleave", onMouseLeave);
-      link.addEventListener("mouseleave", onMouseLeave);
-    }
-
-    return () => {
-      for (const link of links) {
-        link.removeEventListener("pointermove", onMouseMove);
-        link.removeEventListener("pointerleave", onMouseLeave);
-        link.removeEventListener("mouseleave", onMouseLeave);
-      }
-    };
-  }, [onMouseMove, onMouseLeave]);
+  const onPointerLeave = useCallback(() => {
+    clearTimeout(restTimeoutRef.current);
+    setCardTooltip("");
+  }, []);
 
   const onLinkClick = useCallback(
     (evt: React.MouseEvent) => {
       if (evt.target instanceof HTMLElement) {
-        const anchor = evt.target.closest("a") as HTMLAnchorElement;
-        const href = anchor.getAttribute("href");
+        const anchor = evt.target.closest("a") as HTMLAnchorElement | null;
+        const href = anchor?.getAttribute("href");
 
         if (href?.includes("/card/") && !href.includes("#")) {
           evt.preventDefault();
-          const code = anchor.href.split("/card/").at(-1);
+          const code = anchor?.href.split("/card/").at(-1);
 
           if (code) {
             openCardModal(code);
@@ -119,11 +101,6 @@ function DeckDescription(props: Props) {
           }
         } else {
           redirectArkhamDBLinks(evt);
-        }
-
-        if (anchor != null) {
-          if (anchor.href.startsWith("/card")) {
-          }
         }
       }
     },
@@ -145,7 +122,8 @@ function DeckDescription(props: Props) {
           __html: parseMarkdown(content),
         }}
         onClick={onLinkClick}
-        ref={containerRef}
+        onPointerMove={onPointerMove}
+        onPointerLeave={onPointerLeave}
       />
 
       {isMounted && cardTooltip && (
@@ -160,16 +138,6 @@ function DeckDescription(props: Props) {
       )}
     </>
   );
-}
-
-function getCardCodeForEvent(
-  evt: React.MouseEvent | MouseEvent,
-): string | undefined {
-  const target = (evt.target as HTMLElement)?.closest("a");
-
-  if (target instanceof HTMLAnchorElement) {
-    return /\/card\/(.*)$/.exec(target.href)?.[1];
-  }
 }
 
 export default DeckDescription;

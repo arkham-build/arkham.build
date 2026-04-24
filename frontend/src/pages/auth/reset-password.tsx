@@ -38,7 +38,7 @@ function ResetPassword() {
       duration: 5000,
     });
 
-    navigate("/login");
+    navigate("/auth/login");
   };
 
   return (

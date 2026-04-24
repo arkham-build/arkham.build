@@ -287,8 +287,8 @@ function SidebarActions(props: {
       <div className={css["actions"]}>
         {origin === "local" ? (
           <>
-            <HotkeyTooltip keybind="e" description={t("deck.actions.edit")}>
-              <Link to={`/deck/edit/${deck.id}`} asChild>
+            <Link to={`/deck/edit/${deck.id}`} asChild>
+              <HotkeyTooltip keybind="e" description={t("deck.actions.edit")}>
                 <Button
                   data-testid="view-edit"
                   disabled={isReadOnly}
@@ -297,8 +297,8 @@ function SidebarActions(props: {
                 >
                   <PencilIcon /> {t("deck.actions.edit_short")}
                 </Button>
-              </Link>
-            </HotkeyTooltip>
+              </HotkeyTooltip>
+            </Link>
             <Dialog
               onOpenChange={onUpgradeModalOpenChange}
               open={upgradeModalOpen}
@@ -519,24 +519,28 @@ function Sharing(props: {
         {share || origin !== "local" ? (
           <div className={css["share"]}>
             <ShareInfo id={deck.id} path={`/share/${deck.id}`} />
-            {origin === "local" && (
+            {(origin === "local" || devModeEnabled) && (
               <nav className={css["share-actions"]}>
-                {deck.date_update !== share && (
-                  <Button
-                    disabled={isReadOnly}
-                    onClick={onUpdateShare}
-                    size="sm"
-                  >
-                    {t("deck_view.sharing.update")}
-                  </Button>
+                {origin === "local" && (
+                  <>
+                    {deck.date_update !== share && (
+                      <Button
+                        disabled={isReadOnly}
+                        onClick={onUpdateShare}
+                        size="sm"
+                      >
+                        {t("deck_view.sharing.update")}
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      onClick={onDeleteShare}
+                      data-testid="share-delete"
+                    >
+                      {t("deck_view.sharing.delete")}
+                    </Button>
+                  </>
                 )}
-                <Button
-                  size="sm"
-                  onClick={onDeleteShare}
-                  data-testid="share-delete"
-                >
-                  {t("deck_view.sharing.delete")}
-                </Button>
                 {devModeEnabled && <DevModeApiLinkButton id={deck.id} />}
               </nav>
             )}
@@ -658,7 +662,7 @@ function ArkhamDBDetails(props: { deck: ResolvedDeck; type: DeckDisplayType }) {
           <nav className={css["share-actions"]}>
             <Button
               as="a"
-              href={`${localizeArkhamDBBaseUrl()}/deck/view/${deck.id}`}
+              href={`${localizeArkhamDBBaseUrl()}/${type}/view/${deck.id}`}
               size="sm"
               rel="noreferrer"
               target="_blank"
@@ -677,7 +681,7 @@ function ArkhamDBDetails(props: { deck: ResolvedDeck; type: DeckDisplayType }) {
           icon={<ShareIcon />}
           label={t("deck_view.sharing.title")}
         >
-          <ShareInfo id={deck.id} path={`/deck/view/${deck.id}`} />
+          <ShareInfo id={deck.id} path={`/${type}/view/${deck.id}`} />
         </DeckDetail>
       </section>
     </>

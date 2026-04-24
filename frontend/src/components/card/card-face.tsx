@@ -20,6 +20,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
   className?: string;
   ignoreTaboo?: boolean;
+  omitImage?: boolean;
   onPrintingSelect?: (card: Card) => void;
   resolvedCard: CardWithRelations | ResolvedCard;
   setIgnoreTaboo?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -33,6 +34,7 @@ export function CardFace(props: Props) {
     children,
     className,
     ignoreTaboo,
+    omitImage,
     onPrintingSelect,
     resolvedCard,
     setIgnoreTaboo,
@@ -47,7 +49,8 @@ export function CardFace(props: Props) {
   const { card } = resolvedCard;
   const [isSideways, setSideways] = useState(sideways(card));
 
-  const showImage = size === "full" || card.type_code !== "story";
+  const showImage =
+    !omitImage && (size === "full" || card.type_code !== "story");
 
   const onFlip = useCallback((_: boolean, sideways: boolean) => {
     setSideways(sideways);

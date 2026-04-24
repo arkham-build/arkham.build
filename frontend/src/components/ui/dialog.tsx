@@ -5,7 +5,7 @@ import {
   useMergeRefs,
   useTransitionStyles,
 } from "@floating-ui/react";
-import { cloneElement, forwardRef, isValidElement } from "react";
+import { cloneElement, isValidElement } from "react";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import type { DialogOptions } from "./dialog.hooks";
 import {
@@ -21,9 +21,7 @@ export function Dialog({
   children: React.ReactNode;
 } & DialogOptions) {
   const dialog = useDialog(options);
-  return (
-    <DialogContext.Provider value={dialog}>{children}</DialogContext.Provider>
-  );
+  return <DialogContext value={dialog}>{children}</DialogContext>;
 }
 
 interface DialogTriggerProps {
@@ -31,23 +29,29 @@ interface DialogTriggerProps {
   asChild?: boolean;
 }
 
-export const DialogTrigger = forwardRef<
-  HTMLElement,
-  React.HTMLProps<HTMLElement> & DialogTriggerProps
->(function DialogTrigger({ children, asChild = false, ...props }, propRef) {
+export function DialogTrigger({
+  children,
+  asChild = false,
+  ref: propRef,
+  ...props
+}: React.HTMLProps<HTMLElement> & DialogTriggerProps) {
   const context = useDialogContextChecked();
-  // biome-ignore lint/suspicious/noExplicitAny: safe.
-  const childrenRef = (children as any).ref;
+  const childrenRef = isValidElement(children)
+    ? (children.props as { ref?: React.Ref<unknown> }).ref
+    : null;
   const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef]);
 
   // `asChild` allows the user to pass any element as the anchor
   if (asChild && isValidElement(children)) {
+    // biome-ignore lint/suspicious/noExplicitAny: safe.
+    const { ref: _, ...childProps } = (children as React.ReactElement<any>)
+      .props;
     return cloneElement(
       children as React.ReactElement,
       context.getReferenceProps({
         ref,
         ...props,
-        ...(children as React.ReactElement).props,
+        ...childProps,
         "data-state": context.open ? "open" : "closed",
       } as React.HTMLProps<Element>),
     );
@@ -62,17 +66,14 @@ export const DialogTrigger = forwardRef<
       {children}
     </div>
   );
-});
+}
 
-export const DialogContent = forwardRef<
-  HTMLDivElement,
-  React.HTMLProps<HTMLElement>
->(function DialogContent(props, propRef) {
+export function DialogContent(props: React.HTMLProps<HTMLElement>) {
   const { context: floatingContext, ...context } = useDialogContextChecked();
   const { isMounted, styles } = useTransitionStyles(floatingContext);
   const ref = useMergeRefs([
     context.refs.setFloating,
-    propRef,
+    props.ref,
   ] as React.Ref<HTMLDivElement>[]);
 
   if (!isMounted || !floatingContext.open) return null;
@@ -92,4 +93,4 @@ export const DialogContent = forwardRef<
       </FloatingOverlay>
     </FloatingPortal>
   );
-});
+}

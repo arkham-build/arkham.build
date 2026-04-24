@@ -15,6 +15,7 @@ import type { EmailService } from "./lib/email/email-service.ts";
 import { errorHandler } from "./lib/errors.ts";
 import type { HonoEnv } from "./lib/hono-env.ts";
 import { logger, requestLogger } from "./lib/logger.ts";
+import cacheRouter from "./routes/cache.ts";
 
 export function appFactory(
   config: Config,
@@ -37,6 +38,10 @@ export function appFactory(
     c.set("emailService", emailService);
     return next();
   });
+
+  app.route("/admin", adminRouter);
+
+  app.route("/v1/cache", cacheRouter);
 
   const pub = new Hono<HonoEnv>();
   app.route("/admin", adminRouter);

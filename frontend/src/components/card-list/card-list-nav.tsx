@@ -12,12 +12,12 @@ import type { Metadata } from "@/store/slices/metadata.types";
 import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
 import { download } from "@/utils/download";
 import { useHotkey } from "@/utils/use-hotkey";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import {
   DeckTagsContainer,
   LimitedCardPoolTag,
   SealedDeckTag,
 } from "../deck-tags/deck-tags";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { SortSelect } from "../sort-select";
 import { Button } from "../ui/button";
 import {

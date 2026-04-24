@@ -1,0 +1,157 @@
+[
+  {
+    "abbreviation": "btmo",
+    "code": "60214",
+    "patch": true
+  },
+  {
+    "abbreviation": "dtrh",
+    "code": "08059",
+    "patch": true
+  },
+  {
+    "abbreviation": "dttf",
+    "code": "01064",
+    "patch": true
+  },
+  {
+    "abbreviation": "dttf",
+    "code": "01564",
+    "patch": true
+  },
+  {
+    "abbreviation": "filp",
+    "code": "09060",
+    "patch": true
+  },
+  {
+    "abbreviation": "ittoi",
+    "code": "08125",
+    "patch": true
+  },
+  {
+    "abbreviation": "izzie",
+    "code": "12013",
+    "patch": true
+  },
+  {
+    "abbreviation": "lcc",
+    "code": "04107",
+    "patch": true
+  },
+  {
+    "abbreviation": "lcc",
+    "code": "60308",
+    "patch": true
+  },
+  {
+    "abbreviation": "lcc",
+    "code": "60326",
+    "patch": true
+  },
+  {
+    "abbreviation": "lwif",
+    "code": "01079",
+    "patch": true
+  },
+  {
+    "abbreviation": "lwif",
+    "code": "01579",
+    "patch": true
+  },
+  {
+    "abbreviation": "lwif",
+    "code": "12078",
+    "patch": true
+  },
+  {
+    "abbreviation": "lwif",
+    "code": "60517",
+    "patch": true
+  },
+  {
+    "abbreviation": "lwif",
+    "code": "60524",
+    "patch": true
+  },
+  {
+    "abbreviation": "lcc",
+    "code": "12044",
+    "patch": true
+  },
+  {
+    "abbreviation": "pmp",
+    "code": "06197",
+    "patch": true
+  },
+  {
+    "abbreviation": "pftw",
+    "code": "02184",
+    "patch": true
+  },
+  {
+    "abbreviation": "rts",
+    "code": "06117",
+    "patch": true
+  },
+  {
+    "abbreviation": "rts",
+    "code": "10101",
+    "patch": true
+  },
+  {
+    "abbreviation": "soh",
+    "code": "03029",
+    "patch": true
+  },
+  {
+    "abbreviation": "wah",
+    "code": "01037",
+    "patch": true
+  },
+  {
+    "abbreviation": "wah",
+    "code": "01537",
+    "patch": true
+  },
+  {
+    "abbreviation": "wah",
+    "code": "12038",
+    "patch": true
+  },
+  {
+    "abbreviation": "wah",
+    "code": "11045",
+    "patch": true
+  },
+  {
+    "abbreviation": "wop",
+    "code": "01065",
+    "patch": true
+  },
+  {
+    "abbreviation": "wop",
+    "code": "01565",
+    "patch": true
+  },
+  {
+    "abbreviation": "wop",
+    "code": "12065",
+    "patch": true
+  },
+  {
+    "abbreviation": "wop",
+    "code": "03270",
+    "patch": true
+  },
+  {
+    "abbreviation": "wop",
+    "code": "02307",
+    "patch": true
+  },
+  {
+    "abbreviation": "suzi",
+    "code": "89001",
+    "patch": true
+  }
+]

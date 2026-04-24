@@ -1,9 +1,9 @@
-import type { CollapsibleProps } from "@radix-ui/react-collapsible";
 import { CircleIcon, LockIcon, XIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { cx } from "@/utils/cx";
 import { Button } from "../../ui/button";
+import type { CollapsibleRootProps } from "../../ui/collapsible";
 import { Collapsible, CollapsibleContent } from "../../ui/collapsible";
 import css from "./filter-container.module.css";
 
@@ -19,7 +19,7 @@ type Props = {
   onReset?: () => void;
   open: boolean;
   title: string;
-} & Omit<CollapsibleProps, "title">;
+} & Pick<CollapsibleRootProps, "defaultOpen">;
 
 export function FilterContainer(props: Props) {
   const {

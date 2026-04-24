@@ -9,7 +9,6 @@ import type {
   Customization,
   Customizations,
   DeckMeta,
-  ResolvedCard,
   Selection,
   Selections,
 } from "./types";
@@ -203,24 +202,27 @@ export function encodeAttachments(attachments: AttachmentQuantities) {
   );
 }
 
-export function decodeCardPool(
+export function decodeCardPoolFromSlots(
   slots: Slots,
-  cards: Record<string, ResolvedCard>,
+  metadata: Metadata,
   deckMeta: DeckMeta,
 ) {
   const pool = deckMeta.card_pool?.split(",");
   if (!pool?.length) return undefined;
 
-  for (const { card } of Object.values(cards)) {
-    if (!card.card_pool_extension || !slots[card.code]) continue;
+  for (const code of Object.keys(slots)) {
+    const card = metadata.cards[code];
+    if (!card?.card_pool_extension) continue;
 
-    const extension = deckMeta[`card_pool_extension_${card.code}`];
+    const extension = deckMeta[`card_pool_extension_${code}`];
 
     if (extension) {
       pool.push(...extension.split(","));
     } else if (card.card_pool_extension.selections) {
       pool.push(
-        ...card.card_pool_extension.selections.map((code) => `card:${code}`),
+        ...card.card_pool_extension.selections.map(
+          (code: string) => `card:${code}`,
+        ),
       );
     }
   }

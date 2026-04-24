@@ -1,5 +1,5 @@
 import { FloatingPortal, useMergeRefs } from "@floating-ui/react";
-import { cloneElement, forwardRef, isValidElement, memo } from "react";
+import { cloneElement, isValidElement, memo } from "react";
 import { cx } from "@/utils/cx";
 import {
   TooltipContext,
@@ -17,30 +17,34 @@ export const Tooltip = memo(function Tooltip({
   // or other positioning options.
   const tooltip = useTooltip(options);
 
-  return (
-    <TooltipContext.Provider value={tooltip}>
-      {children}
-    </TooltipContext.Provider>
-  );
+  return <TooltipContext value={tooltip}>{children}</TooltipContext>;
 });
 
-export const TooltipTrigger = forwardRef<
-  HTMLElement,
-  React.HTMLProps<HTMLElement> & { asChild?: boolean }
->(function TooltipTrigger({ children, asChild = false, ...props }, propRef) {
+export function TooltipTrigger({
+  children,
+  asChild = false,
+  ref: propRef,
+  ...props
+}: React.HTMLProps<HTMLElement> & {
+  asChild?: boolean;
+}) {
   const context = useTooltipContext();
-  // biome-ignore lint/suspicious/noExplicitAny: safe.
-  const childrenRef = (children as any).ref;
+  const childrenRef = isValidElement(children)
+    ? (children.props as { ref?: React.Ref<unknown> }).ref
+    : null;
   const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef]);
 
   // `asChild` allows the user to pass any element as the anchor
   if (asChild && isValidElement(children)) {
+    // biome-ignore lint/suspicious/noExplicitAny: safe.
+    const { ref: _, ...childProps } = (children as React.ReactElement<any>)
+      .props;
     return cloneElement(
       children as React.ReactElement,
       context.getReferenceProps({
         ref,
         ...props,
-        ...(children as React.ReactElement).props,
+        ...childProps,
         "data-tooltip-state": context.open ? "open" : "closed",
       } as React.HTMLProps<Element>),
     );
@@ -55,13 +59,13 @@ export const TooltipTrigger = forwardRef<
       {children}
     </button>
   );
-});
+}
 
-export const TooltipContent = forwardRef<
-  HTMLDivElement,
-  React.HTMLProps<HTMLElement>
-  // eslint-disable-next-line react/prop-types
->(function TooltipContent({ style, ...props }, propRef) {
+export function TooltipContent({
+  ref: propRef,
+  style,
+  ...props
+}: React.HTMLProps<HTMLElement>) {
   const context = useTooltipContext();
 
   const ref = useMergeRefs([
@@ -84,7 +88,7 @@ export const TooltipContent = forwardRef<
       />
     </FloatingPortal>
   );
-});
+}
 
 export type DefaultTooltipProps = {
   // Don't accept arrays of items or nullish values

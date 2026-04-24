@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import type { ResolvedDeck } from "@/store/lib/types";
+import type { DeckSummary } from "@/store/lib/types";
 import css from "./deck-stats.module.css";
 import { DefaultTooltip } from "./ui/tooltip";
 
 type Props = {
-  deck: ResolvedDeck;
+  deck: DeckSummary;
 };
 
 export function DeckStats(props: Props) {

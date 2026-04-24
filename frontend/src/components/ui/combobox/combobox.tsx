@@ -200,7 +200,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                 value: inputValue,
                 placeholder: placeholder,
                 autoFocus,
-                onKeyDown(evt) {
+                onKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {
                   if (evt.key === "Tab") {
                     // use a timeout to allow focus to move natively first.
                     // re-rendering the FloatingPortal first causes the focus to stay on input.
@@ -244,7 +244,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                 onClick() {
                   setOpen(!isOpen);
                 },
-                onChange(evt) {
+                onChange(evt: React.ChangeEvent<HTMLInputElement>) {
                   if (evt.target instanceof HTMLInputElement) {
                     setInputValue(evt.target.value);
                   }

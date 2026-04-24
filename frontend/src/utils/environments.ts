@@ -1,63 +1,76 @@
 import type { Cycle } from "@/store/schemas/cycle.schema";
 import type { Pack } from "@/store/schemas/pack.schema";
 import type { Metadata } from "@/store/slices/metadata.types";
-import { CURRENT_CYCLE_POSITION, RETURN_TO_CYCLES } from "./constants";
+import { RETURN_TO_CYCLES } from "./constants";
 
-export const CAMPAIGN_PLAYALONG_PROJECT_ID =
-  "5b6a1f95-73d1-4059-8af2-b9a645efd625";
+export const environments = {
+  current() {
+    return ["cycle:core_ch2", "cycle:investigator_decks_ch2"];
+  },
+  limited(packs: string[]) {
+    return [
+      ...packs.flatMap((code) => {
+        const cycle = code.substring(0, code.length - 1);
+        if (RETURN_TO_CYCLES[cycle]) {
+          return [code, RETURN_TO_CYCLES[cycle]];
+        }
+        return [code];
+      }),
+      "cycle:core_ch2",
+      "cycle:investigator_decks_ch2",
+    ];
+  },
+  cpa(cycle: string) {
+    const packs = [];
 
-const CORE_PACKS = ["cycle:investigator", "cycle:core", "rtnotz"];
-
-export function currentEnvironmentPacks(cycles: Cycle[]) {
-  const packs = [];
-
-  for (let i = CURRENT_CYCLE_POSITION; i >= CURRENT_CYCLE_POSITION - 2; i--) {
-    const cycle = cycles.find((c) => c.position === i);
-    if (!cycle) continue;
-
-    if (cycle.code !== "core") {
-      packs.push(`${cycle.code}p`);
-    }
-  }
-
-  packs.push(...CORE_PACKS.filter((c) => c !== "rtnotz"));
-
-  return packs;
-}
-
-export function limitedEnvironmentPacks(cycles: Cycle[]) {
-  const packs = [];
-
-  for (const cycle of cycles) {
-    if (cycle.code !== "core") {
-      packs.push(`${cycle.code}p`);
+    if (cycle !== "core") {
+      packs.push(`${cycle}p`);
     }
 
-    if (RETURN_TO_CYCLES[cycle.code]) {
-      packs.push(RETURN_TO_CYCLES[cycle.code]);
+    if (RETURN_TO_CYCLES[cycle]) {
+      packs.push(RETURN_TO_CYCLES[cycle]);
     }
-  }
 
-  packs.push(...CORE_PACKS);
+    packs.push("cycle:investigator", "cycle:core", "rtnotz");
 
-  return packs;
-}
+    return packs;
+  },
+  currentFaq25(cycles: Cycle[]) {
+    const CURRENT_CYCLE_POSITION = 11;
 
-export function campaignPlayalongPacks(cycle: string) {
-  const packs = [];
+    const packs = [];
 
-  if (cycle !== "core") {
-    packs.push(`${cycle}p`);
-  }
+    for (let i = CURRENT_CYCLE_POSITION; i >= CURRENT_CYCLE_POSITION - 2; i--) {
+      const cycle = cycles.find((c) => c.position === i);
+      if (!cycle) continue;
 
-  if (RETURN_TO_CYCLES[cycle]) {
-    packs.push(RETURN_TO_CYCLES[cycle]);
-  }
+      if (cycle.code !== "core") {
+        packs.push(`${cycle.code}p`);
+      }
+    }
 
-  packs.push(...CORE_PACKS);
+    packs.push("cycle:investigator", "cycle:core");
 
-  return packs;
-}
+    return packs;
+  },
+  limitedFaq25(cycles: Cycle[]) {
+    const packs = [];
+
+    for (const cycle of cycles) {
+      if (cycle.code !== "core") {
+        packs.push(`${cycle.code}p`);
+      }
+
+      if (RETURN_TO_CYCLES[cycle.code]) {
+        packs.push(RETURN_TO_CYCLES[cycle.code]);
+      }
+    }
+
+    packs.push("cycle:investigator", "cycle:core", "rtnotz");
+
+    return packs;
+  },
+};
 
 export function resolveLimitedPoolPacks(
   metadata: Metadata,
@@ -81,14 +94,14 @@ export function resolveLimitedPoolPacks(
         if (cycle.code === "core") {
           selectedPacks.push(...cyclePacks);
         } else {
-          const reprints = cyclePacks.filter((p) => p.reprint);
+          const reprints = cyclePacks.filter((p) => p.reprint_type);
 
           if (reprints.length) {
             selectedPacks.push(
-              ...reprints.filter((p) => p.reprint?.type !== "encounter"),
+              ...reprints.filter((p) => p.reprint_type !== "campaign"),
             );
           } else {
-            selectedPacks.push(...cyclePacks.filter((p) => !p.preview));
+            selectedPacks.push(...cyclePacks);
           }
         }
       }

@@ -9,6 +9,7 @@ import {
   type DeckDisplayProps,
   type DeckDisplayType,
 } from "@/components/deck-display/deck-display";
+import { ResolvedDeckProvider } from "@/components/resolved-deck-context-provider";
 import { Loader } from "@/components/ui/loader";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";
@@ -30,7 +31,6 @@ import { queryDeck } from "@/store/services/queries";
 import { fetchArkhamDBDecklistMeta } from "@/store/services/requests/decklist-meta";
 import { ApiError } from "@/store/services/requests/shared";
 import { isNumeric } from "@/utils/is-numeric";
-import { ResolvedDeckProvider } from "@/utils/use-resolved-deck";
 import { ErrorStatus } from "../errors/404";
 import { ShareInner } from "../share/share";
 

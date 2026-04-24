@@ -1,16 +1,20 @@
 import { useCallback, useEffect } from "react";
 import { useStore } from "@/store";
 
-const FLAG = "easter_egg_agatha";
-const TRIGGER = "agathaallalong";
+const AGATHA_TRIGGER = "agathaallalong";
+const AGATHA_CODES = ["11007", "11008", "11007b", "11008b"];
+const AGATHA_FLAG = "easter_egg_agatha";
+
+const _MONTEREY_CODES = ["08007", "08007b"];
+const _MONTEREY_FLAG = "easter_egg_monty";
 
 export function useAgathaEasterEggTrigger() {
   const toggleFlag = useStore((state) => state.toggleFlag);
-  const flag = useStore((state) => !!state.settings.flags?.[FLAG]);
+  const flag = useStore((state) => !!state.settings.flags?.[AGATHA_FLAG]);
 
   const callback = useCallback(
     (val: string) => {
-      const match = val === TRIGGER;
+      const match = val === AGATHA_TRIGGER;
 
       if (match) {
         const confirmed = flag
@@ -19,7 +23,7 @@ export function useAgathaEasterEggTrigger() {
               "You are about to transform Agatha into her true self. If you ever want to return her to her original form, cast this incantation again.",
             );
 
-        if (confirmed) toggleFlag(FLAG).catch(console.error);
+        if (confirmed) toggleFlag(AGATHA_FLAG).catch(console.error);
       }
 
       return match;
@@ -30,23 +34,17 @@ export function useAgathaEasterEggTrigger() {
   return callback;
 }
 
-const AGATHA_CODES = ["11007", "11008", "11007b", "11008b"];
-
 export function useAgathaEasterEggTransform(code: string) {
-  const flag = useStore((state) => !!state.settings.flags?.[FLAG]);
-
+  const flag = useStore((state) => !!state.settings.flags?.[AGATHA_FLAG]);
   if (!AGATHA_CODES.includes(code)) return code;
-
-  return flag || aprilFools() ? `${FLAG}_${code}` : code;
+  return flag ? `${AGATHA_FLAG}_${code}` : code;
 }
 
 export function useAgathaEasterEggHint() {
   const settings = useStore((state) => state.settings);
 
   useEffect(() => {
-    if (!settings.showPreviews || aprilFools()) return;
-
-    const flag = settings.flags?.[FLAG];
+    const flag = settings.flags?.[AGATHA_FLAG];
 
     const action = flag
       ? "transform Agatha back into her original form"
@@ -60,7 +58,7 @@ export function useAgathaEasterEggHint() {
   }, [settings]);
 }
 
-function aprilFools() {
+function _aprilFools() {
   const date = new Date();
   return date.getMonth() === 3 && date.getDate() === 1;
 }

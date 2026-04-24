@@ -5,12 +5,8 @@ import { Link } from "wouter";
 import EncounterIcon from "@/components/icons/encounter-icon";
 import PackIcon from "@/components/icons/pack-icon";
 import { Scroller } from "@/components/ui/scroller";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  useTabUrlState,
-} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTabUrlState } from "@/components/ui/tabs.hooks";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useStore } from "@/store";
 import { sortByEncounterSet } from "@/store/lib/sorting";
@@ -64,37 +60,32 @@ type Tree = TreeItem[];
 
 type FormatChoice = "old" | "new";
 
-type ChapterTab = "1" | "2" | "fan-made";
+export type ChapterTab = "all" | "1" | "2" | "fan-made";
 
 type SetTreeProps = {
   activeCode?: string;
   activeType?: TreeItemType;
+  chapterTab: ChapterTab;
+  onChapterTabChange: (value: ChapterTab) => void;
 };
 
-export function SetTree({ activeCode, activeType }: SetTreeProps) {
+export function SetTree({
+  activeCode,
+  activeType,
+  chapterTab,
+  onChapterTabChange,
+}: SetTreeProps) {
   const [formatSelection, setFormatSelection] = useTabUrlState<FormatChoice>(
     "new",
     "format",
-  );
-
-  const initialTab = useStore((state) =>
-    selectInitialTab(state, activeCode, activeType),
-  );
-
-  const [chapterTab, setChapterTab] = useTabUrlState<ChapterTab>(
-    initialTab ? (String(initialTab) as ChapterTab) : "1",
-    "chapter",
   );
 
   const { t } = useTranslation();
 
   const hasFanMadeCycles = useStore(selectHasFanMadeCycles);
 
-  const activeChapterTab =
-    chapterTab === "fan-made" && !hasFanMadeCycles ? "1" : chapterTab;
-
   const cardSetTree = useStore((state) =>
-    selectCardSetTree(state, formatSelection, activeChapterTab),
+    selectCardSetTree(state, formatSelection, chapterTab),
   );
 
   const activeKey = activeType ? `${activeType}-${activeCode}` : "none-all";
@@ -110,10 +101,11 @@ export function SetTree({ activeCode, activeType }: SetTreeProps) {
     <Scroller className={css["tree"]}>
       <Tabs
         className={css["chapter-tabs"]}
-        value={activeChapterTab}
-        onValueChange={setChapterTab}
+        value={chapterTab}
+        onValueChange={(value) => onChapterTabChange(value as ChapterTab)}
       >
         <TabsList>
+          <TabsTrigger value="all">{t("filters.all")}</TabsTrigger>
           <TabsTrigger value="1">
             {t("settings.collection.chapter", { number: 1 })}
           </TabsTrigger>
@@ -127,7 +119,7 @@ export function SetTree({ activeCode, activeType }: SetTreeProps) {
           )}
         </TabsList>
       </Tabs>
-      {activeChapterTab === "1" && (
+      {(chapterTab === "all" || chapterTab === "1") && (
         <div className={css["format-toggle"]}>
           <ToggleGroup
             value={formatSelection}
@@ -203,7 +195,7 @@ function SetTreeNode({
         {item.type === "encounter_set" && (
           <>
             <EncounterIcon code={item.data.code} />
-            {item.data.name}
+            {displayPackName(item.data)}
           </>
         )}
       </Link>
@@ -243,42 +235,6 @@ const selectHasFanMadeCycles = createSelector(selectCyclesAndPacks, (cycles) =>
   cycles.some((c) => !official(c)),
 );
 
-function selectInitialTab(
-  state: StoreState,
-  activeCode: string | undefined,
-  activeType: TreeItemType | undefined,
-) {
-  if (!activeCode || !activeType || activeType === "none") return undefined;
-
-  if (activeType === "cycle") {
-    const cycle = selectCyclesAndPacks(state).find(
-      (c) => c.code === activeCode,
-    );
-    if (!cycle) return undefined;
-    return official(cycle) ? cycle?.packs[0]?.chapter : "fan-made";
-  }
-
-  const metadata = selectMetadata(state);
-
-  if (activeType === "pack") {
-    const pack = metadata.packs[activeCode];
-    if (!pack) return undefined;
-    return official(pack) ? pack?.chapter : "fan-made";
-  }
-
-  if (activeType === "encounter_set") {
-    const lookupTables = selectLookupTables(state);
-    const packCode = Object.keys(lookupTables.encounterCodesByPack).find(
-      (p) => lookupTables.encounterCodesByPack[p]?.[activeCode],
-    );
-    const pack = packCode ? metadata.packs[packCode] : undefined;
-    if (!pack) return undefined;
-    return official(pack) ? pack?.chapter : "fan-made";
-  }
-
-  return undefined;
-}
-
 const selectCardSetTree = createSelector(
   selectCyclesAndPacks,
   selectMetadata,
@@ -288,12 +244,14 @@ const selectCardSetTree = createSelector(
   (_: StoreState, __: FormatChoice, chapterTab: ChapterTab) => chapterTab,
   (cycles, metadata, lookupTables, collator, formatChoice, chapterTab) => {
     const filteredCycles =
-      chapterTab === "fan-made"
-        ? cycles.filter((c) => !official(c))
-        : filterByChapter(
-            cycles.filter((c) => official(c)),
-            chapterTab,
-          );
+      chapterTab === "all"
+        ? cycles
+        : chapterTab === "fan-made"
+          ? cycles.filter((c) => !official(c))
+          : filterByChapter(
+              cycles.filter((c) => official(c)),
+              chapterTab,
+            );
 
     const tree: Tree = filteredCycles.map((c) => {
       const targetPacks = [];

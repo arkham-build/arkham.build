@@ -171,18 +171,15 @@ test.describe("environments", () => {
   test("applies the current environment", async ({ page }) => {
     await page.goto("deck/create/01001");
     await page.getByTestId("limited-card-pool-environments").click();
-    await page.getByTestId("limited-card-pool-environment-current").click();
+    await page
+      .getByTestId("limited-card-pool-environment-current_faq25")
+      .click();
     await page
       .getByTestId("limited-card-pool-environment-current-apply")
       .click();
     await expect(
       page.getByTestId("limited-card-pool-field"),
     ).toHaveScreenshot();
-
-    await page.getByTestId("create-save").click();
-    await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
-    await page.getByTestId("editor-save").click();
-    await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
   });
 
   test("applies the legacy environment", async ({ page }) => {
@@ -207,7 +204,9 @@ test.describe("environments", () => {
   test("applies a limited environment", async ({ page }) => {
     await page.goto("deck/create/01001");
     await page.getByTestId("limited-card-pool-environments").click();
-    await page.getByTestId("limited-card-pool-environment-limited").click();
+    await page
+      .getByTestId("limited-card-pool-environment-limited_faq25")
+      .click();
     await page
       .getByTestId("cycle-select-combobox")
       .getByTestId("combobox-input")

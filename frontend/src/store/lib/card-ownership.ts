@@ -59,6 +59,11 @@ export function ownedCardCount(options: CardOwnershipOptions) {
 
   for (const code of Object.keys(duplicates ?? {})) {
     const duplicate = metadata.cards[code];
+
+    if (!duplicate) {
+      continue;
+    }
+
     const packCode = duplicate.pack_code;
     if (packCode && collection[packCode]) quantityOwned += duplicate.quantity;
   }

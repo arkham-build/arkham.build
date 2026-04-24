@@ -75,13 +75,13 @@ function CardSetNav(props: { currentCard: CardWithRelations }) {
 
       if (reprintPackCodes) {
         const targetType = currentCard.card.encounter_code
-          ? "encounter"
-          : "player";
+          ? "campaign"
+          : "investigator";
 
         const reprint = Object.keys(reprintPackCodes).reduce(
           (acc, curr) => {
             const pack = metadata.packs[curr];
-            return pack.reprint?.type === targetType ? pack : acc;
+            return pack.reprint_type === targetType ? pack : acc;
           },
           undefined as Pack | undefined,
         );
@@ -108,7 +108,7 @@ function CardSetNav(props: { currentCard: CardWithRelations }) {
           and([
             filterBacksides,
             (card) => {
-              if (targetPack.reprint && targetPack.reprint?.type !== "rcore") {
+              if (targetPack.reprint_type !== "rcore") {
                 const cardPack = metadata.packs[card.pack_code];
 
                 const cycleMatches =

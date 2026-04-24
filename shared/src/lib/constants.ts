@@ -1,5 +1,7 @@
 export const COMPARISON_OPERATOR = ["=", "!="] as const;
 
+export const DECKLIST_SEARCH_MAX_XP = 50;
+
 export type SkillKey =
   | "agility"
   | "combat"

@@ -7,7 +7,7 @@ import {
   type RecommendationsResponse,
 } from "@arkham-build/shared";
 import { useQuery } from "@tanstack/react-query";
-import { forwardRef, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ErrorDisplay,
@@ -21,23 +21,24 @@ import { getRecommendations } from "@/store/services/queries";
 import { ApiError } from "@/store/services/requests/shared";
 import type { ListDisplay } from "@/store/slices/lists.types";
 import { cx } from "@/utils/cx";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { DecklistsDateRangeInput } from "../arkhamdb-decklists/decklists-date-range-input";
 import { CardList } from "../card-list/card-list";
 import { CardSearch } from "../card-list/card-search";
 import type { CardListProps } from "../card-list/types";
 import { Footer } from "../footer";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { Loader } from "../ui/loader";
 import css from "./card-recommender.module.css";
 import { IncludeSideDeckToggle } from "./include-side-deck-toggle";
 import { RecommendationBar } from "./recommendation-bar";
 import { RecommenderRelativityToggle } from "./recommender-relativity-toggle";
 
-export const CardRecommender = forwardRef(function CardRecommender(
-  props: CardListProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
+export function CardRecommender(
+  props: CardListProps & {
+    ref?: React.Ref<HTMLDivElement>;
+  },
 ) {
-  const { slotLeft, slotRight, ...rest } = props;
+  const { ref, slotLeft, slotRight, ...rest } = props;
 
   const { t } = useTranslation();
   const { resolvedDeck } = useResolvedDeck();
@@ -170,7 +171,7 @@ export const CardRecommender = forwardRef(function CardRecommender(
       <Footer />
     </article>
   );
-});
+}
 
 function DeckCount(props: { decksAnalyzed?: number }) {
   const { decksAnalyzed } = props;

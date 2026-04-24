@@ -1,8 +1,7 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, cardLevel } from "@arkham-build/shared";
 import { useStore } from "@/store";
 import { selectMetadata } from "@/store/selectors/shared";
 import {
-  cardLevel,
   cycleOrPack,
   displayAttribute,
   parseCardTextHtml,
@@ -71,7 +70,7 @@ function CardPackDetail(props: { card: Card; invert?: boolean }) {
   const displayPack = cycleOrPack(cycle, pack);
 
   return (
-    <span className={css["pack-detail"]}>
+    <span className={cx(css["pack-detail"], invert && css["invert"])}>
       <PackIcon
         className={css["pack-detail-icon"]}
         code={displayPack.code}

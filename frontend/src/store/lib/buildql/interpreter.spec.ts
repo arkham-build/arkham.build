@@ -293,6 +293,16 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ name: "Wendy Adams" }))).toBe(false);
     });
 
+    test("name matches abbreviation", () => {
+      const expr = parse('name = "mm"');
+      const filter = compile(expr, ctx);
+
+      expect(
+        filter(createMockCard({ name: "Machete", abbreviation: "mm" })),
+      ).toBe(true);
+      expect(filter(createMockCard({ name: "Machete" }))).toBe(false);
+    });
+
     test("throws error when comparing text field with string field", () => {
       const expr = parse("text == name");
       const filter = compile(expr, ctx);

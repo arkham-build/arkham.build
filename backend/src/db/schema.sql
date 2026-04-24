@@ -1,7 +1,11 @@
-\restrict CRu5asSBUahOIlRGwL2TxWOnVNeFJOCGSblwzGZdS1bQkYCA5p6xYjnOcpQvWP6
+--
+-- PostgreSQL database dump
+--
 
--- Dumped from database version 16.9
--- Dumped by pg_dump version 17.6
+\restrict VPpdwDSbpYV443DdhgH6MAi2t8xBPRJNEynU99nkBTpEiPejo011nSGb6ttmc8i
+
+-- Dumped from database version 18.1
+-- Dumped by pg_dump version 18.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -65,7 +69,8 @@ CREATE TABLE public.arkhamdb_decklist (
     canonical_investigator_code character varying(255) NOT NULL,
     like_count integer DEFAULT 0 NOT NULL,
     is_searchable boolean GENERATED ALWAYS AS ((((like_count > 0) OR ((next_deck IS NULL) AND (previous_deck IS NULL))) AND ((name)::text <> ''::text) AND (length(description_md) >= 10))) STORED,
-    description_word_count integer DEFAULT 0 NOT NULL
+    description_word_count integer DEFAULT 0 NOT NULL,
+    xp_required integer
 );
 
 
@@ -117,21 +122,21 @@ CREATE TABLE public.arkhamdb_user (
 --
 
 CREATE TABLE public.card (
-    alt_art_investigator boolean DEFAULT false,
-    alternate_of_code character varying(255),
+    alternate_of character varying(255),
     back_illustrator character varying(255),
-    back_link_id character varying(255),
+    back_link character varying(255),
     clues integer,
     clues_fixed boolean DEFAULT false,
     code character varying(255) NOT NULL,
     cost integer,
+    attachments jsonb,
     customization_options jsonb,
     deck_limit integer,
     deck_options jsonb,
-    deck_requirements jsonb,
+    deck_requirements text,
     doom integer,
     double_sided boolean DEFAULT false,
-    duplicate_of_code character varying(255),
+    duplicate_of character varying(255),
     encounter_code character varying(255),
     encounter_position integer,
     enemy_damage integer,
@@ -144,41 +149,39 @@ CREATE TABLE public.card (
     faction_code character varying(36) NOT NULL,
     faction2_code character varying(36),
     faction3_code character varying(36),
-    heals_damage boolean DEFAULT false,
-    heals_horror boolean DEFAULT false,
     health integer,
     health_per_investigator boolean DEFAULT false,
     hidden boolean DEFAULT false,
     id character varying(255) NOT NULL,
     illustrator character varying(255),
     is_unique boolean DEFAULT false,
-    linked boolean DEFAULT false,
     myriad boolean DEFAULT false,
     official boolean DEFAULT true NOT NULL,
     pack_code character varying(255) NOT NULL,
     pack_position integer,
     permanent boolean DEFAULT false,
-    "position" integer NOT NULL,
     preview boolean DEFAULT false,
+    "position" integer NOT NULL,
     quantity integer NOT NULL,
-    real_back_flavor text,
-    real_back_name character varying(255),
-    real_back_text text,
-    real_back_traits character varying(255),
-    real_customization_change text,
-    real_customization_text text,
-    real_flavor text,
-    real_name character varying(255) NOT NULL,
-    real_slot character varying(36),
-    real_subname character varying(255),
-    real_taboo_text_change text,
-    real_text text,
-    real_traits character varying(255),
-    restrictions jsonb,
+    reprint_of character varying(255),
+    back_flavor text,
+    back_name character varying(255),
+    back_text text,
+    back_traits character varying(255),
+    customization_change text,
+    customization_text text,
+    flavor text,
+    name character varying(255) CONSTRAINT card_real_name_not_null NOT NULL,
+    slot character varying(36),
+    subname character varying(255),
+    taboo_text_change text,
+    text text,
+    traits character varying(255),
+    restrictions text,
     sanity integer,
     shroud integer,
     side_deck_options jsonb,
-    side_deck_requirements jsonb,
+    side_deck_requirements text,
     skill_agility integer,
     skill_combat integer,
     skill_intellect integer,
@@ -188,12 +191,24 @@ CREATE TABLE public.card (
     subtype_code character varying(36),
     taboo_set_id integer,
     taboo_xp integer,
-    tags jsonb,
+    tags text,
     translations jsonb,
     type_code character varying(36) NOT NULL,
     vengeance integer,
     victory integer,
-    xp integer
+    xp integer,
+    abbreviation character varying(255),
+    back_subname character varying(255),
+    back_type character varying(255),
+    bonded_count integer,
+    bonded_to character varying(255),
+    doom_per_investigator boolean,
+    enemy_fight_per_investigator boolean,
+    enemy_evade_per_investigator boolean,
+    shroud_per_investigator boolean,
+    starts_in_hand boolean,
+    starts_in_play boolean,
+    sticky_mulligan boolean
 );
 
 
@@ -214,7 +229,7 @@ CREATE TABLE public.card_resolution (
 CREATE TABLE public.cycle (
     code character varying(255) NOT NULL,
     "position" integer NOT NULL,
-    real_name character varying(255) NOT NULL,
+    name character varying(255) CONSTRAINT cycle_real_name_not_null NOT NULL,
     translations jsonb NOT NULL
 );
 
@@ -227,7 +242,8 @@ CREATE TABLE public.data_version (
     card_count integer NOT NULL,
     cards_updated_at timestamp without time zone NOT NULL,
     locale character varying(10) NOT NULL,
-    translation_updated_at timestamp without time zone NOT NULL
+    translation_updated_at timestamp without time zone NOT NULL,
+    ingested_commit_id character varying(255)
 );
 
 
@@ -238,7 +254,7 @@ CREATE TABLE public.data_version (
 CREATE TABLE public.encounter_set (
     code character varying(255) NOT NULL,
     pack_code character varying(255) NOT NULL,
-    real_name character varying(255) NOT NULL,
+    name character varying(255) CONSTRAINT encounter_set_real_name_not_null NOT NULL,
     translations jsonb NOT NULL
 );
 
@@ -250,7 +266,19 @@ CREATE TABLE public.encounter_set (
 CREATE TABLE public.faction (
     code character varying(36) NOT NULL,
     is_primary boolean NOT NULL,
-    name character varying(255) NOT NULL
+    name character varying(255) NOT NULL,
+    translations jsonb NOT NULL
+);
+
+
+--
+-- Name: fan_made_project_info; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.fan_made_project_info (
+    id uuid NOT NULL,
+    bucket_path text NOT NULL,
+    meta jsonb NOT NULL
 );
 
 
@@ -262,9 +290,14 @@ CREATE TABLE public.pack (
     code character varying(255) NOT NULL,
     cycle_code character varying(255) NOT NULL,
     "position" integer NOT NULL,
-    real_name character varying(255) NOT NULL,
+    name character varying(255) CONSTRAINT pack_real_name_not_null NOT NULL,
     translations jsonb NOT NULL,
-    type character varying(255)
+    type character varying(255),
+    chapter integer,
+    date_release timestamp without time zone,
+    size integer,
+    reprint_type character varying(255),
+    reprint_packs jsonb
 );
 
 
@@ -292,7 +325,8 @@ CREATE TABLE public.schema_migrations (
 
 CREATE TABLE public.subtype (
     code character varying(36) NOT NULL,
-    name character varying(255) NOT NULL
+    name character varying(255) NOT NULL,
+    translations jsonb NOT NULL
 );
 
 
@@ -303,8 +337,9 @@ CREATE TABLE public.subtype (
 CREATE TABLE public.taboo_set (
     card_count integer NOT NULL,
     id integer NOT NULL,
-    date timestamp without time zone NOT NULL,
-    name character varying(255)
+    date_start timestamp without time zone CONSTRAINT taboo_set_date_not_null NOT NULL,
+    name character varying(255),
+    code character varying(255) NOT NULL
 );
 
 
@@ -314,7 +349,8 @@ CREATE TABLE public.taboo_set (
 
 CREATE TABLE public.type (
     code character varying(36) NOT NULL,
-    name character varying(255) NOT NULL
+    name character varying(255) NOT NULL,
+    translations jsonb NOT NULL
 );
 
 
@@ -403,6 +439,14 @@ ALTER TABLE ONLY public.encounter_set
 
 ALTER TABLE ONLY public.faction
     ADD CONSTRAINT faction_pkey PRIMARY KEY (code);
+
+
+--
+-- Name: fan_made_project_info fan_made_project_info_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fan_made_project_info
+    ADD CONSTRAINT fan_made_project_info_pkey PRIMARY KEY (id);
 
 
 --
@@ -510,6 +554,13 @@ CREATE INDEX idx_arkhamdb_decklist_user_like_date ON public.arkhamdb_decklist US
 
 
 --
+-- Name: idx_arkhamdb_decklist_xp_required; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_arkhamdb_decklist_xp_required ON public.arkhamdb_decklist USING btree (xp_required);
+
+
+--
 -- Name: idx_arkhamdb_user_reputation; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -517,10 +568,10 @@ CREATE INDEX idx_arkhamdb_user_reputation ON public.arkhamdb_user USING btree (r
 
 
 --
--- Name: idx_card_alternate_of_code; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_card_alternate_of; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_card_alternate_of_code ON public.card USING btree (alternate_of_code);
+CREATE INDEX idx_card_alternate_of ON public.card USING btree (alternate_of);
 
 
 --
@@ -531,10 +582,10 @@ CREATE INDEX idx_card_code ON public.card USING btree (code);
 
 
 --
--- Name: idx_card_duplicate_of_code; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_card_duplicate_of; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_card_duplicate_of_code ON public.card USING btree (duplicate_of_code);
+CREATE INDEX idx_card_duplicate_of ON public.card USING btree (duplicate_of);
 
 
 --
@@ -660,19 +711,19 @@ ALTER TABLE ONLY public.arkhamdb_decklist
 
 
 --
--- Name: card card_alternate_of_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: card card_alternate_of_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.card
-    ADD CONSTRAINT card_alternate_of_code_fkey FOREIGN KEY (alternate_of_code) REFERENCES public.card(id) DEFERRABLE INITIALLY DEFERRED;
+    ADD CONSTRAINT card_alternate_of_fkey FOREIGN KEY (alternate_of) REFERENCES public.card(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
--- Name: card card_duplicate_of_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: card card_duplicate_of_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.card
-    ADD CONSTRAINT card_duplicate_of_code_fkey FOREIGN KEY (duplicate_of_code) REFERENCES public.card(id) DEFERRABLE INITIALLY DEFERRED;
+    ADD CONSTRAINT card_duplicate_of_fkey FOREIGN KEY (duplicate_of) REFERENCES public.card(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -783,7 +834,7 @@ ALTER TABLE ONLY public.pack
 -- PostgreSQL database dump complete
 --
 
-\unrestrict CRu5asSBUahOIlRGwL2TxWOnVNeFJOCGSblwzGZdS1bQkYCA5p6xYjnOcpQvWP6
+\unrestrict VPpdwDSbpYV443DdhgH6MAi2t8xBPRJNEynU99nkBTpEiPejo011nSGb6ttmc8i
 
 
 --
@@ -796,4 +847,7 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20250804133251'),
     ('20250805131452'),
     ('20250826075406'),
-    ('20250831084503');
+    ('20250831084503'),
+    ('20260206184321'),
+    ('20260227194035'),
+    ('20260418123000');

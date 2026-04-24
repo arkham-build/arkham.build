@@ -156,6 +156,7 @@ export function useRestingTooltip(
       refs,
       floatingStyles,
       transitionStyles: styles,
+      setTooltipOpen,
     }),
     [referenceProps, refs, styles, floatingStyles, isMounted],
   );

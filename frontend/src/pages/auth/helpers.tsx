@@ -18,7 +18,7 @@ export function errorMapper(
         <Trans
           t={t}
           i18nKey="auth.errors.account_not_verified"
-          components={{ verifyLink: <Link href="~/verify-email" /> }}
+          components={{ verifyLink: <Link href="~/auth/verify-email" /> }}
         />
       );
     }

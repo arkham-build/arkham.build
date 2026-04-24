@@ -25,6 +25,9 @@ export const DecklistSearchRequestSchema = z.object({
     .enum(["user_reputation", "date", "likes", "popularity"])
     .default("popularity"),
   sort_dir: z.enum(["asc", "desc"]).optional().default("desc"),
+  xp: z
+    .tuple([z.coerce.number().int().min(0), z.coerce.number().int().min(0)])
+    .optional(),
 });
 
 export type DecklistSearchRequest = z.infer<typeof DecklistSearchRequestSchema>;

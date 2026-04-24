@@ -4,7 +4,6 @@ import { useStore } from "@/store";
 import type { Pack } from "@/store/schemas/pack.schema";
 import {
   selectActiveListFilter,
-  selectCampaignCycles,
   selectFilterChanges,
   selectListFilterProperties,
   selectPackMapper,
@@ -13,10 +12,7 @@ import {
 import { selectMetadata } from "@/store/selectors/shared";
 import { isPackFilterObject } from "@/store/slices/lists.type-guards";
 import { assert } from "@/utils/assert";
-import {
-  currentEnvironmentPacks,
-  resolveLimitedPoolPacks,
-} from "@/utils/environments";
+import { environments, resolveLimitedPoolPacks } from "@/utils/environments";
 import { displayPackName } from "@/utils/formatting";
 import { PackName } from "../pack-name";
 import { Button } from "../ui/button";
@@ -61,15 +57,14 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { onChange } = useFilter<string[]>(id);
 
   const metadata = useStore(selectMetadata);
-  const cycles = useStore(selectCampaignCycles);
 
   const onApplyCurrentEnvironment = useCallback(() => {
     onChange(
-      resolveLimitedPoolPacks(metadata, currentEnvironmentPacks(cycles)).map(
+      resolveLimitedPoolPacks(metadata, environments.current()).map(
         (p) => p.code,
       ),
     );
-  }, [cycles, onChange, metadata]);
+  }, [onChange, metadata]);
 
   const showShortcut =
     listFilterProperties.cardTypes.has("player") &&

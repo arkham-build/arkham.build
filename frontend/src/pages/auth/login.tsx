@@ -46,7 +46,7 @@ function Login() {
       footer={
         <>
           {t("auth.login.no_account")}{" "}
-          <Link href="/signup">{t("auth.signup.title")}</Link>
+          <Link href="/auth/signup">{t("auth.signup.title")}</Link>
         </>
       }
     >

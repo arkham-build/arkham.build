@@ -34,6 +34,7 @@ i18n
     fallbackLng: "en",
     load: "languageOnly",
     partialBundledLanguages: true,
+    showSupportNotice: false,
     resources: {
       en,
     },

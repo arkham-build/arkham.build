@@ -3,12 +3,20 @@ import { useTranslation } from "react-i18next";
 import { AppLayout } from "@/layouts/app-layout";
 import { parseCardTextHtml } from "@/utils/card-utils";
 import "./rules-reference.css";
-import { ChevronLeftIcon, ChevronUpIcon, ListIcon, XIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronUpIcon,
+  ExternalLinkIcon,
+  ListIcon,
+  XIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import html from "@/assets/rules.html?raw";
 import { Button } from "@/components/ui/button";
 import { Scroller } from "@/components/ui/scroller";
 import { SearchInput } from "@/components/ui/search-input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTabUrlState } from "@/components/ui/tabs.hooks";
 import { cx } from "@/utils/cx";
 import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";
 import { useGoBack } from "@/utils/use-go-back";
@@ -19,7 +27,16 @@ function RulesReference() {
 
   const [toc, rules] = html.split("<!-- BEGIN RULES -->");
 
+  const [activeTab, onTabChangeUrl] = useTabUrlState("chapter_1");
   const [tocOpen, setTocOpen] = useState(false);
+
+  const onTabChange = useCallback(
+    (value: string) => {
+      setTocOpen(false);
+      onTabChangeUrl(value);
+    },
+    [onTabChangeUrl],
+  );
   const [search, setSearch] = useState("");
 
   const tocTriggerRef = useRef<HTMLButtonElement>(null);
@@ -104,58 +121,99 @@ function RulesReference() {
 
   return (
     <AppLayout title={t("rules.title")}>
-      <div className="container">
-        <Button
-          className="toc-toggle"
-          onClick={onToggleToc}
-          ref={tocTriggerRef}
-          size="xl"
-          variant="primary"
-        >
-          {tocOpen ? <XIcon /> : <ListIcon />} {t("rules.toc")}
-        </Button>
-        <div className={cx("toc-container", tocOpen && "open")} ref={tocRef}>
-          <h1 className="toc-title">{t("rules.toc")}</h1>
-
-          <div className="toc-inner">
-            <SearchInput
-              className="rules-search"
-              id="rules-search"
-              onValueChange={setSearch}
-              placeholder={t("rules.search_placeholder")}
-              ref={searchRef}
-              value={search}
-            />
-          </div>
-
-          <nav className="toc-nav">
-            <Button size="sm" onClick={goBack}>
-              <ChevronLeftIcon />
-              {t("common.back")}
+      <Tabs value={activeTab} onValueChange={onTabChange}>
+        <TabsList>
+          <TabsTrigger value="chapter_1" onTabChange={onTabChange}>
+            {t("settings.collection.chapter", { number: 1 })}
+          </TabsTrigger>
+          <TabsTrigger value="chapter_2" onTabChange={onTabChange}>
+            {t("settings.collection.chapter", { number: 2 })}
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="chapter_1">
+          <div className="container">
+            <Button
+              className="toc-toggle"
+              onClick={onToggleToc}
+              ref={tocTriggerRef}
+              size="xl"
+              variant="primary"
+            >
+              {tocOpen ? <XIcon /> : <ListIcon />} {t("rules.toc")}
             </Button>
-            <Button size="sm" as="a" href="#">
-              <ChevronUpIcon />
-              {t("rules.back_to_top")}
-            </Button>
-          </nav>
-
-          <Scroller className="toc-inner">
             <div
-              dangerouslySetInnerHTML={{
-                __html: parseCardTextHtml(toc, { newLines: "skip" }),
-              }}
-            />
-          </Scroller>
-        </div>
-        <div className="rules-container">
-          <div
-            ref={contentRef}
-            dangerouslySetInnerHTML={{
-              __html: parseCardTextHtml(rules, { newLines: "skip" }),
-            }}
-          />
-        </div>
-      </div>
+              className={cx("toc-container", tocOpen && "open")}
+              ref={tocRef}
+            >
+              <h1 className="toc-title">{t("rules.toc")}</h1>
+
+              <div className="toc-inner">
+                <SearchInput
+                  className="rules-search"
+                  id="rules-search"
+                  onValueChange={setSearch}
+                  placeholder={t("rules.search_placeholder")}
+                  ref={searchRef}
+                  value={search}
+                />
+              </div>
+
+              <nav className="toc-nav">
+                <Button size="sm" onClick={goBack}>
+                  <ChevronLeftIcon />
+                  {t("common.back")}
+                </Button>
+                <Button size="sm" as="a" href="#">
+                  <ChevronUpIcon />
+                  {t("rules.back_to_top")}
+                </Button>
+              </nav>
+
+              <Scroller className="toc-inner">
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: parseCardTextHtml(toc, { newLines: "skip" }),
+                  }}
+                />
+              </Scroller>
+            </div>
+            <div className="rules-container">
+              <div
+                ref={contentRef}
+                dangerouslySetInnerHTML={{
+                  __html: parseCardTextHtml(rules, { newLines: "skip" }),
+                }}
+              />
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value="chapter_2">
+          <div className="grimoire longform">
+            <h1>The Arkham Grimoire</h1>
+            <p>
+              The Arkham Grimoire is a comprehensive collection of rulings
+              covering all known situations in the game. As a living document,
+              it is maintained online and updated as new cards, rules, and
+              interactions are introduced or discovered. This document contains
+              information pertaining to more advanced topics such as the
+              interpretation of card text, the resolution of timing conflicts,
+              frequently asked questions, and a list of all keywords and other
+              rules text.
+            </p>
+            <Button
+              as="a"
+              href="https://ffgapp.com/qr/ahc100"
+              target="_blank"
+              rel="noreferrer"
+              variant="primary"
+              size="full"
+            >
+              <ExternalLinkIcon />
+              Open the Grimoire
+            </Button>
+          </div>
+        </TabsContent>
+      </Tabs>
     </AppLayout>
   );
 }
@@ -170,8 +228,8 @@ function replaceIcons(node: Element) {
 }
 
 function useClickOutside(
-  ref: React.RefObject<HTMLElement>,
-  tocTriggerRef: React.RefObject<HTMLElement>,
+  ref: React.RefObject<HTMLElement | null>,
+  tocTriggerRef: React.RefObject<HTMLElement | null>,
   onClickOutside: () => void,
   enabled: boolean,
 ) {

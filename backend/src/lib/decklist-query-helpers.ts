@@ -1,5 +1,4 @@
-import type { DateRange } from "@arkham-build/shared";
-import type { Context } from "hono";
+import { type DateRange, DECKLIST_SEARCH_MAX_XP } from "@arkham-build/shared";
 import { type Expression, expressionBuilder, sql } from "kysely";
 import type { DB } from "../db/schema.types.ts";
 
@@ -76,10 +75,19 @@ export function inDateRangeConds(
   return conds;
 }
 
-export function rangeFromQuery(key: string, c: Context) {
-  return c.req.query(`${key}_start`)
-    ? [c.req.query(`${key}_start`), c.req.query(`${key}_end`)]
-    : undefined;
+export function inXpRangeConds(
+  xpRequired: Expression<number | null>,
+  xp: [number, number],
+) {
+  const eb = expressionBuilder<DB>();
+  const [min, max] = xp;
+
+  const conds = [eb(xpRequired, "is not", sql.lit(null))];
+
+  if (min > 0) conds.push(eb(xpRequired, ">=", min));
+  if (max < DECKLIST_SEARCH_MAX_XP) conds.push(eb(xpRequired, "<=", max));
+
+  return conds;
 }
 
 function requiredCardsCond(

@@ -10,6 +10,7 @@ function prepareCardFace(card: Card, search: Search) {
   if (search.includeName) {
     if (card.real_name) needle.push(displayAttribute(card, "name"));
     if (card.real_subname) needle.push(displayAttribute(card, "subname"));
+    if (card.abbreviation) needle.push(card.abbreviation);
   }
 
   if (search.includeGameText) {
@@ -32,11 +33,15 @@ function prepareCardBack(card: Card, search: Search) {
 
   if (search.includeName) {
     needle.push(displayAttribute(card, "back_name"));
+    if (card.back_subname) {
+      needle.push(displayAttribute(card, "back_subname"));
+    }
   }
 
   if (search.includeGameText) {
-    if (card.real_back_traits)
+    if (card.real_back_traits) {
       needle.push(displayAttribute(card, "back_traits"));
+    }
     if (card.real_back_text) needle.push(displayAttribute(card, "back_text"));
   }
 
@@ -64,7 +69,7 @@ export function applySearch(
   return cards.filter((card) => {
     const content = prepareCardFace(card, search);
 
-    if (search.includeBacks && card.real_back_text) {
+    if (search.includeBacks && !card.back_link_id) {
       content.push(...prepareCardBack(card, search));
     } else if (search.includeBacks && card.back_link_id) {
       const back = metadata.cards[card.back_link_id];

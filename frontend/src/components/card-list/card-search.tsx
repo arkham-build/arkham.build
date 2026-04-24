@@ -7,7 +7,7 @@ import { cx } from "@/utils/cx";
 import { debounce } from "@/utils/debounce";
 import { useAgathaEasterEggTrigger } from "@/utils/easter-egg-agatha";
 import { useHotkey } from "@/utils/use-hotkey";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { Checkbox } from "../ui/checkbox";
 import { ErrorBubble } from "../ui/error-bubble";
 import { SearchInput } from "../ui/search-input";

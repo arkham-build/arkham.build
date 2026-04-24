@@ -14,7 +14,7 @@ import type {
   LiteralNode,
 } from "./parser.types";
 
-export class InterpreterError extends Error {
+class InterpreterError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "InterpreterError";

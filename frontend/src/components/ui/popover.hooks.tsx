@@ -80,7 +80,7 @@ export function usePopover({
     enabled: !hoverDisabled,
     restMs: 50,
     handleClose: safePolygon({
-      blockPointerEvents: true,
+      blockPointerEvents: false,
     }),
   });
 
@@ -115,10 +115,6 @@ type ContextType =
   | undefined;
 
 export const PopoverContext = createContext<ContextType>(undefined);
-
-export const usePopoverContext = () => {
-  return useContext(PopoverContext);
-};
 
 export const usePopoverContextChecked = () => {
   const context = useContext(PopoverContext);

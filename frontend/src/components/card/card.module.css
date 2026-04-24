@@ -378,6 +378,24 @@
     margin-top: 0.125rem;
   }
 
+  .meta-printing-group + .meta-printing-group {
+    margin-top: 0.25rem;
+    border-top: 1px dotted var(--palette-2);
+  }
+
+  .meta-printing-group > * + * {
+    margin-top: 0.25rem;
+  }
+
+  .meta-chapter {
+    line-height: 1;
+    font-weight: 700;
+    font-family: var(--font-family-ui);
+    color: var(--palette-three-point-five);
+    font-size: var(--text-2xs);
+    margin-block: 0.25rem;
+  }
+
   .meta-property [class^="encounters-"],
   .meta-property svg {
     display: inline-block;

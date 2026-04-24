@@ -16,7 +16,7 @@ test.describe("filters", () => {
 
     await page
       .getByTestId("filters-level-shortcut")
-      .getByRole("radio", { name: "Level 0" })
+      .getByRole("button", { name: "Level 0" })
       .click();
 
     await page
@@ -95,12 +95,12 @@ test.describe("filters", () => {
 
     await page.getByTestId("collection-create-deck").hover();
     await page.locator('[data-test-id="card-list-config"]').click();
-    await page.getByLabel("List with card text").click();
+    await page.getByText("List with card text").click();
 
     await expect(page.getByTestId("card-text").first()).toBeVisible();
     await expect(page.getByTestId("card-text").nth(1)).toBeVisible();
 
-    await page.getByLabel("Scans (Grouped)").click();
+    await page.getByText("Scans (Grouped)").click();
 
     await expect(page.getByTestId("card-text").first()).not.toBeVisible();
     await expect(page.getByTestId("card-text").nth(1)).not.toBeVisible();
@@ -220,9 +220,9 @@ test.describe("filters", () => {
   }) => {
     await fillSearch(page, "runic axe");
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 0" }).click();
+    await page.getByRole("button", { name: "Level 0" }).click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 1-" }).click();
+    await page.getByRole("button", { name: "Level 1-" }).click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
   });
 
@@ -238,9 +238,9 @@ test.describe("filters", () => {
       .click();
     await page.getByTestId("custom-select-option-04002").click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 1-" }).click();
+    await page.getByRole("button", { name: "Level 1-" }).click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 0" }).click();
+    await page.getByRole("button", { name: "Level 0" }).click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
     await fillSearch(page, "honed instinct");
     await expect(page.getByTestId("listcard-09061")).not.toBeVisible();
@@ -251,10 +251,10 @@ test.describe("filters", () => {
     await page.getByTestId("create-save").click();
     await fillSearch(page, "runic axe");
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 0" }).click();
+    await page.getByRole("button", { name: "Level 0" }).click();
 
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 1-" }).click();
+    await page.getByRole("button", { name: "Level 1-" }).click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
     await page.getByRole("heading", { name: "Level" }).click();
     await page.getByLabel("Minimum").click();

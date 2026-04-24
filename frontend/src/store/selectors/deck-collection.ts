@@ -8,7 +8,7 @@ import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";
 import i18n from "@/utils/i18n";
 import type { LookupTables } from "../lib/lookup-tables.types";
 import { deckTags } from "../lib/resolve-deck";
-import type { ResolvedDeck } from "../lib/types";
+import type { DeckSummary, ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";
 import type { Folder } from "../slices/data.types";
 import type {
@@ -20,7 +20,7 @@ import type {
   SortOrder,
 } from "../slices/deck-collection.types";
 import type { MultiselectFilter } from "../slices/lists.types";
-import { selectLocalDecks } from "./decks";
+import { selectLocalDeckSummaries } from "./decks";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
@@ -47,8 +47,8 @@ export const selectDeckFactionFilter = (state: StoreState) =>
   state.deckCollection.filters.faction;
 
 const filterDeckByFaction = (faction: string) => {
-  return (deck: ResolvedDeck) =>
-    deck.cards.investigator.card.faction_code === faction;
+  return (deck: DeckSummary) =>
+    deck.investigatorFront.card.faction_code === faction;
 };
 
 const makeDeckFactionFilter = (values: MultiselectFilter) => {
@@ -57,7 +57,7 @@ const makeDeckFactionFilter = (values: MultiselectFilter) => {
 
 // Tag
 const filterDeckByTag = (tag: string) => {
-  return (deck: ResolvedDeck) => deckTags(deck).includes(tag);
+  return (deck: DeckSummary) => deckTags(deck).includes(tag);
 };
 
 const makeDeckTagsFilter = (values: MultiselectFilter) => {
@@ -74,19 +74,18 @@ export const selectTagsChanges = createSelector(
 );
 
 const filterDeckByCard = (cardCode: string, lookupTables: LookupTables) => {
-  return (deck: ResolvedDeck) => {
-    const allSlots = [
-      ...Object.values(deck.cards.slots),
-      ...Object.values(deck.cards.sideSlots ?? {}),
-      ...Object.values(deck.cards.extraSlots ?? {}),
+  return (deck: DeckSummary) => {
+    const allCodes = [
+      ...Object.keys(deck.slots),
+      ...Object.keys(deck.sideSlots ?? {}),
+      ...Object.keys(deck.extraSlots ?? {}),
     ];
 
     const duplicates = Object.keys(
       lookupTables.relations.duplicates[cardCode] ?? {},
     );
-    return allSlots.some(
-      (slot) =>
-        slot.card.code === cardCode || duplicates.includes(slot.card.code),
+    return allCodes.some(
+      (code) => code === cardCode || duplicates.includes(code),
     );
   };
 };
@@ -140,7 +139,7 @@ const makeDeckPropertiesFilter = (properties: DeckProperties) => {
     if (properties[property as DeckPropertyName]) {
       switch (property) {
         case "parallel": {
-          filters.push((deck: ResolvedDeck) =>
+          filters.push((deck: DeckSummary) =>
             Boolean(
               deck.investigatorFront.card.parallel ||
                 deck.investigatorBack.card.parallel,
@@ -157,9 +156,9 @@ const makeDeckPropertiesFilter = (properties: DeckProperties) => {
 const makeDeckValidityFilter = (value: Omit<DeckValidity, "all">) => {
   switch (value) {
     case "valid":
-      return (deck: ResolvedDeck) => deck.problem == null;
+      return (deck: DeckSummary) => deck.problem == null;
     case "invalid":
-      return (deck: ResolvedDeck) => Boolean(deck.problem);
+      return (deck: DeckSummary) => Boolean(deck.problem);
     default:
       return () => true;
   }
@@ -167,7 +166,7 @@ const makeDeckValidityFilter = (value: Omit<DeckValidity, "all">) => {
 
 // Exp Cost
 export const selectDecksMinMaxXpCost = createSelector(
-  selectLocalDecks,
+  selectLocalDeckSummaries,
   (decks) => {
     const minmax: RangeMinMax = decks.reduce<[number, number]>(
       (acc, val) => {
@@ -193,7 +192,7 @@ export const selectXpCostChanges = createSelector(
 );
 
 const makeDeckXpCostFilter = (minmax: [number, number]) => {
-  return (deck: ResolvedDeck) => {
+  return (deck: DeckSummary) => {
     return (
       deck.stats.xpRequired >= minmax[0] && deck.stats.xpRequired <= minmax[1]
     );
@@ -201,7 +200,7 @@ const makeDeckXpCostFilter = (minmax: [number, number]) => {
 };
 
 const makeDeckProviderFilter = (values: StorageProvider[]) => {
-  return (deck: ResolvedDeck) => {
+  return (deck: DeckSummary) => {
     return (
       !values.length ||
       values.some((val) => {
@@ -285,7 +284,7 @@ const selectFilteringFunc = createSelector(
 );
 
 export const selectFactionsInLocalDecks = createSelector(
-  selectLocalDecks,
+  selectLocalDeckSummaries,
   selectMetadata,
   (decks, metadata) => {
     if (!decks) return [];
@@ -293,7 +292,7 @@ export const selectFactionsInLocalDecks = createSelector(
     const factionsSet = new Set<string>();
 
     for (const deck of decks) {
-      factionsSet.add(deck.cards.investigator.card.faction_code);
+      factionsSet.add(deck.investigatorFront.card.faction_code);
     }
 
     const factions = Array.from(factionsSet).map(
@@ -309,7 +308,7 @@ export const selectFactionsInLocalDecks = createSelector(
 );
 
 export const selectTagsInLocalDecks = createSelector(
-  selectLocalDecks,
+  selectLocalDeckSummaries,
   selectLocaleSortingCollator,
   (decks, collator) =>
     Array.from(new Set(decks.flatMap((deck) => deckTags(deck))))
@@ -318,11 +317,11 @@ export const selectTagsInLocalDecks = createSelector(
 );
 
 const selectDecksFiltered = createSelector(
-  selectLocalDecks,
+  selectLocalDeckSummaries,
   selectDeckSearchTerm,
   selectFilteringFunc,
   (decks, searchTerm, filterFunc) => {
-    let decksToFilter: ResolvedDeck[];
+    let decksToFilter: DeckSummary[];
 
     if (searchTerm) {
       const needle = prepareNeedle(
@@ -334,7 +333,7 @@ const selectDecksFiltered = createSelector(
         decksToFilter = decks.filter((deck) => {
           const text = [
             deck.name,
-            displayAttribute(deck.cards.investigator.card, "name"),
+            displayAttribute(deck.investigatorFront.card, "name"),
           ];
           return fuzzyMatch(text, needle);
         });
@@ -371,23 +370,29 @@ function dateSort(a: string, b: string, order: SortOrder) {
 }
 
 function makeAlphabeticalSort(order: SortOrder) {
-  return (a: ResolvedDeck, b: ResolvedDeck) =>
+  return (a: Pick<ResolvedDeck, "name">, b: Pick<ResolvedDeck, "name">) =>
     genericSort(a.name, b.name, order);
 }
 
 function makeDeckCreatedSort(order: SortOrder) {
-  return (a: ResolvedDeck, b: ResolvedDeck) =>
-    dateSort(a.date_creation, b.date_creation, order);
+  return (
+    a: Pick<ResolvedDeck, "date_creation">,
+    b: Pick<ResolvedDeck, "date_creation">,
+  ) => dateSort(a.date_creation, b.date_creation, order);
 }
 
 function makeDeckUpdatedSort(order: SortOrder) {
-  return (a: ResolvedDeck, b: ResolvedDeck) =>
-    dateSort(a.date_update, b.date_update, order);
+  return (
+    a: Pick<ResolvedDeck, "date_update">,
+    b: Pick<ResolvedDeck, "date_update">,
+  ) => dateSort(a.date_update, b.date_update, order);
 }
 
 function makeXPSort(order: SortOrder) {
-  return (a: ResolvedDeck, b: ResolvedDeck) =>
-    genericSort(a.stats.xpRequired, b.stats.xpRequired, order);
+  return (
+    a: { stats: { xpRequired: number } },
+    b: { stats: { xpRequired: number } },
+  ) => genericSort(a.stats.xpRequired, b.stats.xpRequired, order);
 }
 
 const selectDecksSortingFunc = createSelector(
@@ -416,7 +421,7 @@ const selectDecksSortingFunc = createSelector(
 type DecklistEntry = DeckEntry | FolderEntry;
 
 type DeckEntry = {
-  deck: ResolvedDeck;
+  deck: DeckSummary;
   depth: number;
   folder?: Folder;
   type: "deck";
@@ -438,8 +443,8 @@ export const selectDecksDisplayList = createSelector(
   (state: StoreState) => state.deckCollection.expandedFolders,
   (filteredDecks, sorting, folders, deckFolders, expandedFolders) => {
     const folderHierarchy: Record<string, string[]> = {};
-    const decksByFolderId: Record<string, ResolvedDeck[]> = {};
-    const uncategorizedDecks: ResolvedDeck[] = [];
+    const decksByFolderId: Record<string, DeckSummary[]> = {};
+    const uncategorizedDecks: DeckSummary[] = [];
 
     for (const deck of filteredDecks.decks) {
       const folderId = deckFolders[deck.id];

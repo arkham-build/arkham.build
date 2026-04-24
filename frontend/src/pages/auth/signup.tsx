@@ -39,7 +39,7 @@ function Signup() {
           <>
             {t("auth.signup.success")}
             <br />
-            <Link href="/login" asChild>
+            <Link href="/auth/login" asChild>
               <Button as="a" variant="primary" size="full">
                 {t("auth.login.title")}
               </Button>
@@ -56,7 +56,7 @@ function Signup() {
       footer={
         <>
           {t("auth.signup.has_account")}{" "}
-          <Link href="/login">{t("auth.login.title")}</Link>
+          <Link href="/auth/login">{t("auth.login.title")}</Link>
         </>
       }
     >

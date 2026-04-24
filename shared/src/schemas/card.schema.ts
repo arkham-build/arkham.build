@@ -107,10 +107,13 @@ const AtLeastSchema = z.object({
 
 const OptionSelectSchema = z.object({
   id: z.string(),
-  level: z.object({
-    min: z.number(),
-    max: z.number(),
-  }),
+  level: z
+    .object({
+      min: z.number(),
+      max: z.number(),
+    })
+    .nullish(),
+  buildql_query: z.string().nullish(),
   name: z.string(),
   size: z.number().nullish(),
   trait: z.array(z.string()).nullish(),
@@ -155,19 +158,21 @@ export type DeckOptionSelectType = "deckSize" | "faction" | "option";
 const Faction = z.enum(FACTION_ORDER);
 
 export const JsonDataCardSchema = z.object({
+  abbreviation: z.string().nullish(),
   alternate_of: z.string().nullish(),
+  attachments: AttachmentsSchema.nullish(),
   back_flavor: z.string().nullish(),
   back_illustrator: z.string().nullish(),
   back_link: z.string().nullish(),
   back_name: z.string().nullish(),
   back_subname: z.string().nullish(),
   back_text: z.string().nullish(),
-  back_type: z.string().nullish(),
   back_traits: z.string().nullish(),
+  back_type: z.string().nullish(),
   bonded_count: z.number().nullish(),
   bonded_to: z.string().nullish(),
-  clues_fixed: z.boolean().nullish(),
   clues: z.number().nullish(),
+  clues_fixed: z.boolean().nullish(),
   code: z.string(),
   cost: z.number().nullish(),
   customization_change: z.string().nullish(),
@@ -191,12 +196,12 @@ export const JsonDataCardSchema = z.object({
   errata_date: z.string().nullish(),
   exceptional: z.boolean().nullish(),
   exile: z.boolean().nullish(),
-  faction_code: Faction,
   faction2_code: Faction.nullish(),
   faction3_code: Faction.nullish(),
+  faction_code: Faction,
   flavor: z.string().nullish(),
-  health_per_investigator: z.boolean().nullish(),
   health: z.number().nullish(),
+  health_per_investigator: z.boolean().nullish(),
   hidden: z.boolean().nullish(),
   illustrator: z.string().nullish(),
   is_unique: z.boolean().nullish(),
@@ -205,7 +210,9 @@ export const JsonDataCardSchema = z.object({
   pack_code: z.string(),
   permanent: z.boolean().nullish(),
   position: z.number(),
+  preview: z.boolean().nullish(),
   quantity: z.number(),
+  reprint_of: z.string().nullish(),
   restrictions: z.string().nullish(),
   sanity: z.number().nullish(),
   shroud: z.number().nullish(),
@@ -224,6 +231,9 @@ export const JsonDataCardSchema = z.object({
   sticky_mulligan: z.boolean().nullish(),
   subname: z.string().nullish(),
   subtype_code: z.enum(["basicweakness", "weakness"]).nullish(),
+  taboo_set_id: z.number().nullish(),
+  taboo_text_change: z.string().nullish(),
+  taboo_xp: z.number().nullish(),
   tags: z.string().nullish(),
   text: z.string().nullish(),
   traits: z.string().nullish(),
@@ -268,7 +278,7 @@ export const ApiCardSchema = JsonDataCardSchema.omit({
   back_link_id: z.string().nullish(),
   deck_requirements: ApiDeckRequirementsSchema.nullish(),
   duplicate_of_code: z.string().nullish(),
-  id: z.string(), // {code} or {code}-{taboo_set_id}
+  id: z.string(),
   locale: z.string().nullish(),
   preview: z.boolean().nullish(),
   real_back_flavor: z.string().nullish(),
@@ -287,9 +297,6 @@ export const ApiCardSchema = JsonDataCardSchema.omit({
   real_traits: z.string().nullish(),
   restrictions: ApiRestrictionsSchema.nullish(),
   side_deck_requirements: ApiDeckRequirementsSchema.nullish(),
-  taboo_set_id: z.number().nullish(),
-  taboo_text_change: z.string().nullish(),
-  taboo_xp: z.number().nullish(),
   tags: z.array(z.string()).nullish(),
 });
 
@@ -305,13 +312,10 @@ const CardPoolExtensionSchema = z.object({
 });
 
 export const AdditionalAttributes = {
-  attachments: AttachmentsSchema.nullish(),
   back_image_url: z.url().nullish(),
   back_thumbnail_url: z.url().nullish(),
   card_pool_extension: CardPoolExtensionSchema.optional(),
   image_url: z.url().nullish(),
-  reprint_of: z.string().nullish(),
-  taboo_xp: z.number().nullish(),
   thumbnail_url: z.url().nullish(),
 };
 
@@ -322,6 +326,8 @@ export const AdditionalAttributes = {
 const CardRuntimeAttributes = {
   /* indicates the amount of xp spent on customizations for a card. only relevant in deckbuilder mode. */
   customization_xp: z.number().nullish(),
+  /* chapter inferred from the card's pack. */
+  chapter: z.number().nullish(),
   /** marks fan-made cards */
   official: z.boolean().nullish(),
   /* copy of card attributes, can be changed by customizable or taboos */

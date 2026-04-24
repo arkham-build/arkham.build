@@ -10,7 +10,8 @@ import {
 } from "recharts";
 import type { ChartableData } from "@/store/lib/deck-charts";
 import { SkillIconFancy } from "../icons/skill-icon-fancy";
-import { ChartTooltip, chartTheme } from "./chart-theme";
+import { chartTheme } from "./chart-theme";
+import { ChartTooltip } from "./chart-tooltip";
 import css from "./deck-tools.module.css";
 
 type Props = {

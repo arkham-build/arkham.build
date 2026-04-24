@@ -12,12 +12,8 @@ import {
 } from "recharts";
 import type { ChartableData } from "@/store/lib/deck-charts";
 import { range } from "@/utils/range";
-import {
-  axisLabelStyle,
-  axisTickStyle,
-  ChartTooltip,
-  chartTheme,
-} from "./chart-theme";
+import { axisLabelStyle, axisTickStyle, chartTheme } from "./chart-theme";
+import { ChartTooltip } from "./chart-tooltip";
 import css from "./deck-tools.module.css";
 
 type Props = {

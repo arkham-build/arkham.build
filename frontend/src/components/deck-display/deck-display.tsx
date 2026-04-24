@@ -40,13 +40,8 @@ import {
   ModalInner,
 } from "../ui/modal";
 import { Plane } from "../ui/plane";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  useTabUrlState,
-} from "../ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { useTabUrlState } from "../ui/tabs.hooks";
 import { useToast } from "../ui/toast.hooks";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./deck-display.module.css";

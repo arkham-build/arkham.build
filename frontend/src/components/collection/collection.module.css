@@ -135,6 +135,12 @@
   min-width: 6ch;
 }
 
+.chapter-header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
 .chapter-title {
   display: inline-block;
   font-size: var(--text-lg);

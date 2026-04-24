@@ -110,6 +110,27 @@
   vertical-align: baseline;
 }
 
+.printings-group + .printings-group {
+  border-top: 1px dotted var(--palette-2);
+}
+
+.printings-groups > * + * {
+  margin-top: 0.75rem;
+}
+
+.printings-group > * + * {
+  margin-top: 0.5rem;
+}
+
+.printings-chapter-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 1;
+  font-family: var(--font-family-ui);
+  color: var(--palette-three-point-five);
+  margin-block: 0.25rem;
+}
+
 .printings {
   list-style: none;
 }

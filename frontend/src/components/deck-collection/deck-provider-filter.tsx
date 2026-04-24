@@ -6,7 +6,7 @@ import {
   selectProviderChanges,
 } from "@/store/selectors/deck-collection";
 import { STORAGE_PROVIDERS, type StorageProvider } from "@/utils/constants";
-import { providerTagRenderer } from "../deck-tags/deck-tags";
+import { ProviderTagInner } from "../deck-tags/deck-tags";
 import { FilterContainer } from "../filters/primitives/filter-container";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 
@@ -55,7 +55,7 @@ export function DeckProviderFilter(props: Props) {
       >
         {options.map((value) => (
           <ToggleGroupItem key={value} value={value}>
-            {providerTagRenderer(value, t)}
+            <ProviderTagInner tag={value} t={t} />
           </ToggleGroupItem>
         ))}
       </ToggleGroup>

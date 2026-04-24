@@ -12,7 +12,7 @@ export function getAvailableThemes(): Record<string, string> {
 
 const DEFAULT_THEME = "dark";
 
-function getColorThemePreference() {
+export function getColorThemePreference() {
   const pref = localStorage.getItem("color-scheme-preference");
   if (pref && getAvailableThemes()[pref]) return pref;
   return DEFAULT_THEME;
@@ -22,7 +22,7 @@ function persistColorTheme(theme: string | null | undefined) {
   localStorage.setItem("color-scheme-preference", theme ?? DEFAULT_THEME);
 }
 
-function applyColorTheme(theme: string, prefersDarkMode: boolean) {
+export function applyColorTheme(theme: string, prefersDarkMode: boolean) {
   if (theme === "system") {
     document.documentElement.dataset.theme = prefersDarkMode ? "dark" : "light";
   } else {

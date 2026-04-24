@@ -21,16 +21,18 @@ export function LocaleSelect(props: Props) {
       className={cx(css["select"], variant && css[variant])}
       id={id}
       items={options}
+      menuClassName={css["menu"]}
       renderControl={(item) => {
         if (!item) return null;
         return (
           <span className={css["control-row"]}>
             {loading && <LoaderCircleIcon className="spin" />}
             {variant === "compact" ? (
-              <LocaleIcon locale={item.value} />
+              <LocaleIcon locale={item.displayValue ?? item.value} />
             ) : (
               <>
-                <LocaleIcon locale={item.value} /> {item.label}
+                <LocaleIcon locale={item.displayValue ?? item.value} />{" "}
+                {item.label}
               </>
             )}
           </span>
@@ -40,7 +42,7 @@ export function LocaleSelect(props: Props) {
         if (!item) return null;
         return (
           <span className={css["control-row"]}>
-            <LocaleIcon locale={item.value} />
+            <LocaleIcon locale={item.displayValue ?? item.value} />
             {item.label}
           </span>
         );

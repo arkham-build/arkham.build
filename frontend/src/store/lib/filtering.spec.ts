@@ -80,6 +80,12 @@ describe("filter: investigator access", () => {
       expect(applyFilter(state, "06002", "11099")).toBeTruthy();
       expect(applyFilter(state, "01001", "11099")).toBeFalsy();
     });
+
+    it("handles case: faction-restricted basic weaknesses", () => {
+      const state = store.getState();
+      expect(applyFilter(state, "01001", "09124")).toBeTruthy();
+      expect(applyFilter(state, "01001", "09128")).toBeFalsy();
+    });
   });
 
   describe("class <> level filters", () => {
@@ -1018,13 +1024,11 @@ describe("filter: ownership", () => {
     expect(applyFilter(state, "01039", { rcore: true })).toBeTruthy();
   });
 
-  // TODO: while we and arkhamcards both normalize cards to core set ids,
-  //       arkhamdb doesn't, so we might want to make this case work.
-  // it("handles case: revised core", () => {
-  //   const state = store.getState();
-  //   expect(applyFilter(state, "01539", { core: true })).toBeTruthy();
-  //   expect(applyFilter(state, "01539", { rcore: true })).toBeTruthy();
-  // });
+  it("handles case: revised core", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "01539", { core: true })).toBeTruthy();
+    expect(applyFilter(state, "01539", { rcore: true })).toBeTruthy();
+  });
 
   it("handles case: extended revised core", () => {
     const state = store.getState();
@@ -1036,6 +1040,14 @@ describe("filter: ownership", () => {
     const state = store.getState();
     expect(applyFilter(state, "01039", {})).toBeFalsy();
     expect(applyFilter(state, "01039", { har: true })).toBeTruthy();
+  });
+
+  it("handles case: charisma reprint", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "01694", { core: true, dwlp: true })).toBeFalsy();
+    expect(
+      applyFilter(state, "02158", { core: true, dwlp: true }),
+    ).toBeTruthy();
   });
 });
 
@@ -1066,6 +1078,12 @@ describe("filter: investigator weakness access", () => {
     const state = store.getState();
     expect(applyFilter(state, "60101", "01000")).toBeTruthy();
     expect(applyFilter(state, "60101", "01100")).toBeTruthy();
+  });
+
+  it("handles case: weakness is a faction-restricted basic weakness", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "01001", "09124")).toBeTruthy();
+    expect(applyFilter(state, "01001", "09128")).toBeFalsy();
   });
 
   it("handles case: weakness is multi-stage weakness", () => {

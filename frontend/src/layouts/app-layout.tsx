@@ -1,8 +1,7 @@
-import { forwardRef } from "react";
 import { Footer } from "@/components/footer";
 import { Masthead } from "@/components/masthead";
+import { PageTitle } from "@/components/ui/page-title";
 import { cx } from "@/utils/cx";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import css from "./app-layout.module.css";
 
 type Props = {
@@ -11,13 +10,8 @@ type Props = {
   title: string;
 } & React.HTMLProps<HTMLDivElement>;
 
-export const AppLayout = forwardRef(function AppLayout(
-  props: Props,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
-  const { children, mainClassName, title, ...rest } = props;
-
-  useDocumentTitle(title);
+export function AppLayout(props: Props) {
+  const { children, mainClassName, title, ref, ...rest } = props;
 
   return (
     <div
@@ -26,6 +20,7 @@ export const AppLayout = forwardRef(function AppLayout(
       data-testid="app-layout"
       ref={ref}
     >
+      <PageTitle>{title}</PageTitle>
       <div className={css["layout-inner"]}>
         <Masthead className={css["header"]} />
         <section className={cx(css["main"], mainClassName)}>{children}</section>
@@ -35,4 +30,4 @@ export const AppLayout = forwardRef(function AppLayout(
       </div>
     </div>
   );
-});
+}

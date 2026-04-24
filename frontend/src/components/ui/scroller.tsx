@@ -1,57 +1,36 @@
-/* eslint-disable react/display-name */
-import type { ScrollAreaProps } from "@radix-ui/react-scroll-area";
-import { Root, Scrollbar, Thumb, Viewport } from "@radix-ui/react-scroll-area";
-import { forwardRef, useCallback } from "react";
 import { cx } from "@/utils/cx";
 import { useMedia } from "@/utils/use-media";
 import css from "./scroller.module.css";
 
-interface Props extends ScrollAreaProps {
-  className?: string;
+type ScrollType = "always" | "auto" | "hover" | "scroll";
+
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
+  ref?: React.Ref<HTMLDivElement>;
+  type?: ScrollType;
   viewportClassName?: string;
 }
 
-export const Scroller = forwardRef(
-  (props: Props, ref: React.ForwardedRef<HTMLDivElement>) => {
-    const { children, className, type, viewportClassName, ...rest } = props;
+export function Scroller(props: Props) {
+  const { children, className, ref, type, viewportClassName, ...rest } = props;
 
-    const touchDevice = useMedia("(hover: none)");
+  const touchDevice = useMedia("(hover: none)");
+  const scrollerType =
+    touchDevice && type === "hover" ? "scroll" : (type ?? "scroll");
 
-    const scrollerType = touchDevice && type === "hover" ? "scroll" : type;
-
-    const stopPropagation = useCallback(
-      (evt: React.MouseEvent<HTMLDivElement>) => {
-        evt.stopPropagation();
-      },
-      [],
-    );
-
-    return (
-      <Root
-        {...rest}
+  return (
+    <div {...rest} className={cx(css["scroller"], className)}>
+      <div
+        ref={ref}
+        tabIndex={-1}
         className={cx(
-          css["scroller"],
-          scrollerType === "always" && css["permanent-scrollbar"],
-          className,
+          css["viewport"],
+          css[`viewport-${scrollerType}`],
+          viewportClassName,
         )}
-        type={scrollerType ?? "scroll"}
       >
-        <Viewport
-          className={cx(css["viewport"], viewportClassName)}
-          ref={ref}
-          tabIndex={-1}
-        >
-          {children}
-        </Viewport>
-        <Scrollbar
-          className={css["scrollbar"]}
-          onMouseDown={stopPropagation}
-          orientation="vertical"
-        >
-          <Thumb className={css["scrollbar-thumb"]} />
-        </Scrollbar>
-      </Root>
-    );
-  },
-);
+        {children}
+      </div>
+    </div>
+  );
+}

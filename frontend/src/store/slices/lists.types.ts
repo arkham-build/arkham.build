@@ -192,13 +192,14 @@ export type ListsSlice = {
     key: string,
     initialValues?: Partial<Record<FilterKey, FilterMapping[FilterKey]>>,
     opts?: {
+      additionalFilters?: FilterKey[];
       display?: Partial<ListDisplay>;
       fanMadeCycleCodes?: string[];
-      additionalFilters?: FilterKey[];
       lockedFilters?: Set<FilterKey>;
       search?: string;
       showInvestigatorFilter?: boolean;
       showOwnershipFilter?: boolean;
+      systemFilter?: Filter;
     },
   ): void;
 

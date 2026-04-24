@@ -59,7 +59,7 @@
 }
 
 .content {
-  padding: var(--filters-spacing-y) var(--filters-spacing-x) 1rem;
+  padding: var(--filters-spacing-y) 0 1rem var(--filters-spacing-x);
 }
 
 .content > * + * {

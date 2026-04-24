@@ -5,49 +5,56 @@
   overflow: hidden;
 }
 
-.scroller.permanent-scrollbar {
-  padding-right: var(--scrollbar-padding);
-}
-
 .viewport {
   width: 100%;
   height: 100%;
   border-radius: inherit;
+  overflow-y: auto;
 }
 
-.viewport > div[style] {
-  /* biome-ignore lint/complexity/noImportantStyles: fix for library bug (radix-ui/primitives/issues/926) */
-  display: block !important;
-  min-height: 100%;
+@supports selector(::-webkit-scrollbar) {
+  .viewport {
+    padding-right: calc(var(--scrollbar-padding) - 6px);
+  }
+
+  .viewport-always {
+    overflow-y: scroll;
+  }
+
+  .viewport::-webkit-scrollbar {
+    background: var(--color-scrollbar);
+    width: 6px;
+  }
+
+  .viewport::-webkit-scrollbar-thumb {
+    background: var(--color-scrollbar-thumb);
+    border-radius: var(--rounded);
+    z-index: 9999;
+  }
+
+  .viewport-hover {
+    mask-image: linear-gradient(to left, transparent 6px, black 6px);
+    transition: mask-image 300ms;
+
+    &:hover {
+      mask-image: linear-gradient(to left, black 6px, black 6px);
+    }
+  }
 }
 
-.scrollbar {
-  display: flex;
-  user-select: none;
-  touch-action: none;
-  padding: 2px;
-  background: var(--color-scrollbar);
-  z-index: 10;
-  transition: background 160ms ease-out;
-}
+@supports (scrollbar-color: auto) {
+  .viewport {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar);
+    scrollbar-gutter: stable;
+    padding-right: var(--scrollbar-padding);
+  }
 
-.scrollbar[data-orientation="vertical"] {
-  width: var(--scrollbar-size);
-}
+  .viewport-hover {
+    scrollbar-color: transparent transparent;
 
-.scrollbar-thumb {
-  flex: 1;
-  background: var(--color-scrollbar-thumb);
-  border-radius: var(--scrollbar-size);
-  position: relative;
-}
-
-.scrollbar-thumb::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
+    &:hover {
+      scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar);
+    }
+  }
 }

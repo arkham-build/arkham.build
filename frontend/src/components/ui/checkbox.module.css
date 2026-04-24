@@ -10,50 +10,56 @@
   padding-left: 0.5rem;
 }
 
-.root {
+.control {
+  position: relative;
   display: inline-flex;
-  align-items: stretch;
-  justify-content: center;
   width: var(--checkbox-size);
   height: var(--checkbox-size);
+  flex-shrink: 0;
+}
+
+.input {
+  appearance: none;
+  cursor: pointer;
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
   background: var(--palette-1);
   border-radius: var(--rounded);
   border: 1px solid var(--palette-3);
-  cursor: pointer;
 
-  &[disabled] {
-    cursor: not-allowed;
-    opacity: 1;
-  }
-
-  &[data-state="checked"] {
-    background: var(--palette-2);
-    border: 1px solid var(--palette-3);
+  & svg {
+    width: 0.75em;
+    height: 0.75em;
+    visibility: hidden;
+    color: var(--palette-5);
   }
 }
 
-.root svg {
-  width: 0.75em;
-  height: 0.75em;
+.input:checked + .box {
+  background: var(--palette-2);
+  border: 1px solid var(--palette-3);
+
+  & svg {
+    visibility: visible;
+  }
 }
 
-.checkbox:hover .root:not([disabled]):not([data-state="checked"]) {
+.checkbox:hover .input:not(:disabled):not(:checked) + .box {
   background-color: var(--palette-2);
 }
 
-.root:focus-visible {
+.input:focus-visible + .box {
   outline: 1px solid var(--focus);
   outline-offset: 1px;
-}
-
-.indicator {
-  color: var(--palette-5);
-  display: inline-flex;
-  align-items: center;
-}
-
-.checkbox:hover .indicator {
-  color: var(--palette-5);
 }
 
 .label {

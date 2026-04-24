@@ -6,12 +6,12 @@ import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { DeckCollection } from "@/components/deck-collection/deck-collection";
 import { Filters } from "@/components/filters/filters";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/page-title";
 import { ListLayout } from "@/layouts/list-layout";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { useStore } from "@/store";
 import { selectIsInitialized } from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import css from "./index.module.css";
 
 function Index() {
@@ -19,8 +19,6 @@ function Index() {
 
   const activeListId = useStore((state) => state.activeList);
   const isInitalized = useStore(selectIsInitialized);
-  useDocumentTitle(t("browse.title"));
-
   const setActiveList = useStore((state) => state.setActiveList);
 
   useEffect(() => {
@@ -31,6 +29,7 @@ function Index() {
 
   return (
     <CardModalProvider>
+      <PageTitle>{t("browse.title")}</PageTitle>
       <ListLayoutContextProvider>
         <ListLayout
           filters={<Filters targetDeck={undefined} />}

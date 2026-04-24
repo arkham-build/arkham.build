@@ -580,7 +580,11 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         }),
         initialValues: values,
         key,
-        systemFilter: and([...SYSTEM_FILTERS]),
+        systemFilter: and([
+          ...SYSTEM_FILTERS,
+          ...(state.settings.showPreviews ? [] : [not(filterPreviews)]),
+          ...(opts.systemFilter ? [opts.systemFilter] : []),
+        ]),
         search: {
           value: opts.search ?? "",
           mode: "simple",
@@ -598,6 +602,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
 
   removeList(key) {
     set((state) => {
+      if (!state.lists[key]) return state;
       const lists = { ...state.lists };
       delete lists[key];
       return { lists };

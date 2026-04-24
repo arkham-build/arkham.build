@@ -12,6 +12,7 @@ export function corsMiddleware(config: Config) {
       "Authorization",
       "Content-Type",
       "If-Modified-Since",
+      "If-None-Match",
       "X-Client-Id",
     ],
     credentials: true,

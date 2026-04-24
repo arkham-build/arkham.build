@@ -192,6 +192,9 @@ function getEncounterIcon(code?: string | null) {
     case "film_fatale":
       return "film_fatale_encounter";
 
+    case "arkham_sewers":
+      return "sewers";
+
     default:
       return code;
   }

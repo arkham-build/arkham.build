@@ -119,7 +119,6 @@
       }
     },
     "card_view": {
-      "errata_notice": "Errata ({{date}})",
       "actions": {
         "faq": "View FAQ",
         "open_on_arkhamdb": "Open on ArkhamDB",
@@ -131,6 +130,7 @@
         "view_backside": "Backside",
         "who_can_take": "Who can take this card?"
       },
+      "errata_notice": "Errata ({{date}})",
       "faq": {
         "empty": "No FAQ entries available.",
         "error": "Failed to load FAQ entries.",
@@ -218,7 +218,8 @@
         "You cannot have more than 5 level 0 Seeker cards": "You cannot have more than 5 level 0 Seeker cards",
         "You cannot have more than 5 level 0 Survivor cards": "You cannot have more than 5 level 0 Survivor cards",
         "You cannot have more than one Covenant in your deck.": "You cannot have more than one Covenant in your deck.",
-        "You must have at least 7 cards from 3 different factions": "You must have at least 7 cards from 3 different classes",
+        "You must have at least 6 cards from each faction.": "You must have at least 6 cards from each faction.",
+        "You must have at least 7 cards from 3 different factions": "You must have at least 7 cards from 3 different factions",
         "You must have at least 7 cards from each class": "You must have at least 7 cards from each class"
       },
       "decks": {
@@ -289,8 +290,8 @@
         "parallelCards": "Parallel cards",
         "replacement": "Replacements",
         "requiredCards": "Signatures",
-        "sideDeckRequiredCards": "Extra Deck Signatures",
         "restrictedTo": "Restricted to",
+        "sideDeckRequiredCards": "Extra Deck Signatures",
         "specialist": "Specialist",
         "specialist_investigators": "Specialist Investigators"
       },
@@ -322,6 +323,7 @@
       "sort_asc": "Sort ascending",
       "sort_desc": "Sort descending",
       "specialist": "Specialist",
+      "stage": "Stage",
       "subtype": {
         "basicweakness": "Basic Weakness",
         "none": "No subtype",
@@ -369,6 +371,7 @@
         "Act 1": "Act 1",
         "Act 2": "Act 2",
         "Agency": "Agency",
+        "Alchemy": "Alchemy",
         "Alexandria": "Alexandria",
         "Allied": "Allied",
         "Ally": "Ally",
@@ -376,6 +379,7 @@
         "Ancient": "Ancient",
         "Ancient One": "Ancient One",
         "Apiary": "Apiary",
+        "Apparel": "Apparel",
         "Arkham": "Arkham",
         "Arkham Asylum": "Arkham Asylum",
         "Armor": "Armor",
@@ -407,6 +411,7 @@
         "Carnevale": "Carnevale",
         "Cart": "Cart",
         "Casino": "Casino",
+        "Castle": "Castle",
         "Cave": "Cave",
         "Central": "Central",
         "Charm": "Charm",
@@ -426,6 +431,7 @@
         "Conspirator": "Conspirator",
         "Construct": "Construct",
         "Corruption": "Corruption",
+        "Cosmos": "Cosmos",
         "Coterie": "Coterie",
         "Covenant": "Covenant",
         "Creature": "Creature",
@@ -446,6 +452,8 @@
         "Developed": "Developed",
         "Dhole": "Dhole",
         "Dilemma": "Dilemma",
+        "Dinosaur": "Dinosaur",
+        "Dionsaur": "Dionsaur",
         "Distortion": "Distortion",
         "Dormant": "Dormant",
         "Double": "Double",
@@ -503,6 +511,7 @@
         "Haunted": "Haunted",
         "Havana": "Havana",
         "Hazard": "Hazard",
+        "Headwear": "Headwear",
         "Hemlock Vale": "Hemlock Vale",
         "Hex": "Hex",
         "Hideout": "Hideout",
@@ -598,6 +607,8 @@
         "Present-Day": "Present-Day",
         "Prison": "Prison",
         "Private": "Private",
+        "Profession": "Profession",
+        "Prop": "Prop",
         "Providence": "Providence",
         "Public": "Public",
         "R'lyeh": "R'lyeh",
@@ -625,6 +636,8 @@
         "Ruins": "Ruins",
         "Salem": "Salem",
         "Sanctum": "Sanctum",
+        "Satellite": "Satellite",
+        "Saturnite": "Saturnite",
         "Scheme": "Scheme",
         "Scholar": "Scholar",
         "Science": "Science",
@@ -637,6 +650,7 @@
         "Serpent": "Serpent",
         "Service": "Service",
         "Servitor": "Servitor",
+        "Set": "Set",
         "Shantak": "Shantak",
         "Shattered": "Shattered",
         "Ship": "Ship",
@@ -704,6 +718,7 @@
         "Witch": "Witch",
         "Witch House": "Witch House",
         "Woods": "Woods",
+        "Worker": "Worker",
         "Y'ha-nthlei": "Y'ha-nthlei",
         "Yithian": "Yithian",
         "Yoth": "Yoth",
@@ -747,8 +762,11 @@
         "obsessions": "Obsessions",
         "offerings": "Offerings",
         "portents": "Portents",
+        "renown": "Renown",
         "resources": "Resources",
+        "rumors": "Rumors",
         "secrets": "Secrets",
+        "shards": "Shards",
         "shell": "Shell",
         "signs": "Signs",
         "supplies": "Supplies",
@@ -806,6 +824,7 @@
         "xp_spent": "XP spent"
       },
       "limited_decks": {
+        "Collector": "Collector",
         "Secondary Class": "Secondary class",
         "Versatile": "Versatile"
       },
@@ -910,7 +929,8 @@
       "sealed_deck": {
         "error": "Failed to fetch sealed deck: {{error}}",
         "loading": "Fetching sealed deck..."
-      }
+      },
+      "title": "Create {{name}} deck"
     },
     "deck_edit": {
       "actions": {
@@ -935,6 +955,7 @@
       },
       "changes_restored": "Unsaved changes were restored.",
       "config": {
+        "buildql_deck_option": "BuildQL deckbuilding override",
         "card_pool": {
           "apply_environment": "Apply {{environment}} environment",
           "campaign_playalong": "Campaign Play-Along",
@@ -944,13 +965,18 @@
           "collection_help": "Set your current <settings_link>collection</settings_link> as this deck's card pool. This can be useful to freeze the deck's card pool, or to share a \"build preset\" with people sharing a physical collection.",
           "configure_environment": "Configure environment",
           "current": "Current",
-          "current_help": "When deckbuilding in the Current Environment, players may only deckbuild with core cards, the five starter decks and the three most recent investigator expansions.",
+          "current_faq25": "Current (FAQ 2.5)",
+          "current_faq25_help": "When deckbuilding in the Current Environment, players may only deckbuild with core cards, the five starter decks and the three most recent investigator expansions.",
+          "current_help": "When deckbuilding in the the Current environment, players may use the following products: The 2026 core set, the five investigator decks, the two most recently released deckbuilding expansions and the two most recently released investigator expansions after the 2026 core set.",
           "custom": "Custom pool",
           "help": "Investigators, signature cards and story assets are not affected by this selection.",
+          "help_chapter_1": "This is a Chapter 1 environment.",
           "legacy": "Legacy",
           "legacy_help": "When deckbuilding in the Legacy Environment, players may build their decks and use investigators, player cards, and weaknesses from any Arkham Horror: The Card Game™ product. There are no restrictions whatsoever.",
           "limited": "Limited",
-          "limited_help": "When deckbuilding in the Limited Environment, players may only build their decks with cards from the core set, the five starter decks and three different investigator expansions of their choice.",
+          "limited_faq25": "Limited (FAQ 2.5)",
+          "limited_faq25_help": "When deckbuilding in the Limited Environment, players may only build their decks with cards from the core set, the five starter decks and three different investigator expansions of their choice.",
+          "limited_help": "When deckbuilding in the the Limited environment, players may use the following products: The 2026 core set, the five investigator decks, three different player card expansions of their choice.",
           "placeholder": "Select packs...",
           "section_title": "Card pool settings",
           "selected_cards": "Selected cards",
@@ -975,7 +1001,6 @@
           "shared": "Shared",
           "title": "Storage provider"
         },
-        "buildql_deck_option": "BuildQL deckbuilding override",
         "taboo": "Taboo list",
         "tags": "Tags",
         "tags_help": "Enter tags, separated by spaces",
@@ -1160,7 +1185,8 @@
         "name_placeholder": "Enter name (e.g. Deck Guide)...",
         "required_cards": "Required cards",
         "submit": "Apply",
-        "title": "Filter criteria"
+        "title": "Filter criteria",
+        "xp_range": "XP required"
       },
       "sorting": {
         "date": "Most recent",
@@ -1223,6 +1249,7 @@
         "card_lists": "Card lists",
         "card_lists_help": "This setting controls the default value of the \"Fan-made content\" filter in card lists."
       },
+      "short_title": "Fan-made",
       "status": {
         "alpha": "Alpha",
         "beta": "Beta",
@@ -1233,7 +1260,6 @@
       "status_installed": "Installed",
       "status_update_available": "Update content",
       "tags": "Tags",
-      "short_title": "Fan-made",
       "title": "Fan-made content",
       "types": {
         "campaign": "Campaign",
@@ -1250,7 +1276,6 @@
       },
       "all": "All",
       "and": "and",
-      "locked": "This filter is locked",
       "asset": {
         "title": "Asset"
       },
@@ -1300,6 +1325,8 @@
         "no_level": "Null",
         "title": "Level"
       },
+      "locked": "This filter is locked",
+      "or": "or",
       "ownership": {
         "owned": "Owned",
         "title": "Ownership",
@@ -1444,9 +1471,9 @@
       "title": "Preview season is here!"
     },
     "rules": {
-      "title": "Rules reference",
       "back_to_top": "Back to top",
       "search_placeholder": "Search keywords...",
+      "title": "Rules reference",
       "toc": "Table of contents"
     },
     "search": {
@@ -1458,6 +1485,7 @@
         "create": "Create backup",
         "help": "Create a backup of your settings, decks and card collection as a JSON file. You can use this file to restore your data on this device or another device.",
         "help_warning": "When a backup is restored, <strong>any existing data will be overwritten.</strong>",
+        "metadata_title": "Application data",
         "no_file_selected": "No file selected",
         "restore": "Restore backup",
         "restore_error": "Failed to restore backup: {{error}}",
@@ -1513,6 +1541,10 @@
         "user_id": "User ID",
         "username": "Username"
       },
+      "developer": {
+        "dev_mode_enabled": "Enable developer mode",
+        "title": "Developer"
+      },
       "display": {
         "card_display": "Card display settings",
         "card_level": "Card level",
@@ -1545,10 +1577,6 @@
         "theme_light": "Light",
         "theme_system": "System",
         "title": "Display"
-      },
-      "developer": {
-        "dev_mode_enabled": "Enable developer mode",
-        "title": "Developer"
       },
       "error": "Failed to save settings: {{error}}",
       "general": {

@@ -110,10 +110,6 @@ describe("GET /v2/public/recommendations", () => {
           "recommendation": 100,
         },
         {
-          "card_code": "04033",
-          "recommendation": 100,
-        },
-        {
           "card_code": "04200",
           "recommendation": 100,
         },
@@ -134,52 +130,56 @@ describe("GET /v2/public/recommendations", () => {
           "recommendation": 100,
         },
         {
-          "card_code": "09109",
-          "recommendation": 100,
-        },
-        {
-          "card_code": "09111",
-          "recommendation": 100,
-        },
-        {
           "card_code": "09122",
           "recommendation": 100,
         },
         {
-          "card_code": "01093",
-          "recommendation": 75,
+          "card_code": "01088",
+          "recommendation": 66.67,
         },
         {
           "card_code": "01089",
-          "recommendation": 60,
+          "recommendation": 66.67,
         },
         {
-          "card_code": "01064",
-          "recommendation": 50,
-        },
-        {
-          "card_code": "01088",
-          "recommendation": 50,
+          "card_code": "01093",
+          "recommendation": 66.67,
         },
         {
           "card_code": "02158",
-          "recommendation": 50,
-        },
-        {
-          "card_code": "08125",
-          "recommendation": 50,
-        },
-        {
-          "card_code": "01092",
           "recommendation": 33.33,
         },
         {
-          "card_code": "01087",
-          "recommendation": 20,
+          "card_code": "08125",
+          "recommendation": 33.33,
         },
         {
           "card_code": "01000",
-          "recommendation": 16.67,
+          "recommendation": 0,
+        },
+        {
+          "card_code": "01059",
+          "recommendation": 0,
+        },
+        {
+          "card_code": "01064",
+          "recommendation": 0,
+        },
+        {
+          "card_code": "01072",
+          "recommendation": 0,
+        },
+        {
+          "card_code": "01073",
+          "recommendation": 0,
+        },
+        {
+          "card_code": "01078",
+          "recommendation": 0,
+        },
+        {
+          "card_code": "01079",
+          "recommendation": 0,
         },
       ]
     `);

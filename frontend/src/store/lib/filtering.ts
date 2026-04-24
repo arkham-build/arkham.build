@@ -1,13 +1,13 @@
 import {
   type AttributeFilter,
   type Card,
+  cardLevel,
   type DeckOption,
   type SealedDeckResponse,
   SKILL_KEYS,
   type SkillKey,
 } from "@arkham-build/shared";
 import {
-  cardLevel,
   cardUses,
   isSpecialist,
   official,
@@ -481,7 +481,7 @@ export function filterPackCode(
         const reprint = metadata.packs[reprintCode];
 
         const typeMatches =
-          !!(reprint.reprint?.type === "encounter") === !!card.encounter_code;
+          !!(reprint.reprint_type === "campaign") === !!card.encounter_code;
 
         return typeMatches && value.includes(reprintCode);
       });
@@ -554,6 +554,15 @@ export function filterTag(tag: string, checkUnselectedCustomizations: boolean) {
 
     const hasTag = !!card.tags?.includes(tag);
 
+    // XXX: McGlenn always wants to check of customizable cards (FiLP)
+    if (
+      tag === "fa" &&
+      !!card.customization_options &&
+      filterTagFallback(tag, checkUnselectedCustomizations)(card)
+    ) {
+      return true;
+    }
+
     if (
       hasTag ||
       !checkUnselectedCustomizations ||
@@ -607,6 +616,10 @@ function filterMyriad(card: Card) {
  */
 
 function filterRestrictions(card: Card, investigator: Card) {
+  if (Array.isArray(card.restrictions?.faction)) {
+    return card.restrictions.faction.includes(investigator.faction_code);
+  }
+
   if (Array.isArray(card.restrictions?.trait)) {
     // placeholder investigators don't have restrictions
     if (
@@ -1182,7 +1195,9 @@ function makePlayerCardsFilter(
   } else {
     ors.push(
       filterRequired(investigator),
-      (card: Card) => card.subtype_code === "basicweakness",
+      (card: Card) =>
+        card.subtype_code === "basicweakness" &&
+        filterRestrictions(card, investigator),
       (card: Card) => {
         return (
           !!card.encounter_code &&
@@ -1246,7 +1261,12 @@ export function filterInvestigatorWeaknessAccess(
     config?.targetDeck !== "extraSlots"
       ? [
           filterRequired(investigator),
-          filterSubtypes({ basicweakness: true, weakness: false, none: false }),
+          (c) =>
+            filterSubtypes({
+              basicweakness: true,
+              weakness: false,
+              none: false,
+            })(c) && filterRestrictions(c, investigator),
           (card: Card) => card.xp == null && !card.restrictions && !card.hidden,
         ]
       : [(c: Card) => !!investigator.side_deck_requirements?.card?.[c.code]];
@@ -1278,6 +1298,7 @@ export function filterDuplicatesFromContext(
   metadata: Metadata,
   lookupTables: LookupTables,
   deck: ResolvedDeck | undefined,
+  collection: Record<string, boolean | number>,
 ) {
   const cardPool = deck?.cardPool
     ? resolveLimitedPoolPacks(metadata, deck.cardPool).map((p) => p.code)
@@ -1358,6 +1379,26 @@ export function filterDuplicatesFromContext(
       .sort((a, b) => {
         const aCard = metadata.cards[a];
         const bCard = metadata.cards[b];
+
+        const aOwned = ownedCardCount({
+          card: aCard,
+          metadata,
+          lookupTables,
+          collection,
+          showAllCards: false,
+        });
+
+        const bOwned = ownedCardCount({
+          card: bCard,
+          metadata,
+          lookupTables,
+          collection,
+          showAllCards: false,
+        });
+
+        if (aOwned !== bOwned) {
+          return bOwned - aOwned;
+        }
 
         const aPack = metadata.packs[aCard.pack_code];
         const bPack = metadata.packs[bCard.pack_code];

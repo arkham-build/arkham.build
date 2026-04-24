@@ -1,15 +1,12 @@
-import { forwardRef, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { cx } from "@/utils/cx";
 import { mergeRefs } from "@/utils/merge-refs";
 import { getScrollParent } from "@/utils/scroll-parent";
 import css from "./auto-sizing-textarea.module.css";
 
-type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+type TextareaProps = React.HTMLProps<HTMLTextAreaElement>;
 
-export const AutoSizingTextarea = forwardRef(function AutoSizingTextarea(
-  props: TextareaProps,
-  forwardedRef: React.ForwardedRef<HTMLTextAreaElement>,
-) {
+export function AutoSizingTextarea(props: TextareaProps) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -51,7 +48,7 @@ export const AutoSizingTextarea = forwardRef(function AutoSizingTextarea(
       {...props}
       className={cx(css["textarea"], props.className)}
       onChange={onValueChange}
-      ref={mergeRefs(ref, forwardedRef)}
+      ref={mergeRefs(ref, props.ref)}
     />
   );
-});
+}

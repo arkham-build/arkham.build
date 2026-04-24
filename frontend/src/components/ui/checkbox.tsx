@@ -1,42 +1,56 @@
-import type { CheckboxProps } from "@radix-ui/react-checkbox";
-import { Indicator, Root } from "@radix-ui/react-checkbox";
 import { CheckIcon } from "lucide-react";
-import { forwardRef, useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { cx } from "@/utils/cx";
 import css from "./checkbox.module.css";
 
-interface Props extends Omit<CheckboxProps, "label"> {
+interface Props
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "label" | "onChange"
+  > {
   className?: string;
+  "data-testid"?: string;
   hideLabel?: boolean;
   id?: string;
+  ref?: React.Ref<HTMLLabelElement>;
   label: React.ReactNode;
+  onCheckedChange?: (checked: boolean) => void;
 }
 
-export const Checkbox = forwardRef(function Checkbox(
-  props: Props,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
-  const { className, id, hideLabel, label, ...rest } = props;
-  const checkboxRef = useRef<HTMLButtonElement>(null);
+export function Checkbox(props: Props) {
+  const {
+    className,
+    "data-testid": testid,
+    id,
+    hideLabel,
+    label,
+    onCheckedChange,
+    ref,
+    ...rest
+  } = props;
 
-  const preventDefault = useCallback((evt: React.MouseEvent) => {
-    evt.preventDefault();
-  }, []);
+  const handleChange = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement>) => {
+      onCheckedChange?.(evt.target.checked);
+    },
+    [onCheckedChange],
+  );
 
   return (
-    <div className={cx(css["checkbox"], className)} ref={ref}>
-      <Root {...rest} className={css["root"]} id={id} ref={checkboxRef}>
-        <Indicator className={css["indicator"]}>
+    <label className={cx(css["checkbox"], className)} ref={ref}>
+      <span className={css["control"]}>
+        <input
+          {...rest}
+          id={id}
+          type="checkbox"
+          className={cx(css["input"], "sr-only")}
+          onChange={handleChange}
+        />
+        <span data-testid={testid} className={css["box"]}>
           <CheckIcon />
-        </Indicator>
-      </Root>
-      <label
-        className={cx(css["label"], hideLabel && "sr-only")}
-        onPointerDown={preventDefault}
-        htmlFor={id}
-      >
-        {label}
-      </label>
-    </div>
+        </span>
+      </span>
+      <span className={cx(css["label"], hideLabel && "sr-only")}>{label}</span>
+    </label>
   );
-});
+}

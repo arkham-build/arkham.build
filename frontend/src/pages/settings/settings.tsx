@@ -11,13 +11,8 @@ import { useSearch } from "wouter";
 import { CollectionSettings } from "@/components/collection/collection";
 import { FanMadeContent } from "@/components/fan-made-content/fan-made-content";
 import { Button } from "@/components/ui/button";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  useTabUrlState,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTabUrlState } from "@/components/ui/tabs.hooks";
 import { useToast } from "@/components/ui/toast.hooks";
 import { AppLayout } from "@/layouts/app-layout";
 import { useStore } from "@/store";
@@ -34,6 +29,7 @@ import { DevModeSetting } from "./dev-mode";
 import { FontSizeSetting } from "./font-size";
 import { ListSettings } from "./list-settings";
 import { LocaleSetting } from "./locale-setting";
+import { MetadataRefresh } from "./metadata-refresh";
 import { Section } from "./section";
 import css from "./settings.module.css";
 import { ShowAllCardsSetting } from "./show-all-cards";
@@ -261,6 +257,9 @@ function SettingsInner({
             <TabsContent value="backup">
               <Section title={t("settings.backup.title")}>
                 <BackupRestore />
+              </Section>
+              <Section title={t("settings.backup.metadata_title")}>
+                <MetadataRefresh />
               </Section>
               <Section title={t("settings.developer.title")}>
                 <DevModeSetting settings={settings} setSettings={setSettings} />

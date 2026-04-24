@@ -26,11 +26,11 @@
 .filters-container {
   background: var(--palette-point-five);
   border: 1px solid var(--palette-1);
-  padding: 0.375rem;
+  padding: 0.375rem 0 0.375rem 0.625rem;
   box-shadow: var(--shadow-lg);
   border-radius: var(--rounded);
   max-height: 95dvh;
-  width: min(18rem, 95dvw);
+  width: min(20rem, 95dvw);
 }
 
 .expand-filters {

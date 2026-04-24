@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { CenterLayout } from "@/layouts/center-layout";
 import { useStore } from "@/store";
 import {
@@ -7,8 +7,8 @@ import {
 } from "@/store/selectors/lists";
 import { selectActiveList, selectMetadata } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { Footer } from "../footer";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { CardGrid } from "./card-grid";
 import { CardGridGrouped } from "./card-grid-grouped";
 import { CardList } from "./card-list";
@@ -19,15 +19,20 @@ import { CardSearch } from "./card-search";
 import type { CardListProps } from "./types";
 
 interface Props extends CardListProps {
+  ref?: React.Ref<HTMLDivElement>;
   topContent?: React.ReactNode;
 }
 
-export const CardListContainer = forwardRef(function CardListContainer(
-  props: Props,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
-  const { className, slotLeft, slotRight, targetDeck, topContent, ...rest } =
-    props;
+export function CardListContainer(props: Props) {
+  const {
+    className,
+    slotLeft,
+    slotRight,
+    targetDeck,
+    topContent,
+    ref,
+    ...rest
+  } = props;
 
   const ctx = useResolvedDeck();
 
@@ -146,4 +151,4 @@ export const CardListContainer = forwardRef(function CardListContainer(
       </div>
     </CenterLayout>
   );
-});
+}

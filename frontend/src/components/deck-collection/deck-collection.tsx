@@ -174,7 +174,9 @@ export function DeckCollection() {
       {deckCollection.total ? (
         <Scroller
           className={css["scroller"]}
-          ref={setScrollParent as unknown as React.RefObject<HTMLDivElement>}
+          ref={
+            setScrollParent as unknown as React.RefObject<HTMLDivElement | null>
+          }
           type="hover"
         >
           <Virtuoso

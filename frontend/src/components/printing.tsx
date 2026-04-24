@@ -27,7 +27,7 @@ export function Printing({
 
   const packName = displayPackName(pack);
 
-  const packFormat = pack.reprint ? "new" : "old";
+  const packFormat = pack.reprint_type ? "new" : "old";
 
   return (
     <PrintingInner

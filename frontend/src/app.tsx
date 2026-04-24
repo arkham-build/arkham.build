@@ -3,6 +3,7 @@ import {
   QueryClientProvider,
   useMutation,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -28,23 +29,7 @@ import { useColorThemeListener } from "./utils/use-color-theme";
 
 const Index = lazy(() => import("./pages/index"));
 
-const Browse = lazy(() =>
-  import("./pages/browse/index").then((m) => ({ default: m.Browse })),
-);
-
-const BrowsePack = lazy(() =>
-  import("./pages/browse/index").then((m) => ({ default: m.BrowsePack })),
-);
-
-const BrowseCycle = lazy(() =>
-  import("./pages/browse/index").then((m) => ({ default: m.BrowseCycle })),
-);
-
-const BrowseEncounterSet = lazy(() =>
-  import("./pages/browse/index").then((m) => ({
-    default: m.BrowseEncounterSet,
-  })),
-);
+const BrowseRoutes = lazy(() => import("./pages/browse/index"));
 
 const DeckEdit = lazy(() => import("./pages/deck-edit/deck-edit"));
 
@@ -83,6 +68,10 @@ const InstallFanMadeContent = lazy(
 );
 
 const Core2026Reveal = lazy(() => import("./pages/blog/core-2026-reveal"));
+
+const Investigator2026Reveal = lazy(
+  () => import("./pages/blog/investigator-2026-reveal"),
+);
 
 const FanMadeContentPreview = lazy(
   () => import("./pages/fan-made-content-preview/fan-made-content-preview"),
@@ -138,16 +127,19 @@ function AppInner() {
   return (
     <>
       <Loader message={t("app.init")} show={!storeInitialized} delay={200} />
-      <Suspense fallback={<Loader delay={200} show />}>
+      <Suspense fallback={<Loader delay={300} show />}>
         {storeInitialized && (
           <Router hook={useBrowserLocation}>
             <Switch>
               <Route component={Index} path="/" />
-              <Route component={Browse} path="/browse" />
-              <Route component={BrowsePack} path="/browse/pack/:pack_code" />
-              <Route component={BrowseCycle} path="/browse/cycle/:cycle_code" />
+              <Route component={BrowseRoutes} path="/browse" />
+              <Route component={BrowseRoutes} path="/browse/pack/:pack_code" />
               <Route
-                component={BrowseEncounterSet}
+                component={BrowseRoutes}
+                path="/browse/cycle/:cycle_code"
+              />
+              <Route
+                component={BrowseRoutes}
                 path="/browse/encounter_set/:encounter_code"
               />
               <Route component={Search} path="/search" />
@@ -169,6 +161,10 @@ function AppInner() {
               <Route component={Connect} path="/connect" />
               <Route component={Rules} path="/rules" />
               <Route component={Core2026Reveal} path="/blog/core-2026-reveal" />
+              <Route
+                component={Investigator2026Reveal}
+                path="/blog/investigator-2026-reveal"
+              />
               <Route
                 component={FanMadeContentPreview}
                 path="/fan-made-content/preview/:id"
@@ -239,7 +235,8 @@ function CardDataSyncTask() {
   const { t } = useTranslation();
 
   const toast = useToast();
-  const toastId = useRef<string | undefined>();
+  const toastId = useRef<string | undefined>(undefined);
+  const hasTriggeredSync = useRef(false);
 
   const shouldQueryDataVersion =
     !navigator.webdriver && !location.includes("/connect");
@@ -252,22 +249,28 @@ function CardDataSyncTask() {
   });
 
   const init = useStore((state) => state.init);
-  const settings = useStore((state) => state.settings);
+  const queryClient = useQueryClient();
 
-  const initMutation = useMutation({
-    mutationFn: () =>
-      init(queryMetadata, queryDataVersion, queryCards, {
+  const { isError, isPending, mutateAsync } = useMutation({
+    mutationFn: async () => {
+      await init(queryMetadata, queryDataVersion, queryCards, {
         refresh: true,
-        locale: settings.locale,
-      }),
+        locale,
+      });
+      queryClient.setQueryData(
+        ["tasks", "dataVersion", locale],
+        useStore.getState().metadata.dataVersion,
+      );
+    },
   });
 
   useEffect(() => {
     if (
+      hasTriggeredSync.current ||
       !remoteDataVersion ||
       !dataVersion ||
-      initMutation.isPending ||
-      initMutation.isError
+      isPending ||
+      isError
     ) {
       return;
     }
@@ -276,17 +279,16 @@ function CardDataSyncTask() {
       remoteDataVersion.locale === dataVersion.locale &&
       remoteDataVersion.cards_updated_at === dataVersion.cards_updated_at &&
       remoteDataVersion.translation_updated_at ===
-        dataVersion.translation_updated_at &&
-      remoteDataVersion.version === dataVersion.version;
+        dataVersion.translation_updated_at;
 
     if (!upToDate) {
+      hasTriggeredSync.current = true;
       toastId.current = toast.show({
         variant: "loading",
         children: t("settings.card_data.loading"),
       });
 
-      initMutation
-        .mutateAsync()
+      mutateAsync()
         .then(() => {
           if (toastId.current) {
             toast.dismiss(toastId.current);
@@ -296,9 +298,9 @@ function CardDataSyncTask() {
     }
   }, [
     dataVersion,
-    initMutation.isError,
-    initMutation.isPending,
-    initMutation.mutateAsync,
+    isError,
+    isPending,
+    mutateAsync,
     remoteDataVersion,
     toast,
     t,
