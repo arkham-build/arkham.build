@@ -23,7 +23,7 @@ import {
   queryCards,
   queryDataVersion,
   queryMetadata,
-} from "./store/services/queries";
+} from "./store/services/requests/cache";
 import { useAgathaEasterEggHint } from "./utils/easter-egg-agatha";
 import { useColorThemeListener } from "./utils/use-color-theme";
 

@@ -17,7 +17,7 @@ import {
   queryCards,
   queryDataVersion,
   queryMetadata,
-} from "./store/services/queries";
+} from "./store/services/requests/cache";
 
 const rootNode = document.getElementById("root");
 

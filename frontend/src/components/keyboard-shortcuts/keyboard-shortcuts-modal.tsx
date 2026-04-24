@@ -228,7 +228,7 @@ export function KeyboardShortcutsModal() {
 
   return (
     <Dialog open={open} onOpenChange={toggle}>
-      <DialogContent initialFocus={-1}>
+      <DialogContent>
         <Modal>
           <ModalBackdrop />
           <ModalInner size="52rem">

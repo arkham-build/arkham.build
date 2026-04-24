@@ -48,7 +48,7 @@ export function Masthead(props: Props) {
       </div>
       <nav className={css["right"]}>
         {slotRight}
-        {location !== "/settings" && !location.includes("/auth") && (
+        {!location.includes("/auth") && (
           <>
             {!session && (
               <Link asChild href="~/auth/login">

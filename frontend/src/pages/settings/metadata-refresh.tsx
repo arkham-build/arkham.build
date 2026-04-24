@@ -8,7 +8,7 @@ import {
   queryCards,
   queryDataVersion,
   queryMetadata,
-} from "@/store/services/queries";
+} from "@/store/services/requests/cache";
 
 export function MetadataRefresh() {
   const { t } = useTranslation();

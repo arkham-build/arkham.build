@@ -10,7 +10,7 @@ import type {
   AllCardApiResponse,
   DataVersionApiResponse,
   MetadataApiResponse,
-} from "@/store/services/queries";
+} from "@/store/services/requests/cache";
 
 function queryStubMetadata() {
   return Promise.resolve({

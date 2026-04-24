@@ -3,7 +3,7 @@ import { CheckIcon, FileDownIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Field } from "@/components/ui/field";
 import { useStore } from "@/store";
-import { queryDataVersion } from "@/store/services/queries";
+import { queryDataVersion } from "@/store/services/requests/cache";
 import { cx } from "@/utils/cx";
 import css from "./card-data-sync.module.css";
 

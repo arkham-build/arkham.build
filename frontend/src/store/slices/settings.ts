@@ -5,7 +5,7 @@ import {
   queryCards,
   queryDataVersion,
   queryMetadata,
-} from "../services/queries";
+} from "../services/requests/cache";
 import type { StoreState } from ".";
 import { makeLists } from "./lists";
 import type {

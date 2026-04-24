@@ -3,7 +3,7 @@ import type {
   AllCardResponse,
   DataVersionResponse,
   MetadataResponse,
-} from "@/store/services/queries";
+} from "@/store/services/requests/cache";
 import type { StoreState } from ".";
 import type { Locale } from "./settings.types";
 
