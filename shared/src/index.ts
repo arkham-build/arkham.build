@@ -27,6 +27,25 @@ export {
 } from "./dtos/date-range.schema.ts";
 
 export {
+  type DeckBatchRequest,
+  DeckBatchRequestSchema,
+  type DeckBatchResponse,
+  DeckBatchResponseSchema,
+  type DeckConflictResponse,
+  DeckConflictResponseSchema,
+  type DeckCreateRequest,
+  DeckCreateRequestSchema,
+  type DeckDeleteRequest,
+  DeckDeleteRequestSchema,
+  type DeckManifestItem,
+  DeckManifestItemSchema,
+  type DeckManifestResponse,
+  DeckManifestResponseSchema,
+  type DeckUpdateRequest,
+  DeckUpdateRequestSchema,
+} from "./dtos/deck-sync.schema.ts";
+
+export {
   type DecklistMetaResponse,
   DecklistMetaResponseSchema,
 } from "./dtos/decklist-meta-response.schema.ts";
@@ -118,6 +137,17 @@ export {
   type DataVersion,
   DataVersionSchema,
 } from "./schemas/data-version.schema.ts";
+export {
+  type Deck,
+  type DeckId,
+  DeckIdSchema,
+  type DeckProblem,
+  DeckProblemSchema,
+  DeckSchema,
+  isDeck,
+  type Slots,
+  SlotsSchema,
+} from "./schemas/deck.schema.ts";
 export {
   type JsonDataEncounterSet,
   JsonDataEncounterSetSchema,
