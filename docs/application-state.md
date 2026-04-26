@@ -12,32 +12,39 @@ Application state is split by data ownership:
 | Public/shared decks | Remote-authoritative | Server/query layer |
 | Editor drafts | Local draft state | Component state or temporary Zustand state |
 
-Zustand owns local-first app state. The remote/query layer owns server-authoritative data. Sync services connect local-first domains to the server:
+Zustand owns local-first app state. The remote/query layer owns server-authoritative data.
 
-```txt
-deckCollectionStore <-> deckSyncService     <-> API
-settingsStore       <-> settingsSyncService <-> API
-authStore           <-  lightweight session identity
-profile/social/etc  <-> remote query/mutation layer <-> API
-```
+Synced domains should keep explicit sync state under a top-level `sync` namespace, scoped per domain rather than flattened globally. Today this is implemented for settings as `sync.settings`; future deck sync should follow the same pattern.
 
-Synced domains should keep explicit sync metadata. Deck sync tracks this per deck; settings sync may track it globally or per field.
+Settings sync is local-first:
+- local settings remain the runtime source of truth
+- authenticated users bootstrap remote settings after local init and session init; this does not block app startup
+- saves write local state first, then sync remote state
+- account-scoped sync state is reset when the authenticated account changes or the user logs out
+
+Settings sync metadata is global for the settings domain:
 
 ```ts
-type SyncStatus =
-  | "idle"
-  | "synced"
-  | "local-changes"
-  | "syncing"
-  | "conflict"
-  | "error";
+type SyncStatus = "idle" | "loading" | "saving" | "synced" | "conflict" | "error";
 
-type SyncMetadata = {
+type SettingsSyncState = {
+  accountId: string | null;
+  revision: string | null;
+  lastSyncedAt: number | null;
   status: SyncStatus;
-  lastSyncedAt?: string;
-  remoteRevision?: string;
-  error?: string;
+  error: string | null;
+  conflict: SettingsResponse | null;
 };
 ```
+
+Settings remote payloads are explicit:
+- synced settings use `RemoteSettings`
+- `collection` is synced separately from settings
+- device-only settings currently remain local-only (`devModeEnabled`, `fontSize`)
+
+Settings conflict handling is optimistic-concurrency based:
+- the client sends `expectedRevision`
+- `409` stores the remote conflict payload in `sync.settings.conflict`
+- UX offers **Refresh** (apply remote settings) or **Overwrite** (retry with latest remote revision)
 
 The deck builder remains backed by Zustand. Remote decks, local decks, and imported decks are loaded into the builder through explicit adapters, and saves/export/publish/sync operations leave the builder through explicit actions.

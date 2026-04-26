@@ -5,7 +5,6 @@ import type {
   MetadataResponse,
 } from "@/store/services/requests/cache";
 import type { StoreState } from ".";
-import type { Locale } from "./settings.types";
 
 type AppState = {
   clientId: string;
@@ -16,11 +15,11 @@ export type AppSlice = {
   app: AppState;
 
   init(
-    queryMetadata: (locale?: Locale) => Promise<MetadataResponse>,
-    queryDataVersion: (locale?: Locale) => Promise<DataVersionResponse>,
-    queryCards: (locale?: Locale) => Promise<AllCardResponse>,
+    queryMetadata: (locale?: string) => Promise<MetadataResponse>,
+    queryDataVersion: (locale?: string) => Promise<DataVersionResponse>,
+    queryCards: (locale?: string) => Promise<AllCardResponse>,
     opts?: {
-      locale?: Locale;
+      locale?: string;
       overrides?: Partial<StoreState>;
       refresh?: boolean;
     },

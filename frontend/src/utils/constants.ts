@@ -172,8 +172,4 @@ export const TAG_REGEX_FALLBACKS: Record<string, RegExp> = {
 
 export const ARCHIVE_FOLDER_ID = "archive";
 
-export type StorageProvider = "local" | "shared" | "arkhamdb";
-
-export const STORAGE_PROVIDERS = ["local", "shared", "arkhamdb"] as const;
-
 export const DEFAULT_LIST_SORT_ID = "list_default";

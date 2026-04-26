@@ -18,7 +18,7 @@ export function SyncStatus() {
   const healthy = syncHealthy(connections);
   const { t } = useTranslation();
 
-  const sync = useSync();
+  const syncConnections = useSync();
   const syncing = useStore((state) => state.remoting.sync);
 
   const collectionLabels = Object.values(connections.data)
@@ -28,11 +28,11 @@ export function SyncStatus() {
   const onSyncButtonClick = useCallback(() => {
     if (syncing) return;
     if (healthy) {
-      sync();
+      syncConnections();
     } else {
       navigate("~/settings");
     }
-  }, [healthy, sync, syncing, navigate]);
+  }, [healthy, syncConnections, syncing, navigate]);
 
   if (isEmpty(connections.data)) return null;
 

@@ -15,8 +15,8 @@
     "generate:database-types": "kysely-codegen --out-file src/db/schema.types.ts",
     "ingest": "npm run ingest:json-data && npm run ingest:arkhamdb-decklists",
     "ingest:json-data": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/tasks/ingest/index.ts",
-    "purge:cloudflare-cache": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/tasks/purge-cloudflare-cache.ts",
     "ingest:arkhamdb-decklists": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/tasks/ingest-arkhamdb-decklists.ts",
+    "purge:cloudflare-cache": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/tasks/purge-cloudflare-cache.ts",
     "start": "node --experimental-strip-types src/main.ts",
     "test": "vitest run"
   },

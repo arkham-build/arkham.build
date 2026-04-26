@@ -5,13 +5,25 @@ import type { Config } from "./config.ts";
 import type { EmailService } from "./email/email-service.ts";
 import type { Logger } from "./logger.ts";
 
+export type HonoVariables = {
+  config: Config;
+  db: Database;
+  emailService: EmailService;
+  logger: Logger;
+  session?: Selectable<Session>;
+  account?: Selectable<Account>;
+};
+
 export type HonoEnv = {
-  Variables: {
-    config: Config;
-    db: Database;
-    emailService: EmailService;
-    logger: Logger;
-    session?: Selectable<Session>;
-    account?: Selectable<Account>;
+  Variables: HonoVariables;
+};
+
+export type WithRequiredHonoVariableKeys<K extends keyof HonoVariables> = {
+  Variables: Omit<HonoVariables, K> & {
+    [P in K]-?: NonNullable<HonoVariables[P]>;
   };
 };
+
+export type SessionAuthHonoEnv = WithRequiredHonoVariableKeys<
+  "account" | "session"
+>;

@@ -1,8 +1,8 @@
+import type { DecklistConfig } from "@arkham-build/shared";
 import { type Card, countExperience } from "@arkham-build/shared";
 import type { Slots } from "@/store/schemas/deck.schema";
 import { isEmpty } from "@/utils/is-empty";
 import type { Metadata } from "../slices/metadata.types";
-import type { DecklistConfig } from "../slices/settings.types";
 import {
   type GroupedCards,
   type GroupingResult,

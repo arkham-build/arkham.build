@@ -1,6 +1,6 @@
-import type { SettingsState } from "@/store/slices/settings.types";
+import type { Settings } from "@arkham-build/shared";
 
 export type SettingProps = {
-  settings: SettingsState;
-  setSettings: React.Dispatch<React.SetStateAction<SettingsState>>;
+  settings: Settings;
+  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
 };

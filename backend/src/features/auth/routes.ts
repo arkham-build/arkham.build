@@ -149,9 +149,7 @@ routes.post("/logout", sessionAuth(), async (c) => {
 
 routes.get("/me", sessionAuth(), async (c) => {
   const db = c.get("db");
-
   const account = c.get("account");
-  assert(account, "Account should be set by session middleware");
 
   const accountIdentity = await getAccountIdentityByAccountId(db, account.id);
 
@@ -384,7 +382,6 @@ routes.post(
   async (c) => {
     const db = c.get("db");
     const account = c.get("account");
-    assert(account, "Account should be set by middleware");
 
     const { username } = c.req.valid("json");
 

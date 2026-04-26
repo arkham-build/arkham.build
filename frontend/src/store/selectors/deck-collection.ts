@@ -1,7 +1,7 @@
+import type { StorageProvider } from "@arkham-build/shared";
 import { FACTION_ORDER, type FactionName } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import { displayAttribute } from "@/utils/card-utils";
-import type { StorageProvider } from "@/utils/constants";
 import { formatProviderName } from "@/utils/formatting";
 import { and, or } from "@/utils/fp";
 import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";

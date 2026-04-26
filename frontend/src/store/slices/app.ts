@@ -923,5 +923,15 @@ function mergeInitialState(
         ...overrides?.settings?.lists,
       },
     },
+    sync: {
+      ...initialState.sync,
+      ...persistedState?.sync,
+      ...overrides?.sync,
+      settings: {
+        ...initialState.sync.settings,
+        ...persistedState?.sync?.settings,
+        ...overrides?.sync?.settings,
+      },
+    },
   };
 }

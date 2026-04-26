@@ -1,4 +1,4 @@
-import type { StorageProvider } from "@/utils/constants";
+import type { StorageProvider } from "@arkham-build/shared";
 
 export type DeckProperties = Record<DeckPropertyName, string | boolean>;
 

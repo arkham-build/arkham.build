@@ -1,10 +1,10 @@
+import type { DecklistConfig } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
 import { ChevronRightIcon, ChevronsRightIcon } from "lucide-react";
 import { Fragment, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { sortPresetId } from "@/store/slices/lists";
 import { SORTING_PRESETS } from "@/store/slices/settings";
-import type { DecklistConfig } from "@/store/slices/settings.types";
 import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import css from "./sort-select.module.css";

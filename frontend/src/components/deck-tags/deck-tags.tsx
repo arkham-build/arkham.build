@@ -1,3 +1,4 @@
+import type { StorageProvider } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
 import { LockKeyholeIcon, ShareIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -8,7 +9,6 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
 import { selectMetadata } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
-import type { StorageProvider } from "@/utils/constants";
 import { resolveLimitedPoolPacks } from "@/utils/environments";
 import { capitalize, formatProviderName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";

@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { LocaleSelect } from "@/components/locale-select";
 import { Field, FieldLabel } from "@/components/ui/field";
-import type { Locale } from "@/store/slices/settings.types";
 import type { SettingProps } from "./types";
 
 export function LocaleSetting(props: SettingProps) {
@@ -14,7 +13,7 @@ export function LocaleSetting(props: SettingProps) {
     (locale: string) => {
       setSettings((settings) => ({
         ...settings,
-        locale: locale as Locale,
+        locale: locale,
       }));
     },
     [setSettings],

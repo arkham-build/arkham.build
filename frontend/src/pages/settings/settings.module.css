@@ -134,3 +134,19 @@
 .list-group-title {
   font-size: var(--text-base);
 }
+
+.sync-toast {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sync-toast-details {
+  font-size: var(--text-xs);
+  overflow-wrap: anywhere;
+}
+
+.sync-toast-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

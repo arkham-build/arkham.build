@@ -4,7 +4,6 @@ import resourcesToBackend from "i18next-resources-to-backend";
 import { initReactI18next } from "react-i18next";
 
 import en from "@/locales/en.json";
-import type { Locale } from "@/store/slices/settings.types";
 
 const localStorageDectector: LanguageDetectorModule = {
   type: "languageDetector",
@@ -47,7 +46,7 @@ i18n.on("languageChanged", (lng) => {
   if (document) document.documentElement.lang = lng;
 });
 
-export function changeLanguage(lng: Locale) {
+export function changeLanguage(lng: string) {
   if (i18n.language === lng) return;
   return i18n.changeLanguage(lng);
 }

@@ -41,9 +41,12 @@ init().catch((err) => {
 });
 
 async function init() {
-  await useStore
-    .getState()
-    .init(queryMetadata, queryDataVersion, queryCards, { refresh: false });
+  const store = useStore.getState();
+
+  await store.init(queryMetadata, queryDataVersion, queryCards, {
+    refresh: false,
+  });
+  await store.initSession();
 
   const tabSyncListener = (evt: TabSyncEvent) => {
     useStore.setState(evt.state);

@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, StorageProvider } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
 import { ArrowRightLeftIcon, Settings2Icon } from "lucide-react";
 import { useCallback, useMemo } from "react";
@@ -24,7 +24,6 @@ import {
 } from "@/store/selectors/deck-create";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
 import { selectConnectionLock } from "@/store/selectors/shared";
-import type { StorageProvider } from "@/utils/constants";
 import { formatProviderName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useGoBack } from "@/utils/use-go-back";

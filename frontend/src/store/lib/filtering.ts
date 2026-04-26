@@ -1,6 +1,7 @@
 import {
   type AttributeFilter,
   type Card,
+  type Collection,
   cardLevel,
   type DeckOption,
   type SealedDeckResponse,
@@ -1298,7 +1299,7 @@ export function filterDuplicatesFromContext(
   metadata: Metadata,
   lookupTables: LookupTables,
   deck: ResolvedDeck | undefined,
-  collection: Record<string, boolean | number>,
+  collection: Collection,
 ) {
   const cardPool = deck?.cardPool
     ? resolveLimitedPoolPacks(metadata, deck.cardPool).map((p) => p.code)

@@ -15,6 +15,7 @@ import { createRecommenderSlice } from "./slices/recommender";
 import { createRemotingSlice } from "./slices/remoting";
 import { createSettingsSlice } from "./slices/settings";
 import { createSharingSlice } from "./slices/sharing";
+import { createSyncSlice } from "./slices/sync";
 import { createUISlice } from "./slices/ui";
 
 // biome-ignore lint/suspicious/noExplicitAny: safe.
@@ -26,6 +27,7 @@ const stateCreator = (...args: [any, any, any]) => ({
   ...createMetadataSlice(...args),
   ...createListsSlice(...args),
   ...createSettingsSlice(...args),
+  ...createSyncSlice(...args),
   ...createUISlice(...args),
   ...createDeckEditsSlice(...args),
   ...createDeckCreateSlice(...args),

@@ -31,11 +31,6 @@ export interface Account {
   updated_at: Generated<Timestamp>;
 }
 
-export interface AccountCollection {
-  account_id: string;
-  collection: Json | null;
-}
-
 export interface AccountIdentity {
   account_id: string;
   created_at: Generated<Timestamp>;
@@ -50,6 +45,8 @@ export interface AccountIdentity {
 
 export interface AccountSettings {
   account_id: string;
+  collection: Json | null;
+  revision: Generated<string>;
   settings: Json | null;
 }
 
@@ -247,6 +244,12 @@ export interface Faction {
   translations: Json;
 }
 
+export interface FanMadeProjectInfo {
+  bucket_path: string;
+  id: string;
+  meta: Json;
+}
+
 export interface OauthToken {
   access_token: string;
   account_identity_id: string;
@@ -254,12 +257,6 @@ export interface OauthToken {
   refresh_token: string | null;
   token_expires_at: Timestamp | null;
   updated_at: Generated<Timestamp>;
-}
-
-export interface FanMadeProjectInfo {
-  bucket_path: string;
-  id: string;
-  meta: Json;
 }
 
 export interface Pack {
@@ -324,7 +321,6 @@ export interface VerificationToken {
 
 export interface DB {
   account: Account;
-  account_collection: AccountCollection;
   account_identity: AccountIdentity;
   account_settings: AccountSettings;
   arkhamdb_decklist: ArkhamdbDecklist;
@@ -337,8 +333,8 @@ export interface DB {
   deck: Deck;
   encounter_set: EncounterSet;
   faction: Faction;
-  oauth_token: OauthToken;
   fan_made_project_info: FanMadeProjectInfo;
+  oauth_token: OauthToken;
   pack: Pack;
   pack_type: PackType;
   schema_migrations: SchemaMigrations;

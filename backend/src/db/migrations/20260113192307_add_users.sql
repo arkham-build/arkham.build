@@ -78,19 +78,12 @@ create unique index idx_oauth_tokens_account_identity on oauth_token (account_id
 
 create table account_settings(
   account_id uuid primary key references account(id) on delete cascade,
+  collection jsonb,
+  revision uuid NOT NULL DEFAULT uuidv7(),
   settings jsonb
 );
 
 create index idx_account_settings_account_id on account_settings (account_id);
-
--- Collections
-
-create table account_collection(
-  account_id uuid primary key references account(id) on delete cascade,
-  collection jsonb
-);
-
-create index idx_account_collections_account_id on account_collection (account_id);
 
 -- Decks
 

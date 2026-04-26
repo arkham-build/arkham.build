@@ -13,6 +13,7 @@ type AppState = Pick<
   | "data"
   | "settings"
   | "sharing"
+  | "sync"
   | "fanMadeData"
 >;
 
@@ -41,6 +42,14 @@ export const appStorage = makeStorageAdapter<AppState>(
     data: state.data,
     settings: state.settings,
     sharing: state.sharing,
+    sync: {
+      settings: {
+        ...state.sync.settings,
+        status: "idle",
+        error: null,
+        conflict: null,
+      },
+    },
   }),
 );
 

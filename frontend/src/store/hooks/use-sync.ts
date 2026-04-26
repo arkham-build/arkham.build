@@ -10,7 +10,7 @@ export function useSync() {
   const toast = useToast();
   const { t } = useTranslation();
 
-  const sync = useStore((state) => state.sync);
+  const syncConnections = useStore((state) => state.syncConnections);
 
   const syncHandler = useCallback(
     async (create?: SyncInit) => {
@@ -23,7 +23,7 @@ export function useSync() {
       });
 
       try {
-        await sync(create);
+        await syncConnections(create);
         toast.dismiss(toastId);
       } catch (err) {
         toast.dismiss(toastId);
@@ -38,7 +38,7 @@ export function useSync() {
         throw err;
       }
     },
-    [sync, toast, t],
+    [syncConnections, toast, t],
   );
 
   return syncHandler;

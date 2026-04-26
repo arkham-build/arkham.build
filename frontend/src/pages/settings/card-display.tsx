@@ -1,3 +1,4 @@
+import type { Settings } from "@arkham-build/shared";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ListCardInner } from "@/components/list-card/list-card-inner";
@@ -6,7 +7,6 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Select } from "@/components/ui/select";
 import { useStore } from "@/store";
 import { selectMetadata } from "@/store/selectors/shared";
-import type { SettingsState } from "@/store/slices/settings.types";
 import css from "./card-display.module.css";
 import type { SettingProps } from "./types";
 
@@ -19,10 +19,10 @@ export function CardDisplaySettings(props: SettingProps) {
 
   const metadata = useStore(selectMetadata);
 
-  const [liveValue, setLiveValue] = useState<Partial<SettingsState>>(settings);
+  const [liveValue, setLiveValue] = useState<Partial<Settings>>(settings);
 
   const setValue = useCallback(
-    (value: Partial<SettingsState>) => {
+    (value: Partial<Settings>) => {
       setLiveValue((prev) => ({ ...prev, ...value }));
       setSettings((prev) => ({ ...prev, ...value }));
     },
@@ -98,7 +98,7 @@ export function CardDisplaySettings(props: SettingProps) {
           className={css["input"]}
           onChange={(evt) => {
             setValue({
-              cardSize: evt.target.value as SettingsState["cardSize"],
+              cardSize: evt.target.value as Settings["cardSize"],
             });
           }}
           options={[
@@ -124,7 +124,7 @@ export function CardDisplaySettings(props: SettingProps) {
             onChange={(evt) => {
               setValue({
                 cardLevelDisplay: evt.target
-                  .value as SettingsState["cardLevelDisplay"],
+                  .value as Settings["cardLevelDisplay"],
               });
             }}
             options={[
@@ -158,7 +158,7 @@ export function CardDisplaySettings(props: SettingProps) {
             onChange={(evt) => {
               setValue({
                 cardSkillIconsDisplay: evt.target
-                  .value as SettingsState["cardSkillIconsDisplay"],
+                  .value as Settings["cardSkillIconsDisplay"],
               });
             }}
             options={[
@@ -207,10 +207,8 @@ export function CardDisplaySettings(props: SettingProps) {
   );
 }
 
-function resolver(liveValue: Partial<SettingsState>, settings: SettingsState) {
-  return function resolve<K extends keyof SettingsState>(
-    key: K,
-  ): SettingsState[K] {
+function resolver(liveValue: Partial<Settings>, settings: Settings) {
+  return function resolve<K extends keyof Settings>(key: K): Settings[K] {
     return liveValue[key] ?? settings[key];
   };
 }

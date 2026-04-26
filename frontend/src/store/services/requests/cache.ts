@@ -3,7 +3,6 @@ import type { Cycle } from "@/store/schemas/cycle.schema";
 import type { EncounterSet } from "@/store/schemas/encounter-set.schema";
 import type { Pack } from "@/store/schemas/pack.schema";
 import type { TabooSet } from "@/store/schemas/taboo-set.schema";
-import type { Locale } from "@/store/slices/settings.types";
 import { apiV2Request } from "./shared";
 
 export type MetadataApiResponse = {
@@ -17,9 +16,7 @@ export type MetadataResponse = {
   taboo_set: TabooSet[];
 };
 
-export async function queryMetadata(
-  locale: Locale = "en",
-): Promise<MetadataResponse> {
+export async function queryMetadata(locale = "en"): Promise<MetadataResponse> {
   const res = await apiV2Request(`/v1/cache/metadata/${locale}`);
   const { data }: MetadataApiResponse = await res.json();
 
@@ -38,9 +35,7 @@ export type DataVersionApiResponse = {
 
 export type DataVersionResponse = DataVersion;
 
-export async function queryDataVersion(
-  locale: Locale = "en",
-): Promise<DataVersion> {
+export async function queryDataVersion(locale = "en"): Promise<DataVersion> {
   const res = await apiV2Request(`/v1/cache/version/${locale}`);
   const { data }: DataVersionApiResponse = await res.json();
   return data.all_card_updated[0];
@@ -54,7 +49,7 @@ export type AllCardApiResponse = {
 
 export type AllCardResponse = ApiCard[];
 
-export async function queryCards(locale: Locale = "en"): Promise<ApiCard[]> {
+export async function queryCards(locale = "en"): Promise<ApiCard[]> {
   const res = await apiV2Request(`/v1/cache/cards/${locale}`);
   const { data }: AllCardApiResponse = await res.json();
   return data.all_card;

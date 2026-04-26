@@ -626,6 +626,7 @@ const selectBaseListCards = createSelector(
     time("select_base_list_cards");
 
     let filteredCards = Object.values(metadata.cards);
+    const totalCardCount = filteredCards.length;
 
     // filters can be impacted by card changes, apply them now.
     if (tabooSetId || customizations) {
@@ -673,7 +674,6 @@ const selectBaseListCards = createSelector(
     }
 
     filteredCards = filteredCards.filter(and(filters));
-    const totalCardCount = filteredCards.length;
 
     filters = [];
 

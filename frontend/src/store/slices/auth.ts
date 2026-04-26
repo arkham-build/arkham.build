@@ -29,7 +29,6 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
 
     try {
       const session = await fetchSession();
-
       set({
         auth: { session, status: "authenticated" },
       });
@@ -38,6 +37,7 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
         set((state) => ({
           auth: { ...state.auth, status: "unauthenticated" },
         }));
+        get().resetSync();
       } else {
         const session = get().auth.session;
 
@@ -50,6 +50,15 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
       }
     }
 
+    if (get().auth.status === "authenticated") {
+      try {
+        await get().bootstrapAuthenticatedState();
+      } catch (error) {
+        // settings sync bootstrap failure should be surfaced via sync state without failing session init.
+        console.error(error);
+      }
+    }
+
     await dehydrate(get(), "app");
   },
 
@@ -59,6 +68,12 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
     set({
       auth: { session, status: "authenticated" },
     });
+    try {
+      await get().bootstrapAuthenticatedState();
+    } catch (error) {
+      // settings sync bootstrap failure should be surfaced via sync state without failing session init.
+      console.error(error);
+    }
     await dehydrate(get(), "app");
   },
 
@@ -69,6 +84,7 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
       set({
         auth: { session: null, status: "idle" },
       });
+      get().resetSync();
     }
     await dehydrate(get(), "app");
   },

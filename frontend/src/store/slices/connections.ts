@@ -36,7 +36,7 @@ export const createConnectionsSlice: StateCreator<
 > = (set, get) => ({
   connections: getInitialConnectionsState(),
 
-  async sync(init) {
+  async syncConnections(init) {
     assert(
       selectIsInitialized(get()),
       "Store must be initialized before syncing",

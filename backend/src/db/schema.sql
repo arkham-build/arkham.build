@@ -1,11 +1,7 @@
---
--- PostgreSQL database dump
---
+\restrict dbmate
 
-\restrict VPpdwDSbpYV443DdhgH6MAi2t8xBPRJNEynU99nkBTpEiPejo011nSGb6ttmc8i
-
--- Dumped from database version 18.1
--- Dumped by pg_dump version 18.1
+-- Dumped from database version 18.3
+-- Dumped by pg_dump version 18.3 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -38,6 +34,47 @@ $$;
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
+
+--
+-- Name: account; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.account (
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT uuidv7() NOT NULL,
+    name character varying(64) NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: account_identity; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.account_identity (
+    account_id uuid NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT uuidv7() NOT NULL,
+    provider character varying(64) NOT NULL,
+    provider_user_id text NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    verified_at timestamp without time zone,
+    email character varying(255),
+    password_hash text
+);
+
+
+--
+-- Name: account_settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.account_settings (
+    account_id uuid NOT NULL,
+    collection jsonb,
+    revision uuid DEFAULT uuidv7() NOT NULL,
+    settings jsonb
+);
+
 
 --
 -- Name: arkhamdb_decklist; Type: TABLE; Schema: public; Owner: -
@@ -129,7 +166,6 @@ CREATE TABLE public.card (
     clues_fixed boolean DEFAULT false,
     code character varying(255) NOT NULL,
     cost integer,
-    attachments jsonb,
     customization_options jsonb,
     deck_limit integer,
     deck_options jsonb,
@@ -160,10 +196,9 @@ CREATE TABLE public.card (
     pack_code character varying(255) NOT NULL,
     pack_position integer,
     permanent boolean DEFAULT false,
-    preview boolean DEFAULT false,
     "position" integer NOT NULL,
+    preview boolean DEFAULT false,
     quantity integer NOT NULL,
-    reprint_of character varying(255),
     back_flavor text,
     back_name character varying(255),
     back_text text,
@@ -208,7 +243,9 @@ CREATE TABLE public.card (
     shroud_per_investigator boolean,
     starts_in_hand boolean,
     starts_in_play boolean,
-    sticky_mulligan boolean
+    sticky_mulligan boolean,
+    attachments jsonb,
+    reprint_of character varying(255)
 );
 
 
@@ -248,6 +285,38 @@ CREATE TABLE public.data_version (
 
 
 --
+-- Name: deck; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.deck (
+    account_id uuid,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    description text DEFAULT ''::text,
+    exile_string text,
+    id uuid DEFAULT uuidv7() NOT NULL,
+    ignore_deck_limit jsonb,
+    investigator_code character varying(255) NOT NULL,
+    investigator_name character varying(255) NOT NULL,
+    meta jsonb,
+    name character varying(255) NOT NULL,
+    next_deck text,
+    prev_deck text,
+    problem text,
+    provider_deck_id text,
+    provider_type character varying(64) NOT NULL,
+    side_slots jsonb,
+    slots jsonb NOT NULL,
+    taboo_set_id integer,
+    tags text,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    version character varying(8),
+    xp integer,
+    xp_adjustment integer,
+    xp_spent integer
+);
+
+
+--
 -- Name: encounter_set; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -279,6 +348,20 @@ CREATE TABLE public.fan_made_project_info (
     id uuid NOT NULL,
     bucket_path text NOT NULL,
     meta jsonb NOT NULL
+);
+
+
+--
+-- Name: oauth_token; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth_token (
+    account_identity_id uuid NOT NULL,
+    access_token text NOT NULL,
+    refresh_token text,
+    token_expires_at timestamp without time zone,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -320,6 +403,19 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: session; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.session (
+    account_id uuid NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    expires_at timestamp without time zone NOT NULL,
+    id uuid DEFAULT uuidv7() NOT NULL,
+    last_activity_at timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: subtype; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -355,10 +451,73 @@ CREATE TABLE public.type (
 
 
 --
+-- Name: verification_token; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.verification_token (
+    account_identity_id uuid,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    email character varying(255) NOT NULL,
+    expires_at timestamp without time zone NOT NULL,
+    id uuid DEFAULT uuidv7() NOT NULL,
+    token_hash text NOT NULL,
+    token_type character varying(32) NOT NULL
+);
+
+
+--
 -- Name: arkhamdb_ranking_cache id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.arkhamdb_ranking_cache ALTER COLUMN id SET DEFAULT nextval('public.arkhamdb_ranking_cache_id_seq'::regclass);
+
+
+--
+-- Name: account_identity account_identity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_identity
+    ADD CONSTRAINT account_identity_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: account_identity account_identity_provider_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_identity
+    ADD CONSTRAINT account_identity_provider_email_key UNIQUE (provider, email);
+
+
+--
+-- Name: account_identity account_identity_provider_provider_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_identity
+    ADD CONSTRAINT account_identity_provider_provider_user_id_key UNIQUE (provider, provider_user_id);
+
+
+--
+-- Name: account account_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account
+    ADD CONSTRAINT account_name_key UNIQUE (name);
+
+
+--
+-- Name: account account_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account
+    ADD CONSTRAINT account_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: account_settings account_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_settings
+    ADD CONSTRAINT account_settings_pkey PRIMARY KEY (account_id);
 
 
 --
@@ -426,6 +585,22 @@ ALTER TABLE ONLY public.data_version
 
 
 --
+-- Name: deck deck_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deck
+    ADD CONSTRAINT deck_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: deck deck_provider_deck_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deck
+    ADD CONSTRAINT deck_provider_deck_id_key UNIQUE (provider_deck_id);
+
+
+--
 -- Name: encounter_set encounter_set_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -447,6 +622,14 @@ ALTER TABLE ONLY public.faction
 
 ALTER TABLE ONLY public.fan_made_project_info
     ADD CONSTRAINT fan_made_project_info_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_token oauth_token_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_token
+    ADD CONSTRAINT oauth_token_pkey PRIMARY KEY (account_identity_id);
 
 
 --
@@ -474,6 +657,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: session session_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.session
+    ADD CONSTRAINT session_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: subtype subtype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -495,6 +686,50 @@ ALTER TABLE ONLY public.taboo_set
 
 ALTER TABLE ONLY public.type
     ADD CONSTRAINT type_pkey PRIMARY KEY (code);
+
+
+--
+-- Name: verification_token verification_token_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.verification_token
+    ADD CONSTRAINT verification_token_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: verification_token verification_token_token_type_token_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.verification_token
+    ADD CONSTRAINT verification_token_token_type_token_hash_key UNIQUE (token_type, token_hash);
+
+
+--
+-- Name: idx_account_identity_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_account_identity_account_id ON public.account_identity USING btree (account_id);
+
+
+--
+-- Name: idx_account_identity_provider_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_account_identity_provider_email ON public.account_identity USING btree (provider, email) WHERE (email IS NOT NULL);
+
+
+--
+-- Name: idx_account_identity_provider_uid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_account_identity_provider_uid ON public.account_identity USING btree (provider, provider_user_id) WHERE (provider_user_id IS NOT NULL);
+
+
+--
+-- Name: idx_account_settings_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_account_settings_account_id ON public.account_settings USING btree (account_id);
 
 
 --
@@ -666,6 +901,34 @@ CREATE INDEX idx_card_type_code ON public.card USING btree (type_code);
 
 
 --
+-- Name: idx_deck_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_deck_account_id ON public.deck USING btree (account_id);
+
+
+--
+-- Name: idx_deck_next_deck; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_deck_next_deck ON public.deck USING btree (next_deck);
+
+
+--
+-- Name: idx_deck_prev_deck; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_deck_prev_deck ON public.deck USING btree (prev_deck);
+
+
+--
+-- Name: idx_deck_provider_deck_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_deck_provider_deck_id ON public.deck USING btree (provider_deck_id);
+
+
+--
 -- Name: idx_decklist_not_duplicate; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -680,10 +943,68 @@ CREATE INDEX idx_encounter_set_pack_code ON public.encounter_set USING btree (pa
 
 
 --
+-- Name: idx_oauth_tokens_account_identity; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_oauth_tokens_account_identity ON public.oauth_token USING btree (account_identity_id);
+
+
+--
 -- Name: idx_pack_cycle_code; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_pack_cycle_code ON public.pack USING btree (cycle_code);
+
+
+--
+-- Name: idx_session_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_session_account_id ON public.session USING btree (account_id);
+
+
+--
+-- Name: idx_session_expires_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_session_expires_at ON public.session USING btree (expires_at);
+
+
+--
+-- Name: idx_verification_token_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_verification_token_email ON public.verification_token USING btree (email);
+
+
+--
+-- Name: idx_verification_token_expires_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_verification_token_expires_at ON public.verification_token USING btree (expires_at);
+
+
+--
+-- Name: idx_verification_token_token_hash; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_verification_token_token_hash ON public.verification_token USING btree (token_hash);
+
+
+--
+-- Name: account_identity account_identity_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_identity
+    ADD CONSTRAINT account_identity_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id) ON DELETE CASCADE;
+
+
+--
+-- Name: account_settings account_settings_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_settings
+    ADD CONSTRAINT account_settings_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id) ON DELETE CASCADE;
 
 
 --
@@ -807,11 +1128,51 @@ ALTER TABLE ONLY public.card
 
 
 --
+-- Name: deck deck_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deck
+    ADD CONSTRAINT deck_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id) ON DELETE CASCADE;
+
+
+--
+-- Name: deck deck_next_deck_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deck
+    ADD CONSTRAINT deck_next_deck_fkey FOREIGN KEY (next_deck) REFERENCES public.deck(provider_deck_id) ON DELETE SET NULL;
+
+
+--
+-- Name: deck deck_prev_deck_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deck
+    ADD CONSTRAINT deck_prev_deck_fkey FOREIGN KEY (prev_deck) REFERENCES public.deck(provider_deck_id) ON DELETE SET NULL;
+
+
+--
+-- Name: deck deck_taboo_set_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deck
+    ADD CONSTRAINT deck_taboo_set_id_fkey FOREIGN KEY (taboo_set_id) REFERENCES public.taboo_set(id) ON DELETE SET NULL;
+
+
+--
 -- Name: encounter_set encounter_set_pack_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.encounter_set
     ADD CONSTRAINT encounter_set_pack_code_fkey FOREIGN KEY (pack_code) REFERENCES public.pack(code);
+
+
+--
+-- Name: oauth_token oauth_token_account_identity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_token
+    ADD CONSTRAINT oauth_token_account_identity_id_fkey FOREIGN KEY (account_identity_id) REFERENCES public.account_identity(id) ON DELETE CASCADE;
 
 
 --
@@ -831,10 +1192,26 @@ ALTER TABLE ONLY public.pack
 
 
 --
+-- Name: session session_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.session
+    ADD CONSTRAINT session_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id) ON DELETE CASCADE;
+
+
+--
+-- Name: verification_token verification_token_account_identity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.verification_token
+    ADD CONSTRAINT verification_token_account_identity_id_fkey FOREIGN KEY (account_identity_id) REFERENCES public.account_identity(id) ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict VPpdwDSbpYV443DdhgH6MAi2t8xBPRJNEynU99nkBTpEiPejo011nSGb6ttmc8i
+\unrestrict dbmate
 
 
 --
@@ -848,6 +1225,7 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20250805131452'),
     ('20250826075406'),
     ('20250831084503'),
+    ('20260113192307'),
     ('20260206184321'),
     ('20260227194035'),
     ('20260418123000');

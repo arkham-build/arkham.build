@@ -310,21 +310,40 @@ function CardDataSyncTask() {
 }
 
 function AppTasks() {
+  const { t } = useTranslation();
+  const toast = useToast();
   const connections = useStore((state) => state.connections);
+  const { error, status } = useStore((state) => state.sync.settings);
 
-  const sync = useSync();
+  const syncConnections = useSync();
   const [location] = useLocation();
 
   useAgathaEasterEggHint();
 
   const autoSyncLock = useRef(false);
+  const previousSettingsSyncStatus = useRef(status);
 
   useEffect(() => {
     if (!autoSyncLock.current && shouldAutoSync(location, connections)) {
       autoSyncLock.current = true;
-      sync().catch(console.error);
+      syncConnections().catch(console.error);
     }
-  }, [sync, location, connections]);
+  }, [syncConnections, location, connections]);
+
+  useEffect(() => {
+    if (
+      previousSettingsSyncStatus.current === "loading" &&
+      status === "error" &&
+      error
+    ) {
+      toast.show({
+        children: t("settings.load_error", { error }),
+        variant: "error",
+      });
+    }
+
+    previousSettingsSyncStatus.current = status;
+  }, [error, status, t, toast]);
 
   return null;
 }

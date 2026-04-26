@@ -1,7 +1,6 @@
-import type { SkillKey } from "@arkham-build/shared";
+import type { DecklistConfig, SkillKey } from "@arkham-build/shared";
 import type { Filter } from "@/utils/fp";
 import type { ResolvedDeck } from "../lib/types";
-import type { DecklistConfig } from "./settings.types";
 
 export type AssetFilter = {
   health: undefined | [number, number];

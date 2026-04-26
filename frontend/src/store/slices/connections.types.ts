@@ -43,7 +43,7 @@ export type SyncInit = {
 export type ConnectionsSlice = {
   connections: ConnectionsState;
 
-  sync(init?: SyncInit): Promise<void>;
+  syncConnections(init?: SyncInit): Promise<void>;
   unsync(provider: Provider): Promise<void>;
 
   uploadDeck(id: Id, provider: Provider): Promise<Id>;

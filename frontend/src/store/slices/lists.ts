@@ -1,4 +1,8 @@
-import type { Card } from "@arkham-build/shared";
+import type {
+  Card,
+  DecklistConfig,
+  Settings as SettingsState,
+} from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import { DEFAULT_LIST_SORT_ID, SPECIAL_CARD_CODES } from "@/utils/constants";
@@ -44,7 +48,6 @@ import type {
   SkillIconsFilter,
   SubtypeFilter,
 } from "./lists.types";
-import type { DecklistConfig, SettingsState } from "./settings.types";
 
 const SYSTEM_FILTERS: Filter[] = [
   filterBacksides,

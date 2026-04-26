@@ -1,3 +1,4 @@
+import type { StorageProvider } from "@arkham-build/shared";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearch } from "wouter";
@@ -5,7 +6,6 @@ import { Loader } from "@/components/ui/loader";
 import { AppLayout } from "@/layouts/app-layout";
 import { useSync } from "@/store/hooks/use-sync";
 import type { Provider } from "@/store/slices/connections.types";
-import type { StorageProvider } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { formatProviderName } from "@/utils/formatting";
 import { ErrorDisplay } from "../../components/error-display/error-display";
@@ -17,7 +17,7 @@ export function Connect() {
   const { t } = useTranslation();
 
   const connectLock = useRef(false);
-  const sync = useSync();
+  const syncConnections = useSync();
 
   const params = new URLSearchParams(search);
   const loginState = params.get("login_state")?.toString();
@@ -32,13 +32,13 @@ export function Connect() {
 
     async function syncOnConnect() {
       if (loginState === "success") {
-        await sync({ provider: provider as Provider, user: {} });
+        await syncConnections({ provider: provider as Provider, user: {} });
         navigate(`~/settings?${search}`, { replace: true });
       }
     }
 
     syncOnConnect().catch(console.error);
-  }, [loginState, provider, sync, search, navigate]);
+  }, [loginState, provider, syncConnections, search, navigate]);
 
   const message =
     loginState === "success"

@@ -103,9 +103,13 @@ psql -h localhost -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "
 
 } > "$OUTPUT_FILE"
 
-if [ $? -eq 0 ]; then
-  echo "Database dump completed successfully: $OUTPUT_FILE"
-else
+if [ $? -ne 0 ]; then
   echo "Database dump failed!"
   exit 1
 fi
+
+TMP_FILE=$(mktemp)
+sed "s/SELECT pg_catalog.set_config('search_path', '', false);/SELECT pg_catalog.set_config('search_path', 'public', false);/g" "$OUTPUT_FILE" > "$TMP_FILE"
+mv "$TMP_FILE" "$OUTPUT_FILE"
+
+echo "Database dump completed successfully: $OUTPUT_FILE"

@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: test code */
 
-import type { Card } from "@arkham-build/shared";
+import type { Card, Collection } from "@arkham-build/shared";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import { getMockStore } from "@/test/get-mock-store";
@@ -990,11 +990,7 @@ describe("filter: ownership", () => {
     store = await getMockStore();
   });
 
-  function applyFilter(
-    state: StoreState,
-    code: string,
-    config: Record<string, number | boolean>,
-  ) {
+  function applyFilter(state: StoreState, code: string, config: Collection) {
     return filterOwnership({
       card: state.metadata.cards[code],
       metadata: state.metadata,
@@ -1007,47 +1003,45 @@ describe("filter: ownership", () => {
   it("handles case: pack owned", () => {
     const state = store.getState();
     expect(applyFilter(state, "51007", {})).toBeFalsy();
-    expect(applyFilter(state, "51007", { rtdwl: true })).toBeTruthy();
+    expect(applyFilter(state, "51007", { rtdwl: 1 })).toBeTruthy();
   });
 
   it("handles case: new / old formats", () => {
     const state = store.getState();
     expect(applyFilter(state, "02301", {})).toBeFalsy();
-    expect(applyFilter(state, "02301", { litas: true })).toBeTruthy();
-    expect(applyFilter(state, "02301", { dwlp: true })).toBeTruthy();
+    expect(applyFilter(state, "02301", { litas: 1 })).toBeTruthy();
+    expect(applyFilter(state, "02301", { dwlp: 1 })).toBeTruthy();
   });
 
   it("handles case: core set", () => {
     const state = store.getState();
     expect(applyFilter(state, "01039", {})).toBeFalsy();
-    expect(applyFilter(state, "01039", { core: true })).toBeTruthy();
-    expect(applyFilter(state, "01039", { rcore: true })).toBeTruthy();
+    expect(applyFilter(state, "01039", { core: 1 })).toBeTruthy();
+    expect(applyFilter(state, "01039", { rcore: 1 })).toBeTruthy();
   });
 
   it("handles case: revised core", () => {
     const state = store.getState();
-    expect(applyFilter(state, "01539", { core: true })).toBeTruthy();
-    expect(applyFilter(state, "01539", { rcore: true })).toBeTruthy();
+    expect(applyFilter(state, "01539", { core: 1 })).toBeTruthy();
+    expect(applyFilter(state, "01539", { rcore: 1 })).toBeTruthy();
   });
 
   it("handles case: extended revised core", () => {
     const state = store.getState();
-    expect(applyFilter(state, "51007", { core: true })).toBeFalsy();
-    expect(applyFilter(state, "51007", { rcore: true })).toBeTruthy();
+    expect(applyFilter(state, "51007", { core: 1 })).toBeFalsy();
+    expect(applyFilter(state, "51007", { rcore: 1 })).toBeTruthy();
   });
 
   it("handles case: reprints", () => {
     const state = store.getState();
     expect(applyFilter(state, "01039", {})).toBeFalsy();
-    expect(applyFilter(state, "01039", { har: true })).toBeTruthy();
+    expect(applyFilter(state, "01039", { har: 1 })).toBeTruthy();
   });
 
   it("handles case: charisma reprint", () => {
     const state = store.getState();
-    expect(applyFilter(state, "01694", { core: true, dwlp: true })).toBeFalsy();
-    expect(
-      applyFilter(state, "02158", { core: true, dwlp: true }),
-    ).toBeTruthy();
+    expect(applyFilter(state, "01694", { core: 1, dwlp: 1 })).toBeFalsy();
+    expect(applyFilter(state, "02158", { core: 1, dwlp: 1 })).toBeTruthy();
   });
 });
 

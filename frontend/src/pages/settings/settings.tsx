@@ -1,3 +1,4 @@
+import type { Settings as SettingsState } from "@arkham-build/shared";
 import { featherText } from "@lucide/lab";
 import {
   DatabaseBackupIcon,
@@ -16,7 +17,7 @@ import { useTabUrlState } from "@/components/ui/tabs.hooks";
 import { useToast } from "@/components/ui/toast.hooks";
 import { AppLayout } from "@/layouts/app-layout";
 import { useStore } from "@/store";
-import type { SettingsState } from "@/store/slices/settings.types";
+import { isSettingsConflictError } from "@/store/services/requests/settings";
 import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
 import { BackupRestore } from "./backup-restore";
@@ -32,6 +33,7 @@ import { LocaleSetting } from "./locale-setting";
 import { MetadataRefresh } from "./metadata-refresh";
 import { Section } from "./section";
 import css from "./settings.module.css";
+import { SettingsConflictToast } from "./settings-conflict-toast";
 import { ShowAllCardsSetting } from "./show-all-cards";
 import { ShowMoveToSideDeckSetting } from "./show-move-to-side-deck";
 import { ShowPreviewsSetting } from "./show-previews";
@@ -42,7 +44,7 @@ import { WeaknessPoolSetting } from "./weakness-pool";
 
 function Settings() {
   const settings = useStore((state) => state.settings);
-  const applySettings = useStore((state) => state.applySettings);
+  const saveSettings = useStore((state) => state.saveSettings);
 
   const [colorTheme, updateColorTheme] = useColorThemeManager();
 
@@ -52,7 +54,7 @@ function Settings() {
       key={`${settingsKey(settings)}-${colorTheme}`}
       settings={settings}
       updateColorTheme={updateColorTheme}
-      updateSettings={applySettings}
+      updateSettings={saveSettings}
     />
   );
 }
@@ -94,13 +96,30 @@ function SettingsInner({
         toast.dismiss(toastId);
       } catch (err) {
         toast.dismiss(toastId);
+
+        if (isSettingsConflictError(err)) {
+          toast.show({
+            children: ({ onClose }) => (
+              <SettingsConflictToast
+                conflict={err.remote}
+                onClose={onClose}
+                settings={settings}
+                theme={theme}
+                updateColorTheme={updateColorTheme}
+              />
+            ),
+            variant: "error",
+          });
+          return;
+        }
+
         toast.show({
           children: t("settings.error", { error: (err as Error).message }),
           variant: "error",
         });
       }
     },
-    [updateSettings, settings, toast, t, theme, updateColorTheme],
+    [settings, t, theme, toast, updateColorTheme, updateSettings],
   );
 
   return (

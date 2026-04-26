@@ -8,6 +8,7 @@ import authRouter from "./features/auth/routes.ts";
 import fanMadeProjectInfoRouter from "./features/fan-made-content/routes.ts";
 import recommendationsRouter from "./features/recommendations/routes.ts";
 import sealedDeckRouter from "./features/sealed-decks/routes.ts";
+import settingsRouter from "./features/settings/routes.ts";
 import { bodyLimitMiddleware } from "./lib/body-limit.ts";
 import type { Config } from "./lib/config.ts";
 import { corsMiddleware } from "./lib/cors.ts";
@@ -52,6 +53,7 @@ export function appFactory(
   app.route("/v2/public", pub);
 
   app.route("/v2/auth", authRouter);
+  app.route("/v2/settings", settingsRouter);
 
   app.onError(errorHandler);
 

@@ -1,3 +1,4 @@
+import type { DecklistConfig } from "@arkham-build/shared";
 import { type Card, countExperience } from "@arkham-build/shared";
 import { LayoutGridIcon, LayoutListIcon, SortDescIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -9,7 +10,6 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckGroups } from "@/store/selectors/decks";
 import { sortPresetId } from "@/store/slices/lists";
 import type { ViewMode } from "@/store/slices/lists.types";
-import type { DecklistConfig } from "@/store/slices/settings.types";
 import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";

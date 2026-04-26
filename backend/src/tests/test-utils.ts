@@ -1,10 +1,40 @@
 import assert from "node:assert";
+import type { Kysely } from "kysely";
 import { test as base } from "vitest";
 import { appFactory } from "../app.ts";
-import { getDatabase } from "../db/db.ts";
-import { configFromEnv } from "../lib/config.ts";
+import { type Database, getDatabase } from "../db/db.ts";
+import type { DB } from "../db/schema.types.ts";
+import { hashPassword } from "../features/auth/crypto.ts";
+import { createSession } from "../features/auth/queries.ts";
+import { type Config, configFromEnv } from "../lib/config.ts";
 import { createEmailService } from "../lib/email/email-service.ts";
 import { MockMailer } from "./mocks/email.ts";
+
+export const TEST_ACCOUNT = {
+  email: "test-account@example.com",
+  name: "test-account",
+  password: "SecurePassword123!",
+};
+
+export async function seedTestAccount(tx: Kysely<DB>) {
+  const account = await tx
+    .insertInto("account")
+    .values({ name: TEST_ACCOUNT.name })
+    .returning(["id"])
+    .executeTakeFirstOrThrow();
+
+  await tx
+    .insertInto("account_identity")
+    .values({
+      account_id: account.id,
+      email: TEST_ACCOUNT.email,
+      password_hash: await hashPassword(TEST_ACCOUNT.password),
+      provider: "email",
+      provider_user_id: TEST_ACCOUNT.email,
+      verified_at: new Date(),
+    })
+    .executeTakeFirstOrThrow();
+}
 
 export function getTestDatabase() {
   const container = globalThis.postgresContainer;
@@ -12,7 +42,27 @@ export function getTestDatabase() {
   return getDatabase(container.getConnectionUri());
 }
 
-function getDependencies() {
+export async function createAuthenticatedSessionCookie(
+  db: Database,
+  config: Config,
+) {
+  const account = await db
+    .selectFrom("account")
+    .select("id")
+    .where("name", "=", TEST_ACCOUNT.name)
+    .executeTakeFirst();
+
+  assert(account, "Seeded test account not found.");
+
+  const session = await createSession(
+    db,
+    account.id,
+    config.SESSION_EXPIRY_HOURS,
+  );
+  return `${config.SESSION_COOKIE_NAME}=${session.id}`;
+}
+
+async function getDependencies() {
   const container = globalThis.postgresContainer;
   assert(container, "PostgreSQL container not started.");
 
@@ -40,15 +90,16 @@ function getDependencies() {
   const emailService = createEmailService(new MockMailer());
   const app = appFactory(config, db, emailService);
 
-  return { app, db, emailService, config };
+  const sessionCookie = await createAuthenticatedSessionCookie(db, config);
+  return { app, db, emailService, config, sessionCookie };
 }
 
 export const test = base.extend<{
-  dependencies: ReturnType<typeof getDependencies>;
+  dependencies: Awaited<ReturnType<typeof getDependencies>>;
 }>({
   // biome-ignore lint/correctness/noEmptyPattern: vitest expects a destructure here
   dependencies: async ({}, use) => {
-    const dependencies = getDependencies();
+    const dependencies = await getDependencies();
     await use(dependencies);
     await dependencies.db.destroy();
     await globalThis.postgresContainer?.restoreSnapshot();

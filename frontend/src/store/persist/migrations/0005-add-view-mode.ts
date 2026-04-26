@@ -1,5 +1,5 @@
+import type { ListConfig } from "@arkham-build/shared";
 import type { StoreState } from "@/store/slices";
-import type { ListConfig } from "@/store/slices/settings.types";
 
 function migrate(_state: unknown, version: number) {
   const state = _state as StoreState;

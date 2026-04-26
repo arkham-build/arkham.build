@@ -1,3 +1,4 @@
+import type { Settings } from "@arkham-build/shared";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import type { Deck } from "@/store/schemas/deck.schema";
@@ -7,7 +8,6 @@ import {
   selectLookupTables,
 } from "../selectors/shared";
 import type { StoreState } from "../slices";
-import type { SettingsState } from "../slices/settings.types";
 import { randomBasicWeaknessForDeck } from "./random-basic-weakness";
 import { resolveDeck } from "./resolve-deck";
 
@@ -86,7 +86,7 @@ describe("randomBasicWeaknessForDeck", () => {
         collection: {
           eoep: 1,
         },
-      } as unknown as SettingsState,
+      } as unknown as Settings,
     });
 
     const state = store.getState();
@@ -135,7 +135,7 @@ describe("randomBasicWeaknessForDeck", () => {
           tskp: 1,
         },
         showAllCards: false,
-      } as unknown as SettingsState,
+      } as unknown as Settings,
     });
 
     const state = store.getState();
@@ -182,7 +182,7 @@ describe("randomBasicWeaknessForDeck", () => {
           tskp: 1,
         },
         showAllCards: false,
-      } as unknown as SettingsState,
+      } as unknown as Settings,
     });
 
     const state = store.getState();

@@ -1541,6 +1541,12 @@
         "user_id": "User ID",
         "username": "Username"
       },
+      "conflict": {
+        "description": "Your account settings changed somewhere else. Refresh to load the remote version, or overwrite it with your current local changes.",
+        "overwrite": "Overwrite",
+        "refresh": "Reload page",
+        "remote_revision": "Remote revision: {{revision}}"
+      },
       "developer": {
         "dev_mode_enabled": "Enable developer mode",
         "title": "Developer"
@@ -1579,6 +1585,7 @@
         "title": "Display"
       },
       "error": "Failed to save settings: {{error}}",
+      "load_error": "Failed to load account settings. Using local settings: {{error}}",
       "general": {
         "default_environment": "Default environment",
         "default_taboo": "Default taboo list",

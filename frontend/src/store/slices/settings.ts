@@ -1,19 +1,43 @@
+import {
+  type DecklistConfig,
+  type ListConfig,
+  type Settings,
+  type SettingsResponse,
+  SettingsSchema,
+} from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { changeLanguage } from "@/utils/i18n";
+import { fromRemoteSettings, toRemoteSettings } from "../lib/settings-sync";
 import { dehydrate } from "../persist";
 import {
   queryCards,
   queryDataVersion,
   queryMetadata,
 } from "../services/requests/cache";
+import {
+  fetchSettings,
+  isSettingsConflictError,
+  putSettings,
+} from "../services/requests/settings";
 import type { StoreState } from ".";
 import { makeLists } from "./lists";
-import type {
-  DecklistConfig,
-  ListConfig,
-  SettingsSlice,
-  SettingsState,
-} from "./settings.types";
+
+export type SettingsSlice = {
+  settings: Settings;
+} & {
+  toggleFlag(key: string): Promise<void>;
+  applySettings: (
+    payload: Settings,
+    opts?: { keepListState?: boolean },
+  ) => Promise<void>;
+  applyRemoteSettings(payload: SettingsResponse): Promise<void>;
+  loadRemoteSettings(): Promise<void>;
+  saveSettings(
+    payload: Settings,
+    opts?: { expectedRevision?: string | null },
+  ): Promise<void>;
+  setSettings(payload: Partial<Settings>): Promise<void>;
+};
 
 export const PLAYER_DEFAULTS: ListConfig = {
   group: ["subtype", "type", "slot"],
@@ -80,7 +104,7 @@ export const SORTING_PRESETS: DecklistConfig[] = [
   },
 ];
 
-export function getInitialListsSetting(): SettingsState["lists"] {
+export function getInitialListsSetting(): Settings["lists"] {
   return {
     deck: structuredClone(DECK_DEFAULTS),
     deckScans: structuredClone(DECK_SCANS_DEFAULTS),
@@ -91,8 +115,8 @@ export function getInitialListsSetting(): SettingsState["lists"] {
   };
 }
 
-export function getInitialSettings(): SettingsState {
-  return {
+export function getInitialSettings(): Settings {
+  return SettingsSchema.parse({
     cardLevelDisplay: "icon-only",
     cardListsDefaultContentType: "all",
     cardSkillIconsDisplay: "simple",
@@ -120,7 +144,7 @@ export function getInitialSettings(): SettingsState {
     sortIgnorePunctuation: false,
     tabooSetId: undefined,
     useLimitedPoolForWeaknessDraw: true,
-  };
+  });
 }
 
 export const createSettingsSlice: StateCreator<
@@ -148,6 +172,7 @@ export const createSettingsSlice: StateCreator<
             ...state.settings,
             ...settings,
           },
+          sync: state.sync,
         },
       });
     } else {
@@ -157,6 +182,139 @@ export const createSettingsSlice: StateCreator<
       });
 
       await dehydrate(get(), "app");
+    }
+  },
+  async applyRemoteSettings(response) {
+    const state = get();
+    const accountId = state.auth.session?.account.id;
+
+    if (!accountId) {
+      state.resetSync();
+      return;
+    }
+
+    if (state.sync.settings.accountId !== accountId) {
+      state.resetSync();
+    }
+
+    const localSettings = get().settings;
+
+    await get().applySettings(
+      SettingsSchema.parse({
+        ...fromRemoteSettings(response.settings, localSettings),
+        collection: response.collection ?? localSettings.collection,
+      }),
+    );
+
+    get().setSettingsSync({
+      accountId,
+      revision: response.revision,
+      lastSyncedAt: Date.now(),
+      status: "synced",
+      error: null,
+      conflict: null,
+    });
+
+    await dehydrate(get(), "app");
+  },
+  async loadRemoteSettings() {
+    const state = get();
+    const accountId = state.auth.session?.account.id;
+
+    if (!accountId) {
+      state.resetSync();
+      return;
+    }
+
+    if (state.sync.settings.accountId !== accountId) {
+      state.resetSync();
+    }
+
+    get().setSettingsSync({
+      accountId,
+      status: "loading",
+      error: null,
+      conflict: null,
+    });
+
+    try {
+      const response = await fetchSettings();
+      await get().applyRemoteSettings(response);
+    } catch (error) {
+      get().setSettingsSync({
+        status: "error",
+        error: getErrorMessage(error),
+        conflict: null,
+      });
+      await dehydrate(get(), "app");
+      throw error;
+    }
+  },
+  async saveSettings(settings, opts) {
+    await get().applySettings(settings);
+
+    const state = get();
+    const accountId = state.auth.session?.account.id;
+
+    if (!accountId) {
+      state.resetSync();
+      await dehydrate(get(), "app");
+      return;
+    }
+
+    if (state.sync.settings.accountId !== accountId) {
+      state.resetSync();
+    }
+
+    const expectedRevision =
+      opts?.expectedRevision !== undefined
+        ? opts.expectedRevision
+        : get().sync.settings.accountId === accountId
+          ? get().sync.settings.revision
+          : null;
+
+    get().setSettingsSync({
+      accountId,
+      status: "saving",
+      error: null,
+      conflict: null,
+    });
+
+    try {
+      const response = await putSettings({
+        settings: toRemoteSettings(settings),
+        collection: settings.collection,
+        expectedRevision,
+      });
+
+      get().setSettingsSync({
+        accountId,
+        revision: response.revision,
+        lastSyncedAt: Date.now(),
+        status: "synced",
+        error: null,
+        conflict: null,
+      });
+      await dehydrate(get(), "app");
+    } catch (error) {
+      if (isSettingsConflictError(error)) {
+        get().setSettingsSync({
+          accountId,
+          status: "conflict",
+          error: getErrorMessage(error),
+          conflict: error.remote,
+        });
+      } else {
+        get().setSettingsSync({
+          accountId,
+          status: "error",
+          error: getErrorMessage(error),
+          conflict: null,
+        });
+      }
+
+      await dehydrate(get(), "app");
+      throw error;
     }
   },
   async setSettings(payload) {
@@ -183,3 +341,7 @@ export const createSettingsSlice: StateCreator<
     await dehydrate(get(), "app");
   },
 });
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unknown error";
+}

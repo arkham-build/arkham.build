@@ -1,3 +1,4 @@
+import type { Settings } from "@arkham-build/shared";
 import { BarChart3Icon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,7 +11,6 @@ import {
   groupCyclesByChapter,
   selectCyclesAndPacks,
 } from "@/store/selectors/lists";
-import type { SettingsState } from "@/store/slices/settings.types";
 import { official } from "@/utils/card-utils";
 import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
 import { displayPackName } from "@/utils/formatting";
@@ -25,8 +25,8 @@ import { CollectionPack } from "./collection-pack";
 
 type Props = {
   canShowCounts?: boolean;
-  settings: SettingsState;
-  setSettings?: (settings: React.SetStateAction<SettingsState>) => void;
+  settings: Settings;
+  setSettings?: (settings: React.SetStateAction<Settings>) => void;
 };
 
 export function CollectionSettings(props: Props) {

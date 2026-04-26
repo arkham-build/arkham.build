@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, Settings } from "@arkham-build/shared";
 import { applyTaboo } from "@/store/lib/card-edits";
 import { cardUses, splitMultiValue } from "@/utils/card-utils";
 import {
@@ -10,7 +10,6 @@ import {
 import { time, timeEnd } from "@/utils/time";
 import { selectSettingsTabooId } from "../selectors/shared";
 import type { Metadata } from "../slices/metadata.types";
-import type { SettingsState } from "../slices/settings.types";
 import type { LookupTable, LookupTables } from "./lookup-tables.types";
 
 function getInitialLookupTables(): LookupTables {
@@ -51,10 +50,7 @@ function getInitialLookupTables(): LookupTables {
   };
 }
 
-export function createLookupTables(
-  metadata: Metadata,
-  settings: SettingsState,
-) {
+export function createLookupTables(metadata: Metadata, settings: Settings) {
   time("refresh_lookup_tables");
   const lookupTables = getInitialLookupTables();
 

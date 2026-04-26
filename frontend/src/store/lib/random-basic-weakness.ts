@@ -1,10 +1,13 @@
+import type {
+  Collection,
+  Settings as SettingsState,
+} from "@arkham-build/shared";
 import { cardLimit } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { resolveLimitedPoolPacks } from "@/utils/environments";
 import { isEmpty } from "@/utils/is-empty";
 import { randomInt } from "@/utils/random-int";
 import type { Metadata } from "../slices/metadata.types";
-import type { SettingsState } from "../slices/settings.types";
 import { ownedCardCount } from "./card-ownership";
 import type { LookupTables } from "./lookup-tables.types";
 import type { ResolvedDeck } from "./types";
@@ -26,7 +29,7 @@ export function randomBasicWeaknessForDeck(
     settings.useLimitedPoolForWeaknessDraw && !isEmpty(limitedPool);
 
   const collection = useLimitedPool
-    ? limitedPool.reduce<Record<string, number>>((acc, curr) => {
+    ? limitedPool.reduce<Collection>((acc, curr) => {
         acc[curr] = settings.collection?.[curr] || 1;
         return acc;
       }, {})

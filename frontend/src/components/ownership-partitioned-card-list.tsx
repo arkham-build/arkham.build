@@ -1,3 +1,4 @@
+import type { Settings } from "@arkham-build/shared";
 import { FileWarningIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,7 +12,6 @@ import {
   selectMetadata,
 } from "@/store/selectors/shared";
 import type { Metadata } from "@/store/slices/metadata.types";
-import type { SettingsState } from "@/store/slices/settings.types";
 import { isEmpty } from "@/utils/is-empty";
 import css from "./ownership-partitioned-card-list.module.css";
 import { Collapsible, CollapsibleContent } from "./ui/collapsible";
@@ -72,7 +72,7 @@ function partitionCardsByOwnership(
   cards: ResolvedCard[],
   metadata: Metadata,
   lookupTables: LookupTables,
-  collection: SettingsState["collection"],
+  collection: Settings["collection"],
   showAllCards: boolean,
 ) {
   const owned = [];
