@@ -6,7 +6,7 @@ import type { Deck } from "@/store/schemas/deck.schema";
 import factions from "@/store/services/data/factions.json";
 import subTypes from "@/store/services/data/subtypes.json";
 import types from "@/store/services/data/types.json";
-import { assertCanPublishDeck, incrementVersion } from "@/utils/arkhamdb";
+import { incrementVersion } from "@/utils/arkhamdb";
 import { assert } from "@/utils/assert";
 import { decodeExileSlots } from "@/utils/card-utils";
 import { inferChapterNumber } from "@/utils/chapters";
@@ -26,27 +26,15 @@ import { buildCacheFromDecks } from "../lib/fan-made-content";
 import { mappedByCode, mappedById } from "../lib/metadata-utils";
 import { resolveDeck } from "../lib/resolve-deck";
 import { decodeExtraSlots, encodeExtraSlots } from "../lib/slots";
-import { disconnectProviderIfUnauthorized, syncAdapters } from "../lib/sync";
 import type { DeckMeta } from "../lib/types";
 import { dehydrate, hydrate } from "../persist";
 import { selectDeckCreateCardSets } from "../selectors/deck-create";
-import {
-  selectDeckHistory,
-  selectDeckValid,
-  selectLatestUpgrade,
-} from "../selectors/decks";
+import { selectDeckValid, selectLatestUpgrade } from "../selectors/decks";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
 } from "../selectors/shared";
-import {
-  createShare,
-  deleteDeck,
-  newDeck,
-  updateDeck,
-  upgradeDeck,
-} from "../services/queries";
 import type { StoreState } from ".";
 import type { AppSlice } from "./app.types";
 import { makeLists } from "./lists";
@@ -304,7 +292,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       Object.assign(meta, encodeSealedDeck(sealedDeck));
     }
 
-    let deck = createDeck({
+    const deck = createDeck({
       investigator_code: state.deckCreate.investigatorCode,
       investigator_name: back.real_name,
       name: state.deckCreate.title,
@@ -330,26 +318,6 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       deck.meta = JSON.stringify(meta);
     }
 
-    if (state.deckCreate.provider === "arkhamdb") {
-      assertCanPublishDeck(resolved);
-
-      state.setRemoting("arkhamdb", true);
-
-      try {
-        const adapter = new syncAdapters["arkhamdb"](get);
-        const { id } = await newDeck(state.app.clientId, adapter.out(deck));
-
-        deck = adapter.in(
-          await updateDeck(state.app.clientId, adapter.out({ ...deck, id })),
-        );
-      } catch (err) {
-        disconnectProviderIfUnauthorized("arkhamdb", err, set);
-        throw err;
-      } finally {
-        state.setRemoting("arkhamdb", false);
-      }
-    }
-
     set((prev) => ({
       data: {
         ...prev.data,
@@ -367,10 +335,6 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
 
     await dehydrate(get(), "app");
 
-    if (state.deckCreate.provider === "shared") {
-      await state.createShare(deck.id as string);
-    }
-
     return deck.id;
   },
   async deleteDeck(id, cb) {
@@ -378,24 +342,6 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
 
     const deck = state.data.decks[id];
     assert(deck.next_deck == null, "Cannot delete a deck that has upgrades.");
-
-    if (deck.source === "arkhamdb") {
-      state.setRemoting("arkhamdb", true);
-      try {
-        await deleteDeck(state.app.clientId, id, true);
-      } catch (err) {
-        disconnectProviderIfUnauthorized("arkhamdb", err, set);
-        // when deleting, we ignore the remote error and continue to delete
-      } finally {
-        state.setRemoting("arkhamdb", false);
-      }
-    } else {
-      await Promise.allSettled(
-        [...state.data.history[id], deck.id].map((curr) =>
-          state.deleteShare(curr as string),
-        ),
-      );
-    }
 
     cb?.();
 
@@ -458,10 +404,6 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     });
 
     await dehydrate(get(), "app", "edits");
-
-    if (Object.keys(get().sharing.decks).length) {
-      await get().deleteAllShares().catch(console.error);
-    }
   },
   async updateDeckProperties(deckId, properties) {
     const state = get();
@@ -469,31 +411,13 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     const deck = state.data.decks[deckId];
     assert(deck, `Deck ${deckId} does not exist.`);
 
-    let nextDeck = {
+    const nextDeck = {
       ...deck,
       ...properties,
     };
 
     nextDeck.date_update = new Date().toISOString();
     nextDeck.version = incrementVersion(deck.version);
-
-    if (nextDeck.source === "arkhamdb") {
-      state.setRemoting("arkhamdb", true);
-
-      try {
-        const adapter = new syncAdapters.arkhamdb(get);
-        nextDeck = adapter.in(
-          await updateDeck(state.app.clientId, adapter.out(nextDeck)),
-        );
-      } catch (err) {
-        disconnectProviderIfUnauthorized("arkhamdb", err, set);
-        throw err;
-      } finally {
-        state.setRemoting("arkhamdb", false);
-      }
-    } else {
-      await state.updateShare(nextDeck);
-    }
 
     set((prev) => {
       const nextEdits = { ...prev.deckEdits };
@@ -540,7 +464,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       ? state.data.decks[deck.previous_deck]
       : undefined;
 
-    let nextDeck = applyDeckEdits(deck, edits, metadata, true, previousDeck);
+    const nextDeck = applyDeckEdits(deck, edits, metadata, true, previousDeck);
     nextDeck.date_update = new Date().toISOString();
     nextDeck.version = incrementVersion(deck.version);
 
@@ -568,26 +492,6 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     if (upgrade) {
       nextDeck.xp_spent = upgrade.xpSpent ?? 0;
       nextDeck.xp_adjustment = upgrade.xpAdjustment ?? 0;
-    }
-
-    if (nextDeck.source === "arkhamdb") {
-      assertCanPublishDeck(resolved);
-
-      state.setRemoting("arkhamdb", true);
-
-      try {
-        const adapter = new syncAdapters.arkhamdb(get);
-        nextDeck = adapter.in(
-          await updateDeck(state.app.clientId, adapter.out(nextDeck)),
-        );
-      } catch (err) {
-        disconnectProviderIfUnauthorized("arkhamdb", err, set);
-        throw err;
-      } finally {
-        state.setRemoting("arkhamdb", false);
-      }
-    } else {
-      await state.updateShare(nextDeck);
     }
 
     set((prev) => {
@@ -652,7 +556,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
 
     const now = new Date().toISOString();
 
-    let newDeck: Deck = {
+    const newDeck: Deck = {
       ...structuredClone(deck),
       id: randomId(),
       date_creation: now,
@@ -725,46 +629,6 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
 
     const isShared = !!state.sharing.decks[deck.id];
 
-    if (deck.source === "arkhamdb") {
-      state.setRemoting("arkhamdb", true);
-      try {
-        const adapter = new syncAdapters.arkhamdb(get);
-        const payload = adapter.out(newDeck);
-        const res = await upgradeDeck(state.app.clientId, deck.id, {
-          xp,
-          exiles: exileString,
-          meta: payload.meta,
-        });
-        newDeck = adapter.in(res);
-      } catch (err) {
-        disconnectProviderIfUnauthorized("arkhamdb", err, set);
-        throw err;
-      } finally {
-        state.setRemoting("arkhamdb", false);
-      }
-    } else if (isShared) {
-      await createShare(
-        state.app.clientId,
-        newDeck,
-        selectDeckHistory(
-          {
-            ...state,
-            metadata,
-            data: {
-              ...state.data,
-              history: {
-                ...state.data.history,
-                [newDeck.id]: [deck.id, ...state.data.history[deck.id]],
-              },
-            },
-          },
-          selectLookupTables(state),
-          selectLocaleSortingCollator(state),
-          newDeck,
-        ),
-      );
-    }
-
     set((prev) => {
       const history = { ...prev.data.history };
       history[newDeck.id] = [deck.id, ...history[deck.id]];
@@ -821,21 +685,6 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       Array.isArray(state.data.history[deck.id]),
       "Deck history does not exist",
     );
-
-    if (deck.source === "arkhamdb") {
-      state.setRemoting("arkhamdb", true);
-
-      try {
-        await deleteDeck(state.app.clientId, deck.id, false);
-      } catch (err) {
-        disconnectProviderIfUnauthorized("arkhamdb", err, set);
-        throw err;
-      } finally {
-        state.setRemoting("arkhamdb", false);
-      }
-    } else {
-      await state.deleteShare(deck.id as string).catch(console.error);
-    }
 
     cb?.(previousId);
 
@@ -931,6 +780,16 @@ function mergeInitialState(
         ...initialState.sync.settings,
         ...persistedState?.sync?.settings,
         ...overrides?.sync?.settings,
+      },
+      decks: {
+        ...initialState.sync.decks,
+        ...persistedState?.sync?.decks,
+        ...overrides?.sync?.decks,
+        items: {
+          ...initialState.sync.decks.items,
+          ...persistedState?.sync?.decks?.items,
+          ...overrides?.sync?.decks?.items,
+        },
       },
     },
   };

@@ -31,9 +31,7 @@ import {
 import { Scroller } from "@/components/ui/scroller";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
-import { selectConnectionsData } from "@/store/selectors/connections";
 import { selectDecksDisplayList } from "@/store/selectors/deck-collection";
-import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
 import { FileInput } from "../ui/file-input";
 import css from "./deck-collection.module.css";
@@ -51,7 +49,7 @@ export function DeckCollection() {
   const toast = useToast();
 
   const deckCollection = useStore(selectDecksDisplayList);
-  const hasConnections = !isEmpty(useStore(selectConnectionsData));
+  const hasConnections = false; // XXX
 
   const importDecks = useStore((state) => state.importFromFiles);
   const deleteAllDecks = useStore((state) => state.deleteAllDecks);

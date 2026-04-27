@@ -98,7 +98,7 @@ function Core2026Reveal() {
       <PageTitle>Core Set 2026 Reveal</PageTitle>
       <header className={css["header"]}>
         <div className={css["header-nav"]}>
-          <Masthead hideLocaleSwitch hideSyncStatus invert />
+          <Masthead hideLocaleSwitch invert />
         </div>
         <div className={css["header-backdrop"]}>
           <img

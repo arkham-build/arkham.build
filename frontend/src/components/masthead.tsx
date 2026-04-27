@@ -17,7 +17,6 @@ type Props = {
   className?: string;
   children?: React.ReactNode;
   slotRight?: React.ReactNode;
-  hideSyncStatus?: boolean;
   hideLocaleSwitch?: boolean;
   hideSettings?: boolean;
   invert?: boolean;

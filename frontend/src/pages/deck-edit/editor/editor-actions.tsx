@@ -15,7 +15,6 @@ import { useStore } from "@/store";
 import { UnsupportedPublishError } from "@/store/lib/errors";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckValid } from "@/store/selectors/decks";
-import { selectConnectionLockForDeck } from "@/store/selectors/shared";
 import { useHotkey } from "@/utils/use-hotkey";
 import { LatestUpgrade } from "../../../components/deck-display/deck-history/latest-upgrade";
 import css from "./editor.module.css";
@@ -33,9 +32,7 @@ export function EditorActions(props: Props) {
   const { t } = useTranslation();
 
   const hasEdits = useStore((state) => !!state.deckEdits[deck.id]);
-  const connectionLock = useStore((state) =>
-    selectConnectionLockForDeck(state, deck),
-  );
+  const connectionLock = ""; // XXX
 
   const discardEdits = useStore((state) => state.discardEdits);
   const saveDeck = useStore((state) => state.saveDeck);

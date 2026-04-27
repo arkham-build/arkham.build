@@ -304,7 +304,7 @@ Implications:
 4. Add write endpoints or wrappers that accept `expectedVersion` ✅
 5. Return structured `409` conflict payloads ✅
 6. Add backend conversion between storage rows and shared deck DTOs ✅
-7. Remove legacy provider-specific deck sync endpoints or wrappers that are no longer needed by the frontend flow
+7. Remove legacy provider-specific deck sync endpoints or wrappers that are no longer needed by the frontend flow ✅
 8. Add backend upgrade endpoint for write-through deck upgrades
 9. Add tests for:
    - changed manifest response ✅
@@ -332,9 +332,9 @@ Implications:
 4. Backend optimistic-concurrency writes using `expectedVersion` ✅
 5. Tests ✅
 
-6. Remove legacy `connections`-based deck sync
-7. Frontend request helpers
-8. Frontend `sync.decks` state and persistence
+6. Remove legacy `connections`-based deck sync ✅
+7. Frontend request helpers ✅
+8. Frontend `sync.decks` state and persistence ✅
 9. Startup manifest reconciliation flow
 10. Write-through create/update/delete flows
 11. Conflict UX

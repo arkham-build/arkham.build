@@ -3,7 +3,6 @@ import { assert } from "@/utils/assert";
 import { displayAttribute } from "@/utils/card-utils";
 import { environments } from "@/utils/environments";
 import { getDefaultDeckName } from "../lib/deck-factory";
-import { selectConnectionsData } from "../selectors/connections";
 import { selectMetadata, selectSettingsTabooId } from "../selectors/shared";
 import type { StoreState } from ".";
 import type { CardSet, DeckCreateSlice } from "./deck-create.types";
@@ -20,7 +19,6 @@ export const createDeckCreateSlice: StateCreator<
     set((state) => {
       const metadata = selectMetadata(state);
       const settings = state.settings;
-      const connections = selectConnectionsData(state);
 
       const investigator = metadata.cards[code];
       assert(
@@ -47,9 +45,7 @@ export const createDeckCreateSlice: StateCreator<
       const provider = settings.defaultStorageProvider;
 
       // when arkhamdb is set as default storage, but not available, default to local.
-      const providerExists =
-        provider !== "arkhamdb" ||
-        connections.some((c) => c.provider === provider);
+      const providerExists = false;
 
       // Apply current environment packs if default environment is set to "current"
       const cardPool =

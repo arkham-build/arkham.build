@@ -138,23 +138,6 @@ export const selectCardOwnedCount = createSelector(
   },
 );
 
-export const selectConnectionLock = createSelector(
-  (state: StoreState) => state.remoting,
-  (remoting) => {
-    return remoting.sync || remoting.arkhamdb
-      ? i18n.t("settings.connections.lock", { provider: "ArkhamDB" })
-      : undefined;
-  },
-);
-
-export const selectConnectionLockForDeck = createSelector(
-  selectConnectionLock,
-  (_: StoreState, deck: Pick<ResolvedDeck, "source">) => deck,
-  (remoting, deck) => {
-    return remoting && deck.source === "arkhamdb" ? remoting : undefined;
-  },
-);
-
 export const selectBackCard = createSelector(
   selectMetadata,
   selectLookupTables,

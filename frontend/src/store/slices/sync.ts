@@ -1,6 +1,12 @@
 import type { StateCreator } from "zustand";
 import type { StoreState } from ".";
-import type { SettingsSyncState, SyncSlice, SyncState } from "./sync.types";
+import type {
+  DeckSyncItemState,
+  DecksSyncState,
+  SettingsSyncState,
+  SyncSlice,
+  SyncState,
+} from "./sync.types";
 
 function getInitialSettingsSyncState(): SettingsSyncState {
   return {
@@ -13,10 +19,32 @@ function getInitialSettingsSyncState(): SettingsSyncState {
   };
 }
 
+function getInitialDeckSyncItemState(): DeckSyncItemState {
+  return {
+    version: null,
+    status: "idle",
+    lastSyncedAt: null,
+    error: null,
+    conflict: null,
+  };
+}
+
+function getInitialDecksSyncState(): DecksSyncState {
+  return {
+    accountId: null,
+    manifestVersion: null,
+    lastSyncedAt: null,
+    status: "idle",
+    error: null,
+    items: {},
+  };
+}
+
 function getInitialSyncState(): SyncState {
   return {
     sync: {
       settings: getInitialSettingsSyncState(),
+      decks: getInitialDecksSyncState(),
     },
   };
 }
@@ -36,7 +64,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       return;
     }
 
-    if (state.sync.settings?.accountId !== accountId) {
+    if (state.sync.settings.accountId !== accountId) {
       state.resetSync();
     }
 
@@ -57,5 +85,44 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
         },
       },
     }));
+  },
+
+  setDecksSync(payload) {
+    set((state) => ({
+      sync: {
+        ...state.sync,
+        decks: {
+          ...state.sync.decks,
+          ...payload,
+        },
+      },
+    }));
+  },
+
+  setDeckSyncItem(id, payload) {
+    set((state) => {
+      const items = { ...state.sync.decks.items };
+      const key = String(id);
+
+      if (payload == null) {
+        delete items[key];
+      } else {
+        items[key] = {
+          ...getInitialDeckSyncItemState(),
+          ...items[key],
+          ...payload,
+        };
+      }
+
+      return {
+        sync: {
+          ...state.sync,
+          decks: {
+            ...state.sync.decks,
+            items,
+          },
+        },
+      };
+    });
   },
 });

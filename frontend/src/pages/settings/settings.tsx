@@ -24,7 +24,6 @@ import { BackupRestore } from "./backup-restore";
 import { CardDataSync } from "./card-data-sync";
 import { CardDisplaySettings } from "./card-display";
 import { CardModalPopularDecksSetting } from "./card-modal-popular-decks";
-import { Connections } from "./connections";
 import { DefaultEnvironmentSetting } from "./default-environment";
 import { DevModeSetting } from "./dev-mode";
 import { FontSizeSetting } from "./font-size";
@@ -146,9 +145,6 @@ function SettingsInner({
         </header>
         <div className={css["container"]}>
           <div className={css["row"]}>
-            <Section title={t("settings.connections.title")}>
-              <Connections />
-            </Section>
             <Section title={t("settings.card_data.title")}>
               <CardDataSync showDetails />
             </Section>

@@ -15,7 +15,6 @@ import type { DeckValidationResult } from "@/store/lib/deck-validation";
 import { deckTags } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { History } from "@/store/selectors/decks";
-import { selectConnectionLockForDeck } from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
 import { useAccentColor } from "@/utils/use-accent-color";
 import DeckDescription from "../deck-description";
@@ -267,9 +266,7 @@ function TitleEditModal(props: TitleEditModalProps) {
 
   const [loading, setLoading] = useState(false);
 
-  const connectionLock = useStore((state) =>
-    selectConnectionLockForDeck(state, deck),
-  );
+  const connectionLock = ""; // XXX
 
   const { t } = useTranslation();
   const toast = useToast();

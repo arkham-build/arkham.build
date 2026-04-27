@@ -19,7 +19,6 @@ import { Scroller } from "@/components/ui/scroller";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import { selectConnectionLockForDeck } from "@/store/selectors/shared";
 import { decodeExileSlots, displayAttribute } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
@@ -78,9 +77,7 @@ export function UpgradeModal(props: Props) {
   const toast = useToast();
   const { t } = useTranslation();
 
-  const connectionLock = useStore((state) =>
-    selectConnectionLockForDeck(state, deck),
-  );
+  const connectionLock = ""; // XXX
   const upgradeDeck = useStore((state) => state.upgradeDeck);
 
   const [xp, setXp] = useState(

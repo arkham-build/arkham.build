@@ -6,9 +6,7 @@ import {
   selectMetadata,
   selectStaticBuildQlInterpreter,
 } from "../selectors/shared";
-import { ApiError } from "../services/requests/shared";
 import type { StoreState } from "../slices";
-import type { Provider } from "../slices/connections.types";
 import { mapValidationToProblem } from "./deck-io";
 import { validateDeck } from "./deck-validation";
 import { applyHiddenSlots, extractHiddenSlots } from "./fan-made-content";
@@ -102,24 +100,3 @@ class ArkhamDBAdapter implements SyncAdapter<ArkhamDBDeckPayload> {
 export const syncAdapters = {
   arkhamdb: ArkhamDBAdapter,
 };
-
-export function disconnectProviderIfUnauthorized(
-  provider: Provider,
-  err: unknown,
-  set: StoreApi<StoreState>["setState"],
-) {
-  if (err instanceof ApiError && err.status === 401) {
-    set((state) => ({
-      connections: {
-        ...state.connections,
-        data: {
-          ...state.connections.data,
-          [provider]: {
-            ...state.connections.data[provider],
-            status: "disconnected",
-          },
-        },
-      },
-    }));
-  }
-}

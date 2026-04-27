@@ -28,16 +28,10 @@ import { UpgradeModal } from "@/pages/deck-view/upgrade-modal";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Id } from "@/store/schemas/deck.schema";
-import { selectConnectionsData } from "@/store/selectors/connections";
 import type { History } from "@/store/selectors/decks";
-import {
-  selectConnectionLock,
-  selectConnectionLockForDeck,
-} from "@/store/selectors/shared";
 import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
-import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
 import { DeckDetail, DeckDetails } from "../deck-details";
 import { DeckInvestigatorModal } from "../deck-investigator/deck-investigator-modal";
@@ -53,7 +47,6 @@ import {
   useDuplicateDeck,
   useExportJson,
   useExportText,
-  useUploadDeck,
 } from "./hooks";
 import css from "./sidebar.module.css";
 import type { DeckOrigin } from "./types";
@@ -70,23 +63,6 @@ type Props = {
 export function Sidebar(props: Props) {
   const { className, history, innerClassName, origin, deck, type } = props;
 
-  const connectionsData = useStore(selectConnectionsData);
-
-  const uploadDeck = useUploadDeck();
-  const onUpload = useCallback(() => {
-    uploadDeck(deck.id);
-  }, [deck.id, uploadDeck]);
-
-  const isReadOnly = !!deck.next_deck;
-
-  const canUploadToArkhamDB =
-    origin === "local" &&
-    !isReadOnly &&
-    deck.source !== "arkhamdb" &&
-    !isEmpty(connectionsData);
-
-  const onArkhamDBUpload = canUploadToArkhamDB ? onUpload : undefined;
-
   return (
     <div className={className}>
       <div className={cx(css["container"], innerClassName)}>
@@ -98,7 +74,6 @@ export function Sidebar(props: Props) {
         <SidebarActions
           deck={deck}
           history={history}
-          onArkhamDBUpload={onArkhamDBUpload}
           origin={origin}
           type={type}
         />
@@ -109,13 +84,7 @@ export function Sidebar(props: Props) {
           <ArkhamDBDetails deck={deck} type={type} />
         )}
 
-        {deck.source !== "arkhamdb" && (
-          <Sharing
-            onArkhamDBUpload={onArkhamDBUpload}
-            deck={deck}
-            origin={origin}
-          />
-        )}
+        {deck.source !== "arkhamdb" && <Sharing deck={deck} origin={origin} />}
       </div>
     </div>
   );
@@ -145,9 +114,8 @@ function SidebarActions(props: {
   deck: ResolvedDeck;
   history?: History;
   type: DeckDisplayType;
-  onArkhamDBUpload?: () => void;
 }) {
-  const { history, origin, deck, onArkhamDBUpload, type } = props;
+  const { history, origin, deck, type } = props;
 
   const { t } = useTranslation();
   const [, navigate] = useLocation();
@@ -160,11 +128,7 @@ function SidebarActions(props: {
     origin === "local" && search.includes("upgrade") && !deck.next_deck,
   );
 
-  const connectionLock = useStore(selectConnectionLock);
-
-  const deckConnectionLock = useStore((state) =>
-    selectConnectionLockForDeck(state, deck),
-  );
+  const deckConnectionLock = ""; // XXX
 
   const deleteDeck = useDeleteDeck();
 
@@ -392,24 +356,6 @@ function SidebarActions(props: {
                   <hr />
                 </>
               )}
-              {onArkhamDBUpload && (
-                <>
-                  <DropdownButton
-                    data-testid="view-upload"
-                    disabled={!!connectionLock}
-                    size="full"
-                    tooltip={connectionLock}
-                    variant="bare"
-                    onClick={onArkhamDBUpload}
-                  >
-                    <i className="icon-elder_sign" />{" "}
-                    {t("deck_view.actions.upload", {
-                      provider: "ArkhamDB",
-                    })}
-                  </DropdownButton>
-                  <hr />
-                </>
-              )}
               <DropdownButton
                 data-testid="view-export-json"
                 onClick={onExportJson}
@@ -461,53 +407,11 @@ function Sharing(props: {
   deck: ResolvedDeck;
   origin: DeckOrigin;
 }) {
-  const { deck, onArkhamDBUpload, origin } = props;
-  const toast = useToast();
+  const { deck, origin } = props;
   const { t } = useTranslation();
 
-  const deckData = useStore((state) => state.data.decks[props.deck.id]);
   const share = useStore((state) => state.sharing.decks[props.deck.id]);
   const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
-
-  const connectionLock = useStore(selectConnectionLock);
-
-  const createShare = useStore((state) => state.createShare);
-  const deleteShare = useStore((state) => state.deleteShare);
-  const updateShare = useStore((state) => state.updateShare);
-
-  async function withToast(fn: () => Promise<unknown>, action: string) {
-    const id = toast.show({
-      children: t(`deck_view.sharing.${action}`),
-      variant: "loading",
-    });
-
-    try {
-      await fn();
-      toast.dismiss(id);
-    } catch (err) {
-      toast.dismiss(id);
-      toast.show({
-        children: t(`deck_view.sharing.${action}_failed`, {
-          error: (err as Error).message,
-        }),
-        variant: "error",
-      });
-    }
-  }
-
-  const onCreateShare = async () => {
-    await withToast(() => createShare(deck.id as string), "create");
-  };
-
-  const onDeleteShare = async () => {
-    await withToast(() => deleteShare(deck.id as string), "delete");
-  };
-
-  const onUpdateShare = async () => {
-    await withToast(() => updateShare(deckData), "update");
-  };
-
-  const isReadOnly = !!deck.next_deck;
 
   return (
     <section className={css["details"]} data-testid="share">
@@ -521,26 +425,6 @@ function Sharing(props: {
             <ShareInfo id={deck.id} path={`/share/${deck.id}`} />
             {(origin === "local" || devModeEnabled) && (
               <nav className={css["share-actions"]}>
-                {origin === "local" && (
-                  <>
-                    {deck.date_update !== share && (
-                      <Button
-                        disabled={isReadOnly}
-                        onClick={onUpdateShare}
-                        size="sm"
-                      >
-                        {t("deck_view.sharing.update")}
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      onClick={onDeleteShare}
-                      data-testid="share-delete"
-                    >
-                      {t("deck_view.sharing.delete")}
-                    </Button>
-                  </>
-                )}
                 {devModeEnabled && <DevModeApiLinkButton id={deck.id} />}
               </nav>
             )}
@@ -548,36 +432,6 @@ function Sharing(props: {
         ) : (
           <div className={css["share-empty"]}>
             <p>{t("deck_view.sharing.description")}</p>
-            <div className={css["share-actions"]}>
-              <Button
-                data-testid="share-create"
-                disabled={isReadOnly}
-                onClick={onCreateShare}
-                size="sm"
-                tooltip={
-                  <Trans
-                    t={t}
-                    i18nKey="deck_view.sharing.create_tooltip"
-                    components={{ br: <br />, strong: <strong /> }}
-                  />
-                }
-              >
-                <ShareIcon />
-                {t("deck_view.sharing.create")}
-              </Button>
-              {onArkhamDBUpload && (
-                <Button
-                  data-testid="view-upload"
-                  disabled={!!connectionLock}
-                  onClick={onArkhamDBUpload}
-                  tooltip={connectionLock}
-                  size="sm"
-                >
-                  <i className="icon-elder_sign" />{" "}
-                  {t("deck_view.actions.upload", { provider: "ArkhamDB" })}
-                </Button>
-              )}
-            </div>
           </div>
         )}
       </DeckDetail>

@@ -14,10 +14,8 @@ import { KeyboardShortcutsModal } from "./components/keyboard-shortcuts/keyboard
 import { Loader } from "./components/ui/loader";
 import { ToastProvider } from "./components/ui/toast";
 import { useToast } from "./components/ui/toast.hooks";
-import { Connect } from "./pages/connect/connect";
 import { ErrorStatus } from "./pages/errors/404";
 import { useStore } from "./store";
-import { shouldAutoSync, useSync } from "./store/hooks/use-sync";
 import { selectIsInitialized } from "./store/selectors/shared";
 import {
   queryCards,
@@ -158,7 +156,6 @@ function AppInner() {
               <Route component={Share} path="/share/:id" />
               <Route component={CollectionStats} path="/collection-stats" />
               <Route component={BrowseDecklists} path="/decklists" />
-              <Route component={Connect} path="/connect" />
               <Route component={Rules} path="/rules" />
               <Route component={Core2026Reveal} path="/blog/core-2026-reveal" />
               <Route
@@ -312,23 +309,11 @@ function CardDataSyncTask() {
 function AppTasks() {
   const { t } = useTranslation();
   const toast = useToast();
-  const connections = useStore((state) => state.connections);
   const { error, status } = useStore((state) => state.sync.settings);
-
-  const syncConnections = useSync();
-  const [location] = useLocation();
 
   useAgathaEasterEggHint();
 
-  const autoSyncLock = useRef(false);
   const previousSettingsSyncStatus = useRef(status);
-
-  useEffect(() => {
-    if (!autoSyncLock.current && shouldAutoSync(location, connections)) {
-      autoSyncLock.current = true;
-      syncConnections().catch(console.error);
-    }
-  }, [syncConnections, location, connections]);
 
   useEffect(() => {
     if (

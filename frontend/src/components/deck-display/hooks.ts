@@ -8,7 +8,6 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import type { Deck, Id } from "@/store/schemas/deck.schema";
 import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import { download } from "@/utils/download";
-import { formatProviderName } from "@/utils/formatting";
 
 export function useDeleteDeck() {
   const toast = useToast();
@@ -150,40 +149,6 @@ export function useExportText() {
       }
     },
     [toast.show, state, t],
-  );
-}
-
-export function useUploadDeck() {
-  const { t } = useTranslation();
-  const toast = useToast();
-  const [, navigate] = useLocation();
-  const uploadDeck = useStore((state) => state.uploadDeck);
-
-  return useCallback(
-    async (deckId: Id) => {
-      const toastId = toast.show({
-        children: t("deck.toasts.upload_loading", {
-          provider: formatProviderName("arkhamdb"),
-        }),
-        variant: "loading",
-      });
-
-      try {
-        const id = await uploadDeck(deckId, "arkhamdb");
-        toast.dismiss(toastId);
-        navigate(`/deck/view/${id}`, { replace: true });
-      } catch (err) {
-        toast.dismiss(toastId);
-        toast.show({
-          children: t("deck.toasts.upload_error", {
-            error: (err as Error)?.message,
-            provider: formatProviderName("arkhamdb"),
-          }),
-          variant: "error",
-        });
-      }
-    },
-    [toast, uploadDeck, navigate, t],
   );
 }
 

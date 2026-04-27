@@ -1,4 +1,4 @@
-import type { Settings } from "@arkham-build/shared";
+import type { Settings as SettingsState } from "@arkham-build/shared";
 import { BarChart3Icon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,8 +25,8 @@ import { CollectionPack } from "./collection-pack";
 
 type Props = {
   canShowCounts?: boolean;
-  settings: Settings;
-  setSettings?: (settings: React.SetStateAction<Settings>) => void;
+  settings: SettingsState;
+  setSettings?: (settings: React.SetStateAction<SettingsState>) => void;
 };
 
 export function CollectionSettings(props: Props) {

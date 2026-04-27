@@ -17,14 +17,11 @@ import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import { decodeSelections } from "@/store/lib/deck-meta";
 import type { CardWithRelations } from "@/store/lib/types";
-import { selectConnectionsData } from "@/store/selectors/connections";
 import {
   selectDeckCreateChecked,
   selectDeckCreateInvestigators,
 } from "@/store/selectors/deck-create";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
-import { selectConnectionLock } from "@/store/selectors/shared";
-import { formatProviderName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useGoBack } from "@/utils/use-go-back";
 import { useAccentColor } from "../../utils/use-accent-color";
@@ -37,8 +34,7 @@ export function DeckCreateEditor() {
   const deckCreate = useStore(selectDeckCreateChecked);
   const { back, investigator } = useStore(selectDeckCreateInvestigators);
 
-  const connections = useStore(selectConnectionsData);
-  const connectionLock = useStore(selectConnectionLock);
+  const connectionLock = ""; // XXX
   const provider = useStore((state) => state.deckCreate?.provider);
   const settings = useStore((state) => state.settings);
 
@@ -144,16 +140,8 @@ export function DeckCreateEditor() {
         label: t("deck_edit.config.storage_provider.local"),
         value: "local",
       },
-      {
-        label: t("deck_edit.config.storage_provider.shared"),
-        value: "shared",
-      },
-      ...connections.map((connection) => ({
-        label: formatProviderName(connection.provider),
-        value: connection.provider,
-      })),
     ],
-    [t, connections],
+    [t],
   );
 
   const providerChanged =
