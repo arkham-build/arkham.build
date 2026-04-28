@@ -150,7 +150,7 @@ export function CardTagsEdit(props: Props) {
           <span className={css["tags-section-label"]}>
             {t("card_modal.tags.scope_deck")}
           </span>
-          {deckTags.length > 0 && (
+          {deckTags.length > 0 ? (
             <div className={css["tags-chips"]}>
               {deckTags.map((tag) => (
                 <Tag key={tag} size="xs" className={css["tag-chip"]}>
@@ -169,6 +169,12 @@ export function CardTagsEdit(props: Props) {
                 </Tag>
               ))}
             </div>
+          ) : (
+            !deckEditable && (
+              <span className={css["tags-none"]}>
+                {t("card_modal.tags.none")}
+              </span>
+            )
           )}
           {deckEditable && (
             <>

@@ -111,6 +111,12 @@
   letter-spacing: 0.05em;
 }
 
+.tags-none {
+  font-size: var(--text-xs);
+  color: var(--palette-three-point-five);
+  font-style: italic;
+}
+
 .tags-chips {
   display: flex;
   flex-wrap: wrap;

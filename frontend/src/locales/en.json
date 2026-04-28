@@ -62,6 +62,7 @@
         "placeholder": "Type tag, press Enter or comma...",
         "remove": "Remove tag {{tag}}",
         "remove_global": "Remove global tag {{tag}}",
+        "none": "None",
         "too_long": "Tags must be {{max}} characters or fewer"
       }
     },
