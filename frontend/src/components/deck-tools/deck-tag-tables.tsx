@@ -66,7 +66,6 @@ export function DeckTagTables({ deck, readonly }: Props) {
     .map((code) => metadata.cards[code])
     .filter((c): c is Card => c != null);
 
-  // Build tag -> Card[] for the expandable summary rows.
   const tagToCards = new Map<string, Card[]>();
   for (const { code, tags } of taggedCards) {
     const card = metadata.cards[code];

@@ -9,6 +9,8 @@ import {
 import { isCardTagsFilterObject } from "@/store/slices/lists.type-guards";
 import type { CardTagScope } from "@/store/slices/lists.types";
 import { assert } from "@/utils/assert";
+import { cx } from "@/utils/cx";
+import css from "./card-tags-filter.module.css";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
 import { useFilter } from "./primitives/filter-hooks";
@@ -59,11 +61,11 @@ export function CardTagsFilter({ id, resolvedDeck }: FilterProps) {
       open={filter.open}
       title={t("filters.card_tags.title")}
     >
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      <div className={css["container"]}>
         <select
+          className={css["scope-select"]}
           value={filter.value.scope}
           onChange={(e) => onScopeChange(e.target.value as CardTagScope)}
-          style={{ fontSize: "var(--text-xs)", padding: "0.25rem" }}
         >
           <option value="both">{t("filters.card_tags.scope_both")}</option>
           <option value="deck">{t("filters.card_tags.scope_deck")}</option>
@@ -71,29 +73,20 @@ export function CardTagsFilter({ id, resolvedDeck }: FilterProps) {
         </select>
 
         {tagOptions.length === 0 ? (
-          <p style={{ fontSize: "var(--text-xs)", color: "var(--muted)" }}>
+          <p className={css["empty-message"]}>
             {t("filters.card_tags.placeholder")}
           </p>
         ) : (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
+          <div className={css["tags-list"]}>
             {tagOptions.map((tag) => (
               <button
                 key={tag}
                 type="button"
+                className={cx(
+                  css["tag-button"],
+                  filter.value.tags.includes(tag) && css["active"],
+                )}
                 onClick={() => onTagToggle(tag)}
-                style={{
-                  fontSize: "var(--text-xs)",
-                  padding: "0.25rem 0.5rem",
-                  borderRadius: "var(--rounded)",
-                  background: filter.value.tags.includes(tag)
-                    ? "var(--color-primary)"
-                    : "var(--palette-1)",
-                  color: filter.value.tags.includes(tag)
-                    ? "var(--color-primary-text)"
-                    : "var(--text)",
-                  border: "none",
-                  cursor: "pointer",
-                }}
               >
                 {tag}
               </button>

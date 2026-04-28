@@ -8,17 +8,9 @@ import css from "./card-modal.module.css";
 
 const TAG_MAX_LENGTH = 24;
 
-function normalizeTag(raw: string): string {
-  return raw.trim();
-}
-
-function isValidTag(tag: string): boolean {
-  return tag.length > 0 && tag.length <= TAG_MAX_LENGTH;
-}
-
 type Props = {
   cardCode: string;
-  // When undefined, no deck context — only global section is shown.
+  // When undefined, no deck context - only global section is shown.
   deckId?: Id;
   deckTags?: string[];
   deckEditable?: boolean;
@@ -230,4 +222,12 @@ export function CardTagsEdit(props: Props) {
       </div>
     </div>
   );
+}
+
+function normalizeTag(raw: string): string {
+  return raw.trim();
+}
+
+function isValidTag(tag: string): boolean {
+  return tag.length > 0 && tag.length <= TAG_MAX_LENGTH;
 }

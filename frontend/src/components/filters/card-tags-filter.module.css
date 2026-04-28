@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scope-select {
+  font-size: var(--text-xs);
+  padding: 0.25rem;
+}
+
+.empty-message {
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tag-button {
+  font-size: var(--text-xs);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--rounded);
+  background: var(--palette-1);
+  color: var(--text);
+  border: none;
+  cursor: pointer;
+}
+
+.tag-button:hover {
+  background: var(--palette-2);
+}
+
+.tag-button.active {
+  background: var(--palette-3);
+  color: var(--palette-6);
+}
