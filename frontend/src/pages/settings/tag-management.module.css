@@ -39,8 +39,8 @@
   font-size: var(--text-sm);
   padding: 0.25rem 0.5rem;
   border-radius: var(--rounded);
-  border: 1px solid var(--border);
-  background: var(--bg);
+  border: 1px solid var(--palette-2);
+  background: var(--palette-1);
   color: var(--text);
   min-width: 10rem;
 }
@@ -55,7 +55,7 @@
   border: none;
   cursor: pointer;
   padding: 0.25rem;
-  color: var(--muted);
+  color: var(--palette-three-point-five);
   display: inline-flex;
   align-items: center;
   border-radius: var(--rounded);
@@ -68,5 +68,5 @@
 
 .error {
   font-size: var(--text-xs);
-  color: var(--color-error, red);
+  color: var(--health);
 }

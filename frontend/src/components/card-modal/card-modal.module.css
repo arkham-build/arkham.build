@@ -106,7 +106,7 @@
 .tags-section-label {
   font-size: var(--text-xs);
   font-weight: 600;
-  color: var(--muted);
+  color: var(--palette-three-point-five);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -152,8 +152,8 @@
   font-size: var(--text-xs);
   padding: 0.25rem 0.5rem;
   border-radius: var(--rounded);
-  border: 1px solid var(--border);
-  background: var(--bg);
+  border: 1px solid var(--palette-2);
+  background: var(--palette-1);
   color: var(--text);
 }
 
@@ -164,7 +164,7 @@
 
 .tags-error {
   font-size: var(--text-xs);
-  color: var(--color-error, red);
+  color: var(--health);
 }
 
 .tags-readonly {

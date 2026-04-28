@@ -11,7 +11,7 @@
 
 .empty-message {
   font-size: var(--text-xs);
-  color: var(--muted);
+  color: var(--palette-three-point-five);
 }
 
 .tags-list {
