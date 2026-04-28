@@ -53,6 +53,7 @@ export type EditState = {
   };
   attachments?: AttachmentQuantities;
   annotations?: Annotations;
+  cardTags?: Record<string, string[] | null>;
   tabooId?: number | null;
   tags?: string | null;
   xpAdjustment?: number | null;
@@ -123,6 +124,7 @@ export type DeckEditsSlice = {
   }): void;
 
   updateAnnotation(deckId: Id, code: string, value: string | null): void;
+  updateCardTags(deckId: Id, code: string, tags: string[] | null): void;
 
   upgradeCard(payload: UpgradePayload): void;
 

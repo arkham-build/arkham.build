@@ -1,4 +1,5 @@
 import type { Card } from "@arkham-build/shared";
+import { GlobeIcon, LayersIcon } from "lucide-react";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
@@ -24,6 +25,10 @@ import {
   selectMetadata,
 } from "@/store/selectors/shared";
 import type { ViewMode } from "@/store/slices/lists.types";
+import {
+  buildAllCardTagDescriptors,
+  type CardTagDescriptor,
+} from "@/utils/card-tag-descriptors";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";
 import { CardGridItem } from "../card-list/card-grid";
@@ -32,6 +37,7 @@ import type { FilteredListCardPropsGetter } from "../card-list/types";
 import { CardScan } from "../card-scan";
 import { CustomizableSheet } from "../customizable-sheet";
 import { ListCard } from "../list-card/list-card";
+import { Tag } from "../ui/tag";
 import css from "./decklist-groups.module.css";
 
 type DecklistGroupsProps = {
@@ -53,6 +59,16 @@ export function DecklistGroup(props: DecklistGroupsProps) {
     selectCardsNotInLimitedPool(state, deck),
   );
   const cardOwnedCount = useStore(selectCardOwnedCount);
+  const customTagsEnabled = useStore(
+    (state) => state.settings.customTagsEnabled,
+  );
+  const globalCardTags = useStore(
+    (state) => state.settings.globalCardTags ?? {},
+  );
+  const cardTagDescriptors: Record<string, CardTagDescriptor[]> =
+    customTagsEnabled
+      ? buildAllCardTagDescriptors(deck.cardTags, globalCardTags)
+      : {};
 
   const quantities = resolveQuantities(grouping);
   const xp = resolveXP(grouping);
@@ -117,6 +133,7 @@ export function DecklistGroup(props: DecklistGroupsProps) {
                 grouping={grouping}
                 group={group}
                 getListCardProps={getListCardProps}
+                cardTagDescriptors={cardTagDescriptors}
               />
             ) : (
               group.cards.map((card: Card) => {
@@ -125,6 +142,7 @@ export function DecklistGroup(props: DecklistGroupsProps) {
                   <ListCard
                     {...listCardProps}
                     annotation={deck.annotations?.[card.code]}
+                    cardTags={cardTagDescriptors[card.code]}
                     isForbidden={
                       forbiddenCards.find(
                         (x) =>
@@ -175,8 +193,9 @@ function Scans(props: {
   grouping: DeckGrouping;
   group: GroupingResult;
   getListCardProps?: FilteredListCardPropsGetter;
+  cardTagDescriptors?: Record<string, CardTagDescriptor[]>;
 }) {
-  const { deck, getListCardProps, group, grouping } = props;
+  const { deck, getListCardProps, group, grouping, cardTagDescriptors } = props;
 
   const styles = useMemo(
     () =>
@@ -197,6 +216,7 @@ function Scans(props: {
               card={card}
               quantities={grouping.quantities}
               getListCardProps={getListCardProps}
+              cardTags={cardTagDescriptors?.[card.code]}
             />
           </li>
           {!!card.customization_options && card.official && (
@@ -218,8 +238,9 @@ function Scan(props: {
   card: Card;
   quantities: Slots;
   getListCardProps?: FilteredListCardPropsGetter;
+  cardTags?: CardTagDescriptor[];
 }) {
-  const { card, getListCardProps, quantities } = props;
+  const { card, cardTags, getListCardProps, quantities } = props;
 
   const quantity = quantities[card.code] ?? 0;
 
@@ -252,6 +273,17 @@ function Scan(props: {
           );
         })}
       </div>
+      {!!cardTags?.length && (
+        <figcaption className={css["scan-tags"]}>
+          {cardTags.map(({ tag, global, deck }) => (
+            <Tag key={tag} size="xs">
+              {global && <GlobeIcon size={10} />}
+              {deck && <LayersIcon size={10} />}
+              {tag}
+            </Tag>
+          ))}
+        </figcaption>
+      )}
     </figure>
   );
 }

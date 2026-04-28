@@ -1,6 +1,6 @@
 import type { Card } from "@arkham-build/shared";
 import type { ReferenceType } from "@floating-ui/react";
-import { FileWarningIcon, StarIcon } from "lucide-react";
+import { FileWarningIcon, GlobeIcon, LayersIcon, StarIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
@@ -33,14 +33,20 @@ import { TabooIndicator } from "../taboo-indicator";
 import { useDialogContext } from "../ui/dialog.hooks";
 import { QuantityInput } from "../ui/quantity-input";
 import { QuantityOutput } from "../ui/quantity-output";
+import { Tag } from "../ui/tag";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./list-card.module.css";
 
 type RenderCallback = (card: Card, quantity?: number) => React.ReactNode;
 
+export type { CardTagDescriptor } from "@/utils/card-tag-descriptors";
+
+import type { CardTagDescriptor } from "@/utils/card-tag-descriptors";
+
 export type Props = {
   annotation?: string | null;
   as?: "li" | "div";
+  cardTags?: CardTagDescriptor[];
   card: Card;
   cardLevelDisplay?: SettingsState["cardLevelDisplay"];
   cardShowCollectionNumber?: SettingsState["cardShowCollectionNumber"];
@@ -81,6 +87,7 @@ export function ListCardInner(props: Props) {
     annotation,
     as = "div",
     card,
+    cardTags,
     cardLevelDisplay,
     cardShowCollectionNumber,
     cardShowUniqueIcon,
@@ -343,6 +350,17 @@ export function ListCardInner(props: Props) {
       {!!renderCardAfter && (
         <div className={css["listcard-after"]}>
           {renderCardAfter?.(card, quantity)}
+        </div>
+      )}
+      {!!cardTags?.length && (
+        <div className={css["card-tags"]}>
+          {cardTags.map(({ tag, global, deck }) => (
+            <Tag key={tag} size="xs">
+              {global && <GlobeIcon size={10} />}
+              {deck && <LayersIcon size={10} />}
+              {tag}
+            </Tag>
+          ))}
         </div>
       )}
       {showCardText && (

@@ -8,16 +8,19 @@ import { getAttachableCards } from "./attachments";
 import {
   decodeAnnotations,
   decodeAttachments,
+  decodeCardTags,
   decodeCustomizations,
   decodeDeckMeta,
   encodeAnnotations,
   encodeAttachments,
+  encodeCardTags,
   encodeCustomizations,
 } from "./deck-meta";
 import { type ChangeStats, getChangeStats } from "./deck-upgrades";
 import { decodeExtraSlots, encodeExtraSlots } from "./slots";
 import type {
   Annotations,
+  CardTags,
   Customizations,
   DeckMeta,
   ResolvedDeck,
@@ -134,6 +137,7 @@ export function applyDeckEdits(
   );
 
   const annotationEdits = mergeAnnotationEdits(edits, currentDeckMeta);
+  const cardTagEdits = mergeCardTagEdits(edits, currentDeckMeta);
 
   // adjust customizations & attachments based on deck edits.
   const deckMeta = Object.assign(
@@ -143,12 +147,14 @@ export function applyDeckEdits(
         (k) =>
           k.startsWith("attachments_") ||
           k.startsWith("cus_") ||
-          k.startsWith("annotation_"),
+          k.startsWith("annotation_") ||
+          k.startsWith("card_tag_"),
       ),
     ),
     customizationEdits,
     attachmentEdits,
     annotationEdits,
+    cardTagEdits,
   );
 
   deck.meta = JSON.stringify({
@@ -248,6 +254,20 @@ function mergeAnnotationEdits(edits: EditState, deckMeta: DeckMeta) {
   }
 
   return encodeAnnotations(annotations);
+}
+
+function mergeCardTagEdits(edits: EditState, deckMeta: DeckMeta) {
+  const tags: CardTags = decodeCardTags(deckMeta);
+
+  for (const [code, editTags] of Object.entries(edits.cardTags ?? {})) {
+    if (editTags === null || editTags.length === 0) {
+      delete tags[code];
+    } else {
+      tags[code] = editTags;
+    }
+  }
+
+  return encodeCardTags(tags);
 }
 
 /**

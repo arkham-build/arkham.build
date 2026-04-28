@@ -18,6 +18,7 @@ import { HotkeyTooltip } from "../ui/hotkey";
 import { Scroller } from "../ui/scroller";
 import { ActionFilter } from "./action-filter";
 import { AssetFilter } from "./asset-filter";
+import { CardTagsFilter } from "./card-tags-filter";
 import { CardTypeFilter } from "./card-type-filter";
 import { CostFilter } from "./cost-filter";
 import { CycleFilter } from "./cycle-filter";
@@ -164,6 +165,7 @@ export function Filters(props: Props) {
                 {filter === "health" && <HealthFilter {...params} />}
                 {filter === "sanity" && <SanityFilter {...params} />}
                 {filter === "illustrator" && <IllustratorFilter {...params} />}
+                {filter === "card_tags" && <CardTagsFilter {...params} />}
               </Fragment>
             );
           })}

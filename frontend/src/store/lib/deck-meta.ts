@@ -5,6 +5,7 @@ import type { Metadata } from "@/store/slices/metadata.types";
 import { range } from "@/utils/range";
 import type {
   Annotations,
+  CardTags,
   CardWithRelations,
   Customization,
   Customizations,
@@ -277,6 +278,37 @@ export function encodeAnnotations(annotations: Annotations) {
   return Object.entries(annotations).reduce<Annotations>(
     (acc, [code, note]) => {
       if (note) acc[`annotation_${code}`] = note;
+      return acc;
+    },
+    {},
+  );
+}
+
+export function decodeCardTags(deckMeta: DeckMeta): CardTags {
+  const tags: CardTags = {};
+
+  for (const [key, value] of Object.entries(deckMeta)) {
+    if (key.startsWith("card_tag_") && value) {
+      const code = key.slice("card_tag_".length);
+      try {
+        const parsed = JSON.parse(value as string);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          tags[code] = parsed as string[];
+        }
+      } catch {
+        // ignore malformed entries
+      }
+    }
+  }
+
+  return tags;
+}
+
+export function encodeCardTags(tags: CardTags): Record<string, string | null> {
+  return Object.entries(tags).reduce<Record<string, string | null>>(
+    (acc, [code, tagList]) => {
+      acc[`card_tag_${code}`] =
+        tagList.length > 0 ? JSON.stringify(tagList) : null;
       return acc;
     },
     {},

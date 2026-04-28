@@ -105,6 +105,8 @@ export type DeckMeta = {
   [key in `annotation_${string}`]: string | null;
 } & {
   [key in `card_pool_extension_${string}`]: string | null;
+} & {
+  [key in `card_tag_${string}`]: string | null;
 };
 
 type DeckSizeSelection = {
@@ -149,8 +151,11 @@ export type DeckCharts = {
 
 export type Annotations = Record<string, string | null>;
 
+export type CardTags = Record<string, string[]>;
+
 export type ResolvedDeck = Omit<Deck, "sideSlots"> & {
   annotations: Annotations;
+  cardTags: CardTags;
   attachments: AttachmentQuantities | undefined;
   availableAttachments: Attachments[];
   bondedSlots: Record<string, number>;

@@ -38,6 +38,7 @@ import {
   filterAssets,
   filterBacksides,
   filterCardPool,
+  filterCardTags,
   filterCost,
   filterCycleCode,
   filterDuplicates,
@@ -72,12 +73,14 @@ import {
   sortByEncounterSet,
   sortByName,
 } from "../lib/sorting";
+import type { CardTags } from "../lib/types";
 import { isResolvedDeck, type ResolvedDeck } from "../lib/types";
 import type { Cycle } from "../schemas/cycle.schema";
 import type { Pack } from "../schemas/pack.schema";
 import type { StoreState } from "../slices";
 import type {
   AssetFilter,
+  CardTagsFilter,
   CardTypeFilter,
   CostFilter,
   FanMadeContentFilter,
@@ -128,6 +131,7 @@ function makeUserFilter(
   resolvedDeck: ResolvedDeck | undefined,
   targetDeck: TargetDeck | undefined,
   buildQlInterpreter: Interpreter,
+  globalCardTags: Record<string, string[]>,
 ) {
   const filters: Filter[] = [];
 
@@ -327,6 +331,16 @@ function makeUserFilter(
         const value = filterValue.value as SubtypeFilter;
         if (value) {
           filters.push(filterSubtypes(value));
+        }
+        break;
+      }
+
+      case "card_tags": {
+        const value = filterValue.value as CardTagsFilter;
+        if (value.tags.length) {
+          filters.push(
+            filterCardTags(value, resolvedDeck?.cardTags ?? {}, globalCardTags),
+          );
         }
         break;
       }
@@ -739,6 +753,7 @@ export const selectListCards = createSelector(
   ) => targetDeck,
   (state: StoreState) => state.ui.showUnusableCards,
   (state: StoreState) => state.settings.collection,
+  (state: StoreState) => state.settings.globalCardTags ?? {},
   (
     metadata,
     lookupTables,
@@ -750,6 +765,7 @@ export const selectListCards = createSelector(
     targetDeck,
     showUnusableCards,
     collection,
+    globalCardTags,
   ) => {
     if (!baseFilterResult || !activeList) return undefined;
 
@@ -798,6 +814,7 @@ export const selectListCards = createSelector(
       deck,
       targetDeck,
       buildQlInterpreter,
+      globalCardTags,
     );
 
     if (userFilter) {
@@ -2043,6 +2060,12 @@ export function selectFilterChanges<T extends keyof FilterMapping>(
     case "type": {
       return selectTypeChanges(value as MultiselectFilter);
     }
+
+    case "card_tags": {
+      const v = value as CardTagsFilter;
+      if (!v.tags.length) return "";
+      return v.tags.join(` ${i18n.t("filters.or")} `);
+    }
   }
 }
 
@@ -2077,3 +2100,60 @@ export const selectActiveListChanges = createSelector(
     return changes;
   },
 );
+
+/**
+ * Card Tags
+ */
+
+export const selectMergedCardTags = (
+  deckCardTags: CardTags,
+  globalCardTags: CardTags,
+): CardTags => {
+  const merged: CardTags = { ...deckCardTags };
+  for (const [code, tags] of Object.entries(globalCardTags)) {
+    if (merged[code]) {
+      const combined = Array.from(new Set([...merged[code], ...tags]));
+      merged[code] = combined;
+    } else {
+      merged[code] = tags;
+    }
+  }
+  return merged;
+};
+
+export const selectCardTagOptions = createSelector(
+  (state: StoreState) => state.settings.globalCardTags ?? {},
+  (_: StoreState, deckCardTags: CardTags) => deckCardTags,
+  (globalCardTags, deckCardTags) => {
+    const merged = selectMergedCardTags(deckCardTags, globalCardTags);
+    const allTags = new Set<string>();
+    for (const tags of Object.values(merged)) {
+      for (const tag of tags) allTags.add(tag);
+    }
+    return Array.from(allTags).sort();
+  },
+);
+
+export const selectTagCounts = (
+  deckCardTags: CardTags,
+  globalCardTags: CardTags,
+): Map<string, number> => {
+  const merged = selectMergedCardTags(deckCardTags, globalCardTags);
+  const counts = new Map<string, number>();
+  for (const tags of Object.values(merged)) {
+    for (const tag of tags) {
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+  }
+  return counts;
+};
+
+export const selectTaggedCardsInDeck = (
+  deckCardTags: CardTags,
+  globalCardTags: CardTags,
+): Array<{ code: string; tags: string[] }> => {
+  const merged = selectMergedCardTags(deckCardTags, globalCardTags);
+  return Object.entries(merged)
+    .filter(([, tags]) => tags.length > 0)
+    .map(([code, tags]) => ({ code, tags }));
+};

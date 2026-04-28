@@ -43,6 +43,7 @@ import css from "./card-modal.module.css";
 import { AnnotationEdit } from "./card-modal-annotation-edit";
 import { CardModalAttachmentQuantities } from "./card-modal-attachment-quantities";
 import { CardModalQuantities } from "./card-modal-quantities";
+import { CardTagsEdit } from "./card-modal-tags-edit";
 import { CardPageLink } from "./card-page-link";
 import { SpecialistAccess, SpecialistInvestigators } from "./specialist";
 
@@ -86,6 +87,13 @@ export function CardModal(props: Props) {
 
   const completeTask = useStore((state) => state.completeTask);
 
+  const customTagsEnabled = useStore(
+    (state) => state.settings.customTagsEnabled,
+  );
+  const globalCardTags = useStore(
+    (state) => state.settings.globalCardTags ?? {},
+  );
+
   const onCompleteTask = useCallback(() => {
     if (!ctx.resolvedDeck || !cardWithRelations?.card) return;
 
@@ -118,6 +126,10 @@ export function CardModal(props: Props) {
   );
 
   const annotation = ctx.resolvedDeck?.annotations[cardWithRelations.card.code];
+
+  const cardCode = cardWithRelations.card.code;
+  const deckCardTags = ctx.resolvedDeck?.cardTags[cardCode] ?? [];
+  const globalTags = globalCardTags[cardCode] ?? [];
 
   const cardNode = (
     <>
@@ -157,6 +169,18 @@ export function CardModal(props: Props) {
                   </div>
                 )
               ))}
+
+            {customTagsEnabled && (
+              <div className={css["related"]}>
+                <CardTagsEdit
+                  cardCode={cardCode}
+                  deckId={ctx.resolvedDeck?.id}
+                  deckTags={deckCardTags}
+                  deckEditable={canEdit}
+                  globalTags={globalTags}
+                />
+              </div>
+            )}
           </>
         }
       >

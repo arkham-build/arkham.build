@@ -18,6 +18,7 @@ import { prepareBackup, restoreBackup } from "../lib/backup";
 import { applyCardChanges } from "../lib/card-edits";
 import { mapValidationToProblem } from "../lib/deck-io";
 import {
+  decodeCardTags,
   decodeDeckMeta,
   encodeCardPool,
   encodeSealedDeck,
@@ -462,6 +463,77 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     if (Object.keys(get().sharing.decks).length) {
       await get().deleteAllShares().catch(console.error);
     }
+  },
+  async clearAllDeckCardTags() {
+    set((state) => {
+      const decks = { ...state.data.decks };
+      const deckEdits = { ...state.deckEdits };
+
+      for (const id of Object.keys(decks)) {
+        const deck = decks[id];
+        const meta = decodeDeckMeta(deck);
+        const stripped: Record<string, string | null> = {};
+        let changed = false;
+        for (const key of Object.keys(meta)) {
+          if (key.startsWith("card_tag_")) {
+            stripped[key] = null;
+            changed = true;
+          }
+        }
+        if (changed) {
+          const nextMeta = { ...meta };
+          for (const key of Object.keys(stripped)) {
+            delete nextMeta[key as keyof typeof nextMeta];
+          }
+          decks[id] = { ...deck, meta: JSON.stringify(nextMeta) };
+        }
+        if (deckEdits[id]?.cardTags) {
+          deckEdits[id] = { ...deckEdits[id], cardTags: undefined };
+        }
+      }
+
+      return {
+        data: { ...state.data, decks },
+        deckEdits,
+      };
+    });
+
+    await dehydrate(get(), "app", "edits");
+  },
+  clearDeckCardTags(deckId) {
+    const state = get();
+    const deck = state.data.decks[deckId];
+    if (!deck) return;
+
+    const savedTags = decodeCardTags(decodeDeckMeta(deck));
+    const editTags = state.deckEdits[deckId]?.cardTags ?? {};
+    const allCodes = new Set([
+      ...Object.keys(savedTags),
+      ...Object.keys(editTags).filter((k) => editTags[k] !== null),
+    ]);
+
+    if (allCodes.size === 0) return;
+
+    const cleared: Record<string, null> = {};
+    for (const code of allCodes) {
+      cleared[code] = null;
+    }
+
+    set((state) => {
+      const edits = state.deckEdits[deckId] ?? {};
+      return {
+        deckEdits: {
+          ...state.deckEdits,
+          [deckId]: {
+            ...edits,
+            cardTags: cleared,
+            type: "user" as const,
+          },
+        },
+      };
+    });
+
+    dehydrate(get(), "edits").catch(console.error);
   },
   async updateDeckProperties(deckId, properties) {
     const state = get();

@@ -5,6 +5,7 @@ import { cx } from "@/utils/cx";
 import { Loader } from "../ui/loader";
 import { Scroller } from "../ui/scroller";
 import { AllAttachables } from "./all-attachables";
+import { DeckTagTables } from "./deck-tag-tables";
 import css from "./deck-tools.module.css";
 import { DrawSimulator } from "./draw-simulator";
 import { LimitedSlots } from "./limited-slots";
@@ -33,6 +34,7 @@ export function DeckTools(props: Props) {
         <LazyChartContainer deck={deck} />
         <LimitedSlots deck={deck} />
         <AllAttachables deck={deck} readonly={readonly} />
+        <DeckTagTables deck={deck} readonly={readonly} />
       </Suspense>
     </article>
   );

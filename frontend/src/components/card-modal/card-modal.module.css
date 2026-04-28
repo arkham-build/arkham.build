@@ -90,3 +90,90 @@
 .neighbour-nav > * {
   flex: 1 1 auto;
 }
+
+.tags-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tags-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.tags-section-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tags-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tag-chip {
+  outline: 1.5px solid var(--color-link);
+  color: var(--color-link);
+}
+
+.tag-chip-global {
+  background: var(--palette-2);
+}
+
+.tag-remove {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+  opacity: 0.7;
+  line-height: 1;
+}
+
+.tag-remove:hover {
+  opacity: 1;
+}
+
+.tags-input-row {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.tags-input {
+  flex: 1;
+  font-size: var(--text-xs);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--rounded);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.tags-input:focus {
+  outline: 1px solid var(--focus);
+  border-color: var(--focus);
+}
+
+.tags-error {
+  font-size: var(--text-xs);
+  color: var(--color-error, red);
+}
+
+.tags-readonly {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tag-global-icon {
+  opacity: 0.7;
+  flex-shrink: 0;
+}

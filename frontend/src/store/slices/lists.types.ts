@@ -77,8 +77,16 @@ export type InvestigatorSkillsFilter = Record<
 
 type InvestigatorCardAccessFilter = string[] | undefined;
 
+export type CardTagScope = "deck" | "global" | "both";
+
+export type CardTagsFilter = {
+  tags: string[];
+  scope: CardTagScope;
+};
+
 export type FilterMapping = {
   action: MultiselectFilter;
+  card_tags: CardTagsFilter;
   asset: AssetFilter;
   card_type: CardTypeFilter;
   cost: CostFilter;

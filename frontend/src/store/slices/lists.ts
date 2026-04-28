@@ -16,6 +16,7 @@ import { selectBuildQlInterpreter } from "../selectors/shared";
 import type { StoreState } from ".";
 import {
   isAssetFilter,
+  isCardTagsFilter,
   isCardTypeFilter,
   isCostFilter,
   isFanMadeContentFilter,
@@ -358,6 +359,15 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
           assert(
             isMultiSelectFilter(payload),
             `filter ${id} value must be an array.`,
+          );
+          filterValues[id] = { ...filterValues[id], value: payload };
+          break;
+        }
+
+        case "card_tags": {
+          assert(
+            isCardTagsFilter(payload),
+            `filter ${id} value must be a card_tags object.`,
           );
           filterValues[id] = { ...filterValues[id], value: payload };
           break;
@@ -850,6 +860,17 @@ function makeFilterValue(
         locked,
       );
     }
+
+    case "card_tags": {
+      return makeFilterObject(
+        type,
+        isCardTagsFilter(initialValue)
+          ? initialValue
+          : { tags: [], scope: "both" as const },
+        false,
+        locked,
+      );
+    }
   }
 }
 
@@ -923,6 +944,7 @@ function cardsFilters({
   additionalFilters = [] as FilterKey[],
   showOwnershipFilter = false,
   showInvestigatorsFilter = false,
+  showCardTagsFilter = false,
 }) {
   const filters: FilterKey[] = [
     "card_type",
@@ -954,6 +976,10 @@ function cardsFilters({
     "taboo_set",
     ...additionalFilters,
   );
+
+  if (showCardTagsFilter) {
+    filters.push("card_tags");
+  }
 
   return filters;
 }
@@ -1017,6 +1043,7 @@ export function makeLists(
       filters: cardsFilters({
         showOwnershipFilter: true,
         showInvestigatorsFilter: false,
+        showCardTagsFilter: settings.customTagsEnabled,
       }),
     }),
     index: makeList({

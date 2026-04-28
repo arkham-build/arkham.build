@@ -98,7 +98,9 @@ export function getInitialSettings(): SettingsState {
     cardSkillIconsDisplay: "simple",
     defaultEnvironment: "legacy",
     defaultStorageProvider: "local",
+    customTagsEnabled: false,
     devModeEnabled: false,
+    globalCardTags: {},
     cardShowIcon: true,
     cardShowDetails: true,
     cardSize: "standard",
@@ -166,6 +168,67 @@ export const createSettingsSlice: StateCreator<
         ...payload,
       },
     }));
+
+    await dehydrate(get(), "app");
+  },
+  async updateGlobalCardTags(cardCode, tags) {
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        globalCardTags: {
+          ...state.settings.globalCardTags,
+          [cardCode]: tags,
+        },
+      },
+    }));
+
+    await dehydrate(get(), "app");
+  },
+  async clearAllGlobalTags() {
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        globalCardTags: {},
+      },
+    }));
+
+    await dehydrate(get(), "app");
+  },
+  async renameGlobalTag(oldName, newName) {
+    set((state) => {
+      const next: Record<string, string[]> = {};
+      for (const [code, tags] of Object.entries(
+        state.settings.globalCardTags ?? {},
+      )) {
+        const renamed = tags.map((t) => (t === oldName ? newName : t));
+        if (renamed.length > 0) next[code] = renamed;
+      }
+      return {
+        settings: {
+          ...state.settings,
+          globalCardTags: next,
+        },
+      };
+    });
+
+    await dehydrate(get(), "app");
+  },
+  async deleteGlobalTag(tagName) {
+    set((state) => {
+      const next: Record<string, string[]> = {};
+      for (const [code, tags] of Object.entries(
+        state.settings.globalCardTags ?? {},
+      )) {
+        const filtered = tags.filter((t) => t !== tagName);
+        if (filtered.length > 0) next[code] = filtered;
+      }
+      return {
+        settings: {
+          ...state.settings,
+          globalCardTags: next,
+        },
+      };
+    });
 
     await dehydrate(get(), "app");
   },

@@ -1,5 +1,6 @@
 import type {
   AssetFilter,
+  CardTagsFilter,
   CardTypeFilter,
   CostFilter,
   FanMadeContentFilter,
@@ -17,6 +18,22 @@ export function isActionFilterObject(
   filter?: FilterObject<FilterKey>,
 ): filter is FilterObject<"action"> {
   return !!filter && filter.type === "action";
+}
+
+export function isCardTagsFilterObject(
+  filter?: FilterObject<FilterKey>,
+): filter is FilterObject<"card_tags"> {
+  return !!filter && filter.type === "card_tags";
+}
+
+export function isCardTagsFilter(value: unknown): value is CardTagsFilter {
+  return (
+    typeof value === "object" &&
+    value != null &&
+    "tags" in value &&
+    "scope" in value &&
+    Array.isArray((value as CardTagsFilter).tags)
+  );
 }
 
 export function isAssetFilterObject(

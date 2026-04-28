@@ -54,6 +54,15 @@
         "complete_task": "Complete task",
         "open_card_page": "Card page",
         "reviews": "Reviews"
+      },
+      "tags": {
+        "title": "Tags",
+        "scope_deck": "This deck",
+        "scope_global": "All decks (global)",
+        "placeholder": "Type tag, press Enter or comma...",
+        "remove": "Remove tag {{tag}}",
+        "remove_global": "Remove global tag {{tag}}",
+        "too_long": "Tags must be {{max}} characters or fewer"
       }
     },
     "card_view": {
@@ -715,7 +724,8 @@
         "wishes": "Wishes"
       },
       "victory": "Victory",
-      "xp": "XP"
+      "xp": "XP",
+      "save": "Save"
     },
     "connect": {
       "error": "Failed to connect {{provider}}: {{error}}",
@@ -805,7 +815,19 @@
         "resource_costs": "Resource costs",
         "skill_icons": "Skill icons",
         "skill_icons_tooltip": "{{count}} {{skill}} {{icons}}",
-        "title": "Deck tools"
+        "title": "Deck tools",
+        "tagged_cards": "Tagged cards",
+        "tags_chart_title": "Tags",
+        "tags_summary": "Tag summary",
+        "tags_tooltip": "{{count}} {{cards}} tagged \"{{tag}}\"",
+        "tag": "Tag",
+        "tags": "Tags",
+        "no_tags": "No cards have been tagged in this deck yet.",
+        "show_untagged": "Show untagged",
+        "untagged": "Untagged",
+        "untagged_tooltip": "{{count}} untagged {{cards}}",
+        "clear_deck_tags": "Clear deck tags",
+        "clear_deck_tags_confirm": "Remove all card tags for this deck? This cannot be undone."
       },
       "validation": {
         "card_not_in_limited_pool": "The following cards are not part of this deck's card pool:",
@@ -1309,6 +1331,13 @@
       "uses": {
         "placeholder": "Select uses attributes...",
         "title": "Uses"
+      },
+      "card_tags": {
+        "placeholder": "Select tags...",
+        "title": "Card tags",
+        "scope_both": "Deck & global tags",
+        "scope_deck": "Deck tags only",
+        "scope_global": "Global tags only"
       }
     },
     "help": {
@@ -1522,7 +1551,9 @@
         "latest_taboo": "Latest",
         "title": "General",
         "weakness_limited_card_pool": "Use limited card pool for random basic weakness draws",
-        "weakness_limited_card_pool_help": "When this is checked, the random basic weakness draw will respect the limited card pool of a deck if one is defined."
+        "weakness_limited_card_pool_help": "When this is checked, the random basic weakness draw will respect the limited card pool of a deck if one is defined.",
+        "custom_tags": "Custom Tag Support",
+        "custom_tags_help": "Enable per-deck card tagging. Tag cards with custom labels like \"card_draw\" or \"money_generator\" to organize your deck strategy. Tags can be deck-specific or global (shared across all decks using that card)."
       },
       "lists": {
         "deck_view": "Deck view",
@@ -1536,7 +1567,25 @@
       "preview": "Preview",
       "save": "Save settings",
       "saving": "Saving settings...",
-      "title": "Settings"
+      "title": "Settings",
+      "tags": {
+        "title": "Tags",
+        "clear_all": "Clear all tags",
+        "clear_all_help": "Remove all card tags - both global tags and all deck-specific tags.",
+        "clear_all_confirm": "Remove all card tags everywhere? This cannot be undone.",
+        "clear_global": "Clear all global tags",
+        "clear_global_help": "Remove all global card tags (tags shared across all decks).",
+        "clear_global_confirm": "Remove all global card tags? This cannot be undone.",
+        "clear_deck": "Clear all deck-specific tags",
+        "clear_deck_help": "Remove all deck-specific card tags from every saved deck.",
+        "clear_deck_confirm": "Remove all deck-specific card tags from all decks? This cannot be undone.",
+        "global_tags": "Global tags",
+        "no_global_tags": "No global tags have been created yet.",
+        "rename": "Rename tag",
+        "delete": "Delete tag",
+        "delete_confirm": "Delete the tag \"{{tag}}\" from all cards? This cannot be undone.",
+        "rename_empty_error": "Tag name cannot be empty."
+      }
     },
     "suzi_standalone_setup": {
       "description": "FAQ 2.4 defines how standalone decks for Suzi may be built. Random cards between level 1-5 from your collection are drawn until your desired amount of XP is reached. Afterwards, an equivalent number of cards have to be removed from the deck.",

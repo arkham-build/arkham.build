@@ -3,6 +3,10 @@ import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectResolvedCardById } from "@/store/selectors/lists";
 import type { ViewMode } from "@/store/slices/lists.types";
+import {
+  buildCardTagDescriptors,
+  type CardTagDescriptor,
+} from "@/utils/card-tag-descriptors";
 import { Card as CardComponent } from "../card/card";
 import { ListCard } from "../list-card/list-card";
 import { CardActions } from "./card-actions";
@@ -29,10 +33,25 @@ export function CardListItemCompact(props: Props) {
     viewMode,
   } = props;
 
+  const customTagsEnabled = useStore(
+    (state) => state.settings.customTagsEnabled,
+  );
+  const globalCardTags = useStore(
+    (state) => state.settings.globalCardTags ?? {},
+  );
+  const cardTags: CardTagDescriptor[] | undefined = customTagsEnabled
+    ? buildCardTagDescriptors(
+        card.code,
+        resolvedDeck?.cardTags ?? {},
+        globalCardTags,
+      )
+    : undefined;
+
   return (
     <ListCard
       {...listCardProps}
       annotation={resolvedDeck?.annotations[card.code]}
+      cardTags={cardTags}
       card={card}
       disableKeyboard
       highlightQuantity

@@ -4,6 +4,7 @@ import {
   Icon,
   LibraryIcon,
   SlidersVerticalIcon,
+  TagsIcon,
 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -24,6 +25,7 @@ import { CardDataSync } from "./card-data-sync";
 import { CardDisplaySettings } from "./card-display";
 import { CardModalPopularDecksSetting } from "./card-modal-popular-decks";
 import { Connections } from "./connections";
+import { CustomTagsSetting } from "./custom-tags";
 import { DefaultEnvironmentSetting } from "./default-environment";
 import { DevModeSetting } from "./dev-mode";
 import { FontSizeSetting } from "./font-size";
@@ -37,6 +39,7 @@ import { ShowMoveToSideDeckSetting } from "./show-move-to-side-deck";
 import { ShowPreviewsSetting } from "./show-previews";
 import { SortPunctuationSetting } from "./sort-punctuation-setting";
 import { TabooSetSetting } from "./taboo-set";
+import { TagManagement } from "./tag-management";
 import { ThemeSetting } from "./theme";
 import { WeaknessPoolSetting } from "./weakness-pool";
 
@@ -69,6 +72,10 @@ function SettingsInner({
   updateSettings: (settings: SettingsState) => Promise<void>;
 }) {
   const { t } = useTranslation();
+
+  const customTagsEnabled = useStore(
+    (state) => state.settings.customTagsEnabled,
+  );
 
   const [tab, onTabChange] = useTabUrlState("general");
 
@@ -152,9 +159,19 @@ function SettingsInner({
                 <DatabaseBackupIcon />
                 <span>{t("settings.backup.title")}</span>
               </TabsTrigger>
+              {customTagsEnabled && (
+                <TabsTrigger data-testid="tab-tags" value="tags">
+                  <TagsIcon />
+                  <span>{t("settings.tags.title")}</span>
+                </TabsTrigger>
+              )}
             </TabsList>
             <TabsContent value="general">
               <Section title={t("settings.general.title")}>
+                <CustomTagsSetting
+                  settings={settings}
+                  setSettings={setSettings}
+                />
                 <DefaultEnvironmentSetting
                   settings={settings}
                   setSettings={setSettings}
@@ -265,6 +282,13 @@ function SettingsInner({
                 <DevModeSetting settings={settings} setSettings={setSettings} />
               </Section>
             </TabsContent>
+            {customTagsEnabled && (
+              <TabsContent value="tags">
+                <Section title={t("settings.tags.title")}>
+                  <TagManagement />
+                </Section>
+              </TabsContent>
+            )}
           </Tabs>
         </div>
       </form>

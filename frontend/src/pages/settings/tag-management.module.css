@@ -1,0 +1,72 @@
+.container > * + * {
+  margin-top: 1rem;
+}
+
+.section-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.tag-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tag-row {
+  display: flex;
+  align-items: center;
+}
+
+.tag-row-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tag-row-edit {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.tag-input {
+  font-size: var(--text-sm);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--rounded);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  min-width: 10rem;
+}
+
+.tag-input:focus {
+  outline: 1px solid var(--focus);
+  border-color: var(--focus);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--rounded);
+}
+
+.icon-btn:hover {
+  color: var(--text);
+  background: var(--palette-1);
+}
+
+.error {
+  font-size: var(--text-xs);
+  color: var(--color-error, red);
+}

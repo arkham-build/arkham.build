@@ -34,8 +34,10 @@ export type SettingsState = {
   collection: Record<string, number>; // track as "quantity" owned to accomodate the core set.
   defaultEnvironment: "current" | "legacy";
   defaultStorageProvider: StorageProvider;
+  customTagsEnabled: boolean;
   devModeEnabled: boolean;
   flags?: Record<string, boolean>;
+  globalCardTags: Record<string, string[]>;
   fontSize: number;
   hideWeaknessesByDefault: boolean;
   lists: {
@@ -72,4 +74,8 @@ export type SettingsSlice = {
     opts?: { keepListState?: boolean },
   ) => Promise<void>;
   setSettings(payload: Partial<SettingsState>): Promise<void>;
+  updateGlobalCardTags(cardCode: string, tags: string[]): Promise<void>;
+  clearAllGlobalTags(): Promise<void>;
+  renameGlobalTag(oldName: string, newName: string): Promise<void>;
+  deleteGlobalTag(tagName: string): Promise<void>;
 };

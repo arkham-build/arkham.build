@@ -26,6 +26,7 @@ import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";
 import type {
   AssetFilter,
+  CardTagsFilter,
   CostFilter,
   FilterMapping,
   InvestigatorSkillsFilter,
@@ -41,7 +42,7 @@ import type { Interpreter } from "./buildql/interpreter";
 import { parse } from "./buildql/parser";
 import { type CardOwnershipOptions, ownedCardCount } from "./card-ownership";
 import type { LookupTables } from "./lookup-tables.types";
-import type { ResolvedDeck, Selections } from "./types";
+import type { CardTags, ResolvedDeck, Selections } from "./types";
 import { isOptionSelect } from "./types";
 
 /**
@@ -1444,6 +1445,37 @@ export function containsCard(
     deck.metaParsed.alternate_front === card.code ||
     deck.metaParsed.alternate_back === card.code
   );
+}
+
+export function filterCardTags(
+  filterState: CardTagsFilter,
+  deckCardTags: CardTags,
+  globalCardTags: CardTags,
+): Filter {
+  const { tags, scope } = filterState;
+  if (tags.length === 0) return () => true;
+
+  const lowerTags = tags.map((t) => t.toLowerCase());
+
+  return (card: Card) => {
+    const deckTags = (deckCardTags[card.code] ?? []).map((t) =>
+      t.toLowerCase(),
+    );
+    const globalTags = (globalCardTags[card.code] ?? []).map((t) =>
+      t.toLowerCase(),
+    );
+
+    let cardTags: string[];
+    if (scope === "deck") {
+      cardTags = deckTags;
+    } else if (scope === "global") {
+      cardTags = globalTags;
+    } else {
+      cardTags = Array.from(new Set([...deckTags, ...globalTags]));
+    }
+
+    return lowerTags.every((tag) => cardTags.includes(tag));
+  };
 }
 
 function currentFilterValue<K extends keyof FilterMapping>(

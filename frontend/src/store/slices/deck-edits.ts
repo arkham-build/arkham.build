@@ -358,6 +358,26 @@ export const createDeckEditsSlice: StateCreator<
 
     dehydrate(get(), "edits").catch(console.error);
   },
+  updateCardTags(deckId, code, tags) {
+    set((state) => {
+      const edits = currentEdits(state, deckId);
+      return {
+        deckEdits: {
+          ...state.deckEdits,
+          [deckId]: {
+            ...edits,
+            cardTags: {
+              ...edits.cardTags,
+              [code]: tags,
+            },
+            type: "user" as const,
+          },
+        },
+      };
+    });
+
+    dehydrate(get(), "edits").catch(console.error);
+  },
   upgradeCard(payload) {
     set((state) => getCardUpgrade(state, payload));
   },

@@ -24,6 +24,15 @@
       "empty after";
   }
 
+  .card-tags {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding-inline: var(--card-spacing-x);
+    padding-top: 0;
+  }
+
   .listcard-wrapper.removed {
     opacity: 0.33;
 
