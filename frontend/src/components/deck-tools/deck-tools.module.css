@@ -192,6 +192,10 @@ td.trait-chart-column-trait {
 
 .tags-controls {
   padding: 0.5rem 0.75rem 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
 }
 
 .tag-row-untagged {

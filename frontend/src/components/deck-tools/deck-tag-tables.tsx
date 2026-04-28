@@ -34,7 +34,7 @@ type Props = {
 export function DeckTagTables({ deck, readonly }: Props) {
   const { t } = useTranslation();
   const [showUntagged, setShowUntagged] = useState(false);
-  const [countInstances, setCountInstances] = useState(false);
+  const [countInstances, setCountInstances] = useState(true);
 
   const customTagsEnabled = useStore(
     (state) => state.settings.customTagsEnabled,
