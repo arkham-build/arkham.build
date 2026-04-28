@@ -34,6 +34,7 @@ type Props = {
 export function DeckTagTables({ deck, readonly }: Props) {
   const { t } = useTranslation();
   const [showUntagged, setShowUntagged] = useState(false);
+  const [countInstances, setCountInstances] = useState(false);
 
   const customTagsEnabled = useStore(
     (state) => state.settings.customTagsEnabled,
@@ -55,7 +56,8 @@ export function DeckTagTables({ deck, readonly }: Props) {
 
   if (taggedCards.length === 0) return null;
 
-  const tagCounts = selectTagCounts(deck.cardTags, globalCardTags);
+  const slots = countInstances ? deck.slots : undefined;
+  const tagCounts = selectTagCounts(deck.cardTags, globalCardTags, slots);
   const sortedTagCounts = Array.from(tagCounts.entries()).sort(
     (a, b) => b[1] - a[1],
   );
@@ -65,6 +67,10 @@ export function DeckTagTables({ deck, readonly }: Props) {
     .filter((code) => (deck.slots[code] ?? 0) > 0 && !taggedCodeSet.has(code))
     .map((code) => metadata.cards[code])
     .filter((c): c is Card => c != null);
+
+  const untaggedCount = countInstances
+    ? untaggedCards.reduce((sum, c) => sum + (deck.slots[c.code] ?? 0), 0)
+    : untaggedCards.length;
 
   const tagToCards = new Map<string, Card[]>();
   for (const { code, tags } of taggedCards) {
@@ -78,22 +84,28 @@ export function DeckTagTables({ deck, readonly }: Props) {
 
   return (
     <Plane className={css["tags-plane"]}>
-      {untaggedCards.length > 0 && (
-        <div className={css["tags-controls"]}>
+      <div className={css["tags-controls"]}>
+        <Checkbox
+          checked={countInstances}
+          label={t("deck.tools.count_instances")}
+          onCheckedChange={setCountInstances}
+        />
+        {untaggedCards.length > 0 && (
           <Checkbox
             checked={showUntagged}
             label={t("deck.tools.show_untagged")}
             onCheckedChange={setShowUntagged}
           />
-        </div>
-      )}
+        )}
+      </div>
       <div className={css["tags-columns"]}>
         <div className={css["tags-col"]}>
           <Suspense fallback={null}>
             <LazyTagsChart
+              countInstances={countInstances}
               deck={deck}
               showUntagged={showUntagged}
-              untaggedCount={untaggedCards.length}
+              untaggedCount={untaggedCount}
             />
           </Suspense>
         </div>
@@ -134,7 +146,7 @@ export function DeckTagTables({ deck, readonly }: Props) {
                 ))}
                 {showUntagged && untaggedCards.length > 0 && (
                   <UntaggedSummaryRow
-                    count={untaggedCards.length}
+                    count={untaggedCount}
                     deck={deck}
                     cards={untaggedCards}
                   />

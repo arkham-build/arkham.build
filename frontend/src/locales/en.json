@@ -823,6 +823,7 @@
         "tag": "Tag",
         "tags": "Tags",
         "no_tags": "No cards have been tagged in this deck yet.",
+        "count_instances": "Count by copies",
         "show_untagged": "Show untagged",
         "untagged": "Untagged",
         "untagged_tooltip": "{{count}} untagged {{cards}}",

@@ -18,12 +18,18 @@ import { ChartTooltip } from "./chart-tooltip";
 import css from "./deck-tools.module.css";
 
 type Props = {
+  countInstances?: boolean;
   deck: ResolvedDeck;
   showUntagged?: boolean;
   untaggedCount?: number;
 };
 
-export function TagsChart({ deck, showUntagged, untaggedCount }: Props) {
+export function TagsChart({
+  countInstances,
+  deck,
+  showUntagged,
+  untaggedCount,
+}: Props) {
   const { t } = useTranslation();
 
   const customTagsEnabled = useStore(
@@ -35,7 +41,11 @@ export function TagsChart({ deck, showUntagged, untaggedCount }: Props) {
 
   if (!customTagsEnabled) return null;
 
-  const tagCounts = selectTagCounts(deck.cardTags, globalCardTags);
+  const tagCounts = selectTagCounts(
+    deck.cardTags,
+    globalCardTags,
+    countInstances ? deck.slots : undefined,
+  );
   if (tagCounts.size === 0) return null;
 
   const data: { x: string; y: number; untagged: boolean }[] = Array.from(

@@ -2137,12 +2137,15 @@ export const selectCardTagOptions = createSelector(
 export const selectTagCounts = (
   deckCardTags: CardTags,
   globalCardTags: CardTags,
+  slots?: Record<string, number | undefined>,
 ): Map<string, number> => {
   const merged = selectMergedCardTags(deckCardTags, globalCardTags);
   const counts = new Map<string, number>();
-  for (const tags of Object.values(merged)) {
+  for (const [code, tags] of Object.entries(merged)) {
+    const qty = slots ? (slots[code] ?? 0) : 1;
+    if (qty === 0) continue;
     for (const tag of tags) {
-      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+      counts.set(tag, (counts.get(tag) ?? 0) + qty);
     }
   }
   return counts;
