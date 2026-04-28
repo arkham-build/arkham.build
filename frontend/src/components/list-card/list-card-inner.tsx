@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { useStore } from "@/store";
 import type { SettingsState } from "@/store/slices/settings.types";
+import type { CardTagDescriptor } from "@/utils/card-tag-descriptors";
 import {
   cardLimit,
   displayAttribute,
@@ -37,11 +38,9 @@ import { Tag } from "../ui/tag";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./list-card.module.css";
 
-type RenderCallback = (card: Card, quantity?: number) => React.ReactNode;
-
 export type { CardTagDescriptor } from "@/utils/card-tag-descriptors";
 
-import type { CardTagDescriptor } from "@/utils/card-tag-descriptors";
+type RenderCallback = (card: Card, quantity?: number) => React.ReactNode;
 
 export type Props = {
   annotation?: string | null;
