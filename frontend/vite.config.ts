@@ -35,24 +35,9 @@ export default defineConfig({
     },
   },
   server: {
-    host: "0.0.0.0",
     port: 3000,
-    allowedHosts: true,
-    proxy: {
-      "/proxy/v2": {
-        target: "https://api-v2.arkham.build",
-        rewrite: (path) => path.replace(/^\/proxy\/v2/, ""),
-        changeOrigin: true,
-      },
-      "/proxy/legacy": {
-        target: "https://api.arkham.build",
-        rewrite: (path) => path.replace(/^\/proxy\/legacy/, ""),
-        changeOrigin: true,
-      },
-    },
   },
   preview: {
-    host: "0.0.0.0",
     port: 3000,
   },
   test: {
