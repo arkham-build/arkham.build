@@ -6,6 +6,7 @@ import type {
   DecksSyncState,
   SyncStatus,
 } from "../slices/sync.types";
+import { isSyncedStorageProvider } from "./sync";
 
 const SKIPPED_ITEM_STATUSES = new Set<SyncStatus>(["saving", "conflict"]);
 
@@ -33,6 +34,63 @@ type DeckReconciliationResult = {
   deckEdits: DeckEditsState;
   syncDecks: DecksSyncState;
 };
+
+export function removeRemoteAccountDecks({
+  data,
+  deckEdits,
+  sharing,
+}: Pick<StoreState, "data" | "deckEdits" | "sharing">) {
+  const remoteDeckIds = new Set<DeckId>();
+
+  for (const deck of Object.values(data.decks)) {
+    if (isSyncedStorageProvider(deck.source)) {
+      remoteDeckIds.add(deck.id);
+    }
+  }
+
+  if (!remoteDeckIds.size) {
+    return { data, deckEdits, sharing };
+  }
+
+  const nextDecks: DataState["decks"] = {};
+
+  for (const [id, deck] of Object.entries(data.decks)) {
+    if (!hasDeckId(remoteDeckIds, deck.id)) {
+      nextDecks[id] = deck;
+    }
+  }
+
+  const nextDeckFolders = { ...data.deckFolders };
+  const nextDeckEdits = { ...deckEdits };
+  const nextSharingDecks = { ...sharing.decks };
+  const nextUndoHistory = data.undoHistory
+    ? { ...data.undoHistory }
+    : undefined;
+
+  for (const id of remoteDeckIds) {
+    delete nextDeckFolders[id];
+    delete nextDeckEdits[id];
+    delete nextSharingDecks[id];
+    delete nextUndoHistory?.[id];
+  }
+
+  const sanitizedDecks = sanitizeDeckLinks(nextDecks);
+
+  return {
+    data: {
+      ...data,
+      decks: sanitizedDecks,
+      deckFolders: nextDeckFolders,
+      history: rebuildDeckHistory(sanitizedDecks),
+      undoHistory: nextUndoHistory,
+    },
+    deckEdits: nextDeckEdits,
+    sharing: {
+      ...sharing,
+      decks: nextSharingDecks,
+    },
+  };
+}
 
 export function getDeckReconciliationPlan({
   data,

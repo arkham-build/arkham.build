@@ -28,14 +28,10 @@ export const createHttpClientSlice: StateCreator<
       return;
     }
 
-    set({
-      auth: {
-        session: null,
-        status: "unauthenticated",
-      },
+    get().clearAccountState({
+      session: null,
+      status: "unauthenticated",
     });
-
-    get().resetSync();
     await dehydrate(get(), "app");
   },
 });

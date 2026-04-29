@@ -1,5 +1,6 @@
 import type { SettingsResponse } from "@arkham-build/shared";
 import type { Id } from "../schemas/deck.schema";
+import type { AuthState } from "./auth.types";
 
 export type SyncStatus =
   | "idle"
@@ -49,7 +50,7 @@ export type SyncState = {
 
 export type SyncSlice = SyncState & {
   bootstrapAuthenticatedState(): Promise<void>;
-  resetSync(): void;
+  clearAccountState(auth?: AuthState): void;
   setSettingsSync(payload: Partial<SettingsSyncState>): void;
   setDecksSync(payload: Partial<DecksSyncState>): void;
   setDeckSyncItem(id: Id, payload: Partial<DeckSyncItemState> | null): void;

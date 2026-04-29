@@ -5,10 +5,12 @@ import {
   applyRemoteDeckReconciliation,
   getDeckReconciliationPlan,
   hasUnsettledDeckSyncItems,
+  removeRemoteAccountDecks,
 } from "../lib/sync-reconciliation";
 import { dehydrate } from "../persist";
 import { fetchDeckBatch, fetchDeckManifest } from "../services/requests/decks";
 import type { StoreState } from ".";
+import type { AuthState } from "./auth.types";
 import type {
   DeckSyncItemState,
   DecksSyncState,
@@ -69,12 +71,12 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     const accountId = state.auth.session?.account.id;
 
     if (state.auth.status !== "authenticated" || !accountId) {
-      state.resetSync();
+      get().clearAccountState();
       return;
     }
 
     if (shouldResetSyncForAccount(state.sync, accountId)) {
-      state.resetSync();
+      get().clearAccountState();
     }
 
     const results = await Promise.allSettled([
@@ -90,8 +92,12 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     }
   },
 
-  resetSync() {
-    set(() => getInitialSyncState());
+  clearAccountState(auth?: AuthState) {
+    set((state) => ({
+      ...removeRemoteAccountDecks(state),
+      ...(auth ? { auth } : {}),
+      sync: getInitialSyncState().sync,
+    }));
   },
 
   setSettingsSync(payload) {

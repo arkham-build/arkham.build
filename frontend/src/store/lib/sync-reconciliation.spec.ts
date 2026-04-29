@@ -6,6 +6,7 @@ import type { DecksSyncState, SyncStatus } from "../slices/sync.types";
 import {
   applyRemoteDeckReconciliation,
   getDeckReconciliationPlan,
+  removeRemoteAccountDecks,
 } from "./sync-reconciliation";
 
 describe("sync reconciliation", () => {
@@ -70,6 +71,53 @@ describe("sync reconciliation", () => {
         removeIds: [],
         skippedIds: ["saving", "conflict"],
       });
+    });
+  });
+
+  describe("removeRemoteAccountDecks", () => {
+    it("removes remote decks and repairs local history", () => {
+      const result = removeRemoteAccountDecks({
+        data: makeData({
+          decks: {
+            local: makeDeck("local", "v1", {
+              previous_deck: "remote",
+            }),
+            remote: makeDeck("remote", "v1", {
+              source: "remote",
+              next_deck: "local",
+            }),
+          },
+          history: {
+            local: ["remote"],
+            remote: [],
+          },
+          deckFolders: {
+            remote: "folder-id",
+          },
+          undoHistory: {
+            remote: [],
+          },
+        }),
+        deckEdits: {
+          remote: {},
+        },
+        sharing: {
+          decks: {
+            remote: "2026-01-01T00:00:00.000Z",
+          },
+        },
+      });
+
+      expect(result.data.decks.remote).toBeUndefined();
+      expect(result.data.decks.local).toMatchObject({
+        id: "local",
+        previous_deck: null,
+      });
+      expect(result.data.history).toEqual({ local: [] });
+      expect(result.data.deckFolders.remote).toBeUndefined();
+      expect(result.data.undoHistory?.remote).toBeUndefined();
+      expect(result.deckEdits.remote).toBeUndefined();
+      expect(result.sharing.decks.remote).toBeUndefined();
     });
   });
 
