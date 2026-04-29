@@ -6,6 +6,7 @@ import type { Pack } from "@/store/schemas/pack.schema";
 import factions from "@/store/services/data/factions.json";
 import subTypes from "@/store/services/data/subtypes.json";
 import types from "@/store/services/data/types.json";
+import { createHttpClient } from "@/store/services/http-client";
 import type {
   AllCardApiResponse,
   DataVersionApiResponse,
@@ -36,6 +37,13 @@ function queryStubCardData() {
 
 export async function getMockStore() {
   useStore.setState(useStore.getInitialState(), true);
+  useStore.getState().setHttpClient(
+    createHttpClient({
+      apiUrl: "http://localhost",
+      onUnauthorized: () => undefined,
+    }),
+  );
+
   const state = useStore.getState();
   await state.init(queryStubMetadata, queryStubDataVersion, queryStubCardData);
   return useStore;

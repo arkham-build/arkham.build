@@ -18,7 +18,8 @@ import {
   type DeckUpgradeRequest,
   DeckUpgradeRequestSchema,
 } from "@arkham-build/shared";
-import { ApiError, apiV2Request } from "./shared";
+import type { HttpClient } from "../http-client";
+import { ApiError } from "./shared";
 
 class DeckConflictError extends ApiError {
   remote: DeckConflictResponse | null;
@@ -30,8 +31,10 @@ class DeckConflictError extends ApiError {
   }
 }
 
-export async function fetchDeckManifest(): Promise<DeckManifestResponse> {
-  const res = await apiV2Request("/v2/decks/manifest", {
+export async function fetchDeckManifest(
+  client: HttpClient,
+): Promise<DeckManifestResponse> {
+  const res = await client.request("/v2/decks/manifest", {
     credentials: "include",
   });
 
@@ -39,9 +42,10 @@ export async function fetchDeckManifest(): Promise<DeckManifestResponse> {
 }
 
 export async function fetchDeckBatch(
+  client: HttpClient,
   payload: DeckBatchRequest,
 ): Promise<Deck[]> {
-  const res = await apiV2Request("/v2/decks/batch", {
+  const res = await client.request("/v2/decks/batch", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(DeckBatchRequestSchema.parse(payload)),
@@ -51,8 +55,11 @@ export async function fetchDeckBatch(
   return DeckBatchResponseSchema.parse(await res.json());
 }
 
-export async function postDeck(payload: DeckCreateRequest): Promise<Deck> {
-  const res = await apiV2Request("/v2/decks", {
+export async function postDeck(
+  client: HttpClient,
+  payload: DeckCreateRequest,
+): Promise<Deck> {
+  const res = await client.request("/v2/decks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(DeckCreateRequestSchema.parse(payload)),
@@ -62,9 +69,12 @@ export async function postDeck(payload: DeckCreateRequest): Promise<Deck> {
   return DeckSchema.parse(await res.json());
 }
 
-export async function putDeck(payload: DeckUpdateRequest): Promise<Deck> {
+export async function putDeck(
+  client: HttpClient,
+  payload: DeckUpdateRequest,
+): Promise<Deck> {
   try {
-    const res = await apiV2Request(`/v2/decks/${payload.id}`, {
+    const res = await client.request(`/v2/decks/${payload.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(DeckUpdateRequestSchema.parse(payload)),
@@ -82,11 +92,12 @@ export async function putDeck(payload: DeckUpdateRequest): Promise<Deck> {
 }
 
 export async function postDeckUpgrade(
+  client: HttpClient,
   id: DeckId,
   payload: DeckUpgradeRequest,
 ): Promise<Deck> {
   try {
-    const res = await apiV2Request(`/v2/auth/upgrade/${id}`, {
+    const res = await client.request(`/v2/auth/upgrade/${id}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(DeckUpgradeRequestSchema.parse(payload)),
@@ -104,11 +115,12 @@ export async function postDeckUpgrade(
 }
 
 export async function deleteDeck(
+  client: HttpClient,
   id: DeckId,
   payload: DeckDeleteRequest,
 ): Promise<void> {
   try {
-    await apiV2Request(`/v2/decks/${id}`, {
+    await client.request(`/v2/decks/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(DeckDeleteRequestSchema.parse(payload)),

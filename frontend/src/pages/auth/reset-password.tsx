@@ -6,6 +6,7 @@ import { useLocation, useSearchParams } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { useToast } from "@/components/ui/toast.hooks";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { postResetPassword } from "@/store/services/requests/auth";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
@@ -17,9 +18,11 @@ function ResetPassword() {
   const [params] = useSearchParams();
   const toast = useToast();
   const [, navigate] = useLocation();
+  const client = useHttpClient();
 
   const resetPasswordMutation = useMutation({
-    mutationFn: postResetPassword,
+    mutationFn: (payload: { token: string; password: string }) =>
+      postResetPassword(client, payload),
   });
 
   const token = params.get("token") ?? "";

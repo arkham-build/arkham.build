@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { useHttpClient } from "@/store/services/http-client.context";
 import {
   fetchSession,
   postCompleteProfile,
@@ -18,14 +19,16 @@ function SignupArkhamDB() {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
   const queryClient = useQueryClient();
+  const client = useHttpClient();
 
   const { data: session, isLoading } = useQuery({
     queryKey: ["auth", "session"],
-    queryFn: fetchSession,
+    queryFn: () => fetchSession(client),
   });
 
   const completeProfileMutation = useMutation({
-    mutationFn: postCompleteProfile,
+    mutationFn: (payload: { username: string }) =>
+      postCompleteProfile(client, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
       navigate("/");

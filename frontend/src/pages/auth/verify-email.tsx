@@ -13,6 +13,7 @@ import {
   ModalInner,
 } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast.hooks";
+import { useHttpClient } from "@/store/services/http-client.context";
 import {
   postResendVerification,
   postVerifyEmail,
@@ -27,11 +28,13 @@ function VerifyEmail() {
   const toast = useToast();
   const [, navigate] = useLocation();
   const [params] = useSearchParams();
+  const client = useHttpClient();
 
   const [token, setToken] = useState<string>(params.get("token") ?? "");
 
   const verifyEmailMutation = useMutation({
-    mutationFn: postVerifyEmail,
+    mutationFn: (payload: { token: string }) =>
+      postVerifyEmail(client, payload),
   });
 
   const onSubmit = async (evt: React.FormEvent) => {
@@ -91,9 +94,11 @@ function VerifyEmail() {
 function ResendVerificationDialog() {
   const { t } = useTranslation();
   const toast = useToast();
+  const client = useHttpClient();
 
   const resendVerificationMutation = useMutation({
-    mutationFn: postResendVerification,
+    mutationFn: (payload: { email: string }) =>
+      postResendVerification(client, payload),
   });
 
   const [open, setOpen] = useState(false);

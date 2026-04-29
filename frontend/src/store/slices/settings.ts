@@ -164,18 +164,25 @@ export const createSettingsSlice: StateCreator<
       // TODO: once reprint packs are returned localized by the API, remove this.
       await changeLanguage(settings.locale);
 
-      await state.init(queryMetadata, queryDataVersion, queryCards, {
-        refresh: true,
-        locale: settings.locale,
-        overrides: {
-          lists: keepListState ? state.lists : makeLists(settings),
-          settings: {
-            ...state.settings,
-            ...settings,
+      const client = getHttpClient(state);
+
+      await state.init(
+        (locale) => queryMetadata(client, locale),
+        (locale) => queryDataVersion(client, locale),
+        (locale) => queryCards(client, locale),
+        {
+          refresh: true,
+          locale: settings.locale,
+          overrides: {
+            lists: keepListState ? state.lists : makeLists(settings),
+            settings: {
+              ...state.settings,
+              ...settings,
+            },
+            sync: state.sync,
           },
-          sync: state.sync,
         },
-      });
+      );
     } else {
       set({
         settings,
@@ -225,7 +232,7 @@ export const createSettingsSlice: StateCreator<
     });
 
     try {
-      const response = await fetchSettings();
+      const response = await fetchSettings(getHttpClient(get()));
       await get().applyRemoteSettings(response);
     } catch (error) {
       get().setSettingsSync({
@@ -263,7 +270,7 @@ export const createSettingsSlice: StateCreator<
     });
 
     try {
-      const response = await putSettings({
+      const response = await putSettings(getHttpClient(get()), {
         settings: toRemoteSettings(settings),
         collection: settings.collection,
         expectedRevision,
@@ -323,6 +330,16 @@ export const createSettingsSlice: StateCreator<
     await dehydrate(get(), "app");
   },
 });
+
+function getHttpClient(state: StoreState) {
+  const client = state.httpClient;
+
+  if (!client) {
+    throw new Error("HTTP client not initialized.");
+  }
+
+  return client;
+}
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Unknown error";

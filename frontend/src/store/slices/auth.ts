@@ -28,17 +28,12 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
     }));
 
     try {
-      const session = await fetchSession();
+      const session = await fetchSession(getHttpClient(get()));
       set({
         auth: { session, status: "authenticated" },
       });
     } catch (err) {
-      if (err instanceof ApiError && err.status === 401) {
-        set((state) => ({
-          auth: { ...state.auth, status: "unauthenticated" },
-        }));
-        get().resetSync();
-      } else {
+      if (!(err instanceof ApiError && err.status === 401)) {
         const session = get().auth.session;
 
         set({
@@ -63,8 +58,10 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
   },
 
   async login(payload) {
-    await postLogin(payload);
-    const session = await fetchSession();
+    const client = getHttpClient(get());
+
+    await postLogin(client, payload);
+    const session = await fetchSession(client);
     set({
       auth: { session, status: "authenticated" },
     });
@@ -79,7 +76,7 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
 
   async logout() {
     try {
-      await postLogout();
+      await postLogout(getHttpClient(get()));
     } finally {
       set({
         auth: { session: null, status: "idle" },
@@ -89,3 +86,13 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
     await dehydrate(get(), "app");
   },
 });
+
+function getHttpClient(state: StoreState) {
+  const client = state.httpClient;
+
+  if (!client) {
+    throw new Error("HTTP client not initialized.");
+  }
+
+  return client;
+}

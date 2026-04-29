@@ -10,6 +10,7 @@ import { Loader } from "@/components/ui/loader";
 import { Pagination } from "@/components/ui/pagination";
 import { Select } from "@/components/ui/select";
 import { AppLayout } from "@/layouts/app-layout";
+import { useHttpClient } from "@/store/services/http-client.context";
 import {
   type DecklistsFiltersState,
   deckSearchQuery,
@@ -27,6 +28,7 @@ import { DecklistsFilters } from "./decklists-filters/decklists-filters";
 
 function BrowseDecklists() {
   const { t } = useTranslation();
+  const client = useHttpClient();
 
   const navRef = useRef<HTMLElement>(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,7 +43,7 @@ function BrowseDecklists() {
 
   const { data, isPending, error, isPlaceholderData } = useQuery({
     placeholderData: keepPreviousData,
-    queryFn: () => searchDecklists(deckSearchQuery(state, 30)),
+    queryFn: () => searchDecklists(client, deckSearchQuery(state, 30)),
     queryKey: ["decklists", deckSearchQuery(state, 30).toString()],
   });
 

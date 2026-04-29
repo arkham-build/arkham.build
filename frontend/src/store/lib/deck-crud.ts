@@ -154,8 +154,10 @@ export const createAdapter = {
     deck.source = provider ?? "local";
     return deck;
   },
-  async persist(deck: Deck) {
-    return isSyncedStorageProvider(deck.source) ? await postDeck(deck) : deck;
+  async persist(state: StoreState, deck: Deck) {
+    return isSyncedStorageProvider(deck.source)
+      ? await postDeck(getHttpClient(state), deck)
+      : deck;
   },
   transition(set: StoreApi<StoreState>["setState"], deck: Deck) {
     return set((prev) => {
@@ -252,7 +254,10 @@ export const updateAdapter = {
     }));
 
     try {
-      const remoteDeck = await putDeck({ ...deck, expectedVersion });
+      const remoteDeck = await putDeck(getHttpClient(get()), {
+        ...deck,
+        expectedVersion,
+      });
       return remoteDeck;
     } catch (error) {
       set((prev) => ({
@@ -335,7 +340,7 @@ export const deleteAdapter = {
     }));
 
     try {
-      await deleteDeck(deck.id, { expectedVersion });
+      await deleteDeck(getHttpClient(get()), deck.id, { expectedVersion });
     } catch (error) {
       set((prev) => ({
         sync: updateDeckSyncError(prev.sync, deck.id, error, "delete"),
@@ -436,8 +441,8 @@ export const uploadAdapter = {
 
     return { ...deck, source: provider };
   },
-  async persist(deck: Deck) {
-    return await postDeck(deck);
+  async persist(state: StoreState, deck: Deck) {
+    return await postDeck(getHttpClient(state), deck);
   },
   transition(
     set: StoreApi<StoreState>["setState"],
@@ -609,6 +614,7 @@ export const upgradeAdapter = {
     return newDeck;
   },
   async persist(
+    state: StoreState,
     deck: Deck,
     upgrade: Deck,
     expectedVersion: string | null | undefined,
@@ -619,7 +625,7 @@ export const upgradeAdapter = {
 
     assert(expectedVersion, `Deck ${deck.id} does not have a sync version.`);
 
-    return await postDeckUpgrade(deck.id, {
+    return await postDeckUpgrade(getHttpClient(state), deck.id, {
       deck: upgrade,
       expectedVersion,
     });
@@ -666,6 +672,12 @@ export const upgradeAdapter = {
     });
   },
 };
+
+function getHttpClient(state: StoreState) {
+  const client = state.httpClient;
+  assert(client, "HTTP client not initialized.");
+  return client;
+}
 
 function updateValidation(
   state: StoreState,

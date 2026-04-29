@@ -23,11 +23,13 @@ export function errorMapper(
       );
     }
 
-    if (error.status === 429 && error.cause?.retryAfter) {
-      const retryAfter = new Date(error.cause.retryAfter);
+    const retryAfter = getRetryAfter(error.cause);
+
+    if (error.status === 429 && retryAfter) {
+      const retryAt = new Date(retryAfter);
 
       const retrySeconds = Math.max(
-        Math.ceil((retryAfter.getTime() - Date.now()) / 1000),
+        Math.ceil((retryAt.getTime() - Date.now()) / 1000),
         0,
       );
 
@@ -48,4 +50,17 @@ export function errorMapper(
 
 export function createPasswordMatchPattern(password: string): string {
   return password.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getRetryAfter(cause: unknown): string | null {
+  if (
+    cause &&
+    typeof cause === "object" &&
+    "retryAfter" in cause &&
+    typeof cause.retryAfter === "string"
+  ) {
+    return cause.retryAfter;
+  }
+
+  return null;
 }

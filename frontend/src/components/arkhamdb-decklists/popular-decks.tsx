@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertCircleIcon, ExternalLinkIcon } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "wouter";
+import { useHttpClient } from "@/store/services/http-client.context";
 import {
   deckSearchQuery,
   searchDecklists,
@@ -23,6 +24,7 @@ type Props = {
 export function PopularDecks(props: Props) {
   const { scope } = props;
   const { t } = useTranslation();
+  const client = useHttpClient();
 
   const enabled = !scope.encounter_code;
 
@@ -39,7 +41,7 @@ export function PopularDecks(props: Props) {
 
   const { data, error, isPending } = useQuery({
     queryKey: ["popular-decks", scope.code],
-    queryFn: () => searchDecklists(deckSearchQuery(scopeParams, 10)),
+    queryFn: () => searchDecklists(client, deckSearchQuery(scopeParams, 10)),
     enabled,
   });
 

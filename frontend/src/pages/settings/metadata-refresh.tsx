@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
+import { useHttpClient } from "@/store/services/http-client.context";
 import {
   queryCards,
   queryDataVersion,
@@ -17,13 +18,19 @@ export function MetadataRefresh() {
 
   const init = useStore((state) => state.init);
   const locale = useStore((state) => state.settings.locale);
+  const client = useHttpClient();
 
   const { isPending, mutateAsync } = useMutation({
     mutationFn: async () => {
-      await init(queryMetadata, queryDataVersion, queryCards, {
-        refresh: true,
-        locale,
-      });
+      await init(
+        (nextLocale) => queryMetadata(client, nextLocale),
+        (nextLocale) => queryDataVersion(client, nextLocale),
+        (nextLocale) => queryCards(client, nextLocale),
+        {
+          refresh: true,
+          locale,
+        },
+      );
 
       const dataVersion = useStore.getState().metadata.dataVersion;
 

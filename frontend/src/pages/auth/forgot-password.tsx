@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { postForgotPassword } from "@/store/services/requests/auth";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
@@ -13,9 +14,11 @@ import { errorMapper } from "./helpers";
 function ForgotPassword() {
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const { t } = useTranslation();
+  const client = useHttpClient();
 
   const forgotPasswordMutation = useMutation({
-    mutationFn: postForgotPassword,
+    mutationFn: (payload: { emailOrUsername: string }) =>
+      postForgotPassword(client, payload),
   });
 
   const onSubmit = async (evt: React.FormEvent) => {

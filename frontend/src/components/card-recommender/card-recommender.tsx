@@ -17,6 +17,7 @@ import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { type ListState, selectListCards } from "@/store/selectors/lists";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { getRecommendations } from "@/store/services/queries";
 import { ApiError } from "@/store/services/requests/shared";
 import type { ListDisplay } from "@/store/slices/lists.types";
@@ -42,6 +43,7 @@ export function CardRecommender(
 
   const { t } = useTranslation();
   const { resolvedDeck } = useResolvedDeck();
+  const client = useHttpClient();
 
   const setFilterValue = useStore((state) => state.setRecommenderDeckFilter);
 
@@ -75,6 +77,7 @@ export function CardRecommender(
     const canonicalizedInvestigatorCode = `${canonicalFrontCode}-${canonicalBackCode}`;
 
     return getRecommendations(
+      client,
       RecommendationsRequestSchema.parse({
         canonical_investigator_code: canonicalizedInvestigatorCode,
         analyze_side_decks: includeSideDeck,

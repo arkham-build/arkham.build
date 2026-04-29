@@ -39,7 +39,7 @@ describe("app deck write-through actions", () => {
     const id = await store.getState().uploadDeckToProvider("local", "remote");
 
     expect(id).toBe("local");
-    expect(deckRequests.postDeck).toHaveBeenCalledWith({
+    expect(deckRequests.postDeck).toHaveBeenCalledWith(expect.anything(), {
       ...deck,
       source: "remote",
     });
@@ -130,6 +130,7 @@ describe("app deck write-through actions", () => {
     await store.getState().saveDeck("remote");
 
     expect(deckRequests.putDeck).toHaveBeenCalledWith(
+      expect.anything(),
       expect.objectContaining({ id: "remote", expectedVersion: "1" }),
     );
     expect(store.getState().data.decks.remote).toMatchObject({
@@ -177,9 +178,13 @@ describe("app deck write-through actions", () => {
 
     await store.getState().deleteDeck("remote", callback);
 
-    expect(deckRequests.deleteDeck).toHaveBeenCalledWith("remote", {
-      expectedVersion: "1",
-    });
+    expect(deckRequests.deleteDeck).toHaveBeenCalledWith(
+      expect.anything(),
+      "remote",
+      {
+        expectedVersion: "1",
+      },
+    );
     expect(callback).toHaveBeenCalledOnce();
     expect(store.getState().data.decks.remote).toBeUndefined();
     expect(store.getState().sync.decks.items.remote).toBeUndefined();

@@ -22,6 +22,7 @@ import { z } from "zod";
 import type { SettingProps } from "@/pages/settings/types";
 import { useStore } from "@/store";
 import { selectOwnedFanMadeProjects } from "@/store/selectors/fan-made-content";
+import { useHttpClient } from "@/store/services/http-client.context";
 import {
   queryFanMadeProjectData,
   queryFanMadeProjects,
@@ -64,6 +65,7 @@ export function FanMadeContent(props: SettingProps) {
   const { t } = useTranslation();
   const toast = useToast();
   const [searchParams] = useSearchParams();
+  const client = useHttpClient();
 
   // TECH DEBT: the current preview implementation re-uses the card grid.
   // we don't want preview modals here, make sure a user interaction does not persist one.
@@ -77,7 +79,7 @@ export function FanMadeContent(props: SettingProps) {
   const addFanMadeProject = useStore((state) => state.addFanMadeProject);
 
   const listingsQuery = useQuery({
-    queryFn: queryFanMadeProjects,
+    queryFn: () => queryFanMadeProjects(client),
     queryKey: ["fan-made-project-info"],
   });
 

@@ -158,7 +158,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     });
 
     try {
-      const manifest = await fetchDeckManifest();
+      const manifest = await fetchDeckManifest(getHttpClient(get()));
 
       if (!isCurrentAccount(get(), accountId)) return;
 
@@ -186,7 +186,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
       const remoteDecks = isEmpty(plan.fetchIds)
         ? []
-        : await fetchDeckBatch({ ids: plan.fetchIds });
+        : await fetchDeckBatch(getHttpClient(get()), { ids: plan.fetchIds });
 
       const remoteDeckIds = new Set(remoteDecks.map((deck) => String(deck.id)));
 
@@ -237,6 +237,16 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     }
   },
 });
+
+function getHttpClient(state: StoreState) {
+  const client = state.httpClient;
+
+  if (!client) {
+    throw new Error("HTTP client not initialized.");
+  }
+
+  return client;
+}
 
 function isCurrentAccount(state: StoreState, accountId: string) {
   return (

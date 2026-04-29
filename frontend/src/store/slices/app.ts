@@ -196,14 +196,18 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
   },
   async createDeck() {
     const state = get();
-    const deck = await createAdapter.persist(createAdapter.format(state));
+    const deck = await createAdapter.persist(
+      state,
+      createAdapter.format(state),
+    );
     createAdapter.transition(set, deck);
     await dehydrate(get(), "app");
     return deck.id;
   },
   async uploadDeckToProvider(deckId, provider) {
-    const deck = uploadAdapter.format(get(), deckId, provider);
-    const canonicalDeck = await uploadAdapter.persist(deck);
+    const state = get();
+    const deck = uploadAdapter.format(state, deckId, provider);
+    const canonicalDeck = await uploadAdapter.persist(state, deck);
     uploadAdapter.transition(set, deck, canonicalDeck);
     await dehydrate(get(), "app", "edits");
     return canonicalDeck.id;
@@ -313,6 +317,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     assert(deck, `Deck ${payload.id} does not exist.`);
 
     const upgrade = await upgradeAdapter.persist(
+      state,
       deck,
       upgradeAdapter.format(state, deck, payload),
       state.sync.decks.items[deck.id]?.version,

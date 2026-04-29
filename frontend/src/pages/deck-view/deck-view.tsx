@@ -27,6 +27,7 @@ import {
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { queryDeck } from "@/store/services/queries";
 import { fetchArkhamDBDecklistMeta } from "@/store/services/requests/decklist-meta";
 import { ApiError } from "@/store/services/requests/shared";
@@ -60,6 +61,7 @@ function DeckView() {
 function ArkhamDBDeckView({ id, type }: { id: string; type: DeckDisplayType }) {
   const clientId = useStore(selectClientId);
   const { t } = useTranslation();
+  const client = useHttpClient();
 
   const idInt = Number.parseInt(id, 10);
 
@@ -83,7 +85,7 @@ function ArkhamDBDeckView({ id, type }: { id: string; type: DeckDisplayType }) {
       },
       {
         queryKey: ["deck_meta", idInt],
-        queryFn: () => fetchArkhamDBDecklistMeta(idInt),
+        queryFn: () => fetchArkhamDBDecklistMeta(client, idInt),
         enabled: type === "decklist",
       },
     ],

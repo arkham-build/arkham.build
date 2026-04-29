@@ -4,7 +4,8 @@ import {
   type SettingsResponse,
   SettingsResponseSchema,
 } from "@arkham-build/shared";
-import { ApiError, apiV2Request } from "./shared";
+import type { HttpClient } from "../http-client";
+import { ApiError } from "./shared";
 
 class SettingsConflictError extends ApiError {
   remote: SettingsResponse | null;
@@ -16,8 +17,10 @@ class SettingsConflictError extends ApiError {
   }
 }
 
-export async function fetchSettings(): Promise<SettingsResponse> {
-  const res = await apiV2Request("/v2/settings", {
+export async function fetchSettings(
+  client: HttpClient,
+): Promise<SettingsResponse> {
+  const res = await client.request("/v2/settings", {
     credentials: "include",
   });
 
@@ -25,10 +28,11 @@ export async function fetchSettings(): Promise<SettingsResponse> {
 }
 
 export async function putSettings(
+  client: HttpClient,
   payload: SettingsRequest,
 ): Promise<SettingsResponse> {
   try {
-    const res = await apiV2Request("/v2/settings", {
+    const res = await client.request("/v2/settings", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(SettingsRequestSchema.parse(payload)),

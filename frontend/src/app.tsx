@@ -17,6 +17,9 @@ import { useToast } from "./components/ui/toast.hooks";
 import { ErrorStatus } from "./pages/errors/404";
 import { useStore } from "./store";
 import { selectIsInitialized } from "./store/selectors/shared";
+import type { HttpClient } from "./store/services/http-client";
+import { useHttpClient } from "./store/services/http-client.context";
+import { HttpClientProvider } from "./store/services/http-client.provider";
 import {
   queryCards,
   queryDataVersion,
@@ -81,9 +84,9 @@ const ForgotPassword = lazy(() => import("./pages/auth/forgot-password"));
 const VerifyEmail = lazy(() => import("./pages/auth/verify-email"));
 const ResetPassword = lazy(() => import("./pages/auth/reset-password"));
 
-function App() {
+function App(props: { httpClient: HttpClient }) {
   return (
-    <Providers>
+    <Providers httpClient={props.httpClient}>
       <AppInner />
     </Providers>
   );
@@ -98,15 +101,20 @@ const queryClient = new QueryClient({
   },
 });
 
-function Providers(props: { children: React.ReactNode }) {
+function Providers(props: {
+  children: React.ReactNode;
+  httpClient: HttpClient;
+}) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ErrorBoundary>
-        <Suspense>
-          <ToastProvider>{props.children}</ToastProvider>
-        </Suspense>
-      </ErrorBoundary>
-    </QueryClientProvider>
+    <HttpClientProvider client={props.httpClient}>
+      <QueryClientProvider client={queryClient}>
+        <ErrorBoundary>
+          <Suspense>
+            <ToastProvider>{props.children}</ToastProvider>
+          </Suspense>
+        </ErrorBoundary>
+      </QueryClientProvider>
+    </HttpClientProvider>
   );
 }
 
@@ -228,6 +236,7 @@ function CardDataSyncTask() {
   const [location] = useLocation();
   const locale = useStore((state) => state.settings.locale);
   const dataVersion = useStore((state) => state.metadata.dataVersion);
+  const client = useHttpClient();
 
   const { t } = useTranslation();
 
@@ -240,7 +249,7 @@ function CardDataSyncTask() {
 
   const { data: remoteDataVersion } = useQuery({
     enabled: shouldQueryDataVersion,
-    queryFn: () => queryDataVersion(locale),
+    queryFn: () => queryDataVersion(client, locale),
     queryKey: ["tasks", "dataVersion", locale],
     staleTime: 24 * 60 * 60 * 1000,
   });
@@ -250,10 +259,15 @@ function CardDataSyncTask() {
 
   const { isError, isPending, mutateAsync } = useMutation({
     mutationFn: async () => {
-      await init(queryMetadata, queryDataVersion, queryCards, {
-        refresh: true,
-        locale,
-      });
+      await init(
+        (nextLocale) => queryMetadata(client, nextLocale),
+        (nextLocale) => queryDataVersion(client, nextLocale),
+        (nextLocale) => queryCards(client, nextLocale),
+        {
+          refresh: true,
+          locale,
+        },
+      );
       queryClient.setQueryData(
         ["tasks", "dataVersion", locale],
         useStore.getState().metadata.dataVersion,

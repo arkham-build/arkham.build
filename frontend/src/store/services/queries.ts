@@ -12,7 +12,8 @@ import {
 import { assert } from "@/utils/assert";
 import { type Deck, isDeck } from "../schemas/deck.schema";
 import type { History } from "../selectors/decks";
-import { ApiError, apiV2Request } from "./requests/shared";
+import type { HttpClient } from "./http-client";
+import { ApiError } from "./requests/shared";
 
 type FaqResponse = {
   code: string;
@@ -101,11 +102,12 @@ export async function getShare(id: string): Promise<ShareRead> {
 }
 
 export async function getRecommendations(
+  client: HttpClient,
   req: RecommendationsRequest,
 ): Promise<RecommendationsResponse["data"]["recommendations"]> {
   const search = encodeSearch(req).toString();
 
-  const res = await apiV2Request(
+  const res = await client.request(
     `/v2/public/recommendations/${req.canonical_investigator_code}?${search}`,
     {
       method: "GET",
@@ -116,13 +118,18 @@ export async function getRecommendations(
   return RecommendationsResponseSchema.parse(json).data.recommendations;
 }
 
-export async function querySealedDeck(id: string): Promise<SealedDeckResponse> {
-  const res = await apiV2Request(`/v2/public/sealed-deck/${id}`);
+export async function querySealedDeck(
+  client: HttpClient,
+  id: string,
+): Promise<SealedDeckResponse> {
+  const res = await client.request(`/v2/public/sealed-deck/${id}`);
   return await res.json();
 }
 
-export async function queryFanMadeProjects(): Promise<FanMadeProjectInfo[]> {
-  const res = await apiV2Request("/v2/public/fan-made-project-info");
+export async function queryFanMadeProjects(
+  client: HttpClient,
+): Promise<FanMadeProjectInfo[]> {
+  const res = await client.request("/v2/public/fan-made-project-info");
   const { data }: { data: FanMadeProjectInfo[] } = await res.json();
   return data.sort((a, b) => {
     return a.meta.name.localeCompare(b.meta.name);

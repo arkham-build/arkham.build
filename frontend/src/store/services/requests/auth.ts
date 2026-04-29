@@ -16,10 +16,14 @@ import {
   type VerifyEmailRequest,
   VerifyEmailRequestSchema,
 } from "@arkham-build/shared";
-import { apiV2Request } from "./shared.ts";
+import type { HttpClient } from "../http-client";
 
-export async function postLogin(payload: LoginRequest): Promise<void> {
-  await apiV2Request("/v2/auth/login", {
+export async function postLogin(
+  client: HttpClient,
+  payload: LoginRequest,
+): Promise<void> {
+  await client.request("/v2/auth/login", {
+    unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(LoginRequestSchema.parse(payload)),
@@ -27,8 +31,12 @@ export async function postLogin(payload: LoginRequest): Promise<void> {
   });
 }
 
-export async function postSignup(payload: SignupRequest): Promise<void> {
-  await apiV2Request("/v2/auth/signup", {
+export async function postSignup(
+  client: HttpClient,
+  payload: SignupRequest,
+): Promise<void> {
+  await client.request("/v2/auth/signup", {
+    unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(SignupRequestSchema.parse(payload)),
@@ -36,15 +44,18 @@ export async function postSignup(payload: SignupRequest): Promise<void> {
   });
 }
 
-export async function postLogout(): Promise<void> {
-  await apiV2Request("/v2/auth/logout", {
+export async function postLogout(client: HttpClient): Promise<void> {
+  await client.request("/v2/auth/logout", {
+    unauthorizedBehavior: "ignore",
     method: "POST",
     credentials: "include",
   });
 }
 
-export async function fetchSession(): Promise<SessionResponse> {
-  const res = await apiV2Request("/v2/auth/me", {
+export async function fetchSession(
+  client: HttpClient,
+): Promise<SessionResponse> {
+  const res = await client.request("/v2/auth/me", {
     credentials: "include",
   });
 
@@ -52,9 +63,11 @@ export async function fetchSession(): Promise<SessionResponse> {
 }
 
 export async function postVerifyEmail(
+  client: HttpClient,
   payload: VerifyEmailRequest,
 ): Promise<void> {
-  await apiV2Request("/v2/auth/verify-email", {
+  await client.request("/v2/auth/verify-email", {
+    unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(VerifyEmailRequestSchema.parse(payload)),
@@ -63,9 +76,11 @@ export async function postVerifyEmail(
 }
 
 export async function postResendVerification(
+  client: HttpClient,
   payload: ResendVerificationRequest,
 ): Promise<void> {
-  await apiV2Request("/v2/auth/resend-verification", {
+  await client.request("/v2/auth/resend-verification", {
+    unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(ResendVerificationRequestSchema.parse(payload)),
@@ -74,9 +89,11 @@ export async function postResendVerification(
 }
 
 export async function postForgotPassword(
+  client: HttpClient,
   payload: ForgotPasswordRequest,
 ): Promise<void> {
-  await apiV2Request("/v2/auth/forgot-password", {
+  await client.request("/v2/auth/forgot-password", {
+    unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(ForgotPasswordRequestSchema.parse(payload)),
@@ -85,9 +102,11 @@ export async function postForgotPassword(
 }
 
 export async function postResetPassword(
+  client: HttpClient,
   payload: ResetPasswordRequest,
 ): Promise<void> {
-  await apiV2Request("/v2/auth/reset-password", {
+  await client.request("/v2/auth/reset-password", {
+    unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(ResetPasswordRequestSchema.parse(payload)),
@@ -96,9 +115,10 @@ export async function postResetPassword(
 }
 
 export async function postCompleteProfile(
+  client: HttpClient,
   payload: CompleteProfileRequest,
 ): Promise<void> {
-  await apiV2Request("/v2/auth/complete-profile", {
+  await client.request("/v2/auth/complete-profile", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(CompleteProfileRequestSchema.parse(payload)),

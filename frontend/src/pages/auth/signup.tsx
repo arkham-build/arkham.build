@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { postSignup } from "@/store/services/requests/auth";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
@@ -17,8 +18,10 @@ import { OAuthSeparator } from "./oauth-separator";
 
 function Signup() {
   const { t } = useTranslation();
+  const client = useHttpClient();
   const signupMutation = useMutation({
-    mutationFn: postSignup,
+    mutationFn: (payload: { name: string; email: string; password: string }) =>
+      postSignup(client, payload),
   });
 
   const [name, setName] = useState("");
