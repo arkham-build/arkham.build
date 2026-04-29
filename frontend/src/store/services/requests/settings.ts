@@ -6,7 +6,7 @@ import {
 } from "@arkham-build/shared";
 import { ApiError, apiV2Request } from "./shared";
 
-export class SettingsConflictError extends ApiError {
+class SettingsConflictError extends ApiError {
   remote: SettingsResponse | null;
 
   constructor(error: ApiError) {

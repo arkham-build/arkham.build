@@ -2,7 +2,6 @@
 export type { DeckId as Id } from "@arkham-build/shared";
 export {
   type Deck,
-  type DeckId,
   type DeckProblem,
   DeckSchema,
   isDeck,

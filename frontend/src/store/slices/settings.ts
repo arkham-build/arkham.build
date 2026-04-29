@@ -6,6 +6,7 @@ import {
   SettingsSchema,
 } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
+import { assert } from "@/utils/assert";
 import { changeLanguage } from "@/utils/i18n";
 import { fromRemoteSettings, toRemoteSettings } from "../lib/settings-sync";
 import { dehydrate } from "../persist";
@@ -186,16 +187,9 @@ export const createSettingsSlice: StateCreator<
   },
   async applyRemoteSettings(response) {
     const state = get();
+
     const accountId = state.auth.session?.account.id;
-
-    if (!accountId) {
-      state.resetSync();
-      return;
-    }
-
-    if (state.sync.settings.accountId !== accountId) {
-      state.resetSync();
-    }
+    assert(accountId, "Cannot apply remote settings without an account.");
 
     const localSettings = get().settings;
 
@@ -219,16 +213,9 @@ export const createSettingsSlice: StateCreator<
   },
   async loadRemoteSettings() {
     const state = get();
+
     const accountId = state.auth.session?.account.id;
-
-    if (!accountId) {
-      state.resetSync();
-      return;
-    }
-
-    if (state.sync.settings.accountId !== accountId) {
-      state.resetSync();
-    }
+    assert(accountId, "Cannot load remote settings without an account.");
 
     get().setSettingsSync({
       accountId,
@@ -257,13 +244,8 @@ export const createSettingsSlice: StateCreator<
     const accountId = state.auth.session?.account.id;
 
     if (!accountId) {
-      state.resetSync();
       await dehydrate(get(), "app");
       return;
-    }
-
-    if (state.sync.settings.accountId !== accountId) {
-      state.resetSync();
     }
 
     const expectedRevision =

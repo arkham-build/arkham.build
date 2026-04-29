@@ -18,7 +18,7 @@ export type SettingsSyncState = {
   conflict: SettingsResponse | null;
 };
 
-export type DeckSyncConflictState = {
+type DeckSyncConflictState = {
   kind: "update" | "delete" | "upgrade";
   remoteVersion: string | null;
 };
@@ -53,4 +53,5 @@ export type SyncSlice = SyncState & {
   setSettingsSync(payload: Partial<SettingsSyncState>): void;
   setDecksSync(payload: Partial<DecksSyncState>): void;
   setDeckSyncItem(id: Id, payload: Partial<DeckSyncItemState> | null): void;
+  syncDecks(): Promise<void>;
 };

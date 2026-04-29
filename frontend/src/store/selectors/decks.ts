@@ -301,7 +301,7 @@ export const selectDeckHistoryCached = createSelector(
   },
 );
 
-export function selectDeckHistory(
+function selectDeckHistory(
   deps: Pick<StoreState, "metadata" | "data" | "sharing" | "settings">,
   lookupTables: LookupTables,
   collator: Intl.Collator,

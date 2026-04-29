@@ -18,7 +18,7 @@ import {
 } from "@arkham-build/shared";
 import { ApiError, apiV2Request } from "./shared";
 
-export class DeckConflictError extends ApiError {
+class DeckConflictError extends ApiError {
   remote: DeckConflictResponse | null;
 
   constructor(error: ApiError) {

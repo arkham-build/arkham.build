@@ -1,102 +1,293 @@
-import type { StoreApi } from "zustand";
-import { type Deck, DeckSchema } from "@/store/schemas/deck.schema";
-import {
-  selectLocaleSortingCollator,
-  selectLookupTables,
-  selectMetadata,
-  selectStaticBuildQlInterpreter,
-} from "../selectors/shared";
+import type { DeckId, DeckManifestResponse } from "@arkham-build/shared";
+import type { Deck, Id } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
-import { mapValidationToProblem } from "./deck-io";
-import { validateDeck } from "./deck-validation";
-import { applyHiddenSlots, extractHiddenSlots } from "./fan-made-content";
-import { resolveDeck } from "./resolve-deck";
+import type {
+  DeckSyncItemState,
+  DecksSyncState,
+  SyncStatus,
+} from "../slices/sync.types";
 
-interface SyncAdapter<Output extends Record<string, unknown>> {
-  in(deck: Deck): Deck;
-  out(deck: Deck): Output;
-}
+const SKIPPED_ITEM_STATUSES = new Set<SyncStatus>(["saving", "conflict"]);
 
-type ArkhamDBDeckPayload = Omit<
-  Deck,
-  | "slots"
-  | "sideSlots"
-  | "ignoreDeckLimitSlots"
-  | "problem"
-  | "source"
-  | "version"
-  | "previous_deck"
-  | "next_deck"
-  | "taboo_id"
-> & {
-  slots: string;
-  side: string | undefined;
-  ignored: string | undefined;
-  taboo: number | undefined;
+type DataState = StoreState["data"];
+type DeckEditsState = StoreState["deckEdits"];
+
+type DeckReconciliationPlan = {
+  fetchIds: DeckId[];
+  removeIds: Id[];
+  skippedIds: Id[];
 };
 
-class ArkhamDBAdapter implements SyncAdapter<ArkhamDBDeckPayload> {
-  constructor(public stateGetter: StoreApi<StoreState>["getState"]) {}
+type DeckReconciliationInput = {
+  accountId: string;
+  data: DataState;
+  deckEdits: DeckEditsState;
+  manifest: DeckManifestResponse;
+  plan: DeckReconciliationPlan;
+  remoteDecks: Deck[];
+  syncDecks: DecksSyncState;
+};
 
-  in(_deck: Deck): Deck {
-    let state = this.stateGetter();
+type DeckReconciliationResult = {
+  data: DataState;
+  deckEdits: DeckEditsState;
+  syncDecks: DecksSyncState;
+};
 
-    const deck = DeckSchema.parse(_deck);
-    applyHiddenSlots(deck, selectMetadata(state));
+export function getDeckReconciliationPlan({
+  data,
+  manifest,
+  syncDecks,
+}: {
+  data: DataState;
+  manifest: DeckManifestResponse;
+  syncDecks: DecksSyncState;
+}): DeckReconciliationPlan {
+  const fetchIds: DeckId[] = [];
+  const skippedIds = new Set<Id>();
 
-    state = this.stateGetter();
+  for (const item of manifest.decks) {
+    const syncItem = syncDecks.items[item.id];
 
-    const lookupTables = selectLookupTables(state);
-    const metadata = selectMetadata(state);
+    if (shouldSkipSyncItem(syncItem)) {
+      skippedIds.add(item.id);
+      continue;
+    }
 
-    const validation = validateDeck(
-      resolveDeck(
-        {
-          lookupTables,
-          metadata,
-          sharing: state.sharing,
-        },
-        selectLocaleSortingCollator(state),
-        deck,
-      ),
-      metadata,
-      lookupTables,
-      selectStaticBuildQlInterpreter(state),
-    );
-
-    const problem = mapValidationToProblem(validation);
-
-    return {
-      ...deck,
-      problem,
-      source: "arkhamdb",
-    };
+    if (
+      !data.decks[item.id] ||
+      !syncItem ||
+      syncItem.version !== item.version
+    ) {
+      fetchIds.push(item.id);
+    }
   }
 
-  out(_deck: Deck) {
-    const state = this.stateGetter();
-    const deck = structuredClone(_deck);
+  const removeIds = Object.keys(syncDecks.items).reduce<Id[]>((acc, id) => {
+    if (manifestHasDeckId(manifest, id)) return acc;
 
-    extractHiddenSlots(deck, selectMetadata(state));
+    const item = syncDecks.items[id];
 
-    const payload = deck as Record<string, unknown>;
+    if (shouldSkipSyncItem(item)) {
+      skippedIds.add(id);
+      return acc;
+    }
 
-    payload.slots = JSON.stringify(deck.slots);
-    payload.side = JSON.stringify(deck.sideSlots);
-    payload.ignored = JSON.stringify(deck.ignoreDeckLimitSlots);
-    payload.source = undefined;
-    payload.version = undefined;
-    payload.previous_deck = undefined;
-    payload.next_deck = undefined;
-    payload.taboo = deck.taboo_id;
+    acc.push(id);
+    return acc;
+  }, []);
 
-    delete payload.sideSlots;
-    delete payload.ignoreDeckLimitSlots;
-
-    return payload as ArkhamDBDeckPayload;
-  }
+  return {
+    fetchIds,
+    removeIds,
+    skippedIds: Array.from(skippedIds),
+  };
 }
 
-export const syncAdapters = {
-  arkhamdb: ArkhamDBAdapter,
-};
+export function applyRemoteDeckReconciliation({
+  accountId,
+  data,
+  deckEdits,
+  manifest,
+  plan,
+  remoteDecks,
+  syncDecks,
+}: DeckReconciliationInput): DeckReconciliationResult {
+  const now = Date.now();
+  const skippedIds = new Set<DeckId>(plan.skippedIds);
+
+  const nextDecks = { ...data.decks };
+  const nextDeckFolders = { ...data.deckFolders };
+  const nextDeckEdits = { ...deckEdits };
+  const nextItems = { ...syncDecks.items };
+  const nextUndoHistory = data.undoHistory
+    ? { ...data.undoHistory }
+    : undefined;
+
+  for (const id of plan.removeIds) {
+    const item = nextItems[id];
+
+    if (shouldSkipSyncItem(item)) {
+      skippedIds.add(id);
+      continue;
+    }
+
+    delete nextDecks[id];
+    delete nextItems[id];
+    delete nextDeckEdits[id];
+    delete nextDeckFolders[id];
+    delete nextUndoHistory?.[id];
+  }
+
+  for (const deck of remoteDecks) {
+    const item = nextItems[deck.id];
+
+    if (shouldSkipSyncItem(item)) {
+      skippedIds.add(deck.id);
+      continue;
+    }
+
+    nextDecks[deck.id] = deck;
+    nextItems[deck.id] = makeSyncedItem(deck.version, now, item);
+    delete nextUndoHistory?.[deck.id];
+  }
+
+  for (const item of manifest.decks) {
+    const syncItem = nextItems[item.id];
+
+    if (hasDeckId(skippedIds, item.id)) continue;
+
+    if (shouldSkipSyncItem(syncItem)) {
+      skippedIds.add(item.id);
+      continue;
+    }
+
+    if (!nextDecks[item.id]) continue;
+    nextItems[item.id] = makeSyncedItem(item.version, now, syncItem);
+  }
+
+  const sanitizedDecks = sanitizeDeckLinks(nextDecks);
+
+  return {
+    data: {
+      ...data,
+      decks: sanitizedDecks,
+      deckFolders: nextDeckFolders,
+      history: rebuildDeckHistory(sanitizedDecks),
+      undoHistory: nextUndoHistory,
+    },
+    deckEdits: nextDeckEdits,
+    syncDecks: {
+      ...syncDecks,
+      accountId,
+      manifestVersion: skippedIds.size
+        ? syncDecks.manifestVersion
+        : manifest.version,
+      lastSyncedAt: now,
+      status: getReconciliationStatus(skippedIds, nextItems),
+      error: null,
+      items: nextItems,
+    },
+  };
+}
+
+export function hasUnsettledDeckSyncItems(syncDecks: DecksSyncState) {
+  return Object.values(syncDecks.items).some(shouldSkipSyncItem);
+}
+
+function makeSyncedItem(
+  version: string,
+  lastSyncedAt: number,
+  item: DeckSyncItemState | undefined,
+): DeckSyncItemState {
+  return {
+    ...item,
+    version,
+    status: "synced",
+    lastSyncedAt,
+    error: null,
+    conflict: null,
+  };
+}
+
+function getReconciliationStatus(
+  skippedIds: Set<DeckId>,
+  items: Record<DeckId, DeckSyncItemState>,
+): SyncStatus {
+  if (!skippedIds.size) return "synced";
+
+  for (const id of skippedIds) {
+    if (items[id]?.status === "conflict") return "conflict";
+  }
+
+  return "saving";
+}
+
+export function rebuildDeckHistory(decks: Record<DeckId, Deck>) {
+  const previousIds = new Set<DeckId>();
+
+  for (const deck of Object.values(decks)) {
+    if (deck.previous_deck != null && decks[deck.previous_deck]) {
+      previousIds.add(deck.previous_deck);
+    }
+  }
+
+  const latestIds = Object.values(decks)
+    .filter((deck) => {
+      const hasKnownNextDeck =
+        deck.next_deck != null && decks[deck.next_deck] != null;
+      return !hasDeckId(previousIds, deck.id) && !hasKnownNextDeck;
+    })
+    .map((deck) => deck.id);
+
+  const history: DataState["history"] = {};
+
+  for (const latestId of latestIds) {
+    history[latestId] = collectPreviousDeckIds(decks, latestId);
+  }
+
+  for (const deck of Object.values(decks)) {
+    if (!history[deck.id] && !hasDeckId(previousIds, deck.id)) {
+      history[deck.id] = [];
+    }
+  }
+
+  return history;
+}
+
+function collectPreviousDeckIds(decks: Record<DeckId, Deck>, latestId: DeckId) {
+  const history: Id[] = [];
+  const seen = new Set<DeckId>([latestId]);
+  let current = decks[latestId];
+
+  while (current?.previous_deck != null) {
+    const previousId = current.previous_deck;
+
+    if (hasDeckId(seen, previousId) || !decks[previousId]) break;
+
+    history.push(previousId);
+    seen.add(previousId);
+    current = decks[previousId];
+  }
+
+  return history;
+}
+
+function sanitizeDeckLinks(decks: Record<DeckId, Deck>) {
+  return Object.fromEntries(
+    Object.entries(decks).map(([id, deck]) => [
+      id,
+      {
+        ...deck,
+        previous_deck:
+          deck.previous_deck != null && decks[deck.previous_deck]
+            ? deck.previous_deck
+            : null,
+        next_deck:
+          deck.next_deck != null && decks[deck.next_deck]
+            ? deck.next_deck
+            : null,
+      },
+    ]),
+  );
+}
+
+function manifestHasDeckId(manifest: DeckManifestResponse, id: DeckId) {
+  return manifest.decks.some((item) => deckIdsMatch(item.id, id));
+}
+
+function hasDeckId(ids: Set<DeckId>, id: DeckId) {
+  for (const candidate of ids) {
+    if (deckIdsMatch(candidate, id)) return true;
+  }
+
+  return false;
+}
+
+function deckIdsMatch(a: DeckId, b: DeckId) {
+  return a === b || String(a) === String(b);
+}
+
+function shouldSkipSyncItem(item: DeckSyncItemState | undefined) {
+  return item ? SKIPPED_ITEM_STATUSES.has(item.status) : false;
+}

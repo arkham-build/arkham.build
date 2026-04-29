@@ -12,8 +12,8 @@ import {
 import { ResolvedDeckProvider } from "@/components/resolved-deck-context-provider";
 import { Loader } from "@/components/ui/loader";
 import { useStore } from "@/store";
+import { providerAdapters } from "@/store/lib/provider-adapters";
 import { resolveDeck } from "@/store/lib/resolve-deck";
-import { syncAdapters } from "@/store/lib/sync";
 import type { Id } from "@/store/schemas/deck.schema";
 import {
   getDeckHistory,
@@ -68,7 +68,7 @@ function ArkhamDBDeckView({ id, type }: { id: string; type: DeckDisplayType }) {
   async function queryFn() {
     const decks = await queryDeck(clientId, type, idInt);
     cacheFanMadeContent(decks);
-    const adapter = new syncAdapters.arkhamdb(useStore.getState);
+    const adapter = new providerAdapters.arkhamdb(useStore.getState);
     return decks.map((deck) => adapter.in(deck));
   }
 

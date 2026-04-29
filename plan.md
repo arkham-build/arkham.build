@@ -38,9 +38,8 @@ Implemented so far:
 - backend tests added for manifest, batch, create, update, delete, and conflict responses
 
 Still pending:
-- frontend request helpers and sync state/workflow
-- removal of legacy frontend `connections`-based deck sync
-- conflict UX and reconciliation flow in the frontend
+- write-through deck create/update/delete flows in the frontend
+- conflict UX in the frontend
 - backend upgrade endpoint and frontend upgrade integration
 
 ## Current state
@@ -316,7 +315,7 @@ Implications:
 ## Frontend tasks
 1. Add typed request helpers for manifest, batch, and write-through deck endpoints
 2. Add `sync.decks` slice/types
-3. Rework startup deck sync to use manifest comparison instead of full collection pulls
+3. Rework startup deck sync to use manifest comparison instead of full collection pulls ✅
 4. Refactor deck create/update/delete flows to call backend deck endpoints immediately
 5. Integrate upgrade flow after the backend endpoint exists
 6. Add conflict handling and summary toast
@@ -335,7 +334,7 @@ Implications:
 6. Remove legacy `connections`-based deck sync ✅
 7. Frontend request helpers ✅
 8. Frontend `sync.decks` state and persistence ✅
-9. Startup manifest reconciliation flow
+9. Startup manifest reconciliation flow ✅
 10. Write-through create/update/delete flows
 11. Conflict UX
 12. Upgrade flow after backend endpoint lands
