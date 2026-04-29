@@ -48,8 +48,15 @@ export const DecklistConfigSchema = z.object({
 });
 export type DecklistConfig = z.infer<typeof DecklistConfigSchema>;
 
-export const STORAGE_PROVIDERS = ["local", "shared", "arkhamdb"] as const;
-export const StorageProviderSchema = z.enum(["local", "shared", "arkhamdb"]);
+export const STORAGE_PROVIDERS = [
+  "local",
+  "remote",
+  "shared",
+  "arkhamdb",
+] as const;
+export const StorageProviderSchema = z
+  .enum(["local", "remote", "shared", "arkhamdb"])
+  .nullish();
 export type StorageProvider = z.infer<typeof StorageProviderSchema>;
 
 export const SettingsSchema = z.object({

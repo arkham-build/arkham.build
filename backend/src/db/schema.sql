@@ -293,7 +293,7 @@ CREATE TABLE public.deck (
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     description text DEFAULT ''::text,
     exile_string text,
-    id uuid DEFAULT uuidv7() NOT NULL,
+    id text DEFAULT (uuidv7())::text NOT NULL,
     ignore_deck_limit jsonb,
     investigator_code character varying(255) NOT NULL,
     investigator_name character varying(255) NOT NULL,
@@ -302,7 +302,6 @@ CREATE TABLE public.deck (
     next_deck text,
     prev_deck text,
     problem text,
-    provider_deck_id text,
     provider_type character varying(64) NOT NULL,
     side_slots jsonb,
     slots jsonb NOT NULL,
@@ -590,14 +589,6 @@ ALTER TABLE ONLY public.data_version
 
 ALTER TABLE ONLY public.deck
     ADD CONSTRAINT deck_pkey PRIMARY KEY (id);
-
-
---
--- Name: deck deck_provider_deck_id_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.deck
-    ADD CONSTRAINT deck_provider_deck_id_key UNIQUE (provider_deck_id);
 
 
 --
@@ -922,13 +913,6 @@ CREATE INDEX idx_deck_prev_deck ON public.deck USING btree (prev_deck);
 
 
 --
--- Name: idx_deck_provider_deck_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_deck_provider_deck_id ON public.deck USING btree (provider_deck_id);
-
-
---
 -- Name: idx_decklist_not_duplicate; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1140,7 +1124,7 @@ ALTER TABLE ONLY public.deck
 --
 
 ALTER TABLE ONLY public.deck
-    ADD CONSTRAINT deck_next_deck_fkey FOREIGN KEY (next_deck) REFERENCES public.deck(provider_deck_id) ON DELETE SET NULL;
+    ADD CONSTRAINT deck_next_deck_fkey FOREIGN KEY (next_deck) REFERENCES public.deck(id) ON DELETE SET NULL;
 
 
 --
@@ -1148,7 +1132,7 @@ ALTER TABLE ONLY public.deck
 --
 
 ALTER TABLE ONLY public.deck
-    ADD CONSTRAINT deck_prev_deck_fkey FOREIGN KEY (prev_deck) REFERENCES public.deck(provider_deck_id) ON DELETE SET NULL;
+    ADD CONSTRAINT deck_prev_deck_fkey FOREIGN KEY (prev_deck) REFERENCES public.deck(id) ON DELETE SET NULL;
 
 
 --
@@ -1228,4 +1212,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260113192307'),
     ('20260206184321'),
     ('20260227194035'),
-    ('20260418123000');
+    ('20260418123000'),
+    ('20260429184500');

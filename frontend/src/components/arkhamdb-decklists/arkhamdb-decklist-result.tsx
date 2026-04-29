@@ -32,6 +32,7 @@ export function ArkhamDBDecklistResult({ result, showDetails }: Props) {
     const deps = { lookupTables, metadata, sharing };
     return resolveDeck(deps, collator, {
       ...result,
+      source: undefined,
     });
   }, [result, lookupTables, metadata, sharing, collator]);
 

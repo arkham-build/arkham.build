@@ -82,7 +82,7 @@ export function formatProviderName(name: StorageProvider) {
     }
 
     default: {
-      return capitalize(name);
+      return capitalize(name ?? "local");
     }
   }
 }

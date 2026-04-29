@@ -6,9 +6,9 @@ import type { DecksSyncState, SyncStatus } from "../slices/sync.types";
 import {
   applyRemoteDeckReconciliation,
   getDeckReconciliationPlan,
-} from "./sync";
+} from "./sync-reconciliation";
 
-describe("deck reconciliation", () => {
+describe("sync reconciliation", () => {
   describe("getDeckReconciliationPlan", () => {
     it("fetches missing and changed remote decks", () => {
       const plan = getDeckReconciliationPlan({
@@ -76,9 +76,11 @@ describe("deck reconciliation", () => {
   describe("applyRemoteDeckReconciliation", () => {
     it("applies fetched decks and rebuilds history", () => {
       const previousDeck = makeDeck("previous", "v1", {
+        source: "local",
         next_deck: "latest",
       });
       const latestDeck = makeDeck("latest", "v1", {
+        source: "remote",
         previous_deck: "previous",
       });
 
@@ -100,8 +102,8 @@ describe("deck reconciliation", () => {
       });
 
       expect(result.data.decks).toMatchObject({
-        previous: { id: "previous" },
-        latest: { id: "latest" },
+        previous: { id: "previous", source: "local" },
+        latest: { id: "latest", source: "remote" },
       });
       expect(result.data.history).toEqual({ latest: ["previous"] });
       expect(result.syncDecks.manifestVersion).toBe("manifest-version");

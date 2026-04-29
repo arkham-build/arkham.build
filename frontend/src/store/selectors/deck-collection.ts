@@ -206,6 +206,7 @@ const makeDeckProviderFilter = (values: StorageProvider[]) => {
       values.some((val) => {
         return (
           (val === "shared" && deck.shared) ||
+          (val === "remote" && deck.source === "remote") ||
           (val === "arkhamdb" && deck.source === "arkhamdb") ||
           (val === "local" && !deck.shared && !deck.source)
         );

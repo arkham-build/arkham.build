@@ -5,7 +5,7 @@ import {
   applyRemoteDeckReconciliation,
   getDeckReconciliationPlan,
   hasUnsettledDeckSyncItems,
-} from "../lib/sync";
+} from "../lib/sync-reconciliation";
 import { dehydrate } from "../persist";
 import { fetchDeckBatch, fetchDeckManifest } from "../services/requests/decks";
 import type { StoreState } from ".";

@@ -73,6 +73,42 @@ export function useDeleteUpgrade() {
   );
 }
 
+export function useUploadDeckToProvider() {
+  const toast = useToast();
+  const { t } = useTranslation();
+  const [, navigate] = useLocation();
+
+  const uploadDeckToProvider = useStore((state) => state.uploadDeckToProvider);
+
+  return useCallback(
+    async (deckId: Id) => {
+      const provider = t("deck_edit.config.storage_provider.remote");
+
+      const toastId = toast.show({
+        children: t("deck.toasts.upload_loading", { provider }),
+        variant: "loading",
+      });
+
+      try {
+        const id = await uploadDeckToProvider(deckId, "remote");
+        toast.dismiss(toastId);
+        if (id !== deckId) navigate(`/deck/view/${id}`, { replace: true });
+      } catch (err) {
+        toast.dismiss(toastId);
+
+        toast.show({
+          children: t("deck.toasts.upload_error", {
+            provider,
+            error: (err as Error)?.message,
+          }),
+          variant: "error",
+        });
+      }
+    },
+    [navigate, toast, uploadDeckToProvider, t],
+  );
+}
+
 export function useDuplicateDeck() {
   const toast = useToast();
   const { t } = useTranslation();

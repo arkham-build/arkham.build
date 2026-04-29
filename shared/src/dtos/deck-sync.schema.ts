@@ -39,6 +39,12 @@ export const DeckDeleteRequestSchema = z.object({
 });
 export type DeckDeleteRequest = z.infer<typeof DeckDeleteRequestSchema>;
 
+export const DeckUpgradeRequestSchema = z.object({
+  deck: DeckCreateRequestSchema,
+  expectedVersion: z.string(),
+});
+export type DeckUpgradeRequest = z.infer<typeof DeckUpgradeRequestSchema>;
+
 export const DeckBatchResponseSchema = z.array(DeckSchema);
 export type DeckBatchResponse = z.infer<typeof DeckBatchResponseSchema>;
 

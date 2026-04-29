@@ -71,6 +71,42 @@ describe("data slice", () => {
     });
   });
 
+  describe("actions.deleteUpgrade", () => {
+    afterEach(async () => {
+      store = await getMockStore();
+    });
+
+    it("removes only the latest upgrade from state", async () => {
+      store.setState({
+        data: {
+          decks: {
+            "1": { id: "1", next_deck: "2" } as Deck,
+            "2": { id: "2", previous_deck: "1" } as Deck,
+            "3": { id: "3" } as Deck,
+          },
+          history: {
+            "2": ["1"],
+            "3": [],
+          },
+          folders: {},
+          deckFolders: {},
+        },
+      });
+
+      await store.getState().deleteUpgrade("2");
+
+      const state = store.getState();
+      expect(state.data.decks).toEqual({
+        "1": { id: "1", next_deck: null },
+        "3": { id: "3" },
+      });
+      expect(state.data.history).toEqual({
+        "1": [],
+        "3": [],
+      });
+    });
+  });
+
   describe("actions.duplicateDeck", () => {
     const mockState = {
       data: {

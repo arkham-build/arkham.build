@@ -217,7 +217,6 @@ export interface Deck {
   next_deck: string | null;
   prev_deck: string | null;
   problem: string | null;
-  provider_deck_id: string | null;
   provider_type: string;
   side_slots: Json | null;
   slots: Json;

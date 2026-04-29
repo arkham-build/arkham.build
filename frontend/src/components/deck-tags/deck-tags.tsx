@@ -1,6 +1,6 @@
 import type { StorageProvider } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
-import { LockKeyholeIcon, ShareIcon } from "lucide-react";
+import { CloudIcon, LockKeyholeIcon, ShareIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useShallow } from "zustand/react/shallow";
@@ -87,15 +87,19 @@ export function ProviderTagInner({
 }) {
   let icon = null;
 
-  if (tag === "arkhamdb") {
+  const canonicalTag = tag ?? "local";
+
+  if (canonicalTag === "arkhamdb") {
     icon = <i className="icon-elder_sign" />;
-  } else if (tag === "local") {
+  } else if (canonicalTag === "local") {
     icon = <LockKeyholeIcon />;
-  } else if (tag === "shared") {
+  } else if (canonicalTag === "remote") {
+    icon = <CloudIcon />;
+  } else if (canonicalTag === "shared") {
     icon = <ShareIcon />;
   }
 
-  const str = tag.trim();
+  const str = canonicalTag.trim();
 
   return (
     <>
@@ -105,9 +109,11 @@ export function ProviderTagInner({
           ? formatProviderName(str)
           : str === "local"
             ? t("deck.tags.private")
-            : str === "shared"
-              ? t("deck.tags.shared")
-              : capitalize(str)}
+            : str === "remote"
+              ? t("deck.tags.remote")
+              : str === "shared"
+                ? t("deck.tags.shared")
+                : capitalize(str)}
       </span>
     </>
   );

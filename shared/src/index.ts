@@ -43,6 +43,8 @@ export {
   DeckManifestResponseSchema,
   type DeckUpdateRequest,
   DeckUpdateRequestSchema,
+  type DeckUpgradeRequest,
+  DeckUpgradeRequestSchema,
 } from "./dtos/deck-sync.schema.ts";
 
 export {

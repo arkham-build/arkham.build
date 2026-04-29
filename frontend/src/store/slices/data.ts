@@ -3,7 +3,7 @@ import { assert } from "@/utils/assert";
 import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import i18n from "@/utils/i18n";
 import { applyDeckEdits } from "../lib/deck-edits";
-import { cloneDeck } from "../lib/deck-factory";
+import { makeDeckCopy } from "../lib/deck-factory";
 import { formatDeckImport } from "../lib/deck-io";
 import { dehydrate } from "../persist";
 import { type Deck, type Id, isDeck } from "../schemas/deck.schema";
@@ -94,8 +94,10 @@ export const createDataSlice: StateCreator<StoreState, [], [], DataSlice> = (
     assert(deck, `Deck ${id} does not exist.`);
 
     const newDeck = options?.applyEdits
-      ? cloneDeck(applyDeckEdits(deck, state.deckEdits[id], metadata, true))
-      : cloneDeck(deck);
+      ? makeDeckCopy(applyDeckEdits(deck, state.deckEdits[id], metadata, true))
+      : makeDeckCopy(deck);
+
+    newDeck.source = null;
 
     set((prev) => ({
       data: {

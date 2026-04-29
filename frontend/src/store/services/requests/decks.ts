@@ -15,6 +15,8 @@ import {
   DeckSchema,
   type DeckUpdateRequest,
   DeckUpdateRequestSchema,
+  type DeckUpgradeRequest,
+  DeckUpgradeRequestSchema,
 } from "@arkham-build/shared";
 import { ApiError, apiV2Request } from "./shared";
 
@@ -66,6 +68,28 @@ export async function putDeck(payload: DeckUpdateRequest): Promise<Deck> {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(DeckUpdateRequestSchema.parse(payload)),
+      credentials: "include",
+    });
+
+    return DeckSchema.parse(await res.json());
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 409) {
+      throw new DeckConflictError(error);
+    }
+
+    throw error;
+  }
+}
+
+export async function postDeckUpgrade(
+  id: DeckId,
+  payload: DeckUpgradeRequest,
+): Promise<Deck> {
+  try {
+    const res = await apiV2Request(`/v2/auth/upgrade/${id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(DeckUpgradeRequestSchema.parse(payload)),
       credentials: "include",
     });
 

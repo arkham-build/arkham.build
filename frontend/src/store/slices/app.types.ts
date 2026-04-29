@@ -1,3 +1,4 @@
+import type { StorageProvider } from "@arkham-build/shared";
 import type { Deck, Id } from "@/store/schemas/deck.schema";
 import type {
   AllCardResponse,
@@ -9,6 +10,13 @@ import type { StoreState } from ".";
 type AppState = {
   clientId: string;
   bannersDismissed?: string[];
+};
+
+export type DeckUpgradePayload = {
+  id: Id;
+  xp: number;
+  exileString: string;
+  usurped?: boolean;
 };
 
 export type AppSlice = {
@@ -29,14 +37,11 @@ export type AppSlice = {
 
   saveDeck(deckId: Id): Promise<Id>;
 
+  uploadDeckToProvider(deckId: Id, provider: StorageProvider): Promise<Id>;
+
   updateDeckProperties(deckId: Id, properties: Partial<Deck>): Promise<Deck>;
 
-  upgradeDeck(payload: {
-    id: Id;
-    xp: number;
-    exileString: string;
-    usurped?: boolean;
-  }): Promise<Deck>;
+  upgradeDeck(payload: DeckUpgradePayload): Promise<Deck>;
 
   deleteAllDecks(): Promise<void>;
   deleteDeck(id: Id, callback?: () => void): Promise<void>;

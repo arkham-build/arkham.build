@@ -9,6 +9,7 @@ import {
   PencilIcon,
   ShareIcon,
   Trash2Icon,
+  UploadIcon,
 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -28,6 +29,7 @@ import { UpgradeModal } from "@/pages/deck-view/upgrade-modal";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Id } from "@/store/schemas/deck.schema";
+import { selectDeckCreateStorageProviderOptions } from "@/store/selectors/deck-create";
 import type { History } from "@/store/selectors/decks";
 import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
@@ -47,6 +49,7 @@ import {
   useDuplicateDeck,
   useExportJson,
   useExportText,
+  useUploadDeckToProvider,
 } from "./hooks";
 import css from "./sidebar.module.css";
 import type { DeckOrigin } from "./types";
@@ -170,6 +173,13 @@ function SidebarActions(props: {
     duplicateDeck(deck.id);
   }, [deck.id, duplicateDeck]);
 
+  const uploadDeckToProvider = useUploadDeckToProvider();
+
+  const onRemoteUpload = useCallback(() => {
+    setActionsOpen(false);
+    uploadDeckToProvider(deck.id);
+  }, [deck.id, uploadDeckToProvider]);
+
   const onUpgradeModalOpenChange = useCallback((val: boolean) => {
     setUpgradeModalOpen(val);
     if (!val && window.location.hash.includes("upgrade")) {
@@ -206,6 +216,14 @@ function SidebarActions(props: {
 
   const isReadOnly = !!deck.next_deck;
   const isLocal = origin === "local";
+  const isLocalOnly = isLocal && !deck.source;
+
+  const storageProviderOptions = useStore(
+    selectDeckCreateStorageProviderOptions,
+  );
+  const remoteProvider = storageProviderOptions.find(
+    (option) => option.value === "remote",
+  );
 
   useHotkey("e", onEdit, { disabled: isReadOnly || !isLocal });
   useHotkey("u", onOpenUpgradeModal, { disabled: isReadOnly || !isLocal });
@@ -336,6 +354,17 @@ function SidebarActions(props: {
                     <CopyIcon />
                     {t("deck.actions.duplicate_short")}
                   </DropdownButton>
+                  {isLocalOnly && !!remoteProvider && (
+                    <DropdownButton
+                      data-testid="view-upload-remote"
+                      onClick={onRemoteUpload}
+                    >
+                      <UploadIcon />
+                      {t("deck_view.actions.upload", {
+                        provider: remoteProvider.label,
+                      })}
+                    </DropdownButton>
+                  )}
                   <DropdownButton
                     data-testid="view-archive"
                     hotkey="cmd+a"

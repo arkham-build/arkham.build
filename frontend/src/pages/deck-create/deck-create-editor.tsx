@@ -20,6 +20,7 @@ import type { CardWithRelations } from "@/store/lib/types";
 import {
   selectDeckCreateChecked,
   selectDeckCreateInvestigators,
+  selectDeckCreateStorageProviderOptions,
 } from "@/store/selectors/deck-create";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
 import { isEmpty } from "@/utils/is-empty";
@@ -134,14 +135,8 @@ export function DeckCreateEditor() {
   const selections = decodeSelections(back, deckCreate.selections);
   const cssVariables = useAccentColor(investigator.card);
 
-  const storageProviderOptions = useMemo(
-    () => [
-      {
-        label: t("deck_edit.config.storage_provider.local"),
-        value: "local",
-      },
-    ],
-    [t],
+  const storageProviderOptions = useStore(
+    selectDeckCreateStorageProviderOptions,
   );
 
   const providerChanged =
@@ -161,10 +156,10 @@ export function DeckCreateEditor() {
           name="provider"
           options={storageProviderOptions}
           onChange={(evt) => {
-            setProvider(evt.target.value);
+            setProvider(evt.target.value as StorageProvider);
           }}
           required
-          value={deckCreate.provider}
+          value={deckCreate.provider as string}
         />
         {providerChanged && (
           <Button

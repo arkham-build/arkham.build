@@ -11,7 +11,7 @@ import {
 } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { type Selectable, sql } from "kysely";
+import type { Selectable } from "kysely";
 import type { Database } from "../../db/db.ts";
 import type { DB } from "../../db/schema.types.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
@@ -21,7 +21,6 @@ import {
   ACCOUNT_PROVIDER_TYPE,
   deckDtoToRow,
   deckRowToDto,
-  getExternalDeckId,
 } from "./conversion.ts";
 
 const routes = new Hono<HonoEnv>();
@@ -35,7 +34,7 @@ routes.get("/manifest", sessionAuth(), async (c) => {
   const manifest = DeckManifestResponseSchema.parse({
     version: getManifestVersion(decks),
     decks: decks.map((deck) => ({
-      id: getExternalDeckId(deck),
+      id: deck.id,
       version: deck.version ?? "",
       updatedAt: deck.updated_at.toISOString(),
     })),
@@ -50,7 +49,7 @@ routes.post(
   zodValidator("json", DeckBatchRequestSchema),
   async (c) => {
     const { ids } = c.req.valid("json");
-    const decks = await getAccountDecksByExternalIds(
+    const decks = await getAccountDecksByIds(
       c.get("db"),
       c.get("account").id,
       ids.map(String),
@@ -75,7 +74,7 @@ routes.post(
       .values({
         ...deckDtoToRow(deckPayload),
         account_id: accountId,
-        provider_deck_id: String(id),
+        id: String(id),
         provider_type: ACCOUNT_PROVIDER_TYPE,
         version,
       })
@@ -95,7 +94,7 @@ routes.put(
     const accountId = c.get("account").id;
     const payload = c.req.valid("json");
     const deckId = c.req.param("id");
-    const current = await getAccountDeckByExternalId(db, accountId, deckId);
+    const current = await getAccountDeckById(db, accountId, deckId);
 
     if (payload.id !== deckId) {
       throw new HTTPException(400, {
@@ -142,11 +141,7 @@ routes.delete(
     const db = c.get("db");
     const accountId = c.get("account").id;
     const { expectedVersion } = c.req.valid("json");
-    const current = await getAccountDeckByExternalId(
-      db,
-      accountId,
-      c.req.param("id"),
-    );
+    const current = await getAccountDeckById(db, accountId, c.req.param("id"));
 
     if (!current) {
       throw new HTTPException(404, { message: "Deck not found" });
@@ -174,25 +169,21 @@ async function getAccountDecksForManifest(db: Database, accountId: string) {
     .selectFrom("deck")
     .selectAll()
     .where("account_id", "=", accountId)
-    .orderBy(sql<string>`coalesce(provider_deck_id, id::text)`)
+    .orderBy("id")
     .execute();
 }
 
-async function getAccountDeckByExternalId(
-  db: Database,
-  accountId: string,
-  externalId: string,
-) {
-  const decks = await getAccountDecksByExternalIds(db, accountId, [externalId]);
-  return decks.find((deck) => getExternalDeckId(deck) === externalId);
+async function getAccountDeckById(db: Database, accountId: string, id: string) {
+  const decks = await getAccountDecksByIds(db, accountId, [id]);
+  return decks.find((deck) => deck.id === id);
 }
 
-async function getAccountDecksByExternalIds(
+async function getAccountDecksByIds(
   db: Database,
   accountId: string,
-  externalIds: string[],
+  ids: string[],
 ) {
-  if (!externalIds.length) {
+  if (!ids.length) {
     return [];
   }
 
@@ -200,12 +191,7 @@ async function getAccountDecksByExternalIds(
     .selectFrom("deck")
     .selectAll()
     .where("account_id", "=", accountId)
-    .where((eb) =>
-      eb.or([
-        eb("provider_deck_id", "in", externalIds),
-        sql<boolean>`id::text in (${sql.join(externalIds)})`,
-      ]),
-    )
+    .where("id", "in", ids)
     .execute();
 }
 
@@ -213,7 +199,7 @@ function getManifestVersion(decks: Selectable<DB["deck"]>[]) {
   const hash = createHash("sha256");
 
   const items = decks.map((deck) => ({
-    id: getExternalDeckId(deck),
+    id: deck.id,
     updatedAt: deck.updated_at.toISOString(),
     version: deck.version ?? "",
   }));

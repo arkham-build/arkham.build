@@ -17,7 +17,7 @@ export function deckRowToDto(deck: DeckRow): Deck {
     date_update: deck.updated_at.toISOString(),
     description_md: deck.description ?? "",
     exile_string: deck.exile_string,
-    id: getExternalDeckId(deck),
+    id: deck.id,
     ignoreDeckLimitSlots: parseNullableSlots(deck.ignore_deck_limit),
     investigator_code: deck.investigator_code,
     investigator_name: deck.investigator_name,
@@ -29,7 +29,9 @@ export function deckRowToDto(deck: DeckRow): Deck {
     sideSlots: parseNullableSlots(deck.side_slots),
     slots: SlotsSchema.parse(deck.slots),
     source:
-      deck.provider_type === ACCOUNT_PROVIDER_TYPE ? null : deck.provider_type,
+      deck.provider_type === ACCOUNT_PROVIDER_TYPE
+        ? "remote"
+        : deck.provider_type,
     taboo_id: deck.taboo_set_id,
     tags: deck.tags ?? "",
     user_id: null,
@@ -47,7 +49,6 @@ export function deckDtoToRow(
   | "account_id"
   | "created_at"
   | "id"
-  | "provider_deck_id"
   | "provider_type"
   | "updated_at"
   | "version"
@@ -71,12 +72,6 @@ export function deckDtoToRow(
     xp_spent: dto.xp_spent ?? null,
     xp: dto.xp ?? null,
   };
-}
-
-export function getExternalDeckId(
-  deck: Pick<DeckRow, "id" | "provider_deck_id">,
-): string {
-  return deck.provider_deck_id ?? deck.id;
 }
 
 export function getProviderType(source: string | null | undefined): string {

@@ -842,6 +842,7 @@
       "tags": {
         "limited_pool": "Limited pool",
         "private": "Private",
+        "remote": "Account",
         "sealed": "Sealed",
         "shared": "Shared"
       },
@@ -997,7 +998,9 @@
           "parallel_front": "Parallel front"
         },
         "storage_provider": {
+          "arkhamdb": "ArkhamDB",
           "local": "Private",
+          "remote": "Account",
           "shared": "Shared",
           "title": "Storage provider"
         },

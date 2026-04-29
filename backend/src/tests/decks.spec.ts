@@ -82,6 +82,22 @@ function deleteDeck(
   });
 }
 
+function upgradeDeck(
+  app: Hono<HonoEnv>,
+  cookie: string,
+  id: string,
+  payload: Record<string, unknown>,
+) {
+  return app.request(`/v2/auth/upgrade/${id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: cookie,
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
 async function readDeck(res: Response): Promise<Deck> {
   return DeckSchema.parse(await res.json());
 }
@@ -98,7 +114,7 @@ describe("Deck routes", () => {
       const { app, db, sessionCookie } = dependencies;
       await insertTestDeck(db, {
         name: "Manifest deck",
-        provider_deck_id: "deck-manifest",
+        id: "deck-manifest",
         version: "0.1",
       });
 
@@ -122,12 +138,12 @@ describe("Deck routes", () => {
       const { app, db, sessionCookie } = dependencies;
       await insertTestDeck(db, {
         name: "First",
-        provider_deck_id: "deck-1",
+        id: "deck-1",
         version: "11111111",
       });
       await insertTestDeck(db, {
         name: "Second",
-        provider_deck_id: "deck-2",
+        id: "deck-2",
         version: "22222222",
       });
 
@@ -168,7 +184,7 @@ describe("Deck routes", () => {
       const { app, db, sessionCookie } = dependencies;
       const seeded = await insertTestDeck(db, {
         name: "Original",
-        provider_deck_id: "deck-update",
+        id: "deck-update",
         version: "aaaa1111",
       });
 
@@ -192,7 +208,7 @@ describe("Deck routes", () => {
       const { app, db, sessionCookie } = dependencies;
       await insertTestDeck(db, {
         name: "Conflict",
-        provider_deck_id: "deck-conflict",
+        id: "deck-conflict",
         version: "bbbb2222",
       });
 
@@ -214,11 +230,82 @@ describe("Deck routes", () => {
     });
   });
 
+  describe("POST /v2/auth/upgrade/:id", () => {
+    test("creates an upgraded deck and links it to the previous deck", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      await insertTestDeck(db, {
+        id: "deck-upgrade-base",
+        version: "base0001",
+      });
+
+      const res = await upgradeDeck(app, sessionCookie, "deck-upgrade-base", {
+        deck: baseDeckPayload({
+          id: "deck-upgrade-created",
+          name: "Upgraded",
+          version: "upg00001",
+        }),
+        expectedVersion: "base0001",
+      });
+
+      expect(res.status).toBe(200);
+
+      const body = await readDeck(res);
+      expect(body).toMatchObject({
+        id: "deck-upgrade-created",
+        name: "Upgraded",
+        next_deck: null,
+        previous_deck: "deck-upgrade-base",
+        version: "upg00001",
+      });
+
+      const previous = await db
+        .selectFrom("deck")
+        .select(["next_deck"])
+        .where("id", "=", "deck-upgrade-base")
+        .executeTakeFirstOrThrow();
+
+      expect(previous.next_deck).toBe("deck-upgrade-created");
+    });
+
+    test("returns 409 when the previous deck already has an upgrade", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      const previous = await insertTestDeck(db, {
+        id: "deck-already-upgraded",
+        version: "base0001",
+      });
+      await insertTestDeck(db, {
+        id: "existing-upgrade",
+        version: "upg00001",
+      });
+      await db
+        .updateTable("deck")
+        .set({ next_deck: "existing-upgrade" })
+        .where("id", "=", previous.id)
+        .executeTakeFirst();
+
+      const res = await upgradeDeck(
+        app,
+        sessionCookie,
+        "deck-already-upgraded",
+        {
+          deck: baseDeckPayload({ id: "deck-new-upgrade" }),
+          expectedVersion: "base0001",
+        },
+      );
+
+      expect(res.status).toBe(409);
+    });
+  });
+
   describe("DELETE /v2/decks/:id", () => {
     test("deletes a deck when version matches", async ({ dependencies }) => {
       const { app, db, sessionCookie } = dependencies;
       await insertTestDeck(db, {
-        provider_deck_id: "deck-delete",
+        id: "deck-delete",
         version: "cccc3333",
       });
 
@@ -240,7 +327,7 @@ describe("Deck routes", () => {
     test("returns 409 on delete version conflict", async ({ dependencies }) => {
       const { app, db, sessionCookie } = dependencies;
       await insertTestDeck(db, {
-        provider_deck_id: "deck-delete-conflict",
+        id: "deck-delete-conflict",
         version: "dddd4444",
       });
 
@@ -284,7 +371,7 @@ async function insertTestDeck(
   db: Database,
   overrides: Partial<{
     name: string;
-    provider_deck_id: string;
+    id: string;
     version: string;
   }> = {},
 ) {
@@ -303,7 +390,7 @@ async function insertTestDeck(
       investigator_name: "Roland Banks",
       meta: {},
       name: overrides.name ?? "Seeded deck",
-      provider_deck_id: overrides.provider_deck_id ?? "deck-seeded",
+      id: overrides.id ?? "deck-seeded",
       provider_type: "account",
       slots: { "01006": 1 },
       tags: null,

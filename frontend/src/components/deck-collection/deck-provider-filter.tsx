@@ -34,8 +34,8 @@ export function DeckProviderFilter(props: Props) {
   );
 
   const onChange = useCallback(
-    (value: StorageProvider[]) => {
-      setFilterValue("provider", value);
+    (value: string[]) => {
+      setFilterValue("provider", value as StorageProvider[]);
     },
     [setFilterValue],
   );

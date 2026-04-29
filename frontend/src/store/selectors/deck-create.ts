@@ -49,6 +49,30 @@ export const selectDeckCreateInvestigators = createSelector(
   },
 );
 
+export const selectDeckCreateStorageProviderOptions = createSelector(
+  (state: StoreState) => state.auth.status,
+  (state: StoreState) => state.settings.locale,
+  (authStatus) => {
+    const providers: string[] = ["local", "remote", "arkhamdb"];
+
+    return providers
+      .filter((provider) => {
+        switch (provider) {
+          case "local":
+            return true;
+          case "remote":
+            return authStatus === "authenticated";
+          default:
+            return false;
+        }
+      })
+      .map((provider) => ({
+        label: i18n.t(`deck_edit.config.storage_provider.${provider}`),
+        value: provider,
+      }));
+  },
+);
+
 export const selectDeckCreateCardSets = createSelector(
   selectMetadata,
   selectLookupTables,

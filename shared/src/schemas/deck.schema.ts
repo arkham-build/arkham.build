@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { StorageProviderSchema } from "./settings.schema.ts";
 
 export const DeckIdSchema = z.union([z.number(), z.string()]);
 export type DeckId = z.infer<typeof DeckIdSchema>;
@@ -37,7 +38,7 @@ export const DeckSchema = z.object({
   problem: z.union([DeckProblemSchema, z.string()]).nullish(),
   sideSlots: SafeSlotsSchema,
   slots: SlotsSchema,
-  source: z.string().nullish(),
+  source: StorageProviderSchema,
   taboo_id: z.number().nullish(),
   tags: z.string(),
   user_id: z.number().nullish(),

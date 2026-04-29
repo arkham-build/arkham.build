@@ -1,7 +1,7 @@
 import type { ChangeRecord } from "../lib/deck-edits";
 import type { Deck, Id } from "../schemas/deck.schema";
 
-type UndoEntry = {
+export type UndoEntry = {
   changes: ChangeRecord;
   date_update: string;
   version: string;

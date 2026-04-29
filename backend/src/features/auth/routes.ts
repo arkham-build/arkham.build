@@ -1,6 +1,9 @@
 import assert from "node:assert";
 import {
   CompleteProfileRequestSchema,
+  DeckConflictResponseSchema,
+  DeckSchema,
+  DeckUpgradeRequestSchema,
   ForgotPasswordRequestSchema,
   LoginRequestSchema,
   ResendVerificationRequestSchema,
@@ -15,6 +18,11 @@ import { HTTPException } from "hono/http-exception";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { isEmpty } from "../../lib/is-empty.ts";
 import { zodValidator } from "../../lib/validation.ts";
+import {
+  ACCOUNT_PROVIDER_TYPE,
+  deckDtoToRow,
+  deckRowToDto,
+} from "../decks/conversion.ts";
 import {
   authorize,
   exchangeAuthCodeForToken,
@@ -329,6 +337,88 @@ routes.post(
     });
 
     return new Response(null, { status: 200 });
+  },
+);
+
+routes.post(
+  "/upgrade/:id",
+  sessionAuth(),
+  zodValidator("json", DeckUpgradeRequestSchema),
+  async (c) => {
+    const db = c.get("db");
+    const accountId = c.get("account").id;
+    const previousDeckId = c.req.param("id");
+    const { deck, expectedVersion } = c.req.valid("json");
+
+    if (String(deck.id) === previousDeckId) {
+      throw new HTTPException(400, {
+        message: "Upgraded deck id must differ from previous deck id",
+      });
+    }
+
+    const created = await db.transaction().execute(async (tx) => {
+      const current = await tx
+        .selectFrom("deck")
+        .selectAll()
+        .where("account_id", "=", accountId)
+        .where("id", "=", previousDeckId)
+        .forUpdate()
+        .executeTakeFirst();
+
+      if (!current) {
+        throw new HTTPException(404, { message: "Deck not found" });
+      }
+
+      if (current.version !== expectedVersion) {
+        throw new HTTPException(409, {
+          message: "Stored deck version does not match the expected version",
+          cause: DeckConflictResponseSchema.parse({
+            remoteDeck: deckRowToDto(current),
+            remoteVersion: current.version ?? null,
+          }),
+        });
+      }
+
+      if (current.next_deck) {
+        throw new HTTPException(409, {
+          message: "Deck already has an upgrade",
+          cause: DeckConflictResponseSchema.parse({
+            remoteDeck: deckRowToDto(current),
+            remoteVersion: current.version ?? null,
+          }),
+        });
+      }
+
+      const { id, version, ...deckPayload } = deck;
+
+      const createdDeckId = String(id);
+
+      const created = await tx
+        .insertInto("deck")
+        .values({
+          ...deckDtoToRow({
+            ...deckPayload,
+            next_deck: null,
+            previous_deck: current.id,
+          }),
+          account_id: accountId,
+          id: createdDeckId,
+          provider_type: ACCOUNT_PROVIDER_TYPE,
+          version,
+        })
+        .returningAll()
+        .executeTakeFirstOrThrow();
+
+      await tx
+        .updateTable("deck")
+        .set({ next_deck: createdDeckId, updated_at: new Date() })
+        .where("id", "=", current.id)
+        .executeTakeFirst();
+
+      return created;
+    });
+
+    return c.json(DeckSchema.parse(deckRowToDto(created)));
   },
 );
 

@@ -1,40 +1,25 @@
 import type { Card } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
-import { applyDeckEdits, getChangeRecord } from "@/store/lib/deck-edits";
-import { createDeck } from "@/store/lib/deck-factory";
-import type { Deck } from "@/store/schemas/deck.schema";
 import factions from "@/store/services/data/factions.json";
 import subTypes from "@/store/services/data/subtypes.json";
 import types from "@/store/services/data/types.json";
-import { incrementVersion } from "@/utils/arkhamdb";
 import { assert } from "@/utils/assert";
-import { decodeExileSlots } from "@/utils/card-utils";
 import { inferChapterNumber } from "@/utils/chapters";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { randomId } from "@/utils/crypto";
 import { download } from "@/utils/download";
 import { time, timeEnd } from "@/utils/time";
 import { prepareBackup, restoreBackup } from "../lib/backup";
-import { applyCardChanges } from "../lib/card-edits";
-import { mapValidationToProblem } from "../lib/deck-io";
 import {
-  decodeDeckMeta,
-  encodeCardPool,
-  encodeSealedDeck,
-} from "../lib/deck-meta";
+  createAdapter,
+  deleteAdapter,
+  updateAdapter,
+  upgradeAdapter,
+  uploadAdapter,
+} from "../lib/deck-crud";
 import { buildCacheFromDecks } from "../lib/fan-made-content";
 import { mappedByCode, mappedById } from "../lib/metadata-utils";
-import { resolveDeck } from "../lib/resolve-deck";
-import { decodeExtraSlots, encodeExtraSlots } from "../lib/slots";
-import type { DeckMeta } from "../lib/types";
+import { isSyncedStorageProvider } from "../lib/sync";
 import { dehydrate, hydrate } from "../persist";
-import { selectDeckCreateCardSets } from "../selectors/deck-create";
-import { selectDeckValid, selectLatestUpgrade } from "../selectors/decks";
-import {
-  selectLocaleSortingCollator,
-  selectLookupTables,
-  selectMetadata,
-} from "../selectors/shared";
 import type { StoreState } from ".";
 import type { AppSlice } from "./app.types";
 import { makeLists } from "./lists";
@@ -211,513 +196,132 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
   },
   async createDeck() {
     const state = get();
-    const metadata = selectMetadata(state);
-
-    assert(state.deckCreate, "DeckCreate state must be initialized.");
-
-    const extraSlots: Record<string, number> = {};
-    const meta: DeckMeta = {};
-    const slots: Record<string, number> = {};
-
-    const { investigatorCode, investigatorFrontCode, investigatorBackCode } =
-      state.deckCreate;
-
-    if (investigatorCode !== investigatorFrontCode) {
-      meta.alternate_front = investigatorFrontCode;
-    }
-
-    if (investigatorCode !== investigatorBackCode) {
-      meta.alternate_back = investigatorBackCode;
-    }
-
-    const back = applyCardChanges(
-      metadata.cards[investigatorBackCode],
-      metadata,
-      state.deckCreate.tabooSetId,
-      undefined,
-    );
-
-    const deckSizeOption = [
-      ...(back.deck_options ?? []),
-      ...(back.side_deck_options ?? []),
-    ]?.find((o) => !!o.deck_size_select);
-
-    for (const [key, value] of Object.entries(state.deckCreate.selections)) {
-      // EDGE CASE: mandy's taboo removes the deck size select,
-      // omit any selection made from deck meta.
-      if (key === "deck_size_selected" && !deckSizeOption) {
-        continue;
-      }
-
-      meta[key as keyof Omit<DeckMeta, "fan_made_content" | "hidden_slots">] =
-        value;
-    }
-
-    if (deckSizeOption && !meta.deck_size_selected) {
-      meta.deck_size_selected = "30";
-    }
-
-    const cardSets = selectDeckCreateCardSets(state);
-
-    for (const set of cardSets) {
-      if (!set.selected) continue;
-
-      for (const { card } of set.cards) {
-        const quantity =
-          state.deckCreate.extraCardQuantities?.[card.code] ??
-          set.quantities?.[card.code];
-
-        if (!quantity) continue;
-
-        if (set.id === "sideDeckRequiredCards") {
-          extraSlots[card.code] = quantity;
-        } else {
-          slots[card.code] = quantity;
-        }
-      }
-    }
-
-    if (Object.keys(extraSlots).length) {
-      meta.extra_deck = encodeExtraSlots(extraSlots);
-    }
-
-    const cardPool = state.deckCreate.cardPool ?? [];
-    if (cardPool.length) {
-      meta.card_pool = encodeCardPool(cardPool);
-    }
-
-    const sealedDeck = state.deckCreate.sealed;
-
-    if (sealedDeck) {
-      Object.assign(meta, encodeSealedDeck(sealedDeck));
-    }
-
-    const deck = createDeck({
-      investigator_code: state.deckCreate.investigatorCode,
-      investigator_name: back.real_name,
-      name: state.deckCreate.title,
-      slots,
-      meta: JSON.stringify(meta),
-      taboo_id: state.deckCreate.tabooSetId ?? null,
-      problem: "too_few_cards",
-    });
-
-    const resolved = resolveDeck(
-      {
-        lookupTables: selectLookupTables(state),
-        metadata,
-        sharing: state.sharing,
-      },
-      selectLocaleSortingCollator(state),
-      deck,
-    );
-
-    if (resolved.fanMadeData) {
-      const meta = decodeDeckMeta(deck);
-      meta.fan_made_content = resolved.fanMadeData;
-      deck.meta = JSON.stringify(meta);
-    }
-
-    set((prev) => ({
-      data: {
-        ...prev.data,
-        decks: {
-          ...prev.data.decks,
-          [deck.id]: deck,
-        },
-        history: {
-          ...prev.data.history,
-          [deck.id]: [],
-        },
-      },
-      deckCreate: undefined,
-    }));
-
+    const deck = await createAdapter.persist(createAdapter.format(state));
+    createAdapter.transition(set, deck);
     await dehydrate(get(), "app");
-
     return deck.id;
+  },
+  async uploadDeckToProvider(deckId, provider) {
+    const deck = uploadAdapter.format(get(), deckId, provider);
+    const canonicalDeck = await uploadAdapter.persist(deck);
+    uploadAdapter.transition(set, deck, canonicalDeck);
+    await dehydrate(get(), "app", "edits");
+    return canonicalDeck.id;
   },
   async deleteDeck(id, cb) {
     const state = get();
 
-    const deck = state.data.decks[id];
-    assert(deck.next_deck == null, "Cannot delete a deck that has upgrades.");
+    const deck = deleteAdapter.format(state, id);
+
+    await deleteAdapter.persist(
+      get,
+      set,
+      deck,
+      state.sync.decks.items[id]?.version,
+    );
 
     cb?.();
 
-    set((prev) => {
-      const history = { ...prev.data.history };
-      const undoHistory = { ...prev.data.undoHistory };
-      const decks = { ...prev.data.decks };
-      const deckEdits = { ...prev.deckEdits };
-
-      delete deckEdits[id];
-      delete decks[id];
-
-      const historyEntries = history[id] ?? [];
-
-      for (const prevId of historyEntries) {
-        delete decks[prevId];
-        delete deckEdits[prevId];
-        delete undoHistory[prevId];
-      }
-
-      delete history[id];
-      delete undoHistory[id];
-
-      return {
-        data: {
-          ...prev.data,
-          decks,
-          history,
-          undoHistory,
-        },
-        deckEdits,
-      };
-    });
-
+    deleteAdapter.transition(set, deck.id);
     await dehydrate(get(), "app", "edits");
-  },
-  async deleteAllDecks() {
-    set((state) => {
-      const decks = { ...state.data.decks };
-      const history = { ...state.data.history };
-      const edits = { ...state.deckEdits };
-      const undoHistory = { ...state.data.undoHistory };
-
-      for (const id of Object.keys(decks)) {
-        if (decks[id].source !== "arkhamdb") {
-          delete decks[id];
-          delete history[id];
-          delete edits[id];
-          delete undoHistory[id];
-        }
-      }
-
-      return {
-        data: {
-          ...state.data,
-          decks,
-          history,
-        },
-      };
-    });
-
-    await dehydrate(get(), "app", "edits");
-  },
-  async updateDeckProperties(deckId, properties) {
-    const state = get();
-
-    const deck = state.data.decks[deckId];
-    assert(deck, `Deck ${deckId} does not exist.`);
-
-    const nextDeck = {
-      ...deck,
-      ...properties,
-    };
-
-    nextDeck.date_update = new Date().toISOString();
-    nextDeck.version = incrementVersion(deck.version);
-
-    set((prev) => {
-      const nextEdits = { ...prev.deckEdits };
-
-      const edit = prev.deckEdits[deckId];
-
-      if (edit) {
-        if (properties.slots || properties.sideSlots || properties.meta) {
-          delete nextEdits[deckId];
-        } else {
-          const nextEdit = structuredClone(edit);
-          if (properties.name) delete nextEdit.name;
-          if (properties.tags) delete nextEdit.tags;
-          nextEdits[deckId] = nextEdit;
-        }
-      }
-
-      return {
-        deckEdits: nextEdits,
-        data: {
-          ...prev.data,
-          decks: {
-            ...prev.data.decks,
-            [nextDeck.id]: nextDeck,
-          },
-        },
-      };
-    });
-
-    await dehydrate(get(), "app", "edits");
-
-    return nextDeck;
-  },
-  async saveDeck(deckId) {
-    const state = get();
-    const metadata = selectMetadata(state);
-
-    const edits = state.deckEdits[deckId];
-
-    const deck = state.data.decks[deckId];
-    if (!deck) return deckId;
-
-    const previousDeck = deck.previous_deck
-      ? state.data.decks[deck.previous_deck]
-      : undefined;
-
-    const nextDeck = applyDeckEdits(deck, edits, metadata, true, previousDeck);
-    nextDeck.date_update = new Date().toISOString();
-    nextDeck.version = incrementVersion(deck.version);
-
-    const resolved = resolveDeck(
-      {
-        lookupTables: selectLookupTables(state),
-        metadata,
-        sharing: state.sharing,
-      },
-      selectLocaleSortingCollator(state),
-      nextDeck,
-    );
-
-    if (resolved.fanMadeData) {
-      const meta = decodeDeckMeta(nextDeck);
-      meta.fan_made_content = resolved.fanMadeData;
-      nextDeck.meta = JSON.stringify(meta);
-    }
-
-    const validation = selectDeckValid(state, resolved);
-    nextDeck.problem = mapValidationToProblem(validation);
-
-    const upgrade = selectLatestUpgrade(state, resolved);
-
-    if (upgrade) {
-      nextDeck.xp_spent = upgrade.xpSpent ?? 0;
-      nextDeck.xp_adjustment = upgrade.xpAdjustment ?? 0;
-    }
-
-    set((prev) => {
-      const deckEdits = { ...prev.deckEdits };
-      delete deckEdits[deckId];
-
-      const undoHistory = { ...prev.data.undoHistory };
-
-      const resolveState = {
-        metadata: selectMetadata(state),
-        lookupTables: selectLookupTables(state),
-        sharing: state.sharing,
-      };
-
-      const undoEntry = {
-        changes: getChangeRecord(
-          resolveDeck(resolveState, selectLocaleSortingCollator(state), deck),
-          resolveDeck(
-            resolveState,
-            selectLocaleSortingCollator(state),
-            nextDeck,
-          ),
-          true,
-        ),
-        date_update: nextDeck.date_update,
-        version: nextDeck.version,
-      };
-
-      return {
-        deckEdits,
-        data: {
-          ...prev.data,
-          decks: {
-            ...prev.data.decks,
-            [nextDeck.id]: nextDeck,
-          },
-          undoHistory: {
-            ...undoHistory,
-            [nextDeck.id]: [...(undoHistory[nextDeck.id] ?? []), undoEntry],
-          },
-        },
-      };
-    });
-
-    await dehydrate(get(), "app", "edits");
-    return nextDeck.id;
-  },
-  async upgradeDeck({ id, xp, exileString, usurped }) {
-    const state = get();
-    const metadata = selectMetadata(state);
-
-    const deck = state.data.decks[id];
-    assert(deck, `Deck ${id} does not exist.`);
-
-    assert(
-      !deck.next_deck,
-      `Deck ${id} already has an upgrade: ${deck.next_deck}.`,
-    );
-
-    const xpCarryover =
-      (deck.xp ?? 0) + (deck.xp_adjustment ?? 0) - (deck.xp_spent ?? 0);
-
-    const now = new Date().toISOString();
-
-    const newDeck: Deck = {
-      ...structuredClone(deck),
-      id: randomId(),
-      date_creation: now,
-      date_update: now,
-      next_deck: null,
-      previous_deck: deck.id,
-      version: "0.1",
-      xp: xp + xpCarryover,
-      xp_spent: null,
-      xp_adjustment: null,
-      exile_string: exileString ?? null,
-    };
-
-    const meta = decodeDeckMeta(deck);
-
-    if (usurped) {
-      delete newDeck.slots[SPECIAL_CARD_CODES.THE_GREAT_WORK];
-      meta.transform_into = SPECIAL_CARD_CODES.LOST_HOMUNCULUS;
-
-      for (const [code, quantity] of Object.entries(newDeck.slots)) {
-        const card = metadata.cards[code];
-
-        if (quantity && card.restrictions?.investigator) {
-          delete newDeck.slots[code];
-          newDeck.slots[SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS] ??= 0;
-          newDeck.slots[SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS] += quantity;
-        }
-      }
-    }
-
-    if (exileString) {
-      const exiledSlots = decodeExileSlots(exileString);
-      const extraSlots = decodeExtraSlots(meta);
-
-      for (const [code, quantity] of Object.entries(exiledSlots)) {
-        if (newDeck.slots[code]) {
-          newDeck.slots[code] -= quantity;
-          if (newDeck.slots[code] <= 0) delete newDeck.slots[code];
-        }
-
-        if (extraSlots[code]) {
-          extraSlots[code] -= quantity;
-          if (extraSlots[code] <= 0) delete extraSlots[code];
-        }
-
-        if (meta[`cus_${code}`]) {
-          delete meta[`cus_${code}`];
-        }
-      }
-
-      meta.extra_deck = encodeExtraSlots(extraSlots);
-    }
-
-    const resolved = resolveDeck(
-      {
-        lookupTables: selectLookupTables(state),
-        metadata,
-        sharing: state.sharing,
-      },
-      selectLocaleSortingCollator(state),
-      newDeck,
-    );
-
-    if (resolved.fanMadeData) {
-      const meta = decodeDeckMeta(newDeck);
-      meta.fan_made_content = resolved.fanMadeData;
-    }
-
-    newDeck.meta = JSON.stringify(meta);
-
-    const isShared = !!state.sharing.decks[deck.id];
-
-    set((prev) => {
-      const history = { ...prev.data.history };
-      history[newDeck.id] = [deck.id, ...history[deck.id]];
-      delete history[deck.id];
-
-      const deckEdits = { ...prev.deckEdits };
-      delete deckEdits[deck.id];
-
-      const undoHistory = { ...prev.data.undoHistory };
-      delete undoHistory[deck.id];
-
-      const sharedDecks = { ...prev.sharing.decks };
-      if (isShared) {
-        sharedDecks[newDeck.id] = newDeck.date_update;
-      }
-
-      return {
-        deckEdits,
-        data: {
-          ...prev.data,
-          decks: {
-            ...prev.data.decks,
-            [deck.id]: {
-              ...deck,
-              next_deck: newDeck.id,
-            },
-            [newDeck.id]: newDeck,
-          },
-          history,
-          undoHistory,
-        },
-        sharing: {
-          ...prev.sharing,
-          decks: sharedDecks,
-        },
-      };
-    });
-
-    await dehydrate(get(), "app", "edits");
-    return newDeck;
   },
   async deleteUpgrade(id, cb) {
     const state = get();
 
-    const deck = state.data.decks[id];
-
+    const deck = deleteAdapter.format(state, id);
     const previousId = deck.previous_deck;
-
-    assert(deck, `Deck ${id} does not exist.`);
     assert(previousId, "Deck does not have a previous deck");
     assert(state.data.decks[previousId], "Previous deck does not exist");
 
-    assert(
-      Array.isArray(state.data.history[deck.id]),
-      "Deck history does not exist",
+    await deleteAdapter.persist(
+      get,
+      set,
+      deck,
+      state.sync.decks.items[id]?.version,
     );
 
     cb?.(previousId);
 
-    set((prev) => {
-      const decks = { ...prev.data.decks };
-      const history = { ...prev.data.history };
-      const deckHistory = history[deck.id];
-
-      history[previousId] = deckHistory.filter((x) => deck.previous_deck !== x);
-      delete history[deck.id];
-
-      decks[previousId] = { ...decks[previousId], next_deck: null };
-      delete decks[deck.id];
-
-      const deckEdits = { ...prev.deckEdits };
-      delete deckEdits[deck.id];
-
-      const undoHistory = { ...prev.data.undoHistory };
-      delete undoHistory[deck.id];
-
-      return {
-        deckEdits,
-        data: {
-          ...prev.data,
-          decks,
-          history,
-          undoHistory,
-        },
-      };
-    });
+    deleteAdapter.transition(set, deck.id, previousId);
 
     await dehydrate(get(), "app", "edits");
     return previousId;
+  },
+  async updateDeckProperties(deckId, properties) {
+    const state = get();
+
+    const { deck } = updateAdapter.formatPropertyPatch(
+      state,
+      deckId,
+      properties,
+    );
+
+    const canonicalDeck = await updateAdapter.persist(
+      get,
+      set,
+      deck,
+      state.sync.decks.items[deckId]?.version,
+    );
+
+    updateAdapter.transition(set, canonicalDeck, undefined, (deckEdits) => {
+      const nextEdits = { ...deckEdits };
+      const edit = deckEdits[deckId];
+
+      if (!edit) return nextEdits;
+
+      if (properties.slots || properties.sideSlots || properties.meta) {
+        delete nextEdits[deckId];
+        return nextEdits;
+      }
+
+      const nextEdit = structuredClone(edit);
+      if (properties.name) delete nextEdit.name;
+      if (properties.tags) delete nextEdit.tags;
+      nextEdits[deckId] = nextEdit;
+
+      return nextEdits;
+    });
+
+    await dehydrate(get(), "app", "edits");
+
+    return deck;
+  },
+  async saveDeck(deckId) {
+    const state = get();
+    const { deck, undo } = updateAdapter.formatSave(get(), deckId);
+
+    const canonicalDeck = await updateAdapter.persist(
+      get,
+      set,
+      deck,
+      state.sync.decks.items[deckId]?.version,
+    );
+
+    updateAdapter.transition(set, canonicalDeck, undo, (deckEdits) => {
+      const nextEdits = { ...deckEdits };
+      delete nextEdits[deck.id];
+      return nextEdits;
+    });
+
+    await dehydrate(get(), "app", "edits");
+    return deck.id;
+  },
+  async upgradeDeck(payload) {
+    const state = get();
+
+    const deck = state.data.decks[payload.id];
+    assert(deck, `Deck ${payload.id} does not exist.`);
+
+    const upgrade = await upgradeAdapter.persist(
+      deck,
+      upgradeAdapter.format(state, deck, payload),
+      state.sync.decks.items[deck.id]?.version,
+    );
+
+    upgradeAdapter.transition(set, deck, upgrade);
+
+    await dehydrate(get(), "app", "edits");
+    return upgrade;
   },
   backup() {
     download(
@@ -744,6 +348,35 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     });
 
     await dehydrate(get(), "app");
+  },
+  async deleteAllDecks() {
+    set((state) => {
+      const decks = { ...state.data.decks };
+      const history = { ...state.data.history };
+      const edits = { ...state.deckEdits };
+      const undoHistory = { ...state.data.undoHistory };
+
+      for (const id of Object.keys(decks)) {
+        if (isSyncedStorageProvider(decks[id]?.source)) {
+          delete decks[id];
+          delete history[id];
+          delete edits[id];
+          delete undoHistory[id];
+        }
+      }
+
+      return {
+        data: {
+          ...state.data,
+          decks,
+          history,
+          undoHistory,
+        },
+        deckEdits: edits,
+      };
+    });
+
+    await dehydrate(get(), "app", "edits");
   },
 });
 
