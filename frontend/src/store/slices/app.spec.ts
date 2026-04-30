@@ -26,9 +26,9 @@ describe("app deck write-through actions", () => {
     vi.clearAllMocks();
   });
 
-  it("uploads a local deck to remote storage", async () => {
+  it("uploads a local deck to account storage", async () => {
     const deck = makeTestDeck({ id: "local", source: null, version: "0.1" });
-    const remoteDeck = { ...deck, source: "remote" as const, version: "1" };
+    const remoteDeck = { ...deck, source: "account" as const, version: "1" };
 
     vi.mocked(deckRequests.postDeck).mockResolvedValue(remoteDeck);
     setAuthenticated(store);
@@ -39,21 +39,21 @@ describe("app deck write-through actions", () => {
 
     const id = await store
       .getState()
-      .uploadDeckToProvider(client, "local", "remote");
+      .uploadDeckToProvider(client, "local", "account");
 
     expect(id).toBe("local");
     expect(deckRequests.postDeck).toHaveBeenCalledWith(expect.anything(), {
       ...deck,
-      source: "remote",
+      source: "account",
     });
-    expect(store.getState().data.decks.local.source).toBe("remote");
+    expect(store.getState().data.decks.local.source).toBe("account");
     expect(store.getState().sync.decks.items.local).toMatchObject({
       version: "1",
       status: "synced",
     });
   });
 
-  it("keeps an uploaded deck local when the remote request fails", async () => {
+  it("keeps an uploaded deck local when the account request fails", async () => {
     const deck = makeTestDeck({ id: "local", source: null, version: "0.1" });
 
     vi.mocked(deckRequests.postDeck).mockRejectedValue(new Error("boom"));
@@ -63,7 +63,7 @@ describe("app deck write-through actions", () => {
     });
 
     await expect(
-      store.getState().uploadDeckToProvider(client, "local", "remote"),
+      store.getState().uploadDeckToProvider(client, "local", "account"),
     ).rejects.toThrow();
 
     expect(store.getState().data.decks.local.source).toBeNull();
@@ -83,42 +83,46 @@ describe("app deck write-through actions", () => {
   it("creates remote decks through the selected provider", async () => {
     const remoteDeck = makeTestDeck({
       id: "remote",
-      source: "remote",
+      source: "account",
       version: "1",
     });
 
     vi.mocked(deckRequests.postDeck).mockResolvedValue(remoteDeck);
     setAuthenticated(store);
     store.getState().initCreate("01001");
-    store.getState().deckCreateSetProvider("remote");
+    store.getState().deckCreateSetProvider("account");
 
     const id = await store.getState().createDeck(client);
 
     expect(id).toBe("remote");
     expect(deckRequests.postDeck).toHaveBeenCalledOnce();
-    expect(store.getState().data.decks.remote.source).toBe("remote");
+    expect(store.getState().data.decks.remote.source).toBe("account");
     expect(store.getState().sync.decks.items.remote).toMatchObject({
       version: "1",
       status: "synced",
     });
   });
 
-  it("throws when creating remote decks while unauthenticated", async () => {
+  it("throws when creating account decks while unauthenticated", async () => {
     store.getState().initCreate("01001");
-    store.getState().deckCreateSetProvider("remote");
+    store.getState().deckCreateSetProvider("account");
 
     await expect(store.getState().createDeck(client)).rejects.toThrow(
-      "Storage provider remote is not available.",
+      "Storage provider account is not available.",
     );
     expect(deckRequests.postDeck).not.toHaveBeenCalled();
   });
 
-  it("saves remote decks with the expected version", async () => {
-    const deck = makeTestDeck({ id: "remote", source: "remote", version: "1" });
+  it("saves account decks with the expected version", async () => {
+    const deck = makeTestDeck({
+      id: "remote",
+      source: "account",
+      version: "1",
+    });
     const remoteDeck = makeTestDeck({
       ...deck,
       name: "Backend",
-      source: "remote",
+      source: "account",
       version: "2",
     });
 
@@ -138,7 +142,7 @@ describe("app deck write-through actions", () => {
     );
     expect(store.getState().data.decks.remote).toMatchObject({
       name: "Backend",
-      source: "remote",
+      source: "account",
       version: "2",
     });
     expect(store.getState().deckEdits.remote).toBeUndefined();
@@ -148,8 +152,12 @@ describe("app deck write-through actions", () => {
     });
   });
 
-  it("keeps remote deck edits when save fails", async () => {
-    const deck = makeTestDeck({ id: "remote", source: "remote", version: "1" });
+  it("keeps account deck edits when save fails", async () => {
+    const deck = makeTestDeck({
+      id: "remote",
+      source: "account",
+      version: "1",
+    });
 
     vi.mocked(deckRequests.putDeck).mockRejectedValue(new Error("nope"));
     setAuthenticated(store);
@@ -170,8 +178,12 @@ describe("app deck write-through actions", () => {
     });
   });
 
-  it("deletes remote decks after backend deletion succeeds", async () => {
-    const deck = makeTestDeck({ id: "remote", source: "remote", version: "1" });
+  it("deletes account decks after backend deletion succeeds", async () => {
+    const deck = makeTestDeck({
+      id: "remote",
+      source: "account",
+      version: "1",
+    });
     const callback = vi.fn();
 
     vi.mocked(deckRequests.deleteDeck).mockResolvedValue(undefined);
@@ -195,8 +207,12 @@ describe("app deck write-through actions", () => {
     expect(store.getState().sync.decks.items.remote).toBeUndefined();
   });
 
-  it("keeps remote decks when backend deletion fails", async () => {
-    const deck = makeTestDeck({ id: "remote", source: "remote", version: "1" });
+  it("keeps account decks when backend deletion fails", async () => {
+    const deck = makeTestDeck({
+      id: "remote",
+      source: "account",
+      version: "1",
+    });
     const callback = vi.fn();
 
     vi.mocked(deckRequests.deleteDeck).mockRejectedValue(new Error("nope"));

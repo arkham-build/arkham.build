@@ -94,7 +94,7 @@ export function useUploadDeckToProvider() {
 
   return useCallback(
     async (deckId: Id) => {
-      const provider = t("deck_edit.config.storage_provider.remote");
+      const provider = t("deck_edit.config.storage_provider.account");
 
       const toastId = toast.show({
         children: t("deck.toasts.upload_loading", { provider }),
@@ -104,7 +104,7 @@ export function useUploadDeckToProvider() {
       try {
         const id = await uploadDeckToProviderMutation.mutateAsync({
           deckId,
-          provider: "remote",
+          provider: "account",
         });
         toast.dismiss(toastId);
         if (id !== deckId) navigate(`/deck/view/${id}`, { replace: true });

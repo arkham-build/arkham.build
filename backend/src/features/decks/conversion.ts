@@ -28,10 +28,7 @@ export function deckRowToDto(deck: DeckRow): Deck {
     problem: deck.problem,
     sideSlots: parseNullableSlots(deck.side_slots),
     slots: SlotsSchema.parse(deck.slots),
-    source:
-      deck.provider_type === ACCOUNT_PROVIDER_TYPE
-        ? "remote"
-        : deck.provider_type,
+    source: deck.provider_type,
     taboo_id: deck.taboo_set_id,
     tags: deck.tags ?? "",
     user_id: null,

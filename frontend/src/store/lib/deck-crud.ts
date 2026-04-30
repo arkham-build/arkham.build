@@ -434,12 +434,12 @@ export const uploadAdapter = {
 
     assert(
       isStorageProviderAvailable(state, provider),
-      "Remote deck storage is not available.",
+      "Account deck storage is not available.",
     );
 
     assert(
       !isSyncedStorageProvider(deck.source),
-      `Deck ${deckId} is already remote.`,
+      `Deck ${deckId} is already account-backed.`,
     );
 
     return { ...deck, source: provider };

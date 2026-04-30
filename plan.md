@@ -260,18 +260,32 @@ For a synced deck upgrade:
 - frontend implementation can land after the backend endpoint exists
 
 ## Conflict handling
-Conflicts should be handled per deck, not globally.
+Conflicts are handled per deck, with lightweight global discovery.
 
 V1 UX:
-- show a summary toast when one or more deck conflicts exist
+- show a single summary toast when sync detects one or more deck conflicts
 - do not show one toast per deck
-- each conflict should support:
-  - `Refresh`: apply remote deck
-  - `Overwrite`: retry local save using the latest remote `version`
-- delete conflicts only support the same two actions in V1: `Refresh` and `Overwrite`
+- if there is one conflict, the toast CTA should open that deck
+- if there are multiple conflicts, the toast CTA should open the collection
+- show a conflict warning block in the deck view sidebar with:
+  - warning text
+  - conflict actions: `Refresh` and `Overwrite`
+- disable the deck view `Edit` action while that deck is conflicted
+- show a blocking full-screen conflict modal/overlay on the deck edit screen
+- the deck edit conflict UI must force the user to resolve the conflict before continuing to edit
+- mark conflicted decks in the collection with a small warning indicator
+- keep collection rows navigable
+- delete conflicts use the same two actions in V1: `Refresh` and `Overwrite`
 
-Possible future improvement:
-- conflict list UI with deck names and actions
+Resolution behavior:
+- `Refresh`: apply the authoritative remote deck locally and clear the conflict
+- `Overwrite`: retry the intended write using the latest remote `version`
+- if `Overwrite` returns another `409`, keep the conflict UI open and update from the latest conflict response
+
+State decision for V1:
+- do not extend `sync.decks.items[*].conflict` beyond the current shape
+- use existing store deck data and deck edits as the local state for resolution
+- use the conflict response payload when available, or fetch the latest remote deck if needed during refresh
 
 ## Local version handling
 We will use the existing deck `version` field for sync, but with one rule:
@@ -318,11 +332,15 @@ Implications:
 3. Rework startup deck sync to use manifest comparison instead of full collection pulls ✅
 4. Refactor deck create/update/delete flows to call backend deck endpoints immediately
 5. Integrate upgrade flow after the backend endpoint exists
-6. Add conflict handling and summary toast
-7. Ensure id/history updates remain correct when backend responses are applied
-8. Remove the existing provider-based `connections` deck sync flow completely
-9. Remove ArkhamDB-specific synced deck write logic from the frontend
-10. Add tests for reconciliation and conflict handling
+6. Add aggregated deck conflict summary toast
+7. Add deck view sidebar conflict UI with `Refresh` and `Overwrite`
+8. Disable deck view edit action while the deck is conflicted
+9. Add blocking conflict modal/overlay on deck edit
+10. Mark conflicted decks in the collection
+11. Ensure id/history updates remain correct when backend responses are applied
+12. Remove the existing provider-based `connections` deck sync flow completely
+13. Remove ArkhamDB-specific synced deck write logic from the frontend
+14. Add tests for reconciliation and conflict handling
 
 ## Suggested implementation order
 1. Shared DTOs for manifest, batch, and `expectedVersion` ✅
@@ -336,7 +354,12 @@ Implications:
 8. Frontend `sync.decks` state and persistence ✅
 9. Startup manifest reconciliation flow ✅
 10. Write-through create/update/delete flows
-11. Conflict UX
+11. Conflict UX:
+   - summary toast
+   - deck view sidebar warning
+   - disable edit on conflicted decks
+   - blocking deck edit conflict modal
+   - collection conflict indicator
 12. Upgrade flow after backend endpoint lands
 
 ## Resolved decisions

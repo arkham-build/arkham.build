@@ -172,7 +172,7 @@ function SidebarActions(props: {
 
   const uploadDeckToProvider = useUploadDeckToProvider();
 
-  const onRemoteUpload = useCallback(() => {
+  const onAccountUpload = useCallback(() => {
     setActionsOpen(false);
     uploadDeckToProvider(deck.id);
   }, [deck.id, uploadDeckToProvider]);
@@ -218,8 +218,8 @@ function SidebarActions(props: {
   const storageProviderOptions = useStore(
     selectDeckCreateStorageProviderOptions,
   );
-  const remoteProvider = storageProviderOptions.find(
-    (option) => option.value === "remote",
+  const accountProvider = storageProviderOptions.find(
+    (option) => option.value === "account",
   );
 
   useHotkey("e", onEdit, { disabled: isReadOnly || !isLocal });
@@ -351,10 +351,10 @@ function SidebarActions(props: {
                     <CopyIcon />
                     {t("deck.actions.duplicate_short")}
                   </DropdownButton>
-                  {isLocalOnly && !!remoteProvider && (
+                  {isLocalOnly && !!accountProvider && (
                     <DropdownButton
-                      data-testid="view-upload-remote"
-                      onClick={onRemoteUpload}
+                      data-testid="view-upload-account"
+                      onClick={onAccountUpload}
                     >
                       <UploadIcon />
                       {t("deck_view.actions.upload_remote")}

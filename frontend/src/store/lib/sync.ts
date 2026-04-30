@@ -12,7 +12,7 @@ export function isStorageProviderAvailable(
     case null:
     case "local":
       return true;
-    case "remote":
+    case "account":
       return state.auth.status === "authenticated";
     case "shared":
     case "arkhamdb":
@@ -21,7 +21,7 @@ export function isStorageProviderAvailable(
 }
 
 export function isSyncedStorageProvider(provider: StorageProvider): boolean {
-  return provider === "remote" || provider === "arkhamdb";
+  return provider === "account" || provider === "arkhamdb";
 }
 
 export function updateDeckSyncSuccess(

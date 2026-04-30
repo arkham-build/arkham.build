@@ -842,7 +842,7 @@
       "tags": {
         "limited_pool": "Limited pool",
         "private": "Private",
-        "remote": "arkham.build",
+        "account": "arkham.build",
         "sealed": "Sealed",
         "shared": "Shared"
       },
@@ -1000,9 +1000,9 @@
           "parallel_front": "Parallel front"
         },
         "storage_provider": {
+          "account": "Your account",
           "arkhamdb": "ArkhamDB",
           "local": "Device",
-          "remote": "arkham.build",
           "shared": "Shared",
           "title": "Storage provider"
         },

@@ -50,12 +50,12 @@ export type DecklistConfig = z.infer<typeof DecklistConfigSchema>;
 
 export const STORAGE_PROVIDERS = [
   "local",
-  "remote",
+  "account",
   "shared",
   "arkhamdb",
 ] as const;
 export const StorageProviderSchema = z
-  .enum(["local", "remote", "shared", "arkhamdb"])
+  .enum(["local", "account", "shared", "arkhamdb"])
   .nullish();
 export type StorageProvider = z.infer<typeof StorageProviderSchema>;
 

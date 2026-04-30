@@ -93,7 +93,7 @@ export function ProviderTagInner({
     icon = <i className="icon-elder_sign" />;
   } else if (canonicalTag === "local") {
     icon = <LockKeyholeIcon />;
-  } else if (canonicalTag === "remote") {
+  } else if (canonicalTag === "account") {
     icon = <CloudIcon />;
   } else if (canonicalTag === "shared") {
     icon = <ShareIcon />;
@@ -109,8 +109,8 @@ export function ProviderTagInner({
           ? formatProviderName(str)
           : str === "local"
             ? t("deck.tags.private")
-            : str === "remote"
-              ? t("deck.tags.remote")
+            : str === "account"
+              ? t("deck.tags.account")
               : str === "shared"
                 ? t("deck.tags.shared")
                 : capitalize(str)}

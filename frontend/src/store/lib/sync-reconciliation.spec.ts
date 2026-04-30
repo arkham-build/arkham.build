@@ -83,7 +83,7 @@ describe("sync reconciliation", () => {
               previous_deck: "remote",
             }),
             remote: makeDeck("remote", "v1", {
-              source: "remote",
+              source: "account",
               next_deck: "local",
             }),
           },
@@ -127,7 +127,7 @@ describe("sync reconciliation", () => {
         next_deck: "latest",
       });
       const latestDeck = makeDeck("latest", "v1", {
-        source: "remote",
+        source: "account",
         previous_deck: "previous",
       });
 
@@ -150,7 +150,7 @@ describe("sync reconciliation", () => {
 
       expect(result.data.decks).toMatchObject({
         previous: { id: "previous", source: "local" },
-        latest: { id: "latest", source: "remote" },
+        latest: { id: "latest", source: "account" },
       });
       expect(result.data.history).toEqual({ latest: ["previous"] });
       expect(result.syncDecks.manifestVersion).toBe("manifest-version");

@@ -34,7 +34,7 @@ describe("auth slice", () => {
         ...store.getState().data,
         decks: {
           local: makeDeck({ id: "local" }),
-          remote: makeDeck({ id: "remote", source: "remote" }),
+          remote: makeDeck({ id: "remote", source: "account" }),
         },
         history: {
           local: [],
@@ -83,7 +83,7 @@ describe("auth slice", () => {
         ...store.getState().data,
         decks: {
           local: makeDeck({ id: "local" }),
-          remote: makeDeck({ id: "remote", source: "remote" }),
+          remote: makeDeck({ id: "remote", source: "account" }),
         },
         history: {
           local: [],

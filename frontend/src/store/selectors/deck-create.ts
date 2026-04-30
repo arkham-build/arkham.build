@@ -53,14 +53,14 @@ export const selectDeckCreateStorageProviderOptions = createSelector(
   (state: StoreState) => state.auth.status,
   (state: StoreState) => state.settings.locale,
   (authStatus) => {
-    const providers: string[] = ["local", "remote", "arkhamdb"];
+    const providers: string[] = ["local", "account", "arkhamdb"];
 
     return providers
       .filter((provider) => {
         switch (provider) {
           case "local":
             return true;
-          case "remote":
+          case "account":
             return authStatus === "authenticated";
           default:
             return false;
