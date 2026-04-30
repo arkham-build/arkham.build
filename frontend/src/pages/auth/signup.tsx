@@ -2,14 +2,12 @@ import {
   PATTERN_VALID_PASSWORD,
   PATTERN_VALID_USERNAME,
 } from "@arkham-build/shared";
-import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { useHttpClient } from "@/store/services/http-client.context";
-import { postSignup } from "@/store/services/requests/auth";
+import { useSignupMutation } from "@/queries/mutations/auth";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
@@ -18,18 +16,14 @@ import { OAuthSeparator } from "./oauth-separator";
 
 function Signup() {
   const { t } = useTranslation();
-  const client = useHttpClient();
-  const signupMutation = useMutation({
-    mutationFn: (payload: { name: string; email: string; password: string }) =>
-      postSignup(client, payload),
-  });
+  const signupMutation = useSignupMutation();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const onSubmit = async (evt: React.FormEvent) => {
+  const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();
     await signupMutation.mutateAsync({ name, email, password });
   };

@@ -14,6 +14,7 @@ import { PageTitle } from "@/components/ui/page-title";
 import type { SelectOption } from "@/components/ui/select";
 import { Select } from "@/components/ui/select";
 import { useToast } from "@/components/ui/toast.hooks";
+import { useCreateDeckMutation } from "@/queries/mutations/decks";
 import { useStore } from "@/store";
 import { decodeSelections } from "@/store/lib/deck-meta";
 import type { CardWithRelations } from "@/store/lib/types";
@@ -23,7 +24,6 @@ import {
   selectDeckCreateStorageProviderOptions,
 } from "@/store/selectors/deck-create";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
-import { useHttpClient } from "@/store/services/http-client.context";
 import { isEmpty } from "@/utils/is-empty";
 import { useGoBack } from "@/utils/use-go-back";
 import { useAccentColor } from "../../utils/use-accent-color";
@@ -40,36 +40,14 @@ export function DeckCreateEditor() {
   const provider = useStore((state) => state.deckCreate?.provider);
   const settings = useStore((state) => state.settings);
 
-  const client = useHttpClient();
-  const createDeck = useStore((state) => state.createDeck);
   const setTitle = useStore((state) => state.deckCreateSetTitle);
   const setTabooSet = useStore((state) => state.deckCreateSetTabooSet);
   const setSelection = useStore((state) => state.deckCreateSetSelection);
   const setProvider = useStore((state) => state.deckCreateSetProvider);
 
-  const toast = useToast();
-  const [, navigate] = useLocation();
+  const onDeckCreate = useCreateDeck();
 
   const goBack = useGoBack();
-
-  const onDeckCreate = useCallback(async () => {
-    const toastId = toast.show({
-      children: t("deck_create.loading"),
-      variant: "loading",
-    });
-
-    try {
-      const id = await createDeck(client);
-      navigate(`/deck/edit/${id}`, { replace: true });
-      toast.dismiss(toastId);
-    } catch (err) {
-      toast.dismiss(toastId);
-      toast.show({
-        children: t("deck_create.error", { error: (err as Error).message }),
-        variant: "error",
-      });
-    }
-  }, [client, toast, createDeck, navigate, t]);
 
   const setInvestigatorCode = useStore(
     (state) => state.deckCreateSetInvestigatorCode,
@@ -272,6 +250,32 @@ export function DeckCreateEditor() {
       </nav>
     </div>
   );
+}
+
+function useCreateDeck() {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const [, navigate] = useLocation();
+  const createDeckMutation = useCreateDeckMutation();
+
+  return useCallback(async () => {
+    const toastId = toast.show({
+      children: t("deck_create.loading"),
+      variant: "loading",
+    });
+
+    try {
+      const id = await createDeckMutation.mutateAsync();
+      navigate(`/deck/edit/${id}`, { replace: true });
+      toast.dismiss(toastId);
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.show({
+        children: t("deck_create.error", { error: (err as Error).message }),
+        variant: "error",
+      });
+    }
+  }, [createDeckMutation, navigate, t, toast]);
 }
 
 function getInvestigatorOptions(

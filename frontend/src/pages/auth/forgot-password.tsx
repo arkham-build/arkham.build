@@ -1,11 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { useHttpClient } from "@/store/services/http-client.context";
-import { postForgotPassword } from "@/store/services/requests/auth";
+import { useForgotPasswordMutation } from "@/queries/mutations/auth";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
@@ -14,14 +12,10 @@ import { errorMapper } from "./helpers";
 function ForgotPassword() {
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const { t } = useTranslation();
-  const client = useHttpClient();
 
-  const forgotPasswordMutation = useMutation({
-    mutationFn: (payload: { emailOrUsername: string }) =>
-      postForgotPassword(client, payload),
-  });
+  const forgotPasswordMutation = useForgotPasswordMutation();
 
-  const onSubmit = async (evt: React.FormEvent) => {
+  const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();
     await forgotPasswordMutation.mutateAsync({ emailOrUsername });
   };

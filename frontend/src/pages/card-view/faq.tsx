@@ -1,12 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Details } from "@/components/ui/details";
-import { useStore } from "@/store";
+import { useFaqQuery } from "@/queries/legacy";
 import type { ResolvedCard } from "@/store/lib/types";
-import { selectClientId } from "@/store/selectors/shared";
-import { queryFaq } from "@/store/services/requests/legacy";
 import { redirectArkhamDBLinks } from "@/utils/arkhamdb";
 import { isEmpty } from "@/utils/is-empty";
 
@@ -19,18 +16,8 @@ export function Faq(props: Props) {
   const { card } = props;
 
   const { t } = useTranslation();
-  const clientId = useStore(selectClientId);
 
-  const query = useMemo(
-    () => () => queryFaq(clientId, card.code),
-    [card.code, clientId],
-  );
-
-  const response = useQuery({
-    queryKey: ["faq", card.code],
-    queryFn: query,
-    enabled: open,
-  });
+  const response = useFaqQuery(card.code, open);
 
   return (
     <Details

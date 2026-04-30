@@ -26,13 +26,13 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/components/ui/toast.hooks";
 import { UpgradeModal } from "@/pages/deck-view/upgrade-modal";
+import { useImportSharedDeckMutation } from "@/queries/mutations/decks";
 import { useStore } from "@/store";
 import { isSyncedStorageProvider } from "@/store/lib/sync";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Id } from "@/store/schemas/deck.schema";
 import { selectDeckCreateStorageProviderOptions } from "@/store/selectors/deck-create";
 import type { History } from "@/store/selectors/decks";
-import { useHttpClient } from "@/store/services/http-client.context";
 import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
@@ -197,13 +197,13 @@ function SidebarActions(props: {
     navigate(`/deck/edit/${deck.id}`);
   }, [deck.id, navigate]);
 
-  const importSharedDeck = useStore((state) => state.importSharedDeck);
+  const importSharedDeckMutation = useImportSharedDeckMutation();
 
   const { isArchived, toggleArchived } = useChangeArchiveStatus(deck.id);
 
   const onImport = useCallback(async () => {
     try {
-      const id = await importSharedDeck(deck, type);
+      const id = await importSharedDeckMutation.mutateAsync({ deck, type });
 
       navigate(`/deck/view/${id}`);
     } catch (err) {
@@ -214,7 +214,7 @@ function SidebarActions(props: {
         variant: "error",
       });
     }
-  }, [deck, importSharedDeck, toast.show, navigate, t, type]);
+  }, [deck, importSharedDeckMutation, toast.show, navigate, t, type]);
 
   const isReadOnly = !!deck.next_deck;
   const isLocal = origin === "local";
@@ -439,14 +439,12 @@ function Sharing(props: { deck: ResolvedDeck; origin: DeckOrigin }) {
 
   const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
 
-  const client = useHttpClient();
   const isSynced = isSyncedStorageProvider(deck.source);
+  const uploadDeckToProvider = useUploadDeckToProvider();
 
-  const uploadDeckToProvider = useStore((state) => state.uploadDeckToProvider);
-
-  const onUpload = () => {
-    void uploadDeckToProvider(client, deck.id, "remote");
-  };
+  const onUpload = useCallback(() => {
+    void uploadDeckToProvider(deck.id);
+  }, [deck.id, uploadDeckToProvider]);
 
   return (
     <section className={css["details"]} data-testid="share">

@@ -33,7 +33,7 @@ export function DecklistsFilters({
   const [formState, setFormState] =
     useState<DecklistsFiltersState["filters"]>(filters);
 
-  const handleSubmit = (evt: React.FormEvent) => {
+  const handleSubmit = (evt: React.SubmitEvent) => {
     evt.preventDefault();
     onFiltersChange(formState);
   };

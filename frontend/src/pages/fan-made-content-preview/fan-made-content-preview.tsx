@@ -1,5 +1,4 @@
 import type { FanMadeProject } from "@arkham-build/shared";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
@@ -7,9 +6,9 @@ import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { Loader } from "@/components/ui/loader";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
+import { useFanMadeProjectDataQuery } from "@/queries/fan-made";
 import { useStore } from "@/store";
 import { selectIsInitialized } from "@/store/selectors/shared";
-import { queryFanMadeProjectData } from "@/store/services/requests/fan-made-projects";
 import { ErrorStatus } from "../errors/404";
 import css from "./fan-made-content-preview.module.css";
 
@@ -24,12 +23,10 @@ function FanMadeContentPreview() {
     (state) => state.uncacheFanMadeProject,
   );
 
-  const fanMadeProjectQuery = useQuery<FanMadeProject>({
-    queryKey: ["fanMadeProject", id],
-    queryFn: () =>
-      queryFanMadeProjectData(`fan_made_content/${id}/project.json`),
-    enabled: !localFanMadePack,
-  });
+  const fanMadeProjectQuery = useFanMadeProjectDataQuery(
+    `fan_made_content/${id}/project.json`,
+    !localFanMadePack,
+  );
 
   useEffect(() => {
     if (fanMadeProjectQuery.data) {

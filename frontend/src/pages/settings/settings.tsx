@@ -16,8 +16,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTabUrlState } from "@/components/ui/tabs.hooks";
 import { useToast } from "@/components/ui/toast.hooks";
 import { AppLayout } from "@/layouts/app-layout";
+import { useSaveSettingsMutation } from "@/queries/mutations/settings";
 import { useStore } from "@/store";
-import { useHttpClient } from "@/store/services/http-client.context";
 import { isSettingsConflictError } from "@/store/services/requests/settings";
 import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
@@ -43,9 +43,7 @@ import { ThemeSetting } from "./theme";
 import { WeaknessPoolSetting } from "./weakness-pool";
 
 function Settings() {
-  const client = useHttpClient();
   const settings = useStore((state) => state.settings);
-  const saveSettings = useStore((state) => state.saveSettings);
 
   const [colorTheme, updateColorTheme] = useColorThemeManager();
 
@@ -55,7 +53,6 @@ function Settings() {
       key={`${settingsKey(settings)}-${colorTheme}`}
       settings={settings}
       updateColorTheme={updateColorTheme}
-      updateSettings={(settings) => saveSettings(client, settings)}
     />
   );
 }
@@ -64,64 +61,22 @@ function SettingsInner({
   colorTheme: persistedColorTheme,
   settings: persistedSettings,
   updateColorTheme,
-  updateSettings,
 }: {
   colorTheme: string;
   settings: SettingsState;
   updateColorTheme: (theme: string) => void;
-  updateSettings: (settings: SettingsState) => Promise<void>;
 }) {
   const { t } = useTranslation();
 
   const [tab, onTabChange] = useTabUrlState("general");
 
   const search = useSearch();
-  const toast = useToast();
   const goBack = useGoBack(search.includes("login_state") ? "/" : undefined);
 
   const [settings, setSettings] = useState(structuredClone(persistedSettings));
   const [theme, setTheme] = useState<string>(persistedColorTheme);
 
-  const onSubmit = useCallback(
-    async (evt: React.FormEvent) => {
-      evt.preventDefault();
-
-      const toastId = toast.show({
-        children: t("settings.saving"),
-        variant: "loading",
-      });
-
-      try {
-        await updateSettings(settings);
-        updateColorTheme(theme);
-        toast.dismiss(toastId);
-      } catch (err) {
-        toast.dismiss(toastId);
-
-        if (isSettingsConflictError(err)) {
-          toast.show({
-            children: ({ onClose }) => (
-              <SettingsConflictToast
-                conflict={err.remote}
-                onClose={onClose}
-                settings={settings}
-                theme={theme}
-                updateColorTheme={updateColorTheme}
-              />
-            ),
-            variant: "error",
-          });
-          return;
-        }
-
-        toast.show({
-          children: t("settings.error", { error: (err as Error).message }),
-          variant: "error",
-        });
-      }
-    },
-    [settings, t, theme, toast, updateColorTheme, updateSettings],
-  );
+  const onSubmit = useSaveSettings(settings, theme, updateColorTheme);
 
   return (
     <AppLayout title={t("settings.title")} mainClassName={css["main"]}>
@@ -286,6 +241,57 @@ function SettingsInner({
         </div>
       </form>
     </AppLayout>
+  );
+}
+
+function useSaveSettings(
+  settings: SettingsState,
+  theme: string,
+  updateColorTheme: (theme: string) => void,
+) {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const saveSettingsMutation = useSaveSettingsMutation();
+
+  return useCallback(
+    async (evt: React.FormEvent<HTMLFormElement>) => {
+      evt.preventDefault();
+
+      const toastId = toast.show({
+        children: t("settings.saving"),
+        variant: "loading",
+      });
+
+      try {
+        await saveSettingsMutation.mutateAsync({ settings });
+        updateColorTheme(theme);
+        toast.dismiss(toastId);
+      } catch (err) {
+        toast.dismiss(toastId);
+
+        if (isSettingsConflictError(err)) {
+          toast.show({
+            children: ({ onClose }) => (
+              <SettingsConflictToast
+                conflict={err.remote}
+                onClose={onClose}
+                settings={settings}
+                theme={theme}
+                updateColorTheme={updateColorTheme}
+              />
+            ),
+            variant: "error",
+          });
+          return;
+        }
+
+        toast.show({
+          children: t("settings.error", { error: (err as Error).message }),
+          variant: "error",
+        });
+      }
+    },
+    [saveSettingsMutation, settings, t, theme, toast, updateColorTheme],
   );
 }
 

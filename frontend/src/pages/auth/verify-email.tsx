@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearchParams } from "wouter";
@@ -13,11 +12,10 @@ import {
   ModalInner,
 } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast.hooks";
-import { useHttpClient } from "@/store/services/http-client.context";
 import {
-  postResendVerification,
-  postVerifyEmail,
-} from "@/store/services/requests/auth";
+  useResendVerificationMutation,
+  useVerifyEmailMutation,
+} from "@/queries/mutations/auth";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
@@ -28,16 +26,12 @@ function VerifyEmail() {
   const toast = useToast();
   const [, navigate] = useLocation();
   const [params] = useSearchParams();
-  const client = useHttpClient();
 
   const [token, setToken] = useState<string>(params.get("token") ?? "");
 
-  const verifyEmailMutation = useMutation({
-    mutationFn: (payload: { token: string }) =>
-      postVerifyEmail(client, payload),
-  });
+  const verifyEmailMutation = useVerifyEmailMutation();
 
-  const onSubmit = async (evt: React.FormEvent) => {
+  const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();
     await verifyEmailMutation.mutateAsync({ token });
 
@@ -94,17 +88,13 @@ function VerifyEmail() {
 function ResendVerificationDialog() {
   const { t } = useTranslation();
   const toast = useToast();
-  const client = useHttpClient();
 
-  const resendVerificationMutation = useMutation({
-    mutationFn: (payload: { email: string }) =>
-      postResendVerification(client, payload),
-  });
+  const resendVerificationMutation = useResendVerificationMutation();
 
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
 
-  const onSubmit = async (evt: React.FormEvent) => {
+  const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();
 
     await resendVerificationMutation.mutateAsync({ email });

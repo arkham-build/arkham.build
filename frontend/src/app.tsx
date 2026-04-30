@@ -1,10 +1,4 @@
-import {
-  QueryClient,
-  QueryClientProvider,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Route, Router, Switch, useLocation, useSearch } from "wouter";
@@ -15,16 +9,14 @@ import { Loader } from "./components/ui/loader";
 import { ToastProvider } from "./components/ui/toast";
 import { useToast } from "./components/ui/toast.hooks";
 import { ErrorStatus } from "./pages/errors/404";
+import {
+  useDataVersionQuery,
+  useRefreshMetadataMutation,
+} from "./queries/cache";
 import { useStore } from "./store";
 import { selectIsInitialized } from "./store/selectors/shared";
 import type { HttpClient } from "./store/services/http-client";
-import { useHttpClient } from "./store/services/http-client.context";
 import { HttpClientProvider } from "./store/services/http-client.provider";
-import {
-  queryCards,
-  queryDataVersion,
-  queryMetadata,
-} from "./store/services/requests/cache";
 import { useAgathaEasterEggHint } from "./utils/easter-egg-agatha";
 import { useColorThemeListener } from "./utils/use-color-theme";
 
@@ -236,7 +228,6 @@ function CardDataSyncTask() {
   const [location] = useLocation();
   const locale = useStore((state) => state.settings.locale);
   const dataVersion = useStore((state) => state.metadata.dataVersion);
-  const client = useHttpClient();
 
   const { t } = useTranslation();
 
@@ -247,41 +238,20 @@ function CardDataSyncTask() {
   const shouldQueryDataVersion =
     !navigator.webdriver && !location.includes("/connect");
 
-  const { data: remoteDataVersion } = useQuery({
-    enabled: shouldQueryDataVersion,
-    queryFn: () => queryDataVersion(client, locale),
-    queryKey: ["tasks", "dataVersion", locale],
-    staleTime: 24 * 60 * 60 * 1000,
-  });
+  const { data: remoteDataVersion } = useDataVersionQuery(
+    locale,
+    shouldQueryDataVersion,
+  );
 
-  const init = useStore((state) => state.init);
-  const queryClient = useQueryClient();
-
-  const { isError, isPending, mutateAsync } = useMutation({
-    mutationFn: async () => {
-      await init(
-        (nextLocale) => queryMetadata(client, nextLocale),
-        (nextLocale) => queryDataVersion(client, nextLocale),
-        (nextLocale) => queryCards(client, nextLocale),
-        {
-          refresh: true,
-          locale,
-        },
-      );
-      queryClient.setQueryData(
-        ["tasks", "dataVersion", locale],
-        useStore.getState().metadata.dataVersion,
-      );
-    },
-  });
+  const refreshMetadataMutation = useRefreshMetadataMutation();
 
   useEffect(() => {
     if (
       hasTriggeredSync.current ||
       !remoteDataVersion ||
       !dataVersion ||
-      isPending ||
-      isError
+      refreshMetadataMutation.isPending ||
+      refreshMetadataMutation.isError
     ) {
       return;
     }
@@ -299,7 +269,8 @@ function CardDataSyncTask() {
         children: t("settings.card_data.loading"),
       });
 
-      mutateAsync()
+      refreshMetadataMutation
+        .mutateAsync()
         .then(() => {
           if (toastId.current) {
             toast.dismiss(toastId.current);
@@ -307,15 +278,7 @@ function CardDataSyncTask() {
         })
         .catch(console.error);
     }
-  }, [
-    dataVersion,
-    isError,
-    isPending,
-    mutateAsync,
-    remoteDataVersion,
-    toast,
-    t,
-  ]);
+  }, [dataVersion, refreshMetadataMutation, remoteDataVersion, toast, t]);
 
   return null;
 }

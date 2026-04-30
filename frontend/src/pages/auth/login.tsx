@@ -1,11 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { useStore } from "@/store";
-import { useHttpClient } from "@/store/services/http-client.context";
+import { useLoginMutation } from "@/queries/mutations/auth";
 import { ApiError } from "@/store/services/requests/shared";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
@@ -20,22 +18,12 @@ function Login() {
   const search = useSearch();
   const { t } = useTranslation();
 
-  const client = useHttpClient();
-  const login = useStore((state) => state.login);
-  const queryClient = useQueryClient();
-
-  const loginMutation = useMutation({
-    mutationFn: (payload: { email: string; password: string }) =>
-      login(client, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
-    },
-  });
+  const loginMutation = useLoginMutation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmit = async (evt: React.FormEvent) => {
+  const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();
     await loginMutation.mutateAsync({ email, password });
     const params = new URLSearchParams(search);

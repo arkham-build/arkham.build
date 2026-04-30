@@ -1,10 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
 import { CheckIcon, FileDownIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Field } from "@/components/ui/field";
+import { useDataVersionQuery } from "@/queries/cache";
 import { useStore } from "@/store";
-import { useHttpClient } from "@/store/services/http-client.context";
-import { queryDataVersion } from "@/store/services/requests/cache";
 import { cx } from "@/utils/cx";
 import css from "./card-data-sync.module.css";
 
@@ -19,14 +17,8 @@ export function CardDataSync(props: Props) {
 
   const dataVersion = useStore((state) => state.metadata.dataVersion);
   const settings = useStore((state) => state.settings);
-  const client = useHttpClient();
 
-  const queryFn = () => queryDataVersion(client, settings.locale);
-
-  const { data, error, isPending } = useQuery({
-    queryKey: ["settings", "dataVersion", settings.locale],
-    queryFn,
-  });
+  const { data, error, isPending } = useDataVersionQuery(settings.locale);
 
   const upToDate =
     data &&

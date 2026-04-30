@@ -6,19 +6,17 @@ import {
   RecommendationsRequestSchema,
   type RecommendationsResponse,
 } from "@arkham-build/shared";
-import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ErrorDisplay,
   ErrorImage,
 } from "@/components/error-display/error-display";
+import { useRecommendationsQuery } from "@/queries/recommendations";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { type ListState, selectListCards } from "@/store/selectors/lists";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
-import { useHttpClient } from "@/store/services/http-client.context";
-import { getRecommendations } from "@/store/services/requests/recommendations";
 import { ApiError } from "@/store/services/requests/shared";
 import type { ListDisplay } from "@/store/slices/lists.types";
 import { cx } from "@/utils/cx";
@@ -43,7 +41,6 @@ export function CardRecommender(
 
   const { t } = useTranslation();
   const { resolvedDeck } = useResolvedDeck();
-  const client = useHttpClient();
 
   const setFilterValue = useStore((state) => state.setRecommenderDeckFilter);
 
@@ -61,47 +58,35 @@ export function CardRecommender(
     coreCards,
   } = recommender;
 
-  const recommendationQuery = () => {
-    if (!resolvedDeck?.id) {
-      return Promise.resolve({ recommendations: [], decks_analyzed: 0 });
-    }
+  const canonicalFrontCode =
+    resolvedDeck?.metaParsed.alternate_front ?? resolvedDeck?.investigator_code;
+  const canonicalBackCode =
+    resolvedDeck?.metaParsed.alternate_back ?? resolvedDeck?.investigator_code;
 
-    const canonicalFrontCode =
-      resolvedDeck?.metaParsed.alternate_front ??
-      resolvedDeck?.investigator_code;
-
-    const canonicalBackCode =
-      resolvedDeck?.metaParsed.alternate_back ??
-      resolvedDeck?.investigator_code;
-
-    const canonicalizedInvestigatorCode = `${canonicalFrontCode}-${canonicalBackCode}`;
-
-    return getRecommendations(
-      client,
-      RecommendationsRequestSchema.parse({
-        canonical_investigator_code: canonicalizedInvestigatorCode,
+  const request = resolvedDeck?.id
+    ? RecommendationsRequestSchema.parse({
+        canonical_investigator_code: `${canonicalFrontCode}-${canonicalBackCode}`,
         analyze_side_decks: includeSideDeck,
         analysis_algorithm: isRelative ? "percentile_rank" : "absolute_rank",
         required_cards: coreCards[resolvedDeck.id] || [],
         date_range: dateRange,
-      }),
-    );
-  };
+      })
+    : null;
 
-  const { data, error, isPending } = useQuery({
-    queryFn: recommendationQuery,
-    queryKey: [
-      "recommendations",
-      resolvedDeck?.id,
-      includeSideDeck,
-      isRelative,
-      coreCards[resolvedDeck?.id ?? ""],
-      dateRange,
-      resolvedDeck?.metaParsed.alternate_back,
-      resolvedDeck?.metaParsed.alternate_front,
-    ],
-    retry: false,
-  });
+  const requestKey = [
+    resolvedDeck?.id,
+    includeSideDeck,
+    isRelative,
+    coreCards[resolvedDeck?.id ?? ""],
+    dateRange,
+    resolvedDeck?.metaParsed.alternate_back,
+    resolvedDeck?.metaParsed.alternate_front,
+  ];
+
+  const { data, error, isPending } = useRecommendationsQuery(
+    request,
+    requestKey,
+  );
 
   const onKeyboardNavigate = useCallback((evt: React.KeyboardEvent) => {
     if (

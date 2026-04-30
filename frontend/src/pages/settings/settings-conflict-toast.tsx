@@ -6,8 +6,12 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast.hooks";
+import {
+  useApplyRemoteSettingsMutation,
+  useLoadRemoteSettingsMutation,
+  useSaveSettingsMutation,
+} from "@/queries/mutations/settings";
 import { useStore } from "@/store";
-import { useHttpClient } from "@/store/services/http-client.context";
 import { isSettingsConflictError } from "@/store/services/requests/settings";
 import css from "./settings.module.css";
 
@@ -26,10 +30,9 @@ export function SettingsConflictToast({
 }) {
   const { t } = useTranslation();
   const toast = useToast();
-  const client = useHttpClient();
-  const applyRemoteSettings = useStore((state) => state.applyRemoteSettings);
-  const loadRemoteSettings = useStore((state) => state.loadRemoteSettings);
-  const saveSettings = useStore((state) => state.saveSettings);
+  const applyRemoteSettingsMutation = useApplyRemoteSettingsMutation();
+  const loadRemoteSettingsMutation = useLoadRemoteSettingsMutation();
+  const saveSettingsMutation = useSaveSettingsMutation();
   const [activeConflict, setActiveConflict] = useState(conflict);
   const [pendingAction, setPendingAction] = useState<
     "refresh" | "overwrite" | null
@@ -64,22 +67,25 @@ export function SettingsConflictToast({
 
   const refresh = useCallback(async () => {
     if (activeConflict) {
-      await applyRemoteSettings(client, activeConflict);
+      await applyRemoteSettingsMutation.mutateAsync(activeConflict);
       return;
     }
 
-    await loadRemoteSettings(client);
-  }, [activeConflict, applyRemoteSettings, client, loadRemoteSettings]);
+    await loadRemoteSettingsMutation.mutateAsync();
+  }, [activeConflict, applyRemoteSettingsMutation, loadRemoteSettingsMutation]);
 
   const overwrite = useCallback(async () => {
-    await saveSettings(client, settings, {
-      expectedRevision:
-        useStore.getState().sync.settings.conflict?.revision ??
-        activeConflict?.revision ??
-        null,
+    await saveSettingsMutation.mutateAsync({
+      settings,
+      opts: {
+        expectedRevision:
+          useStore.getState().sync.settings.conflict?.revision ??
+          activeConflict?.revision ??
+          null,
+      },
     });
     updateColorTheme(theme);
-  }, [activeConflict, client, saveSettings, settings, theme, updateColorTheme]);
+  }, [activeConflict, saveSettingsMutation, settings, theme, updateColorTheme]);
 
   return (
     <div className={css["sync-toast"]}>

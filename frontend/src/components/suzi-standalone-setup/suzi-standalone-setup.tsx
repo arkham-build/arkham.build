@@ -80,7 +80,7 @@ function SuziStandaloneSetupInner(props: Pick<Props, "deck">) {
   );
 
   const drawResults = useCallback(
-    (evt: React.FormEvent) => {
+    (evt: React.SubmitEvent) => {
       evt.preventDefault();
 
       const state = useStore.getState();

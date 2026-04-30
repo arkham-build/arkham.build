@@ -2,11 +2,16 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { useToast } from "@/components/ui/toast.hooks";
+import {
+  useDeleteDeckMutation,
+  useDeleteUpgradeMutation,
+  useDuplicateDeckMutation,
+  useUploadDeckToProviderMutation,
+} from "@/queries/mutations/decks";
 import { useStore } from "@/store";
 import { formatDeckAsText, formatDeckShare } from "@/store/lib/deck-io";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Deck, Id } from "@/store/schemas/deck.schema";
-import { useHttpClient } from "@/store/services/http-client.context";
 import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import { download } from "@/utils/download";
 
@@ -14,8 +19,7 @@ export function useDeleteDeck() {
   const toast = useToast();
   const { t } = useTranslation();
   const [, navigate] = useLocation();
-  const client = useHttpClient();
-  const deleteDeck = useStore((state) => state.deleteDeck);
+  const deleteDeckMutation = useDeleteDeckMutation();
 
   return useCallback(
     async (deckId: Id) => {
@@ -26,7 +30,10 @@ export function useDeleteDeck() {
         });
 
         try {
-          await deleteDeck(client, deckId, () => navigate("~/"));
+          await deleteDeckMutation.mutateAsync({
+            deckId,
+            onBeforeTransition: () => navigate("~/"),
+          });
           toast.dismiss(toastId);
         } catch (err) {
           toast.dismiss(toastId);
@@ -39,7 +46,7 @@ export function useDeleteDeck() {
         }
       }
     },
-    [client, navigate, toast, deleteDeck, t],
+    [deleteDeckMutation, navigate, toast, t],
   );
 }
 
@@ -47,8 +54,7 @@ export function useDeleteUpgrade() {
   const toast = useToast();
   const { t } = useTranslation();
   const [, navigate] = useLocation();
-  const client = useHttpClient();
-  const deleteUpgrade = useStore((state) => state.deleteUpgrade);
+  const deleteUpgradeMutation = useDeleteUpgradeMutation();
 
   return useCallback(
     async (deckId: Id) => {
@@ -59,9 +65,10 @@ export function useDeleteUpgrade() {
         });
 
         try {
-          await deleteUpgrade(client, deckId, (id) =>
-            navigate(`/deck/view/${id}`),
-          );
+          await deleteUpgradeMutation.mutateAsync({
+            deckId,
+            onBeforeTransition: (id) => navigate(`/deck/view/${id}`),
+          });
           toast.dismiss(toastId);
         } catch (err) {
           toast.dismiss(toastId);
@@ -74,7 +81,7 @@ export function useDeleteUpgrade() {
         }
       }
     },
-    [client, deleteUpgrade, navigate, toast, t],
+    [deleteUpgradeMutation, navigate, toast, t],
   );
 }
 
@@ -83,8 +90,7 @@ export function useUploadDeckToProvider() {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
 
-  const client = useHttpClient();
-  const uploadDeckToProvider = useStore((state) => state.uploadDeckToProvider);
+  const uploadDeckToProviderMutation = useUploadDeckToProviderMutation();
 
   return useCallback(
     async (deckId: Id) => {
@@ -96,7 +102,10 @@ export function useUploadDeckToProvider() {
       });
 
       try {
-        const id = await uploadDeckToProvider(client, deckId, "remote");
+        const id = await uploadDeckToProviderMutation.mutateAsync({
+          deckId,
+          provider: "remote",
+        });
         toast.dismiss(toastId);
         if (id !== deckId) navigate(`/deck/view/${id}`, { replace: true });
       } catch (err) {
@@ -111,7 +120,7 @@ export function useUploadDeckToProvider() {
         });
       }
     },
-    [client, navigate, toast, uploadDeckToProvider, t],
+    [navigate, toast, uploadDeckToProviderMutation, t],
   );
 }
 
@@ -120,12 +129,12 @@ export function useDuplicateDeck() {
   const { t } = useTranslation();
 
   const [, navigate] = useLocation();
-  const duplicateDeck = useStore((state) => state.duplicateDeck);
+  const duplicateDeckMutation = useDuplicateDeckMutation();
 
   return useCallback(
     async (deckId: Id) => {
       try {
-        const id = await duplicateDeck(deckId);
+        const id = await duplicateDeckMutation.mutateAsync({ id: deckId });
         navigate(`/deck/view/${id}`);
       } catch (err) {
         toast.show({
@@ -136,7 +145,7 @@ export function useDuplicateDeck() {
         });
       }
     },
-    [duplicateDeck, navigate, toast.show, t],
+    [duplicateDeckMutation, navigate, toast.show, t],
   );
 }
 

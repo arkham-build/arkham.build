@@ -17,9 +17,8 @@ import {
 } from "@/components/ui/modal";
 import { Scroller } from "@/components/ui/scroller";
 import { useToast } from "@/components/ui/toast.hooks";
-import { useStore } from "@/store";
+import { useUpgradeDeckMutation } from "@/queries/mutations/decks";
 import type { ResolvedDeck } from "@/store/lib/types";
-import { useHttpClient } from "@/store/services/http-client.context";
 import { decodeExileSlots, displayAttribute } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
@@ -73,14 +72,10 @@ function selectExilableCards(deck: ResolvedDeck) {
 
 export function UpgradeModal(props: Props) {
   const { deck } = props;
-  const [, navigate] = useLocation();
   const search = useSearch();
-  const toast = useToast();
   const { t } = useTranslation();
 
   const connectionLock = ""; // XXX
-  const client = useHttpClient();
-  const upgradeDeck = useStore((state) => state.upgradeDeck);
 
   const [xp, setXp] = useState(
     new URLSearchParams(search).get("upgrade_xp")?.toString() ?? "",
@@ -110,54 +105,15 @@ export function UpgradeModal(props: Props) {
     modalContext?.setOpen(false);
   }, [modalContext]);
 
-  const onUpgrade = useCallback(
-    async (path = "edit") => {
-      const toastId = toast.show({
-        children: t("deck_view.upgrade_modal.loading"),
-        variant: "loading",
-      });
-
-      let upgradeXp = xp ? +xp : 0;
-      if (hasCharonsObol) upgradeXp += 2;
-      if (hasGreatWork && !usurped) upgradeXp += 1;
-
-      try {
-        const newDeck = await upgradeDeck(client, {
-          id: deck.id,
-          xp: upgradeXp,
-          exileString,
-          usurped: hasGreatWork ? usurped : undefined,
-        });
-
-        toast.dismiss(toastId);
-        onCloseModal();
-
-        navigate(`/deck/${path}/${newDeck.id}`);
-      } catch (err) {
-        toast.dismiss(toastId);
-        toast.show({
-          children: t("deck_view.upgrade_modal.error", {
-            error: (err as Error).message,
-          }),
-          variant: "error",
-        });
-      }
-    },
-    [
-      client,
-      deck.id,
-      upgradeDeck,
-      xp,
-      onCloseModal,
-      navigate,
-      toast,
-      exileString,
-      usurped,
-      hasGreatWork,
-      hasCharonsObol,
-      t,
-    ],
-  );
+  const { onSave, onSaveClose } = useUpgradeDeck({
+    deck,
+    exileString,
+    hasCharonsObol,
+    hasGreatWork,
+    onCloseModal,
+    usurped,
+    xp,
+  });
 
   const onXpChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
     setXp(evt.target.value);
@@ -188,14 +144,6 @@ export function UpgradeModal(props: Props) {
   const cssVariables = useAccentColor(deck.cards.investigator.card);
 
   const disabled = xp === "" || !!connectionLock;
-
-  const onSave = useCallback(() => {
-    onUpgrade("edit");
-  }, [onUpgrade]);
-
-  const onSaveClose = useCallback(() => {
-    onUpgrade("view");
-  }, [onUpgrade]);
 
   useHotkey("cmd+enter", onSave, { disabled, allowInputFocused: true });
 
@@ -353,4 +301,87 @@ export function UpgradeModal(props: Props) {
       </ModalInner>
     </Modal>
   );
+}
+
+function useUpgradeDeck({
+  deck,
+  exileString,
+  hasCharonsObol,
+  hasGreatWork,
+  onCloseModal,
+  usurped,
+  xp,
+}: {
+  deck: ResolvedDeck;
+  exileString: string;
+  hasCharonsObol: boolean;
+  hasGreatWork: boolean;
+  onCloseModal: () => void;
+  usurped: boolean;
+  xp: string;
+}) {
+  const [, navigate] = useLocation();
+  const toast = useToast();
+  const { t } = useTranslation();
+  const upgradeDeckMutation = useUpgradeDeckMutation();
+
+  const onUpgrade = useCallback(
+    async (path: "edit" | "view") => {
+      const toastId = toast.show({
+        children: t("deck_view.upgrade_modal.loading"),
+        variant: "loading",
+      });
+
+      let upgradeXp = xp ? +xp : 0;
+      if (hasCharonsObol) upgradeXp += 2;
+      if (hasGreatWork && !usurped) upgradeXp += 1;
+
+      try {
+        const newDeck = await upgradeDeckMutation.mutateAsync({
+          id: deck.id,
+          xp: upgradeXp,
+          exileString,
+          usurped: hasGreatWork ? usurped : undefined,
+        });
+
+        toast.dismiss(toastId);
+        onCloseModal();
+        navigate(`/deck/${path}/${newDeck.id}`);
+      } catch (err) {
+        toast.dismiss(toastId);
+        toast.show({
+          children: t("deck_view.upgrade_modal.error", {
+            error: (err as Error).message,
+          }),
+          variant: "error",
+        });
+      }
+    },
+    [
+      deck.id,
+      exileString,
+      hasCharonsObol,
+      hasGreatWork,
+      navigate,
+      onCloseModal,
+      t,
+      toast,
+      upgradeDeckMutation,
+      usurped,
+      xp,
+    ],
+  );
+
+  const onSave = useCallback(() => {
+    void onUpgrade("edit");
+  }, [onUpgrade]);
+
+  const onSaveClose = useCallback(() => {
+    void onUpgrade("view");
+  }, [onUpgrade]);
+
+  return {
+    onSave,
+    onSaveClose,
+  };
 }

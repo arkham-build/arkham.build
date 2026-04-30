@@ -896,7 +896,9 @@
       "import": "Import",
       "import_arkhamdb": "Import from ArkhamDB",
       "import_arkhamdb_help": "Enter a public ArkhamDB deck id, deck url or deck guide url. Decks will be <strong>copied</strong> over and deck history and upgrade state will not be imported. If you are meaning to sync your ArkhamDB decks with this app, <settings_link>connect your arkhamdb account.</settings_link>",
+      "import_error": "Failed to import deck: {{error}}",
       "import_json": "Import from JSON files",
+      "import_loading": "Importing deck...",
       "more_filters": "More filters",
       "search_placeholder": "Search decks...",
       "sorting": {

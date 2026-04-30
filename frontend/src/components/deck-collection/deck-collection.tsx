@@ -30,6 +30,10 @@ import {
 } from "@/components/ui/popover";
 import { Scroller } from "@/components/ui/scroller";
 import { useToast } from "@/components/ui/toast.hooks";
+import {
+  useDeleteAllDecksMutation,
+  useImportFromFilesMutation,
+} from "@/queries/mutations/decks";
 import { useStore } from "@/store";
 import { selectDecksDisplayList } from "@/store/selectors/deck-collection";
 import { useHotkey } from "@/utils/use-hotkey";
@@ -51,18 +55,18 @@ export function DeckCollection() {
   const deckCollection = useStore(selectDecksDisplayList);
   const hasConnections = false; // XXX
 
-  const importDecks = useStore((state) => state.importFromFiles);
-  const deleteAllDecks = useStore((state) => state.deleteAllDecks);
+  const importDecksMutation = useImportFromFilesMutation();
+  const deleteAllDecksMutation = useDeleteAllDecksMutation();
 
   const onAddFiles = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement>) => {
       const files = evt.target.files;
       if (files?.length) {
-        importDecks(files);
+        importDecksMutation.mutate(files);
         setPopoverOpen(false);
       }
     },
-    [importDecks],
+    [importDecksMutation],
   );
 
   const onDeleteAll = useCallback(async () => {
@@ -76,7 +80,7 @@ export function DeckCollection() {
         variant: "loading",
       });
       try {
-        await deleteAllDecks();
+        await deleteAllDecksMutation.mutateAsync();
         toast.dismiss(toastId);
       } catch (err) {
         toast.dismiss(toastId);
@@ -88,7 +92,7 @@ export function DeckCollection() {
         });
       }
     }
-  }, [deleteAllDecks, toast, t]);
+  }, [deleteAllDecksMutation, toast, t]);
 
   const deleteDeck = useDeleteDeck();
   const duplicateDeck = useDuplicateDeck();

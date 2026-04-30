@@ -1,15 +1,11 @@
 import { PATTERN_VALID_USERNAME } from "@arkham-build/shared";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { useHttpClient } from "@/store/services/http-client.context";
-import {
-  fetchSession,
-  postCompleteProfile,
-} from "@/store/services/requests/auth.ts";
+import { useAuthSessionQuery } from "@/queries/auth";
+import { useCompleteProfileMutation } from "@/queries/mutations/auth";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
@@ -18,28 +14,17 @@ import { errorMapper } from "./helpers";
 function SignupArkhamDB() {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
-  const queryClient = useQueryClient();
-  const client = useHttpClient();
 
-  const { data: session, isLoading } = useQuery({
-    queryKey: ["auth", "session"],
-    queryFn: () => fetchSession(client),
-  });
+  const { data: session, isLoading } = useAuthSessionQuery();
 
-  const completeProfileMutation = useMutation({
-    mutationFn: (payload: { username: string }) =>
-      postCompleteProfile(client, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
-      navigate("/");
-    },
-  });
+  const completeProfileMutation = useCompleteProfileMutation();
 
   const [username, setUsername] = useState("");
 
-  const onSubmit = async (evt: React.FormEvent) => {
+  const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();
     await completeProfileMutation.mutateAsync({ username });
+    navigate("/");
   };
 
   if (isLoading) {

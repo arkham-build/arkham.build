@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useParams } from "wouter";
@@ -6,6 +5,7 @@ import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { DeckDisplay } from "@/components/deck-display/deck-display";
 import { ResolvedDeckProvider } from "@/components/resolved-deck-context-provider";
 import { Loader } from "@/components/ui/loader";
+import { useShareQuery } from "@/queries/legacy";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";
 import type { Deck } from "@/store/schemas/deck.schema";
@@ -15,7 +15,6 @@ import {
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
-import { getShare } from "@/store/services/requests/legacy";
 import { ApiError } from "@/store/services/requests/shared";
 import type { StoreState } from "@/store/slices";
 import { ErrorStatus } from "../errors/404";
@@ -50,18 +49,7 @@ export function ShareInner(props: { id: string }) {
 
   const { t } = useTranslation();
 
-  const cacheFanMadeContent = useStore((state) => state.cacheFanMadeContent);
-
-  async function queryFn() {
-    const shareRead = await getShare(id);
-    cacheFanMadeContent([shareRead.data]);
-    return shareRead;
-  }
-
-  const { data, isPending, error } = useQuery({
-    queryFn,
-    queryKey: ["share", id],
-  });
+  const { data, isPending, error } = useShareQuery(id);
 
   const resolvedDeck = useStore((state) =>
     selectResolvedShare(state, data?.data),

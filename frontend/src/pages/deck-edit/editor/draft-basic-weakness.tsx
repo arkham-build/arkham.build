@@ -99,7 +99,7 @@ function DraftBasicWeaknessModal(props: Props) {
   const dialogContext = useDialogContext();
 
   const handleSubmit = useCallback(
-    (evt: React.FormEvent<HTMLFormElement>) => {
+    (evt: React.SubmitEvent) => {
       evt.preventDefault();
 
       assert(weaknesses, "Submit called before draft initialized.");

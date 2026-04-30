@@ -1,13 +1,11 @@
 import { PATTERN_VALID_PASSWORD } from "@arkham-build/shared";
-import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearchParams } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { useToast } from "@/components/ui/toast.hooks";
-import { useHttpClient } from "@/store/services/http-client.context";
-import { postResetPassword } from "@/store/services/requests/auth";
+import { useResetPasswordMutation } from "@/queries/mutations/auth";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
@@ -18,19 +16,15 @@ function ResetPassword() {
   const [params] = useSearchParams();
   const toast = useToast();
   const [, navigate] = useLocation();
-  const client = useHttpClient();
 
-  const resetPasswordMutation = useMutation({
-    mutationFn: (payload: { token: string; password: string }) =>
-      postResetPassword(client, payload),
-  });
+  const resetPasswordMutation = useResetPasswordMutation();
 
   const token = params.get("token") ?? "";
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const onSubmit = async (evt: React.FormEvent) => {
+  const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();
 
     await resetPasswordMutation.mutateAsync({ token, password });

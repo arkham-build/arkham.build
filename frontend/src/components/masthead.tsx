@@ -1,10 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
 import { KeyboardIcon, LogOutIcon, MenuIcon, SettingsIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
+import { useLogoutMutation } from "@/queries/mutations/auth";
 import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
-import { useHttpClient } from "@/store/services/http-client.context";
 import { cx } from "@/utils/cx";
 import { Logo } from "./icons/logo";
 import { LocaleQuickSwitch } from "./locale-quick-switch";
@@ -68,16 +67,12 @@ export function Masthead(props: Props) {
 
 function AccountMenu() {
   const { t } = useTranslation();
-  const client = useHttpClient();
   const session = useStore(selectSession);
-  const logout = useStore((state) => state.logout);
   const toggleKeyboardShortcuts = useStore(
     (state) => state.toggleKeyboardShortcuts,
   );
 
-  const logoutMutation = useMutation({
-    mutationFn: () => logout(client),
-  });
+  const logoutMutation = useLogoutMutation();
 
   const actionNodes = (
     <>
