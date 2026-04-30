@@ -618,7 +618,8 @@ export const upgradeAdapter = {
   },
   async persist(
     client: HttpClient,
-    _state: StoreState,
+    get: StoreApi<StoreState>["getState"],
+    set: StoreApi<StoreState>["setState"],
     deck: Deck,
     upgrade: Deck,
     expectedVersion: string | null | undefined,
@@ -629,10 +630,22 @@ export const upgradeAdapter = {
 
     assert(expectedVersion, `Deck ${deck.id} does not have a sync version.`);
 
-    return await postDeckUpgrade(client, deck.id, {
-      deck: upgrade,
-      expectedVersion,
-    });
+    set((prev) => ({
+      sync: updateDeckSyncSaving(prev.sync, deck.id),
+    }));
+
+    try {
+      return await postDeckUpgrade(client, deck.id, {
+        deck: upgrade,
+        expectedVersion,
+      });
+    } catch (error) {
+      set((prev) => ({
+        sync: updateDeckSyncError(prev.sync, deck.id, error, "upgrade"),
+      }));
+      await dehydrate(get(), "app");
+      throw error;
+    }
   },
   transition(set: StoreApi<StoreState>["setState"], deck: Deck, upgrade: Deck) {
     return set((prev) => {

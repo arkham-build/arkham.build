@@ -1,3 +1,4 @@
+import type { DeckId } from "@arkham-build/shared";
 import {
   BookTextIcon,
   EllipsisIcon,
@@ -35,6 +36,7 @@ import {
   useImportFromFilesMutation,
 } from "@/queries/mutations/decks";
 import { useStore } from "@/store";
+import type { DeckSummary as DeckSummaryType } from "@/store/lib/types";
 import { selectDecksDisplayList } from "@/store/selectors/deck-collection";
 import { useHotkey } from "@/utils/use-hotkey";
 import { FileInput } from "../ui/file-input";
@@ -206,26 +208,12 @@ export function DeckCollection() {
                   />
                 )}
                 {entry.type === "deck" && (
-                  <div
-                    className={css["deck"]}
-                    data-testid={`collection-deck-${entry.deck.name}`}
-                    style={{ "--depth": entry.depth } as React.CSSProperties}
-                  >
-                    <DeckSummary
-                      data-testid="collection-deck"
-                      deck={entry.deck}
-                      interactive
-                      showThumbnail
-                      size="sm"
-                      validation={entry.deck.problem}
-                    >
-                      <DeckSummaryQuickActions
-                        deck={entry.deck}
-                        onDeleteDeck={deleteDeck}
-                        onDuplicateDeck={duplicateDeck}
-                      />
-                    </DeckSummary>
-                  </div>
+                  <DeckCollectionDeckEntry
+                    deck={entry.deck}
+                    deleteDeck={deleteDeck}
+                    depth={entry.depth}
+                    duplicateDeck={duplicateDeck}
+                  />
                 )}
               </div>
             )}
@@ -255,6 +243,46 @@ export function DeckCollection() {
           </figure>
         </div>
       )}
+    </div>
+  );
+}
+
+function DeckCollectionDeckEntry({
+  deck,
+  deleteDeck,
+  depth,
+  duplicateDeck,
+}: {
+  deck: DeckSummaryType;
+  deleteDeck: (id: DeckId) => Promise<void>;
+  depth: number;
+  duplicateDeck: (id: DeckId) => void;
+}) {
+  const hasSyncConflict = useStore(
+    (state) => state.sync.decks.items[deck.id]?.status === "conflict",
+  );
+
+  return (
+    <div
+      className={css["deck"]}
+      data-testid={`collection-deck-${deck.name}`}
+      style={{ "--depth": depth } as React.CSSProperties}
+    >
+      <DeckSummary
+        data-testid="collection-deck"
+        deck={deck}
+        hasSyncConflict={hasSyncConflict}
+        interactive
+        showThumbnail
+        size="sm"
+        validation={deck.problem}
+      >
+        <DeckSummaryQuickActions
+          deck={deck}
+          onDeleteDeck={deleteDeck}
+          onDuplicateDeck={duplicateDeck}
+        />
+      </DeckSummary>
     </div>
   );
 }

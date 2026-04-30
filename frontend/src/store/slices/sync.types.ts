@@ -49,6 +49,10 @@ export type SyncState = {
   };
 };
 
+type DeckConflictResolutionResult = {
+  kind: NonNullable<DeckSyncItemState["conflict"]>["kind"];
+};
+
 export type SyncSlice = SyncState & {
   bootstrapAuthenticatedState(client: HttpClient): Promise<void>;
   clearAccountState(auth?: AuthState): void;
@@ -56,4 +60,9 @@ export type SyncSlice = SyncState & {
   setDecksSync(payload: Partial<DecksSyncState>): void;
   setDeckSyncItem(id: Id, payload: Partial<DeckSyncItemState> | null): void;
   syncDecks(client: HttpClient): Promise<void>;
+  resolveDeckConflictWithRefresh(
+    client: HttpClient,
+    id: Id,
+  ): Promise<DeckConflictResolutionResult>;
+  resolveDeckConflictWithDiscard(id: Id): Promise<DeckConflictResolutionResult>;
 };

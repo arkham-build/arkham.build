@@ -1,7 +1,7 @@
 import type { DeckId, StorageProvider } from "@arkham-build/shared";
 import { isDeckConflictError } from "../services/requests/decks";
 import type { StoreState } from "../slices";
-import type { DeckSyncItemState } from "../slices/sync.types";
+import type { DeckSyncItemState, SyncStatus } from "../slices/sync.types";
 
 export function isStorageProviderAvailable(
   state: StoreState,
@@ -30,20 +30,22 @@ export function updateDeckSyncSuccess(
   version: string,
   lastSyncedAt: number,
 ): StoreState["sync"] {
+  const items = updateDeckSyncItem(sync.decks.items, deckId, {
+    version,
+    status: "synced",
+    lastSyncedAt,
+    error: null,
+    conflict: null,
+  });
+
   return {
     ...sync,
     decks: {
       ...sync.decks,
       manifestVersion: null,
-      status: "synced",
+      status: getDecksSyncStatus(items),
       error: null,
-      items: updateDeckSyncItem(sync.decks.items, deckId, {
-        version,
-        status: "synced",
-        lastSyncedAt,
-        error: null,
-        conflict: null,
-      }),
+      items,
     },
   };
 }
@@ -52,15 +54,18 @@ export function updateDeckSyncSaving(
   sync: StoreState["sync"],
   deckId: DeckId,
 ): StoreState["sync"] {
+  const items = updateDeckSyncItem(sync.decks.items, deckId, {
+    status: "saving",
+    error: null,
+    conflict: null,
+  });
+
   return {
     ...sync,
     decks: {
       ...sync.decks,
-      items: updateDeckSyncItem(sync.decks.items, deckId, {
-        status: "saving",
-        error: null,
-        conflict: null,
-      }),
+      status: getDecksSyncStatus(items),
+      items,
     },
   };
 }
@@ -74,29 +79,65 @@ export function updateDeckSyncError(
   if (isDeckConflictError(error)) {
     const remoteVersion =
       error.remote?.remoteVersion ?? error.remote?.remoteDeck?.version ?? null;
+    const items = updateDeckSyncItem(sync.decks.items, deckId, {
+      status: "conflict",
+      error: null,
+      conflict: {
+        kind,
+        remoteVersion,
+      },
+    });
 
     return {
       ...sync,
       decks: {
         ...sync.decks,
-        status: "conflict",
-        items: updateDeckSyncItem(sync.decks.items, deckId, {
-          status: "conflict",
-          conflict: { kind, remoteVersion },
-        }),
+        status: getDecksSyncStatus(items),
+        items,
       },
     };
   }
+
+  const items = updateDeckSyncItem(sync.decks.items, deckId, {
+    status: "error",
+    error: error instanceof Error ? error.message : "Unknown error",
+  });
 
   return {
     ...sync,
     decks: {
       ...sync.decks,
-      status: "error",
-      items: updateDeckSyncItem(sync.decks.items, deckId, {
-        status: "error",
-        error: error instanceof Error ? error.message : "Unknown error",
-      }),
+      status: getDecksSyncStatus(items),
+      items,
+    },
+  };
+}
+
+export function updateDeckSyncConflictError(
+  sync: StoreState["sync"],
+  deckId: DeckId,
+  error: unknown,
+  kind: NonNullable<DeckSyncItemState["conflict"]>["kind"],
+): StoreState["sync"] {
+  const current = sync.decks.items[deckId] ?? getInitialDeckSyncItem();
+
+  if (isDeckConflictError(error)) {
+    return updateDeckSyncError(sync, deckId, error, kind);
+  }
+
+  const items = updateDeckSyncItem(sync.decks.items, deckId, {
+    ...current,
+    status: "conflict",
+    error: error instanceof Error ? error.message : "Unknown error",
+    conflict: current.conflict ?? { kind, remoteVersion: null },
+  });
+
+  return {
+    ...sync,
+    decks: {
+      ...sync.decks,
+      status: getDecksSyncStatus(items),
+      items,
     },
   };
 }
@@ -114,6 +155,19 @@ function updateDeckSyncItem(
       ...payload,
     },
   };
+}
+
+function getDecksSyncStatus(items: StoreState["sync"]["decks"]["items"]) {
+  let status = "synced";
+
+  for (const item of Object.values(items)) {
+    if (item.status === "conflict") return "conflict";
+    if (item.status === "saving") status = "saving";
+    if (item.status === "loading") status = "loading";
+    if (item.status === "error") status = "error";
+  }
+
+  return status as SyncStatus;
 }
 
 function getInitialDeckSyncItem(): DeckSyncItemState {

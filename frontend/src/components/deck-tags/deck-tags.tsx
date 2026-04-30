@@ -1,6 +1,6 @@
 import type { StorageProvider } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
-import { CloudIcon, LockKeyholeIcon, ShareIcon } from "lucide-react";
+import { CloudIcon, CloudOffIcon, ShareIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useShallow } from "zustand/react/shallow";
@@ -92,7 +92,7 @@ export function ProviderTagInner({
   if (canonicalTag === "arkhamdb") {
     icon = <i className="icon-elder_sign" />;
   } else if (canonicalTag === "local") {
-    icon = <LockKeyholeIcon />;
+    icon = <CloudOffIcon />;
   } else if (canonicalTag === "account") {
     icon = <CloudIcon />;
   } else if (canonicalTag === "shared") {

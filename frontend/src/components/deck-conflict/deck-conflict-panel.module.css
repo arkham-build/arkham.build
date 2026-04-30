@@ -1,0 +1,44 @@
+.panel {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--nord-12) 30%, transparent);
+  border-radius: var(--rounded);
+  background: color-mix(in srgb, var(--nord-12) 20%, var(--palette-1));
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  line-height: 1;
+}
+
+.description,
+.details {
+  font-size: var(--text-sm);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: color-mix(in srgb, var(--palette-1) 55%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.overlay-panel {
+  width: min(100%, 32rem);
+  box-shadow: var(--shadow);
+}

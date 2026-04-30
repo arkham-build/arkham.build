@@ -19,6 +19,8 @@ import { useStore } from "@/store";
 import { UnsupportedPublishError } from "@/store/lib/errors";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckValid } from "@/store/selectors/decks";
+import { selectDeckHasConflict } from "@/store/selectors/sync";
+import { isDeckConflictError } from "@/store/services/requests/decks";
 import { useHotkey } from "@/utils/use-hotkey";
 import { LatestUpgrade } from "../../../components/deck-display/deck-history/latest-upgrade";
 import css from "./editor.module.css";
@@ -34,6 +36,9 @@ export function EditorActions(props: Props) {
   const { t } = useTranslation();
 
   const hasEdits = useStore((state) => !!state.deckEdits[deck.id]);
+  const hasSyncConflict = useStore((state) =>
+    selectDeckHasConflict(state, deck.id),
+  );
   const connectionLock = ""; // XXX
 
   const validation = useStore((state) => selectDeckValid(state, deck));
@@ -46,14 +51,18 @@ export function EditorActions(props: Props) {
 
   useHotkey("cmd+s", onSaveClose, {
     allowInputFocused: true,
+    disabled: hasSyncConflict,
   });
 
   useHotkey("cmd+shift+s", onQuicksave, {
     allowInputFocused: true,
+    disabled: hasSyncConflict,
   });
 
-  useHotkey("cmd+backspace", onDiscardClose);
-  useHotkey("cmd+shift+backspace", onQuickDiscard);
+  useHotkey("cmd+backspace", onDiscardClose, { disabled: hasSyncConflict });
+  useHotkey("cmd+shift+backspace", onQuickDiscard, {
+    disabled: hasSyncConflict,
+  });
 
   const readonly = !!deck.next_deck;
 
@@ -77,13 +86,15 @@ export function EditorActions(props: Props) {
           <Button
             data-testid="editor-save"
             onClick={onSaveClose}
-            disabled={!!connectionLock || readonly}
+            disabled={hasSyncConflict || !!connectionLock || readonly}
             tooltip={
-              connectionLock
-                ? connectionLock
-                : readonly
-                  ? t("deck_edit.readonly")
-                  : undefined
+              hasSyncConflict
+                ? t("deck_sync.conflict.edit_locked")
+                : connectionLock
+                  ? connectionLock
+                  : readonly
+                    ? t("deck_edit.readonly")
+                    : undefined
             }
             variant="primary"
           >
@@ -97,7 +108,11 @@ export function EditorActions(props: Props) {
         >
           <Button
             data-testid="editor-discard"
+            disabled={hasSyncConflict}
             onClick={onDiscardClose}
+            tooltip={
+              hasSyncConflict ? t("deck_sync.conflict.edit_locked") : undefined
+            }
             variant="bare"
           >
             <Undo2Icon />
@@ -138,6 +153,10 @@ function useSaveDeck(deck: ResolvedDeck) {
         if (!stayOnPage) navigate(`~/deck/view/${id}`);
       } catch (err) {
         toast.dismiss(toastId);
+
+        if (isDeckConflictError(err)) {
+          return;
+        }
 
         toast.show({
           children: (

@@ -14,6 +14,7 @@ import {
 import { useCallback, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useLocation, useSearch } from "wouter";
+import { DeckConflictPanel } from "@/components/deck-conflict/deck-conflict-panel";
 import { DeckInvestigator } from "@/components/deck-investigator/deck-investigator";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -33,6 +34,7 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import type { Id } from "@/store/schemas/deck.schema";
 import { selectDeckCreateStorageProviderOptions } from "@/store/selectors/deck-create";
 import type { History } from "@/store/selectors/decks";
+import { selectDeckHasConflict } from "@/store/selectors/sync";
 import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
@@ -124,8 +126,15 @@ function SidebarActions(props: {
 
   const [actionsOpen, setActionsOpen] = useState(false);
 
+  const hasSyncConflict = useStore((state) =>
+    selectDeckHasConflict(state, deck.id),
+  );
+
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(
-    origin === "local" && search.includes("upgrade") && !deck.next_deck,
+    origin === "local" &&
+      search.includes("upgrade") &&
+      !deck.next_deck &&
+      !hasSyncConflict,
   );
 
   const deckConnectionLock = ""; // XXX
@@ -185,8 +194,9 @@ function SidebarActions(props: {
   }, []);
 
   const onOpenUpgradeModal = useCallback(() => {
+    if (hasSyncConflict) return;
     setUpgradeModalOpen(true);
-  }, []);
+  }, [hasSyncConflict]);
 
   const onEdit = useCallback(() => {
     navigate(`/deck/edit/${deck.id}`);
@@ -222,12 +232,16 @@ function SidebarActions(props: {
     (option) => option.value === "account",
   );
 
-  useHotkey("e", onEdit, { disabled: isReadOnly || !isLocal });
-  useHotkey("u", onOpenUpgradeModal, { disabled: isReadOnly || !isLocal });
+  useHotkey("e", onEdit, {
+    disabled: hasSyncConflict || isReadOnly || !isLocal,
+  });
+  useHotkey("u", onOpenUpgradeModal, {
+    disabled: hasSyncConflict || isReadOnly || !isLocal,
+  });
   useHotkey("cmd+a", toggleArchived, { disabled: !isLocal });
   useHotkey("cmd+backspace", onDelete, { disabled: isReadOnly || !isLocal });
   useHotkey("cmd+shift+backspace", onDeleteLatest, {
-    disabled: isReadOnly || !isLocal,
+    disabled: hasSyncConflict || isReadOnly || !isLocal,
   });
   useHotkey("cmd+i", onImport, { disabled: isLocal });
   useHotkey("cmd+d", onDuplicate, { disabled: !isLocal });
@@ -263,6 +277,7 @@ function SidebarActions(props: {
           )}
         </Notice>
       )}
+      {hasSyncConflict && <DeckConflictPanel deckId={deck.id} />}
       <div className={css["actions"]}>
         {origin === "local" ? (
           <>
@@ -270,9 +285,18 @@ function SidebarActions(props: {
               <HotkeyTooltip keybind="e" description={t("deck.actions.edit")}>
                 <Button
                   data-testid="view-edit"
-                  disabled={isReadOnly}
+                  disabled={
+                    isReadOnly || !!deckConnectionLock || hasSyncConflict
+                  }
                   as="a"
                   size="full"
+                  tooltip={
+                    hasSyncConflict
+                      ? t("deck_sync.conflict.edit_locked")
+                      : deckConnectionLock
+                        ? deckConnectionLock
+                        : undefined
+                  }
                 >
                   <PencilIcon /> {t("deck.actions.edit_short")}
                 </Button>
@@ -289,8 +313,13 @@ function SidebarActions(props: {
                 <DialogTrigger asChild>
                   <Button
                     data-testid="view-upgrade"
-                    disabled={isReadOnly}
+                    disabled={hasSyncConflict || isReadOnly}
                     size="full"
+                    tooltip={
+                      hasSyncConflict
+                        ? t("deck_sync.conflict.edit_locked")
+                        : undefined
+                    }
                   >
                     <i className="icon-xp-bold" />{" "}
                     {t("deck.actions.upgrade_short")}
@@ -398,10 +427,16 @@ function SidebarActions(props: {
                   {!!deck.previous_deck && (
                     <DropdownButton
                       data-testid="view-delete-upgrade"
-                      disabled={isReadOnly || !!deckConnectionLock}
+                      disabled={
+                        hasSyncConflict || isReadOnly || !!deckConnectionLock
+                      }
                       hotkey="cmd+shift+backspace"
                       onClick={onDeleteUpgrade}
-                      tooltip={deckConnectionLock}
+                      tooltip={
+                        hasSyncConflict
+                          ? t("deck_sync.conflict.edit_locked")
+                          : deckConnectionLock
+                      }
                     >
                       <i className="icon-xp-bold" />{" "}
                       {t("deck.actions.delete_upgrade")}

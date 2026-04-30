@@ -18,7 +18,9 @@ import {
 import { Scroller } from "@/components/ui/scroller";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useUpgradeDeckMutation } from "@/queries/mutations/decks";
+import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
+import { selectDeckHasConflict } from "@/store/selectors/sync";
 import { decodeExileSlots, displayAttribute } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
@@ -76,6 +78,9 @@ export function UpgradeModal(props: Props) {
   const { t } = useTranslation();
 
   const connectionLock = ""; // XXX
+  const hasSyncConflict = useStore((state) =>
+    selectDeckHasConflict(state, deck.id),
+  );
 
   const [xp, setXp] = useState(
     new URLSearchParams(search).get("upgrade_xp")?.toString() ?? "",
@@ -143,7 +148,7 @@ export function UpgradeModal(props: Props) {
 
   const cssVariables = useAccentColor(deck.cards.investigator.card);
 
-  const disabled = xp === "" || !!connectionLock;
+  const disabled = xp === "" || !!connectionLock || hasSyncConflict;
 
   useHotkey("cmd+enter", onSave, { disabled, allowInputFocused: true });
 
@@ -171,13 +176,20 @@ export function UpgradeModal(props: Props) {
                 <HotkeyTooltip
                   keybind="cmd+enter"
                   description={
-                    connectionLock ?? t("deck_view.actions.save_upgrade")
+                    hasSyncConflict
+                      ? t("deck_sync.conflict.edit_locked")
+                      : (connectionLock ?? t("deck_view.actions.save_upgrade"))
                   }
                 >
                   <Button
                     data-testid="upgrade-save"
                     disabled={disabled}
                     onClick={onSave}
+                    tooltip={
+                      hasSyncConflict
+                        ? t("deck_sync.conflict.edit_locked")
+                        : undefined
+                    }
                     variant="primary"
                   >
                     {t("deck_view.actions.save_upgrade_short")}
@@ -186,13 +198,21 @@ export function UpgradeModal(props: Props) {
                 <HotkeyTooltip
                   keybind="cmd+shift+enter"
                   description={
-                    connectionLock ?? t("deck_view.actions.save_upgrade_close")
+                    hasSyncConflict
+                      ? t("deck_sync.conflict.edit_locked")
+                      : (connectionLock ??
+                        t("deck_view.actions.save_upgrade_close"))
                   }
                 >
                   <Button
                     data-testid="upgrade-save-close"
                     disabled={disabled}
                     onClick={onSaveClose}
+                    tooltip={
+                      hasSyncConflict
+                        ? t("deck_sync.conflict.edit_locked")
+                        : undefined
+                    }
                     variant="bare"
                   >
                     {t("deck_view.actions.save_upgrade_close_short")}

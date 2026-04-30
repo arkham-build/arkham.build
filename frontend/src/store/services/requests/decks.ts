@@ -97,7 +97,7 @@ export async function postDeckUpgrade(
   payload: DeckUpgradeRequest,
 ): Promise<Deck> {
   try {
-    const res = await client.request(`/v2/auth/upgrade/${id}`, {
+    const res = await client.request(`/v2/decks/upgrade/${id}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(DeckUpgradeRequestSchema.parse(payload)),

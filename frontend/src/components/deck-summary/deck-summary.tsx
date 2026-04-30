@@ -2,6 +2,7 @@ import {
   ArchiveIcon,
   ArchiveRestoreIcon,
   CircleAlertIcon,
+  CircleQuestionMarkIcon,
   CopyIcon,
   PencilIcon,
   Trash2Icon,
@@ -35,6 +36,7 @@ type DeckSummaryProps = {
   children?: React.ReactNode;
   deck: DeckSummaryType;
   elevation?: "normal" | "elevated";
+  hasSyncConflict?: boolean;
   interactive?: boolean;
   showThumbnail?: boolean;
   showShadow?: boolean;
@@ -49,6 +51,7 @@ export function DeckSummary(props: DeckSummaryProps) {
     children,
     deck,
     elevation,
+    hasSyncConflict,
     interactive,
     showShadow,
     showThumbnail,
@@ -88,7 +91,15 @@ export function DeckSummary(props: DeckSummaryProps) {
           {showThumbnail && (
             <div className={css["thumbnail"]}>
               <CardThumbnail card={card} />
-              {!!validation &&
+              {hasSyncConflict && (
+                <DefaultTooltip
+                  tooltip={t("deck_sync.conflict.collection_badge")}
+                >
+                  <CircleQuestionMarkIcon className={css["conflict"]} />
+                </DefaultTooltip>
+              )}
+              {!hasSyncConflict &&
+                !!validation &&
                 (typeof validation === "string" || !validation?.valid) && (
                   <div className={css["validation"]}>
                     <CircleAlertIcon />

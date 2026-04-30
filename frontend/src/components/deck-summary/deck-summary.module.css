@@ -39,6 +39,17 @@
   right: -0.125rem;
 }
 
+.conflict {
+  display: inline-block;
+  background: var(--nord-12);
+  color: var(--color-inverted);
+  border-radius: 100%;
+  padding: 1px;
+  position: absolute;
+  bottom: -0.125rem;
+  right: -0.125rem;
+}
+
 .header,
 .meta {
   width: 100%;

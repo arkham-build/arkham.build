@@ -129,3 +129,26 @@ export function useDeleteAllDecksMutation() {
     mutationFn: () => deleteAllDecks(),
   });
 }
+
+export function useRefreshDeckConflictMutation() {
+  const client = useHttpClient();
+  const resolveDeckConflictWithRefresh = useStore(
+    (state) => state.resolveDeckConflictWithRefresh,
+  );
+
+  return useMutation({
+    mutationKey: ["decks", "conflict", "refresh"],
+    mutationFn: (deckId: Id) => resolveDeckConflictWithRefresh(client, deckId),
+  });
+}
+
+export function useDiscardLocalDeckConflictMutation() {
+  const resolveDeckConflictWithDiscard = useStore(
+    (state) => state.resolveDeckConflictWithDiscard,
+  );
+
+  return useMutation({
+    mutationKey: ["decks", "conflict", "discard-local"],
+    mutationFn: (deckId: Id) => resolveDeckConflictWithDiscard(deckId),
+  });
+}

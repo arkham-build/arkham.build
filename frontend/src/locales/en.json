@@ -841,7 +841,7 @@
       },
       "tags": {
         "limited_pool": "Limited pool",
-        "private": "Private",
+        "private": "Device",
         "account": "arkham.build",
         "sealed": "Sealed",
         "shared": "Shared"
@@ -914,6 +914,21 @@
         "title": "Tags"
       },
       "title": "Decks"
+    },
+    "deck_sync": {
+      "conflict": {
+        "action_error": "Failed to resolve deck conflict: {{error}}",
+        "collection_badge": "Deck conflict needs attention",
+        "description": "This deck changed remotely before your change completed. Refresh to apply the latest remote state.",
+        "description_remote_missing": "This deck was deleted remotely before your change completed. Discard the local deck to match the remote state.",
+        "discard_local": "Discard local deck",
+        "edit_locked": "Resolve the deck conflict before editing.",
+        "refresh": "Refresh",
+        "remote_version": "Remote version: {{version}}",
+        "title": "Deck sync conflict",
+        "toast_many": "{{count}} deck conflicts need attention.",
+        "toast_one": "1 deck conflict needs attention."
+      }
     },
     "deck_create": {
       "default_name": {

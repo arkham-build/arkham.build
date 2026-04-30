@@ -88,7 +88,7 @@ function upgradeDeck(
   id: string,
   payload: Record<string, unknown>,
 ) {
-  return app.request(`/v2/auth/upgrade/${id}`, {
+  return app.request(`/v2/decks/upgrade/${id}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -228,9 +228,31 @@ describe("Deck routes", () => {
       expect(conflict.remoteVersion).toBe("bbbb2222");
       expect(conflict.remoteDeck?.id).toBe("deck-conflict");
     });
+
+    test("returns a conflict when the deck was already removed", async ({
+      dependencies,
+    }) => {
+      const { app, sessionCookie } = dependencies;
+
+      const res = await updateDeck(app, sessionCookie, "deck-missing", {
+        ...baseDeckPayload({
+          id: "deck-missing",
+          name: "Updated",
+          version: "bbbb2223",
+        }),
+        expectedVersion: "stale000",
+      });
+
+      expect(res.status).toBe(409);
+
+      const body = (await res.json()) as { cause: unknown };
+      const conflict = DeckConflictResponseSchema.parse(body.cause);
+      expect(conflict.remoteVersion).toBeNull();
+      expect(conflict.remoteDeck).toBeNull();
+    });
   });
 
-  describe("POST /v2/auth/upgrade/:id", () => {
+  describe("POST /v2/decks/upgrade/:id", () => {
     test("creates an upgraded deck and links it to the previous deck", async ({
       dependencies,
     }) => {
@@ -299,6 +321,24 @@ describe("Deck routes", () => {
 
       expect(res.status).toBe(409);
     });
+
+    test("returns a conflict when the previous deck was already removed", async ({
+      dependencies,
+    }) => {
+      const { app, sessionCookie } = dependencies;
+
+      const res = await upgradeDeck(app, sessionCookie, "deck-missing", {
+        deck: baseDeckPayload({ id: "deck-new-upgrade" }),
+        expectedVersion: "base0001",
+      });
+
+      expect(res.status).toBe(409);
+
+      const body = (await res.json()) as { cause: unknown };
+      const conflict = DeckConflictResponseSchema.parse(body.cause);
+      expect(conflict.remoteVersion).toBeNull();
+      expect(conflict.remoteDeck).toBeNull();
+    });
   });
 
   describe("DELETE /v2/decks/:id", () => {
@@ -338,6 +378,30 @@ describe("Deck routes", () => {
         "stale000",
       );
       expect(res.status).toBe(409);
+
+      const body = (await res.json()) as { cause: unknown };
+      const conflict = DeckConflictResponseSchema.parse(body.cause);
+      expect(conflict.remoteVersion).toBe("dddd4444");
+      expect(conflict.remoteDeck?.id).toBe("deck-delete-conflict");
+    });
+
+    test("returns a delete conflict when the deck was already removed", async ({
+      dependencies,
+    }) => {
+      const { app, sessionCookie } = dependencies;
+
+      const res = await deleteDeck(
+        app,
+        sessionCookie,
+        "deck-delete-missing",
+        "stale000",
+      );
+      expect(res.status).toBe(409);
+
+      const body = (await res.json()) as { cause: unknown };
+      const conflict = DeckConflictResponseSchema.parse(body.cause);
+      expect(conflict.remoteVersion).toBeNull();
+      expect(conflict.remoteDeck).toBeNull();
     });
   });
 });

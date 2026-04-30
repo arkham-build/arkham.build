@@ -15,6 +15,7 @@ import { CardListContainer } from "@/components/card-list/card-list-container";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { CardRecommender } from "@/components/card-recommender/card-recommender";
 import { CoreCardCheckbox } from "@/components/card-recommender/core-card-checkbox";
+import { DeckConflictOverlay } from "@/components/deck-conflict/deck-conflict-panel";
 import { DeckTools } from "@/components/deck-tools/deck-tools";
 import { DecklistValidation } from "@/components/decklist/decklist-validation";
 import { Filters } from "@/components/filters/filters";
@@ -33,6 +34,7 @@ import {
   selectResolvedDeckById,
 } from "@/store/selectors/decks";
 import { selectLookupTables } from "@/store/selectors/shared";
+import { selectDeckHasConflict } from "@/store/selectors/sync";
 import { mapTabToSlot } from "@/store/slices/deck-edits.types";
 import { isStaticInvestigator } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";
@@ -133,6 +135,9 @@ function DeckEditInner() {
 
   const updateCardQuantity = useStore((state) => state.updateCardQuantity);
   const validation = useStore((state) => selectDeckValid(state, deck));
+  const hasSyncConflict = useStore((state) =>
+    selectDeckHasConflict(state, deck.id),
+  );
   const lookupTables = useStore(selectLookupTables);
 
   const accentColor = useAccentColor(deck.investigatorBack.card);
@@ -163,8 +168,8 @@ function DeckEditInner() {
     setCurrentTab("config");
   }, [setCurrentTab]);
 
-  useHotkey("d", onCycleDeck);
-  useHotkey("c", onSetMeta);
+  useHotkey("d", onCycleDeck, { disabled: hasSyncConflict });
+  useHotkey("c", onSetMeta, { disabled: hasSyncConflict });
 
   const renderCoreCardCheckbox = useCallback(
     (card: Card, quantity?: number) => {
@@ -220,6 +225,7 @@ function DeckEditInner() {
       <PageTitle>{t("deck_edit.title", { name: deck.name })}</PageTitle>
       <NotesRichTextEditorContextProvider>
         <ListLayout
+          inert={hasSyncConflict}
           filters={
             tabHasFilters ? (
               <Filters targetDeck={targetDeck}>
@@ -331,6 +337,7 @@ function DeckEditInner() {
             </Tabs>
           )}
         </ListLayout>
+        {hasSyncConflict && <DeckConflictOverlay deckId={deck.id} />}
       </NotesRichTextEditorContextProvider>
     </ListLayoutContextProvider>
   );

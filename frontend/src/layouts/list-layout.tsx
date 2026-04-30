@@ -22,6 +22,7 @@ type Props = {
   className?: string;
   filters?: React.ReactNode;
   hideSidebarCollapse?: boolean;
+  inert?: boolean;
   mastheadContent?: React.ReactNode;
   noFade?: boolean;
   sidebar: React.ReactNode;
@@ -34,6 +35,7 @@ export function ListLayout(props: Props) {
     className,
     filters,
     hideSidebarCollapse,
+    inert,
     mastheadContent,
     noFade,
     sidebar,
@@ -125,6 +127,7 @@ export function ListLayout(props: Props) {
         floatingMenuOpen && css["floating-menu-open"],
         filters && css["has-filters"],
       )}
+      inert={inert}
       onClick={onContentClick}
       style={{ "--sidebar-width-max": sidebarWidthMax } as React.CSSProperties}
     >

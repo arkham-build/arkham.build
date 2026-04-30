@@ -323,7 +323,8 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
 
     const upgrade = await upgradeAdapter.persist(
       client,
-      state,
+      get,
+      set,
       deck,
       upgradeAdapter.format(state, deck, payload),
       state.sync.decks.items[deck.id]?.version,
