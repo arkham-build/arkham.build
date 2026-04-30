@@ -9,7 +9,7 @@ import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provide
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
 import { selectIsInitialized } from "@/store/selectors/shared";
-import { queryFanMadeProjectData } from "@/store/services/queries";
+import { queryFanMadeProjectData } from "@/store/services/requests/fan-made-projects";
 import { ErrorStatus } from "../errors/404";
 import css from "./fan-made-content-preview.module.css";
 

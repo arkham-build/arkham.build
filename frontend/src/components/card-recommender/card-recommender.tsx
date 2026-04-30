@@ -18,7 +18,7 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { type ListState, selectListCards } from "@/store/selectors/lists";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import { useHttpClient } from "@/store/services/http-client.context";
-import { getRecommendations } from "@/store/services/queries";
+import { getRecommendations } from "@/store/services/requests/recommendations";
 import { ApiError } from "@/store/services/requests/shared";
 import type { ListDisplay } from "@/store/slices/lists.types";
 import { cx } from "@/utils/cx";

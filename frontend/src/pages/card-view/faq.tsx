@@ -6,7 +6,7 @@ import { Details } from "@/components/ui/details";
 import { useStore } from "@/store";
 import type { ResolvedCard } from "@/store/lib/types";
 import { selectClientId } from "@/store/selectors/shared";
-import { queryFaq } from "@/store/services/queries";
+import { queryFaq } from "@/store/services/requests/legacy";
 import { redirectArkhamDBLinks } from "@/utils/arkhamdb";
 import { isEmpty } from "@/utils/is-empty";
 

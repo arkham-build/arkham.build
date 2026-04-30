@@ -15,7 +15,7 @@ import {
   selectDeckCreateInvestigators,
 } from "@/store/selectors/deck-create";
 import { useHttpClient } from "@/store/services/http-client.context";
-import { querySealedDeck } from "@/store/services/queries";
+import { querySealedDeck } from "@/store/services/requests/sealed-decks";
 import { cx } from "@/utils/cx";
 import { useAccentColor } from "@/utils/use-accent-color";
 import css from "./deck-create.module.css";

@@ -85,10 +85,6 @@ export function removeRemoteAccountDecks({
       undoHistory: nextUndoHistory,
     },
     deckEdits: nextDeckEdits,
-    sharing: {
-      ...sharing,
-      decks: nextSharingDecks,
-    },
   };
 }
 

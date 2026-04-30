@@ -15,7 +15,7 @@ import {
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
-import { getShare } from "@/store/services/queries";
+import { getShare } from "@/store/services/requests/legacy";
 import { ApiError } from "@/store/services/requests/shared";
 import type { StoreState } from "@/store/slices";
 import { ErrorStatus } from "../errors/404";

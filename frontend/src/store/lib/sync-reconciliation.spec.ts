@@ -117,7 +117,6 @@ describe("sync reconciliation", () => {
       expect(result.data.deckFolders.remote).toBeUndefined();
       expect(result.data.undoHistory?.remote).toBeUndefined();
       expect(result.deckEdits.remote).toBeUndefined();
-      expect(result.sharing.decks.remote).toBeUndefined();
     });
   });
 

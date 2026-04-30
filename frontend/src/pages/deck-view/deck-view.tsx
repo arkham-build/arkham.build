@@ -28,8 +28,8 @@ import {
   selectMetadata,
 } from "@/store/selectors/shared";
 import { useHttpClient } from "@/store/services/http-client.context";
-import { queryDeck } from "@/store/services/queries";
 import { fetchArkhamDBDecklistMeta } from "@/store/services/requests/decklist-meta";
+import { queryDeck } from "@/store/services/requests/legacy";
 import { ApiError } from "@/store/services/requests/shared";
 import { isNumeric } from "@/utils/is-numeric";
 import { ErrorStatus } from "../errors/404";

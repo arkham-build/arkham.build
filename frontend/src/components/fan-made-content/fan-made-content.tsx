@@ -26,7 +26,7 @@ import { useHttpClient } from "@/store/services/http-client.context";
 import {
   queryFanMadeProjectData,
   queryFanMadeProjects,
-} from "@/store/services/queries";
+} from "@/store/services/requests/fan-made-projects";
 import type { FanMadeContentFilter } from "@/store/slices/lists.types";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";

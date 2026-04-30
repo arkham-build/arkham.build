@@ -27,6 +27,7 @@ import {
 import { useToast } from "@/components/ui/toast.hooks";
 import { UpgradeModal } from "@/pages/deck-view/upgrade-modal";
 import { useStore } from "@/store";
+import { isSyncedStorageProvider } from "@/store/lib/sync";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Id } from "@/store/schemas/deck.schema";
 import { selectDeckCreateStorageProviderOptions } from "@/store/selectors/deck-create";
@@ -431,16 +432,19 @@ function SidebarActions(props: {
   );
 }
 
-function Sharing(props: {
-  onArkhamDBUpload?: () => void;
-  deck: ResolvedDeck;
-  origin: DeckOrigin;
-}) {
+function Sharing(props: { deck: ResolvedDeck; origin: DeckOrigin }) {
   const { deck, origin } = props;
   const { t } = useTranslation();
 
-  const share = useStore((state) => state.sharing.decks[props.deck.id]);
   const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
+
+  const isSynced = isSyncedStorageProvider(deck.source);
+
+  const uploadDeckToProvider = useStore((state) => state.uploadDeckToProvider);
+
+  const onUpload = () => {
+    uploadDeckToProvider(deck.id, "remote");
+  };
 
   return (
     <section className={css["details"]} data-testid="share">
@@ -449,7 +453,7 @@ function Sharing(props: {
         icon={<ShareIcon />}
         label={t("deck_view.sharing.title")}
       >
-        {share || origin !== "local" ? (
+        {isSynced ? (
           <div className={css["share"]}>
             <ShareInfo id={deck.id} path={`/share/${deck.id}`} />
             {(origin === "local" || devModeEnabled) && (
@@ -461,6 +465,12 @@ function Sharing(props: {
         ) : (
           <div className={css["share-empty"]}>
             <p>{t("deck_view.sharing.description")}</p>
+            <Button onClick={onUpload} size="sm">
+              <UploadIcon />
+              {t("deck_view.actions.upload", {
+                provider: t("deck_edit.config.storage_provider.remote"),
+              })}
+            </Button>
           </div>
         )}
       </DeckDetail>
