@@ -84,12 +84,7 @@ export function Sidebar(props: Props) {
         />
         <DeckDetails deck={deck} />
         {origin === "local" && <SidebarUpgrade deck={deck} />}
-
-        {(origin === "arkhamdb" || deck.source === "arkhamdb") && (
-          <ArkhamDBDetails deck={deck} type={type} />
-        )}
-
-        {deck.source !== "arkhamdb" && <Sharing deck={deck} origin={origin} />}
+        <Sharing deck={deck} origin={origin} type={type} />
       </div>
     </div>
   );
@@ -362,9 +357,7 @@ function SidebarActions(props: {
                       onClick={onRemoteUpload}
                     >
                       <UploadIcon />
-                      {t("deck_view.actions.upload", {
-                        provider: remoteProvider.label,
-                      })}
+                      {t("deck_view.actions.upload_remote")}
                     </DropdownButton>
                   )}
                   <DropdownButton
@@ -433,8 +426,12 @@ function SidebarActions(props: {
   );
 }
 
-function Sharing(props: { deck: ResolvedDeck; origin: DeckOrigin }) {
-  const { deck, origin } = props;
+function Sharing(props: {
+  deck: ResolvedDeck;
+  origin: DeckOrigin;
+  type: DeckDisplayType;
+}) {
+  const { deck, origin, type } = props;
   const { t } = useTranslation();
 
   const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
@@ -455,21 +452,28 @@ function Sharing(props: { deck: ResolvedDeck; origin: DeckOrigin }) {
       >
         {isSynced ? (
           <div className={css["share"]}>
-            <ShareInfo id={deck.id} path={`/share/${deck.id}`} />
-            {(origin === "local" || devModeEnabled) && (
-              <nav className={css["share-actions"]}>
-                {devModeEnabled && <DevModeApiLinkButton id={deck.id} />}
-              </nav>
-            )}
+            <ShareInfo deck={deck} path={`/${type}/view/${deck.id}`} />
+            <nav className={css["share-actions"]}>
+              {devModeEnabled && <DevModeApiLinkButton id={deck.id} />}
+              {origin === "arkhamdb" && (
+                <Button
+                  as="a"
+                  href={`${localizeArkhamDBBaseUrl()}/${type}/view/${deck.id}`}
+                  size="sm"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {t("deck_view.sharing.view_on_arkhamdb")}
+                </Button>
+              )}
+            </nav>
           </div>
         ) : (
           <div className={css["share-empty"]}>
             <p>{t("deck_view.sharing.description")}</p>
             <Button onClick={onUpload} size="sm">
               <UploadIcon />
-              {t("deck_view.actions.upload", {
-                provider: t("deck_edit.config.storage_provider.remote"),
-              })}
+              {t("deck_view.actions.upload_remote")}
             </Button>
           </div>
         )}
@@ -478,8 +482,8 @@ function Sharing(props: { deck: ResolvedDeck; origin: DeckOrigin }) {
   );
 }
 
-function ShareInfo(props: { id: Id; path: string }) {
-  const { id, path } = props;
+function ShareInfo(props: { deck: ResolvedDeck; path: string }) {
+  const { deck, path } = props;
   const { t } = useTranslation();
 
   return (
@@ -488,6 +492,9 @@ function ShareInfo(props: { id: Id; path: string }) {
         <Trans
           t={t}
           i18nKey="deck_view.sharing.description_present"
+          values={{
+            provider: t(`deck_edit.config.storage_provider.${deck.source}`),
+          }}
           components={{
             a: (
               // biome-ignore lint/a11y/useAnchorContent: interpolation.
@@ -507,10 +514,10 @@ function ShareInfo(props: { id: Id; path: string }) {
         />
       </p>
       <p>
-        {t("deck.id")}: <code>{id}</code>
+        {t("deck.id")}: <code>{deck.id}</code>
         <CopyToClipboard
           className={css["share-copy"]}
-          text={`${id}`}
+          text={`${deck.id}`}
           variant="bare"
         />
       </p>
@@ -532,51 +539,5 @@ function DevModeApiLinkButton({ id }: { id: Id }) {
       <ExternalLinkIcon />
       {t("deck_view.sharing.api_link")}
     </Button>
-  );
-}
-
-function ArkhamDBDetails(props: { deck: ResolvedDeck; type: DeckDisplayType }) {
-  const { deck, type } = props;
-  const { t } = useTranslation();
-
-  const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
-
-  return (
-    <>
-      <section className={css["details"]} data-testid="share">
-        <DeckDetail
-          as="div"
-          icon={<i className="icon-elder_sign" />}
-          label="ArkhamDB"
-        >
-          <p>
-            {t("deck_view.connections.description", { provider: "ArkhamDB" })}
-          </p>
-          <nav className={css["share-actions"]}>
-            <Button
-              as="a"
-              href={`${localizeArkhamDBBaseUrl()}/${type}/view/${deck.id}`}
-              size="sm"
-              rel="noreferrer"
-              target="_blank"
-            >
-              {t("deck_view.connections.view", { provider: "ArkhamDB" })}
-            </Button>
-            {devModeEnabled && type === "deck" && (
-              <DevModeApiLinkButton id={deck.id} />
-            )}
-          </nav>
-        </DeckDetail>
-      </section>
-      <section className={css["details"]} data-testid="share">
-        <DeckDetail
-          as="div"
-          icon={<ShareIcon />}
-          label={t("deck_view.sharing.title")}
-        >
-          <ShareInfo id={deck.id} path={`/${type}/view/${deck.id}`} />
-        </DeckDetail>
-      </section>
-    </>
   );
 }

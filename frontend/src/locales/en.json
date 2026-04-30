@@ -842,7 +842,7 @@
       "tags": {
         "limited_pool": "Limited pool",
         "private": "Private",
-        "remote": "Account",
+        "remote": "arkham.build",
         "sealed": "Sealed",
         "shared": "Shared"
       },
@@ -1001,8 +1001,8 @@
         },
         "storage_provider": {
           "arkhamdb": "ArkhamDB",
-          "local": "Private",
-          "remote": "Account",
+          "local": "Device",
+          "remote": "arkham.build",
           "shared": "Shared",
           "title": "Storage provider"
         },
@@ -1112,11 +1112,7 @@
         "save_upgrade_close": "Save upgrade and close",
         "save_upgrade_close_short": "Save and close",
         "save_upgrade_short": "Upgrade",
-        "upload": "Upload to {{provider}}"
-      },
-      "connections": {
-        "description": "This deck is set up to sync with {{provider}}.",
-        "view": "View on {{provider}}"
+        "upload_remote": "Upload to your account"
       },
       "discounts": {
         "adaptable": "Adaptable",
@@ -1143,9 +1139,10 @@
       "scans": "Scans",
       "sharing": {
         "api_link": "Json API",
-        "description": "Deck is stored locally.",
-        "description_present": "This deck has a public share, it can be viewed using <a>this link</a>.",
-        "title": "Public share"
+        "description": "Deck is stored on this device.",
+        "description_present": "Deck is stored on {{provider}}. It can be viewed using <a>this link</a>.",
+        "title": "Access",
+        "view_on_arkhamdb": "View on ArkhamDB"
       },
       "show_deck_list": "Show deck list",
       "tab_deck_list": "Deck",
