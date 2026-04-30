@@ -35,14 +35,17 @@ function queryStubCardData() {
   return Promise.resolve(allCards);
 }
 
+export function getMockHttpClient(
+  onUnauthorized: () => Promise<void> | void = () => undefined,
+) {
+  return createHttpClient({
+    apiUrl: "http://localhost",
+    onUnauthorized,
+  });
+}
+
 export async function getMockStore() {
   useStore.setState(useStore.getInitialState(), true);
-  useStore.getState().setHttpClient(
-    createHttpClient({
-      apiUrl: "http://localhost",
-      onUnauthorized: () => undefined,
-    }),
-  );
 
   const state = useStore.getState();
   await state.init(queryStubMetadata, queryStubDataVersion, queryStubCardData);

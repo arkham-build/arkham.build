@@ -15,6 +15,7 @@ import type { DeckValidationResult } from "@/store/lib/deck-validation";
 import { deckTags } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { History } from "@/store/selectors/decks";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { cx } from "@/utils/cx";
 import { useAccentColor } from "@/utils/use-accent-color";
 import DeckDescription from "../deck-description";
@@ -273,6 +274,7 @@ function TitleEditModal(props: TitleEditModalProps) {
   const modalContext = useDialogContextChecked();
   const cssVariables = useAccentColor(deck.investigatorBack.card);
 
+  const client = useHttpClient();
   const updateDeckProperties = useStore((state) => state.updateDeckProperties);
 
   const onCloseModal = useCallback(() => {
@@ -293,7 +295,7 @@ function TitleEditModal(props: TitleEditModalProps) {
       try {
         const values = new FormData(evt.target as HTMLFormElement);
 
-        await updateDeckProperties(deck.id, {
+        await updateDeckProperties(client, deck.id, {
           name: values.get("name")?.toString() || "",
           tags: values.get("tags")?.toString() || "",
         });
@@ -311,7 +313,7 @@ function TitleEditModal(props: TitleEditModalProps) {
         setLoading(false);
       }
     },
-    [deck.id, updateDeckProperties, onCloseModal, toast, t],
+    [client, deck.id, updateDeckProperties, onCloseModal, toast, t],
   );
 
   return (

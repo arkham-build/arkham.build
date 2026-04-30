@@ -1141,16 +1141,9 @@
       "scans": "Scans",
       "sharing": {
         "api_link": "Json API",
-        "create": "Create share",
-        "create_failed": "Failed to create share: {{error}}",
-        "create_tooltip": "Sharing creates a publicly accessible, read-only link to the deck. Anyone with the link can view the deck, but not edit it.<br />Shares can be removed at any time. Removing a share does not affect the deck itself.",
-        "delete": "Delete share",
-        "delete_failed": "Failed to delete share: {{error}}",
         "description": "Deck is stored locally.",
         "description_present": "This deck has a public share, it can be viewed using <a>this link</a>.",
-        "title": "Public share",
-        "update": "Update share",
-        "update_failed": "Failed to update share: {{error}}"
+        "title": "Public share"
       },
       "show_deck_list": "Show deck list",
       "tab_deck_list": "Deck",

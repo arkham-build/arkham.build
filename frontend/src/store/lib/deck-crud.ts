@@ -14,6 +14,7 @@ import {
   selectLookupTables,
   selectMetadata,
 } from "../selectors/shared";
+import type { HttpClient } from "../services/http-client";
 import {
   deleteDeck,
   postDeck,
@@ -154,9 +155,9 @@ export const createAdapter = {
     deck.source = provider ?? "local";
     return deck;
   },
-  async persist(state: StoreState, deck: Deck) {
+  async persist(client: HttpClient, _state: StoreState, deck: Deck) {
     return isSyncedStorageProvider(deck.source)
-      ? await postDeck(getHttpClient(state), deck)
+      ? await postDeck(client, deck)
       : deck;
   },
   transition(set: StoreApi<StoreState>["setState"], deck: Deck) {
@@ -240,6 +241,7 @@ export const updateAdapter = {
     return { deck: nextDeck, undo: undoEntry(deckResolved, nextResolved) };
   },
   async persist(
+    client: HttpClient,
     get: StoreApi<StoreState>["getState"],
     set: StoreApi<StoreState>["setState"],
     deck: Deck,
@@ -254,7 +256,7 @@ export const updateAdapter = {
     }));
 
     try {
-      const remoteDeck = await putDeck(getHttpClient(get()), {
+      const remoteDeck = await putDeck(client, {
         ...deck,
         expectedVersion,
       });
@@ -326,6 +328,7 @@ export const deleteAdapter = {
     return deck;
   },
   async persist(
+    client: HttpClient,
     get: StoreApi<StoreState>["getState"],
     set: StoreApi<StoreState>["setState"],
     deck: Deck,
@@ -340,7 +343,7 @@ export const deleteAdapter = {
     }));
 
     try {
-      await deleteDeck(getHttpClient(get()), deck.id, { expectedVersion });
+      await deleteDeck(client, deck.id, { expectedVersion });
     } catch (error) {
       set((prev) => ({
         sync: updateDeckSyncError(prev.sync, deck.id, error, "delete"),
@@ -441,8 +444,8 @@ export const uploadAdapter = {
 
     return { ...deck, source: provider };
   },
-  async persist(state: StoreState, deck: Deck) {
-    return await postDeck(getHttpClient(state), deck);
+  async persist(client: HttpClient, _state: StoreState, deck: Deck) {
+    return await postDeck(client, deck);
   },
   transition(
     set: StoreApi<StoreState>["setState"],
@@ -614,7 +617,8 @@ export const upgradeAdapter = {
     return newDeck;
   },
   async persist(
-    state: StoreState,
+    client: HttpClient,
+    _state: StoreState,
     deck: Deck,
     upgrade: Deck,
     expectedVersion: string | null | undefined,
@@ -625,7 +629,7 @@ export const upgradeAdapter = {
 
     assert(expectedVersion, `Deck ${deck.id} does not have a sync version.`);
 
-    return await postDeckUpgrade(getHttpClient(state), deck.id, {
+    return await postDeckUpgrade(client, deck.id, {
       deck: upgrade,
       expectedVersion,
     });
@@ -672,12 +676,6 @@ export const upgradeAdapter = {
     });
   },
 };
-
-function getHttpClient(state: StoreState) {
-  const client = state.httpClient;
-  assert(client, "HTTP client not initialized.");
-  return client;
-}
 
 function updateValidation(
   state: StoreState,

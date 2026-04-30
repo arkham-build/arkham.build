@@ -66,7 +66,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 ) => ({
   ...getInitialSyncState(),
 
-  async bootstrapAuthenticatedState() {
+  async bootstrapAuthenticatedState(client) {
     const state = get();
     const accountId = state.auth.session?.account.id;
 
@@ -80,8 +80,8 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     }
 
     const results = await Promise.allSettled([
-      state.loadRemoteSettings(),
-      state.syncDecks(),
+      state.loadRemoteSettings(client),
+      state.syncDecks(client),
     ]);
 
     // Each sync action records its own user-facing error state; keep bootstrap non-fatal.
@@ -151,7 +151,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     });
   },
 
-  async syncDecks() {
+  async syncDecks(client) {
     const state = get();
 
     const accountId = state.auth.session?.account.id;
@@ -164,7 +164,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     });
 
     try {
-      const manifest = await fetchDeckManifest(getHttpClient(get()));
+      const manifest = await fetchDeckManifest(client);
 
       if (!isCurrentAccount(get(), accountId)) return;
 
@@ -192,7 +192,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
       const remoteDecks = isEmpty(plan.fetchIds)
         ? []
-        : await fetchDeckBatch(getHttpClient(get()), { ids: plan.fetchIds });
+        : await fetchDeckBatch(client, { ids: plan.fetchIds });
 
       const remoteDeckIds = new Set(remoteDecks.map((deck) => String(deck.id)));
 
@@ -243,16 +243,6 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     }
   },
 });
-
-function getHttpClient(state: StoreState) {
-  const client = state.httpClient;
-
-  if (!client) {
-    throw new Error("HTTP client not initialized.");
-  }
-
-  return client;
-}
 
 function isCurrentAccount(state: StoreState, accountId: string) {
   return (

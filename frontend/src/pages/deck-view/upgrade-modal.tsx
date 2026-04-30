@@ -19,6 +19,7 @@ import { Scroller } from "@/components/ui/scroller";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { decodeExileSlots, displayAttribute } from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
@@ -78,6 +79,7 @@ export function UpgradeModal(props: Props) {
   const { t } = useTranslation();
 
   const connectionLock = ""; // XXX
+  const client = useHttpClient();
   const upgradeDeck = useStore((state) => state.upgradeDeck);
 
   const [xp, setXp] = useState(
@@ -120,7 +122,7 @@ export function UpgradeModal(props: Props) {
       if (hasGreatWork && !usurped) upgradeXp += 1;
 
       try {
-        const newDeck = await upgradeDeck({
+        const newDeck = await upgradeDeck(client, {
           id: deck.id,
           xp: upgradeXp,
           exileString,
@@ -142,6 +144,7 @@ export function UpgradeModal(props: Props) {
       }
     },
     [
+      client,
       deck.id,
       upgradeDeck,
       xp,

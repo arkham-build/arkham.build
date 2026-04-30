@@ -1,5 +1,6 @@
 import type { SettingsResponse } from "@arkham-build/shared";
 import type { Id } from "../schemas/deck.schema";
+import type { HttpClient } from "../services/http-client";
 import type { AuthState } from "./auth.types";
 
 export type SyncStatus =
@@ -49,10 +50,10 @@ export type SyncState = {
 };
 
 export type SyncSlice = SyncState & {
-  bootstrapAuthenticatedState(): Promise<void>;
+  bootstrapAuthenticatedState(client: HttpClient): Promise<void>;
   clearAccountState(auth?: AuthState): void;
   setSettingsSync(payload: Partial<SettingsSyncState>): void;
   setDecksSync(payload: Partial<DecksSyncState>): void;
   setDeckSyncItem(id: Id, payload: Partial<DeckSyncItemState> | null): void;
-  syncDecks(): Promise<void>;
+  syncDecks(client: HttpClient): Promise<void>;
 };

@@ -6,6 +6,7 @@ import { useStore } from "@/store";
 import { formatDeckAsText, formatDeckShare } from "@/store/lib/deck-io";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { Deck, Id } from "@/store/schemas/deck.schema";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import { download } from "@/utils/download";
 
@@ -13,6 +14,7 @@ export function useDeleteDeck() {
   const toast = useToast();
   const { t } = useTranslation();
   const [, navigate] = useLocation();
+  const client = useHttpClient();
   const deleteDeck = useStore((state) => state.deleteDeck);
 
   return useCallback(
@@ -24,7 +26,7 @@ export function useDeleteDeck() {
         });
 
         try {
-          await deleteDeck(deckId, () => navigate("~/"));
+          await deleteDeck(client, deckId, () => navigate("~/"));
           toast.dismiss(toastId);
         } catch (err) {
           toast.dismiss(toastId);
@@ -37,7 +39,7 @@ export function useDeleteDeck() {
         }
       }
     },
-    [navigate, toast, deleteDeck, t],
+    [client, navigate, toast, deleteDeck, t],
   );
 }
 
@@ -45,6 +47,7 @@ export function useDeleteUpgrade() {
   const toast = useToast();
   const { t } = useTranslation();
   const [, navigate] = useLocation();
+  const client = useHttpClient();
   const deleteUpgrade = useStore((state) => state.deleteUpgrade);
 
   return useCallback(
@@ -56,7 +59,9 @@ export function useDeleteUpgrade() {
         });
 
         try {
-          await deleteUpgrade(deckId, (id) => navigate(`/deck/view/${id}`));
+          await deleteUpgrade(client, deckId, (id) =>
+            navigate(`/deck/view/${id}`),
+          );
           toast.dismiss(toastId);
         } catch (err) {
           toast.dismiss(toastId);
@@ -69,7 +74,7 @@ export function useDeleteUpgrade() {
         }
       }
     },
-    [deleteUpgrade, navigate, toast, t],
+    [client, deleteUpgrade, navigate, toast, t],
   );
 }
 
@@ -78,6 +83,7 @@ export function useUploadDeckToProvider() {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
 
+  const client = useHttpClient();
   const uploadDeckToProvider = useStore((state) => state.uploadDeckToProvider);
 
   return useCallback(
@@ -90,7 +96,7 @@ export function useUploadDeckToProvider() {
       });
 
       try {
-        const id = await uploadDeckToProvider(deckId, "remote");
+        const id = await uploadDeckToProvider(client, deckId, "remote");
         toast.dismiss(toastId);
         if (id !== deckId) navigate(`/deck/view/${id}`, { replace: true });
       } catch (err) {
@@ -105,7 +111,7 @@ export function useUploadDeckToProvider() {
         });
       }
     },
-    [navigate, toast, uploadDeckToProvider, t],
+    [client, navigate, toast, uploadDeckToProvider, t],
   );
 }
 

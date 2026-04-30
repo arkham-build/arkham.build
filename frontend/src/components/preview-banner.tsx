@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
+import { useHttpClient } from "@/store/services/http-client.context";
 import css from "./preview-banner.module.css";
 import { Button } from "./ui/button";
 
@@ -10,6 +11,7 @@ export function PreviewBanner() {
   const settings = useStore((state) => state.settings);
   const { t } = useTranslation();
 
+  const client = useHttpClient();
   const dismissBanner = useStore((state) => state.dismissBanner);
   const applySettings = useStore((state) => state.applySettings);
 
@@ -27,12 +29,12 @@ export function PreviewBanner() {
 
   const onEnablePreviews = useCallback(async () => {
     try {
-      await applySettings({ ...settings, showPreviews: true });
+      await applySettings(client, { ...settings, showPreviews: true });
       await dismissBanner(BANNER_ID);
     } catch (err) {
       console.error(err);
     }
-  }, [settings, applySettings, dismissBanner]);
+  }, [client, settings, applySettings, dismissBanner]);
 
   if (settings.showPreviews || dismissed) {
     return null;

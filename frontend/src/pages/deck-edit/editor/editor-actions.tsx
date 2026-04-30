@@ -15,6 +15,7 @@ import { useStore } from "@/store";
 import { UnsupportedPublishError } from "@/store/lib/errors";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckValid } from "@/store/selectors/decks";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { useHotkey } from "@/utils/use-hotkey";
 import { LatestUpgrade } from "../../../components/deck-display/deck-history/latest-upgrade";
 import css from "./editor.module.css";
@@ -34,6 +35,7 @@ export function EditorActions(props: Props) {
   const hasEdits = useStore((state) => !!state.deckEdits[deck.id]);
   const connectionLock = ""; // XXX
 
+  const client = useHttpClient();
   const discardEdits = useStore((state) => state.discardEdits);
   const saveDeck = useStore((state) => state.saveDeck);
   const duplicateDeck = useStore((state) => state.duplicateDeck);
@@ -53,7 +55,7 @@ export function EditorActions(props: Props) {
       });
 
       try {
-        const id = await saveDeck(deck.id);
+        const id = await saveDeck(client, deck.id);
         toast.dismiss(toastId);
 
         if (!stayOnPage) navigate(`~/deck/view/${id}`);
@@ -82,7 +84,7 @@ export function EditorActions(props: Props) {
         });
       }
     },
-    [saveDeck, navigate, deck.id, toast, onduplicateWithEdits, t],
+    [client, saveDeck, navigate, deck.id, toast, onduplicateWithEdits, t],
   );
 
   const onDiscard = useCallback(

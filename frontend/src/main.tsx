@@ -31,8 +31,6 @@ const httpClient = createHttpClient({
   onUnauthorized: () => useStore.getState().handleUnauthorized(),
 });
 
-useStore.getState().setHttpClient(httpClient);
-
 ReactDOM.createRoot(rootNode).render(
   <React.StrictMode>
     <App httpClient={httpClient} />
@@ -59,7 +57,7 @@ async function init() {
       refresh: false,
     },
   );
-  await store.initSession();
+  await store.initSession(httpClient);
 
   const tabSyncListener = (evt: TabSyncEvent) => {
     useStore.setState(evt.state);

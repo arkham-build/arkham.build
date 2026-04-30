@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
 import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { cx } from "@/utils/cx";
 import { Logo } from "./icons/logo";
 import { LocaleQuickSwitch } from "./locale-quick-switch";
@@ -67,6 +68,7 @@ export function Masthead(props: Props) {
 
 function AccountMenu() {
   const { t } = useTranslation();
+  const client = useHttpClient();
   const session = useStore(selectSession);
   const logout = useStore((state) => state.logout);
   const toggleKeyboardShortcuts = useStore(
@@ -74,7 +76,7 @@ function AccountMenu() {
   );
 
   const logoutMutation = useMutation({
-    mutationFn: logout,
+    mutationFn: () => logout(client),
   });
 
   const actionNodes = (

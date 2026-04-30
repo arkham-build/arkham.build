@@ -1,5 +1,6 @@
 import type { StorageProvider } from "@arkham-build/shared";
 import type { Deck, Id } from "@/store/schemas/deck.schema";
+import type { HttpClient } from "@/store/services/http-client";
 import type {
   AllCardResponse,
   DataVersionResponse,
@@ -33,19 +34,31 @@ export type AppSlice = {
     },
   ): Promise<boolean>;
 
-  createDeck(): Promise<Id>;
+  createDeck(client: HttpClient): Promise<Id>;
 
-  saveDeck(deckId: Id): Promise<Id>;
+  saveDeck(client: HttpClient, deckId: Id): Promise<Id>;
 
-  uploadDeckToProvider(deckId: Id, provider: StorageProvider): Promise<Id>;
+  uploadDeckToProvider(
+    client: HttpClient,
+    deckId: Id,
+    provider: StorageProvider,
+  ): Promise<Id>;
 
-  updateDeckProperties(deckId: Id, properties: Partial<Deck>): Promise<Deck>;
+  updateDeckProperties(
+    client: HttpClient,
+    deckId: Id,
+    properties: Partial<Deck>,
+  ): Promise<Deck>;
 
-  upgradeDeck(payload: DeckUpgradePayload): Promise<Deck>;
+  upgradeDeck(client: HttpClient, payload: DeckUpgradePayload): Promise<Deck>;
 
   deleteAllDecks(): Promise<void>;
-  deleteDeck(id: Id, callback?: () => void): Promise<void>;
-  deleteUpgrade(id: Id, callback?: (id: Id) => void): Promise<Id>;
+  deleteDeck(client: HttpClient, id: Id, callback?: () => void): Promise<void>;
+  deleteUpgrade(
+    client: HttpClient,
+    id: Id,
+    callback?: (id: Id) => void,
+  ): Promise<Id>;
 
   backup(): void;
   restore(file: File): Promise<void>;

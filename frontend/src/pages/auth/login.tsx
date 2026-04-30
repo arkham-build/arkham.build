@@ -5,6 +5,7 @@ import { Link, useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { useStore } from "@/store";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { ApiError } from "@/store/services/requests/shared";
 import { AuthForm } from "./auth-form";
 import { AuthLayout } from "./auth-layout";
@@ -19,11 +20,13 @@ function Login() {
   const search = useSearch();
   const { t } = useTranslation();
 
+  const client = useHttpClient();
   const login = useStore((state) => state.login);
   const queryClient = useQueryClient();
 
   const loginMutation = useMutation({
-    mutationFn: login,
+    mutationFn: (payload: { email: string; password: string }) =>
+      login(client, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     },

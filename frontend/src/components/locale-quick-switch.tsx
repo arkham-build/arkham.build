@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { LocaleSelect } from "./locale-select";
 import { useToast } from "./ui/toast.hooks";
 
@@ -10,6 +11,7 @@ export function LocaleQuickSwitch() {
 
   const [loading, setLoading] = useState(false);
 
+  const client = useHttpClient();
   const applySettings = useStore((state) => state.applySettings);
   const settings = useStore((state) => state.settings);
 
@@ -19,6 +21,7 @@ export function LocaleQuickSwitch() {
 
       try {
         await applySettings(
+          client,
           {
             ...settings,
             locale,
@@ -34,7 +37,7 @@ export function LocaleQuickSwitch() {
         setLoading(false);
       }
     },
-    [applySettings, settings, t, toast],
+    [applySettings, client, settings, t, toast],
   );
 
   return (

@@ -1,10 +1,11 @@
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import type { Deck } from "@/store/schemas/deck.schema";
-import { getMockStore } from "@/test/get-mock-store";
+import { getMockHttpClient, getMockStore } from "@/test/get-mock-store";
 import type { StoreState } from ".";
 
 describe("data slice", () => {
+  const client = getMockHttpClient();
   let store: StoreApi<StoreState>;
 
   beforeAll(async () => {
@@ -37,7 +38,7 @@ describe("data slice", () => {
       store.setState(mockState);
 
       try {
-        await store.getState().deleteDeck("2");
+        await store.getState().deleteDeck(client, "2");
       } catch (err) {
         expect((err as Error).message).toMatchInlineSnapshot(
           `"Cannot delete a deck that has upgrades."`,
@@ -47,7 +48,7 @@ describe("data slice", () => {
 
     it("removes a deck from state", async () => {
       store.setState(mockState);
-      await store.getState().deleteDeck("4");
+      await store.getState().deleteDeck(client, "4");
 
       const state = store.getState();
       expect(state.data.decks["4"]).toBeUndefined();
@@ -57,7 +58,7 @@ describe("data slice", () => {
 
     it("removes deck and its upgrades from state", async () => {
       store.setState(mockState);
-      await store.getState().deleteDeck("1");
+      await store.getState().deleteDeck(client, "1");
 
       const state = store.getState();
 
@@ -93,7 +94,7 @@ describe("data slice", () => {
         },
       });
 
-      await store.getState().deleteUpgrade("2");
+      await store.getState().deleteUpgrade(client, "2");
 
       const state = store.getState();
       expect(state.data.decks).toEqual({

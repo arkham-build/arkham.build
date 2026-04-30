@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { StoreApi } from "zustand";
-import { getMockStore } from "@/test/get-mock-store";
+import { getMockHttpClient, getMockStore } from "@/test/get-mock-store";
 import type { Deck } from "../schemas/deck.schema";
 import type { StoreState } from ".";
 
@@ -70,7 +70,7 @@ describe("sync slice", () => {
       syncDecks,
     });
 
-    await store.getState().bootstrapAuthenticatedState();
+    await store.getState().bootstrapAuthenticatedState(getMockHttpClient());
 
     expect(store.getState().data.decks.remote).toBeUndefined();
     expect(store.getState().data.decks.local).toBeDefined();

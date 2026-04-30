@@ -10,6 +10,7 @@ import { assert } from "@/utils/assert";
 import { changeLanguage } from "@/utils/i18n";
 import { fromRemoteSettings, toRemoteSettings } from "../lib/settings-sync";
 import { dehydrate } from "../persist";
+import type { HttpClient } from "../services/http-client";
 import {
   queryCards,
   queryDataVersion,
@@ -28,12 +29,17 @@ export type SettingsSlice = {
 } & {
   toggleFlag(key: string): Promise<void>;
   applySettings: (
+    client: HttpClient,
     payload: Settings,
     opts?: { keepListState?: boolean },
   ) => Promise<void>;
-  applyRemoteSettings(payload: SettingsResponse): Promise<void>;
-  loadRemoteSettings(): Promise<void>;
+  applyRemoteSettings(
+    client: HttpClient,
+    payload: SettingsResponse,
+  ): Promise<void>;
+  loadRemoteSettings(client: HttpClient): Promise<void>;
   saveSettings(
+    client: HttpClient,
     payload: Settings,
     opts?: { expectedRevision?: string | null },
   ): Promise<void>;
@@ -155,16 +161,13 @@ export const createSettingsSlice: StateCreator<
   SettingsSlice
 > = (set, get) => ({
   settings: getInitialSettings(),
-  // TODO: extract to `shared` since this touches other state slices.
-  async applySettings(settings, { keepListState } = {}) {
+  async applySettings(client, settings, { keepListState } = {}) {
     const state = get();
 
     if (settings.locale !== state.settings.locale) {
       // This has to happen first, since the constructed metadata in `init` depends on the locale in some places.
       // TODO: once reprint packs are returned localized by the API, remove this.
       await changeLanguage(settings.locale);
-
-      const client = getHttpClient(state);
 
       await state.init(
         (locale) => queryMetadata(client, locale),
@@ -192,7 +195,7 @@ export const createSettingsSlice: StateCreator<
       await dehydrate(get(), "app");
     }
   },
-  async applyRemoteSettings(response) {
+  async applyRemoteSettings(client, response) {
     const state = get();
 
     const accountId = state.auth.session?.account.id;
@@ -201,6 +204,7 @@ export const createSettingsSlice: StateCreator<
     const localSettings = get().settings;
 
     await get().applySettings(
+      client,
       SettingsSchema.parse({
         ...fromRemoteSettings(response.settings, localSettings),
         collection: response.collection ?? localSettings.collection,
@@ -218,7 +222,7 @@ export const createSettingsSlice: StateCreator<
 
     await dehydrate(get(), "app");
   },
-  async loadRemoteSettings() {
+  async loadRemoteSettings(client) {
     const state = get();
 
     const accountId = state.auth.session?.account.id;
@@ -232,8 +236,8 @@ export const createSettingsSlice: StateCreator<
     });
 
     try {
-      const response = await fetchSettings(getHttpClient(get()));
-      await get().applyRemoteSettings(response);
+      const response = await fetchSettings(client);
+      await get().applyRemoteSettings(client, response);
     } catch (error) {
       get().setSettingsSync({
         status: "error",
@@ -244,8 +248,8 @@ export const createSettingsSlice: StateCreator<
       throw error;
     }
   },
-  async saveSettings(settings, opts) {
-    await get().applySettings(settings);
+  async saveSettings(client, settings, opts) {
+    await get().applySettings(client, settings);
 
     const state = get();
     const accountId = state.auth.session?.account.id;
@@ -270,7 +274,7 @@ export const createSettingsSlice: StateCreator<
     });
 
     try {
-      const response = await putSettings(getHttpClient(get()), {
+      const response = await putSettings(client, {
         settings: toRemoteSettings(settings),
         collection: settings.collection,
         expectedRevision,
@@ -330,16 +334,6 @@ export const createSettingsSlice: StateCreator<
     await dehydrate(get(), "app");
   },
 });
-
-function getHttpClient(state: StoreState) {
-  const client = state.httpClient;
-
-  if (!client) {
-    throw new Error("HTTP client not initialized.");
-  }
-
-  return client;
-}
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Unknown error";

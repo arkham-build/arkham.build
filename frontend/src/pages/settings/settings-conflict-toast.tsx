@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { isSettingsConflictError } from "@/store/services/requests/settings";
 import css from "./settings.module.css";
 
@@ -25,6 +26,7 @@ export function SettingsConflictToast({
 }) {
   const { t } = useTranslation();
   const toast = useToast();
+  const client = useHttpClient();
   const applyRemoteSettings = useStore((state) => state.applyRemoteSettings);
   const loadRemoteSettings = useStore((state) => state.loadRemoteSettings);
   const saveSettings = useStore((state) => state.saveSettings);
@@ -62,22 +64,22 @@ export function SettingsConflictToast({
 
   const refresh = useCallback(async () => {
     if (activeConflict) {
-      await applyRemoteSettings(activeConflict);
+      await applyRemoteSettings(client, activeConflict);
       return;
     }
 
-    await loadRemoteSettings();
-  }, [activeConflict, applyRemoteSettings, loadRemoteSettings]);
+    await loadRemoteSettings(client);
+  }, [activeConflict, applyRemoteSettings, client, loadRemoteSettings]);
 
   const overwrite = useCallback(async () => {
-    await saveSettings(settings, {
+    await saveSettings(client, settings, {
       expectedRevision:
         useStore.getState().sync.settings.conflict?.revision ??
         activeConflict?.revision ??
         null,
     });
     updateColorTheme(theme);
-  }, [activeConflict, saveSettings, settings, theme, updateColorTheme]);
+  }, [activeConflict, client, saveSettings, settings, theme, updateColorTheme]);
 
   return (
     <div className={css["sync-toast"]}>

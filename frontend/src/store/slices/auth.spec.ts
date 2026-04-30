@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Deck } from "@/store/schemas/deck.schema";
 import { createHttpClient } from "@/store/services/http-client";
-import { getMockStore } from "@/test/get-mock-store";
+import { getMockHttpClient, getMockStore } from "@/test/get-mock-store";
 
 describe("auth slice", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
@@ -54,7 +54,7 @@ describe("auth slice", () => {
 
     fetchMock.mockResolvedValue(new Response(null, { status: 200 }));
 
-    await store.getState().logout();
+    await store.getState().logout(getMockHttpClient());
 
     expect(store.getState().auth).toEqual({ session: null, status: "idle" });
     expect(store.getState().data.decks.remote).toBeUndefined();
@@ -108,14 +108,12 @@ describe("auth slice", () => {
       }),
     );
 
-    store.getState().setHttpClient(
-      createHttpClient({
-        apiUrl: "http://localhost",
-        onUnauthorized: () => store.getState().handleUnauthorized(),
-      }),
-    );
+    const client = createHttpClient({
+      apiUrl: "http://localhost",
+      onUnauthorized: () => store.getState().handleUnauthorized(),
+    });
 
-    await store.getState().initSession();
+    await store.getState().initSession(client);
 
     expect(store.getState().auth).toEqual({
       session: null,

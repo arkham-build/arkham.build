@@ -17,6 +17,7 @@ import { useTabUrlState } from "@/components/ui/tabs.hooks";
 import { useToast } from "@/components/ui/toast.hooks";
 import { AppLayout } from "@/layouts/app-layout";
 import { useStore } from "@/store";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { isSettingsConflictError } from "@/store/services/requests/settings";
 import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
@@ -42,6 +43,7 @@ import { ThemeSetting } from "./theme";
 import { WeaknessPoolSetting } from "./weakness-pool";
 
 function Settings() {
+  const client = useHttpClient();
   const settings = useStore((state) => state.settings);
   const saveSettings = useStore((state) => state.saveSettings);
 
@@ -53,7 +55,7 @@ function Settings() {
       key={`${settingsKey(settings)}-${colorTheme}`}
       settings={settings}
       updateColorTheme={updateColorTheme}
-      updateSettings={saveSettings}
+      updateSettings={(settings) => saveSettings(client, settings)}
     />
   );
 }

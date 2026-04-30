@@ -23,6 +23,7 @@ import {
   selectDeckCreateStorageProviderOptions,
 } from "@/store/selectors/deck-create";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { isEmpty } from "@/utils/is-empty";
 import { useGoBack } from "@/utils/use-go-back";
 import { useAccentColor } from "../../utils/use-accent-color";
@@ -39,6 +40,7 @@ export function DeckCreateEditor() {
   const provider = useStore((state) => state.deckCreate?.provider);
   const settings = useStore((state) => state.settings);
 
+  const client = useHttpClient();
   const createDeck = useStore((state) => state.createDeck);
   const setTitle = useStore((state) => state.deckCreateSetTitle);
   const setTabooSet = useStore((state) => state.deckCreateSetTabooSet);
@@ -57,7 +59,7 @@ export function DeckCreateEditor() {
     });
 
     try {
-      const id = await createDeck();
+      const id = await createDeck(client);
       navigate(`/deck/edit/${id}`, { replace: true });
       toast.dismiss(toastId);
     } catch (err) {
@@ -67,7 +69,7 @@ export function DeckCreateEditor() {
         variant: "error",
       });
     }
-  }, [toast, createDeck, navigate, t]);
+  }, [client, toast, createDeck, navigate, t]);
 
   const setInvestigatorCode = useStore(
     (state) => state.deckCreateSetInvestigatorCode,

@@ -3,7 +3,7 @@ import type { StoreApi } from "zustand";
 import { makeDeck } from "@/store/lib/deck-factory";
 import type { Deck } from "@/store/schemas/deck.schema";
 import * as deckRequests from "@/store/services/requests/decks";
-import { getMockStore } from "@/test/get-mock-store";
+import { getMockHttpClient, getMockStore } from "@/test/get-mock-store";
 import type { StoreState } from ".";
 
 vi.mock("@/store/services/requests/decks", () => ({
@@ -14,6 +14,7 @@ vi.mock("@/store/services/requests/decks", () => ({
 }));
 
 describe("app deck write-through actions", () => {
+  const client = getMockHttpClient();
   let store: StoreApi<StoreState>;
 
   beforeEach(async () => {
@@ -36,7 +37,9 @@ describe("app deck write-through actions", () => {
       deckEdits: { local: { name: "Unsaved" } },
     });
 
-    const id = await store.getState().uploadDeckToProvider("local", "remote");
+    const id = await store
+      .getState()
+      .uploadDeckToProvider(client, "local", "remote");
 
     expect(id).toBe("local");
     expect(deckRequests.postDeck).toHaveBeenCalledWith(expect.anything(), {
@@ -60,7 +63,7 @@ describe("app deck write-through actions", () => {
     });
 
     await expect(
-      store.getState().uploadDeckToProvider("local", "remote"),
+      store.getState().uploadDeckToProvider(client, "local", "remote"),
     ).rejects.toThrow();
 
     expect(store.getState().data.decks.local.source).toBeNull();
@@ -70,7 +73,7 @@ describe("app deck write-through actions", () => {
     store.getState().initCreate("01001");
     store.getState().deckCreateSetProvider("local");
 
-    const id = await store.getState().createDeck();
+    const id = await store.getState().createDeck(client);
 
     expect(deckRequests.postDeck).not.toHaveBeenCalled();
     expect(store.getState().data.decks[id]).toBeDefined();
@@ -89,7 +92,7 @@ describe("app deck write-through actions", () => {
     store.getState().initCreate("01001");
     store.getState().deckCreateSetProvider("remote");
 
-    const id = await store.getState().createDeck();
+    const id = await store.getState().createDeck(client);
 
     expect(id).toBe("remote");
     expect(deckRequests.postDeck).toHaveBeenCalledOnce();
@@ -104,7 +107,7 @@ describe("app deck write-through actions", () => {
     store.getState().initCreate("01001");
     store.getState().deckCreateSetProvider("remote");
 
-    await expect(store.getState().createDeck()).rejects.toThrow(
+    await expect(store.getState().createDeck(client)).rejects.toThrow(
       "Storage provider remote is not available.",
     );
     expect(deckRequests.postDeck).not.toHaveBeenCalled();
@@ -127,7 +130,7 @@ describe("app deck write-through actions", () => {
       sync: makeSync({ remote: makeSyncItem("1") }),
     });
 
-    await store.getState().saveDeck("remote");
+    await store.getState().saveDeck(client, "remote");
 
     expect(deckRequests.putDeck).toHaveBeenCalledWith(
       expect.anything(),
@@ -156,7 +159,9 @@ describe("app deck write-through actions", () => {
       sync: makeSync({ remote: makeSyncItem("1") }),
     });
 
-    await expect(store.getState().saveDeck("remote")).rejects.toThrow("nope");
+    await expect(store.getState().saveDeck(client, "remote")).rejects.toThrow(
+      "nope",
+    );
 
     expect(store.getState().data.decks.remote).toBe(deck);
     expect(store.getState().deckEdits.remote).toEqual({ name: "Unsaved" });
@@ -176,7 +181,7 @@ describe("app deck write-through actions", () => {
       sync: makeSync({ remote: makeSyncItem("1") }),
     });
 
-    await store.getState().deleteDeck("remote", callback);
+    await store.getState().deleteDeck(client, "remote", callback);
 
     expect(deckRequests.deleteDeck).toHaveBeenCalledWith(
       expect.anything(),
@@ -202,7 +207,7 @@ describe("app deck write-through actions", () => {
     });
 
     await expect(
-      store.getState().deleteDeck("remote", callback),
+      store.getState().deleteDeck(client, "remote", callback),
     ).rejects.toThrow("nope");
 
     expect(callback).not.toHaveBeenCalled();

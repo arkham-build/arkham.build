@@ -22,13 +22,33 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
 ) => ({
   auth: getInitialAuthState(),
 
-  async initSession() {
+  async handleUnauthorized() {
+    const state = get();
+
+    const shouldReset =
+      state.auth.session != null ||
+      state.auth.status !== "unauthenticated" ||
+      state.sync.settings.accountId != null ||
+      state.sync.decks.accountId != null;
+
+    if (!shouldReset) {
+      return;
+    }
+
+    get().clearAccountState({
+      session: null,
+      status: "unauthenticated",
+    });
+    await dehydrate(get(), "app");
+  },
+
+  async initSession(client) {
     set((state) => ({
       auth: { ...state.auth, status: "loading" },
     }));
 
     try {
-      const session = await fetchSession(getHttpClient(get()));
+      const session = await fetchSession(client);
       set({
         auth: { session, status: "authenticated" },
       });
@@ -47,7 +67,7 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
 
     if (get().auth.status === "authenticated") {
       try {
-        await get().bootstrapAuthenticatedState();
+        await get().bootstrapAuthenticatedState(client);
       } catch (error) {
         // settings sync bootstrap failure should be surfaced via sync state without failing session init.
         console.error(error);
@@ -57,16 +77,14 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
     await dehydrate(get(), "app");
   },
 
-  async login(payload) {
-    const client = getHttpClient(get());
-
+  async login(client, payload) {
     await postLogin(client, payload);
     const session = await fetchSession(client);
     set({
       auth: { session, status: "authenticated" },
     });
     try {
-      await get().bootstrapAuthenticatedState();
+      await get().bootstrapAuthenticatedState(client);
     } catch (error) {
       // settings sync bootstrap failure should be surfaced via sync state without failing session init.
       console.error(error);
@@ -74,22 +92,12 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
     await dehydrate(get(), "app");
   },
 
-  async logout() {
+  async logout(client) {
     try {
-      await postLogout(getHttpClient(get()));
+      await postLogout(client);
     } finally {
       get().clearAccountState({ session: null, status: "idle" });
       await dehydrate(get(), "app");
     }
   },
 });
-
-function getHttpClient(state: StoreState) {
-  const client = state.httpClient;
-
-  if (!client) {
-    throw new Error("HTTP client not initialized.");
-  }
-
-  return client;
-}

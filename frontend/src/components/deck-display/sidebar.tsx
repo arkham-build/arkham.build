@@ -32,6 +32,7 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import type { Id } from "@/store/schemas/deck.schema";
 import { selectDeckCreateStorageProviderOptions } from "@/store/selectors/deck-create";
 import type { History } from "@/store/selectors/decks";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
@@ -438,12 +439,13 @@ function Sharing(props: { deck: ResolvedDeck; origin: DeckOrigin }) {
 
   const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
 
+  const client = useHttpClient();
   const isSynced = isSyncedStorageProvider(deck.source);
 
   const uploadDeckToProvider = useStore((state) => state.uploadDeckToProvider);
 
   const onUpload = () => {
-    uploadDeckToProvider(deck.id, "remote");
+    void uploadDeckToProvider(client, deck.id, "remote");
   };
 
   return (
