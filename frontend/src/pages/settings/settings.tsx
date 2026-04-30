@@ -6,7 +6,7 @@ import {
   LibraryIcon,
   SlidersVerticalIcon,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearch } from "wouter";
 import { CollectionSettings } from "@/components/collection/collection";
@@ -14,11 +14,8 @@ import { FanMadeContent } from "@/components/fan-made-content/fan-made-content";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTabUrlState } from "@/components/ui/tabs.hooks";
-import { useToast } from "@/components/ui/toast.hooks";
 import { AppLayout } from "@/layouts/app-layout";
-import { useSaveSettingsMutation } from "@/queries/mutations/settings";
 import { useStore } from "@/store";
-import { isSettingsConflictError } from "@/store/services/requests/settings";
 import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
 import { BackupRestore } from "./backup-restore";
@@ -33,13 +30,13 @@ import { LocaleSetting } from "./locale-setting";
 import { MetadataRefresh } from "./metadata-refresh";
 import { Section } from "./section";
 import css from "./settings.module.css";
-import { SettingsConflictToast } from "./settings-conflict-toast";
 import { ShowAllCardsSetting } from "./show-all-cards";
 import { ShowMoveToSideDeckSetting } from "./show-move-to-side-deck";
 import { ShowPreviewsSetting } from "./show-previews";
 import { SortPunctuationSetting } from "./sort-punctuation-setting";
 import { TabooSetSetting } from "./taboo-set";
 import { ThemeSetting } from "./theme";
+import { useSaveSettings } from "./use-save-settings";
 import { WeaknessPoolSetting } from "./weakness-pool";
 
 function Settings() {
@@ -76,7 +73,16 @@ function SettingsInner({
   const [settings, setSettings] = useState(structuredClone(persistedSettings));
   const [theme, setTheme] = useState<string>(persistedColorTheme);
 
-  const onSubmit = useSaveSettings(settings, theme, updateColorTheme);
+  const { saveSettings } = useSaveSettings({
+    settings,
+    theme,
+    updateColorTheme,
+  });
+
+  const onSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    await saveSettings();
+  };
 
   return (
     <AppLayout title={t("settings.title")} mainClassName={css["main"]}>
@@ -241,57 +247,6 @@ function SettingsInner({
         </div>
       </form>
     </AppLayout>
-  );
-}
-
-function useSaveSettings(
-  settings: SettingsState,
-  theme: string,
-  updateColorTheme: (theme: string) => void,
-) {
-  const { t } = useTranslation();
-  const toast = useToast();
-  const saveSettingsMutation = useSaveSettingsMutation();
-
-  return useCallback(
-    async (evt: React.FormEvent<HTMLFormElement>) => {
-      evt.preventDefault();
-
-      const toastId = toast.show({
-        children: t("settings.saving"),
-        variant: "loading",
-      });
-
-      try {
-        await saveSettingsMutation.mutateAsync({ settings });
-        updateColorTheme(theme);
-        toast.dismiss(toastId);
-      } catch (err) {
-        toast.dismiss(toastId);
-
-        if (isSettingsConflictError(err)) {
-          toast.show({
-            children: ({ onClose }) => (
-              <SettingsConflictToast
-                conflict={err.remote}
-                onClose={onClose}
-                settings={settings}
-                theme={theme}
-                updateColorTheme={updateColorTheme}
-              />
-            ),
-            variant: "error",
-          });
-          return;
-        }
-
-        toast.show({
-          children: t("settings.error", { error: (err as Error).message }),
-          variant: "error",
-        });
-      }
-    },
-    [saveSettingsMutation, settings, t, theme, toast, updateColorTheme],
   );
 }
 

@@ -28,6 +28,7 @@ import { isEmpty } from "@/utils/is-empty";
 import { useGoBack } from "@/utils/use-go-back";
 import { useAccentColor } from "../../utils/use-accent-color";
 import { SelectionEditor } from "../deck-edit/editor/selection-editor";
+import { useSaveSettings } from "../settings/use-save-settings";
 import css from "./deck-create.module.css";
 
 export function DeckCreateEditor() {
@@ -94,13 +95,16 @@ export function DeckCreateEditor() {
     [setSelection],
   );
 
-  const onStorageDefaultChange = useCallback(() => {
-    const state = useStore.getState();
-
-    state.setSettings({
+  const { isPending: isSavingSettings, saveSettings } = useSaveSettings({
+    settings: {
+      ...settings,
       defaultStorageProvider: deckCreate.provider as StorageProvider,
-    });
-  }, [deckCreate.provider]);
+    },
+  });
+
+  const onStorageDefaultChange = useCallback(async () => {
+    await saveSettings();
+  }, [saveSettings]);
 
   const investigatorActionRenderer = useCallback(
     (card: Card) => (
@@ -145,6 +149,7 @@ export function DeckCreateEditor() {
           <Button
             className={css["provider-default"]}
             data-testid="create-provider-set-default"
+            disabled={isSavingSettings}
             onClick={onStorageDefaultChange}
             size="xs"
             variant="primary"
