@@ -45,6 +45,18 @@ export function useLogoutMutation() {
   });
 }
 
+export function useAccountSyncMutation() {
+  const client = useHttpClient();
+  const bootstrapAuthenticatedState = useStore(
+    (state) => state.bootstrapAuthenticatedState,
+  );
+
+  return useMutation({
+    mutationKey: ["auth", "sync-account"],
+    mutationFn: () => bootstrapAuthenticatedState(client),
+  });
+}
+
 export function useSignupMutation() {
   const client = useHttpClient();
 

@@ -74,7 +74,10 @@
       },
       "logout": "Logout",
       "menu": {
-        "logged_in_as": "Logged in as {{name}}"
+        "logged_in_as": "Logged in as {{name}}",
+        "sync_account": "Sync account",
+        "sync_error": "Failed to sync account: {{error}}",
+        "syncing": "Syncing account..."
       },
       "signup": {
         "title": "Sign up",

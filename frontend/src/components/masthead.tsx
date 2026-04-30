@@ -1,7 +1,17 @@
-import { KeyboardIcon, LogOutIcon, MenuIcon, SettingsIcon } from "lucide-react";
+import {
+  KeyboardIcon,
+  LogOutIcon,
+  MenuIcon,
+  RefreshCwIcon,
+  SettingsIcon,
+} from "lucide-react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
-import { useLogoutMutation } from "@/queries/mutations/auth";
+import {
+  useAccountSyncMutation,
+  useLogoutMutation,
+} from "@/queries/mutations/auth";
 import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
 import { cx } from "@/utils/cx";
@@ -11,6 +21,7 @@ import css from "./masthead.module.css";
 import { Button } from "./ui/button";
 import { DropdownButton, DropdownItem, DropdownMenu } from "./ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { useToast } from "./ui/toast.hooks";
 import { Avatar } from "./user-account/avatar";
 
 type Props = {
@@ -72,6 +83,7 @@ function AccountMenu() {
     (state) => state.toggleKeyboardShortcuts,
   );
 
+  const { isPending: isSyncPending, onSyncAccount } = useAccountSyncAction();
   const logoutMutation = useLogoutMutation();
 
   const actionNodes = (
@@ -86,6 +98,16 @@ function AccountMenu() {
           <SettingsIcon /> {t("settings.title")}
         </DropdownButton>
       </Link>
+      {session && (
+        <DropdownButton
+          data-testid="masthead-account-sync"
+          disabled={isSyncPending || logoutMutation.isPending}
+          onClick={onSyncAccount}
+        >
+          <RefreshCwIcon />
+          {t("auth.menu.sync_account")}
+        </DropdownButton>
+      )}
       <hr />
       <DropdownButton
         className={css["action-shortcuts"]}
@@ -149,4 +171,34 @@ function AccountMenu() {
       </PopoverContent>
     </Popover>
   );
+}
+
+function useAccountSyncAction() {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const accountSyncMutation = useAccountSyncMutation();
+
+  const onSyncAccount = useCallback(async () => {
+    const toastId = toast.show({
+      children: t("auth.menu.syncing"),
+      variant: "loading",
+    });
+
+    try {
+      await accountSyncMutation.mutateAsync();
+      toast.dismiss(toastId);
+    } catch (err) {
+      toast.dismiss(toastId);
+      console.error(err);
+      toast.show({
+        children: t("auth.menu.sync_error", { error: (err as Error).message }),
+        variant: "error",
+      });
+    }
+  }, [accountSyncMutation, t, toast]);
+
+  return {
+    isPending: accountSyncMutation.isPending,
+    onSyncAccount,
+  };
 }

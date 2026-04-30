@@ -91,11 +91,16 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       state.syncDecks(client),
     ]);
 
-    // Each sync action records its own user-facing error state; keep bootstrap non-fatal.
-    for (const result of results) {
-      if (result.status === "rejected") {
-        console.error(result.reason);
-      }
+    const errors = results.flatMap((result) =>
+      result.status === "rejected" ? [result.reason] : [],
+    );
+
+    if (errors.length === 1) {
+      throw errors[0];
+    }
+
+    if (errors.length > 1) {
+      throw new Error(errors.map(getErrorMessage).join("; "));
     }
   },
 
