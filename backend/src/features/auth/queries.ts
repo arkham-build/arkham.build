@@ -306,6 +306,20 @@ export async function consumeVerificationToken(
     .executeTakeFirst();
 }
 
+export async function getVerificationTokenByHash(
+  db: Database,
+  tokenHash: string,
+  tokenType: "email_verification" | "password_reset",
+) {
+  return await db
+    .selectFrom("verification_token")
+    .selectAll()
+    .where("token_hash", "=", tokenHash)
+    .where("token_type", "=", tokenType)
+    .where("expires_at", ">", new Date())
+    .executeTakeFirst();
+}
+
 export async function getLatestVerificationTokenByEmail(
   db: Database,
   email: string,

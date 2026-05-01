@@ -44,6 +44,7 @@ import {
   getAccountIdentityByEmail,
   getAccountIdentityByUsername,
   getLatestVerificationTokenByEmail,
+  getVerificationTokenByHash,
   updateAccountIdentityPasswordHash,
   updateAccountIdentityVerified,
   updateAccountName,
@@ -295,19 +296,29 @@ routes.post(
     const { token, password } = c.req.valid("json");
     const db = c.get("db");
 
+    const tokenHash = hashToken(token);
+
+    const existingToken = await getVerificationTokenByHash(
+      db,
+      tokenHash,
+      "password_reset",
+    );
+
+    if (!existingToken?.account_identity_id) {
+      throwInvalidResetToken();
+    }
+
     const passwordHash = await hashPassword(password);
 
     await db.transaction().execute(async (tx) => {
       const verificationToken = await consumeVerificationToken(
         tx,
-        hashToken(token),
+        tokenHash,
         "password_reset",
       );
 
       if (!verificationToken?.account_identity_id) {
-        throw new HTTPException(400, {
-          message: "Invalid or expired password reset token",
-        });
+        throwInvalidResetToken();
       }
 
       const accountIdentity = await getAccountIdentity(
@@ -316,9 +327,7 @@ routes.post(
       );
 
       if (!accountIdentity) {
-        throw new HTTPException(400, {
-          message: "Invalid or expired password reset token",
-        });
+        throwInvalidResetToken();
       }
 
       await updateAccountIdentityPasswordHash(
@@ -409,6 +418,12 @@ routes.post(
 );
 
 export default routes;
+
+function throwInvalidResetToken(): never {
+  throw new HTTPException(400, {
+    message: "Invalid or expired password reset token",
+  });
+}
 
 function assertEmailCooldown(
   tokenCreatedAt: Date,
