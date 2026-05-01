@@ -1,7 +1,7 @@
 import { PATTERN_VALID_PASSWORD } from "@arkham-build/shared";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useSearchParams } from "wouter";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { useToast } from "@/components/ui/toast.hooks";
@@ -13,13 +13,11 @@ import { createPasswordMatchPattern, errorMapper } from "./helpers";
 
 function ResetPassword() {
   const { t } = useTranslation();
-  const [params] = useSearchParams();
   const toast = useToast();
   const [, navigate] = useLocation();
+  const token = useResetToken();
 
   const resetPasswordMutation = useResetPasswordMutation();
-
-  const token = params.get("token") ?? "";
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -96,3 +94,30 @@ function ResetPassword() {
 }
 
 export default ResetPassword;
+
+function useResetToken() {
+  const [token] = useState(readResetToken);
+
+  useEffect(() => {
+    removeResetTokenFromUrl();
+  }, []);
+
+  return token;
+}
+
+function readResetToken() {
+  const hashParams = new URLSearchParams(window.location.hash.slice(1));
+
+  const hashToken = hashParams.get("token");
+  return hashToken ?? "";
+}
+
+function removeResetTokenFromUrl() {
+  const url = new URL(window.location.href);
+
+  if (new URLSearchParams(url.hash.slice(1)).has("token")) {
+    url.hash = "";
+  }
+
+  window.history.replaceState(null, "", `${url.pathname}${url.search}`);
+}

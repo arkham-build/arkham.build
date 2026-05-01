@@ -276,7 +276,9 @@ routes.post(
 
       await c.get("emailService").sendTemplate(
         passwordResetEmailTemplate({
-          resetUrl: `${config.FRONTEND_URL}/auth/reset-password?token=${token}`,
+          resetUrl: `${config.FRONTEND_URL}/auth/reset-password#token=${encodeURIComponent(
+            token,
+          )}`,
         }),
         email,
       );

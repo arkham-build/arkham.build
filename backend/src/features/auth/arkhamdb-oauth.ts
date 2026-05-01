@@ -115,7 +115,10 @@ export async function exchangeAuthCodeForToken(
 
   if (!isAccessToken(token)) {
     console.error("OAuth token validation failed", {
-      receivedToken: token,
+      receivedFields:
+        typeof token === "object" && token !== null
+          ? Object.keys(token)
+          : undefined,
       expectedFields: [
         "access_token",
         "expires_in",
