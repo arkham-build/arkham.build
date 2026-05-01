@@ -85,13 +85,6 @@ export async function exchangeAuthCodeForToken(
   code: string,
 ): Promise<AccessToken> {
   const config = oauthConfigFromEnv(ctx);
-  const url = new URL(`${config.base}/token`);
-
-  url.searchParams.set("code", code);
-  url.searchParams.set("client_id", config.clientId);
-  url.searchParams.set("client_secret", config.clientSecret);
-  url.searchParams.set("redirect_uri", config.redirectUri);
-  url.searchParams.set("grant_type", "authorization_code");
 
   const requestPayload = {
     code,
@@ -101,7 +94,7 @@ export async function exchangeAuthCodeForToken(
     grant_type: "authorization_code",
   };
 
-  const res = await fetch(url.toString(), {
+  const res = await fetch(`${config.base}/token`, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
