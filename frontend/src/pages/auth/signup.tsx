@@ -134,7 +134,7 @@ function Signup() {
 
         <Button
           as="a"
-          href={`${import.meta.env.VITE_API_URL}/v2/auth/arkhamdb`}
+          href={`${import.meta.env.VITE_API_URL}/auth/arkhamdb`}
           variant="secondary"
           size="full"
         >

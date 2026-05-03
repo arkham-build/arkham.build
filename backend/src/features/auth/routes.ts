@@ -343,9 +343,12 @@ routes.post(
   },
 );
 
-routes.get("/arkhamdb", authorize);
+// Separate since we need to mount it at root
+export const arkhamdbOAuthRoutes = new Hono<HonoEnv>();
 
-routes.get("/arkhamdb/callback", async (c) => {
+arkhamdbOAuthRoutes.get("/", authorize);
+
+arkhamdbOAuthRoutes.get("/callback", async (c) => {
   const db = c.get("db");
   const config = c.get("config");
   const code = c.req.query("code");
@@ -377,7 +380,7 @@ routes.get("/arkhamdb/callback", async (c) => {
     });
 
     setSessionCookie(c, session.id);
-    const path = existing ? "/" : "/signup/complete";
+    const path = existing ? "/" : "/auth/signup/complete";
     return c.redirect(`${config.FRONTEND_URL}${path}`);
   } catch (error) {
     const logger = c.get("logger");

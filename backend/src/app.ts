@@ -4,7 +4,7 @@ import { secureHeaders } from "hono/secure-headers";
 import type { Database } from "./db/db.ts";
 import adminRouter from "./features/admin/routes.ts";
 import arkhamDbDecklistsRouter from "./features/arkhamdb-decklists/routes.ts";
-import authRouter from "./features/auth/routes.ts";
+import authRouter, { arkhamdbOAuthRoutes } from "./features/auth/routes.ts";
 import decksRouter from "./features/decks/routes.ts";
 import fanMadeProjectInfoRouter from "./features/fan-made-content/routes.ts";
 import recommendationsRouter from "./features/recommendations/routes.ts";
@@ -56,6 +56,8 @@ export function appFactory(
   app.route("/v2/auth", authRouter);
   app.route("/v2/decks", decksRouter);
   app.route("/v2/settings", settingsRouter);
+
+  app.route("/auth/arkhamdb", arkhamdbOAuthRoutes);
 
   app.onError(errorHandler);
 
