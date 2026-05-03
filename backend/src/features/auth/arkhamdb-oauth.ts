@@ -1,4 +1,6 @@
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import type { Context } from "hono";
+import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { request } from "../../lib/arkhamdb/shared.ts";
 import type {
   AccessToken,
@@ -30,6 +32,9 @@ export class NotChangedError extends Error {
     this.name = "NotChangedError";
   }
 }
+
+const OAUTH_STATE_COOKIE_NAME = "arkham-build-oauth-state";
+const OAUTH_STATE_MAX_AGE_SECONDS = 10 * 60;
 
 function isOAuthErrorResponse(x: unknown): x is OAuthErrorResponse {
   return (
@@ -159,11 +164,38 @@ export async function refreshToken(
 
 export function authorize(ctx: Context<HonoEnv>) {
   const config = oauthConfigFromEnv(ctx);
+  const state = generateOAuthState();
   const url = new URL(`${config.base}/auth`);
   url.searchParams.set("client_id", config.clientId);
   url.searchParams.set("redirect_uri", config.redirectUri);
   url.searchParams.set("response_type", "code");
+  url.searchParams.set("state", state);
+
+  setCookie(ctx, OAUTH_STATE_COOKIE_NAME, signOAuthState(ctx, state), {
+    httpOnly: true,
+    maxAge: OAUTH_STATE_MAX_AGE_SECONDS,
+    path: oauthStateCookiePath(ctx),
+    sameSite: "Lax",
+    secure: ctx.var.config.NODE_ENV === "production",
+  });
+
   return ctx.redirect(url.toString());
+}
+
+export function validateOAuthState(
+  ctx: Context<HonoEnv>,
+  state: string | undefined,
+): void {
+  const signedState = getCookie(ctx, OAUTH_STATE_COOKIE_NAME);
+  deleteOAuthStateCookie(ctx);
+
+  if (!state || !signedState) {
+    throw new OAuthError("invalid_state");
+  }
+
+  if (!safeEqualHex(signedState, signOAuthState(ctx, state))) {
+    throw new OAuthError("invalid_state");
+  }
 }
 
 export async function fetchUserDecksForOAuth(
@@ -181,4 +213,31 @@ export async function fetchUserDecksForOAuth(
   }
 
   return res.data;
+}
+
+function generateOAuthState(): string {
+  return randomBytes(32).toString("hex");
+}
+
+function signOAuthState(ctx: Context<HonoEnv>, state: string): string {
+  return createHmac("sha256", ctx.var.config.SESSION_SECRET)
+    .update(state)
+    .digest("hex");
+}
+
+function safeEqualHex(a: string, b: string): boolean {
+  const aBuffer = Buffer.from(a, "hex");
+  const bBuffer = Buffer.from(b, "hex");
+
+  return aBuffer.length === bBuffer.length && timingSafeEqual(aBuffer, bBuffer);
+}
+
+function deleteOAuthStateCookie(ctx: Context<HonoEnv>): void {
+  deleteCookie(ctx, OAUTH_STATE_COOKIE_NAME, {
+    path: oauthStateCookiePath(ctx),
+  });
+}
+
+function oauthStateCookiePath(ctx: Context<HonoEnv>): string {
+  return new URL(oauthConfigFromEnv(ctx).redirectUri).pathname;
 }

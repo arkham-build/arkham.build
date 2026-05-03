@@ -19,6 +19,7 @@ import {
   authorize,
   exchangeAuthCodeForToken,
   fetchUserDecksForOAuth,
+  validateOAuthState,
 } from "./arkhamdb-oauth.ts";
 import {
   generateRandomToken,
@@ -352,12 +353,14 @@ arkhamdbOAuthRoutes.get("/callback", async (c) => {
   const db = c.get("db");
   const config = c.get("config");
   const code = c.req.query("code");
+  const state = c.req.query("state");
 
   if (!code) {
     return c.redirect(`${config.FRONTEND_URL}/?error=oauth_missing_code`);
   }
 
   try {
+    validateOAuthState(c, state);
     const accessToken = await exchangeAuthCodeForToken(c, code);
     const decks = await fetchUserDecksForOAuth(c, accessToken.access_token);
 
