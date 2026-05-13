@@ -396,7 +396,6 @@
         "Dhole": "Dhole",
         "Dilemma": "Dilemma",
         "Dinosaur": "Dinosaur",
-        "Dionsaur": "Dionsaur",
         "Distortion": "Distortion",
         "Dormant": "Dormant",
         "Double": "Double",
@@ -691,6 +690,7 @@
       "uses": {
         "aether": "Aether",
         "ammo": "Ammo",
+        "arrow": "Arrow",
         "bounties": "Bounties",
         "brilliance": "Brilliance",
         "chances": "Chances",
