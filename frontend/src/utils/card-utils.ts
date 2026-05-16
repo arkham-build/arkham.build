@@ -45,7 +45,7 @@ type CardBackType =
   | "card"
   | "the_longest_night"
   | "artifact"
-  | "cthulhu_deck";
+  | "cthulhu";
 
 export function cardBackType(card: Card): CardBackType {
   if (doubleSided(card)) return "card";
