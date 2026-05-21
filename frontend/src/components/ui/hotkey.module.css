@@ -18,6 +18,10 @@
   }
 }
 
+.keybind-always {
+  display: inline-flex;
+}
+
 .keybind svg {
   width: 1em;
 }
