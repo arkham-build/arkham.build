@@ -62,7 +62,10 @@ export {
   DecklistSearchResponseSchema,
   type DecklistSearchResult,
 } from "./dtos/decklist-search-response.schema.ts";
-
+export {
+  type UpdateProfileRequest,
+  UpdateProfileRequestSchema,
+} from "./dtos/profile.schema.ts";
 export {
   type RecommendationsRequest,
   RecommendationsRequestSchema,

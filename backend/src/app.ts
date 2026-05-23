@@ -7,6 +7,7 @@ import arkhamDbDecklistsRouter from "./features/arkhamdb-decklists/routes.ts";
 import authRouter, { arkhamdbOAuthRoutes } from "./features/auth/routes.ts";
 import decksRouter from "./features/decks/routes.ts";
 import fanMadeProjectInfoRouter from "./features/fan-made-content/routes.ts";
+import profileRouter from "./features/profile/routes.ts";
 import recommendationsRouter from "./features/recommendations/routes.ts";
 import sealedDeckRouter from "./features/sealed-decks/routes.ts";
 import settingsRouter from "./features/settings/routes.ts";
@@ -55,6 +56,7 @@ export function appFactory(
 
   app.route("/v2/auth", authRouter);
   app.route("/v2/decks", decksRouter);
+  app.route("/v2/profile", profileRouter);
   app.route("/v2/settings", settingsRouter);
 
   app.route("/auth/arkhamdb", arkhamdbOAuthRoutes);
