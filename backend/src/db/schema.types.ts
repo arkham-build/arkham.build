@@ -37,6 +37,7 @@ export interface AccountIdentity {
   email: string | null;
   id: Generated<string>;
   password_hash: string | null;
+  pending_email: string | null;
   provider: string;
   provider_user_id: string;
   updated_at: Generated<Timestamp>;
@@ -91,6 +92,18 @@ export interface ArkhamdbUser {
   id: number;
   name: string;
   reputation: Generated<number>;
+}
+
+export interface Campaign {
+  code: string;
+  name: string;
+  translations: Json;
+}
+
+export interface CampaignScenario {
+  campaign_code: string;
+  position: number;
+  scenario_code: string;
 }
 
 export interface Card {
@@ -236,6 +249,33 @@ export interface EncounterSet {
   translations: { locale: string; name: string }[];
 }
 
+export interface Errata {
+  citation: string;
+  id: Generated<number>;
+  position: number;
+  ruling: string;
+  section: string | null;
+  type: string;
+}
+
+export interface ErrataCard {
+  card_id: string;
+  errata_id: number;
+  position: number;
+}
+
+export interface ErrataCycle {
+  cycle_code: string;
+  errata_id: number;
+  position: number;
+}
+
+export interface ErrataScenario {
+  errata_id: number;
+  position: number;
+  scenario_code: string;
+}
+
 export interface Faction {
   code: string;
   is_primary: boolean;
@@ -247,6 +287,57 @@ export interface FanMadeProjectInfo {
   bucket_path: string;
   id: string;
   meta: Json;
+}
+
+export interface Faq {
+  citation: string;
+  id: Generated<number>;
+  position: number;
+  question: string;
+  ruling: string;
+  type: Generated<string>;
+}
+
+export interface FaqCard {
+  card_id: string;
+  faq_id: number;
+  position: number;
+}
+
+export interface FaqCycle {
+  cycle_code: string;
+  faq_id: number;
+  position: number;
+}
+
+export interface FaqScenario {
+  faq_id: number;
+  position: number;
+  scenario_code: string;
+}
+
+export interface GrimoireEntry {
+  citation: string;
+  id: string;
+  section: string;
+  text: string | null;
+  title: string;
+  translations: Json;
+}
+
+export interface GrimoireEntryReference {
+  position: number;
+  source_id: string;
+  target_id: string;
+}
+
+export interface GrimoireSection {
+  citation: string | null;
+  id: string;
+  position: number;
+  text: string | null;
+  title: string;
+  translations: Json;
 }
 
 export interface OauthToken {
@@ -274,6 +365,31 @@ export interface Pack {
 
 export interface PackType {
   pack_type: string;
+}
+
+export interface RulesVersion {
+  citation: string;
+  date: Timestamp;
+}
+
+export interface Scenario {
+  campaign_code: string | null;
+  code: string;
+  name: string;
+  translations: Json;
+}
+
+export interface ScenarioEncounterSet {
+  encounter_code: string;
+  position: number;
+  scenario_code: string;
+}
+
+export interface ScenarioEncounterSetCard {
+  card_id: string;
+  encounter_code: string;
+  position: number;
+  scenario_code: string;
 }
 
 export interface SchemaMigrations {
@@ -325,17 +441,34 @@ export interface DB {
   arkhamdb_decklist: ArkhamdbDecklist;
   arkhamdb_ranking_cache: ArkhamdbRankingCache;
   arkhamdb_user: ArkhamdbUser;
+  campaign: Campaign;
+  campaign_scenario: CampaignScenario;
   card: Card;
   card_resolution: CardResolution;
   cycle: Cycle;
   data_version: DataVersion;
   deck: Deck;
   encounter_set: EncounterSet;
+  errata: Errata;
+  errata_card: ErrataCard;
+  errata_cycle: ErrataCycle;
+  errata_scenario: ErrataScenario;
   faction: Faction;
   fan_made_project_info: FanMadeProjectInfo;
+  faq: Faq;
+  faq_card: FaqCard;
+  faq_cycle: FaqCycle;
+  faq_scenario: FaqScenario;
+  grimoire_entry: GrimoireEntry;
+  grimoire_entry_reference: GrimoireEntryReference;
+  grimoire_section: GrimoireSection;
   oauth_token: OauthToken;
   pack: Pack;
   pack_type: PackType;
+  rules_version: RulesVersion;
+  scenario: Scenario;
+  scenario_encounter_set: ScenarioEncounterSet;
+  scenario_encounter_set_card: ScenarioEncounterSetCard;
   schema_migrations: SchemaMigrations;
   session: Session;
   subtype: Subtype;
