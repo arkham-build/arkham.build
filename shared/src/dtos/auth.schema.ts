@@ -34,12 +34,52 @@ export const ForgotPasswordRequestSchema = z.object({
 
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
 
+export const EmailIdentitySchema = z.object({
+  provider: z.literal("email"),
+  email: z.email().max(255),
+  pendingEmail: z.email().max(255).nullable(),
+  verified: z.boolean(),
+});
+
+export const ArkhamDBIdentitySchema = z.object({
+  provider: z.literal("arkhamdb"),
+  providerUserId: z.string(),
+  details: z.object({
+    status: z.enum(["healthy", "unhealthy"]),
+    createdAt: z.string(),
+    lastSyncedAt: z.string().nullish(),
+    username: z.string().nullish(),
+  }),
+});
+
+export const OAuthIdentitySchema = z.object({
+  provider: z.string().refine((provider) => provider !== "email"),
+  providerUserId: z.string(),
+});
+
+export const IdentitySchema = z.union([
+  ArkhamDBIdentitySchema,
+  EmailIdentitySchema,
+  OAuthIdentitySchema,
+]);
+
+export type EmailIdentity = z.infer<typeof EmailIdentitySchema>;
+export type OAuthIdentity = z.infer<typeof OAuthIdentitySchema>;
+export type Identity = z.infer<typeof IdentitySchema>;
+export type ArkhamDBIdentity = z.infer<typeof ArkhamDBIdentitySchema>;
+
+export function isArkhamDBIdentity(
+  identity: Identity | undefined,
+): identity is ArkhamDBIdentity {
+  return identity?.provider === "arkhamdb";
+}
+
 export const SessionResponseSchema = z.object({
   account: z.object({
     id: z.uuid(),
     name: z.string().max(64),
-    email: z.email().nullable(),
   }),
+  identities: z.array(IdentitySchema),
 });
 
 export type SessionResponse = z.infer<typeof SessionResponseSchema>;

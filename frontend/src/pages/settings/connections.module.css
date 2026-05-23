@@ -1,0 +1,58 @@
+.connection > * + *,
+.header > * + *,
+.content > * + * {
+  margin-top: 0.5rem;
+}
+
+.connection {
+  border: 1px solid var(--palette-point-five);
+  padding: 0.5rem;
+  border-radius: var(--rounded);
+}
+
+.actions {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: var(--palette-point-five);
+  padding: 0.25rem 0.375rem;
+  border-radius: var(--rounded);
+
+  & .connected {
+    color: var(--nord-14);
+  }
+
+  & .disconnected {
+    color: var(--nord-11);
+  }
+}
+
+.details-properties {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.375rem 1rem;
+  padding: 0.375rem;
+  margin-top: 0.375rem;
+  line-height: 1;
+  border-top: 1px solid var(--palette-point-five);
+}
+
+.details-properties dt {
+  font-weight: 700;
+  text-align: right;
+
+  &::after {
+    content: ":";
+  }
+}
+
+.title {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+}

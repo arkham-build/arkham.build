@@ -239,7 +239,8 @@ function setAuthenticated(store: StoreApi<StoreState>) {
     auth: {
       status: "authenticated",
       session: {
-        account: { id: "account-id", name: "user", email: null },
+        account: { id: "account-id", name: "user" },
+        identities: [],
       },
     },
   });

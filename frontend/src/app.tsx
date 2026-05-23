@@ -284,11 +284,52 @@ function CardDataSyncTask() {
 }
 
 function AppTasks() {
+  useAgathaEasterEggHint();
+
+  return (
+    <>
+      <OAuthErrorToastTask />
+      <SettingsSyncErrorTask />
+    </>
+  );
+}
+
+function OAuthErrorToastTask() {
+  const { i18n, t } = useTranslation();
+  const toast = useToast();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const oauthError = params.get("oauth_error");
+
+    if (!oauthError) {
+      return;
+    }
+
+    params.delete("oauth_error");
+    const nextSearch = params.toString();
+    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}${window.location.hash}`;
+    window.history.replaceState(window.history.state, "", nextUrl);
+
+    const translationKey = `auth.oauth_errors.${oauthError}`;
+
+    toast.show({
+      children: t(
+        i18n.exists(translationKey)
+          ? translationKey
+          : "auth.oauth_errors.oauth_failed",
+      ),
+      variant: "error",
+    });
+  }, [i18n, t, toast]);
+
+  return null;
+}
+
+function SettingsSyncErrorTask() {
   const { t } = useTranslation();
   const toast = useToast();
   const { error, status } = useStore((state) => state.sync.settings);
-
-  useAgathaEasterEggHint();
 
   const previousSettingsSyncStatus = useRef(status);
 

@@ -23,10 +23,17 @@ describe("auth slice", () => {
       auth: {
         session: {
           account: {
-            email: "test@example.com",
             id: "account-id",
             name: "Test User",
           },
+          identities: [
+            {
+              provider: "email",
+              email: "test@example.com",
+              pendingEmail: null,
+              verified: true,
+            },
+          ],
         },
         status: "authenticated",
       },
@@ -72,10 +79,17 @@ describe("auth slice", () => {
       auth: {
         session: {
           account: {
-            email: "test@example.com",
             id: "account-id",
             name: "Test User",
           },
+          identities: [
+            {
+              provider: "email",
+              email: "test@example.com",
+              pendingEmail: null,
+              verified: true,
+            },
+          ],
         },
         status: "authenticated",
       },

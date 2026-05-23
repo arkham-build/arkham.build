@@ -52,6 +52,16 @@ export async function postLogout(client: HttpClient): Promise<void> {
   });
 }
 
+export async function disconnectOAuthIdentity(
+  client: HttpClient,
+  provider: string,
+): Promise<void> {
+  await client.request(`/v2/auth/oauth/${provider}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+}
+
 export async function fetchSession(
   client: HttpClient,
 ): Promise<SessionResponse> {

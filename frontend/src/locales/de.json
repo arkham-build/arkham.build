@@ -1452,29 +1452,18 @@
         "title": "Kartensammlung"
       },
       "connections": {
-        "connect": "Verbinden",
-        "connect_help": "Verbinde dein {{provider}}-Konto, um deine Decks zu synchronisieren.",
-        "connected": "Verbunden",
-        "created_at": "Verbunden seit",
-        "details": "Details",
-        "disconnect": "Trennen",
-        "disconnected": "Es besteht ein Problem mit dieser Verbindung. Bitte erneut verbinden..",
         "disconnected_all": "Es besteht ein Problem mit einer deiner Verbindungen. Bitte in den Einstellungen erneut verbinden.",
         "items_synced": "Synchronisierte Objekte",
         "last_modified": "Letzte Änderung",
-        "last_synced_at": "Letzte Synchronisierung",
         "lock": "Another {{provider}} operation is in progress, please wait...",
         "no_errors": "Keine Fehler",
         "provider_error": "Synchronisierung mit {{provider}} fehlgeschlagen: {{error}}",
         "provider_syncing": "{{provider}} synchronisieren...",
-        "reconnect": "Erneut verbinden",
         "sync": "Sync",
         "sync_all": "{{collectionLabels}} Decks synchronisieren",
         "sync_errors": "Fehler",
         "sync_status": "Status",
         "syncing": "Synchronisierung läuft...",
-        "title": "Verbundene Konten",
-        "user_id": "Nutzer ID",
         "username": "Nutzername"
       },
       "developer": {
@@ -1535,7 +1524,28 @@
       "preview": "Vorschau",
       "save": "Speichern",
       "saving": "Einstellungen werden gespeichert...",
-      "title": "Einstellungen"
+      "title": "Einstellungen",
+      "account": {
+        "oauth": {
+          "connect": "Verbinden",
+          "connect_help": "Verbinde dein {{provider}}-Konto, um deine Decks zu synchronisieren und dich damit anzumelden.",
+          "connected": "Verbunden",
+          "created_at": "Verbunden seit",
+          "details": "Details",
+          "disconnect": "Trennen",
+          "disconnect_error": "Fehler beim Trennen von {{provider}}: {{error}}",
+          "disconnecting": "{{provider}} wird getrennt...",
+          "last_synced_at": "Letzte Synchronisierung",
+          "not_connected": "Nicht verbunden",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "Erneut verbinden",
+          "title": "Verbindungen",
+          "user_id": "Nutzer ID",
+          "disconnected": "Es besteht ein Problem mit dieser Verbindung. Bitte erneut verbinden.."
+        }
+      }
     },
     "suzi_standalone_setup": {
       "description": "FAQ 2.4 beschreibt, wie Einzelspielszenario-Decks für Suzi erstellt werden können. Es werden zufällige Level 1-5 Karten gezogen, bis die gewünschte Anzahl an Erfahrungspunkten erreicht ist. Im Anschluss wird eine identische Anzahl an Karten aus dem Deck entfernt.",

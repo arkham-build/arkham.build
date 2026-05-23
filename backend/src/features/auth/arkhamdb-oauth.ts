@@ -1,6 +1,7 @@
-import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { randomBytes } from "node:crypto";
 import type { Context } from "hono";
-import { deleteCookie, getCookie, setCookie } from "hono/cookie";
+import { deleteCookie, getSignedCookie, setSignedCookie } from "hono/cookie";
+import { z } from "zod";
 import { request } from "../../lib/arkhamdb/shared.ts";
 import type {
   AccessToken,
@@ -33,6 +34,22 @@ export class NotChangedError extends Error {
   }
 }
 
+export const OAuthIntentSchema = z.enum(["login", "signup", "connect"]);
+
+export const OAuthContextSchema = z.object({
+  accountId: z.string().optional(),
+  intent: OAuthIntentSchema,
+  returnTo: z.string(),
+});
+
+const OAuthStateCookieSchema = OAuthContextSchema.extend({
+  state: z.string(),
+});
+
+export type OAuthIntent = z.infer<typeof OAuthIntentSchema>;
+export type OAuthContext = z.infer<typeof OAuthContextSchema>;
+type OAuthStateCookie = z.infer<typeof OAuthStateCookieSchema>;
+
 const OAUTH_STATE_COOKIE_NAME = "arkham-build-oauth-state";
 const OAUTH_STATE_MAX_AGE_SECONDS = 10 * 60;
 
@@ -56,7 +73,7 @@ function isAccessToken(x: unknown): x is AccessToken {
   );
 }
 
-function oauthConfigFromEnv(ctx: Context<HonoEnv>) {
+function oauthConfigFromEnv<T extends HonoEnv>(ctx: Context<T>) {
   const config = ctx.var.config;
 
   return {
@@ -162,7 +179,10 @@ export async function refreshToken(
   return refreshed;
 }
 
-export function authorize(ctx: Context<HonoEnv>) {
+export async function authorize<T extends HonoEnv>(
+  ctx: Context<T>,
+  oauthContext: OAuthContext,
+) {
   const config = oauthConfigFromEnv(ctx);
   const state = generateOAuthState();
   const url = new URL(`${config.base}/auth`);
@@ -171,31 +191,76 @@ export function authorize(ctx: Context<HonoEnv>) {
   url.searchParams.set("response_type", "code");
   url.searchParams.set("state", state);
 
-  setCookie(ctx, OAUTH_STATE_COOKIE_NAME, signOAuthState(ctx, state), {
-    httpOnly: true,
-    maxAge: OAUTH_STATE_MAX_AGE_SECONDS,
-    path: oauthStateCookiePath(ctx),
-    sameSite: "Lax",
-    secure: ctx.var.config.NODE_ENV === "production",
-  });
+  await setSignedCookie(
+    ctx,
+    OAUTH_STATE_COOKIE_NAME,
+    JSON.stringify({
+      ...oauthContext,
+      state,
+    }),
+    ctx.var.config.SESSION_SECRET,
+    {
+      httpOnly: true,
+      maxAge: OAUTH_STATE_MAX_AGE_SECONDS,
+      path: oauthStateCookiePath(ctx),
+      sameSite: "Lax",
+      secure: ctx.var.config.NODE_ENV === "production",
+    },
+  );
 
   return ctx.redirect(url.toString());
 }
 
-export function validateOAuthState(
-  ctx: Context<HonoEnv>,
+export async function getOAuthContext<T extends HonoEnv>(
+  ctx: Context<T>,
+): Promise<OAuthContext | null> {
+  try {
+    const oauthState = await getOAuthStateCookie(ctx);
+
+    if (!oauthState) {
+      return null;
+    }
+
+    return oauthState.accountId
+      ? {
+          accountId: oauthState.accountId,
+          intent: oauthState.intent,
+          returnTo: oauthState.returnTo,
+        }
+      : {
+          intent: oauthState.intent,
+          returnTo: oauthState.returnTo,
+        };
+  } catch {
+    return null;
+  }
+}
+
+export async function validateOAuthState<T extends HonoEnv>(
+  ctx: Context<T>,
   state: string | undefined,
-): void {
-  const signedState = getCookie(ctx, OAUTH_STATE_COOKIE_NAME);
+): Promise<OAuthContext> {
+  const oauthState = await getOAuthStateCookie(ctx);
   deleteOAuthStateCookie(ctx);
 
-  if (!state || !signedState) {
+  if (!state || !oauthState) {
     throw new OAuthError("invalid_state");
   }
 
-  if (!safeEqualHex(signedState, signOAuthState(ctx, state))) {
+  if (oauthState.state !== state) {
     throw new OAuthError("invalid_state");
   }
+
+  return oauthState.accountId
+    ? {
+        accountId: oauthState.accountId,
+        intent: oauthState.intent,
+        returnTo: oauthState.returnTo,
+      }
+    : {
+        intent: oauthState.intent,
+        returnTo: oauthState.returnTo,
+      };
 }
 
 export async function fetchUserDecksForOAuth(
@@ -219,25 +284,36 @@ function generateOAuthState(): string {
   return randomBytes(32).toString("hex");
 }
 
-function signOAuthState(ctx: Context<HonoEnv>, state: string): string {
-  return createHmac("sha256", ctx.var.config.SESSION_SECRET)
-    .update(state)
-    .digest("hex");
+async function getOAuthStateCookie<T extends HonoEnv>(
+  ctx: Context<T>,
+): Promise<OAuthStateCookie | null> {
+  const signedState = await getSignedCookie(
+    ctx,
+    ctx.var.config.SESSION_SECRET,
+    OAUTH_STATE_COOKIE_NAME,
+  );
+
+  if (typeof signedState !== "string") {
+    return null;
+  }
+
+  return parseOAuthStateCookie(signedState);
 }
 
-function safeEqualHex(a: string, b: string): boolean {
-  const aBuffer = Buffer.from(a, "hex");
-  const bBuffer = Buffer.from(b, "hex");
-
-  return aBuffer.length === bBuffer.length && timingSafeEqual(aBuffer, bBuffer);
+function parseOAuthStateCookie(signedState: string): OAuthStateCookie {
+  try {
+    return OAuthStateCookieSchema.parse(JSON.parse(signedState));
+  } catch {
+    throw new OAuthError("invalid_state");
+  }
 }
 
-function deleteOAuthStateCookie(ctx: Context<HonoEnv>): void {
+function deleteOAuthStateCookie<T extends HonoEnv>(ctx: Context<T>): void {
   deleteCookie(ctx, OAUTH_STATE_COOKIE_NAME, {
     path: oauthStateCookiePath(ctx),
   });
 }
 
-function oauthStateCookiePath(ctx: Context<HonoEnv>): string {
+function oauthStateCookiePath<T extends HonoEnv>(ctx: Context<T>): string {
   return new URL(oauthConfigFromEnv(ctx).redirectUri).pathname;
 }

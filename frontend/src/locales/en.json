@@ -65,6 +65,14 @@
         "verify_email_send_failed": "Failed to resend verification email: {{error}}",
         "resend_error": "Failed to resend verification: {{error}}"
       },
+      "oauth_errors": {
+        "arkhamdb_invalid_response": "ArkhamDB sign-in failed. Please try again.",
+        "arkhamdb_no_decks": "Your ArkhamDB account must have at least one deck before you can continue.",
+        "identity_belongs_to_another_account": "This ArkhamDB account is already linked to another account.",
+        "invalid_state": "ArkhamDB sign-in expired or became invalid. Please try again.",
+        "oauth_failed": "ArkhamDB sign-in failed. Please try again.",
+        "oauth_missing_code": "ArkhamDB sign-in was cancelled or did not complete. Please try again."
+      },
       "login": {
         "forgot_password": "Forgot password?",
         "no_account": "Don't have an account?",
@@ -1494,6 +1502,25 @@
     },
     "settings": {
       "account": {
+        "oauth": {
+          "connect": "Connect",
+          "connect_help": "Connect your {{provider}} account to sync your decks and login with it.",
+          "connected": "Connected",
+          "created_at": "Connected since",
+          "details": "Details",
+          "not_connected": "Not connected",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "disconnect": "Disconnect",
+          "disconnect_error": "Failed to disconnect {{provider}}: {{error}}",
+          "disconnecting": "Disconnecting {{provider}}...",
+          "last_synced_at": "Last sync",
+          "reconnect": "Refresh",
+          "title": "Connections",
+          "user_id": "User ID",
+          "disconnected": "There is a problem with this connection, please reconnect."
+        },
         "profile": {
           "save": "Save profile",
           "saving": "Saving profile...",
@@ -1539,29 +1566,18 @@
         "title": "Collection"
       },
       "connections": {
-        "connect": "Connect",
-        "connect_help": "Connect your {{provider}} account to sync your decks.",
-        "connected": "Connected",
-        "created_at": "Connected since",
-        "details": "Details",
-        "disconnect": "Disconnect",
-        "disconnected": "There is a problem with this connection, please reconnect.",
         "disconnected_all": "There is a problem with one of your connections. Please refresh it in the settings.",
         "items_synced": "Items synced",
         "last_modified": "Data timestamp",
-        "last_synced_at": "Last sync",
         "lock": "Another {{provider}} operation is in progress, please wait...",
         "no_errors": "No errors",
         "provider_error": "Syncing {{provider}} failed: {{error}}",
         "provider_syncing": "Syncing {{provider}}...",
-        "reconnect": "Refresh",
         "sync": "Sync",
         "sync_all": "Sync {{collectionLabels}} decks",
         "sync_errors": "Sync errors",
         "sync_status": "Sync status",
         "syncing": "Sync in progress",
-        "title": "Connected accounts",
-        "user_id": "User ID",
         "username": "Username"
       },
       "conflict": {

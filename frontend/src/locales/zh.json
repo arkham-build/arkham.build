@@ -1384,29 +1384,18 @@
         "title": "收藏"
       },
       "connections": {
-        "connect": "连接",
-        "connect_help": "连接你的{{provider}}账号以同步卡组",
-        "connected": "已连接",
-        "created_at": "连接于",
-        "details": "详情",
-        "disconnect": "断开连接",
-        "disconnected": "此连接存在问题，请重新连接。",
         "disconnected_all": "你的某个连接出现问题。请在设置中重新连接。",
         "items_synced": "已同步",
         "last_modified": "数据时间戳",
-        "last_synced_at": "最近同步",
         "lock": "另一个{{provider}}操作正在进行中，请稍候...",
         "no_errors": "无错误",
         "provider_error": "同步{{provider}}失败：{{error}}",
         "provider_syncing": "正在同步 {{provider}}...",
-        "reconnect": "重新连接",
         "sync": "同步",
         "sync_all": "同步{{collectionLabels}}卡组",
         "sync_errors": "同步错误",
         "sync_status": "同步状态",
         "syncing": "同步中",
-        "title": "关联账户",
-        "user_id": "用户ID",
         "username": "用户名"
       },
       "display": {
@@ -1463,7 +1452,28 @@
       "preview": "预览",
       "save": "保存设置",
       "saving": "正在保存设置...",
-      "title": "设置"
+      "title": "设置",
+      "account": {
+        "oauth": {
+          "connect": "连接",
+          "connect_help": "连接你的{{provider}}账号以同步卡组并用其登录。",
+          "connected": "已连接",
+          "created_at": "连接于",
+          "details": "详情",
+          "disconnect": "断开连接",
+          "disconnect_error": "断开{{provider}}连接失败：{{error}}",
+          "disconnecting": "正在断开{{provider}}连接...",
+          "last_synced_at": "最近同步",
+          "not_connected": "未连接",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "重新连接",
+          "title": "连接",
+          "user_id": "用户ID",
+          "disconnected": "此连接存在问题，请重新连接。"
+        }
+      }
     },
     "suzi_standalone_setup": {
       "description": "FAQ 2.4 定义了如何构建 Suzi 的独立卡组。从你的收藏中随机抽取 1-5 级的卡牌，直到达到你所需的经验值。之后，必须从卡组中移除等量的卡牌。",

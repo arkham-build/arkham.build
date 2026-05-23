@@ -61,7 +61,7 @@ export function AccountProfile() {
         </Field>
         <Button
           disabled={patchProfileMutation.isPending}
-          variant="primary"
+          variant="secondary"
           type="submit"
         >
           {t("settings.account.profile.save")}

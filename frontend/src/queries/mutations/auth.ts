@@ -3,6 +3,7 @@ import { authKeys } from "@/queries/keys";
 import { useStore } from "@/store";
 import { useHttpClient } from "@/store/services/http-client.context";
 import {
+  disconnectOAuthIdentity,
   postCompleteProfile,
   postForgotPassword,
   postResendVerification,
@@ -119,6 +120,24 @@ export function useCompleteProfileMutation() {
       void queryClient.invalidateQueries({
         queryKey: authKeys.session(),
       });
+    },
+  });
+}
+
+export function useDisconnectOAuthIdentityMutation() {
+  const client = useHttpClient();
+  const initSession = useStore((state) => state.initSession);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["auth", "disconnect-oauth-identity"],
+    mutationFn: (provider: string) => disconnectOAuthIdentity(client, provider),
+    onSuccess: async () => {
+      await initSession(client);
+      queryClient.setQueryData(
+        authKeys.session(),
+        useStore.getState().auth.session,
+      );
     },
   });
 }

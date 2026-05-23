@@ -1,3 +1,4 @@
+import assert from "node:assert";
 import type { Database } from "../../db/db.ts";
 import type { AccessToken } from "../../lib/arkhamdb/types.ts";
 import { upsertOAuthToken } from "../../lib/common-queries.ts";
@@ -140,13 +141,167 @@ export async function getAccountIdentityByUserProviderId(
     .executeTakeFirst();
 }
 
-export function getAccountIdentityByAccountId(db: Database, accountId: string) {
-  return db
+function assertOAuthProvider(provider: string) {
+  assert(provider !== "email", "Expected an OAuth provider.");
+}
+
+export async function getOAuthIdentityByAccountIdAndProvider(
+  db: Database,
+  accountId: string,
+  provider: string,
+) {
+  assertOAuthProvider(provider);
+
+  return await db
     .selectFrom("account_identity")
-    .selectAll()
+    .selectAll("account_identity")
     .where("account_id", "=", accountId)
-    .where("provider", "=", "email")
+    .where("provider", "=", provider)
     .executeTakeFirst();
+}
+
+export async function getOAuthIdentityByProviderUserId(
+  db: Database,
+  provider: string,
+  providerUserId: string,
+) {
+  assertOAuthProvider(provider);
+
+  return await getAccountIdentityByUserProviderId(db, provider, providerUserId);
+}
+
+export interface ConnectOAuthIdentityToAccountParams {
+  accountId: string;
+  provider: string;
+  providerUserId: string;
+  accessToken: AccessToken;
+}
+
+export async function connectOAuthIdentityToAccount(
+  db: Database,
+  params: ConnectOAuthIdentityToAccountParams,
+) {
+  assertOAuthProvider(params.provider);
+
+  return await db.transaction().execute(async (tx) => {
+    const existingIdentity = await getOAuthIdentityByAccountIdAndProvider(
+      tx,
+      params.accountId,
+      params.provider,
+    );
+
+    if (existingIdentity) {
+      assert(
+        existingIdentity.provider_user_id === params.providerUserId,
+        "OAuth identity provider user ID does not match the existing identity.",
+      );
+
+      await upsertOAuthToken(tx, existingIdentity.id, params.accessToken);
+      return existingIdentity;
+    }
+
+    const accountIdentity = await tx
+      .insertInto("account_identity")
+      .values({
+        account_id: params.accountId,
+        provider: params.provider,
+        provider_user_id: params.providerUserId,
+        verified_at: new Date(),
+      })
+      .returningAll()
+      .executeTakeFirstOrThrow();
+
+    await upsertOAuthToken(tx, accountIdentity.id, params.accessToken);
+
+    return accountIdentity;
+  });
+}
+
+export async function disconnectOAuthIdentity(
+  db: Database,
+  accountId: string,
+  provider: string,
+) {
+  assertOAuthProvider(provider);
+
+  return await db
+    .deleteFrom("account_identity")
+    .where("account_id", "=", accountId)
+    .where("provider", "=", provider)
+    .executeTakeFirst();
+}
+
+export async function countUsableLoginIdentities(
+  db: Database,
+  accountId: string,
+) {
+  const result = await db
+    .selectFrom("account_identity")
+    .select((eb) => eb.fn.countAll<number>().as("count"))
+    .where("account_id", "=", accountId)
+    .where((eb) =>
+      eb.or([
+        eb.and([
+          eb("provider", "=", "email"),
+          eb("verified_at", "is not", null),
+          eb("password_hash", "is not", null),
+        ]),
+        eb("provider", "!=", "email"),
+      ]),
+    )
+    .executeTakeFirstOrThrow();
+
+  return Number(result.count);
+}
+
+export async function getIdentitiesByAccountId(
+  db: Database,
+  accountId: string,
+) {
+  const identities = await db
+    .selectFrom("account_identity")
+    .select([
+      "provider",
+      "provider_user_id",
+      "email",
+      "pending_email",
+      "verified_at",
+      "created_at",
+    ])
+    .where("account_id", "=", accountId)
+    .orderBy("provider", "asc")
+    .execute();
+
+  return identities.map((identity) => {
+    if (identity.provider === "email") {
+      assert(identity.email, "Email identity must have an email.");
+
+      return {
+        provider: "email" as const,
+        email: identity.email,
+        pendingEmail: identity.pending_email,
+        verified: identity.verified_at != null,
+      };
+    }
+
+    if (identity.provider === "arkhamdb") {
+      return {
+        provider: "arkhamdb" as const,
+        providerUserId: identity.provider_user_id,
+        details: {
+          status: "healthy" as const,
+          createdAt: identity.created_at.toISOString(),
+          lastSyncedAt: null,
+          username: null,
+        },
+      };
+    }
+
+    return {
+      provider: identity.provider,
+      providerUserId: identity.provider_user_id,
+    };
+  });
 }
 
 export async function getAccountIdentityByEmail(db: Database, email: string) {

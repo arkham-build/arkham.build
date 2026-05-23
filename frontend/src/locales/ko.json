@@ -1430,29 +1430,18 @@
         "title": "보유 게임"
       },
       "connections": {
-        "connect": "연결하기",
-        "connect_help": "{{provider}} 계정을 연결하여 덱을 동기화합니다.",
-        "connected": "연결됨",
-        "created_at": "이후 연결됨",
-        "details": "상세 내역",
-        "disconnect": "연결 해제",
-        "disconnected": "이 연결에 문제가 있습니다. 다시 연결해 주세요.",
         "disconnected_all": "연결 중 하나에 문제가 있습니다. 설정에서 새로고침을 진행해 주세요.",
         "items_synced": "항목 동기화",
         "last_modified": "데이터 타임스탬프",
-        "last_synced_at": "마지막 동기화",
         "lock": "다른 {{provider}} 작업이 진행 중입니다. 잠시만 기다려 주십시오...",
         "no_errors": "오류 없음",
         "provider_error": "{{provider}}에 동기화 실패: {{error}}",
         "provider_syncing": "{{provider}}에 동기화 중...",
-        "reconnect": "새로고침",
         "sync": "동기화",
         "sync_all": "{{collectionLabels}} 덱 동기화",
         "sync_errors": "동기화 오류",
         "sync_status": "동기화 상태",
         "syncing": "동기화 진행 중",
-        "title": "계정 연결",
-        "user_id": "사용자 ID",
         "username": "사용자 이름"
       },
       "display": {
@@ -1509,7 +1498,28 @@
       "preview": "미리보기",
       "save": "설정 저장",
       "saving": "설정 저장하는 중...",
-      "title": "설정"
+      "title": "설정",
+      "account": {
+        "oauth": {
+          "connect": "연결하기",
+          "connect_help": "{{provider}} 계정을 연결하여 덱을 동기화하고 이 계정으로 로그인합니다.",
+          "connected": "연결됨",
+          "created_at": "연결된 날짜",
+          "details": "상세 내역",
+          "disconnect": "연결 해제",
+          "disconnect_error": "{{provider}} 연결 해제 실패: {{error}}",
+          "disconnecting": "{{provider}} 연결 해제 중...",
+          "last_synced_at": "마지막 동기화",
+          "not_connected": "연결되지 않음",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "새로고침",
+          "title": "연결",
+          "user_id": "사용자 ID",
+          "disconnected": "이 연결에 문제가 있습니다. 다시 연결해 주세요."
+        }
+      }
     },
     "suzi_standalone_setup": {
       "description": "FAQ 2.4에서는 “수지”용 독립 시나리오 덱을 어떻게 구성할 수 있는지 설명합니다. 컬렉션에서 레벨 1-5 사이의 무작위 카드를 원하는 경험치에 도달할 때까지 뽑습니다. 이후 덱에서 동일한 수의 카드를 제거해야 합니다.",

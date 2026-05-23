@@ -21,7 +21,7 @@ import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
 import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
-import { AccountProfile } from "./account-profile";
+import { AccountSettings } from "./account-settings";
 import { BackupRestore } from "./backup-restore";
 import { CardDataSync } from "./card-data-sync";
 import { CardDisplaySettings } from "./card-display";
@@ -99,7 +99,7 @@ function Settings() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="account">
-            <AccountProfile key={session?.account.name ?? ""} />
+            <AccountSettings key={session?.account.name ?? ""} />
           </TabsContent>
           <ApplicationSettings
             colorTheme={colorTheme}

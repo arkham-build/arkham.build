@@ -34,8 +34,15 @@ describe("sync slice", () => {
           account: {
             id: "new-account",
             name: "User",
-            email: "user@example.com",
           },
+          identities: [
+            {
+              provider: "email",
+              email: "user@example.com",
+              pendingEmail: null,
+              verified: true,
+            },
+          ],
         },
       },
       data: {

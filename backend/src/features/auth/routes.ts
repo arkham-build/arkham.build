@@ -19,6 +19,8 @@ import {
   authorize,
   exchangeAuthCodeForToken,
   fetchUserDecksForOAuth,
+  getOAuthContext,
+  OAuthError,
   validateOAuthState,
 } from "./arkhamdb-oauth.ts";
 import {
@@ -32,19 +34,24 @@ import {
   verificationEmailTemplate,
 } from "./email-templates.ts";
 import {
+  connectOAuthIdentityToAccount,
   consumeVerificationToken,
+  countUsableLoginIdentities,
   createAccount,
   createSession,
   createVerificationToken,
   deleteSession,
   deleteSessionsByAccountId,
   deleteVerificationTokensByEmail,
+  disconnectOAuthIdentity,
   getAccount,
   getAccountIdentity,
-  getAccountIdentityByAccountId,
   getAccountIdentityByEmail,
   getAccountIdentityByUsername,
+  getIdentitiesByAccountId,
   getLatestVerificationTokenByEmail,
+  getOAuthIdentityByAccountIdAndProvider,
+  getOAuthIdentityByProviderUserId,
   getVerificationTokenByHash,
   updateAccountIdentityPasswordHash,
   updateAccountIdentityVerified,
@@ -61,6 +68,18 @@ routes.post("/signup", zodValidator("json", SignupRequestSchema), async (c) => {
   const emailService = c.get("emailService");
 
   const { name, email, password } = c.req.valid("json");
+
+  const existingAccount = await db
+    .selectFrom("account")
+    .select(["id"])
+    .where("name", "=", name)
+    .executeTakeFirst();
+
+  if (existingAccount) {
+    throw new HTTPException(400, {
+      message: "Username is already taken",
+    });
+  }
 
   // This is checked again on the database level.
   // XXX: While this error message is clearer, it potentially allows enumeration of registered emails.
@@ -152,18 +171,56 @@ routes.post("/logout", sessionAuth(), async (c) => {
 routes.get("/me", sessionAuth(), async (c) => {
   const db = c.get("db");
   const account = c.get("account");
-
-  const accountIdentity = await getAccountIdentityByAccountId(db, account.id);
+  const identities = await getIdentitiesByAccountId(db, account.id);
 
   return c.json(
     SessionResponseSchema.parse({
       account: {
         id: account.id,
         name: account.name,
-        email: accountIdentity?.email ?? null,
       },
+      identities,
     }),
   );
+});
+
+routes.delete("/oauth/:provider", sessionAuth(), async (c) => {
+  const db = c.get("db");
+  const account = c.get("account");
+  const provider = c.req.param("provider");
+
+  if (provider === "email") {
+    throw new HTTPException(400, {
+      message: "Email identity cannot be disconnected",
+    });
+  }
+
+  const oauthIdentity = await getOAuthIdentityByAccountIdAndProvider(
+    db,
+    account.id,
+    provider,
+  );
+
+  if (!oauthIdentity) {
+    throw new HTTPException(404, {
+      message: "OAuth identity not found",
+    });
+  }
+
+  const usableLoginIdentityCount = await countUsableLoginIdentities(
+    db,
+    account.id,
+  );
+
+  if (usableLoginIdentityCount <= 1) {
+    throw new HTTPException(400, {
+      message: "Account must have at least one login identity",
+    });
+  }
+
+  await disconnectOAuthIdentity(db, account.id, provider);
+
+  return new Response(null, { status: 200 });
 });
 
 routes.post(
@@ -347,31 +404,92 @@ routes.post(
 // Separate since we need to mount it at root
 export const arkhamdbOAuthRoutes = new Hono<HonoEnv>();
 
-arkhamdbOAuthRoutes.get("/", authorize);
+arkhamdbOAuthRoutes.get("/", (c) =>
+  authorize(c, {
+    intent: "login",
+    returnTo: "/auth/login",
+  }),
+);
+
+arkhamdbOAuthRoutes.get("/login", (c) =>
+  authorize(c, {
+    intent: "login",
+    returnTo: "/auth/login",
+  }),
+);
+
+arkhamdbOAuthRoutes.get("/signup", (c) =>
+  authorize(c, {
+    intent: "signup",
+    returnTo: "/auth/signup",
+  }),
+);
+
+arkhamdbOAuthRoutes.get("/connect", sessionAuth(), (c) =>
+  authorize(c, {
+    accountId: c.get("account").id,
+    intent: "connect",
+    returnTo: "/settings?tab=account",
+  }),
+);
 
 arkhamdbOAuthRoutes.get("/callback", async (c) => {
   const db = c.get("db");
   const config = c.get("config");
   const code = c.req.query("code");
   const state = c.req.query("state");
+  const oauthContext = await getOAuthContext(c);
 
-  if (!code) {
-    return c.redirect(`${config.FRONTEND_URL}/?error=oauth_missing_code`);
-  }
+  const returnTo = oauthContext?.returnTo ?? "/auth/login";
 
   try {
-    validateOAuthState(c, state);
+    if (!code) {
+      throw new OAuthError("oauth_missing_code");
+    }
+
+    const validatedOAuthContext = await validateOAuthState(c, state);
     const accessToken = await exchangeAuthCodeForToken(c, code);
     const decks = await fetchUserDecksForOAuth(c, accessToken.access_token);
 
     if (isEmpty(decks)) {
-      return c.redirect(`${config.FRONTEND_URL}/?error=arkhamdb_no_decks`);
+      throw new OAuthError("arkhamdb_no_decks");
     }
 
     const firstDeck = decks[0];
     if (!firstDeck?.user_id) {
+      throw new OAuthError("arkhamdb_invalid_response");
+    }
+
+    const providerUserId = firstDeck.user_id.toString();
+
+    if (validatedOAuthContext.intent === "connect") {
+      assert(
+        validatedOAuthContext.accountId,
+        "Missing account ID for OAuth connect.",
+      );
+
+      const existingIdentity = await getOAuthIdentityByProviderUserId(
+        db,
+        "arkhamdb",
+        providerUserId,
+      );
+
+      if (
+        existingIdentity &&
+        existingIdentity.account_id !== validatedOAuthContext.accountId
+      ) {
+        throw new OAuthError("identity_belongs_to_another_account");
+      }
+
+      await connectOAuthIdentityToAccount(db, {
+        accountId: validatedOAuthContext.accountId,
+        accessToken,
+        provider: "arkhamdb",
+        providerUserId,
+      });
+
       return c.redirect(
-        `${config.FRONTEND_URL}/?error=arkhamdb_invalid_response`,
+        `${config.FRONTEND_URL}${validatedOAuthContext.returnTo}`,
       );
     }
 
@@ -379,7 +497,7 @@ arkhamdbOAuthRoutes.get("/callback", async (c) => {
       accessToken,
       config,
       provider: "arkhamdb",
-      providerUserId: firstDeck.user_id.toString(),
+      providerUserId,
     });
 
     setSessionCookie(c, session.id);
@@ -388,7 +506,11 @@ arkhamdbOAuthRoutes.get("/callback", async (c) => {
   } catch (error) {
     const logger = c.get("logger");
     logger("warn", (error as Error).message);
-    return c.redirect(`${config.FRONTEND_URL}/?error=oauth_failed`);
+    return redirectToOAuthError(
+      c,
+      returnTo,
+      getOAuthErrorCode(error, oauthContext?.intent),
+    );
   }
 });
 
@@ -459,4 +581,34 @@ function setSessionCookie(c: Context<HonoEnv>, sessionId: string): void {
     maxAge: config.SESSION_EXPIRY_HOURS * 60 * 60,
     path: "/",
   });
+}
+
+function redirectToOAuthError(
+  c: Context<HonoEnv>,
+  returnTo: string,
+  errorCode: string,
+) {
+  const url = new URL(returnTo, c.get("config").FRONTEND_URL);
+  url.searchParams.set("oauth_error", errorCode);
+  return c.redirect(url.toString());
+}
+
+function getOAuthErrorCode(
+  error: unknown,
+  _intent: "login" | "signup" | "connect" | undefined,
+) {
+  if (error instanceof OAuthError) {
+    switch (error.code) {
+      case "oauth_missing_code":
+      case "arkhamdb_no_decks":
+      case "arkhamdb_invalid_response":
+      case "invalid_state":
+      case "identity_belongs_to_another_account":
+        return error.code;
+      default:
+        return "oauth_failed";
+    }
+  }
+
+  return "oauth_failed";
 }

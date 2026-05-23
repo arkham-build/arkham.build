@@ -1421,29 +1421,18 @@
         "title": "Kolekcja"
       },
       "connections": {
-        "connect": "Połącz",
-        "connect_help": "Połącz swoje konto {{provider}} w celu synchronizacji talii.",
-        "connected": "Połączone",
-        "created_at": "Połączone od",
-        "details": "Szczegóły",
-        "disconnect": "Rozłącz",
-        "disconnected": "Wystąpił problem z połączeniem, spróbuj ponownie.",
         "disconnected_all": "Wystąpił problem z jednym z twoich połączenych kont. Odśwież je proszę w Ustawieniach.",
         "items_synced": "Elementy zsynchronizowane",
         "last_modified": "Znacznik czasu danych",
-        "last_synced_at": "Ostatnia synchronizacja",
         "lock": "Inna operacja związana z {{provider}} jest w trakcie, proszę czekać...",
         "no_errors": "Brak błędów",
         "provider_error": "Synchronizacja {{provider}} nie udała się: {{error}}",
         "provider_syncing": "Synchronizacja {{provider}}...",
-        "reconnect": "Odśwież",
         "sync": "Synchronizuj",
         "sync_all": "Synchronizuj talie {{collectionLabels}}",
         "sync_errors": "Błędy synchronizacji",
         "sync_status": "Status synchronizacji",
         "syncing": "Synchronizacja w trakcie",
-        "title": "Połączone konta",
-        "user_id": "ID użytkownika",
         "username": "Nazwa użytkownika"
       },
       "display": {
@@ -1500,7 +1489,28 @@
       "preview": "Podgląd",
       "save": "Zapisz ustawienia",
       "saving": "Zapisywanie ustawień...",
-      "title": "Ustawienia"
+      "title": "Ustawienia",
+      "account": {
+        "oauth": {
+          "connect": "Połącz",
+          "connect_help": "Połącz swoje konto {{provider}}, aby synchronizować talie i logować się za jego pomocą.",
+          "connected": "Połączone",
+          "created_at": "Połączone od",
+          "details": "Szczegóły",
+          "disconnect": "Rozłącz",
+          "disconnect_error": "Nie udało się rozłączyć {{provider}}: {{error}}",
+          "disconnecting": "Rozłączanie {{provider}}...",
+          "last_synced_at": "Ostatnia synchronizacja",
+          "not_connected": "Niepołączone",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "Odśwież",
+          "title": "Połączenia",
+          "user_id": "ID użytkownika",
+          "disconnected": "Wystąpił problem z połączeniem, spróbuj ponownie."
+        }
+      }
     },
     "suzi_standalone_setup": {
       "description": "FAQ 2.4 określa w jaki sposób można zbudować talię Suzi dla trybu samodzielnej rozgrywki. Losowa ilość kart o poziomie 1-5 z twojej kolekcji jest dobierana do czasu osiągnięcia docelowej liczby XP. Następnie należy usunąć z talii identyczną liczbę kart.",

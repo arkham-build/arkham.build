@@ -1276,28 +1276,17 @@
         "title": "Коллекция"
       },
       "connections": {
-        "connect": "Подключить",
-        "connect_help": "Подключите аккаунт {{provider}} для синхронизации колод.",
-        "connected": "Подключено",
-        "created_at": "Подключено с",
-        "details": "Детали",
-        "disconnect": "Отключиться",
-        "disconnected": "Проблема с подключением, необходимо переподключиться.",
         "disconnected_all": "Проблема с одним из подключений. Обновите подключение в настройках",
         "items_synced": "Объектов синхронизировано",
         "last_modified": "Дата",
-        "last_synced_at": "Последнее подключение",
         "no_errors": "Нет ошибок",
         "provider_error": "Ошибка синхронизации с {{provider}}: {{error}}",
         "provider_syncing": "Синхронизация с {{provider}}…",
-        "reconnect": "Обновить",
         "sync": "Синхронизировать",
         "sync_all": "Sync {{collectionLabels}} decks",
         "sync_errors": "Ошибки синхронизации",
         "sync_status": "Статус синхронизации",
         "syncing": "Синхронизация в процессе",
-        "title": "Подключённые аккаунты",
-        "user_id": "ID пользователя",
         "username": "Имя пользователя",
         "lock": "Другая операция {{provider}} активна, пожалуйста подождите…"
       },
@@ -1354,7 +1343,28 @@
       "preview": "Предпросмотр",
       "save": "Сохранить настройки",
       "saving": "Сохранение настроек…",
-      "title": "Настройки"
+      "title": "Настройки",
+      "account": {
+        "oauth": {
+          "connect": "Подключить",
+          "connect_help": "Подключите аккаунт {{provider}}, чтобы синхронизировать колоды и входить с его помощью.",
+          "connected": "Подключено",
+          "created_at": "Подключено с",
+          "details": "Детали",
+          "disconnect": "Отключить",
+          "disconnect_error": "Не удалось отключить {{provider}}: {{error}}",
+          "disconnecting": "Отключение {{provider}}…",
+          "last_synced_at": "Последняя синхронизация",
+          "not_connected": "Не подключено",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "Обновить",
+          "title": "Подключения",
+          "user_id": "ID пользователя",
+          "disconnected": "Проблема с подключением, необходимо переподключиться."
+        }
+      }
     },
     "ui": {
       "cards_combobox": {

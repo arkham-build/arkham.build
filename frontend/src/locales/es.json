@@ -1420,29 +1420,18 @@
         "title": "Colección"
       },
       "connections": {
-        "connect": "Conectar",
-        "connect_help": "Conecta tu cuenta de {{provider}} para sincronizar tus mazos.",
-        "connected": "Conectado",
-        "created_at": "Conectado desde",
-        "details": "Detalles",
-        "disconnect": "Desconectar",
-        "disconnected": "Hay un problema con esta conexión, por favor reconecta.",
         "disconnected_all": "Hay un problema con una de tus conexiones. Por favor, reconecta en los ajustes.",
         "items_synced": "Elementos sincronizados",
         "last_modified": "Marca de tiempo de datos",
-        "last_synced_at": "Última sincronización",
         "lock": "Hay otra operación de {{provider}} en curso, por favor espera...",
         "no_errors": "Sin errores",
         "provider_error": "La sincronización con {{provider}} falló: {{error}}",
         "provider_syncing": "Sincronizando {{provider}}...",
-        "reconnect": "Refrescar",
         "sync": "Sincronizar",
         "sync_all": "Sincronizar mazos de {{collectionLabels}}",
         "sync_errors": "Errores de sincronización",
         "sync_status": "Estado de sincronización",
         "syncing": "Sincronización en curso",
-        "title": "Cuentas conectadas",
-        "user_id": "ID de Usuario",
         "username": "Nombre de usuario"
       },
       "display": {
@@ -1499,7 +1488,28 @@
       "preview": "Vista previa",
       "save": "Guardar ajustes",
       "saving": "Guardando ajustes...",
-      "title": "Ajustes"
+      "title": "Ajustes",
+      "account": {
+        "oauth": {
+          "connect": "Conectar",
+          "connect_help": "Conecta tu cuenta de {{provider}} para sincronizar tus mazos e iniciar sesión con ella.",
+          "connected": "Conectado",
+          "created_at": "Conectado desde",
+          "details": "Detalles",
+          "disconnect": "Desconectar",
+          "disconnect_error": "No se pudo desconectar {{provider}}: {{error}}",
+          "disconnecting": "Desconectando {{provider}}...",
+          "last_synced_at": "Última sincronización",
+          "not_connected": "No conectado",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "Refrescar",
+          "title": "Conexiones",
+          "user_id": "ID de usuario",
+          "disconnected": "Hay un problema con esta conexión, por favor reconecta."
+        }
+      }
     },
     "suzi_standalone_setup": {
       "description": "La FAQ 2.4 define cómo se pueden construir mazos independientes para Suzi. Se roban cartas aleatorias entre nivel 1-5 de tu colección hasta alcanzar la cantidad de XP deseada. Después, se debe eliminar un número equivalente de cartas del mazo.",
