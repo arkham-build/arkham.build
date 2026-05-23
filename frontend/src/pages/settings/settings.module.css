@@ -1,4 +1,4 @@
-.main {
+.container {
   @media screen and (min-width: 45rem) {
     padding-top: 1rem;
   }
@@ -24,6 +24,7 @@
   top: 0;
   z-index: 3;
   border-radius: var(--rounded);
+  margin-top: 1.5rem;
 
   @media screen and (min-width: 45rem) {
     padding: 0.75rem 1rem;
@@ -77,16 +78,6 @@
 
 .section-content > * + * {
   margin-top: 1rem;
-}
-
-.row {
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: 1fr;
-
-  @media screen and (min-width: 45rem) {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 .lists {

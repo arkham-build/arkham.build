@@ -1493,6 +1493,15 @@
       "title": "Search results"
     },
     "settings": {
+      "account": {
+        "profile": {
+          "save": "Save profile",
+          "title": "Profile",
+          "username": "Username",
+          "username_help": "Letters, numbers, underscores, and hyphens only"
+        },
+        "title": "Account"
+      },
       "backup": {
         "confirm": "Are you sure you want to restore this backup? Any existing data will be overwritten.",
         "create": "Create backup",
