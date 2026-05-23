@@ -31,20 +31,9 @@
 }
 
 .logo svg {
-  flex: 0 0 auto;
-}
-
-.logo-name {
-  flex: 1 1 auto;
-
-  @media screen and (max-width: 30rem) {
-    display: none;
-  }
-}
-
-.logo svg {
   font-size: var(--icon-lg);
   fill: currentColor;
+  flex: 0 0 auto;
 }
 
 .right {

@@ -50,9 +50,7 @@ export function Masthead(props: Props) {
       <div className={css["left"]}>
         <Link className={css["logo"]} href="~/" data-testid="masthead-logo">
           <Logo />
-          <span className={css["logo-name"]}>
-            {import.meta.env.VITE_PAGE_NAME}
-          </span>
+          <span className="sr-only">{import.meta.env.VITE_PAGE_NAME}</span>
         </Link>
         {children}
       </div>
