@@ -1,62 +1,72 @@
 import { PATTERN_VALID_USERNAME } from "@arkham-build/shared";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { useToast } from "@/components/ui/toast.hooks";
 import { ErrorBox } from "@/pages/auth/error-box";
-import { useAuthSessionQuery } from "@/queries/auth";
 import { usePatchProfileMutation } from "@/queries/mutations/profile";
+import { useStore } from "@/store";
+import { selectSession } from "@/store/selectors/auth";
+import { Section } from "./section";
+import css from "./settings.module.css";
 
 export function AccountProfile() {
   const { t } = useTranslation();
-  const { data: session } = useAuthSessionQuery();
+  const toast = useToast();
   const patchProfileMutation = usePatchProfileMutation();
 
-  const currentUsername = session?.account.name ?? "";
-  const [username, setUsername] = useState(currentUsername);
+  const session = useStore(selectSession);
 
-  useEffect(() => {
-    setUsername(currentUsername);
-  }, [currentUsername]);
+  const [username, setUsername] = useState(session?.account?.name ?? "");
 
-  const isUnchanged = useMemo(
-    () => username.trim() === currentUsername,
-    [currentUsername, username],
-  );
+  const onSave = async (evt: React.SubmitEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    const toastId = toast.show({
+      children: t("settings.account.profile.saving"),
+      variant: "loading",
+    });
 
-  const onSave = async () => {
-    await patchProfileMutation.mutateAsync({ username: username.trim() });
+    try {
+      await patchProfileMutation.mutateAsync({ username: username.trim() });
+      toast.dismiss(toastId);
+    } catch (error) {
+      toast.dismiss(toastId);
+      throw error;
+    }
   };
 
   return (
-    <>
-      {patchProfileMutation.error && (
-        <ErrorBox>{patchProfileMutation.error.message}</ErrorBox>
-      )}
-      <Field full helpText={t("settings.account.profile.username_help")}>
-        <FieldLabel htmlFor="profile-username">
-          {t("settings.account.profile.username")}
-        </FieldLabel>
-        <input
-          autoComplete="username"
+    <Section title={t("settings.account.profile.title")}>
+      <form className={css["account-form"]} onSubmit={onSave}>
+        {patchProfileMutation.error && (
+          <ErrorBox>{patchProfileMutation.error.message}</ErrorBox>
+        )}
+        <Field full helpText={t("settings.account.profile.username_help")}>
+          <FieldLabel htmlFor="profile-username">
+            {t("settings.account.profile.username")}
+          </FieldLabel>
+          <input
+            autoComplete="username"
+            disabled={patchProfileMutation.isPending}
+            id="profile-username"
+            maxLength={64}
+            minLength={3}
+            pattern={PATTERN_VALID_USERNAME}
+            required
+            onChange={(e) => setUsername(e.target.value)}
+            type="text"
+            value={username}
+          />
+        </Field>
+        <Button
           disabled={patchProfileMutation.isPending}
-          id="profile-username"
-          maxLength={64}
-          minLength={3}
-          pattern={PATTERN_VALID_USERNAME}
-          required
-          onChange={(e) => setUsername(e.target.value)}
-          type="text"
-          value={username}
-        />
-      </Field>
-      <Button
-        disabled={patchProfileMutation.isPending || isUnchanged || !session}
-        onClick={onSave}
-        variant="primary"
-      >
-        {t("settings.account.profile.save")}
-      </Button>
-    </>
+          variant="primary"
+          type="submit"
+        >
+          {t("settings.account.profile.save")}
+        </Button>
+      </form>
+    </Section>
   );
 }

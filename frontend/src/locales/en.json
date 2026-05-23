@@ -1496,6 +1496,7 @@
       "account": {
         "profile": {
           "save": "Save profile",
+          "saving": "Saving profile...",
           "title": "Profile",
           "username": "Username",
           "username_help": "Letters, numbers, underscores, and hyphens only"

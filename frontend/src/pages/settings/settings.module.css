@@ -141,3 +141,13 @@
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+
+.account-form {
+  padding: 0.5rem;
+  border: 1px solid var(--palette-1);
+  border-radius: var(--rounded);
+}
+
+.account-form > * + * {
+  margin-top: 0.5rem;
+}

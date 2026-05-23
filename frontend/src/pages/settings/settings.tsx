@@ -45,15 +45,10 @@ import { WeaknessPoolSetting } from "./weakness-pool";
 
 function Settings() {
   const settings = useStore((state) => state.settings);
-
-  const [colorTheme, updateColorTheme] = useColorThemeManager();
-
   const session = useStore(selectSession);
-
+  const [colorTheme, updateColorTheme] = useColorThemeManager();
   const { t } = useTranslation();
-
   const [tab, onTabChange] = useTabUrlState("general");
-
   const search = useSearch();
   const goBack = useGoBack(search.includes("login_state") ? "/" : undefined);
 
@@ -104,10 +99,9 @@ function Settings() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="account">
-            <AccountProfile />
+            <AccountProfile key={session?.account.name ?? ""} />
           </TabsContent>
           <ApplicationSettings
-            activeTab={tab}
             colorTheme={colorTheme}
             key={`${settingsKey(settings)}-${colorTheme}`}
             settings={settings}
@@ -120,18 +114,15 @@ function Settings() {
 }
 
 function ApplicationSettings({
-  activeTab,
   colorTheme: persistedColorTheme,
   settings: persistedSettings,
   updateColorTheme,
 }: {
-  activeTab: string;
   colorTheme: string;
   settings: SettingsState;
   updateColorTheme: (theme: string) => void;
 }) {
   const { t } = useTranslation();
-
   const [settings, setSettings] = useState(structuredClone(persistedSettings));
   const [theme, setTheme] = useState<string>(persistedColorTheme);
 
@@ -141,137 +132,131 @@ function ApplicationSettings({
     updateColorTheme,
   });
 
-  const onSubmit = async (evt: React.SubmitEvent<HTMLFormElement>) => {
+  const onSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     await saveSettings();
   };
 
-  const headerActionPortalTarget = document.getElementById(
-    "settings-header-action-portal",
-  );
-
   return (
-    <>
-      {activeTab !== "account" &&
-        headerActionPortalTarget &&
-        createPortal(
-          <Button
-            data-testid="settings-save"
-            form="settings-form"
-            type="submit"
-            variant="primary"
-          >
-            {t("settings.save")}
-          </Button>,
-          headerActionPortalTarget,
-        )}
-      <form id="settings-form" onSubmit={onSubmit}>
-        <TabsContent value="general">
-          <Section title={t("settings.general.title")}>
-            <DefaultEnvironmentSetting
+    <form id="settings-form" onSubmit={onSubmit}>
+      <TabsContent value="general">
+        <PortaledSaveButton />
+        <Section title={t("settings.general.title")}>
+          <DefaultEnvironmentSetting
+            settings={settings}
+            setSettings={setSettings}
+          />
+          <TabooSetSetting settings={settings} setSettings={setSettings} />
+          <WeaknessPoolSetting settings={settings} setSettings={setSettings} />
+        </Section>
+        <Section title={t("settings.display.title")}>
+          <LocaleSetting settings={settings} setSettings={setSettings} />
+          <ThemeSetting setTheme={setTheme} theme={theme} />
+          <FontSizeSetting settings={settings} setSettings={setSettings} />
+          <CardDisplaySettings settings={settings} setSettings={setSettings} />
+          <SortPunctuationSetting
+            settings={settings}
+            setSettings={setSettings}
+          />
+          <ShowMoveToSideDeckSetting
+            settings={settings}
+            setSettings={setSettings}
+          />
+          <CardModalPopularDecksSetting
+            settings={settings}
+            setSettings={setSettings}
+          />
+        </Section>
+        <Section title={t("settings.lists.title")}>
+          <div className={css["lists"]}>
+            <ListSettings
+              listKey="player"
+              title={t("common.player_cards")}
               settings={settings}
               setSettings={setSettings}
             />
-            <TabooSetSetting settings={settings} setSettings={setSettings} />
-            <WeaknessPoolSetting
+            <ListSettings
+              listKey="encounter"
+              title={t("common.encounter_cards")}
               settings={settings}
               setSettings={setSettings}
             />
-          </Section>
-          <Section title={t("settings.display.title")}>
-            <LocaleSetting settings={settings} setSettings={setSettings} />
-            <ThemeSetting setTheme={setTheme} theme={theme} />
-            <FontSizeSetting settings={settings} setSettings={setSettings} />
-            <CardDisplaySettings
+            <ListSettings
+              listKey="mixed"
+              title={t("lists.all_cards")}
               settings={settings}
               setSettings={setSettings}
             />
-            <SortPunctuationSetting
+            <ListSettings
+              listKey="investigator"
+              title={t("common.type.investigator", { count: 2 })}
               settings={settings}
               setSettings={setSettings}
             />
-            <ShowMoveToSideDeckSetting
+            <ListSettings
+              listKey="deck"
+              title={t("settings.lists.deck_view")}
               settings={settings}
               setSettings={setSettings}
             />
-            <CardModalPopularDecksSetting
+            <ListSettings
+              listKey="deckScans"
+              title={t("settings.lists.deck_view_scans")}
               settings={settings}
               setSettings={setSettings}
             />
-          </Section>
-          <Section title={t("settings.lists.title")}>
-            <div className={css["lists"]}>
-              <ListSettings
-                listKey="player"
-                title={t("common.player_cards")}
-                settings={settings}
-                setSettings={setSettings}
-              />
-              <ListSettings
-                listKey="encounter"
-                title={t("common.encounter_cards")}
-                settings={settings}
-                setSettings={setSettings}
-              />
-              <ListSettings
-                listKey="mixed"
-                title={t("lists.all_cards")}
-                settings={settings}
-                setSettings={setSettings}
-              />
-              <ListSettings
-                listKey="investigator"
-                title={t("common.type.investigator", { count: 2 })}
-                settings={settings}
-                setSettings={setSettings}
-              />
-              <ListSettings
-                listKey="deck"
-                title={t("settings.lists.deck_view")}
-                settings={settings}
-                setSettings={setSettings}
-              />
-              <ListSettings
-                listKey="deckScans"
-                title={t("settings.lists.deck_view_scans")}
-                settings={settings}
-                setSettings={setSettings}
-              />
-            </div>
-          </Section>
-        </TabsContent>
-        <TabsContent value="collection">
-          <Section title={t("settings.collection.title")}>
-            <ShowPreviewsSetting
-              settings={settings}
-              setSettings={setSettings}
-            />
-            <ShowAllCardsSetting
-              settings={settings}
-              setSettings={setSettings}
-            />
-            <CollectionSettings settings={settings} setSettings={setSettings} />
-          </Section>
-        </TabsContent>
-        <TabsContent value="fan-made-content">
-          <Section title={t("fan_made_content.title")}>
-            <FanMadeContent settings={settings} setSettings={setSettings} />
-          </Section>
-        </TabsContent>
-        <TabsContent value="backup">
-          <Section title={t("settings.backup.title")}>
-            <BackupRestore />
-          </Section>
-          <Section title={t("settings.backup.metadata_title")}>
-            <CardDataSync showDetails />
-            <MetadataRefresh />
-          </Section>
-          <Section title={t("settings.developer.title")}>
-            <DevModeSetting settings={settings} setSettings={setSettings} />
-          </Section>
-        </TabsContent>
-      </form>
-    </>
+          </div>
+        </Section>
+      </TabsContent>
+      <TabsContent value="collection">
+        <PortaledSaveButton />
+        <Section title={t("settings.collection.title")}>
+          <ShowPreviewsSetting settings={settings} setSettings={setSettings} />
+          <ShowAllCardsSetting settings={settings} setSettings={setSettings} />
+          <CollectionSettings settings={settings} setSettings={setSettings} />
+        </Section>
+      </TabsContent>
+      <TabsContent value="fan-made-content">
+        <PortaledSaveButton />
+        <Section title={t("fan_made_content.title")}>
+          <FanMadeContent settings={settings} setSettings={setSettings} />
+        </Section>
+      </TabsContent>
+      <TabsContent value="backup">
+        <PortaledSaveButton />
+        <Section title={t("settings.backup.metadata_title")}>
+          <CardDataSync showDetails />
+          <MetadataRefresh />
+        </Section>
+        <Section title={t("settings.developer.title")}>
+          <DevModeSetting settings={settings} setSettings={setSettings} />
+        </Section>
+        <Section title={t("settings.backup.title")}>
+          <BackupRestore />
+        </Section>
+      </TabsContent>
+    </form>
+  );
+}
+
+function PortaledSaveButton() {
+  const { t } = useTranslation();
+  const target = document.getElementById("settings-header-action-portal");
+
+  if (!target) {
+    return null;
+  }
+
+  return createPortal(
+    <Button
+      data-testid="settings-save"
+      form="settings-form"
+      type="submit"
+      variant="primary"
+    >
+      {t("settings.save")}
+    </Button>,
+    target,
   );
 }
 
