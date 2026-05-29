@@ -25,6 +25,7 @@ describe("sync slice", () => {
 
   it("removes stale remote decks when the authenticated account changes", async () => {
     const loadRemoteSettings = vi.fn().mockResolvedValue(undefined);
+    const loadRemoteFolders = vi.fn().mockResolvedValue(undefined);
     const syncDecks = vi.fn().mockResolvedValue(undefined);
 
     store.setState({
@@ -83,8 +84,17 @@ describe("sync slice", () => {
             remote: makeSyncItem(),
           },
         },
+        folders: {
+          accountId: "old-account",
+          revision: "1",
+          lastSyncedAt: Date.now(),
+          status: "synced",
+          error: null,
+          conflict: null,
+        },
       },
       loadRemoteSettings,
+      loadRemoteFolders,
       syncDecks,
     });
 
@@ -96,7 +106,9 @@ describe("sync slice", () => {
     expect(store.getState().sharing.decks.remote).toBeUndefined();
     expect(store.getState().sync.settings.accountId).toBeNull();
     expect(store.getState().sync.decks.accountId).toBeNull();
+    expect(store.getState().sync.folders.accountId).toBeNull();
     expect(loadRemoteSettings).toHaveBeenCalledOnce();
+    expect(loadRemoteFolders).toHaveBeenCalledOnce();
     expect(syncDecks).toHaveBeenCalledOnce();
   });
 

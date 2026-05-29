@@ -274,6 +274,14 @@ function makeSync(items: StoreState["sync"]["decks"]["items"]) {
       error: null,
       items,
     },
+    folders: {
+      accountId: null,
+      revision: null,
+      lastSyncedAt: null,
+      status: "idle" as const,
+      error: null,
+      conflict: null,
+    },
   };
 }
 

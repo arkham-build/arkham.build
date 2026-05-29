@@ -1,4 +1,7 @@
-import type { SettingsResponse } from "@arkham-build/shared";
+import type {
+  FolderSyncResponse,
+  SettingsResponse,
+} from "@arkham-build/shared";
 import type { Id } from "../schemas/deck.schema";
 import type { HttpClient } from "../services/http-client";
 import type { AuthState } from "./auth.types";
@@ -42,10 +45,20 @@ export type DecksSyncState = {
   items: Record<string, DeckSyncItemState>;
 };
 
+export type FoldersSyncState = {
+  accountId: string | null;
+  revision: string | null;
+  lastSyncedAt: number | null;
+  status: SyncStatus;
+  error: string | null;
+  conflict: FolderSyncResponse | null;
+};
+
 export type SyncState = {
   sync: {
     settings: SettingsSyncState;
     decks: DecksSyncState;
+    folders: FoldersSyncState;
   };
 };
 
@@ -58,7 +71,14 @@ export type SyncSlice = SyncState & {
   clearAccountState(auth?: AuthState): void;
   setSettingsSync(payload: Partial<SettingsSyncState>): void;
   setDecksSync(payload: Partial<DecksSyncState>): void;
+  setFoldersSync(payload: Partial<FoldersSyncState>): void;
   setDeckSyncItem(id: Id, payload: Partial<DeckSyncItemState> | null): void;
+  loadRemoteFolders(client: HttpClient): Promise<void>;
+  applyRemoteFolders(payload: FolderSyncResponse): Promise<void>;
+  saveFolders(
+    client: HttpClient,
+    opts?: { expectedRevision?: string | null },
+  ): Promise<void>;
   syncDecks(client: HttpClient): Promise<void>;
   resolveDeckConflictWithRefresh(
     client: HttpClient,

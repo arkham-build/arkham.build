@@ -1,5 +1,10 @@
+import type {
+  FolderSyncResponse,
+  FolderSyncState as RemoteFolderSyncState,
+} from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
+import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import { deleteAdapter } from "../lib/deck-crud";
 import {
@@ -16,11 +21,18 @@ import {
 } from "../lib/sync-reconciliation";
 import { dehydrate } from "../persist";
 import { fetchDeckBatch, fetchDeckManifest } from "../services/requests/decks";
+import {
+  fetchFolders,
+  isFoldersConflictError,
+  putFolders,
+} from "../services/requests/folders";
 import type { StoreState } from ".";
 import type { AuthState } from "./auth.types";
+import { createArchiveFolder } from "./data";
 import type {
   DeckSyncItemState,
   DecksSyncState,
+  FoldersSyncState,
   SettingsSyncState,
   SyncSlice,
   SyncState,
@@ -58,11 +70,23 @@ function getInitialDecksSyncState(): DecksSyncState {
   };
 }
 
+function getInitialFoldersSyncState(): FoldersSyncState {
+  return {
+    accountId: null,
+    revision: null,
+    lastSyncedAt: null,
+    status: "idle",
+    error: null,
+    conflict: null,
+  };
+}
+
 function getInitialSyncState(): SyncState {
   return {
     sync: {
       settings: getInitialSettingsSyncState(),
       decks: getInitialDecksSyncState(),
+      folders: getInitialFoldersSyncState(),
     },
   };
 }
@@ -88,6 +112,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
     const results = await Promise.allSettled([
       state.loadRemoteSettings(client),
+      state.loadRemoteFolders(client),
       state.syncDecks(client),
     ]);
 
@@ -136,6 +161,18 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     }));
   },
 
+  setFoldersSync(payload) {
+    set((state) => ({
+      sync: {
+        ...state.sync,
+        folders: {
+          ...state.sync.folders,
+          ...payload,
+        },
+      },
+    }));
+  },
+
   setDeckSyncItem(id, payload) {
     set((state) => {
       const items = { ...state.sync.decks.items };
@@ -161,6 +198,134 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
         },
       };
     });
+  },
+
+  async loadRemoteFolders(client) {
+    const state = get();
+    const accountId = state.auth.session?.account.id;
+
+    assert(accountId, "Cannot load remote folders without an account.");
+
+    state.setFoldersSync({
+      accountId,
+      status: "loading",
+      error: null,
+      conflict: null,
+    });
+
+    try {
+      const response = await fetchFolders(client);
+
+      if (!isCurrentAccount(get(), accountId)) return;
+
+      if (response.revision == null || response.state == null) {
+        await get().saveFolders(client, { expectedRevision: null });
+        return;
+      }
+
+      await get().applyRemoteFolders(response);
+    } catch (error) {
+      if (!isCurrentAccount(get(), accountId)) return;
+
+      get().setFoldersSync({
+        accountId,
+        status: "error",
+        error: getErrorMessage(error),
+        conflict: null,
+      });
+      await dehydrate(get(), "app");
+      throw error;
+    }
+  },
+
+  async applyRemoteFolders(payload) {
+    const accountId = get().auth.session?.account.id;
+    assert(accountId, "Cannot apply remote folders without an account.");
+
+    const folderState = toLocalFolderState(payload.state);
+
+    set((state) => ({
+      data: {
+        ...state.data,
+        folders: folderState.folders,
+        deckFolders: folderState.deckFolders,
+      },
+      sync: {
+        ...state.sync,
+        folders: {
+          ...state.sync.folders,
+          accountId,
+          revision: payload.revision,
+          lastSyncedAt: Date.now(),
+          status: "synced",
+          error: null,
+          conflict: null,
+        },
+      },
+    }));
+
+    await dehydrate(get(), "app");
+  },
+
+  async saveFolders(client, opts) {
+    const state = get();
+    const accountId = state.auth.session?.account.id;
+
+    assert(accountId, "Cannot save folders without an account.");
+
+    const expectedRevision =
+      opts?.expectedRevision !== undefined
+        ? opts.expectedRevision
+        : state.sync.folders.accountId === accountId
+          ? state.sync.folders.revision
+          : null;
+
+    state.setFoldersSync({
+      accountId,
+      status: "saving",
+      error: null,
+      conflict: null,
+    });
+
+    try {
+      const response = await putFolders(client, {
+        expectedRevision,
+        state: getLocalFolderSyncState(get().data),
+      });
+
+      if (!isCurrentAccount(get(), accountId)) return;
+
+      get().setFoldersSync({
+        accountId,
+        revision: response.revision,
+        lastSyncedAt: Date.now(),
+        status: "synced",
+        error: null,
+        conflict: null,
+      });
+      await dehydrate(get(), "app");
+    } catch (error) {
+      if (!isCurrentAccount(get(), accountId)) return;
+
+      if (isFoldersConflictError(error)) {
+        get().setFoldersSync({
+          accountId,
+          status: "conflict",
+          error: getErrorMessage(error),
+          conflict: error.remote,
+        });
+      } else {
+        get().setFoldersSync({
+          accountId,
+          status: "error",
+          error: getErrorMessage(error),
+          conflict: null,
+        });
+      }
+
+      await dehydrate(get(), "app");
+      throw error;
+    }
   },
 
   async syncDecks(client) {
@@ -368,7 +533,8 @@ function getErrorMessage(error: unknown) {
 function shouldResetSyncForAccount(sync: SyncState["sync"], accountId: string) {
   return (
     accountIdMismatches(sync.settings.accountId, accountId) ||
-    accountIdMismatches(sync.decks.accountId, accountId)
+    accountIdMismatches(sync.decks.accountId, accountId) ||
+    accountIdMismatches(sync.folders.accountId, accountId)
   );
 }
 
@@ -377,4 +543,70 @@ function accountIdMismatches(
   accountId: string,
 ) {
   return storedAccountId !== null && storedAccountId !== accountId;
+}
+
+function getEmptyFolderSyncState(): RemoteFolderSyncState {
+  return {
+    folders: {},
+    deckFolders: {},
+  };
+}
+
+function getLocalFolderSyncState(
+  data: StoreState["data"],
+): RemoteFolderSyncState {
+  return sanitizeFolderSyncState({
+    folders: data.folders,
+    deckFolders: data.deckFolders,
+  });
+}
+
+function toLocalFolderState(
+  state: FolderSyncResponse["state"],
+): RemoteFolderSyncState {
+  return materializeArchiveFolder(
+    sanitizeFolderSyncState(state ?? getEmptyFolderSyncState()),
+  );
+}
+
+function sanitizeFolderSyncState(
+  state: RemoteFolderSyncState,
+): RemoteFolderSyncState {
+  const folders = { ...state.folders };
+  delete folders[ARCHIVE_FOLDER_ID];
+
+  const deckFolders = Object.entries(state.deckFolders).reduce<
+    RemoteFolderSyncState["deckFolders"]
+  >((acc, [deckId, folderId]) => {
+    if (folderId === ARCHIVE_FOLDER_ID || folders[folderId]) {
+      acc[deckId] = folderId;
+    }
+
+    return acc;
+  }, {});
+
+  return {
+    folders,
+    deckFolders,
+  };
+}
+
+function materializeArchiveFolder(
+  state: RemoteFolderSyncState,
+): RemoteFolderSyncState {
+  const hasArchiveMembership = Object.values(state.deckFolders).includes(
+    ARCHIVE_FOLDER_ID,
+  );
+
+  if (!hasArchiveMembership) {
+    return state;
+  }
+
+  return {
+    ...state,
+    folders: {
+      ...state.folders,
+      [ARCHIVE_FOLDER_ID]: createArchiveFolder(),
+    },
+  };
 }

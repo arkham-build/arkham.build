@@ -163,7 +163,7 @@ export const createDataSlice: StateCreator<StoreState, [], [], DataSlice> = (
   },
 });
 
-function createArchiveFolder() {
+export function createArchiveFolder() {
   return {
     id: ARCHIVE_FOLDER_ID,
     name: i18n.t("deck_collection.archive"),

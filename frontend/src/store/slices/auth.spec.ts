@@ -70,6 +70,61 @@ describe("auth slice", () => {
     expect(store.getState().sharing.decks.remote).toBeUndefined();
     expect(store.getState().sync.settings.accountId).toBeNull();
     expect(store.getState().sync.decks.accountId).toBeNull();
+    expect(store.getState().sync.folders.accountId).toBeNull();
+  });
+
+  it("preserves local folder membership on logout", async () => {
+    const store = await getMockStore();
+
+    store.setState({
+      auth: {
+        session: {
+          account: {
+            id: "account-id",
+            name: "Test User",
+          },
+          identities: [
+            {
+              provider: "email",
+              email: "test@example.com",
+              pendingEmail: null,
+              verified: true,
+            },
+          ],
+        },
+        status: "authenticated",
+      },
+      data: {
+        ...store.getState().data,
+        decks: {
+          local: makeDeck({ id: "local" }),
+          remote: makeDeck({ id: "remote", source: "account" }),
+        },
+        folders: {
+          folder: { id: "folder", name: "Folder" },
+        },
+        deckFolders: {
+          local: "folder",
+          remote: "folder",
+        },
+        history: {
+          local: [],
+          remote: [],
+        },
+      },
+      sync: makeSync(),
+    });
+
+    fetchMock.mockResolvedValue(new Response(null, { status: 200 }));
+
+    await store.getState().logout(getMockHttpClient());
+
+    expect(store.getState().data.folders.folder).toEqual({
+      id: "folder",
+      name: "Folder",
+    });
+    expect(store.getState().data.deckFolders.local).toBe("folder");
+    expect(store.getState().data.deckFolders.remote).toBeUndefined();
   });
 
   it("clears the stored session after an unauthorized session refresh", async () => {
@@ -139,6 +194,7 @@ describe("auth slice", () => {
     expect(store.getState().sharing.decks.remote).toBeUndefined();
     expect(store.getState().sync.settings.accountId).toBeNull();
     expect(store.getState().sync.decks.accountId).toBeNull();
+    expect(store.getState().sync.folders.accountId).toBeNull();
   });
 });
 
@@ -167,6 +223,14 @@ function makeSync() {
           conflict: null,
         },
       },
+    },
+    folders: {
+      accountId: "account-id",
+      revision: "1",
+      lastSyncedAt: Date.now(),
+      status: "synced" as const,
+      error: null,
+      conflict: null,
     },
   };
 }

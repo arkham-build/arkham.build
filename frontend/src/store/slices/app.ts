@@ -436,6 +436,11 @@ function mergeInitialState(
           ...overrides?.sync?.decks?.items,
         },
       },
+      folders: {
+        ...initialState.sync.folders,
+        ...persistedState?.sync?.folders,
+        ...overrides?.sync?.folders,
+      },
     },
   };
 }
