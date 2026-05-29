@@ -31,6 +31,12 @@ export interface Account {
   updated_at: Generated<Timestamp>;
 }
 
+export interface AccountFolder {
+  account_id: string;
+  revision: Generated<string>;
+  state: Json;
+}
+
 export interface AccountIdentity {
   account_id: string;
   created_at: Generated<Timestamp>;
@@ -436,6 +442,7 @@ export interface VerificationToken {
 
 export interface DB {
   account: Account;
+  account_folder: AccountFolder;
   account_identity: AccountIdentity;
   account_settings: AccountSettings;
   arkhamdb_decklist: ArkhamdbDecklist;

@@ -48,6 +48,17 @@ CREATE TABLE public.account (
 
 
 --
+-- Name: account_folder; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.account_folder (
+    account_id uuid NOT NULL,
+    revision uuid DEFAULT uuidv7() NOT NULL,
+    state jsonb NOT NULL
+);
+
+
+--
 -- Name: account_identity; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -704,6 +715,14 @@ ALTER TABLE ONLY public.arkhamdb_ranking_cache ALTER COLUMN id SET DEFAULT nextv
 
 
 --
+-- Name: account_folder account_folder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_folder
+    ADD CONSTRAINT account_folder_pkey PRIMARY KEY (account_id);
+
+
+--
 -- Name: account_identity account_identity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1069,6 +1088,13 @@ ALTER TABLE ONLY public.verification_token
 
 ALTER TABLE ONLY public.verification_token
     ADD CONSTRAINT verification_token_token_type_token_hash_key UNIQUE (token_type, token_hash);
+
+
+--
+-- Name: idx_account_folder_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_account_folder_account_id ON public.account_folder USING btree (account_id);
 
 
 --
@@ -1440,6 +1466,14 @@ CREATE INDEX idx_verification_token_expires_at ON public.verification_token USIN
 --
 
 CREATE INDEX idx_verification_token_token_hash ON public.verification_token USING btree (token_hash);
+
+
+--
+-- Name: account_folder account_folder_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_folder
+    ADD CONSTRAINT account_folder_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id) ON DELETE CASCADE;
 
 
 --
@@ -1892,4 +1926,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260505120000'),
     ('20260508231500'),
     ('20260523120000'),
-    ('20260524095500');
+    ('20260524095500'),
+    ('20260529120000');
