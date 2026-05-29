@@ -4,7 +4,9 @@ import { secureHeaders } from "hono/secure-headers";
 import type { Database } from "./db/db.ts";
 import adminRouter from "./features/admin/routes.ts";
 import arkhamDbDecklistsRouter from "./features/arkhamdb-decklists/routes.ts";
-import authRouter, { arkhamdbOAuthRoutes } from "./features/auth/routes.ts";
+import authRouter, {
+  arkhamdbOAuthRoutes,
+} from "./features/auth/routes/index.ts";
 import decksRouter from "./features/decks/routes.ts";
 import fanMadeProjectInfoRouter from "./features/fan-made-content/routes.ts";
 import profileRouter from "./features/profile/routes.ts";

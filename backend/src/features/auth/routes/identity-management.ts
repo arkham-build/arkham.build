@@ -1,0 +1,287 @@
+import {
+  CreateEmailIdentityRequestSchema,
+  SessionResponseSchema,
+  UpdateCredentialsRequestSchema,
+} from "@arkham-build/shared";
+import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
+import type { HonoEnv } from "../../../lib/hono-env.ts";
+import { zodValidator } from "../../../lib/validation.ts";
+import {
+  generateRandomToken,
+  hashPassword,
+  hashToken,
+  verifyPassword,
+} from "../crypto.ts";
+import { verificationEmailTemplate } from "../email-templates.ts";
+import {
+  assertEmailAvailable,
+  assertVerificationTokenCooldown,
+} from "../helpers.ts";
+import {
+  countUsableLoginIdentities,
+  createEmailIdentity,
+  deleteEmailIdentity,
+  deleteVerificationTokensByAccountIdentityIdAndEmail,
+  disconnectOAuthIdentity,
+  getAccountIdentityByAccountIdAndProvider,
+  getIdentitiesByAccountId,
+  replaceVerificationToken,
+  updateAccountIdentityPasswordHash,
+  updateAccountIdentityPendingEmail,
+} from "../queries.ts";
+import { sessionAuth } from "../session-auth-middleware.ts";
+
+const routes = new Hono<HonoEnv>();
+
+routes.get("/me", sessionAuth(), async (c) => {
+  const db = c.get("db");
+  const account = c.get("account");
+  const identities = await getIdentitiesByAccountId(db, account.id);
+
+  return c.json(
+    SessionResponseSchema.parse({
+      account: {
+        id: account.id,
+        name: account.name,
+      },
+      identities,
+    }),
+  );
+});
+
+routes.post(
+  "/email",
+  sessionAuth(),
+  zodValidator("json", CreateEmailIdentityRequestSchema),
+  async (c) => {
+    const db = c.get("db");
+    const config = c.get("config");
+    const account = c.get("account");
+    const { email, password } = c.req.valid("json");
+
+    const existingEmailIdentity =
+      await getAccountIdentityByAccountIdAndProvider(db, account.id, "email");
+
+    if (existingEmailIdentity) {
+      throw new HTTPException(400, {
+        message: "Email identity already exists",
+      });
+    }
+
+    await assertEmailAvailable(db, email);
+    await assertVerificationTokenCooldown(db, email, "email_verification");
+
+    const token = generateRandomToken();
+    const passwordHash = await hashPassword(password);
+
+    await db.transaction().execute(async (tx) => {
+      const accountIdentity = await createEmailIdentity(
+        tx,
+        account.id,
+        email,
+        passwordHash,
+      );
+
+      await replaceVerificationToken(tx, {
+        accountIdentityId: accountIdentity.id,
+        email,
+        tokenHash: hashToken(token),
+        tokenType: "email_verification",
+        expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
+      });
+
+      await c.get("emailService").sendTemplate(
+        verificationEmailTemplate({
+          token,
+          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+        }),
+        email,
+      );
+    });
+
+    return new Response(null, { status: 201 });
+  },
+);
+
+routes.patch(
+  "/credentials",
+  sessionAuth(),
+  zodValidator("json", UpdateCredentialsRequestSchema),
+  async (c) => {
+    const db = c.get("db");
+    const config = c.get("config");
+    const account = c.get("account");
+    const { currentPassword, newEmail, newPassword } = c.req.valid("json");
+
+    const emailIdentity = await getAccountIdentityByAccountIdAndProvider(
+      db,
+      account.id,
+      "email",
+    );
+
+    if (!emailIdentity?.email || !emailIdentity.password_hash) {
+      throw new HTTPException(400, {
+        message: "Email identity not found",
+      });
+    }
+
+    const isPasswordValid = await verifyPassword(
+      currentPassword,
+      emailIdentity.password_hash,
+    );
+
+    if (!isPasswordValid) {
+      throw new HTTPException(400, {
+        message: "Current password is incorrect",
+      });
+    }
+
+    const nextEmail =
+      newEmail && newEmail !== emailIdentity.email ? newEmail : undefined;
+
+    if (nextEmail) {
+      await assertEmailAvailable(db, nextEmail, emailIdentity.id);
+      await assertVerificationTokenCooldown(
+        db,
+        nextEmail,
+        "email_verification",
+      );
+    }
+
+    if (!nextEmail && !newPassword) {
+      throw new HTTPException(400, {
+        message: "No credential changes requested",
+      });
+    }
+
+    const token = nextEmail ? generateRandomToken() : null;
+    const passwordHash = newPassword ? await hashPassword(newPassword) : null;
+    const previousPendingEmail = emailIdentity.pending_email;
+
+    await db.transaction().execute(async (tx) => {
+      if (passwordHash) {
+        await updateAccountIdentityPasswordHash(
+          tx,
+          emailIdentity.id,
+          passwordHash,
+        );
+      }
+
+      if (!nextEmail || !token) {
+        return;
+      }
+
+      if (previousPendingEmail && previousPendingEmail !== nextEmail) {
+        await deleteVerificationTokensByAccountIdentityIdAndEmail(
+          tx,
+          emailIdentity.id,
+          previousPendingEmail,
+          "email_verification",
+        );
+      }
+
+      await updateAccountIdentityPendingEmail(tx, emailIdentity.id, nextEmail);
+      await replaceVerificationToken(tx, {
+        accountIdentityId: emailIdentity.id,
+        email: nextEmail,
+        tokenHash: hashToken(token),
+        tokenType: "email_verification",
+        expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
+      });
+      await c.get("emailService").sendTemplate(
+        verificationEmailTemplate({
+          token,
+          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+        }),
+        nextEmail,
+      );
+    });
+
+    return new Response(null, { status: 200 });
+  },
+);
+
+routes.delete("/credentials/pending-email", sessionAuth(), async (c) => {
+  const db = c.get("db");
+  const account = c.get("account");
+
+  const emailIdentity = await getAccountIdentityByAccountIdAndProvider(
+    db,
+    account.id,
+    "email",
+  );
+
+  if (!emailIdentity) {
+    throw new HTTPException(400, {
+      message: "Email identity not found",
+    });
+  }
+
+  const pendingEmail = emailIdentity.pending_email;
+
+  if (!pendingEmail) {
+    throw new HTTPException(400, {
+      message: "No pending email found",
+    });
+  }
+
+  await db.transaction().execute(async (tx) => {
+    await deleteVerificationTokensByAccountIdentityIdAndEmail(
+      tx,
+      emailIdentity.id,
+      pendingEmail,
+      "email_verification",
+    );
+
+    if (emailIdentity.email) {
+      await updateAccountIdentityPendingEmail(tx, emailIdentity.id, null);
+      return;
+    }
+
+    await deleteEmailIdentity(tx, emailIdentity.id);
+  });
+
+  return new Response(null, { status: 200 });
+});
+
+routes.delete("/oauth/:provider", sessionAuth(), async (c) => {
+  const db = c.get("db");
+  const account = c.get("account");
+  const provider = c.req.param("provider");
+
+  if (provider === "email") {
+    throw new HTTPException(400, {
+      message: "Email identity cannot be disconnected",
+    });
+  }
+
+  const oauthIdentity = await getAccountIdentityByAccountIdAndProvider(
+    db,
+    account.id,
+    provider,
+  );
+
+  if (!oauthIdentity) {
+    throw new HTTPException(404, {
+      message: "OAuth identity not found",
+    });
+  }
+
+  const usableLoginIdentityCount = await countUsableLoginIdentities(
+    db,
+    account.id,
+  );
+
+  if (usableLoginIdentityCount <= 1) {
+    throw new HTTPException(400, {
+      message: "Account must have at least one login identity",
+    });
+  }
+
+  await disconnectOAuthIdentity(db, account.id, provider);
+
+  return new Response(null, { status: 200 });
+});
+
+export default routes;
