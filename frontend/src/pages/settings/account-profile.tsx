@@ -38,7 +38,7 @@ export function AccountProfile() {
 
   return (
     <Section title={t("settings.account.profile.title")}>
-      <form className={css["account-form"]} onSubmit={onSave}>
+      <form className={css["account-container"]} onSubmit={onSave}>
         {patchProfileMutation.error && (
           <ErrorBox>{patchProfileMutation.error.message}</ErrorBox>
         )}

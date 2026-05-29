@@ -1521,6 +1521,25 @@
           "user_id": "User ID",
           "disconnected": "There is a problem with this connection, please reconnect."
         },
+        "email": {
+          "add": "Add email",
+          "add_help": "Add an email address and password as an alternative way to sign in.",
+          "cancel_pending": "Cancel email verification",
+          "canceling_pending": "Canceling email verification...",
+          "current_password": "Current password",
+          "new_email": "New email",
+          "new_email_help": "Leave blank to keep your current email.",
+          "new_password": "New password",
+          "new_password_help": "Leave blank to keep your current password.",
+          "pending": "Pending email",
+          "pending_help": "Check {{email}} to <verifyLink>verify it</verifyLink>.",
+          "save": "Update credentials",
+          "saving": "Saving credentials...",
+          "status": "Status",
+          "status_pending": "Pending verification",
+          "status_verified": "Verified",
+          "title": "Credentials"
+        },
         "profile": {
           "save": "Save profile",
           "saving": "Saving profile...",

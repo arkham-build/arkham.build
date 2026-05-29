@@ -1,6 +1,8 @@
 import {
   type CompleteProfileRequest,
   CompleteProfileRequestSchema,
+  type CreateEmailIdentityRequest,
+  CreateEmailIdentityRequestSchema,
   type ForgotPasswordRequest,
   ForgotPasswordRequestSchema,
   type LoginRequest,
@@ -13,6 +15,8 @@ import {
   SessionResponseSchema,
   type SignupRequest,
   SignupRequestSchema,
+  type UpdateCredentialsRequest,
+  UpdateCredentialsRequestSchema,
   type VerifyEmailRequest,
   VerifyEmailRequestSchema,
 } from "@arkham-build/shared";
@@ -48,6 +52,39 @@ export async function postLogout(client: HttpClient): Promise<void> {
   await client.request("/v2/auth/logout", {
     unauthorizedBehavior: "ignore",
     method: "POST",
+    credentials: "include",
+  });
+}
+
+export async function postCreateEmailIdentity(
+  client: HttpClient,
+  payload: CreateEmailIdentityRequest,
+): Promise<void> {
+  await client.request("/v2/auth/email", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(CreateEmailIdentityRequestSchema.parse(payload)),
+    credentials: "include",
+  });
+}
+
+export async function patchUpdateCredentials(
+  client: HttpClient,
+  payload: UpdateCredentialsRequest,
+): Promise<void> {
+  await client.request("/v2/auth/credentials", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(UpdateCredentialsRequestSchema.parse(payload)),
+    credentials: "include",
+  });
+}
+
+export async function deletePendingEmailChange(
+  client: HttpClient,
+): Promise<void> {
+  await client.request("/v2/auth/credentials/pending-email", {
+    method: "DELETE",
     credentials: "include",
   });
 }

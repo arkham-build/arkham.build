@@ -28,6 +28,7 @@ If you didn't request a password reset, you can safely ignore this email.`,
 }
 
 export const verificationEmailParamsSchema = z.object({
+  token: z.string().min(1),
   verificationUrl: z.url(),
 });
 
@@ -47,6 +48,9 @@ export function verificationEmailTemplate(
 Please verify your email address by clicking the link below:
 ${validated.verificationUrl}
 
-This link will expire in 24 hours.`,
+Or copy and paste this verification token:
+${validated.token}
+
+This link and token will expire in 24 hours.`,
   };
 }

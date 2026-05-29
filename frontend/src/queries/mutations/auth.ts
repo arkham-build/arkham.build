@@ -3,8 +3,11 @@ import { authKeys } from "@/queries/keys";
 import { useStore } from "@/store";
 import { useHttpClient } from "@/store/services/http-client.context";
 import {
+  deletePendingEmailChange,
   disconnectOAuthIdentity,
+  patchUpdateCredentials,
   postCompleteProfile,
+  postCreateEmailIdentity,
   postForgotPassword,
   postResendVerification,
   postResetPassword,
@@ -120,6 +123,62 @@ export function useCompleteProfileMutation() {
       void queryClient.invalidateQueries({
         queryKey: authKeys.session(),
       });
+    },
+  });
+}
+
+export function useCreateEmailIdentityMutation() {
+  const client = useHttpClient();
+  const initSession = useStore((state) => state.initSession);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["auth", "create-email-identity"],
+    mutationFn: (payload: Parameters<typeof postCreateEmailIdentity>[1]) =>
+      postCreateEmailIdentity(client, payload),
+    onSuccess: async () => {
+      await initSession(client);
+      queryClient.setQueryData(
+        authKeys.session(),
+        useStore.getState().auth.session,
+      );
+    },
+  });
+}
+
+export function useUpdateCredentialsMutation() {
+  const client = useHttpClient();
+  const initSession = useStore((state) => state.initSession);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["auth", "update-credentials"],
+    mutationFn: (payload: Parameters<typeof patchUpdateCredentials>[1]) =>
+      patchUpdateCredentials(client, payload),
+    onSuccess: async () => {
+      await initSession(client);
+      queryClient.setQueryData(
+        authKeys.session(),
+        useStore.getState().auth.session,
+      );
+    },
+  });
+}
+
+export function useCancelPendingEmailChangeMutation() {
+  const client = useHttpClient();
+  const initSession = useStore((state) => state.initSession);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["auth", "cancel-pending-email-change"],
+    mutationFn: () => deletePendingEmailChange(client),
+    onSuccess: async () => {
+      await initSession(client);
+      queryClient.setQueryData(
+        authKeys.session(),
+        useStore.getState().auth.session,
+      );
     },
   });
 }

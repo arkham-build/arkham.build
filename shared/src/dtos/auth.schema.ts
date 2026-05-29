@@ -28,6 +28,29 @@ export const LoginRequestSchema = z.object({
 
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
+export const CreateEmailIdentityRequestSchema = z.object({
+  email: z.email().max(255),
+  password: z.string().min(8),
+});
+
+export type CreateEmailIdentityRequest = z.infer<
+  typeof CreateEmailIdentityRequestSchema
+>;
+
+export const UpdateCredentialsRequestSchema = z
+  .object({
+    currentPassword: z.string().min(1),
+    newEmail: z.email().max(255).nullish(),
+    newPassword: z.string().min(8).nullish(),
+  })
+  .refine((value) => value.newEmail != null || value.newPassword != null, {
+    message: "At least one credential change is required",
+  });
+
+export type UpdateCredentialsRequest = z.infer<
+  typeof UpdateCredentialsRequestSchema
+>;
+
 export const ForgotPasswordRequestSchema = z.object({
   emailOrUsername: z.string().min(1).max(255),
 });
@@ -36,7 +59,7 @@ export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
 
 export const EmailIdentitySchema = z.object({
   provider: z.literal("email"),
-  email: z.email().max(255),
+  email: z.email().max(255).nullable(),
   pendingEmail: z.email().max(255).nullable(),
   verified: z.boolean(),
 });

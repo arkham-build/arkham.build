@@ -1,7 +1,7 @@
 \restrict dbmate
 
 -- Dumped from database version 18.3
--- Dumped by pg_dump version 18.3 (Homebrew)
+-- Dumped by pg_dump version 18.4 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -56,7 +56,7 @@ CREATE TABLE public.account_identity (
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT uuidv7() NOT NULL,
     provider character varying(64) NOT NULL,
-    provider_user_id text NOT NULL,
+    provider_user_id text,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     verified_at timestamp without time zone,
     email character varying(255),
@@ -1086,13 +1086,6 @@ CREATE UNIQUE INDEX idx_account_identity_provider_email ON public.account_identi
 
 
 --
--- Name: idx_account_identity_provider_pending_email; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX idx_account_identity_provider_pending_email ON public.account_identity USING btree (provider, pending_email) WHERE (pending_email IS NOT NULL);
-
-
---
 -- Name: idx_account_identity_provider_uid; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1898,4 +1891,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260429184500'),
     ('20260505120000'),
     ('20260508231500'),
-    ('20260523120000');
+    ('20260523120000'),
+    ('20260524095500');

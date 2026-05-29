@@ -5,6 +5,8 @@ export {
   ArkhamDBIdentitySchema,
   type CompleteProfileRequest,
   CompleteProfileRequestSchema,
+  type CreateEmailIdentityRequest,
+  CreateEmailIdentityRequestSchema,
   type EmailIdentity,
   EmailIdentitySchema,
   type ForgotPasswordRequest,
@@ -26,6 +28,8 @@ export {
   SessionResponseSchema,
   type SignupRequest,
   SignupRequestSchema,
+  type UpdateCredentialsRequest,
+  UpdateCredentialsRequestSchema,
   type VerifyEmailRequest,
   VerifyEmailRequestSchema,
 } from "./dtos/auth.schema.ts";

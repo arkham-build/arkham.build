@@ -1,35 +1,18 @@
-.connection > * + *,
-.header > * + *,
-.content > * + * {
-  margin-top: 0.5rem;
-}
-
 .connection {
   border: 1px solid var(--palette-point-five);
   padding: 0.5rem;
   border-radius: var(--rounded);
 }
 
+.connection > * + *,
+.header > * + *,
+.content > * + * {
+  margin-top: 0.5rem;
+}
+
 .actions {
   display: flex;
   gap: 0.375rem;
-}
-
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  background: var(--palette-point-five);
-  padding: 0.25rem 0.375rem;
-  border-radius: var(--rounded);
-
-  & .connected {
-    color: var(--nord-14);
-  }
-
-  & .disconnected {
-    color: var(--nord-11);
-  }
 }
 
 .details-properties {

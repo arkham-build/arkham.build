@@ -7,11 +7,11 @@ import {
 import { CheckIcon, CloudOffIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { StatusPill } from "@/components/ui/status-pill";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useDisconnectOAuthIdentityMutation } from "@/queries/mutations/auth";
 import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
-import { cx } from "@/utils/cx";
 import { formatDate } from "@/utils/formatting";
 import css from "./connections.module.css";
 import { Section } from "./section";
@@ -43,6 +43,18 @@ function Connection(props: { connection: OAuthConnection }) {
   );
   const isConnected = !!identity;
   const status = getConnectionStatus(identity);
+  const statusProps =
+    status === "connected"
+      ? {
+          color: "var(--nord-14)",
+          icon: <CheckIcon />,
+          label: t("settings.account.oauth.connected"),
+        }
+      : {
+          color: "var(--nord-11)",
+          icon: <CloudOffIcon />,
+          label: t("settings.account.oauth.disconnected"),
+        };
 
   const onDisconnect = async () => {
     const toastId = toast.show({
@@ -68,28 +80,23 @@ function Connection(props: { connection: OAuthConnection }) {
   };
 
   return (
-    <article className={css.connection}>
-      <header className={css.header}>
-        <h3 className={css.title}>
+    <article className={css["connection"]}>
+      <header className={css["header"]}>
+        <h3 className={css["title"]}>
           <i className={connection.icon} />
           {providerName}
         </h3>
         {isConnected && (
-          <output className={css.status} data-testid="connection-status">
-            <span className={cx(css["status-icon"], css[status])}>
-              {status === "connected" ? <CheckIcon /> : <CloudOffIcon />}
-            </span>
-            <span>
-              {t(
-                status === "connected"
-                  ? "settings.account.oauth.connected"
-                  : "settings.account.oauth.disconnected",
-              )}
-            </span>
-          </output>
+          <StatusPill
+            color={statusProps.color}
+            icon={statusProps.icon}
+            testId="connection-status"
+          >
+            {statusProps.label}
+          </StatusPill>
         )}
       </header>
-      <div className={css.content}>
+      <div className={css["content"]}>
         {isConnected ? (
           <>
             <ConnectionDetails identity={identity} />
@@ -169,7 +176,9 @@ function ConnectionDetails({ identity }: { identity: Identity }) {
   );
 }
 
-function getConnectionStatus(identity: Identity | undefined) {
+type ConnectionStatus = "connected" | "disconnected";
+
+function getConnectionStatus(identity: Identity | undefined): ConnectionStatus {
   if (!identity) {
     return "disconnected";
   }

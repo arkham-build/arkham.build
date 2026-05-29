@@ -5,186 +5,23 @@ import { describe, expect, vi } from "vitest";
 import type { EmailService } from "../lib/email/email-service.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import type { MockMailer } from "./mocks/email.ts";
-import { test } from "./test-utils.ts";
-
-interface SignupParams {
-  name: string;
-  email: string;
-  password: string;
-}
-
-function signup(app: Hono<HonoEnv>, params: SignupParams) {
-  return app.request("/v2/auth/signup", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(params),
-  });
-}
-
-function verifyEmail(app: Hono<HonoEnv>, token: string) {
-  return app.request("/v2/auth/verify-email", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token }),
-  });
-}
-
-function login(app: Hono<HonoEnv>, email: string, password: string) {
-  return app.request("/v2/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-}
-
-function forgotPassword(app: Hono<HonoEnv>, emailOrUsername: string) {
-  return app.request("/v2/auth/forgot-password", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ emailOrUsername }),
-  });
-}
-
-function resetPassword(app: Hono<HonoEnv>, token: string, password: string) {
-  return app.request("/v2/auth/reset-password", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token, password }),
-  });
-}
-
-function resendVerification(app: Hono<HonoEnv>, email: string) {
-  return app.request("/v2/auth/resend-verification", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
-}
-
-async function startOAuthFlow(
-  app: Hono<HonoEnv>,
-  path: string,
-  cookie?: string,
-) {
-  const init: RequestInit = {
-    method: "GET",
-  };
-
-  if (cookie) {
-    init.headers = { Cookie: cookie };
-  }
-
-  const res = await app.request(path, init);
-
-  const location = res.headers.get("location");
-  assert(location, "Missing location header");
-
-  const state = new URL(location).searchParams.get("state");
-  assert(state, "Missing OAuth state");
-
-  const setCookie = res.headers.get("set-cookie");
-  assert(setCookie, "Missing set-cookie header");
-
-  const [oauthCookie] = setCookie.split(";", 1);
-  assert(oauthCookie, "Missing OAuth cookie");
-
-  return {
-    cookie: oauthCookie,
-    state,
-  };
-}
-
-function mockArkhamDbOAuthResponse(decksResponse: unknown) {
-  vi.stubGlobal(
-    "fetch",
-    vi
-      .fn()
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
-            access_token: "access-token",
-            expires_in: 3600,
-            refresh_token: "refresh-token",
-            scope: null,
-            token_type: "Bearer",
-          }),
-          {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          },
-        ),
-      )
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify(decksResponse), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }),
-      ),
-  );
-}
-
-function mockArkhamDbOAuth(userId: number) {
-  mockArkhamDbOAuthResponse([{ user_id: userId }]);
-}
-
-async function signupAndVerify(
-  app: Hono<HonoEnv>,
-  emailService: EmailService<MockMailer>,
-  params: SignupParams,
-) {
-  await signup(app, params);
-  const token = extractToken(
-    emailService.mailer.sentEmails[emailService.mailer.sentEmails.length - 1]
-      ?.body,
-  );
-  if (!token) throw new Error("No verification token found");
-  await verifyEmail(app, token);
-  return token;
-}
-
-function extractToken(
-  emailBody: string | undefined,
-): string | null | undefined {
-  const match = emailBody?.match(/token=([a-zA-Z0-9-_]+)/);
-  return match ? match[1] : null;
-}
+import { TEST_ACCOUNT, test } from "./test-utils.ts";
 
 describe("Auth routes", () => {
-  describe("GET /auth/arkhamdb/login", () => {
-    test("redirects to arkhamdb oauth", async ({ dependencies }) => {
-      const { app, config } = dependencies;
+  describe("OAuth start routes", () => {
+    test.for([
+      { path: "/auth/arkhamdb/login", authenticated: false },
+      { path: "/auth/arkhamdb/signup", authenticated: false },
+      { path: "/auth/arkhamdb/connect", authenticated: true },
+    ])("GET $path redirects to arkhamdb oauth", async ({
+      path,
+      authenticated,
+    }, { dependencies }) => {
+      const { app, config, sessionCookie } = dependencies;
 
-      const res = await app.request("/auth/arkhamdb/login", {
+      const res = await app.request(path, {
         method: "GET",
-      });
-
-      expect(res.status).toBe(302);
-
-      const location = res.headers.get("location");
-      assert(location, "Missing location header");
-
-      const url = new URL(location);
-
-      expect(url.origin + url.pathname).toBe(
-        `${config.ARKHAMDB_BASE_URL}/oauth/v2/auth`,
-      );
-      expect(url.searchParams.get("client_id")).toBe(
-        config.ARKHAMDB_OAUTH_CLIENT_ID,
-      );
-      expect(url.searchParams.get("redirect_uri")).toBe(
-        config.ARKHAMDB_OAUTH_REDIRECT_URI,
-      );
-      expect(url.searchParams.get("response_type")).toBe("code");
-      expect(url.searchParams.get("state")).toBeTruthy();
-    });
-  });
-
-  describe("GET /auth/arkhamdb/signup", () => {
-    test("redirects to arkhamdb oauth", async ({ dependencies }) => {
-      const { app, config } = dependencies;
-
-      const res = await app.request("/auth/arkhamdb/signup", {
-        method: "GET",
+        headers: authenticated ? { Cookie: sessionCookie } : {},
       });
 
       expect(res.status).toBe(302);
@@ -217,36 +54,6 @@ describe("Auth routes", () => {
       });
 
       expect(res.status).toBe(401);
-    });
-
-    test("redirects authenticated users to arkhamdb oauth", async ({
-      dependencies,
-    }) => {
-      const { app, config, sessionCookie } = dependencies;
-
-      const res = await app.request("/auth/arkhamdb/connect", {
-        method: "GET",
-        headers: { Cookie: sessionCookie },
-      });
-
-      expect(res.status).toBe(302);
-
-      const location = res.headers.get("location");
-      assert(location, "Missing location header");
-
-      const url = new URL(location);
-
-      expect(url.origin + url.pathname).toBe(
-        `${config.ARKHAMDB_BASE_URL}/oauth/v2/auth`,
-      );
-      expect(url.searchParams.get("client_id")).toBe(
-        config.ARKHAMDB_OAUTH_CLIENT_ID,
-      );
-      expect(url.searchParams.get("redirect_uri")).toBe(
-        config.ARKHAMDB_OAUTH_REDIRECT_URI,
-      );
-      expect(url.searchParams.get("response_type")).toBe("code");
-      expect(url.searchParams.get("state")).toBeTruthy();
     });
   });
 
@@ -607,10 +414,45 @@ describe("Auth routes", () => {
 
       expect(res.status).toBe(201);
       expect(emailService.mailer.sentEmails).toHaveLength(1);
-      expect(
-        extractToken(emailService.mailer.sentEmails[0]?.body),
-      ).toBeTruthy();
+      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      expect(token).toBeTruthy();
+      expect(emailService.mailer.sentEmails[0]?.body).toContain(
+        "Or copy and paste this verification token:",
+      );
+      expect(emailService.mailer.sentEmails[0]?.body).toContain(`\n${token}\n`);
       expect(emailService.mailer.sentEmails[0]?.to).toEqual("test@example.com");
+    });
+
+    test("does not create an account or verification token when email sending fails", async ({
+      dependencies,
+    }) => {
+      const { app, db, emailService } = dependencies;
+
+      emailService.mailer.failOnce();
+
+      const res = await signup(app, {
+        name: "signup-email-fail",
+        email: "signup-email-fail@example.com",
+        password: "SecurePassword123!",
+      });
+
+      expect(res.status).toBe(500);
+      expect(emailService.mailer.sentEmails).toHaveLength(0);
+
+      const account = await db
+        .selectFrom("account")
+        .select(["id"])
+        .where("name", "=", "signup-email-fail")
+        .executeTakeFirst();
+
+      expect(account).toBeUndefined();
+      expect(
+        await countVerificationTokens(
+          db,
+          "signup-email-fail@example.com",
+          "email_verification",
+        ),
+      ).toBe(0);
     });
 
     test("validates account does not exist", async ({ dependencies }) => {
@@ -888,6 +730,639 @@ describe("Auth routes", () => {
     });
   });
 
+  describe("POST /v2/auth/email", () => {
+    test("requires authentication", async ({ dependencies }) => {
+      const { app } = dependencies;
+
+      const res = await app.request("/v2/auth/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "new-email@example.com",
+          password: "SecurePassword123!",
+        }),
+      });
+
+      expect(res.status).toBe(401);
+    });
+
+    test("creates a new email identity for an oauth-only account", async ({
+      dependencies,
+    }) => {
+      const { app, config, db, emailService } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "oauth-create-email" })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "oauth-create-email-user",
+          verified_at: new Date(),
+        })
+        .executeTakeFirstOrThrow();
+
+      const session = await db
+        .insertInto("session")
+        .values({
+          account_id: account.id,
+          expires_at: new Date(Date.now() + 60 * 60 * 1000),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+
+      const res = await createEmailIdentity(
+        app,
+        cookie,
+        "new-email@example.com",
+        "SecurePassword123!",
+      );
+
+      expect(res.status).toBe(201);
+      expect(emailService.mailer.sentEmails).toHaveLength(1);
+      expect(emailService.mailer.sentEmails[0]?.to).toBe(
+        "new-email@example.com",
+      );
+
+      const meRes = await app.request("/v2/auth/me", {
+        method: "GET",
+        headers: { Cookie: cookie },
+      });
+
+      expect(await meRes.json()).toMatchObject({
+        identities: [
+          {
+            provider: "arkhamdb",
+            providerUserId: "oauth-create-email-user",
+          },
+          {
+            provider: "email",
+            email: null,
+            pendingEmail: "new-email@example.com",
+            verified: false,
+          },
+        ],
+      });
+
+      const loginRes = await login(
+        app,
+        "new-email@example.com",
+        "SecurePassword123!",
+      );
+      expect(loginRes.status).toBe(401);
+
+      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      assert(token, "No verification token found");
+
+      const verifyRes = await verifyEmail(app, token);
+      expect(verifyRes.status).toBe(200);
+
+      const verifiedLoginRes = await login(
+        app,
+        "new-email@example.com",
+        "SecurePassword123!",
+      );
+      expect(verifiedLoginRes.status).toBe(200);
+    });
+
+    test("does not create an email identity or verification token when email sending fails", async ({
+      dependencies,
+    }) => {
+      const { app, config, db, emailService } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "oauth-create-email-fail" })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "oauth-create-email-fail-user",
+          verified_at: new Date(),
+        })
+        .executeTakeFirstOrThrow();
+
+      const session = await db
+        .insertInto("session")
+        .values({
+          account_id: account.id,
+          expires_at: new Date(Date.now() + 60 * 60 * 1000),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+
+      emailService.mailer.failOnce();
+
+      const res = await createEmailIdentity(
+        app,
+        cookie,
+        "new-email-fail@example.com",
+        "SecurePassword123!",
+      );
+
+      expect(res.status).toBe(500);
+      expect(emailService.mailer.sentEmails).toHaveLength(0);
+
+      const identity = await db
+        .selectFrom("account_identity")
+        .select(["id"])
+        .where("account_id", "=", account.id)
+        .where("provider", "=", "email")
+        .executeTakeFirst();
+
+      expect(identity).toBeUndefined();
+      expect(
+        await countVerificationTokens(
+          db,
+          "new-email-fail@example.com",
+          "email_verification",
+        ),
+      ).toBe(0);
+    });
+
+    test("rejects creating an email identity when one already exists", async ({
+      dependencies,
+    }) => {
+      const { app, sessionCookie } = dependencies;
+
+      const res = await createEmailIdentity(
+        app,
+        sessionCookie,
+        "new-email@example.com",
+        "SecurePassword123!",
+      );
+
+      expect(res.status).toBe(400);
+      expect(await res.text()).toContain("Email identity already exists");
+    });
+
+    test("rejects creating an email identity with a duplicate email", async ({
+      dependencies,
+    }) => {
+      const { app, config, db } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "oauth-duplicate-email" })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "oauth-duplicate-email-user",
+          verified_at: new Date(),
+        })
+        .executeTakeFirstOrThrow();
+
+      const session = await db
+        .insertInto("session")
+        .values({
+          account_id: account.id,
+          expires_at: new Date(Date.now() + 60 * 60 * 1000),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+
+      const res = await createEmailIdentity(
+        app,
+        cookie,
+        TEST_ACCOUNT.email,
+        "SecurePassword123!",
+      );
+
+      expect(res.status).toBe(400);
+      expect(await res.text()).toContain(
+        "An account is already registered for this email",
+      );
+    });
+
+    test("does not reserve the pending email for signup", async ({
+      dependencies,
+    }) => {
+      const { app, config, db } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "oauth-pending-email-signup" })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "oauth-pending-email-signup-user",
+          verified_at: new Date(),
+        })
+        .executeTakeFirstOrThrow();
+
+      const session = await db
+        .insertInto("session")
+        .values({
+          account_id: account.id,
+          expires_at: new Date(Date.now() + 60 * 60 * 1000),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+
+      const pendingRes = await createEmailIdentity(
+        app,
+        cookie,
+        "shared@example.com",
+        "SecurePassword123!",
+      );
+      expect(pendingRes.status).toBe(201);
+
+      const signupRes = await signup(app, {
+        name: "shared-email-signup",
+        email: "shared@example.com",
+        password: "SecurePassword123!",
+      });
+
+      expect(signupRes.status).toBe(201);
+    });
+
+    test("invalidates the pending email token when another verification token is generated for the same email", async ({
+      dependencies,
+    }) => {
+      const { app, config, db, emailService } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "oauth-pending-email-verify" })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "oauth-pending-email-verify-user",
+          verified_at: new Date(),
+        })
+        .executeTakeFirstOrThrow();
+
+      const session = await db
+        .insertInto("session")
+        .values({
+          account_id: account.id,
+          expires_at: new Date(Date.now() + 60 * 60 * 1000),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+
+      const pendingRes = await createEmailIdentity(
+        app,
+        cookie,
+        "claimed@example.com",
+        "SecurePassword123!",
+      );
+      expect(pendingRes.status).toBe(201);
+
+      const pendingToken = extractToken(
+        emailService.mailer.sentEmails[0]?.body,
+      );
+      assert(pendingToken, "No verification token found");
+
+      await signupAndVerify(app, emailService, {
+        name: "claimed-email-user",
+        email: "claimed@example.com",
+        password: "SecurePassword123!",
+      });
+
+      const verifyRes = await verifyEmail(app, pendingToken);
+      expect(verifyRes.status).toBe(400);
+      expect(await verifyRes.text()).toContain(
+        "Invalid or expired verification token",
+      );
+    });
+  });
+
+  describe("PATCH /v2/auth/credentials", () => {
+    test("requires authentication", async ({ dependencies }) => {
+      const { app } = dependencies;
+
+      const res = await app.request("/v2/auth/credentials", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPassword: TEST_ACCOUNT.password,
+          newEmail: "updated@example.com",
+        }),
+      });
+
+      expect(res.status).toBe(401);
+    });
+
+    test("starts an email change and stores the pending email", async ({
+      dependencies,
+    }) => {
+      const { app, emailService, sessionCookie } = dependencies;
+
+      const res = await updateCredentials(app, sessionCookie, {
+        currentPassword: TEST_ACCOUNT.password,
+        newEmail: "updated@example.com",
+      });
+
+      expect(res.status).toBe(200);
+      expect(emailService.mailer.sentEmails).toHaveLength(1);
+      expect(emailService.mailer.sentEmails[0]?.to).toBe("updated@example.com");
+
+      const meRes = await app.request("/v2/auth/me", {
+        method: "GET",
+        headers: { Cookie: sessionCookie },
+      });
+
+      expect(meRes.status).toBe(200);
+      expect(await meRes.json()).toMatchObject({
+        identities: [
+          {
+            provider: "email",
+            email: TEST_ACCOUNT.email,
+            pendingEmail: "updated@example.com",
+            verified: true,
+          },
+        ],
+      });
+    });
+
+    test("does not persist credential changes when email sending fails", async ({
+      dependencies,
+    }) => {
+      const { app, db, emailService, sessionCookie } = dependencies;
+
+      emailService.mailer.failOnce();
+
+      const res = await updateCredentials(app, sessionCookie, {
+        currentPassword: TEST_ACCOUNT.password,
+        newEmail: "updated-fail@example.com",
+        newPassword: "NewPassword123!",
+      });
+
+      expect(res.status).toBe(500);
+      expect(emailService.mailer.sentEmails).toHaveLength(0);
+
+      const identity = await db
+        .selectFrom("account_identity")
+        .select(["pending_email"])
+        .where("provider", "=", "email")
+        .where("email", "=", TEST_ACCOUNT.email)
+        .executeTakeFirstOrThrow();
+
+      expect(identity.pending_email).toBeNull();
+
+      const oldLoginRes = await login(
+        app,
+        TEST_ACCOUNT.email,
+        TEST_ACCOUNT.password,
+      );
+      expect(oldLoginRes.status).toBe(200);
+
+      const newLoginRes = await login(
+        app,
+        "updated-fail@example.com",
+        "NewPassword123!",
+      );
+      expect(newLoginRes.status).toBe(401);
+
+      expect(
+        await countVerificationTokens(
+          db,
+          "updated-fail@example.com",
+          "email_verification",
+        ),
+      ).toBe(0);
+    });
+
+    test("changes the password", async ({ dependencies }) => {
+      const { app, sessionCookie } = dependencies;
+
+      const res = await updateCredentials(app, sessionCookie, {
+        currentPassword: TEST_ACCOUNT.password,
+        newPassword: "NewPassword123!",
+      });
+
+      expect(res.status).toBe(200);
+
+      const oldLoginRes = await login(
+        app,
+        TEST_ACCOUNT.email,
+        TEST_ACCOUNT.password,
+      );
+      expect(oldLoginRes.status).toBe(401);
+
+      const newLoginRes = await login(
+        app,
+        TEST_ACCOUNT.email,
+        "NewPassword123!",
+      );
+      expect(newLoginRes.status).toBe(200);
+    });
+
+    test("changes email and password together", async ({ dependencies }) => {
+      const { app, emailService, sessionCookie } = dependencies;
+
+      const res = await updateCredentials(app, sessionCookie, {
+        currentPassword: TEST_ACCOUNT.password,
+        newEmail: "updated@example.com",
+        newPassword: "NewPassword123!",
+      });
+
+      expect(res.status).toBe(200);
+
+      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      assert(token, "No verification token found");
+
+      const verifyRes = await verifyEmail(app, token);
+      expect(verifyRes.status).toBe(200);
+
+      const oldLoginRes = await login(
+        app,
+        TEST_ACCOUNT.email,
+        TEST_ACCOUNT.password,
+      );
+      expect(oldLoginRes.status).toBe(401);
+
+      const newLoginRes = await login(
+        app,
+        "updated@example.com",
+        "NewPassword123!",
+      );
+      expect(newLoginRes.status).toBe(200);
+    });
+
+    test("rejects an incorrect current password", async ({ dependencies }) => {
+      const { app, sessionCookie } = dependencies;
+
+      const res = await updateCredentials(app, sessionCookie, {
+        currentPassword: "WrongPassword123!",
+        newEmail: "updated@example.com",
+      });
+
+      expect(res.status).toBe(400);
+      expect(await res.text()).toContain("Current password is incorrect");
+    });
+  });
+
+  describe("DELETE /v2/auth/credentials/pending-email", () => {
+    test("requires authentication", async ({ dependencies }) => {
+      const { app } = dependencies;
+
+      const res = await app.request("/v2/auth/credentials/pending-email", {
+        method: "DELETE",
+      });
+
+      expect(res.status).toBe(401);
+    });
+
+    test("cancels a pending email change", async ({ dependencies }) => {
+      const { app, db, emailService, sessionCookie } = dependencies;
+
+      const updateRes = await updateCredentials(app, sessionCookie, {
+        currentPassword: TEST_ACCOUNT.password,
+        newEmail: "updated@example.com",
+      });
+      expect(updateRes.status).toBe(200);
+
+      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      assert(token, "No verification token found");
+
+      const cancelRes = await cancelPendingEmailChange(app, sessionCookie);
+      expect(cancelRes.status).toBe(200);
+
+      const meRes = await app.request("/v2/auth/me", {
+        method: "GET",
+        headers: { Cookie: sessionCookie },
+      });
+
+      expect(meRes.status).toBe(200);
+      expect(await meRes.json()).toMatchObject({
+        identities: [
+          {
+            provider: "email",
+            email: TEST_ACCOUNT.email,
+            pendingEmail: null,
+            verified: true,
+          },
+        ],
+      });
+
+      expect(
+        await countVerificationTokens(
+          db,
+          "updated@example.com",
+          "email_verification",
+        ),
+      ).toBe(0);
+
+      const verifyRes = await verifyEmail(app, token);
+      expect(verifyRes.status).toBe(400);
+      expect(await verifyRes.text()).toContain(
+        "Invalid or expired verification token",
+      );
+    });
+
+    test("cancels a pending email identity creation", async ({
+      dependencies,
+    }) => {
+      const { app, config, db, emailService } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "oauth-cancel-email-identity" })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "oauth-cancel-email-identity-user",
+          verified_at: new Date(),
+        })
+        .executeTakeFirstOrThrow();
+
+      const session = await db
+        .insertInto("session")
+        .values({
+          account_id: account.id,
+          expires_at: new Date(Date.now() + 60 * 60 * 1000),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+
+      const createRes = await createEmailIdentity(
+        app,
+        cookie,
+        "new-email@example.com",
+        "SecurePassword123!",
+      );
+      expect(createRes.status).toBe(201);
+
+      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      assert(token, "No verification token found");
+
+      const cancelRes = await cancelPendingEmailChange(app, cookie);
+      expect(cancelRes.status).toBe(200);
+
+      const meRes = await app.request("/v2/auth/me", {
+        method: "GET",
+        headers: { Cookie: cookie },
+      });
+
+      expect(meRes.status).toBe(200);
+      expect(await meRes.json()).toMatchObject({
+        identities: [
+          {
+            provider: "arkhamdb",
+            providerUserId: "oauth-cancel-email-identity-user",
+          },
+        ],
+      });
+
+      expect(
+        await countVerificationTokens(
+          db,
+          "new-email@example.com",
+          "email_verification",
+        ),
+      ).toBe(0);
+
+      const verifyRes = await verifyEmail(app, token);
+      expect(verifyRes.status).toBe(400);
+      expect(await verifyRes.text()).toContain(
+        "Invalid or expired verification token",
+      );
+    });
+  });
+
   describe("POST /v2/auth/logout", () => {
     test("logs out authenticated user", async ({ dependencies }) => {
       const { app, emailService } = dependencies;
@@ -960,6 +1435,49 @@ describe("Auth routes", () => {
         expect(
           extractToken(emailService.mailer.sentEmails[0]?.body),
         ).toBeTruthy();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    test("does not replace the existing verification token when email sending fails", async ({
+      dependencies,
+    }) => {
+      vi.useFakeTimers();
+
+      try {
+        const { app, db, emailService } = dependencies;
+
+        await signup(app, {
+          name: "resend-email-fail",
+          email: "resend-email-fail@example.com",
+          password: "SecurePassword123!",
+        });
+
+        const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+        assert(token, "No verification token found");
+
+        emailService.mailer.reset();
+        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+        emailService.mailer.failOnce();
+
+        const res = await resendVerification(
+          app,
+          "resend-email-fail@example.com",
+        );
+
+        expect(res.status).toBe(500);
+        expect(emailService.mailer.sentEmails).toHaveLength(0);
+        expect(
+          await countVerificationTokens(
+            db,
+            "resend-email-fail@example.com",
+            "email_verification",
+          ),
+        ).toBe(1);
+
+        const verifyRes = await verifyEmail(app, token);
+        expect(verifyRes.status).toBe(200);
       } finally {
         vi.useRealTimers();
       }
@@ -1114,6 +1632,50 @@ describe("Auth routes", () => {
       expect(
         extractToken(emailService.mailer.sentEmails[0]?.body),
       ).toBeTruthy();
+    });
+
+    test("does not replace the existing reset token when email sending fails", async ({
+      dependencies,
+    }) => {
+      vi.useFakeTimers();
+
+      try {
+        const { app, db, emailService } = dependencies;
+
+        await signupAndVerify(app, emailService, {
+          name: "forgot-email-fail",
+          email: "forgot-email-fail@example.com",
+          password: "OldPassword123!",
+        });
+
+        emailService.mailer.reset();
+
+        await forgotPassword(app, "forgot-email-fail@example.com");
+
+        const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+        assert(token, "No verification token found");
+
+        emailService.mailer.reset();
+        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+        emailService.mailer.failOnce();
+
+        const res = await forgotPassword(app, "forgot-email-fail@example.com");
+
+        expect(res.status).toBe(500);
+        expect(emailService.mailer.sentEmails).toHaveLength(0);
+        expect(
+          await countVerificationTokens(
+            db,
+            "forgot-email-fail@example.com",
+            "password_reset",
+          ),
+        ).toBe(1);
+
+        const resetRes = await resetPassword(app, token, "NewPassword123!");
+        expect(resetRes.status).toBe(200);
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     test("returns 200 for non-existent email without revealing existence", async ({
@@ -1308,3 +1870,204 @@ describe("Auth routes", () => {
     });
   });
 });
+
+interface SignupParams {
+  name: string;
+  email: string;
+  password: string;
+}
+
+function signup(app: Hono<HonoEnv>, params: SignupParams) {
+  return app.request("/v2/auth/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+}
+
+function verifyEmail(app: Hono<HonoEnv>, token: string) {
+  return app.request("/v2/auth/verify-email", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+}
+
+function login(app: Hono<HonoEnv>, email: string, password: string) {
+  return app.request("/v2/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+function createEmailIdentity(
+  app: Hono<HonoEnv>,
+  cookie: string,
+  email: string,
+  password: string,
+) {
+  return app.request("/v2/auth/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: cookie,
+    },
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+function updateCredentials(
+  app: Hono<HonoEnv>,
+  cookie: string,
+  payload: {
+    currentPassword: string;
+    newEmail?: string;
+    newPassword?: string;
+  },
+) {
+  return app.request("/v2/auth/credentials", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: cookie,
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+function cancelPendingEmailChange(app: Hono<HonoEnv>, cookie: string) {
+  return app.request("/v2/auth/credentials/pending-email", {
+    method: "DELETE",
+    headers: {
+      Cookie: cookie,
+    },
+  });
+}
+
+function forgotPassword(app: Hono<HonoEnv>, emailOrUsername: string) {
+  return app.request("/v2/auth/forgot-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ emailOrUsername }),
+  });
+}
+
+function resetPassword(app: Hono<HonoEnv>, token: string, password: string) {
+  return app.request("/v2/auth/reset-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, password }),
+  });
+}
+
+function resendVerification(app: Hono<HonoEnv>, email: string) {
+  return app.request("/v2/auth/resend-verification", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+}
+
+async function startOAuthFlow(
+  app: Hono<HonoEnv>,
+  path: string,
+  cookie?: string,
+) {
+  const init: RequestInit = {
+    method: "GET",
+  };
+
+  if (cookie) {
+    init.headers = { Cookie: cookie };
+  }
+
+  const res = await app.request(path, init);
+
+  const location = res.headers.get("location");
+  assert(location, "Missing location header");
+
+  const state = new URL(location).searchParams.get("state");
+  assert(state, "Missing OAuth state");
+
+  const setCookie = res.headers.get("set-cookie");
+  assert(setCookie, "Missing set-cookie header");
+
+  const [oauthCookie] = setCookie.split(";", 1);
+  assert(oauthCookie, "Missing OAuth cookie");
+
+  return {
+    cookie: oauthCookie,
+    state,
+  };
+}
+
+function mockArkhamDbOAuthResponse(decksResponse: unknown) {
+  vi.stubGlobal(
+    "fetch",
+    vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            access_token: "access-token",
+            expires_in: 3600,
+            refresh_token: "refresh-token",
+            scope: null,
+            token_type: "Bearer",
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          },
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(decksResponse), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      ),
+  );
+}
+
+function mockArkhamDbOAuth(userId: number) {
+  mockArkhamDbOAuthResponse([{ user_id: userId }]);
+}
+
+async function signupAndVerify(
+  app: Hono<HonoEnv>,
+  emailService: EmailService<MockMailer>,
+  params: SignupParams,
+) {
+  await signup(app, params);
+  const token = extractToken(
+    emailService.mailer.sentEmails[emailService.mailer.sentEmails.length - 1]
+      ?.body,
+  );
+  if (!token) throw new Error("No verification token found");
+  await verifyEmail(app, token);
+  return token;
+}
+
+function extractToken(
+  emailBody: string | undefined,
+): string | null | undefined {
+  const match = emailBody?.match(/token=([a-zA-Z0-9-_]+)/);
+  return match ? match[1] : null;
+}
+
+async function countVerificationTokens(
+  db: HonoEnv["Variables"]["db"],
+  email: string,
+  tokenType: "email_verification" | "password_reset",
+) {
+  const row = await db
+    .selectFrom("verification_token")
+    .select((eb) => eb.fn.countAll<number>().as("count"))
+    .where("email", "=", email)
+    .where("token_type", "=", tokenType)
+    .executeTakeFirstOrThrow();
+
+  return Number(row.count);
+}

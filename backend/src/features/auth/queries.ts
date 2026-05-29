@@ -18,27 +18,45 @@ export interface CreateAccountFromOAuthParams {
 }
 
 export async function createAccount(db: Database, params: CreateAccountParams) {
-  return await db.transaction().execute(async (tx) => {
-    const account = await tx
-      .insertInto("account")
-      .values({ name: params.name })
-      .returningAll()
-      .executeTakeFirstOrThrow();
+  const account = await db
+    .insertInto("account")
+    .values({ name: params.name })
+    .returningAll()
+    .executeTakeFirstOrThrow();
 
-    const accountIdentity = await tx
-      .insertInto("account_identity")
-      .values({
-        account_id: account.id,
-        provider: "email",
-        provider_user_id: params.email,
-        email: params.email,
-        password_hash: params.passwordHash,
-      })
-      .returningAll()
-      .executeTakeFirstOrThrow();
+  const accountIdentity = await db
+    .insertInto("account_identity")
+    .values({
+      account_id: account.id,
+      provider: "email",
+      provider_user_id: params.email,
+      email: params.email,
+      password_hash: params.passwordHash,
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
 
-    return { account, accountIdentity };
-  });
+  return { account, accountIdentity };
+}
+
+export async function createEmailIdentity(
+  db: Database,
+  accountId: string,
+  pendingEmail: string,
+  passwordHash: string,
+) {
+  return await db
+    .insertInto("account_identity")
+    .values({
+      account_id: accountId,
+      provider: "email",
+      provider_user_id: null,
+      email: null,
+      pending_email: pendingEmail,
+      password_hash: passwordHash,
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
 }
 
 export async function getAccount(db: Database, id: string) {
@@ -47,6 +65,20 @@ export async function getAccount(db: Database, id: string) {
     .selectAll()
     .where("id", "=", id)
     .executeTakeFirst();
+}
+
+export async function accountNameExists(
+  db: Database,
+  name: string,
+  excludeAccountId?: string,
+) {
+  let query = db.selectFrom("account").select(["id"]).where("name", "=", name);
+
+  if (excludeAccountId) {
+    query = query.where("id", "!=", excludeAccountId);
+  }
+
+  return (await query.executeTakeFirst()) != null;
 }
 
 export async function updateAccountName(
@@ -67,7 +99,7 @@ export async function upsertAccountFromOAuth(
   params: CreateAccountFromOAuthParams,
 ) {
   return await db.transaction().execute(async (tx) => {
-    let accountIdentity = await getAccountIdentityByUserProviderId(
+    let accountIdentity = await getAccountIdentityByProviderUserId(
       tx,
       "arkhamdb",
       params.providerUserId,
@@ -128,7 +160,7 @@ export async function getAccountIdentityByUsername(
     .executeTakeFirst();
 }
 
-export async function getAccountIdentityByUserProviderId(
+export async function getAccountIdentityByProviderUserId(
   db: Database,
   provider: string,
   providerUserId: string,
@@ -141,17 +173,11 @@ export async function getAccountIdentityByUserProviderId(
     .executeTakeFirst();
 }
 
-function assertOAuthProvider(provider: string) {
-  assert(provider !== "email", "Expected an OAuth provider.");
-}
-
-export async function getOAuthIdentityByAccountIdAndProvider(
+export async function getAccountIdentityByAccountIdAndProvider(
   db: Database,
   accountId: string,
   provider: string,
 ) {
-  assertOAuthProvider(provider);
-
   return await db
     .selectFrom("account_identity")
     .selectAll("account_identity")
@@ -160,14 +186,8 @@ export async function getOAuthIdentityByAccountIdAndProvider(
     .executeTakeFirst();
 }
 
-export async function getOAuthIdentityByProviderUserId(
-  db: Database,
-  provider: string,
-  providerUserId: string,
-) {
-  assertOAuthProvider(provider);
-
-  return await getAccountIdentityByUserProviderId(db, provider, providerUserId);
+function assertOAuthProvider(provider: string) {
+  assert(provider !== "email", "Expected an OAuth provider.");
 }
 
 export interface ConnectOAuthIdentityToAccountParams {
@@ -184,7 +204,7 @@ export async function connectOAuthIdentityToAccount(
   assertOAuthProvider(params.provider);
 
   return await db.transaction().execute(async (tx) => {
-    const existingIdentity = await getOAuthIdentityByAccountIdAndProvider(
+    const existingIdentity = await getAccountIdentityByAccountIdAndProvider(
       tx,
       params.accountId,
       params.provider,
@@ -231,6 +251,17 @@ export async function disconnectOAuthIdentity(
     .executeTakeFirst();
 }
 
+export async function deleteEmailIdentity(
+  db: Database,
+  accountIdentityId: string,
+) {
+  return await db
+    .deleteFrom("account_identity")
+    .where("provider", "=", "email")
+    .where("id", "=", accountIdentityId)
+    .executeTakeFirst();
+}
+
 export async function countUsableLoginIdentities(
   db: Database,
   accountId: string,
@@ -274,8 +305,6 @@ export async function getIdentitiesByAccountId(
 
   return identities.map((identity) => {
     if (identity.provider === "email") {
-      assert(identity.email, "Email identity must have an email.");
-
       return {
         provider: "email" as const,
         email: identity.email,
@@ -310,6 +339,40 @@ export async function getAccountIdentityByEmail(db: Database, email: string) {
     .selectAll()
     .where("provider", "=", "email")
     .where("email", "=", email)
+    .executeTakeFirst();
+}
+
+export async function updateAccountIdentityPendingEmail(
+  db: Database,
+  accountIdentityId: string,
+  pendingEmail: string | null,
+) {
+  return await db
+    .updateTable("account_identity")
+    .set({ pending_email: pendingEmail, updated_at: new Date() })
+    .where("provider", "=", "email")
+    .where("id", "=", accountIdentityId)
+    .executeTakeFirst();
+}
+
+export async function activatePendingAccountIdentityEmail(
+  db: Database,
+  accountIdentityId: string,
+  email: string,
+) {
+  const now = new Date();
+  return await db
+    .updateTable("account_identity")
+    .set({
+      email,
+      pending_email: null,
+      provider_user_id: email,
+      updated_at: now,
+      verified_at: now,
+    })
+    .where("provider", "=", "email")
+    .where("id", "=", accountIdentityId)
+    .where("pending_email", "=", email)
     .executeTakeFirst();
 }
 
@@ -435,6 +498,14 @@ export async function createVerificationToken(
     .executeTakeFirstOrThrow();
 }
 
+export async function replaceVerificationToken(
+  db: Database,
+  params: CreateVerificationTokenParams,
+) {
+  await deleteVerificationTokensByEmail(db, params.email, params.tokenType);
+  return await createVerificationToken(db, params);
+}
+
 export async function deleteVerificationTokensByEmail(
   db: Database,
   email: string,
@@ -442,6 +513,20 @@ export async function deleteVerificationTokensByEmail(
 ) {
   return await db
     .deleteFrom("verification_token")
+    .where("email", "=", email)
+    .where("token_type", "=", tokenType)
+    .executeTakeFirst();
+}
+
+export async function deleteVerificationTokensByAccountIdentityIdAndEmail(
+  db: Database,
+  accountIdentityId: string,
+  email: string,
+  tokenType: "email_verification" | "password_reset",
+) {
+  return await db
+    .deleteFrom("verification_token")
+    .where("account_identity_id", "=", accountIdentityId)
     .where("email", "=", email)
     .where("token_type", "=", tokenType)
     .executeTakeFirst();

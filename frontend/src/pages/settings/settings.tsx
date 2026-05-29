@@ -99,7 +99,10 @@ function Settings() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="account">
-            <AccountSettings key={session?.account.name ?? ""} />
+            <AccountSettings
+              key={session?.account.name ?? ""}
+              session={session}
+            />
           </TabsContent>
           <ApplicationSettings
             colorTheme={colorTheme}
@@ -132,7 +135,7 @@ function ApplicationSettings({
     updateColorTheme,
   });
 
-  const onSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (evt: React.SubmitEvent<HTMLFormElement>) => {
     evt.preventDefault();
     await saveSettings();
   };

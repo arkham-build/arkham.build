@@ -1,17 +1,20 @@
 import assert from "node:assert";
 import {
   CompleteProfileRequestSchema,
+  CreateEmailIdentityRequestSchema,
   ForgotPasswordRequestSchema,
   LoginRequestSchema,
   ResendVerificationRequestSchema,
   ResetPasswordRequestSchema,
   SessionResponseSchema,
   SignupRequestSchema,
+  UpdateCredentialsRequestSchema,
   VerifyEmailRequestSchema,
 } from "@arkham-build/shared";
 import { type Context, Hono } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
+import type { Database } from "../../db/db.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { isEmpty } from "../../lib/is-empty.ts";
 import { zodValidator } from "../../lib/validation.ts";
@@ -34,26 +37,31 @@ import {
   verificationEmailTemplate,
 } from "./email-templates.ts";
 import {
+  accountNameExists,
+  activatePendingAccountIdentityEmail,
   connectOAuthIdentityToAccount,
   consumeVerificationToken,
   countUsableLoginIdentities,
   createAccount,
+  createEmailIdentity,
   createSession,
-  createVerificationToken,
+  deleteEmailIdentity,
   deleteSession,
   deleteSessionsByAccountId,
-  deleteVerificationTokensByEmail,
+  deleteVerificationTokensByAccountIdentityIdAndEmail,
   disconnectOAuthIdentity,
   getAccount,
   getAccountIdentity,
+  getAccountIdentityByAccountIdAndProvider,
   getAccountIdentityByEmail,
+  getAccountIdentityByProviderUserId,
   getAccountIdentityByUsername,
   getIdentitiesByAccountId,
   getLatestVerificationTokenByEmail,
-  getOAuthIdentityByAccountIdAndProvider,
-  getOAuthIdentityByProviderUserId,
   getVerificationTokenByHash,
+  replaceVerificationToken,
   updateAccountIdentityPasswordHash,
+  updateAccountIdentityPendingEmail,
   updateAccountIdentityVerified,
   updateAccountName,
   upsertAccountFromOAuth,
@@ -69,13 +77,7 @@ routes.post("/signup", zodValidator("json", SignupRequestSchema), async (c) => {
 
   const { name, email, password } = c.req.valid("json");
 
-  const existingAccount = await db
-    .selectFrom("account")
-    .select(["id"])
-    .where("name", "=", name)
-    .executeTakeFirst();
-
-  if (existingAccount) {
+  if (await accountNameExists(db, name)) {
     throw new HTTPException(400, {
       message: "Username is already taken",
     });
@@ -83,34 +85,35 @@ routes.post("/signup", zodValidator("json", SignupRequestSchema), async (c) => {
 
   // This is checked again on the database level.
   // XXX: While this error message is clearer, it potentially allows enumeration of registered emails.
-  if (await getAccountIdentityByEmail(db, email)) {
-    throw new HTTPException(400, {
-      message: "An account is already registered for this email",
+  await assertEmailAvailable(db, email);
+
+  const passwordHash = await hashPassword(password);
+
+  await db.transaction().execute(async (tx) => {
+    const { accountIdentity } = await createAccount(tx, {
+      name,
+      email,
+      passwordHash,
     });
-  }
 
-  const { accountIdentity } = await createAccount(db, {
-    name,
-    email,
-    passwordHash: await hashPassword(password),
+    const token = generateRandomToken();
+
+    await replaceVerificationToken(tx, {
+      accountIdentityId: accountIdentity.id,
+      email,
+      tokenHash: hashToken(token),
+      tokenType: "email_verification",
+      expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
+    });
+
+    await emailService.sendTemplate(
+      verificationEmailTemplate({
+        token,
+        verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+      }),
+      email,
+    );
   });
-
-  const token = generateRandomToken();
-
-  await createVerificationToken(db, {
-    accountIdentityId: accountIdentity.id,
-    email,
-    tokenHash: hashToken(token),
-    tokenType: "email_verification",
-    expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
-  });
-
-  await emailService.sendTemplate(
-    verificationEmailTemplate({
-      verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
-    }),
-    email,
-  );
 
   return new Response(null, { status: 201 });
 });
@@ -184,6 +187,203 @@ routes.get("/me", sessionAuth(), async (c) => {
   );
 });
 
+routes.post(
+  "/email",
+  sessionAuth(),
+  zodValidator("json", CreateEmailIdentityRequestSchema),
+  async (c) => {
+    const db = c.get("db");
+    const config = c.get("config");
+    const account = c.get("account");
+    const { email, password } = c.req.valid("json");
+
+    const existingEmailIdentity =
+      await getAccountIdentityByAccountIdAndProvider(db, account.id, "email");
+
+    if (existingEmailIdentity) {
+      throw new HTTPException(400, {
+        message: "Email identity already exists",
+      });
+    }
+
+    await assertEmailAvailable(db, email);
+
+    await assertVerificationTokenCooldown(db, email, "email_verification");
+
+    const token = generateRandomToken();
+    const passwordHash = await hashPassword(password);
+
+    await db.transaction().execute(async (tx) => {
+      const accountIdentity = await createEmailIdentity(
+        tx,
+        account.id,
+        email,
+        passwordHash,
+      );
+
+      await replaceVerificationToken(tx, {
+        accountIdentityId: accountIdentity.id,
+        email,
+        tokenHash: hashToken(token),
+        tokenType: "email_verification",
+        expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
+      });
+
+      await c.get("emailService").sendTemplate(
+        verificationEmailTemplate({
+          token,
+          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+        }),
+        email,
+      );
+    });
+
+    return new Response(null, { status: 201 });
+  },
+);
+
+routes.patch(
+  "/credentials",
+  sessionAuth(),
+  zodValidator("json", UpdateCredentialsRequestSchema),
+  async (c) => {
+    const db = c.get("db");
+    const config = c.get("config");
+    const account = c.get("account");
+    const { currentPassword, newEmail, newPassword } = c.req.valid("json");
+
+    const emailIdentity = await getAccountIdentityByAccountIdAndProvider(
+      db,
+      account.id,
+      "email",
+    );
+
+    if (!emailIdentity?.email || !emailIdentity.password_hash) {
+      throw new HTTPException(400, {
+        message: "Email identity not found",
+      });
+    }
+
+    const isPasswordValid = await verifyPassword(
+      currentPassword,
+      emailIdentity.password_hash,
+    );
+
+    if (!isPasswordValid) {
+      throw new HTTPException(400, {
+        message: "Current password is incorrect",
+      });
+    }
+
+    const nextEmail =
+      newEmail && newEmail !== emailIdentity.email ? newEmail : undefined;
+
+    if (nextEmail) {
+      await assertEmailAvailable(db, nextEmail, emailIdentity.id);
+
+      await assertVerificationTokenCooldown(
+        db,
+        nextEmail,
+        "email_verification",
+      );
+    }
+
+    if (!nextEmail && !newPassword) {
+      throw new HTTPException(400, {
+        message: "No credential changes requested",
+      });
+    }
+
+    const token = nextEmail ? generateRandomToken() : null;
+    const passwordHash = newPassword ? await hashPassword(newPassword) : null;
+    const previousPendingEmail = emailIdentity.pending_email;
+
+    await db.transaction().execute(async (tx) => {
+      if (passwordHash) {
+        await updateAccountIdentityPasswordHash(
+          tx,
+          emailIdentity.id,
+          passwordHash,
+        );
+      }
+
+      if (!nextEmail || !token) {
+        return;
+      }
+
+      if (previousPendingEmail && previousPendingEmail !== nextEmail) {
+        await deleteVerificationTokensByAccountIdentityIdAndEmail(
+          tx,
+          emailIdentity.id,
+          previousPendingEmail,
+          "email_verification",
+        );
+      }
+
+      await updateAccountIdentityPendingEmail(tx, emailIdentity.id, nextEmail);
+      await replaceVerificationToken(tx, {
+        accountIdentityId: emailIdentity.id,
+        email: nextEmail,
+        tokenHash: hashToken(token),
+        tokenType: "email_verification",
+        expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
+      });
+      await c.get("emailService").sendTemplate(
+        verificationEmailTemplate({
+          token,
+          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+        }),
+        nextEmail,
+      );
+    });
+
+    return new Response(null, { status: 200 });
+  },
+);
+
+routes.delete("/credentials/pending-email", sessionAuth(), async (c) => {
+  const db = c.get("db");
+  const account = c.get("account");
+
+  const emailIdentity = await getAccountIdentityByAccountIdAndProvider(
+    db,
+    account.id,
+    "email",
+  );
+
+  if (!emailIdentity) {
+    throw new HTTPException(400, {
+      message: "Email identity not found",
+    });
+  }
+
+  const pendingEmail = emailIdentity.pending_email;
+
+  if (!pendingEmail) {
+    throw new HTTPException(400, {
+      message: "No pending email found",
+    });
+  }
+
+  await db.transaction().execute(async (tx) => {
+    await deleteVerificationTokensByAccountIdentityIdAndEmail(
+      tx,
+      emailIdentity.id,
+      pendingEmail,
+      "email_verification",
+    );
+
+    if (emailIdentity.email) {
+      await updateAccountIdentityPendingEmail(tx, emailIdentity.id, null);
+      return;
+    }
+
+    await deleteEmailIdentity(tx, emailIdentity.id);
+  });
+
+  return new Response(null, { status: 200 });
+});
+
 routes.delete("/oauth/:provider", sessionAuth(), async (c) => {
   const db = c.get("db");
   const account = c.get("account");
@@ -195,7 +395,7 @@ routes.delete("/oauth/:provider", sessionAuth(), async (c) => {
     });
   }
 
-  const oauthIdentity = await getOAuthIdentityByAccountIdAndProvider(
+  const oauthIdentity = await getAccountIdentityByAccountIdAndProvider(
     db,
     account.id,
     provider,
@@ -243,6 +443,49 @@ routes.post(
         });
       }
 
+      const accountIdentity = await getAccountIdentity(
+        tx,
+        verificationToken.account_identity_id,
+      );
+
+      if (!accountIdentity) {
+        throw new HTTPException(400, {
+          message: "Invalid or expired verification token",
+        });
+      }
+
+      if (accountIdentity.pending_email === verificationToken.email) {
+        await assertEmailAvailable(
+          tx,
+          verificationToken.email,
+          accountIdentity.id,
+        );
+
+        try {
+          await activatePendingAccountIdentityEmail(
+            tx,
+            accountIdentity.id,
+            verificationToken.email,
+          );
+        } catch (error) {
+          if (isUniqueViolation(error)) {
+            throw new HTTPException(400, {
+              message: "An account is already registered for this email",
+            });
+          }
+
+          throw error;
+        }
+
+        return;
+      }
+
+      if (accountIdentity.email !== verificationToken.email) {
+        throw new HTTPException(400, {
+          message: "Invalid or expired verification token",
+        });
+      }
+
       await updateAccountIdentityVerified(
         tx,
         verificationToken.account_identity_id,
@@ -264,34 +507,27 @@ routes.post(
     const accountIdentity = await getAccountIdentityByEmail(db, email);
 
     if (accountIdentity && !accountIdentity.verified_at) {
-      const latestToken = await getLatestVerificationTokenByEmail(
-        db,
-        email,
-        "email_verification",
-      );
-
-      if (latestToken) assertEmailCooldown(latestToken.created_at);
+      await assertVerificationTokenCooldown(db, email, "email_verification");
 
       const token = generateRandomToken();
       const tokenHash = hashToken(token);
 
       await db.transaction().execute(async (tx) => {
-        await deleteVerificationTokensByEmail(tx, email, "email_verification");
-        await createVerificationToken(tx, {
+        await replaceVerificationToken(tx, {
           accountIdentityId: accountIdentity.id,
           email,
           tokenHash,
           tokenType: "email_verification",
           expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
         });
+        await c.get("emailService").sendTemplate(
+          verificationEmailTemplate({
+            token,
+            verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+          }),
+          email,
+        );
       });
-
-      await c.get("emailService").sendTemplate(
-        verificationEmailTemplate({
-          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
-        }),
-        email,
-      );
     }
 
     return new Response(null, { status: 200 });
@@ -313,34 +549,28 @@ routes.post(
     const email = accountIdentity?.email;
 
     if (accountIdentity?.verified_at && email) {
-      const latestToken = await getLatestVerificationTokenByEmail(
-        db,
-        email,
-        "password_reset",
-      );
-
-      if (latestToken) assertEmailCooldown(latestToken.created_at);
-
-      await deleteVerificationTokensByEmail(db, email, "password_reset");
+      await assertVerificationTokenCooldown(db, email, "password_reset");
 
       const token = generateRandomToken();
 
-      await createVerificationToken(db, {
-        accountIdentityId: accountIdentity.id,
-        email,
-        tokenHash: hashToken(token),
-        tokenType: "password_reset",
-        expiryHours: config.PASSWORD_RESET_TOKEN_EXPIRY_HOURS,
-      });
+      await db.transaction().execute(async (tx) => {
+        await replaceVerificationToken(tx, {
+          accountIdentityId: accountIdentity.id,
+          email,
+          tokenHash: hashToken(token),
+          tokenType: "password_reset",
+          expiryHours: config.PASSWORD_RESET_TOKEN_EXPIRY_HOURS,
+        });
 
-      await c.get("emailService").sendTemplate(
-        passwordResetEmailTemplate({
-          resetUrl: `${config.FRONTEND_URL}/auth/reset-password#token=${encodeURIComponent(
-            token,
-          )}`,
-        }),
-        email,
-      );
+        await c.get("emailService").sendTemplate(
+          passwordResetEmailTemplate({
+            resetUrl: `${config.FRONTEND_URL}/auth/reset-password#token=${encodeURIComponent(
+              token,
+            )}`,
+          }),
+          email,
+        );
+      });
     }
 
     return new Response(null, { status: 200 });
@@ -468,7 +698,7 @@ arkhamdbOAuthRoutes.get("/callback", async (c) => {
         "Missing account ID for OAuth connect.",
       );
 
-      const existingIdentity = await getOAuthIdentityByProviderUserId(
+      const existingIdentity = await getAccountIdentityByProviderUserId(
         db,
         "arkhamdb",
         providerUserId,
@@ -525,14 +755,7 @@ routes.post(
     const { username } = c.req.valid("json");
 
     await db.transaction().execute(async (tx) => {
-      const existingAccount = await tx
-        .selectFrom("account")
-        .selectAll()
-        .where("name", "=", username)
-        .where("id", "!=", account.id)
-        .executeTakeFirst();
-
-      if (existingAccount) {
+      if (await accountNameExists(tx, username, account.id)) {
         throw new HTTPException(400, {
           message: "Username is already taken",
         });
@@ -553,6 +776,39 @@ function throwInvalidResetToken(): never {
   });
 }
 
+async function assertEmailAvailable(
+  db: Database,
+  email: string,
+  excludeAccountIdentityId?: string,
+): Promise<void> {
+  const existingEmailIdentity = await getAccountIdentityByEmail(db, email);
+
+  if (
+    existingEmailIdentity &&
+    existingEmailIdentity.id !== excludeAccountIdentityId
+  ) {
+    throw new HTTPException(400, {
+      message: "An account is already registered for this email",
+    });
+  }
+}
+
+async function assertVerificationTokenCooldown(
+  db: Database,
+  email: string,
+  tokenType: "email_verification" | "password_reset",
+): Promise<void> {
+  const latestToken = await getLatestVerificationTokenByEmail(
+    db,
+    email,
+    tokenType,
+  );
+
+  if (latestToken) {
+    assertEmailCooldown(latestToken.created_at);
+  }
+}
+
 function assertEmailCooldown(
   tokenCreatedAt: Date,
   cooldownMs = 5 * 60 * 1000,
@@ -569,6 +825,15 @@ function assertEmailCooldown(
 
 function isEmail(input: string): boolean {
   return input.includes("@");
+}
+
+function isUniqueViolation(error: unknown): error is { code: string } {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "23505"
+  );
 }
 
 function setSessionCookie(c: Context<HonoEnv>, sessionId: string): void {

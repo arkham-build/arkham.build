@@ -39,7 +39,7 @@ export interface AccountIdentity {
   password_hash: string | null;
   pending_email: string | null;
   provider: string;
-  provider_user_id: string;
+  provider_user_id: string | null;
   updated_at: Generated<Timestamp>;
   verified_at: Timestamp | null;
 }
