@@ -1,5 +1,6 @@
 import type { ChangeRecord } from "../lib/deck-edits";
 import type { Deck, Id } from "../schemas/deck.schema";
+import type { HttpClient } from "../services/http-client";
 
 export type UndoEntry = {
   changes: ChangeRecord;
@@ -28,9 +29,13 @@ type DataState = {
 export type DataSlice = {
   data: DataState;
 
-  addDeckToArchive(deckId: Id): Promise<void>;
   duplicateDeck(id: Id, options?: { applyEdits: boolean }): Promise<Id>;
   importDeck(code: string): Promise<void>;
   importFromFiles(files: FileList): Promise<void>;
-  removeDeckFromFolder(deckId: Id): Promise<void>;
+  removeDeckFromFolder(client: HttpClient, deckId: Id): Promise<void>;
+  setDeckFolder(
+    client: HttpClient | undefined,
+    deckId: Id,
+    folderId: string | null,
+  ): Promise<void>;
 };

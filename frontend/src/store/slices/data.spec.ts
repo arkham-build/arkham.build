@@ -1,7 +1,8 @@
-import { afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import type { StoreApi } from "zustand";
 import type { Deck } from "@/store/schemas/deck.schema";
 import { getMockHttpClient, getMockStore } from "@/test/get-mock-store";
+import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import type { StoreState } from ".";
 
 describe("data slice", () => {
@@ -105,6 +106,66 @@ describe("data slice", () => {
         "1": [],
         "3": [],
       });
+    });
+  });
+
+  describe("folder actions", () => {
+    afterEach(async () => {
+      store = await getMockStore();
+    });
+
+    it("sets local folder membership without syncing while unauthenticated", async () => {
+      store.setState({
+        data: {
+          ...store.getState().data,
+          folders: {
+            folder: {
+              id: "folder",
+              name: "Folder",
+            },
+          },
+        },
+      });
+
+      await store.getState().setDeckFolder(undefined, "deck-id", "folder");
+
+      expect(store.getState().data.deckFolders["deck-id"]).toBe("folder");
+    });
+
+    it("auto-creates the archive folder", async () => {
+      await store
+        .getState()
+        .setDeckFolder(undefined, "deck-id", ARCHIVE_FOLDER_ID);
+
+      expect(store.getState().data.deckFolders["deck-id"]).toBe(
+        ARCHIVE_FOLDER_ID,
+      );
+      expect(store.getState().data.folders[ARCHIVE_FOLDER_ID]).toMatchObject({
+        id: ARCHIVE_FOLDER_ID,
+      });
+    });
+
+    it("syncs folder changes when authenticated", async () => {
+      const saveFolders = vi.fn().mockResolvedValue(undefined);
+
+      store.setState({
+        auth: {
+          status: "authenticated",
+          session: {
+            account: {
+              id: "account-id",
+              name: "User",
+            },
+            identities: [],
+          },
+        },
+        saveFolders,
+      });
+
+      await store.getState().setDeckFolder(client, "deck-id", "archive");
+
+      expect(store.getState().data.deckFolders["deck-id"]).toBe("archive");
+      expect(saveFolders).toHaveBeenCalledWith(client);
     });
   });
 
