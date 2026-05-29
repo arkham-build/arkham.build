@@ -209,14 +209,23 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     const state = get();
     const deck = uploadAdapter.format(state, deckId, provider);
     const canonicalDeck = await uploadAdapter.persist(client, state, deck);
+    const shouldSyncFolders =
+      deck.id !== canonicalDeck.id && state.data.deckFolders[deck.id] != null;
+
     uploadAdapter.transition(set, deck, canonicalDeck);
     await dehydrate(get(), "app", "edits");
+
+    if (shouldSyncFolders && get().auth.status === "authenticated") {
+      await get().saveFolders(client);
+    }
+
     return canonicalDeck.id;
   },
   async deleteDeck(client, id, cb) {
     const state = get();
 
     const deck = deleteAdapter.format(state, id);
+    const shouldSyncFolders = hasFolderAssignmentsForDelete(state, deck.id);
 
     await deleteAdapter.persist(
       client,
@@ -230,12 +239,21 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
 
     deleteAdapter.transition(set, deck.id);
     await dehydrate(get(), "app", "edits");
+
+    if (shouldSyncFolders && get().auth.status === "authenticated") {
+      await get().saveFolders(client);
+    }
   },
   async deleteUpgrade(client, id, cb) {
     const state = get();
 
     const deck = deleteAdapter.format(state, id);
     const previousId = deck.previous_deck;
+    const shouldSyncFolders = hasFolderAssignmentsForDelete(
+      state,
+      deck.id,
+      true,
+    );
     assert(previousId, "Deck does not have a previous deck");
     assert(state.data.decks[previousId], "Previous deck does not exist");
 
@@ -252,6 +270,11 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     deleteAdapter.transition(set, deck.id, previousId);
 
     await dehydrate(get(), "app", "edits");
+
+    if (shouldSyncFolders && get().auth.status === "authenticated") {
+      await get().saveFolders(client);
+    }
+
     return previousId;
   },
   async updateDeckProperties(client, deckId, properties) {
@@ -391,6 +414,18 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     await dehydrate(get(), "app", "edits");
   },
 });
+
+function hasFolderAssignmentsForDelete(
+  state: StoreState,
+  deckId: string | number,
+  keepPreviousDeck = false,
+) {
+  const deletedDeckIds = keepPreviousDeck
+    ? [deckId]
+    : [deckId, ...(state.data.history[deckId] ?? [])];
+
+  return deletedDeckIds.some((id) => state.data.deckFolders[id] != null);
+}
 
 function mergeInitialState(
   initialState: StoreState,

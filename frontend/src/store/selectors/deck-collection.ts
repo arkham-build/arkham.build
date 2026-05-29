@@ -2,6 +2,7 @@ import type { StorageProvider } from "@arkham-build/shared";
 import { FACTION_ORDER, type FactionName } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import { displayAttribute } from "@/utils/card-utils";
+import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import { formatProviderName } from "@/utils/formatting";
 import { and, or } from "@/utils/fp";
 import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";
@@ -10,6 +11,7 @@ import type { LookupTables } from "../lib/lookup-tables.types";
 import { deckTags } from "../lib/resolve-deck";
 import type { DeckSummary, ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";
+import { createArchiveFolder } from "../slices/data";
 import type { Folder } from "../slices/data.types";
 import type {
   DeckFiltersKey,
@@ -443,25 +445,35 @@ export const selectDecksDisplayList = createSelector(
   (state: StoreState) => state.data.deckFolders,
   (state: StoreState) => state.deckCollection.expandedFolders,
   (filteredDecks, sorting, folders, deckFolders, expandedFolders) => {
+    const resolvedFolders = Object.values(deckFolders).includes(
+      ARCHIVE_FOLDER_ID,
+    )
+      ? {
+          ...folders,
+          [ARCHIVE_FOLDER_ID]:
+            folders[ARCHIVE_FOLDER_ID] ?? createArchiveFolder(),
+        }
+      : folders;
     const folderHierarchy: Record<string, string[]> = {};
     const decksByFolderId: Record<string, DeckSummary[]> = {};
     const uncategorizedDecks: DeckSummary[] = [];
 
+    for (const folder of Object.values(resolvedFolders)) {
+      const parentId = folder.parent_id;
+
+      if (parentId && resolvedFolders[parentId]) {
+        folderHierarchy[parentId] ??= [];
+        folderHierarchy[parentId].push(folder.id);
+      }
+    }
+
     for (const deck of filteredDecks.decks) {
       const folderId = deckFolders[deck.id];
+      const folder = folderId ? resolvedFolders[folderId] : undefined;
 
-      if (folderId) {
-        const folder = folders[folderId];
-
-        folderHierarchy[folder.id] ??= [];
-
+      if (folder) {
         decksByFolderId[folder.id] ??= [];
         decksByFolderId[folder.id].push(deck);
-
-        if (folder.parent_id) {
-          folderHierarchy[folder.parent_id] ??= [];
-          folderHierarchy[folder.parent_id].push(folder.id);
-        }
       } else {
         uncategorizedDecks.push(deck);
       }
@@ -469,46 +481,47 @@ export const selectDecksDisplayList = createSelector(
 
     const sorted: DecklistEntry[] = [];
 
-    const rootFolders = Object.values(folders)
-      .filter((folder) => !folder.parent_id)
+    const rootFolders = Object.values(resolvedFolders)
+      .filter(
+        (folder) => !folder.parent_id || !resolvedFolders[folder.parent_id],
+      )
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    for (const folder of rootFolders) {
-      const expanded = expandedFolders[folder.id];
+    const traverse = (folder: Folder, depth: number) => {
+      const expanded = expandedFolders[folder.id] ?? false;
+      const decksInFolder = decksByFolderId[folder.id] ?? [];
+      const childFolders = (folderHierarchy[folder.id] ?? [])
+        .map((id) => resolvedFolders[id])
+        .filter((childFolder): childFolder is Folder => childFolder != null)
+        .sort((a, b) => a.name.localeCompare(b.name));
 
-      const traverse = (folder: Folder, depth: number) => {
-        const decksInFolder = decksByFolderId?.[folder.id] ?? [];
+      sorted.push({
+        count: decksInFolder.length,
+        expanded,
+        folder,
+        depth,
+        type: "folder",
+      });
 
+      for (const childFolder of childFolders) {
+        traverse(childFolder, depth + 1);
+      }
+
+      if (!expanded) {
+        return;
+      }
+
+      for (const deck of [...decksInFolder].sort(sorting)) {
         sorted.push({
-          count: decksInFolder.length,
-          expanded,
+          deck,
+          depth: depth + 1,
           folder,
-          depth,
-          type: "folder",
+          type: "deck",
         });
+      }
+    };
 
-        if (folderHierarchy[folder.id]) {
-          const childFolders = folderHierarchy[folder.id]
-            .map((id) => folders[id])
-            .sort((a, b) => a.name.localeCompare(b.name));
-
-          for (const childFolder of childFolders) {
-            if (childFolder) traverse(childFolder, depth + 1);
-          }
-
-          for (const deck of decksInFolder.sort(sorting)) {
-            if (expanded) {
-              sorted.push({
-                deck,
-                depth: depth + 1,
-                folder,
-                type: "deck",
-              });
-            }
-          }
-        }
-      };
-
+    for (const folder of rootFolders) {
       traverse(folder, 0);
     }
 
