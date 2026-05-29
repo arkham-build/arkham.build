@@ -38,7 +38,6 @@ export {
   type DateRange,
   DateRangeSchema,
 } from "./dtos/date-range.schema.ts";
-
 export {
   type DeckBatchRequest,
   DeckBatchRequestSchema,
@@ -59,22 +58,29 @@ export {
   type DeckUpgradeRequest,
   DeckUpgradeRequestSchema,
 } from "./dtos/deck-sync.schema.ts";
-
 export {
   type DecklistMetaResponse,
   DecklistMetaResponseSchema,
 } from "./dtos/decklist-meta-response.schema.ts";
-
 export {
   type DecklistSearchRequest,
   DecklistSearchRequestSchema,
 } from "./dtos/decklist-search-request.schema.ts";
-
 export {
   type DecklistSearchResponse,
   DecklistSearchResponseSchema,
   type DecklistSearchResult,
 } from "./dtos/decklist-search-response.schema.ts";
+export {
+  type Folder,
+  FolderSchema,
+  type FolderSyncRequest,
+  FolderSyncRequestSchema,
+  type FolderSyncResponse,
+  FolderSyncResponseSchema,
+  type FolderSyncState,
+  FolderSyncStateSchema,
+} from "./dtos/folder-sync.schema.ts";
 export {
   type UpdateProfileRequest,
   UpdateProfileRequestSchema,
