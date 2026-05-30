@@ -2,6 +2,7 @@
 import assert from "node:assert";
 import type { Hono } from "hono";
 import { describe, expect, vi } from "vitest";
+import { appFactory } from "../app.ts";
 import type { EmailService } from "../lib/email/email-service.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import type { MockMailer } from "./mocks/email.ts";
@@ -471,6 +472,120 @@ describe("Auth routes", () => {
       });
 
       expect(res.status).toBe(400);
+    });
+
+    test("requires captcha when turnstile is enabled", async ({
+      dependencies,
+    }) => {
+      const { config, db, emailService } = dependencies;
+      const app = appFactory(
+        {
+          ...config,
+          TURNSTILE_SECRET_KEY: "turnstile-secret",
+        },
+        db,
+        emailService,
+      );
+
+      const res = await signup(app, {
+        name: "captcha-required",
+        email: "captcha-required@example.com",
+        password: "SecurePassword123!",
+      });
+
+      expect(res.status).toBe(400);
+      expect(await res.text()).toContain("Captcha is required");
+      expect(emailService.mailer.sentEmails).toHaveLength(0);
+    });
+
+    test("verifies captcha when turnstile is enabled", async ({
+      dependencies,
+    }) => {
+      const { config, db, emailService } = dependencies;
+      const app = appFactory(
+        {
+          ...config,
+          TURNSTILE_SECRET_KEY: "turnstile-secret",
+        },
+        db,
+        emailService,
+      );
+
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(JSON.stringify({ success: true }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }),
+        ),
+      );
+
+      try {
+        const res = await signup(app, {
+          name: "captcha-success",
+          email: "captcha-success@example.com",
+          password: "SecurePassword123!",
+          captchaToken: "captcha-token",
+        });
+
+        expect(res.status).toBe(201);
+        expect(globalThis.fetch).toHaveBeenCalledWith(
+          "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+          expect.objectContaining({
+            method: "POST",
+            body: expect.any(URLSearchParams),
+          }),
+        );
+        expect(emailService.mailer.sentEmails).toHaveLength(1);
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+
+    test("rejects invalid captcha when turnstile is enabled", async ({
+      dependencies,
+    }) => {
+      const { config, db, emailService } = dependencies;
+      const app = appFactory(
+        {
+          ...config,
+          TURNSTILE_SECRET_KEY: "turnstile-secret",
+        },
+        db,
+        emailService,
+      );
+
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(
+            JSON.stringify({
+              success: false,
+              "error-codes": ["invalid-input-response"],
+            }),
+            {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            },
+          ),
+        ),
+      );
+
+      try {
+        const res = await signup(app, {
+          name: "captcha-fail",
+          email: "captcha-fail@example.com",
+          password: "SecurePassword123!",
+          captchaToken: "captcha-token",
+        });
+
+        expect(res.status).toBe(400);
+        expect(await res.text()).toContain("Captcha verification failed");
+        expect(emailService.mailer.sentEmails).toHaveLength(0);
+      } finally {
+        vi.unstubAllGlobals();
+      }
     });
 
     test("returns a clear error for duplicate usernames", async ({
@@ -1875,6 +1990,7 @@ interface SignupParams {
   name: string;
   email: string;
   password: string;
+  captchaToken?: string;
 }
 
 function signup(app: Hono<HonoEnv>, params: SignupParams) {

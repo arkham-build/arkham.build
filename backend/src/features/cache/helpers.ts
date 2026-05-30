@@ -4,9 +4,9 @@ import type {
   ApiRestrictions,
 } from "@arkham-build/shared";
 import type { Selectable } from "kysely";
-import type { Database } from "../db/db.ts";
-import type { Card } from "../db/schema.types.ts";
-import type { WithItemTranslations } from "../tasks/ingest/lib/json-data.types.ts";
+import type { Database } from "../../db/db.ts";
+import type { Card } from "../../db/schema.types.ts";
+import type { WithItemTranslations } from "../../tasks/ingest/lib/json-data.types.ts";
 
 export function getVersionForLocale(db: Database, locale: string) {
   return db

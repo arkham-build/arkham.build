@@ -14,6 +14,7 @@ export const SignupRequestSchema = z.object({
     ),
   email: z.email().max(255),
   password: z.string().min(8),
+  captchaToken: z.string().min(1).max(2048).optional(),
 });
 
 // at least 8 characters

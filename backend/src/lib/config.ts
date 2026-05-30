@@ -54,7 +54,10 @@ export const configSchema = z.object({
     .int()
     .positive()
     .default(1),
-  // Mailer
+  TURNSTILE_SECRET_KEY: z
+    .string()
+    .optional()
+    .transform((value) => value?.trim() || undefined),
   SMTP_HOST: z.string(),
   SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
   SMTP_SECURE: z

@@ -37,6 +37,7 @@ import {
   updateAccountIdentityVerified,
 } from "../queries.ts";
 import { sessionAuth } from "../session-auth-middleware.ts";
+import { assertTurnstileToken } from "../turnstile.ts";
 
 const routes = new Hono<HonoEnv>();
 
@@ -44,7 +45,9 @@ routes.post("/signup", zodValidator("json", SignupRequestSchema), async (c) => {
   const db = c.get("db");
   const config = c.get("config");
   const emailService = c.get("emailService");
-  const { name, email, password } = c.req.valid("json");
+  const { name, email, password, captchaToken } = c.req.valid("json");
+
+  await assertTurnstileToken(c, captchaToken);
 
   if (await accountNameExists(db, name)) {
     throw new HTTPException(400, {

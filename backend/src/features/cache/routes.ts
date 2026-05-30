@@ -1,17 +1,17 @@
 import { type Context, Hono } from "hono";
 import { compress } from "hono/compress";
-import type { Database } from "../db/db.ts";
+import type { Database } from "../../db/db.ts";
 import {
   applyCacheHeaders,
   type CacheResource,
   requestHasMatchingEtag,
-} from "../lib/cache-headers.ts";
-import type { HonoEnv } from "../lib/hono-env.ts";
+} from "../../lib/cache-headers.ts";
+import type { HonoEnv } from "../../lib/hono-env.ts";
 import {
   applyTranslations,
   formatAsLegacyApiCard,
   getVersionForLocale,
-} from "./cache.helpers.ts";
+} from "./helpers.ts";
 
 const router = new Hono<HonoEnv>();
 

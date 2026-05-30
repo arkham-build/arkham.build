@@ -13,6 +13,7 @@ VITE_CARD_IMAGE_URL = "https://assets.arkham.build"
 VITE_PAGE_NAME = "arkham.build"
 VITE_API_URL = "https://api-v2.arkham.build"
 VITE_SHOW_PREVIEW_BANNER="false"
+VITE_TURNSTILE_SITE_KEY = ""
 
 [env.production.vars]
 NODE_VERSION = "24"
@@ -22,3 +23,4 @@ VITE_CARD_IMAGE_URL = "https://assets.arkham.build"
 VITE_PAGE_NAME = "arkham.build"
 VITE_API_URL = "https://api-v2.arkham.build"
 VITE_SHOW_PREVIEW_BANNER="true"
+VITE_TURNSTILE_SITE_KEY = "0x4AAAAAADZMrOB22muKPEvQ"

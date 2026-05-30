@@ -55,6 +55,7 @@
       "username_validation": "Letters, numbers, underscores, and hyphens only",
       "errors": {
         "account_not_verified": "Your account has not been verified yet. Please <verifyLink>verify</verifyLink> your email before logging in.",
+        "captcha_load_failed": "Failed to load Turnstile captcha.",
         "forgot_password_failed": "Failed to initiate password reset: {{error}}",
         "invalid_credentials": "Invalid email or password",
         "login_failed": "Login failed: {{error}}",
@@ -89,6 +90,7 @@
       },
       "signup": {
         "title": "Sign up",
+        "verifying": "Verifying...",
         "has_account": "Already have an account?",
         "success": "Signed up successfully! Please check your email to verify your account.",
         "with_arkhamdb": "Sign up with ArkhamDB",

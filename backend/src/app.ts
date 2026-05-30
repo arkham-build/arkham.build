@@ -7,6 +7,7 @@ import arkhamDbDecklistsRouter from "./features/arkhamdb-decklists/routes.ts";
 import authRouter, {
   arkhamdbOAuthRoutes,
 } from "./features/auth/routes/index.ts";
+import cacheRouter from "./features/cache/routes.ts";
 import decksRouter from "./features/decks/routes.ts";
 import fanMadeProjectInfoRouter from "./features/fan-made-content/routes.ts";
 import foldersRouter from "./features/folders/routes.ts";
@@ -21,7 +22,6 @@ import type { EmailService } from "./lib/email/email-service.ts";
 import { errorHandler } from "./lib/errors.ts";
 import type { HonoEnv } from "./lib/hono-env.ts";
 import { logger, requestLogger } from "./lib/logger.ts";
-import cacheRouter from "./routes/cache.ts";
 
 export function appFactory(
   config: Config,

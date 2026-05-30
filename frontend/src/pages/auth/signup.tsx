@@ -2,7 +2,7 @@ import {
   PATTERN_VALID_PASSWORD,
   PATTERN_VALID_USERNAME,
 } from "@arkham-build/shared";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
 import { createPasswordMatchPattern, errorMapper } from "./helpers";
 import { OAuthSeparator } from "./oauth-separator";
+import { Turnstile } from "./turnstile";
 
 function Signup() {
   const { t } = useTranslation();
@@ -22,10 +23,22 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
+  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+
+  const onTurnstileChange = useCallback((token: string | null) => {
+    setCaptchaToken(token);
+  }, []);
 
   const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();
-    await signupMutation.mutateAsync({ name, email, password });
+    await signupMutation.mutateAsync({
+      name,
+      email,
+      password,
+      captchaToken: captchaToken ?? undefined,
+    });
   };
 
   if (signupMutation.isSuccess) {
@@ -121,13 +134,22 @@ function Signup() {
           />
         </Field>
 
+        {turnstileSiteKey && (
+          <Turnstile onChange={onTurnstileChange} siteKey={turnstileSiteKey} />
+        )}
+
         <Button
-          disabled={signupMutation.isPending}
+          disabled={
+            signupMutation.isPending ||
+            (Boolean(turnstileSiteKey) && !captchaToken)
+          }
           type="submit"
           variant="primary"
           size="full"
         >
-          {t("auth.signup.title")}
+          {turnstileSiteKey && !captchaToken
+            ? t("auth.signup.verifying")
+            : t("auth.signup.title")}
         </Button>
 
         <OAuthSeparator />
