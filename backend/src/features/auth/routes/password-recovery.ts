@@ -5,23 +5,25 @@ import {
 import { Hono } from "hono";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { zodValidator } from "../../../lib/validation.ts";
-import { generateRandomToken, hashPassword, hashToken } from "../crypto.ts";
-import { passwordResetEmailTemplate } from "../email-templates.ts";
 import {
   assertVerificationTokenCooldown,
   isEmail,
   throwInvalidResetTokenError,
-} from "../helpers.ts";
+} from "../assertions.ts";
+import { generateRandomToken, hashPassword, hashToken } from "../crypto.ts";
+import { passwordResetEmailTemplate } from "../email-templates.ts";
 import {
-  consumeVerificationToken,
-  deleteSessionsByAccountId,
   getAccountIdentity,
   getAccountIdentityByEmail,
   getAccountIdentityByUsername,
+  updateAccountIdentityPasswordHash,
+} from "../queries/identities.ts";
+import { deleteSessionsByAccountId } from "../queries/sessions.ts";
+import {
+  consumeVerificationToken,
   getVerificationTokenByHash,
   replaceVerificationToken,
-  updateAccountIdentityPasswordHash,
-} from "../queries.ts";
+} from "../queries/verification-tokens.ts";
 
 const routes = new Hono<HonoEnv>();
 

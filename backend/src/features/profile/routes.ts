@@ -4,7 +4,7 @@ import { HTTPException } from "hono/http-exception";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
 import { sessionAuth } from "../auth/session-auth-middleware.ts";
-import { getAccountByUsername, updateProfileUsername } from "./queries.ts";
+import { findAccountByUsername, updateAccountUsername } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
 
@@ -18,7 +18,7 @@ routes.patch(
     const { username } = c.req.valid("json");
 
     await db.transaction().execute(async (tx) => {
-      const existingAccount = await getAccountByUsername(tx, username);
+      const existingAccount = await findAccountByUsername(tx, username);
 
       if (existingAccount && existingAccount.id !== account.id) {
         throw new HTTPException(400, {
@@ -26,7 +26,7 @@ routes.patch(
         });
       }
 
-      await updateProfileUsername(tx, account.id, username);
+      await updateAccountUsername(tx, account.id, username);
     });
 
     return new Response(null, { status: 200 });

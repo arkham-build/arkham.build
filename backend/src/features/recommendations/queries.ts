@@ -209,7 +209,10 @@ export async function getRecommendationsByPercentileRank(
   return formatRecommendations(inclusions[0]?.decks_analyzed, recommendations);
 }
 
-export async function resolveCanonicalInvestigator(db: Database, code: string) {
+export async function findCanonicalInvestigatorCode(
+  db: Database,
+  code: string,
+) {
   const [frontCode, backCode] = code.split("-");
 
   if (!frontCode || !backCode) {

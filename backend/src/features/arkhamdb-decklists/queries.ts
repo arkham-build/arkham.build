@@ -17,7 +17,7 @@ import {
   requiredSlotsCond,
 } from "../../lib/decklist-query-helpers.ts";
 
-export async function getDecklistMeta(
+export async function findDecklistMetaById(
   db: Database,
   id: number,
 ): Promise<DecklistMetaResponse | undefined> {
@@ -42,7 +42,10 @@ export async function getDecklistMeta(
   return DecklistMetaResponseSchema.parse(res);
 }
 
-export async function search(db: Database, search: DecklistSearchRequest) {
+export async function searchDecklists(
+  db: Database,
+  search: DecklistSearchRequest,
+) {
   const conditions = (
     eb: ExpressionBuilder<
       DB & {

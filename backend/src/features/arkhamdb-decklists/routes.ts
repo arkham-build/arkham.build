@@ -7,7 +7,7 @@ import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { statusText } from "../../lib/http-status.ts";
-import { getDecklistMeta, search } from "./queries.ts";
+import { findDecklistMetaById, searchDecklists } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
 
@@ -19,18 +19,18 @@ routes.use("*", async (c, next) => {
 });
 
 routes.get("/search", async (c) => {
-  const searchReq = decodeSearch<DecklistSearchRequest>(
+  const searchRequest = decodeSearch<DecklistSearchRequest>(
     DecklistSearchRequestSchema,
     c.req.queries(),
   );
 
-  const res = await search(c.get("db"), searchReq);
-  return c.json(res);
+  const response = await searchDecklists(c.get("db"), searchRequest);
+  return c.json(response);
 });
 
 routes.get("/:id/meta", async (c) => {
   const id = c.req.param("id");
-  const meta = await getDecklistMeta(c.get("db"), Number(id));
+  const meta = await findDecklistMetaById(c.get("db"), Number(id));
 
   if (!meta) {
     throw new HTTPException(404, {

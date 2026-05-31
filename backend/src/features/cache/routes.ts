@@ -7,71 +7,66 @@ import {
   requestHasMatchingEtag,
 } from "../../lib/cache-headers.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
-import {
-  applyTranslations,
-  formatAsLegacyApiCard,
-  getVersionForLocale,
-} from "./helpers.ts";
+import { applyLocaleTranslations, mapCardRowToV1Card } from "./mapping.ts";
+import { getDataVersionByLocale } from "./queries.ts";
 
-const router = new Hono<HonoEnv>();
+const routes = new Hono<HonoEnv>();
 
-router.use("*", compress({ threshold: 0 }));
-router.use("*", async (_c, next) => {
+routes.use("*", compress({ threshold: 0 }));
+routes.use("*", async (c, next) => {
   await next();
-  appendVaryHeader(_c.res.headers, "Accept-Encoding");
+  appendVaryHeader(c.res.headers, "Accept-Encoding");
 });
 
-router.get("/cards", (c) =>
+routes.get("/cards", (c) =>
   cachedResponse(c, {
     locale: "en",
     resource: "cards",
-    buildResponse: cardsResponse,
+    buildResponse: buildCardsResponse,
   }),
 );
 
-router.get("/cards/:locale", (c) =>
+routes.get("/cards/:locale", (c) =>
   cachedResponse(c, {
     locale: c.req.param("locale"),
     resource: "cards",
-    buildResponse: cardsResponse,
+    buildResponse: buildCardsResponse,
   }),
 );
 
-router.get("/metadata", (c) =>
+routes.get("/metadata", (c) =>
   cachedResponse(c, {
     locale: "en",
     resource: "metadata",
-    buildResponse: metadataResponse,
+    buildResponse: buildMetadataResponse,
   }),
 );
 
-router.get("/metadata/:locale", (c) =>
+routes.get("/metadata/:locale", (c) =>
   cachedResponse(c, {
     locale: c.req.param("locale"),
     resource: "metadata",
-    buildResponse: metadataResponse,
+    buildResponse: buildMetadataResponse,
   }),
 );
 
-router.get("/version", (c) =>
+routes.get("/version", (c) =>
   cachedResponse(c, {
     locale: "en",
     resource: "version",
-    buildResponse: versionResponse,
+    buildResponse: buildVersionResponse,
   }),
 );
 
-router.get("/version/:locale", (c) =>
+routes.get("/version/:locale", (c) =>
   cachedResponse(c, {
     locale: c.req.param("locale"),
     resource: "version",
-    buildResponse: versionResponse,
+    buildResponse: buildVersionResponse,
   }),
 );
 
-export default router;
-
-type DataVersion = Awaited<ReturnType<typeof getVersionForLocale>>;
+type DataVersion = Awaited<ReturnType<typeof getDataVersionByLocale>>;
 
 type CachedResponseOptions<T> = {
   locale: string;
@@ -88,7 +83,7 @@ async function cachedResponse<T>(
   options: CachedResponseOptions<T>,
 ) {
   const db = c.get("db");
-  const version = await getVersionForLocale(db, options.locale);
+  const version = await getDataVersionByLocale(db, options.locale);
   const etag = `${options.resource}:${options.locale}:${version.cards_updated_at.valueOf()}:${version.translation_updated_at.valueOf()}`;
 
   applyCacheHeaders(c, { etag, resource: options.resource });
@@ -98,17 +93,17 @@ async function cachedResponse<T>(
     : c.json(await options.buildResponse(db, options.locale, version));
 }
 
-async function cardsResponse(db: Database, locale: string) {
+async function buildCardsResponse(db: Database, locale: string) {
   const cards = await db.selectFrom("card").selectAll().execute();
 
-  const all_card = cards.map((c) =>
-    applyTranslations(formatAsLegacyApiCard(c), locale),
+  const all_card = cards.map((card) =>
+    applyLocaleTranslations(mapCardRowToV1Card(card), locale),
   );
 
   return { data: { all_card } };
 }
 
-async function metadataResponse(db: Database, locale: string) {
+async function buildMetadataResponse(db: Database, locale: string) {
   const [packs, cycles, encounterSets, tabooSets] = await Promise.all([
     db.selectFrom("pack").selectAll().execute(),
     db.selectFrom("cycle").selectAll().execute(),
@@ -118,22 +113,26 @@ async function metadataResponse(db: Database, locale: string) {
 
   return {
     data: {
-      pack: packs.map((p) => applyTranslations(p, locale)),
-      cycle: cycles.map((c) => applyTranslations(c, locale)),
-      card_encounter_set: encounterSets.map((es) =>
-        applyTranslations(es, locale),
+      pack: packs.map((pack) => applyLocaleTranslations(pack, locale)),
+      cycle: cycles.map((cycle) => applyLocaleTranslations(cycle, locale)),
+      card_encounter_set: encounterSets.map((encounterSet) =>
+        applyLocaleTranslations(encounterSet, locale),
       ),
-      taboo_set: tabooSets.map((t) => ({
-        id: t.id,
-        card_count: t.card_count,
-        name: t.name,
-        date: t.date_start,
+      taboo_set: tabooSets.map((tabooSet) => ({
+        id: tabooSet.id,
+        card_count: tabooSet.card_count,
+        name: tabooSet.name,
+        date: tabooSet.date_start,
       })),
     },
   };
 }
 
-function versionResponse(_db: Database, _locale: string, version: DataVersion) {
+function buildVersionResponse(
+  _db: Database,
+  _locale: string,
+  version: DataVersion,
+) {
   return Promise.resolve({
     data: {
       all_card_updated: [version],
@@ -154,3 +153,5 @@ function appendVaryHeader(headers: Headers, value: string) {
     headers.set("Vary", `${current}, ${value}`);
   }
 }
+
+export default routes;

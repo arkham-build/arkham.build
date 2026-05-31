@@ -3,7 +3,7 @@ import { type Context, Hono } from "hono";
 import { bearerAuth } from "hono/bearer-auth";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
-import { getAppDataVersions, upsertFanMadeProjectInfo } from "./queries.ts";
+import { findAppDataVersions, upsertFanMadeProjectInfo } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
 
@@ -15,7 +15,7 @@ const adminKeyMiddleware = bearerAuth({
 routes.get("/up", (c) => c.text("ok"));
 
 routes.get("/version", async (c) => {
-  const dataVersions = await getAppDataVersions(c.get("db"));
+  const dataVersions = await findAppDataVersions(c.get("db"));
   if (!dataVersions) throw new Error("could not infer data versions");
   return c.json(dataVersions);
 });

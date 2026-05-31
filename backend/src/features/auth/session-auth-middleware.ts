@@ -2,7 +2,8 @@ import type { MiddlewareHandler } from "hono";
 import { getCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
 import type { SessionAuthHonoEnv } from "../../lib/hono-env.ts";
-import { getAccount, getSession, updateSessionActivity } from "./queries.ts";
+import { getAccount } from "./queries/accounts.ts";
+import { getSession, updateSessionActivity } from "./queries/sessions.ts";
 
 export function sessionAuth(): MiddlewareHandler<SessionAuthHonoEnv> {
   return async (c, next) => {

@@ -1,0 +1,120 @@
+import type { Database } from "../../../db/db.ts";
+import type { Config } from "../../../lib/config.ts";
+import type { OAuthAccessToken } from "../../../lib/oauth.ts";
+import { getAccountIdentityByProviderUserId } from "./identities.ts";
+import { upsertOAuthToken } from "./oauth-tokens.ts";
+import { createSession } from "./sessions.ts";
+
+export interface CreateAccountParams {
+  name: string;
+  email: string;
+  passwordHash: string;
+}
+
+export interface CreateAccountFromOAuthParams {
+  accessToken: OAuthAccessToken;
+  config: Config;
+  provider: string;
+  providerUserId: string;
+}
+
+export async function createAccount(db: Database, params: CreateAccountParams) {
+  const account = await db
+    .insertInto("account")
+    .values({ name: params.name })
+    .returningAll()
+    .executeTakeFirstOrThrow();
+
+  const accountIdentity = await db
+    .insertInto("account_identity")
+    .values({
+      account_id: account.id,
+      provider: "email",
+      provider_user_id: params.email,
+      email: params.email,
+      password_hash: params.passwordHash,
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
+
+  return { account, accountIdentity };
+}
+
+export async function upsertAccountFromOAuth(
+  db: Database,
+  params: CreateAccountFromOAuthParams,
+) {
+  return await db.transaction().execute(async (tx) => {
+    let accountIdentity = await getAccountIdentityByProviderUserId(
+      tx,
+      params.provider,
+      params.providerUserId,
+    );
+
+    const existing = !!accountIdentity;
+
+    if (!accountIdentity) {
+      const account = await tx
+        .insertInto("account")
+        .values({ name: `provider_${params.providerUserId}` })
+        .returningAll()
+        .executeTakeFirstOrThrow();
+
+      accountIdentity = await tx
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: params.provider,
+          provider_user_id: params.providerUserId,
+          verified_at: new Date(),
+        })
+        .returningAll()
+        .executeTakeFirstOrThrow();
+    }
+
+    await upsertOAuthToken(tx, accountIdentity.id, params.accessToken);
+
+    const session = await createSession(
+      tx,
+      accountIdentity.account_id,
+      params.config.SESSION_EXPIRY_HOURS,
+    );
+
+    return { session, existing };
+  });
+}
+
+export async function getAccount(db: Database, id: string) {
+  return await db
+    .selectFrom("account")
+    .selectAll()
+    .where("id", "=", id)
+    .executeTakeFirst();
+}
+
+export async function accountNameExists(
+  db: Database,
+  name: string,
+  excludeAccountId?: string,
+) {
+  let query = db.selectFrom("account").select(["id"]).where("name", "=", name);
+
+  if (excludeAccountId) {
+    query = query.where("id", "!=", excludeAccountId);
+  }
+
+  return (await query.executeTakeFirst()) != null;
+}
+
+export async function updateAccountName(
+  db: Database,
+  accountId: string,
+  name: string,
+) {
+  const now = new Date();
+  return await db
+    .updateTable("account")
+    .set({ name, updated_at: now })
+    .where("id", "=", accountId)
+    .executeTakeFirst();
+}

@@ -17,18 +17,19 @@ const SealedDeckApiResponseSchema = z.object({
   ),
 });
 
+export type SealedDeckApiResponse = z.infer<typeof SealedDeckApiResponseSchema>;
+
 export async function fetchSealedDeck(id: string) {
-  const res = await fetch(`https://www.arkhamsealed.com/cardpool/${id}`, {
+  const response = await fetch(`https://www.arkhamsealed.com/cardpool/${id}`, {
     headers: {
       Accept: "application/json",
       "User-Agent": "arkham.build",
     },
   });
 
-  if (!res.ok) {
+  if (!response.ok) {
     throw new HTTPException(404, { message: "Sealed deck not found." });
   }
 
-  const data = SealedDeckApiResponseSchema.parse(await res.json());
-  return data;
+  return SealedDeckApiResponseSchema.parse(await response.json());
 }

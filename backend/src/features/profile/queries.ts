@@ -1,6 +1,6 @@
 import type { Database } from "../../db/db.ts";
 
-export async function getAccountByUsername(db: Database, username: string) {
+export async function findAccountByUsername(db: Database, username: string) {
   return await db
     .selectFrom("account")
     .select(["id"])
@@ -8,7 +8,7 @@ export async function getAccountByUsername(db: Database, username: string) {
     .executeTakeFirst();
 }
 
-export async function updateProfileUsername(
+export async function updateAccountUsername(
   db: Database,
   accountId: string,
   username: string,

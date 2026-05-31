@@ -5,7 +5,7 @@ import { appFactory } from "../app.ts";
 import { type Database, getDatabase } from "../db/db.ts";
 import type { DB } from "../db/schema.types.ts";
 import { hashPassword } from "../features/auth/crypto.ts";
-import { createSession } from "../features/auth/queries.ts";
+import { createSession } from "../features/auth/queries/sessions.ts";
 import { type Config, configFromEnv } from "../lib/config.ts";
 import { createEmailService } from "../lib/email/email-service.ts";
 import { MockMailer } from "./mocks/email.ts";

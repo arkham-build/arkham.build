@@ -1,0 +1,43 @@
+import type { Database } from "../../db/db.ts";
+
+export async function listAccountDecksForManifest(
+  db: Database,
+  accountId: string,
+) {
+  return await db
+    .selectFrom("deck")
+    .selectAll()
+    .where("account_id", "=", accountId)
+    .orderBy("id")
+    .execute();
+}
+
+export async function findAccountDeckById(
+  db: Database,
+  accountId: string,
+  id: string,
+) {
+  return await db
+    .selectFrom("deck")
+    .selectAll()
+    .where("account_id", "=", accountId)
+    .where("id", "=", id)
+    .executeTakeFirst();
+}
+
+export async function listAccountDecksByIds(
+  db: Database,
+  accountId: string,
+  ids: string[],
+) {
+  if (!ids.length) {
+    return [];
+  }
+
+  return await db
+    .selectFrom("deck")
+    .selectAll()
+    .where("account_id", "=", accountId)
+    .where("id", "in", ids)
+    .execute();
+}

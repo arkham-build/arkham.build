@@ -1,25 +1,24 @@
 import { randomUUID } from "node:crypto";
-import {
-  SettingsRequestSchema,
-  SettingsResponseSchema,
-} from "@arkham-build/shared";
+import { SettingsRequestSchema } from "@arkham-build/shared";
 import { type Context, Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import type { Selectable } from "kysely";
-import type { Database } from "../../db/db.ts";
-import type { AccountSettings } from "../../db/schema.types.ts";
 import type { HonoEnv, SessionAuthHonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
 import { sessionAuth } from "../auth/session-auth-middleware.ts";
+import { mapAccountSettingsToResponse } from "./mapping.ts";
+import {
+  findAccountSettingsByAccountId,
+  upsertAccountSettings,
+} from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
 
 routes.get("/", sessionAuth(), async (c) => {
-  const accountSettings = await getAccountSettings(
+  const accountSettings = await findAccountSettingsByAccountId(
     c.get("db"),
     getAccountId(c),
   );
-  return c.json(serializeSettings(accountSettings));
+  return c.json(mapAccountSettingsToResponse(accountSettings));
 });
 
 routes.put(
@@ -31,62 +30,31 @@ routes.put(
     const accountId = getAccountId(c);
     const payload = c.req.valid("json");
 
-    const current = await getAccountSettings(db, accountId);
+    const current = await findAccountSettingsByAccountId(db, accountId);
     const currentRevision = current?.revision ?? null;
 
     if (currentRevision !== payload.expectedRevision) {
       throw new HTTPException(409, {
         message: "Stored setting revision does not match the expected revision",
-        cause: serializeSettings(current),
+        cause: mapAccountSettingsToResponse(current),
       });
     }
 
     const revision = randomUUID();
+    const accountSettings = await upsertAccountSettings(
+      db,
+      accountId,
+      revision,
+      payload.collection,
+      payload.settings,
+    );
 
-    const accountSettings = await db
-      .insertInto("account_settings")
-      .values({
-        account_id: accountId,
-        collection: payload.collection,
-        revision,
-        settings: payload.settings,
-      })
-      .onConflict((oc) =>
-        oc.column("account_id").doUpdateSet({
-          collection: payload.collection,
-          revision,
-          settings: payload.settings,
-        }),
-      )
-      .returning(["settings", "collection", "revision"])
-      .executeTakeFirstOrThrow();
-
-    return c.json(serializeSettings(accountSettings));
+    return c.json(mapAccountSettingsToResponse(accountSettings));
   },
 );
-
-export default routes;
 
 function getAccountId(c: Context<SessionAuthHonoEnv>) {
   return c.get("account").id;
 }
 
-async function getAccountSettings(db: Database, accountId: string) {
-  return await db
-    .selectFrom("account_settings")
-    .select(["settings", "collection", "revision"])
-    .where("account_id", "=", accountId)
-    .executeTakeFirst();
-}
-
-function serializeSettings(
-  accountSettings:
-    | Pick<Selectable<AccountSettings>, "collection" | "revision" | "settings">
-    | undefined,
-) {
-  return SettingsResponseSchema.parse({
-    collection: accountSettings?.collection ?? null,
-    revision: accountSettings?.revision ?? null,
-    settings: accountSettings?.settings ?? null,
-  });
-}
+export default routes;

@@ -11,31 +11,34 @@ import { HTTPException } from "hono/http-exception";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { zodValidator } from "../../../lib/validation.ts";
 import {
+  assertEmailAvailable,
+  assertVerificationTokenCooldown,
+  isUniqueViolation,
+} from "../assertions.ts";
+import {
   generateRandomToken,
   hashPassword,
   hashToken,
   verifyPassword,
 } from "../crypto.ts";
 import { verificationEmailTemplate } from "../email-templates.ts";
-import {
-  assertEmailAvailable,
-  assertVerificationTokenCooldown,
-  isUniqueViolation,
-  setSessionCookie,
-} from "../helpers.ts";
+import { setSessionCookie } from "../oauth/session-cookie.ts";
 import {
   accountNameExists,
-  activatePendingAccountIdentityEmail,
-  consumeVerificationToken,
   createAccount,
-  createSession,
-  deleteSession,
   getAccount,
+} from "../queries/accounts.ts";
+import {
+  activatePendingAccountIdentityEmail,
   getAccountIdentity,
   getAccountIdentityByEmail,
-  replaceVerificationToken,
   updateAccountIdentityVerified,
-} from "../queries.ts";
+} from "../queries/identities.ts";
+import { createSession, deleteSession } from "../queries/sessions.ts";
+import {
+  consumeVerificationToken,
+  replaceVerificationToken,
+} from "../queries/verification-tokens.ts";
 import { sessionAuth } from "../session-auth-middleware.ts";
 import { assertTurnstileToken } from "../turnstile.ts";
 

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { type Deck, DeckSchema, SlotsSchema } from "@arkham-build/shared";
 import type { Insertable, Selectable } from "kysely";
 import type { Deck as DbDeck, Json } from "../../db/schema.types.ts";
@@ -11,7 +12,7 @@ type DeckWriteDto = Omit<
   "date_creation" | "date_update" | "id" | "source" | "user_id" | "version"
 >;
 
-export function deckRowToDto(deck: DeckRow): Deck {
+export function mapDeckRowToDto(deck: DeckRow): Deck {
   return DeckSchema.parse({
     date_creation: deck.created_at.toISOString(),
     date_update: deck.updated_at.toISOString(),
@@ -39,7 +40,7 @@ export function deckRowToDto(deck: DeckRow): Deck {
   });
 }
 
-export function deckDtoToRow(
+export function mapDeckWriteDtoToInsert(
   dto: DeckWriteDto,
 ): Omit<
   DeckInsert,
@@ -71,8 +72,20 @@ export function deckDtoToRow(
   };
 }
 
-export function getProviderType(source: string | null | undefined): string {
-  return source ?? ACCOUNT_PROVIDER_TYPE;
+export function createDeckManifestVersion(decks: DeckRow[]) {
+  const hash = createHash("sha256");
+
+  const items = decks.map((deck) => ({
+    id: deck.id,
+    updatedAt: deck.updated_at.toISOString(),
+    version: deck.version ?? "",
+  }));
+
+  for (const item of items) {
+    hash.update(`${item.id}:${item.version}:${item.updatedAt}`);
+  }
+
+  return hash.digest("hex");
 }
 
 function stringifyJson(value: DeckRow["meta"]): string {

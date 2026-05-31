@@ -1,22 +1,22 @@
 import type { Selectable } from "kysely";
-import type { Database } from "../db/db.ts";
-import type { OauthToken, Session } from "../db/schema.types.ts";
-import type { AccessToken } from "./arkhamdb/types.ts";
+import type { Database } from "../../../db/db.ts";
+import type { OauthToken } from "../../../db/schema.types.ts";
+import type { OAuthAccessToken } from "../../../lib/oauth.ts";
 
-export function getOAuthTokenForSession(
+export function findOAuthTokenByAccountIdAndProvider(
   db: Database,
-  session: Selectable<Session>,
+  accountId: string,
   provider: string,
 ): Promise<Selectable<OauthToken> | undefined> {
   return db
     .selectFrom("account_identity")
     .innerJoin(
       "oauth_token",
-      "account_identity.account_id",
+      "account_identity.id",
       "oauth_token.account_identity_id",
     )
     .selectAll("oauth_token")
-    .where("account_identity.account_id", "=", session.account_id)
+    .where("account_identity.account_id", "=", accountId)
     .where("account_identity.provider", "=", provider)
     .executeTakeFirst();
 }
@@ -24,7 +24,7 @@ export function getOAuthTokenForSession(
 export function upsertOAuthToken(
   db: Database,
   accountIdentityId: string,
-  accessToken: AccessToken,
+  accessToken: OAuthAccessToken,
 ) {
   const expires = Date.now() + accessToken.expires_in * 1000;
 

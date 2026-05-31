@@ -1,7 +1,7 @@
 import type { FanMadeProjectInfo } from "@arkham-build/shared";
 import type { Database } from "../../db/db.ts";
 
-export async function getAppDataVersions(db: Database) {
+export async function findAppDataVersions(db: Database) {
   const [rankingCache, dataVersion] = await Promise.all([
     db
       .selectFrom("arkhamdb_ranking_cache")

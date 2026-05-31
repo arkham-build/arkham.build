@@ -2,29 +2,25 @@ import assert from "node:assert";
 import { CompleteProfileRequestSchema } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { arkhamdbOAuthProvider } from "../../../lib/arkhamdb/oauth-provider.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
-import { isEmpty } from "../../../lib/is-empty.ts";
+import { OAuthFlowError } from "../../../lib/oauth.ts";
 import { zodValidator } from "../../../lib/validation.ts";
 import {
-  authorize,
-  exchangeAuthCodeForToken,
-  fetchUserDecksForOAuth,
-  getOAuthContext,
-  OAuthError,
-  validateOAuthState,
-} from "../arkhamdb-oauth.ts";
-import {
-  getOAuthErrorCode,
+  beginOAuthAuthorization,
   redirectToOAuthError,
-  setSessionCookie,
-} from "../helpers.ts";
+} from "../oauth/flow.ts";
+import { setSessionCookie } from "../oauth/session-cookie.ts";
+import { getOAuthContext, validateOAuthState } from "../oauth/state.ts";
 import {
   accountNameExists,
-  connectOAuthIdentityToAccount,
-  getAccountIdentityByProviderUserId,
   updateAccountName,
   upsertAccountFromOAuth,
-} from "../queries.ts";
+} from "../queries/accounts.ts";
+import {
+  connectOAuthIdentityToAccount,
+  getAccountIdentityByProviderUserId,
+} from "../queries/identities.ts";
 import { sessionAuth } from "../session-auth-middleware.ts";
 
 const routes = new Hono<HonoEnv>();
@@ -55,28 +51,28 @@ routes.post(
 export const arkhamdbOAuthRoutes = new Hono<HonoEnv>();
 
 arkhamdbOAuthRoutes.get("/", (c) =>
-  authorize(c, {
+  beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
     intent: "login",
     returnTo: "/auth/login",
   }),
 );
 
 arkhamdbOAuthRoutes.get("/login", (c) =>
-  authorize(c, {
+  beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
     intent: "login",
     returnTo: "/auth/login",
   }),
 );
 
 arkhamdbOAuthRoutes.get("/signup", (c) =>
-  authorize(c, {
+  beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
     intent: "signup",
     returnTo: "/auth/signup",
   }),
 );
 
 arkhamdbOAuthRoutes.get("/connect", sessionAuth(), (c) =>
-  authorize(c, {
+  beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
     accountId: c.get("account").id,
     intent: "connect",
     returnTo: "/settings?tab=account",
@@ -93,23 +89,19 @@ arkhamdbOAuthRoutes.get("/callback", async (c) => {
 
   try {
     if (!code) {
-      throw new OAuthError("oauth_missing_code");
+      throw new OAuthFlowError("oauth_missing_code");
     }
 
-    const validatedOAuthContext = await validateOAuthState(c, state);
-    const accessToken = await exchangeAuthCodeForToken(c, code);
-    const decks = await fetchUserDecksForOAuth(c, accessToken.access_token);
-
-    if (isEmpty(decks)) {
-      throw new OAuthError("arkhamdb_no_decks");
-    }
-
-    const firstDeck = decks[0];
-    if (!firstDeck?.user_id) {
-      throw new OAuthError("arkhamdb_invalid_response");
-    }
-
-    const providerUserId = firstDeck.user_id.toString();
+    const validatedOAuthContext = await validateOAuthState(
+      c,
+      arkhamdbOAuthProvider,
+      state,
+    );
+    const accessToken = await arkhamdbOAuthProvider.exchangeCodeForToken(
+      c,
+      code,
+    );
+    const identity = await arkhamdbOAuthProvider.getIdentity(c, accessToken);
 
     if (validatedOAuthContext.intent === "connect") {
       assert(
@@ -119,22 +111,22 @@ arkhamdbOAuthRoutes.get("/callback", async (c) => {
 
       const existingIdentity = await getAccountIdentityByProviderUserId(
         db,
-        "arkhamdb",
-        providerUserId,
+        arkhamdbOAuthProvider.name,
+        identity.providerUserId,
       );
 
       if (
         existingIdentity &&
         existingIdentity.account_id !== validatedOAuthContext.accountId
       ) {
-        throw new OAuthError("identity_belongs_to_another_account");
+        throw new OAuthFlowError("identity_belongs_to_another_account");
       }
 
       await connectOAuthIdentityToAccount(db, {
         accountId: validatedOAuthContext.accountId,
         accessToken,
-        provider: "arkhamdb",
-        providerUserId,
+        provider: arkhamdbOAuthProvider.name,
+        providerUserId: identity.providerUserId,
       });
 
       return c.redirect(
@@ -145,8 +137,8 @@ arkhamdbOAuthRoutes.get("/callback", async (c) => {
     const { existing, session } = await upsertAccountFromOAuth(db, {
       accessToken,
       config,
-      provider: "arkhamdb",
-      providerUserId,
+      provider: arkhamdbOAuthProvider.name,
+      providerUserId: identity.providerUserId,
     });
 
     setSessionCookie(c, session.id);
@@ -155,7 +147,7 @@ arkhamdbOAuthRoutes.get("/callback", async (c) => {
   } catch (error) {
     const logger = c.get("logger");
     logger("warn", (error as Error).message);
-    return redirectToOAuthError(c, returnTo, getOAuthErrorCode(error));
+    return redirectToOAuthError(c, returnTo, error);
   }
 });
 

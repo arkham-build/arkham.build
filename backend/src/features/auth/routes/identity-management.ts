@@ -1,6 +1,5 @@
 import {
   CreateEmailIdentityRequestSchema,
-  SessionResponseSchema,
   UpdateCredentialsRequestSchema,
 } from "@arkham-build/shared";
 import { Hono } from "hono";
@@ -8,28 +7,31 @@ import { HTTPException } from "hono/http-exception";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { zodValidator } from "../../../lib/validation.ts";
 import {
+  assertEmailAvailable,
+  assertVerificationTokenCooldown,
+} from "../assertions.ts";
+import {
   generateRandomToken,
   hashPassword,
   hashToken,
   verifyPassword,
 } from "../crypto.ts";
 import { verificationEmailTemplate } from "../email-templates.ts";
-import {
-  assertEmailAvailable,
-  assertVerificationTokenCooldown,
-} from "../helpers.ts";
+import { mapAccountSessionToResponse } from "../mapping.ts";
 import {
   countUsableLoginIdentities,
   createEmailIdentity,
   deleteEmailIdentity,
-  deleteVerificationTokensByAccountIdentityIdAndEmail,
   disconnectOAuthIdentity,
   getAccountIdentityByAccountIdAndProvider,
-  getIdentitiesByAccountId,
-  replaceVerificationToken,
+  listAccountIdentitiesByAccountId,
   updateAccountIdentityPasswordHash,
   updateAccountIdentityPendingEmail,
-} from "../queries.ts";
+} from "../queries/identities.ts";
+import {
+  deleteVerificationTokensByAccountIdentityIdAndEmail,
+  replaceVerificationToken,
+} from "../queries/verification-tokens.ts";
 import { sessionAuth } from "../session-auth-middleware.ts";
 
 const routes = new Hono<HonoEnv>();
@@ -37,17 +39,9 @@ const routes = new Hono<HonoEnv>();
 routes.get("/me", sessionAuth(), async (c) => {
   const db = c.get("db");
   const account = c.get("account");
-  const identities = await getIdentitiesByAccountId(db, account.id);
+  const identities = await listAccountIdentitiesByAccountId(db, account.id);
 
-  return c.json(
-    SessionResponseSchema.parse({
-      account: {
-        id: account.id,
-        name: account.name,
-      },
-      identities,
-    }),
-  );
+  return c.json(mapAccountSessionToResponse(account, identities));
 });
 
 routes.post(

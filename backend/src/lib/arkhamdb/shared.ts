@@ -1,11 +1,11 @@
 import assert from "node:assert";
 import type { Context } from "hono";
-import { refreshToken } from "../../features/auth/arkhamdb-oauth.ts";
 import {
-  getOAuthTokenForSession,
+  findOAuthTokenByAccountIdAndProvider,
   upsertOAuthToken,
-} from "../common-queries.ts";
+} from "../../features/auth/queries/oauth-tokens.ts";
 import type { HonoEnv } from "../hono-env.ts";
+import { refreshAccessToken } from "./oauth-client.ts";
 import type {
   ArkhamDBApiError,
   OAuthErrorResponse,
@@ -128,9 +128,9 @@ export async function authenticatedRequest<T>(
   const session = ctx.get("session");
   assert(session, new ApiError("No session found in context", 401));
 
-  const oauthToken = await getOAuthTokenForSession(
+  const oauthToken = await findOAuthTokenByAccountIdAndProvider(
     ctx.var.db,
-    session,
+    session.account_id,
     "arkhamdb",
   );
   assert(oauthToken, new ApiError("No oauth token found for session", 401));
@@ -148,7 +148,6 @@ export async function authenticatedRequest<T>(
     return res;
   } catch (err) {
     if (err instanceof ApiError && err.status < 400) {
-      // await updateSessionCookie(ctx, session);
     }
 
     if (
@@ -157,7 +156,7 @@ export async function authenticatedRequest<T>(
       err.status === 401 &&
       retryCount > 0
     ) {
-      const token = await refreshToken(ctx, oauthToken.refresh_token);
+      const token = await refreshAccessToken(ctx, oauthToken.refresh_token);
       await upsertOAuthToken(ctx.var.db, oauthToken.account_identity_id, token);
       return authenticatedRequest<T>(ctx, path, options, retryCount - 1);
     }
