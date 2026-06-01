@@ -2,6 +2,7 @@ import type { MiddlewareHandler } from "hono";
 import { getCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
 import type { SessionAuthHonoEnv } from "../../lib/hono-env.ts";
+import { setSessionCookie } from "./oauth/session-cookie.ts";
 import { getAccount } from "./queries/accounts.ts";
 import { getSession, updateSessionActivity } from "./queries/sessions.ts";
 
@@ -34,5 +35,9 @@ export function sessionAuth(): MiddlewareHandler<SessionAuthHonoEnv> {
     c.set("account", account);
 
     await next();
+
+    if (!c.get("skipSessionCookieRefresh")) {
+      setSessionCookie(c, session.id);
+    }
   };
 }

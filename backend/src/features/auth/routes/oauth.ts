@@ -145,8 +145,6 @@ arkhamdbOAuthRoutes.get("/callback", async (c) => {
     const path = existing ? "/" : "/auth/signup/complete";
     return c.redirect(`${config.FRONTEND_URL}${path}`);
   } catch (error) {
-    const logger = c.get("logger");
-    logger("warn", (error as Error).message);
     return redirectToOAuthError(c, returnTo, error);
   }
 });

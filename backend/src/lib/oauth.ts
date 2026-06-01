@@ -1,12 +1,12 @@
+import {
+  OAUTH_FLOW_ERROR_CODES,
+  type OAuthFlowErrorCode,
+} from "@arkham-build/shared";
 import type { Context } from "hono";
+import type { OAuthAccessToken as ArkhamOAuthAccessToken } from "./arkhamdb/api-client/api-oauth.ts";
 
-export type OAuthAccessToken = {
-  access_token: string;
-  expires_in: number;
-  token_type: string;
-  scope: string | null;
-  refresh_token: string;
-};
+// use arkhamdb format as canonical
+export type OAuthAccessToken = ArkhamOAuthAccessToken;
 
 export type OAuthProviderIdentity = {
   providerUserId: string;
@@ -24,17 +24,26 @@ export type OAuthProvider = {
 };
 
 export class OAuthFlowError extends Error {
-  code: string;
+  code: OAuthFlowErrorCode;
 
   constructor(code: string, cause?: unknown) {
     super(code);
     this.name = "OAuthFlowError";
-    this.code = code;
+    this.code = this.mapToOAuthFlowErrorCode(code);
+
     if (cause !== undefined) {
       this.cause = cause;
       if (cause instanceof Error && cause.stack) {
         this.stack = cause.stack;
       }
     }
+  }
+
+  mapToOAuthFlowErrorCode(code: string): OAuthFlowErrorCode {
+    if (OAUTH_FLOW_ERROR_CODES.has(code)) {
+      return code as OAuthFlowErrorCode;
+    }
+
+    return "oauth_failed" as OAuthFlowErrorCode;
   }
 }

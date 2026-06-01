@@ -124,7 +124,10 @@ export {
   type SkillIcon,
   type SkillKey,
 } from "./lib/constants.ts";
-
+export {
+  OAUTH_FLOW_ERROR_CODES,
+  type OAuthFlowErrorCode,
+} from "./lib/oauth-flow-errors.ts";
 export {
   decodeSearch,
   encodeSearch,

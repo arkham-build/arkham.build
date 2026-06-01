@@ -1,9 +1,8 @@
 import type { Context } from "hono";
 import { OAuthFlowError, type OAuthProvider } from "../oauth.ts";
-import {
-  exchangeAuthCodeForToken,
-  fetchUserDecksForAccessToken,
-} from "./oauth-client.ts";
+import { exchangeAuthCodeForToken } from "./api-client/api-oauth.ts";
+import { fetchDecks } from "./api-client/api-user.ts";
+import type { ArkhamDBDeck } from "./api-client/core/responses.ts";
 
 function getOAuthConfig(c: Context) {
   const config = c.get("config");
@@ -29,12 +28,29 @@ export const arkhamdbOAuthProvider: OAuthProvider = {
   getCallbackPath(c) {
     return new URL(getOAuthConfig(c).redirectUri).pathname;
   },
-  exchangeCodeForToken: exchangeAuthCodeForToken,
+  async exchangeCodeForToken(c, code) {
+    try {
+      const token = await exchangeAuthCodeForToken(c, code);
+      return token;
+    } catch (error) {
+      c.get("logger")("error", (error as Error).message);
+      throw new OAuthFlowError("arkhamdb_invalid_response");
+    }
+  },
   async getIdentity(c, accessToken) {
-    const decks = await fetchUserDecksForAccessToken(
-      c,
-      accessToken.access_token,
-    );
+    let decks: ArkhamDBDeck[];
+
+    try {
+      const res = await fetchDecks(c, accessToken);
+      decks = res.data;
+    } catch (error) {
+      c.get("logger")("error", (error as Error).message);
+      throw new OAuthFlowError("arkhamdb_invalid_response");
+    }
+
+    if (!Array.isArray(decks)) {
+      throw new OAuthFlowError("arkhamdb_invalid_response");
+    }
 
     if (!decks.length) {
       throw new OAuthFlowError("arkhamdb_no_decks");

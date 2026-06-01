@@ -1,17 +1,9 @@
 import { randomBytes } from "node:crypto";
+import { OAUTH_FLOW_ERROR_CODES } from "@arkham-build/shared";
 import type { Context } from "hono";
 import { OAuthFlowError, type OAuthProvider } from "../../../lib/oauth.ts";
 import type { OAuthContext } from "./state.ts";
 import { setOAuthStateCookie } from "./state.ts";
-
-const REDIRECT_ERROR_CODES = new Set([
-  "arkhamdb_invalid_response",
-  "arkhamdb_no_decks",
-  "identity_belongs_to_another_account",
-  "invalid_state",
-  "oauth_failed",
-  "oauth_missing_code",
-]);
 
 export async function beginOAuthAuthorization(
   c: Context,
@@ -36,7 +28,10 @@ export function redirectToOAuthError(
 }
 
 function getOAuthRedirectErrorCode(error: unknown) {
-  if (error instanceof OAuthFlowError && REDIRECT_ERROR_CODES.has(error.code)) {
+  if (
+    error instanceof OAuthFlowError &&
+    OAUTH_FLOW_ERROR_CODES.has(error.code)
+  ) {
     return error.code;
   }
 

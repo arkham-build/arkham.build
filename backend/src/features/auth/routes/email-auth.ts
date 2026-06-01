@@ -134,6 +134,8 @@ routes.post("/logout", sessionAuth(), async (c) => {
   const db = c.get("db");
   const config = c.get("config");
 
+  c.set("skipSessionCookieRefresh", true);
+
   const sessionId = getCookie(c, config.SESSION_COOKIE_NAME);
   if (sessionId) {
     await deleteSession(db, sessionId);

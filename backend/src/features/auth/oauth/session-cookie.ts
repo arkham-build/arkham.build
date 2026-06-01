@@ -1,9 +1,9 @@
 import type { Context } from "hono";
 import { setCookie } from "hono/cookie";
-import type { HonoEnv } from "../../../lib/hono-env.ts";
+import type { Config } from "../../../lib/config.ts";
 
-export function setSessionCookie(c: Context<HonoEnv>, sessionId: string): void {
-  const config = c.get("config");
+export function setSessionCookie(c: Context, sessionId: string): void {
+  const config = c.get("config") as Config;
 
   setCookie(c, config.SESSION_COOKIE_NAME, sessionId, {
     httpOnly: true,
