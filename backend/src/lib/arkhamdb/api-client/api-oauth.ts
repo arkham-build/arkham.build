@@ -1,27 +1,36 @@
 import type { Context } from "hono";
 import { z } from "zod";
 import type { HonoEnv } from "../../hono-env.ts";
+import {
+  type AuthenticatedRequestDependencies,
+  authenticatedRequest,
+} from "./core/authenticated-request.ts";
 import { ApiError } from "./core/errors.ts";
 import { baseHeaders } from "./core/headers.ts";
 import { request } from "./core/request.ts";
+import type { ArkhamDBDeck } from "./core/responses.ts";
 
-export async function exchangeAuthCodeForToken(
-  c: Context<HonoEnv>,
+export async function exchangeAuthCodeForToken<E extends HonoEnv = HonoEnv>(
+  c: Context<E>,
   code: string,
 ): Promise<OAuthAccessToken> {
   const config = getOAuthConfig(c);
 
-  const response = await request<OAuthAccessToken>(c, `${config.base}/token`, {
-    method: "POST",
-    headers: baseHeaders("POST"),
-    body: new URLSearchParams({
-      code,
-      client_id: config.clientId,
-      client_secret: config.clientSecret,
-      redirect_uri: config.redirectUri,
-      grant_type: "authorization_code",
-    }),
-  });
+  const response = await request<OAuthAccessToken, E>(
+    c,
+    `${config.base}/token`,
+    {
+      method: "POST",
+      headers: baseHeaders("POST"),
+      body: new URLSearchParams({
+        code,
+        client_id: config.clientId,
+        client_secret: config.clientSecret,
+        redirect_uri: config.redirectUri,
+        grant_type: "authorization_code",
+      }),
+    },
+  );
 
   const token = response.data;
 
@@ -32,22 +41,26 @@ export async function exchangeAuthCodeForToken(
   return token;
 }
 
-export async function refreshAccessToken(
-  c: Context<HonoEnv>,
+export async function refreshAccessToken<E extends HonoEnv = HonoEnv>(
+  c: Context<E>,
   refreshToken: string,
 ): Promise<OAuthAccessToken> {
   const config = getOAuthConfig(c);
 
-  const response = await request<OAuthAccessToken>(c, `${config.base}/token`, {
-    method: "POST",
-    headers: baseHeaders("POST"),
-    body: new URLSearchParams({
-      refresh_token: refreshToken,
-      client_id: config.clientId,
-      client_secret: config.clientSecret,
-      grant_type: "refresh_token",
-    }),
-  });
+  const response = await request<OAuthAccessToken, E>(
+    c,
+    `${config.base}/token`,
+    {
+      method: "POST",
+      headers: baseHeaders("POST"),
+      body: new URLSearchParams({
+        refresh_token: refreshToken,
+        client_id: config.clientId,
+        client_secret: config.clientSecret,
+        grant_type: "refresh_token",
+      }),
+    },
+  );
 
   const token = response.data;
 
@@ -56,6 +69,10 @@ export async function refreshAccessToken(
   }
 
   return token;
+}
+
+export function fetchDecksForOAuthUser(auth: AuthenticatedRequestDependencies) {
+  return bearerTokenRequest<ArkhamDBDeck[]>(auth, "/decks");
 }
 
 export const OAuthAccessTokenSchema = z.object({
@@ -72,7 +89,7 @@ export function isOAuthAccessToken(value: unknown): value is OAuthAccessToken {
   return OAuthAccessTokenSchema.safeParse(value).success;
 }
 
-function getOAuthConfig(c: Context) {
+function getOAuthConfig<TEnv extends HonoEnv = HonoEnv>(c: Context<TEnv>) {
   const config = c.get("config");
 
   return {
@@ -81,4 +98,12 @@ function getOAuthConfig(c: Context) {
     clientId: config.ARKHAMDB_OAUTH_CLIENT_ID,
     clientSecret: config.ARKHAMDB_OAUTH_CLIENT_SECRET,
   };
+}
+
+function bearerTokenRequest<T, E extends HonoEnv = HonoEnv>(
+  { context, accessToken }: AuthenticatedRequestDependencies<E>,
+  path: string,
+  options: RequestInit = {},
+) {
+  return authenticatedRequest<T, E>({ context, accessToken }, path, options);
 }

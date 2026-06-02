@@ -1,7 +1,9 @@
 import type { Context } from "hono";
 import { OAuthFlowError, type OAuthProvider } from "../oauth.ts";
-import { exchangeAuthCodeForToken } from "./api-client/api-oauth.ts";
-import { fetchDecks } from "./api-client/api-user.ts";
+import {
+  exchangeAuthCodeForToken,
+  fetchDecksForOAuthUser,
+} from "./api-client/api-oauth.ts";
 import type { ArkhamDBDeck } from "./api-client/core/responses.ts";
 
 function getOAuthConfig(c: Context) {
@@ -41,7 +43,10 @@ export const arkhamdbOAuthProvider: OAuthProvider = {
     let decks: ArkhamDBDeck[];
 
     try {
-      const res = await fetchDecks(c, accessToken);
+      const res = await fetchDecksForOAuthUser({
+        context: c,
+        accessToken,
+      });
       decks = res.data;
     } catch (error) {
       c.get("logger")("error", (error as Error).message);

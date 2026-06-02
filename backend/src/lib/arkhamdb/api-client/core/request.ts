@@ -13,12 +13,14 @@ export type WrappedResponse<T> = {
   status: number;
 };
 
-export async function request<T>(
-  ctx: Context<HonoEnv>,
+export async function request<T, E extends HonoEnv = HonoEnv>(
+  c: Context<E>,
   path: string,
   options: RequestInit = {},
 ): Promise<WrappedResponse<T>> {
-  const res = await fetch(`${ctx.var.config.ARKHAMDB_BASE_URL}${path}`, {
+  const config = c.get("config");
+
+  const res = await fetch(`${config.config.ARKHAMDB_BASE_URL}${path}`, {
     ...options,
     headers: {
       ...options?.headers,
