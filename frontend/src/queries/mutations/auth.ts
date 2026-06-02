@@ -113,16 +113,19 @@ export function useResendVerificationMutation() {
 
 export function useCompleteProfileMutation() {
   const client = useHttpClient();
+  const initSession = useStore((state) => state.initSession);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ["auth", "complete-profile"],
     mutationFn: (payload: Parameters<typeof postCompleteProfile>[1]) =>
       postCompleteProfile(client, payload),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: authKeys.session(),
-      });
+    onSuccess: async () => {
+      await initSession(client);
+      queryClient.setQueryData(
+        authKeys.session(),
+        useStore.getState().auth.session,
+      );
     },
   });
 }
