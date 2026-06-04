@@ -9,20 +9,25 @@ import { pipeline } from "node:stream/promises";
 import { type Card, countExperience } from "@arkham-build/shared";
 import { parse } from "@fast-csv/parse";
 import type { Insertable, Transaction } from "kysely";
-import { connectionString, type Database, getDatabase } from "../db/db.ts";
-import type { ArkhamdbDecklist, DB } from "../db/schema.types.ts";
-import { type Config, configFromEnv } from "../lib/config.ts";
-import { log } from "../lib/logger.ts";
+import { connectionString, type Database, getDatabase } from "../../db/db.ts";
+import type { ArkhamdbDecklist, DB } from "../../db/schema.types.ts";
+import { type Config, configFromEnv } from "../../lib/config.ts";
+import { log } from "../../lib/logger.ts";
 
-try {
+export async function runIngestArkhamDbDecklists() {
   const config = configFromEnv();
   const db = getDatabase(connectionString(config));
-  await ingest(config, db);
-  await db.destroy();
-} catch (err) {
-  log("error", "Failed to process ArkhamDB decklists", {
-    details: { error: String(err) },
-  });
+
+  try {
+    await ingest(config, db);
+  } catch (err) {
+    log("error", "Failed to process ArkhamDB decklists", {
+      details: { error: String(err) },
+    });
+    throw err;
+  } finally {
+    await db.destroy();
+  }
 }
 
 async function ingest(config: Config, db: Database) {

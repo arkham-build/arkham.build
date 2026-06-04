@@ -5,7 +5,7 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import { finished } from "node:stream/promises";
 import * as tar from "tar";
-import type { RepoRef } from "../../../lib/config.ts";
+import type { RepoRef } from "../../../../lib/config.ts";
 
 type GitHubCommit = {
   sha?: string;

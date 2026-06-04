@@ -1,9 +1,9 @@
 import type { JsonDataCard } from "@arkham-build/shared";
-import type { CardResolution } from "../../../db/schema.types.ts";
+import type { CardResolution } from "../../../../db/schema.types.ts";
 import type {
   TranslationTable,
   WithItemTranslations,
-} from "./json-data.types.ts";
+} from "../../../../lib/json-data.types.ts";
 import type { TabooSetWithTranslations } from "./taboo-sets.ts";
 
 type In = WithItemTranslations<JsonDataCard>;

@@ -1,5 +1,8 @@
 import { createPgBoss } from "./jobs/boss.ts";
+import { registerQueues } from "./jobs/queues.ts";
+import { registerSchedules } from "./jobs/schedules.ts";
 import { registerEmailWorker } from "./jobs/workers/email.ts";
+import { registerTaskWorkers } from "./jobs/workers/tasks.ts";
 import { configFromEnv } from "./lib/config.ts";
 import { SMTPMailer } from "./lib/email/mailer.ts";
 import { log } from "./lib/logger.ts";
@@ -13,7 +16,10 @@ async function main() {
   const boss = createPgBoss(config);
 
   await boss.start();
+  await registerQueues(boss);
   await registerEmailWorker(boss, new SMTPMailer(config));
+  await registerTaskWorkers(boss);
+  await registerSchedules(boss);
 
   log("info", "Worker started");
 

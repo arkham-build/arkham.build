@@ -1,5 +1,5 @@
 import type { Transaction } from "kysely";
-import type { DB } from "../../../db/schema.types.ts";
+import type { DB } from "../../../../db/schema.types.ts";
 
 type SyncDataVersionsOpts = {
   locales: string[];

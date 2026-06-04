@@ -1,5 +1,5 @@
 import type { JsonDataPack } from "@arkham-build/shared";
-import type { WithItemTranslations } from "./json-data.types.ts";
+import type { WithItemTranslations } from "../../../../lib/json-data.types.ts";
 
 type IgnoredAttributes = {
   cgdb_id?: number;

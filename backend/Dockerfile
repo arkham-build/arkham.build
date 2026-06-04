@@ -4,9 +4,7 @@ FROM amacneil/dbmate:2 AS dbmate
 # Base image
 FROM node:24-alpine AS base
 
-RUN apk add --update busybox-suid && rm -rf /var/cache/apk/*
 COPY --from=dbmate /usr/local/bin/dbmate /usr/local/bin/dbmate
-COPY backend/config/crontab /app/config/crontab
 
 # Dependencies stage
 FROM base AS deps

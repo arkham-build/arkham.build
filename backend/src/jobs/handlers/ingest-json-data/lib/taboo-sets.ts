@@ -1,10 +1,10 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import type { JsonDataTabooSet } from "@arkham-build/shared";
-import type { Config } from "../../../lib/config.ts";
+import type { Config } from "../../../../lib/config.ts";
+import type { WithItemTranslations } from "../../../../lib/json-data.types.ts";
 import { readPoFile } from "./gettext.ts";
 import { downloadRepo } from "./github.ts";
-import type { WithItemTranslations } from "./json-data.types.ts";
 
 export function downloadTabooRepo(config: Config) {
   return downloadRepo(config.INGEST_TABOO_DATA_REPO, "taboo-data");

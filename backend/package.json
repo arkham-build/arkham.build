@@ -17,9 +17,9 @@
     "inspect:worker": "node --inspect=localhost:9230 --experimental-strip-types --env-file=.env src/worker.ts",
     "generate:database-types": "kysely-codegen --out-file src/db/schema.types.ts",
     "ingest": "npm run ingest:json-data && npm run ingest:arkhamdb-decklists",
-    "ingest:json-data": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/tasks/ingest/index.ts",
-    "ingest:arkhamdb-decklists": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/tasks/ingest-arkhamdb-decklists.ts",
-    "purge:cloudflare-cache": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/tasks/purge-cloudflare-cache.ts",
+    "ingest:json-data": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/scripts/ingest/index.ts",
+    "ingest:arkhamdb-decklists": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/scripts/ingest-arkhamdb-decklists.ts",
+    "purge:cloudflare-cache": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/scripts/purge-cloudflare-cache.ts",
     "start": "node --experimental-strip-types src/main.ts",
     "start:worker": "node --experimental-strip-types src/worker.ts",
     "test": "vitest run"

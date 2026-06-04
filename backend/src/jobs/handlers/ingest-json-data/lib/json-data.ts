@@ -1,14 +1,14 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import type { Config } from "../../../lib/config.ts";
-import { downloadRepo } from "./github.ts";
+import type { Config } from "../../../../lib/config.ts";
 import type {
   Coded,
   ItemTranslation,
   Translatable,
   TranslationTable,
   WrappedTranslation,
-} from "./json-data.types.ts";
+} from "../../../../lib/json-data.types.ts";
+import { downloadRepo } from "./github.ts";
 
 export function downloadJsonDataRepo(config: Config) {
   return downloadRepo(config.INGEST_JSON_DATA_REPO, "json-data");

@@ -5,7 +5,7 @@ import type {
 } from "@arkham-build/shared";
 import type { Selectable } from "kysely";
 import type { Card } from "../../db/schema.types.ts";
-import type { WithItemTranslations } from "../../tasks/ingest/lib/json-data.types.ts";
+import type { WithItemTranslations } from "../../lib/json-data.types.ts";
 
 const TRANSLATED_KEYS = [
   "back_flavor",

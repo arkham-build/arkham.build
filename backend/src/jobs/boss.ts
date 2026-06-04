@@ -6,6 +6,9 @@ import { log } from "../lib/logger.ts";
 export function createPgBoss(config: Config) {
   const boss = new PgBoss({
     connectionString: connectionString(config),
+    ...(config.NODE_ENV === "development"
+      ? { monitorIntervalSeconds: 5, persistWarnings: true }
+      : {}),
     schema: "pgboss",
   });
 

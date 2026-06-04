@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { log } from "../../lib/logger.ts";
 
 const purgeConfigSchema = z.object({
   CLOUDFLARE_API_TOKEN: z.string().min(1),
@@ -9,15 +10,15 @@ const CACHE_TAG = "cache";
 
 type PurgeConfig = z.infer<typeof purgeConfigSchema>;
 
-await purgeCloudflareCache();
+export async function runPurgeCloudflareCache() {
+  const purgeConfig = purgeConfigSchema.safeParse(process.env);
 
-async function purgeCloudflareCache() {
-  const purgeConfig = purgeConfigSchema.parse(process.env);
+  if (!purgeConfig.success) {
+    log("info", "Missing Cloudflare Cache configuration, skipping purge");
+    return;
+  }
 
-  await purgeTags(purgeConfig, [CACHE_TAG]);
-
-  // biome-ignore lint/suspicious/noConsole: script.
-  console.log(`Purged Cloudflare cache tag: ${CACHE_TAG}.`);
+  await purgeTags(purgeConfig.data, [CACHE_TAG]);
 }
 
 type CloudflarePurgeResponse = {
