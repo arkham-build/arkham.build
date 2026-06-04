@@ -5,8 +5,6 @@ import {
   DeckBatchResponseSchema,
   type DeckConflictResponse,
   DeckConflictResponseSchema,
-  type DeckCreateRequest,
-  DeckCreateRequestSchema,
   type DeckDeleteRequest,
   DeckDeleteRequestSchema,
   type DeckId,
@@ -57,12 +55,12 @@ export async function fetchDeckBatch(
 
 export async function postDeck(
   client: HttpClient,
-  payload: DeckCreateRequest,
+  payload: Deck,
 ): Promise<Deck> {
   const res = await client.request("/v2/decks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(DeckCreateRequestSchema.parse(payload)),
+    body: JSON.stringify(DeckSchema.parse(payload)),
     credentials: "include",
   });
 

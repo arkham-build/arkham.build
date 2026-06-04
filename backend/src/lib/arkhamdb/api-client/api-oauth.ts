@@ -5,10 +5,10 @@ import {
   type AuthenticatedRequestDependencies,
   authenticatedRequest,
 } from "./core/authenticated-request.ts";
+import { ArkhamDbRemoteDecksSchema } from "./core/dtos.ts";
 import { ApiError } from "./core/errors.ts";
 import { baseHeaders } from "./core/headers.ts";
 import { request } from "./core/request.ts";
-import type { ArkhamDBDeck } from "./core/responses.ts";
 
 export async function exchangeAuthCodeForToken<E extends HonoEnv = HonoEnv>(
   c: Context<E>,
@@ -71,8 +71,14 @@ export async function refreshAccessToken<E extends HonoEnv = HonoEnv>(
   return token;
 }
 
-export function fetchDecksForOAuthUser(auth: AuthenticatedRequestDependencies) {
-  return bearerTokenRequest<ArkhamDBDeck[]>(auth, "/decks");
+export async function fetchDecksForOAuthUser(
+  auth: AuthenticatedRequestDependencies,
+) {
+  const response = await bearerTokenRequest<unknown>(auth, "/decks");
+  return {
+    ...response,
+    data: ArkhamDbRemoteDecksSchema.parse(response.data),
+  };
 }
 
 export const OAuthAccessTokenSchema = z.object({

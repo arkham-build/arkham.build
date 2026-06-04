@@ -89,6 +89,21 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
+      await db
+        .insertInto("deck")
+        .values({
+          account_id: account.id,
+          id: "123",
+          investigator_code: "01001",
+          investigator_name: "Roland Banks",
+          meta: {},
+          name: "Arkham Synced Deck",
+          provider_type: "arkhamdb",
+          slots: { "01006": 1 },
+          version: "1.2",
+        })
+        .executeTakeFirstOrThrow();
+
       const res = await app.request("/v2/auth/oauth/arkhamdb", {
         method: "DELETE",
         headers: { Cookie: sessionCookie },
@@ -275,6 +290,78 @@ describe("Auth routes", () => {
           provider: "arkhamdb",
           provider_user_id: "12345",
         });
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+
+    test("reconnect clears stale unhealthy arkhamdb state", async ({
+      dependencies,
+    }) => {
+      const { app, config, db, sessionCookie } = dependencies;
+
+      const account = await db
+        .selectFrom("account")
+        .select(["id"])
+        .where("name", "=", "test-account")
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "12345",
+          state: {
+            lastError: "boom",
+            lastSyncedAt: "2026-06-04T12:00:00.000Z",
+            status: "unhealthy",
+            username: "arkham-user",
+          },
+          verified_at: new Date(),
+        })
+        .executeTakeFirstOrThrow();
+
+      const oauth = await startOAuthFlow(
+        app,
+        "/auth/arkhamdb/connect",
+        sessionCookie,
+      );
+      mockArkhamDbOAuth(12345);
+
+      try {
+        const res = await app.request(
+          `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
+          {
+            method: "GET",
+            headers: { Cookie: oauth.cookie },
+          },
+        );
+
+        expect(res.status).toBe(302);
+        expect(res.headers.get("location")).toBe(
+          `${config.FRONTEND_URL}/settings?tab=account`,
+        );
+
+        const sessionRes = await app.request("/v2/auth/me", {
+          method: "GET",
+          headers: { Cookie: sessionCookie },
+        });
+
+        expect(sessionRes.status).toBe(200);
+        const body = (await sessionRes.json()) as { identities: unknown[] };
+        expect(body.identities).toContainEqual(
+          expect.objectContaining({
+            provider: "arkhamdb",
+            providerUserId: "12345",
+            details: {
+              status: "healthy",
+              lastSyncedAt: null,
+              lastError: null,
+              username: null,
+            },
+          }),
+        );
       } finally {
         vi.unstubAllGlobals();
       }
@@ -801,6 +888,12 @@ describe("Auth routes", () => {
           account_id: account.id,
           provider: "arkhamdb",
           provider_user_id: "12345",
+          state: {
+            lastError: "boom",
+            lastSyncedAt: "2026-06-04T12:00:00.000Z",
+            status: "unhealthy",
+            username: "arkham-user",
+          },
           verified_at: new Date(),
         })
         .executeTakeFirstOrThrow();
@@ -817,10 +910,10 @@ describe("Auth routes", () => {
             provider: "arkhamdb",
             providerUserId: "12345",
             details: {
-              status: "healthy",
-              createdAt: expect.any(String),
-              lastSyncedAt: null,
-              username: null,
+              status: "unhealthy",
+              lastSyncedAt: "2026-06-04T12:00:00.000Z",
+              lastError: "boom",
+              username: "arkham-user",
             },
           },
           {
@@ -2135,7 +2228,20 @@ function mockArkhamDbOAuthResponse(decksResponse: unknown) {
 }
 
 function mockArkhamDbOAuth(userId: number) {
-  mockArkhamDbOAuthResponse([{ user_id: userId }]);
+  mockArkhamDbOAuthResponse([
+    {
+      id: 1,
+      investigator_code: "01001",
+      investigator_name: "Roland Banks",
+      meta: "{}",
+      name: "Arkham Deck",
+      problem: "too_few_cards",
+      slots: { "01006": 1 },
+      user_id: userId,
+      version: "1.0",
+      xp_spent: 0,
+    },
+  ]);
 }
 
 async function signupAndVerify(

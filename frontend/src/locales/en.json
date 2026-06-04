@@ -1140,6 +1140,7 @@
         "save_upgrade_close": "Save upgrade and close",
         "save_upgrade_close_short": "Save and close",
         "save_upgrade_short": "Upgrade",
+        "upload": "Upload to {{provider}}",
         "upload_remote": "Upload to your account"
       },
       "discounts": {
@@ -1508,7 +1509,6 @@
           "connect": "Connect",
           "connect_help": "Connect your {{provider}} account to sync your decks and login with it.",
           "connected": "Connected",
-          "created_at": "Connected since",
           "details": "Details",
           "not_connected": "Not connected",
           "providers": {
@@ -1517,11 +1517,18 @@
           "disconnect": "Disconnect",
           "disconnect_error": "Failed to disconnect {{provider}}: {{error}}",
           "disconnecting": "Disconnecting {{provider}}...",
+          "disconnected": "There is a problem with this connection, please reconnect.",
+          "last_error": "Last error",
           "last_synced_at": "Last sync",
+          "none": "None",
           "reconnect": "Refresh",
+          "status": {
+            "healthy": "Healthy",
+            "unhealthy": "Unhealthy"
+          },
+          "sync_status": "Sync status",
           "title": "Connections",
-          "user_id": "User ID",
-          "disconnected": "There is a problem with this connection, please reconnect."
+          "user_id": "User ID"
         },
         "email": {
           "add": "Add email",

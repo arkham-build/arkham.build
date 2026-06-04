@@ -4,7 +4,7 @@ import {
   exchangeAuthCodeForToken,
   fetchDecksForOAuthUser,
 } from "./api-client/api-oauth.ts";
-import type { ArkhamDBDeck } from "./api-client/core/responses.ts";
+import type { ArkhamDbRemoteDeck } from "./api-client/core/dtos.ts";
 
 function getOAuthConfig(c: Context) {
   const config = c.get("config");
@@ -40,7 +40,7 @@ export const arkhamdbOAuthProvider: OAuthProvider = {
     }
   },
   async getIdentity(c, accessToken) {
-    let decks: ArkhamDBDeck[];
+    let decks: ArkhamDbRemoteDeck[];
 
     try {
       const res = await fetchDecksForOAuthUser({
@@ -50,10 +50,6 @@ export const arkhamdbOAuthProvider: OAuthProvider = {
       decks = res.data;
     } catch (error) {
       c.get("logger")("error", (error as Error).message);
-      throw new OAuthFlowError("arkhamdb_invalid_response");
-    }
-
-    if (!Array.isArray(decks)) {
       throw new OAuthFlowError("arkhamdb_invalid_response");
     }
 

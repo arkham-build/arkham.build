@@ -6,10 +6,14 @@ import {
   DeckSchema,
 } from "@arkham-build/shared";
 import type { Hono } from "hono";
-import { describe, expect } from "vitest";
+import { afterEach, describe, expect, vi } from "vitest";
 import type { Database } from "../db/db.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 function getManifest(app: Hono<HonoEnv>, cookie?: string) {
   const headers: Record<string, string> = {};
@@ -24,14 +28,28 @@ function getManifest(app: Hono<HonoEnv>, cookie?: string) {
   });
 }
 
-function postBatch(app: Hono<HonoEnv>, cookie: string, ids: string[]) {
+function getSession(app: Hono<HonoEnv>, cookie: string) {
+  return app.request("/v2/auth/me", {
+    method: "GET",
+    headers: {
+      Cookie: cookie,
+    },
+  });
+}
+
+function postBatch(
+  app: Hono<HonoEnv>,
+  cookie: string,
+  ids: string[],
+  arkhamdbSyncToken?: string,
+) {
   return app.request("/v2/decks/batch", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Cookie: cookie,
     },
-    body: JSON.stringify({ ids }),
+    body: JSON.stringify({ arkhamdbSyncToken, ids }),
   });
 }
 
@@ -128,8 +146,219 @@ describe("Deck routes", () => {
           version: "0.1",
         }),
       ]);
-
       expect(manifest.version).toEqual(expect.any(String));
+    });
+
+    test("marks arkhamdb unhealthy when the oauth token is missing", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      const account = await db
+        .selectFrom("account")
+        .select("id")
+        .where("name", "=", TEST_ACCOUNT.name)
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "12345",
+          verified_at: new Date(),
+        })
+        .executeTakeFirstOrThrow();
+
+      const res = await getManifest(app, sessionCookie);
+      expect(res.status).toBe(200);
+
+      DeckManifestResponseSchema.parse(await res.json());
+
+      const sessionRes = await getSession(app, sessionCookie);
+      expect(sessionRes.status).toBe(200);
+      expect(await sessionRes.json()).toMatchObject({
+        identities: expect.arrayContaining([
+          expect.objectContaining({
+            provider: "arkhamdb",
+            providerUserId: "12345",
+            details: {
+              status: "unhealthy",
+              lastSyncedAt: null,
+              lastError:
+                "Missing ArkhamDB identity or OAuth token for account.",
+              username: null,
+            },
+          }),
+        ]),
+      });
+    });
+
+    test("syncs arkhamdb decks before returning the manifest", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      const account = await db
+        .selectFrom("account")
+        .select("id")
+        .where("name", "=", TEST_ACCOUNT.name)
+        .executeTakeFirstOrThrow();
+
+      const identity = await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "12345",
+          verified_at: new Date(),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("oauth_token")
+        .values({
+          account_identity_id: identity.id,
+          access_token: "access-token",
+          refresh_token: "refresh-token",
+          token_expires_at: new Date("2026-06-04T13:00:00.000Z"),
+        })
+        .executeTakeFirstOrThrow();
+
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(
+            JSON.stringify([
+              {
+                date_creation: "2026-06-04T12:00:00.000Z",
+                date_update: "2026-06-04T13:00:00.000Z",
+                id: 123,
+                investigator_code: "01001",
+                investigator_name: "Roland Banks",
+                meta: "{}",
+                name: "Arkham Synced Deck",
+                problem: "too_few_cards",
+                slots: { "01006": 1 },
+                version: "1.2",
+                xp_spent: 0,
+              },
+            ]),
+            {
+              status: 200,
+              headers: {
+                "Content-Type": "application/json",
+                "Last-Modified": "Thu, 04 Jun 2026 12:00:00 GMT",
+              },
+            },
+          ),
+        ),
+      );
+
+      const res = await getManifest(app, sessionCookie);
+      expect(res.status).toBe(200);
+
+      const manifest = DeckManifestResponseSchema.parse(await res.json());
+      expect(manifest.decks).toEqual([
+        expect.objectContaining({
+          id: 123,
+          version: "1.2",
+        }),
+      ]);
+
+      const sessionRes = await getSession(app, sessionCookie);
+      expect(sessionRes.status).toBe(200);
+      expect(await sessionRes.json()).toMatchObject({
+        identities: expect.arrayContaining([
+          expect.objectContaining({
+            provider: "arkhamdb",
+            providerUserId: "12345",
+            details: {
+              status: "healthy",
+              lastError: null,
+              lastSyncedAt: expect.any(String),
+              username: null,
+            },
+          }),
+        ]),
+      });
+    });
+
+    test("keeps account decks available when arkhamdb sync fails", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      await insertTestDeck(db, {
+        name: "Local deck",
+        id: "local-deck",
+        version: "0.1",
+      });
+
+      const account = await db
+        .selectFrom("account")
+        .select("id")
+        .where("name", "=", TEST_ACCOUNT.name)
+        .executeTakeFirstOrThrow();
+
+      const identity = await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "12345",
+          verified_at: new Date(),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("oauth_token")
+        .values({
+          account_identity_id: identity.id,
+          access_token: "access-token",
+          refresh_token: "refresh-token",
+          token_expires_at: new Date("2026-06-04T13:00:00.000Z"),
+        })
+        .executeTakeFirstOrThrow();
+
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(JSON.stringify({ code: 500, message: "boom" }), {
+            status: 500,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }),
+        ),
+      );
+
+      const res = await getManifest(app, sessionCookie);
+      expect(res.status).toBe(200);
+
+      const manifest = DeckManifestResponseSchema.parse(await res.json());
+      expect(manifest.decks).toEqual([
+        expect.objectContaining({
+          id: "local-deck",
+          version: "0.1",
+        }),
+      ]);
+
+      const sessionRes = await getSession(app, sessionCookie);
+      expect(sessionRes.status).toBe(200);
+      expect(await sessionRes.json()).toMatchObject({
+        identities: expect.arrayContaining([
+          expect.objectContaining({
+            provider: "arkhamdb",
+            providerUserId: "12345",
+            details: {
+              status: "unhealthy",
+              lastSyncedAt: null,
+              lastError: "boom",
+              username: null,
+            },
+          }),
+        ]),
+      });
     });
   });
 
@@ -155,6 +384,64 @@ describe("Deck routes", () => {
       expect(new Set(body.map((deck) => deck.id))).toEqual(
         new Set(["deck-1", "deck-2"]),
       );
+    });
+
+    test("returns arkhamdb decks from a stored snapshot", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      const account = await db
+        .selectFrom("account")
+        .select("id")
+        .where("name", "=", TEST_ACCOUNT.name)
+        .executeTakeFirstOrThrow();
+
+      const identity = await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "12345",
+          verified_at: new Date(),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const snapshot = await db
+        .insertInto("arkhamdb_deck_snapshot")
+        .values({
+          account_identity_id: identity.id,
+          decks: JSON.stringify([
+            buildArkhamDbApiDeck({
+              id: 123,
+              name: "Snapshot deck",
+              version: "1.1",
+            }),
+          ]),
+          last_modified: "Thu, 04 Jun 2026 12:00:00 GMT",
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(() => {
+          throw new Error("ArkhamDB should not be fetched for snapshot batch");
+        }),
+      );
+
+      const res = await postBatch(app, sessionCookie, ["123"], snapshot.id);
+      expect(res.status).toBe(200);
+
+      const body = DeckBatchResponseSchema.parse(await res.json());
+      expect(body).toMatchObject([
+        {
+          id: 123,
+          name: "Snapshot deck",
+          source: "arkhamdb",
+          version: "1.1",
+        },
+      ]);
     });
   });
 
@@ -404,10 +691,309 @@ describe("Deck routes", () => {
       expect(conflict.remoteDeck).toBeNull();
     });
   });
+
+  describe("ArkhamDB write-through routes", () => {
+    test("creates an ArkhamDB deck remotely and mirrors it locally", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      await insertArkhamDbConnection(db);
+
+      vi.stubGlobal(
+        "fetch",
+        vi.fn((input, init) => {
+          const url = String(input);
+
+          if (url.endsWith("/api/oauth2/deck/new")) {
+            expect(init?.method).toBe("POST");
+            expect(
+              (init?.headers as Record<string, string>)["Content-Type"],
+            ).toBe("application/x-www-form-urlencoded");
+            expect(String(init?.body)).toContain("investigator=01001");
+            return jsonResponse({ msg: 123, success: true });
+          }
+
+          if (url.endsWith("/api/oauth2/deck/save/123")) {
+            return jsonResponse({ msg: 123, success: true });
+          }
+
+          if (url.endsWith("/api/oauth2/deck/load/123")) {
+            return jsonResponse(
+              buildArkhamDbApiDeck({
+                id: 123,
+                name: "Created remotely",
+                version: "1.2",
+              }),
+            );
+          }
+
+          if (url.endsWith("/api/oauth2/decks")) {
+            return jsonResponse(
+              [
+                buildArkhamDbApiDeck({
+                  id: 123,
+                  name: "Created remotely",
+                  version: "1.2",
+                }),
+              ],
+              {
+                "Last-Modified": "Thu, 04 Jun 2026 12:00:00 GMT",
+              },
+            );
+          }
+
+          throw new Error(`Unhandled fetch: ${url}`);
+        }),
+      );
+
+      const res = await createDeck(
+        app,
+        sessionCookie,
+        baseDeckPayload({
+          id: "client-deck",
+          name: "Created remotely",
+          problem: "too_few_cards",
+          source: "arkhamdb",
+          version: "1.2",
+        }),
+      );
+
+      expect(res.status).toBe(200);
+
+      const body = await readDeck(res);
+      expect(body).toMatchObject({
+        id: 123,
+        name: "Created remotely",
+        source: "arkhamdb",
+        version: "1.2",
+      });
+    });
+
+    test("updates an ArkhamDB deck remotely and mirrors it locally", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      await insertArkhamDbConnection(db);
+      await insertTestDeck(db, {
+        id: "123",
+        name: "Original remote deck",
+        providerType: "arkhamdb",
+        version: "1.1",
+      });
+
+      let loadCount = 0;
+
+      vi.stubGlobal(
+        "fetch",
+        vi.fn((input) => {
+          const url = String(input);
+
+          if (url.endsWith("/api/oauth2/deck/save/123")) {
+            return jsonResponse({ msg: 123, success: true });
+          }
+
+          if (url.endsWith("/api/oauth2/deck/load/123")) {
+            loadCount += 1;
+
+            return jsonResponse(
+              buildArkhamDbApiDeck({
+                id: 123,
+                name:
+                  loadCount === 1 ? "Original remote deck" : "Updated remotely",
+                version: loadCount === 1 ? "1.1" : "1.2",
+              }),
+            );
+          }
+
+          if (url.endsWith("/api/oauth2/decks")) {
+            return jsonResponse([
+              buildArkhamDbApiDeck({
+                id: 123,
+                name: "Updated remotely",
+                version: "1.2",
+              }),
+            ]);
+          }
+
+          throw new Error(`Unhandled fetch: ${url}`);
+        }),
+      );
+
+      const res = await updateDeck(app, sessionCookie, "123", {
+        ...baseDeckPayload({
+          id: "123",
+          name: "Updated remotely",
+          problem: "too_few_cards",
+          source: "arkhamdb",
+          version: "1.2",
+        }),
+        expectedVersion: "1.1",
+      });
+
+      expect(res.status).toBe(200);
+
+      const body = await readDeck(res);
+      expect(body).toMatchObject({
+        id: 123,
+        name: "Updated remotely",
+        source: "arkhamdb",
+        version: "1.2",
+      });
+    });
+
+    test("upgrades an ArkhamDB deck remotely and mirrors the new chain", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      await insertArkhamDbConnection(db);
+      await insertTestDeck(db, {
+        id: "123",
+        name: "Base remote deck",
+        providerType: "arkhamdb",
+        version: "1.1",
+      });
+
+      vi.stubGlobal(
+        "fetch",
+        vi.fn((input, init) => {
+          const url = String(input);
+
+          if (url.endsWith("/api/oauth2/deck/load/123")) {
+            return jsonResponse(
+              buildArkhamDbApiDeck({
+                id: 123,
+                name: "Base remote deck",
+                version: "1.1",
+                xp: 5,
+              }),
+            );
+          }
+
+          if (url.endsWith("/api/oauth2/deck/upgrade/123")) {
+            expect(init?.method).toBe("PUT");
+            expect(String(init?.body)).toContain("xp=3");
+            return jsonResponse({ msg: 124, success: true });
+          }
+
+          if (url.endsWith("/api/oauth2/deck/load/124")) {
+            return jsonResponse(
+              buildArkhamDbApiDeck({
+                id: 124,
+                name: "Upgraded remotely",
+                previous_deck: 123,
+                version: "1.2",
+                xp: 8,
+              }),
+            );
+          }
+
+          if (url.endsWith("/api/oauth2/decks")) {
+            return jsonResponse([
+              buildArkhamDbApiDeck({
+                id: 123,
+                name: "Base remote deck",
+                next_deck: 124,
+                version: "1.1",
+                xp: 5,
+              }),
+              buildArkhamDbApiDeck({
+                id: 124,
+                name: "Upgraded remotely",
+                previous_deck: 123,
+                version: "1.2",
+                xp: 8,
+              }),
+            ]);
+          }
+
+          throw new Error(`Unhandled fetch: ${url}`);
+        }),
+      );
+
+      const res = await upgradeDeck(app, sessionCookie, "123", {
+        deck: baseDeckPayload({
+          id: "124",
+          name: "Upgraded remotely",
+          previous_deck: "123",
+          problem: "too_few_cards",
+          source: "arkhamdb",
+          version: "1.2",
+          xp: 8,
+          xp_spent: 2,
+        }),
+        expectedVersion: "1.1",
+      });
+
+      expect(res.status).toBe(200);
+
+      const body = await readDeck(res);
+      expect(body).toMatchObject({
+        id: 124,
+        name: "Upgraded remotely",
+        previous_deck: 123,
+        source: "arkhamdb",
+        version: "1.2",
+        xp: 8,
+      });
+    });
+
+    test("deletes an ArkhamDB deck remotely and removes the local mirror", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      await insertArkhamDbConnection(db);
+      await insertTestDeck(db, {
+        id: "123",
+        name: "Remote deck",
+        providerType: "arkhamdb",
+        version: "1.1",
+      });
+
+      vi.stubGlobal(
+        "fetch",
+        vi.fn((input) => {
+          const url = String(input);
+
+          if (url.endsWith("/api/oauth2/deck/load/123")) {
+            return jsonResponse(
+              buildArkhamDbApiDeck({
+                id: 123,
+                name: "Remote deck",
+                version: "1.1",
+              }),
+            );
+          }
+
+          if (url.endsWith("/api/oauth2/deck/delete/123")) {
+            return jsonResponse({ success: true });
+          }
+
+          if (url.endsWith("/api/oauth2/decks")) {
+            return jsonResponse([]);
+          }
+
+          throw new Error(`Unhandled fetch: ${url}`);
+        }),
+      );
+
+      const res = await deleteDeck(app, sessionCookie, "123", "1.1");
+      expect(res.status).toBe(204);
+
+      const deleted = await db
+        .selectFrom("deck")
+        .select(["id"])
+        .where("id", "=", "123")
+        .executeTakeFirst();
+
+      expect(deleted).toBeTruthy();
+    });
+  });
 });
 
 function baseDeckPayload(overrides: Partial<Record<string, unknown>> = {}) {
   return {
+    date_creation: "2026-01-01T00:00:00.000Z",
+    date_update: "2026-01-01T00:00:00.000Z",
     description_md: "",
     exile_string: null,
     id: "client-deck",
@@ -422,7 +1008,9 @@ function baseDeckPayload(overrides: Partial<Record<string, unknown>> = {}) {
     sideSlots: null,
     slots: { "01006": 1, "01007": 1 },
     taboo_id: null,
+    source: "account",
     tags: "",
+    user_id: null,
     version: "vtest001",
     xp_adjustment: null,
     xp_spent: 0,
@@ -434,8 +1022,11 @@ function baseDeckPayload(overrides: Partial<Record<string, unknown>> = {}) {
 async function insertTestDeck(
   db: Database,
   overrides: Partial<{
-    name: string;
     id: string;
+    name: string;
+    nextDeck: string | null;
+    previousDeck: string | null;
+    providerType: string;
     version: string;
   }> = {},
 ) {
@@ -455,7 +1046,9 @@ async function insertTestDeck(
       meta: {},
       name: overrides.name ?? "Seeded deck",
       id: overrides.id ?? "deck-seeded",
-      provider_type: "account",
+      next_deck: overrides.nextDeck ?? null,
+      prev_deck: overrides.previousDeck ?? null,
+      provider_type: overrides.providerType ?? "account",
       slots: { "01006": 1 },
       tags: null,
       version: overrides.version ?? "seed0001",
@@ -465,4 +1058,61 @@ async function insertTestDeck(
     })
     .returningAll()
     .executeTakeFirstOrThrow();
+}
+
+async function insertArkhamDbConnection(db: Database) {
+  const account = await db
+    .selectFrom("account")
+    .select("id")
+    .where("name", "=", TEST_ACCOUNT.name)
+    .executeTakeFirstOrThrow();
+
+  const identity = await db
+    .insertInto("account_identity")
+    .values({
+      account_id: account.id,
+      provider: "arkhamdb",
+      provider_user_id: "12345",
+      verified_at: new Date(),
+    })
+    .returning(["id"])
+    .executeTakeFirstOrThrow();
+
+  await db
+    .insertInto("oauth_token")
+    .values({
+      account_identity_id: identity.id,
+      access_token: "access-token",
+      refresh_token: "refresh-token",
+      token_expires_at: new Date("2026-06-04T13:00:00.000Z"),
+    })
+    .executeTakeFirstOrThrow();
+}
+
+function buildArkhamDbApiDeck(
+  overrides: Partial<Record<string, unknown>> = {},
+) {
+  return {
+    id: 123,
+    investigator_code: "01001",
+    investigator_name: "Roland Banks",
+    meta: "{}",
+    name: "Arkham deck",
+    problem: "too_few_cards",
+    slots: { "01006": 1 },
+    version: "1.1",
+    xp: 0,
+    xp_spent: 0,
+    ...overrides,
+  };
+}
+
+function jsonResponse(body: unknown, headers?: Record<string, string>) {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+  });
 }

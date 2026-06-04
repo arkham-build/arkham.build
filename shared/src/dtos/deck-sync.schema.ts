@@ -1,12 +1,13 @@
 import { z } from "zod";
 import { DeckIdSchema, DeckSchema } from "../schemas/deck.schema.ts";
 
-const DeckWritePayloadSchema = DeckSchema.omit({
+export const DeckWritePayloadSchema = DeckSchema.omit({
   date_creation: true,
   date_update: true,
   source: true,
   user_id: true,
 });
+export type DeckWritePayload = z.infer<typeof DeckWritePayloadSchema>;
 
 export const DeckManifestItemSchema = z.object({
   id: DeckIdSchema,
@@ -18,16 +19,15 @@ export type DeckManifestItem = z.infer<typeof DeckManifestItemSchema>;
 export const DeckManifestResponseSchema = z.object({
   version: z.string(),
   decks: z.array(DeckManifestItemSchema),
+  arkhamdbSyncToken: z.string().nullish(),
 });
 export type DeckManifestResponse = z.infer<typeof DeckManifestResponseSchema>;
 
 export const DeckBatchRequestSchema = z.object({
   ids: z.array(DeckIdSchema),
+  arkhamdbSyncToken: z.string().nullish(),
 });
 export type DeckBatchRequest = z.infer<typeof DeckBatchRequestSchema>;
-
-export const DeckCreateRequestSchema = DeckWritePayloadSchema;
-export type DeckCreateRequest = z.infer<typeof DeckCreateRequestSchema>;
 
 export const DeckUpdateRequestSchema = DeckWritePayloadSchema.extend({
   expectedVersion: z.string(),
@@ -40,7 +40,7 @@ export const DeckDeleteRequestSchema = z.object({
 export type DeckDeleteRequest = z.infer<typeof DeckDeleteRequestSchema>;
 
 export const DeckUpgradeRequestSchema = z.object({
-  deck: DeckCreateRequestSchema,
+  deck: DeckSchema,
   expectedVersion: z.string(),
 });
 export type DeckUpgradeRequest = z.infer<typeof DeckUpgradeRequestSchema>;

@@ -1,3 +1,4 @@
+import type { StorageProvider } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
@@ -94,18 +95,21 @@ export function useUploadDeckToProvider() {
   const uploadDeckToProviderMutation = useUploadDeckToProviderMutation();
 
   return useCallback(
-    async (deckId: Id) => {
-      const provider = t("deck_edit.config.storage_provider.account");
+    async (
+      deckId: Id,
+      provider: Extract<StorageProvider, "account" | "arkhamdb">,
+    ) => {
+      const providerLabel = t(`deck_edit.config.storage_provider.${provider}`);
 
       const toastId = toast.show({
-        children: t("deck.toasts.upload_loading", { provider }),
+        children: t("deck.toasts.upload_loading", { provider: providerLabel }),
         variant: "loading",
       });
 
       try {
         const id = await uploadDeckToProviderMutation.mutateAsync({
           deckId,
-          provider: "account",
+          provider,
         });
         toast.dismiss(toastId);
         if (id !== deckId) navigate(`/deck/view/${id}`, { replace: true });
@@ -114,7 +118,7 @@ export function useUploadDeckToProvider() {
 
         toast.show({
           children: t("deck.toasts.upload_error", {
-            provider,
+            provider: providerLabel,
             error: (err as Error)?.message,
           }),
           variant: "error",

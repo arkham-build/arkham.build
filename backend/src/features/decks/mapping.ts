@@ -72,16 +72,12 @@ export function mapDeckWriteDtoToInsert(
   };
 }
 
-export function createDeckManifestVersion(decks: DeckRow[]) {
+export function createDeckManifestVersion(
+  decks: Array<{ id: string | number; updatedAt: string; version: string }>,
+) {
   const hash = createHash("sha256");
 
-  const items = decks.map((deck) => ({
-    id: deck.id,
-    updatedAt: deck.updated_at.toISOString(),
-    version: deck.version ?? "",
-  }));
-
-  for (const item of items) {
+  for (const item of decks) {
     hash.update(`${item.id}:${item.version}:${item.updatedAt}`);
   }
 

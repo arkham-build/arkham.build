@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // alphanumeric characters, underscore, and hyphen only
-export const PATTERN_VALID_USERNAME = "^[a-zA-Z0-9_-]+$";
+export const PATTERN_VALID_USERNAME = "^[a-zA-Z0-9_\-]+$";
 
 export const SignupRequestSchema = z.object({
   name: z
@@ -65,20 +65,24 @@ export const EmailIdentitySchema = z.object({
   verified: z.boolean(),
 });
 
+export const ArkhamDbIdentityStateSchema = z.object({
+  lastError: z.string().nullish(),
+  lastSyncedAt: z.string().nullish(),
+  status: z.enum(["healthy", "unhealthy"]),
+  username: z.string().nullish(),
+});
+
 export const ArkhamDBIdentitySchema = z.object({
   provider: z.literal("arkhamdb"),
   providerUserId: z.string(),
-  details: z.object({
-    status: z.enum(["healthy", "unhealthy"]),
-    createdAt: z.string(),
-    lastSyncedAt: z.string().nullish(),
-    username: z.string().nullish(),
-  }),
+  canDisconnect: z.boolean(),
+  details: ArkhamDbIdentityStateSchema,
 });
 
 export const OAuthIdentitySchema = z.object({
   provider: z.string().refine((provider) => provider !== "email"),
   providerUserId: z.string(),
+  canDisconnect: z.boolean(),
 });
 
 export const IdentitySchema = z.union([
@@ -90,6 +94,7 @@ export const IdentitySchema = z.union([
 export type EmailIdentity = z.infer<typeof EmailIdentitySchema>;
 export type OAuthIdentity = z.infer<typeof OAuthIdentitySchema>;
 export type Identity = z.infer<typeof IdentitySchema>;
+export type ArkhamDbIdentityState = z.infer<typeof ArkhamDbIdentityStateSchema>;
 export type ArkhamDBIdentity = z.infer<typeof ArkhamDBIdentitySchema>;
 
 export function isArkhamDBIdentity(

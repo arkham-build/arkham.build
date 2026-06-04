@@ -369,7 +369,10 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
       const remoteDecks = isEmpty(plan.fetchIds)
         ? []
-        : await fetchDeckBatch(client, { ids: plan.fetchIds });
+        : await fetchDeckBatch(client, {
+            ids: plan.fetchIds,
+            arkhamdbSyncToken: manifest.arkhamdbSyncToken,
+          });
 
       const remoteDeckIds = new Set(remoteDecks.map((deck) => String(deck.id)));
 
@@ -417,6 +420,10 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       });
       await dehydrate(get(), "app");
       throw error;
+    } finally {
+      if (isCurrentAccount(get(), accountId)) {
+        await get().refreshSession(client);
+      }
     }
   },
 

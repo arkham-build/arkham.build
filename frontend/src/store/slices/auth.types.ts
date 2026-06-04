@@ -12,4 +12,5 @@ export type AuthSlice = {
   initSession(client: HttpClient): Promise<void>;
   login(client: HttpClient, payload: LoginRequest): Promise<void>;
   logout(client: HttpClient): Promise<void>;
+  refreshSession(client: HttpClient): Promise<void>;
 };

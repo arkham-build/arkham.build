@@ -67,6 +67,9 @@ type Props = {
   type: DeckDisplayType;
 };
 
+const uploadProviders = ["account", "arkhamdb"] as const;
+type UploadProvider = (typeof uploadProviders)[number];
+
 export function Sidebar(props: Props) {
   const { className, history, innerClassName, origin, deck, type } = props;
 
@@ -181,10 +184,13 @@ function SidebarActions(props: {
 
   const uploadDeckToProvider = useUploadDeckToProvider();
 
-  const onAccountUpload = useCallback(() => {
-    setActionsOpen(false);
-    uploadDeckToProvider(deck.id);
-  }, [deck.id, uploadDeckToProvider]);
+  const onUpload = useCallback(
+    (provider: UploadProvider) => {
+      setActionsOpen(false);
+      void uploadDeckToProvider(deck.id, provider);
+    },
+    [deck.id, uploadDeckToProvider],
+  );
 
   const onUpgradeModalOpenChange = useCallback((val: boolean) => {
     setUpgradeModalOpen(val);
@@ -228,8 +234,8 @@ function SidebarActions(props: {
   const storageProviderOptions = useStore(
     selectDeckCreateStorageProviderOptions,
   );
-  const accountProvider = storageProviderOptions.find(
-    (option) => option.value === "account",
+  const availableUploadProviders = uploadProviders.filter((provider) =>
+    storageProviderOptions.some((option) => option.value === provider),
   );
 
   useHotkey("e", onEdit, {
@@ -380,15 +386,21 @@ function SidebarActions(props: {
                     <CopyIcon />
                     {t("deck.actions.duplicate_short")}
                   </DropdownButton>
-                  {isLocalOnly && !!accountProvider && (
-                    <DropdownButton
-                      data-testid="view-upload-account"
-                      onClick={onAccountUpload}
-                    >
-                      <UploadIcon />
-                      {t("deck_view.actions.upload_remote")}
-                    </DropdownButton>
-                  )}
+                  {isLocalOnly &&
+                    availableUploadProviders.map((provider) => (
+                      <DropdownButton
+                        key={provider}
+                        data-testid={`view-upload-${provider}`}
+                        onClick={() => onUpload(provider)}
+                      >
+                        <UploadIcon />
+                        {t("deck_view.actions.upload", {
+                          provider: t(
+                            `deck_edit.config.storage_provider.${provider}`,
+                          ),
+                        })}
+                      </DropdownButton>
+                    ))}
                   <DropdownButton
                     data-testid="view-archive"
                     hotkey="cmd+a"
@@ -470,13 +482,22 @@ function Sharing(props: {
   const { t } = useTranslation();
 
   const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
+  const storageProviderOptions = useStore(
+    selectDeckCreateStorageProviderOptions,
+  );
 
   const isSynced = isSyncedStorageProvider(deck.source);
+  const availableUploadProviders = uploadProviders.filter((provider) =>
+    storageProviderOptions.some((option) => option.value === provider),
+  );
   const uploadDeckToProvider = useUploadDeckToProvider();
 
-  const onUpload = useCallback(() => {
-    void uploadDeckToProvider(deck.id);
-  }, [deck.id, uploadDeckToProvider]);
+  const onUpload = useCallback(
+    (provider: UploadProvider) => {
+      void uploadDeckToProvider(deck.id, provider);
+    },
+    [deck.id, uploadDeckToProvider],
+  );
 
   return (
     <section className={css["details"]} data-testid="share">
@@ -506,10 +527,24 @@ function Sharing(props: {
         ) : (
           <div className={css["share-empty"]}>
             <p>{t("deck_view.sharing.description")}</p>
-            <Button onClick={onUpload} size="sm">
-              <UploadIcon />
-              {t("deck_view.actions.upload_remote")}
-            </Button>
+            {availableUploadProviders.length > 0 && (
+              <nav className={css["share-actions"]}>
+                {availableUploadProviders.map((provider) => (
+                  <Button
+                    key={provider}
+                    onClick={() => onUpload(provider)}
+                    size="sm"
+                  >
+                    <UploadIcon />
+                    {t("deck_view.actions.upload", {
+                      provider: t(
+                        `deck_edit.config.storage_provider.${provider}`,
+                      ),
+                    })}
+                  </Button>
+                ))}
+              </nav>
+            )}
           </div>
         )}
       </DeckDetail>

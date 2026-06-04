@@ -490,6 +490,19 @@ CREATE TABLE public.account_settings (
 
 
 --
+-- Name: arkhamdb_deck_snapshot; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arkhamdb_deck_snapshot (
+    id uuid DEFAULT uuidv7() NOT NULL,
+    account_identity_id uuid NOT NULL,
+    last_modified text,
+    decks jsonb NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: arkhamdb_decklist; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1243,6 +1256,14 @@ ALTER TABLE ONLY public.account_settings
 
 
 --
+-- Name: arkhamdb_deck_snapshot arkhamdb_deck_snapshot_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arkhamdb_deck_snapshot
+    ADD CONSTRAINT arkhamdb_deck_snapshot_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: arkhamdb_decklist arkhamdb_decklist_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1661,6 +1682,13 @@ CREATE INDEX idx_account_settings_account_id ON public.account_settings USING bt
 
 
 --
+-- Name: idx_arkhamdb_deck_snapshot_account_identity_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_arkhamdb_deck_snapshot_account_identity_id ON public.arkhamdb_deck_snapshot USING btree (account_identity_id);
+
+
+--
 -- Name: idx_arkhamdb_decklist_canonical_investigator_code; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2072,6 +2100,14 @@ ALTER TABLE ONLY public.account_identity
 
 ALTER TABLE ONLY public.account_settings
     ADD CONSTRAINT account_settings_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id) ON DELETE CASCADE;
+
+
+--
+-- Name: arkhamdb_deck_snapshot arkhamdb_deck_snapshot_account_identity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arkhamdb_deck_snapshot
+    ADD CONSTRAINT arkhamdb_deck_snapshot_account_identity_id_fkey FOREIGN KEY (account_identity_id) REFERENCES public.account_identity(id) ON DELETE CASCADE;
 
 
 --
@@ -2511,4 +2547,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260524095500'),
     ('20260529120000'),
     ('20260604090000'),
+    ('20260604103000'),
     ('20260604123000');

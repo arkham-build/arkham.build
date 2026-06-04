@@ -1,19 +1,40 @@
+import assert from "node:assert";
 import {
   DeckBatchRequestSchema,
   DeckBatchResponseSchema,
   DeckConflictResponseSchema,
-  DeckCreateRequestSchema,
+  type DeckDeleteRequest,
   DeckDeleteRequestSchema,
+  type DeckManifestItem,
+  DeckManifestItemSchema,
   DeckManifestResponseSchema,
   DeckSchema,
+  type DeckUpdateRequest,
   DeckUpdateRequestSchema,
+  type DeckUpgradeRequest,
   DeckUpgradeRequestSchema,
+  type Deck as SharedDeck,
 } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { ApiError } from "../../lib/arkhamdb/api-client/core/errors.ts";
+import {
+  ARKHAMDB_PROVIDER_TYPE,
+  isArkhamDbDeckId,
+} from "../../lib/arkhamdb/api-client/mapping.ts";
+import {
+  createArkhamDbDeck,
+  deleteArkhamDbDeck,
+  fetchArkhamDbDeck,
+  fetchArkhamDbDeckBatch,
+  fetchArkhamDbDeckManifest,
+  saveArkhamDbDeck,
+  upgradeArkhamDbDeck,
+} from "../../lib/arkhamdb/api-client/user-service.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
 import { sessionAuth } from "../auth/lib/session-auth-middleware.ts";
+import { getAccountIdentityByAccountIdAndProvider } from "../auth/queries/identities.ts";
 import {
   ACCOUNT_PROVIDER_TYPE,
   createDeckManifestVersion,
@@ -29,18 +50,42 @@ import {
 const routes = new Hono<HonoEnv>();
 
 routes.get("/manifest", sessionAuth(), async (c) => {
-  const decks = await listAccountDecksForManifest(
-    c.get("db"),
-    c.get("account").id,
+  const db = c.get("db");
+  const accountId = c.get("account").id;
+
+  const arkhamdbIdentity = await getAccountIdentityByAccountIdAndProvider(
+    db,
+    accountId,
+    "arkhamdb",
   );
+
+  let arkhamdbDeckManifest: DeckManifestItem[] = [];
+  let arkhamdbSyncToken: string | null = null;
+
+  if (arkhamdbIdentity) {
+    try {
+      const remoteManifest = await fetchArkhamDbDeckManifest(c);
+      arkhamdbDeckManifest = remoteManifest.decks;
+      arkhamdbSyncToken = remoteManifest.arkhamdbSyncToken;
+    } catch {}
+  }
+
+  const accountDecks = await listAccountDecksForManifest(db, accountId);
+
+  const accountDeckManifest = accountDecks.map((deck) =>
+    DeckManifestItemSchema.parse({
+      id: deck.id,
+      updatedAt: deck.updated_at.toISOString(),
+      version: deck.version ?? "",
+    }),
+  );
+
+  const decks = [...accountDeckManifest, ...arkhamdbDeckManifest];
 
   const manifest = DeckManifestResponseSchema.parse({
     version: createDeckManifestVersion(decks),
-    decks: decks.map((deck) => ({
-      id: deck.id,
-      version: deck.version ?? "",
-      updatedAt: deck.updated_at.toISOString(),
-    })),
+    decks,
+    arkhamdbSyncToken,
   });
 
   return c.json(manifest);
@@ -51,28 +96,120 @@ routes.post(
   sessionAuth(),
   zodValidator("json", DeckBatchRequestSchema),
   async (c) => {
-    const { ids } = c.req.valid("json");
-    const decks = await listAccountDecksByIds(
+    const { arkhamdbSyncToken, ids } = c.req.valid("json");
+
+    const accountIds = ids.filter((id) => !isArkhamDbDeckId(id)).map(String);
+    const arkhamdbIds = ids.filter(isArkhamDbDeckId);
+
+    const accountDecks = await listAccountDecksByIds(
       c.get("db"),
       c.get("account").id,
-      ids.map(String),
+      accountIds,
     );
 
-    return c.json(DeckBatchResponseSchema.parse(decks.map(mapDeckRowToDto)));
+    const decksById = new Map(
+      accountDecks.map((deck) => [String(deck.id), mapDeckRowToDto(deck)]),
+    );
+
+    if (arkhamdbIds.length) {
+      const arkhamdbDecks = await fetchArkhamDbDeckBatch(
+        c,
+        arkhamdbIds,
+        arkhamdbSyncToken ?? undefined,
+      );
+
+      for (const deck of arkhamdbDecks) {
+        decksById.set(String(deck.id), deck);
+      }
+    }
+
+    return c.json(
+      DeckBatchResponseSchema.parse(
+        ids.map((id) => {
+          const deck = decksById.get(String(id));
+          assert(deck, `Missing deck ${String(id)} in batch response.`);
+          return deck;
+        }),
+      ),
+    );
+  },
+);
+
+routes.post("/", sessionAuth(), zodValidator("json", DeckSchema), async (c) => {
+  const payload = c.req.valid("json");
+  const deck =
+    payload.source === ARKHAMDB_PROVIDER_TYPE
+      ? await arkhamdbCrud.create(c, payload)
+      : await localCrud.create(c, payload);
+
+  return c.json(DeckSchema.parse(deck));
+});
+
+routes.put(
+  "/:id",
+  sessionAuth(),
+  zodValidator("json", DeckUpdateRequestSchema),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const deckId = c.req.param("id");
+
+    assertMatchingDeckId(deckId, payload.id);
+
+    const deck = isArkhamDbDeckId(deckId)
+      ? await arkhamdbCrud.update(c, deckId, payload)
+      : await localCrud.update(c, deckId, payload);
+
+    return c.json(DeckSchema.parse(deck));
+  },
+);
+
+routes.delete(
+  "/:id",
+  sessionAuth(),
+  zodValidator("json", DeckDeleteRequestSchema),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const deckId = c.req.param("id");
+
+    if (isArkhamDbDeckId(deckId)) {
+      await arkhamdbCrud.delete(c, deckId, payload);
+    } else {
+      await localCrud.delete(c, deckId, payload);
+    }
+
+    return new Response(null, { status: 204 });
   },
 );
 
 routes.post(
-  "/",
+  "/upgrade/:id",
   sessionAuth(),
-  zodValidator("json", DeckCreateRequestSchema),
+  zodValidator("json", DeckUpgradeRequestSchema),
   async (c) => {
+    const payload = c.req.valid("json");
+    const previousDeckId = c.req.param("id");
+
+    assertUpgradeTargetDiffers(previousDeckId, payload.deck.id);
+
+    const deck = isArkhamDbDeckId(previousDeckId)
+      ? await arkhamdbCrud.upgrade(c, previousDeckId, payload)
+      : await localCrud.upgrade(c, previousDeckId, payload);
+
+    return c.json(DeckSchema.parse(deck));
+  },
+);
+
+export default routes;
+
+type DeckContext = Parameters<typeof fetchArkhamDbDeck>[0];
+
+const localCrud = {
+  async create(c: DeckContext, payload: SharedDeck) {
     const db = c.get("db");
     const accountId = c.get("account").id;
-    const payload = c.req.valid("json");
-    const { id, version, ...deckPayload } = payload;
+    const { id, source: _, version, ...deckPayload } = payload;
 
-    const created = await db
+    const deck = await db
       .insertInto("deck")
       .values({
         ...mapDeckWriteDtoToInsert(deckPayload),
@@ -84,49 +221,24 @@ routes.post(
       .returningAll()
       .executeTakeFirstOrThrow();
 
-    return c.json(DeckSchema.parse(mapDeckRowToDto(created)));
+    return mapDeckRowToDto(deck);
   },
-);
 
-routes.put(
-  "/:id",
-  sessionAuth(),
-  zodValidator("json", DeckUpdateRequestSchema),
-  async (c) => {
+  async update(c: DeckContext, deckId: string, payload: DeckUpdateRequest) {
     const db = c.get("db");
     const accountId = c.get("account").id;
-    const payload = c.req.valid("json");
-    const deckId = c.req.param("id");
     const current = await findAccountDeckById(db, accountId, deckId);
 
-    if (payload.id !== deckId) {
-      throw new HTTPException(400, {
-        message: "Deck id in request body must match route parameter",
-      });
-    }
-
     if (!current) {
-      throw new HTTPException(409, {
-        message: "Stored deck version does not match the expected version",
-        cause: DeckConflictResponseSchema.parse({
-          remoteDeck: null,
-          remoteVersion: null,
-        }),
-      });
+      throwDeckConflict(null, null);
     }
 
     if ((current.version ?? "") !== payload.expectedVersion) {
-      throw new HTTPException(409, {
-        message: "Stored deck version does not match the expected version",
-        cause: DeckConflictResponseSchema.parse({
-          remoteDeck: mapDeckRowToDto(current),
-          remoteVersion: current.version ?? null,
-        }),
-      });
+      throwDeckConflict(mapDeckRowToDto(current), current.version ?? null);
     }
 
     const { expectedVersion: _, id: __, version, ...deckPayload } = payload;
-    const updated = await db
+    const deck = await db
       .updateTable("deck")
       .set({
         ...mapDeckWriteDtoToInsert(deckPayload),
@@ -138,110 +250,86 @@ routes.put(
       .returningAll()
       .executeTakeFirstOrThrow();
 
-    return c.json(DeckSchema.parse(mapDeckRowToDto(updated)));
+    return mapDeckRowToDto(deck);
   },
-);
 
-routes.delete(
-  "/:id",
-  sessionAuth(),
-  zodValidator("json", DeckDeleteRequestSchema),
-  async (c) => {
+  async delete(c: DeckContext, deckId: string, payload: DeckDeleteRequest) {
     const db = c.get("db");
     const accountId = c.get("account").id;
-    const { expectedVersion } = c.req.valid("json");
-    const current = await findAccountDeckById(db, accountId, c.req.param("id"));
+    const current = await findAccountDeckById(db, accountId, deckId);
 
     if (!current) {
-      throw new HTTPException(409, {
-        message: "Stored deck version does not match the expected version",
-        cause: DeckConflictResponseSchema.parse({
-          remoteDeck: null,
-          remoteVersion: null,
-        }),
-      });
+      throwDeckConflict(null, null);
     }
 
-    if ((current.version ?? "") !== expectedVersion) {
-      throw new HTTPException(409, {
-        message: "Stored deck version does not match the expected version",
-        cause: DeckConflictResponseSchema.parse({
-          remoteDeck: mapDeckRowToDto(current),
-          remoteVersion: current.version ?? null,
-        }),
-      });
+    if ((current.version ?? "") !== payload.expectedVersion) {
+      throwDeckConflict(mapDeckRowToDto(current), current.version ?? null);
     }
 
     await db.deleteFrom("deck").where("id", "=", current.id).executeTakeFirst();
-    return new Response(null, { status: 204 });
   },
-);
 
-routes.post(
-  "/upgrade/:id",
-  sessionAuth(),
-  zodValidator("json", DeckUpgradeRequestSchema),
-  async (c) => {
+  async upgrade(
+    c: DeckContext,
+    previousDeckId: string,
+    payload: DeckUpgradeRequest,
+  ) {
     const db = c.get("db");
     const accountId = c.get("account").id;
-    const previousDeckId = c.req.param("id");
-    const { deck, expectedVersion } = c.req.valid("json");
+    const { deck, expectedVersion } = payload;
+    const current = await findAccountDeckById(db, accountId, previousDeckId);
 
-    if (String(deck.id) === previousDeckId) {
-      throw new HTTPException(400, {
-        message: "Upgraded deck id must differ from previous deck id",
-      });
+    if (!current) {
+      throwDeckConflict(null, null);
     }
 
-    const created = await db.transaction().execute(async (tx) => {
-      const current = await tx
+    if (current.version !== expectedVersion) {
+      throwDeckConflict(mapDeckRowToDto(current), current.version ?? null);
+    }
+
+    if (current.next_deck) {
+      throwDeckConflict(
+        mapDeckRowToDto(current),
+        current.version ?? null,
+        "Deck already has an upgrade",
+      );
+    }
+
+    const nextDeck = await db.transaction().execute(async (tx) => {
+      const lockedCurrent = await tx
         .selectFrom("deck")
         .selectAll()
         .where("account_id", "=", accountId)
+        .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
         .where("id", "=", previousDeckId)
         .forUpdate()
-        .executeTakeFirst();
+        .executeTakeFirstOrThrow();
 
-      if (!current) {
-        throw new HTTPException(409, {
-          message: "Stored deck version does not match the expected version",
-          cause: DeckConflictResponseSchema.parse({
-            remoteDeck: null,
-            remoteVersion: null,
-          }),
-        });
+      if (lockedCurrent.version !== expectedVersion) {
+        throwDeckConflict(
+          mapDeckRowToDto(lockedCurrent),
+          lockedCurrent.version ?? null,
+        );
       }
 
-      if (current.version !== expectedVersion) {
-        throw new HTTPException(409, {
-          message: "Stored deck version does not match the expected version",
-          cause: DeckConflictResponseSchema.parse({
-            remoteDeck: mapDeckRowToDto(current),
-            remoteVersion: current.version ?? null,
-          }),
-        });
+      if (lockedCurrent.next_deck) {
+        throwDeckConflict(
+          mapDeckRowToDto(lockedCurrent),
+          lockedCurrent.version ?? null,
+          "Deck already has an upgrade",
+        );
       }
 
-      if (current.next_deck) {
-        throw new HTTPException(409, {
-          message: "Deck already has an upgrade",
-          cause: DeckConflictResponseSchema.parse({
-            remoteDeck: mapDeckRowToDto(current),
-            remoteVersion: current.version ?? null,
-          }),
-        });
-      }
-
-      const { id, version, ...deckPayload } = deck;
+      const { id, source: _, version, ...deckPayload } = deck;
       const createdDeckId = String(id);
 
-      const created = await tx
+      const createdDeck = await tx
         .insertInto("deck")
         .values({
           ...mapDeckWriteDtoToInsert({
             ...deckPayload,
             next_deck: null,
-            previous_deck: current.id,
+            previous_deck: lockedCurrent.id,
           }),
           account_id: accountId,
           id: createdDeckId,
@@ -254,14 +342,130 @@ routes.post(
       await tx
         .updateTable("deck")
         .set({ next_deck: createdDeckId, updated_at: new Date() })
-        .where("id", "=", current.id)
+        .where("id", "=", lockedCurrent.id)
         .executeTakeFirst();
 
-      return created;
+      return createdDeck;
     });
 
-    return c.json(DeckSchema.parse(mapDeckRowToDto(created)));
+    return mapDeckRowToDto(nextDeck);
   },
-);
+};
 
-export default routes;
+const arkhamdbCrud = {
+  create(c: DeckContext, payload: SharedDeck) {
+    return createArkhamDbDeck(c, payload);
+  },
+
+  async update(c: DeckContext, deckId: string, payload: DeckUpdateRequest) {
+    const current = await fetchArkhamDbDeckOrNull(c, deckId);
+
+    if (!current) {
+      throwDeckConflict(null, null);
+    }
+
+    if (current.version !== payload.expectedVersion) {
+      throwDeckConflict(current, current.version);
+    }
+
+    return await saveArkhamDbDeck(c, deckId, payload);
+  },
+
+  async delete(c: DeckContext, deckId: string, payload: DeckDeleteRequest) {
+    const current = await fetchArkhamDbDeckOrNull(c, deckId);
+
+    if (!current) {
+      throwDeckConflict(null, null);
+    }
+
+    if (current.version !== payload.expectedVersion) {
+      throwDeckConflict(current, current.version);
+    }
+
+    await deleteArkhamDbDeck(c, deckId);
+  },
+
+  async upgrade(
+    c: DeckContext,
+    previousDeckId: string,
+    payload: DeckUpgradeRequest,
+  ) {
+    const current = await fetchArkhamDbDeckOrNull(c, previousDeckId);
+
+    if (!current) {
+      throwDeckConflict(null, null);
+    }
+
+    if (current.version !== payload.expectedVersion) {
+      throwDeckConflict(current, current.version);
+    }
+
+    if (current.next_deck) {
+      throwDeckConflict(
+        current,
+        current.version,
+        "Deck already has an upgrade",
+      );
+    }
+
+    const currentCarryoverXp =
+      (current.xp ?? 0) +
+      (current.xp_adjustment ?? 0) -
+      (current.xp_spent ?? 0);
+    const upgradeXp = Math.max((payload.deck.xp ?? 0) - currentCarryoverXp, 0);
+
+    return await upgradeArkhamDbDeck(c, previousDeckId, {
+      exile_string: payload.deck.exile_string,
+      meta: payload.deck.meta,
+      xp: upgradeXp,
+    });
+  },
+};
+
+function assertMatchingDeckId(routeId: string, payloadId: SharedDeck["id"]) {
+  if (String(payloadId) !== routeId) {
+    throw new HTTPException(400, {
+      message: "Deck id in request body must match route parameter",
+    });
+  }
+}
+
+function assertUpgradeTargetDiffers(
+  previousDeckId: string,
+  nextDeckId: SharedDeck["id"],
+) {
+  if (String(nextDeckId) === previousDeckId) {
+    throw new HTTPException(400, {
+      message: "Upgraded deck id must differ from previous deck id",
+    });
+  }
+}
+
+async function fetchArkhamDbDeckOrNull(
+  c: Parameters<typeof fetchArkhamDbDeck>[0],
+  id: string,
+) {
+  try {
+    return await fetchArkhamDbDeck(c, id);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+function throwDeckConflict(
+  remoteDeck: SharedDeck | null,
+  remoteVersion: string | null,
+  message = "Stored deck version does not match the expected version",
+): never {
+  throw new HTTPException(409, {
+    message,
+    cause: DeckConflictResponseSchema.parse({
+      remoteDeck,
+      remoteVersion,
+    }),
+  });
+}

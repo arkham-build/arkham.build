@@ -53,6 +53,45 @@ describe("app deck write-through actions", () => {
     });
   });
 
+  it("uploads a local deck to arkhamdb storage", async () => {
+    const deck = makeTestDeck({ id: "local", source: null, version: "0.1" });
+    const remoteDeck = { ...deck, source: "arkhamdb" as const, version: "1" };
+
+    vi.mocked(deckRequests.postDeck).mockResolvedValue(remoteDeck);
+    setAuthenticated(store, [
+      {
+        provider: "arkhamdb",
+        providerUserId: "123",
+        canDisconnect: true,
+        details: {
+          lastError: null,
+          lastSyncedAt: null,
+          status: "healthy",
+          username: "test-user",
+        },
+      },
+    ]);
+    store.setState({
+      data: makeData({ decks: { local: deck }, history: { local: [] } }),
+      deckEdits: { local: { name: "Unsaved" } },
+    });
+
+    const id = await store
+      .getState()
+      .uploadDeckToProvider(client, "local", "arkhamdb");
+
+    expect(id).toBe("local");
+    expect(deckRequests.postDeck).toHaveBeenCalledWith(expect.anything(), {
+      ...deck,
+      source: "arkhamdb",
+    });
+    expect(store.getState().data.decks.local.source).toBe("arkhamdb");
+    expect(store.getState().sync.decks.items.local).toMatchObject({
+      version: "1",
+      status: "synced",
+    });
+  });
+
   it("syncs folders after upload when the deck id changes", async () => {
     const deck = makeTestDeck({ id: "local", source: null, version: "0.1" });
     const remoteDeck = makeTestDeck({
@@ -125,6 +164,41 @@ describe("app deck write-through actions", () => {
     expect(id).toBe("remote");
     expect(deckRequests.postDeck).toHaveBeenCalledOnce();
     expect(store.getState().data.decks.remote.source).toBe("account");
+    expect(store.getState().sync.decks.items.remote).toMatchObject({
+      version: "1",
+      status: "synced",
+    });
+  });
+
+  it("creates arkhamdb decks when an arkhamdb identity is connected", async () => {
+    const remoteDeck = makeTestDeck({
+      id: "remote",
+      source: "arkhamdb",
+      version: "1",
+    });
+
+    vi.mocked(deckRequests.postDeck).mockResolvedValue(remoteDeck);
+    setAuthenticated(store, [
+      {
+        provider: "arkhamdb",
+        providerUserId: "123",
+        canDisconnect: true,
+        details: {
+          lastError: null,
+          lastSyncedAt: null,
+          status: "healthy",
+          username: "test-user",
+        },
+      },
+    ]);
+    store.getState().initCreate("01001");
+    store.getState().deckCreateSetProvider("arkhamdb");
+
+    const id = await store.getState().createDeck(client);
+
+    expect(id).toBe("remote");
+    expect(deckRequests.postDeck).toHaveBeenCalledOnce();
+    expect(store.getState().data.decks.remote.source).toBe("arkhamdb");
     expect(store.getState().sync.decks.items.remote).toMatchObject({
       version: "1",
       status: "synced",
@@ -326,13 +400,16 @@ describe("app deck write-through actions", () => {
   });
 });
 
-function setAuthenticated(store: StoreApi<StoreState>) {
+function setAuthenticated(
+  store: StoreApi<StoreState>,
+  identities: NonNullable<StoreState["auth"]["session"]>["identities"] = [],
+) {
   store.setState({
     auth: {
       status: "authenticated",
       session: {
         account: { id: "account-id", name: "user" },
-        identities: [],
+        identities,
       },
     },
   });

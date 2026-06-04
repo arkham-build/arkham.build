@@ -3,6 +3,8 @@
 export {
   type ArkhamDBIdentity,
   ArkhamDBIdentitySchema,
+  type ArkhamDbIdentityState,
+  ArkhamDbIdentityStateSchema,
   type CompleteProfileRequest,
   CompleteProfileRequestSchema,
   type CreateEmailIdentityRequest,
@@ -45,8 +47,6 @@ export {
   DeckBatchResponseSchema,
   type DeckConflictResponse,
   DeckConflictResponseSchema,
-  type DeckCreateRequest,
-  DeckCreateRequestSchema,
   type DeckDeleteRequest,
   DeckDeleteRequestSchema,
   type DeckManifestItem,
@@ -57,6 +57,8 @@ export {
   DeckUpdateRequestSchema,
   type DeckUpgradeRequest,
   DeckUpgradeRequestSchema,
+  type DeckWritePayload,
+  DeckWritePayloadSchema,
 } from "./dtos/deck-sync.schema.ts";
 export {
   type DecklistMetaResponse,

@@ -96,6 +96,14 @@ export interface ArkhamdbDecklist {
   xp_spent: number | null;
 }
 
+export interface ArkhamdbDeckSnapshot {
+  account_identity_id: string;
+  created_at: Generated<Timestamp>;
+  decks: Json;
+  id: Generated<string>;
+  last_modified: string | null;
+}
+
 export interface ArkhamdbRankingCache {
   id: Generated<number>;
   max_like_count: number;
@@ -555,6 +563,7 @@ export interface DB {
   account_folder: AccountFolder;
   account_identity: AccountIdentity;
   account_settings: AccountSettings;
+  arkhamdb_deck_snapshot: ArkhamdbDeckSnapshot;
   arkhamdb_decklist: ArkhamdbDecklist;
   arkhamdb_ranking_cache: ArkhamdbRankingCache;
   arkhamdb_user: ArkhamdbUser;

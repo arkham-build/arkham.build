@@ -40,8 +40,16 @@ routes.get("/me", sessionAuth(), async (c) => {
   const db = c.get("db");
   const account = c.get("account");
   const identities = await listAccountIdentitiesByAccountId(db, account.id);
+  const canDisconnectOAuthIdentity =
+    (await countUsableLoginIdentities(db, account.id)) > 1;
 
-  return c.json(mapAccountSessionToResponse(account, identities));
+  return c.json(
+    mapAccountSessionToResponse(
+      account,
+      identities,
+      canDisconnectOAuthIdentity,
+    ),
+  );
 });
 
 routes.post(
@@ -268,18 +276,20 @@ routes.delete("/oauth/:provider", sessionAuth(), async (c) => {
     });
   }
 
-  const usableLoginIdentityCount = await countUsableLoginIdentities(
-    db,
-    account.id,
-  );
+  await db.transaction().execute(async (tx) => {
+    const usableLoginIdentityCount = await countUsableLoginIdentities(
+      db,
+      account.id,
+    );
 
-  if (usableLoginIdentityCount <= 1) {
-    throw new HTTPException(400, {
-      message: "Account must have at least one login identity",
-    });
-  }
+    if (usableLoginIdentityCount <= 1) {
+      throw new HTTPException(400, {
+        message: "Account must have at least one login identity",
+      });
+    }
 
-  await disconnectOAuthIdentity(db, account.id, provider);
+    await disconnectOAuthIdentity(tx, account.id, provider);
+  });
 
   return new Response(null, { status: 200 });
 });

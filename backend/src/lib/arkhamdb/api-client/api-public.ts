@@ -1,18 +1,21 @@
 import type { Context } from "hono";
+import type { z } from "zod";
 import type { HonoEnv } from "../../hono-env.ts";
-import { request } from "./core/request.ts";
-import type { ArkhamDBDeck } from "./core/responses.ts";
+import {
+  type ArkhamDbRemoteDeck,
+  ArkhamDbRemoteDeckSchema,
+} from "./core/dtos.ts";
+import { request, type WrappedResponse } from "./core/request.ts";
 
-export async function fetchDeck(
+export function fetchDeck(
   c: Context<HonoEnv>,
   query: { id: string | number; type: string },
 ) {
-  const res = await publicRequest<ArkhamDBDeck>(
+  return publicRequest(
     c,
     `/${query.type}/${query.id}`,
+    ArkhamDbRemoteDeckSchema,
   );
-
-  return res;
 
   // return {
   //   ...res,
@@ -23,7 +26,7 @@ export async function fetchDeck(
 export async function fetchDeckHistory(
   c: Context<HonoEnv>,
   id: string | number,
-): Promise<ArkhamDBDeck[]> {
+): Promise<ArkhamDbRemoteDeck[]> {
   const { data: deck } = await fetchDeck(c, { id, type: "deck" });
 
   const [nextDecks, previousDecks] = await Promise.all([
@@ -36,10 +39,10 @@ export async function fetchDeckHistory(
 
 async function fetchSurroundingDeck(
   c: Context<HonoEnv>,
-  deck: ArkhamDBDeck,
+  deck: ArkhamDbRemoteDeck,
   idKey: "next_deck" | "previous_deck",
-  decks: ArkhamDBDeck[] = [],
-): Promise<ArkhamDBDeck[]> {
+  decks: ArkhamDbRemoteDeck[] = [],
+): Promise<ArkhamDbRemoteDeck[]> {
   if (!deck[idKey]) {
     return Promise.resolve(decks);
   }
@@ -54,10 +57,19 @@ async function fetchSurroundingDeck(
   return fetchSurroundingDeck(c, data, idKey, decks);
 }
 
-function publicRequest<T>(c: Context<HonoEnv>, path: string) {
-  return request<T>(c, `/api/public${path}`, {
+async function publicRequest<T>(
+  c: Context<HonoEnv>,
+  path: string,
+  schema: z.ZodType<T>,
+): Promise<WrappedResponse<T>> {
+  const response = await request<unknown>(c, `/api/public${path}`, {
     headers: {
       "X-Forwarded-For": c.req.header("CF-Connecting-IP") ?? "",
     },
   });
+
+  return {
+    ...response,
+    data: schema.parse(response.data),
+  };
 }

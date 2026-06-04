@@ -202,6 +202,48 @@ describe("sync reconciliation", () => {
       expect(result.syncDecks.items.remote).toBeUndefined();
     });
 
+    it("repairs deck links when only the child deck was fetched", () => {
+      const result = applyRemoteDeckReconciliation({
+        accountId: "account-id",
+        data: makeData({
+          decks: {
+            parent: makeDeck("parent", "v1", {
+              source: "arkhamdb",
+            }),
+          },
+        }),
+        deckEdits: {},
+        manifest: makeManifest([
+          ["parent", "v1"],
+          ["child", "v1"],
+        ]),
+        plan: {
+          fetchIds: ["child"],
+          removeIds: [],
+          skippedIds: [],
+        },
+        remoteDecks: [
+          makeDeck("child", "v1", {
+            source: "arkhamdb",
+            previous_deck: "parent",
+          }),
+        ],
+        syncDecks: makeSyncDecks({
+          parent: makeSyncItem("v1"),
+        }),
+      });
+
+      expect(result.data.decks.parent).toMatchObject({
+        id: "parent",
+        next_deck: "child",
+      });
+      expect(result.data.decks.child).toMatchObject({
+        id: "child",
+        previous_deck: "parent",
+      });
+      expect(result.data.history).toEqual({ child: ["parent"] });
+    });
+
     it("does not commit the manifest version when a deck is skipped", () => {
       const result = applyRemoteDeckReconciliation({
         accountId: "account-id",

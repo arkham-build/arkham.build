@@ -112,6 +112,52 @@ describe("sync slice", () => {
     expect(syncDecks).toHaveBeenCalledOnce();
   });
 
+  it("refreshes the session after syncing decks", async () => {
+    const refreshSession = vi.fn().mockResolvedValue(undefined);
+
+    vi.mocked(deckRequests.fetchDeckManifest).mockResolvedValue({
+      version: "1",
+      decks: [],
+      arkhamdbSyncToken: null,
+    });
+
+    store.setState({
+      auth: {
+        status: "authenticated",
+        session: {
+          account: {
+            id: "account-id",
+            name: "User",
+          },
+          identities: [
+            {
+              provider: "email",
+              email: "user@example.com",
+              pendingEmail: null,
+              verified: true,
+            },
+          ],
+        },
+      },
+      sync: {
+        ...store.getState().sync,
+        decks: {
+          accountId: "account-id",
+          manifestVersion: "1",
+          lastSyncedAt: null,
+          status: "idle",
+          error: null,
+          items: {},
+        },
+      },
+      refreshSession,
+    });
+
+    await store.getState().syncDecks(getMockHttpClient());
+
+    expect(refreshSession).toHaveBeenCalledOnce();
+  });
+
   it("refreshes a conflicted deck with the remote deck", async () => {
     const remoteDeck = makeDeck({
       id: "remote",

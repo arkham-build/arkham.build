@@ -34,6 +34,7 @@ import {
   activatePendingAccountIdentityEmail,
   getAccountIdentity,
   getAccountIdentityByEmail,
+  getAccountIdentityByEmailOrPendingEmail,
   updateAccountIdentityVerified,
 } from "../queries/identities.ts";
 import { createSession, deleteSession } from "../queries/sessions.ts";
@@ -229,9 +230,17 @@ routes.post(
     const config = c.get("config");
     const dispatcher = c.get("dispatcher");
 
-    const accountIdentity = await getAccountIdentityByEmail(db, email);
+    const accountIdentity = await getAccountIdentityByEmailOrPendingEmail(
+      db,
+      email,
+    );
 
-    if (accountIdentity && !accountIdentity.verified_at) {
+    const shouldResend =
+      !!accountIdentity &&
+      ((accountIdentity.email === email && !accountIdentity.verified_at) ||
+        accountIdentity.pending_email === email);
+
+    if (shouldResend) {
       await assertVerificationTokenCooldown(db, email, "email_verification");
 
       const token = generateRandomToken();

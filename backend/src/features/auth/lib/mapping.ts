@@ -1,6 +1,8 @@
 import assert from "node:assert";
 import {
   type ArkhamDBIdentity,
+  type ArkhamDbIdentityState,
+  ArkhamDbIdentityStateSchema,
   SessionResponseSchema,
 } from "@arkham-build/shared";
 import type { Selectable } from "kysely";
@@ -13,6 +15,7 @@ type AccountIdentitySummary = Pick<
   | "pending_email"
   | "provider"
   | "provider_user_id"
+  | "state"
   | "verified_at"
 >;
 
@@ -21,6 +24,7 @@ type SessionAccount = Pick<Selectable<Account>, "id" | "name">;
 export function mapAccountSessionToResponse(
   account: SessionAccount,
   identities: AccountIdentitySummary[],
+  canDisconnect: boolean,
 ) {
   return SessionResponseSchema.parse({
     account: {
@@ -37,11 +41,12 @@ export function mapAccountSessionToResponse(
         };
       }
 
-      const arkhamdbIdentity = mapArkhamDbAccountIdentityToIdentity(identity);
+      const arkhamdbIdentity = mapArkhamDbAccountIdentityToIdentity(
+        identity,
+        canDisconnect,
+      );
 
-      if (arkhamdbIdentity) {
-        return arkhamdbIdentity;
-      }
+      if (arkhamdbIdentity) return arkhamdbIdentity;
 
       assert(
         identity.provider_user_id,
@@ -51,6 +56,7 @@ export function mapAccountSessionToResponse(
       return {
         provider: identity.provider,
         providerUserId: identity.provider_user_id,
+        canDisconnect,
       };
     }),
   });
@@ -58,6 +64,7 @@ export function mapAccountSessionToResponse(
 
 export function mapArkhamDbAccountIdentityToIdentity(
   identity: AccountIdentitySummary,
+  canDisconnect: boolean,
 ): ArkhamDBIdentity | null {
   if (identity.provider !== "arkhamdb") {
     return null;
@@ -68,14 +75,34 @@ export function mapArkhamDbAccountIdentityToIdentity(
     "OAuth identity is missing provider_user_id",
   );
 
+  const state = parseArkhamDbIdentityState(identity.state);
+
   return {
     provider: "arkhamdb",
     providerUserId: identity.provider_user_id,
+    canDisconnect,
     details: {
-      status: "healthy",
-      createdAt: identity.created_at.toISOString(),
-      lastSyncedAt: null,
-      username: null,
+      lastError: state.lastError ?? null,
+      lastSyncedAt: state.lastSyncedAt ?? null,
+      status: state.status,
+      username: state.username ?? null,
     },
   };
+}
+
+export function parseArkhamDbIdentityState(
+  state: AccountIdentity["state"],
+): ArkhamDbIdentityState {
+  const parsed = ArkhamDbIdentityStateSchema.safeParse(state);
+
+  if (!parsed.success) {
+    return {
+      lastError: null,
+      lastSyncedAt: null,
+      status: "healthy",
+      username: null,
+    };
+  }
+
+  return parsed.data;
 }

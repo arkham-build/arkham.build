@@ -12,7 +12,7 @@ import { useToast } from "@/components/ui/toast.hooks";
 import { useDisconnectOAuthIdentityMutation } from "@/queries/mutations/auth";
 import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
-import { formatDate } from "@/utils/formatting";
+import { formatDateTime } from "@/utils/formatting";
 import css from "./connections.module.css";
 import { Section } from "./section";
 
@@ -42,6 +42,7 @@ function Connection(props: { connection: OAuthConnection }) {
     (item) => item.provider === connection.provider,
   );
   const isConnected = !!identity;
+  const canDisconnect = identity ? isDisconnectable(identity) : false;
   const status = getConnectionStatus(identity);
   const statusProps =
     status === "connected"
@@ -110,7 +111,9 @@ function Connection(props: { connection: OAuthConnection }) {
                 {t("settings.account.oauth.reconnect")}
               </Button>
               <Button
-                disabled={disconnectOAuthIdentityMutation.isPending}
+                disabled={
+                  disconnectOAuthIdentityMutation.isPending || !canDisconnect
+                }
                 onClick={onDisconnect}
                 variant="secondary"
               >
@@ -153,7 +156,10 @@ function ConnectionDetails({ identity }: { identity: Identity }) {
       <dl className={css["details-properties"]}>
         {identity.details.username && (
           <>
-            <dt>{t("settings.account.profile.username")}</dt>
+            <dt>
+              {t("settings.account.oauth.providers.arkhamdb")}{" "}
+              {t("settings.account.profile.username")}
+            </dt>
             <dd>{identity.details.username}</dd>
           </>
         )}
@@ -163,13 +169,17 @@ function ConnectionDetails({ identity }: { identity: Identity }) {
             <dd>{identity.providerUserId}</dd>
           </>
         )}
-        <dt>{t("settings.account.oauth.created_at")}</dt>
-        <dd>{formatDate(identity.details.createdAt)}</dd>
+        <dt>{t("settings.account.oauth.sync_status")}</dt>
+        <dd>{t(`settings.account.oauth.status.${identity.details.status}`)}</dd>
         <dt>{t("settings.account.oauth.last_synced_at")}</dt>
         <dd>
           {identity.details.lastSyncedAt
-            ? new Date(identity.details.lastSyncedAt).toUTCString()
-            : "-"}
+            ? formatDateTime(identity.details.lastSyncedAt)
+            : t("settings.account.oauth.none")}
+        </dd>
+        <dt>{t("settings.account.oauth.last_error")}</dt>
+        <dd>
+          {identity.details.lastError ?? t("settings.account.oauth.none")}
         </dd>
       </dl>
     </details>
@@ -177,6 +187,10 @@ function ConnectionDetails({ identity }: { identity: Identity }) {
 }
 
 type ConnectionStatus = "connected" | "disconnected";
+
+function isDisconnectable(identity: Identity) {
+  return "canDisconnect" in identity && identity.canDisconnect;
+}
 
 function getConnectionStatus(identity: Identity | undefined): ConnectionStatus {
   if (!identity) {

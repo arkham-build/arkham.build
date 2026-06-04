@@ -70,8 +70,9 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
       try {
         await get().bootstrapAuthenticatedState(client);
       } catch (error) {
-        // settings sync bootstrap failure should be surfaced via sync state without failing session init.
         console.error(error);
+      } finally {
+        await get().refreshSession(client);
       }
     }
 
@@ -87,8 +88,9 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
     try {
       await get().bootstrapAuthenticatedState(client);
     } catch (error) {
-      // settings sync bootstrap failure should be surfaced via sync state without failing session init.
       console.error(error);
+    } finally {
+      await get().refreshSession(client);
     }
     await dehydrate(get(), "app");
   },
@@ -101,4 +103,37 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
       await dehydrate(get(), "app");
     }
   },
+
+  async refreshSession(client) {
+    await refreshSession(set, get, client);
+  },
 });
+
+async function refreshSession(
+  set: Parameters<StateCreator<StoreState, [], [], AuthSlice>>[0],
+  get: Parameters<StateCreator<StoreState, [], [], AuthSlice>>[1],
+  client: Parameters<AuthSlice["initSession"]>[0],
+) {
+  if (get().auth.status !== "authenticated") {
+    return;
+  }
+
+  try {
+    const session = await fetchSession(client);
+
+    if (get().auth.status !== "authenticated") {
+      return;
+    }
+
+    set((state) => ({
+      auth: {
+        ...state.auth,
+        session,
+      },
+    }));
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      await get().handleUnauthorized();
+    }
+  }
+}

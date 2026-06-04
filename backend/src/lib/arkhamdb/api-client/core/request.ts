@@ -13,20 +13,43 @@ export type WrappedResponse<T> = {
   status: number;
 };
 
+const ARKHAMDB_REQUEST_TIMEOUT_MS = 5 * 60 * 1000;
+
 export async function request<T, E extends HonoEnv = HonoEnv>(
   c: Context<E>,
   path: string,
   options: RequestInit = {},
 ): Promise<WrappedResponse<T>> {
   const config = c.get("config");
+  const controller = new AbortController();
 
-  const res = await fetch(`${config.ARKHAMDB_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      ...options?.headers,
-      ...baseHeaders(),
-    },
-  });
+  const timeout = setTimeout(
+    () => controller.abort(),
+    ARKHAMDB_REQUEST_TIMEOUT_MS,
+  );
+
+  let res: Response;
+
+  try {
+    const method = options.method ?? "GET";
+
+    res = await fetch(`${config.ARKHAMDB_BASE_URL}${path}`, {
+      ...options,
+      headers: {
+        ...baseHeaders(method),
+        ...options.headers,
+      },
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new ApiError("ArkhamDB request timed out", 504);
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   await assertSuccessful(res);
 
@@ -50,6 +73,10 @@ async function assertSuccessful(res: Response) {
 
     if (isArkhamDBApiError(body)) {
       throw new ApiError(body.message, res.status);
+    }
+
+    if (res.status === 304) {
+      throw new ApiError("Not Modified", 304);
     }
 
     if (isOAuthErrorResponse(body)) {

@@ -4,6 +4,7 @@ import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { formatRelationTitle } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
 import { resolveCardWithRelations } from "../lib/resolve-card";
+import { hasHealthyArkhamDBIdentity } from "../lib/sync";
 import type { CardSet, CardWithRelations, ResolvedCard } from "../lib/types";
 import type { StoreState } from "../slices";
 import {
@@ -50,9 +51,9 @@ export const selectDeckCreateInvestigators = createSelector(
 );
 
 export const selectDeckCreateStorageProviderOptions = createSelector(
-  (state: StoreState) => state.auth.status,
+  (state: StoreState) => state.auth,
   (state: StoreState) => state.settings.locale,
-  (authStatus) => {
+  (auth) => {
     const providers: string[] = ["local", "account", "arkhamdb"];
 
     return providers
@@ -61,7 +62,9 @@ export const selectDeckCreateStorageProviderOptions = createSelector(
           case "local":
             return true;
           case "account":
-            return authStatus === "authenticated";
+            return auth.status === "authenticated";
+          case "arkhamdb":
+            return hasHealthyArkhamDBIdentity(auth);
           default:
             return false;
         }

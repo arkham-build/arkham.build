@@ -312,19 +312,28 @@ function collectPreviousDeckIds(decks: Record<DeckId, Deck>, latestId: DeckId) {
 }
 
 function sanitizeDeckLinks(decks: Record<DeckId, Deck>) {
+  const previousByDeckId = new Map<string, DeckId>();
+  const nextByDeckId = new Map<string, DeckId>();
+
+  for (const deck of Object.values(decks)) {
+    if (deck.previous_deck != null && decks[deck.previous_deck]) {
+      previousByDeckId.set(String(deck.id), deck.previous_deck);
+      nextByDeckId.set(String(deck.previous_deck), deck.id);
+    }
+
+    if (deck.next_deck != null && decks[deck.next_deck]) {
+      nextByDeckId.set(String(deck.id), deck.next_deck);
+      previousByDeckId.set(String(deck.next_deck), deck.id);
+    }
+  }
+
   return Object.fromEntries(
     Object.entries(decks).map(([id, deck]) => [
       id,
       {
         ...deck,
-        previous_deck:
-          deck.previous_deck != null && decks[deck.previous_deck]
-            ? deck.previous_deck
-            : null,
-        next_deck:
-          deck.next_deck != null && decks[deck.next_deck]
-            ? deck.next_deck
-            : null,
+        previous_deck: previousByDeckId.get(id) ?? null,
+        next_deck: nextByDeckId.get(id) ?? null,
       },
     ]),
   );

@@ -104,6 +104,7 @@ export async function connectOAuthIdentityToAccount(
       );
 
       await upsertOAuthToken(tx, existingIdentity.id, params.accessToken);
+      await updateAccountIdentityState(tx, existingIdentity.id, null);
       return existingIdentity;
     }
 
@@ -179,6 +180,7 @@ type AccountIdentitySummary = Pick<
   | "pending_email"
   | "provider"
   | "provider_user_id"
+  | "state"
   | "verified_at"
 >;
 
@@ -195,10 +197,24 @@ export async function listAccountIdentitiesByAccountId(
       "pending_email",
       "verified_at",
       "created_at",
+      "state",
     ])
     .where("account_id", "=", accountId)
     .orderBy("provider", "asc")
     .execute();
+}
+
+export async function updateAccountIdentityState(
+  db: Database,
+  accountIdentityId: string,
+  state: AccountIdentity["state"],
+) {
+  return await db
+    .updateTable("account_identity")
+    .set({ state, updated_at: new Date() })
+    .where("id", "=", accountIdentityId)
+    .returning(["state"])
+    .executeTakeFirstOrThrow();
 }
 
 export async function getAccountIdentityByEmail(db: Database, email: string) {
@@ -207,6 +223,20 @@ export async function getAccountIdentityByEmail(db: Database, email: string) {
     .selectAll()
     .where("provider", "=", "email")
     .where("email", "=", email)
+    .executeTakeFirst();
+}
+
+export async function getAccountIdentityByEmailOrPendingEmail(
+  db: Database,
+  email: string,
+) {
+  return await db
+    .selectFrom("account_identity")
+    .selectAll()
+    .where("provider", "=", "email")
+    .where((eb) =>
+      eb.or([eb("email", "=", email), eb("pending_email", "=", email)]),
+    )
     .executeTakeFirst();
 }
 

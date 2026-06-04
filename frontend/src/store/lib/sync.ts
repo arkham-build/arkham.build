@@ -1,7 +1,20 @@
-import type { DeckId, StorageProvider } from "@arkham-build/shared";
+import {
+  type DeckId,
+  isArkhamDBIdentity,
+  type StorageProvider,
+} from "@arkham-build/shared";
 import { isDeckConflictError } from "../services/requests/decks";
 import type { StoreState } from "../slices";
 import type { DeckSyncItemState, SyncStatus } from "../slices/sync.types";
+
+export function hasHealthyArkhamDBIdentity(auth: StoreState["auth"]) {
+  if (auth.status !== "authenticated") return false;
+
+  return (
+    auth.session?.identities.find(isArkhamDBIdentity)?.details.status ===
+    "healthy"
+  );
+}
 
 export function isStorageProviderAvailable(
   state: StoreState,
@@ -14,8 +27,9 @@ export function isStorageProviderAvailable(
       return true;
     case "account":
       return state.auth.status === "authenticated";
-    case "shared":
     case "arkhamdb":
+      return hasHealthyArkhamDBIdentity(state.auth);
+    case "shared":
       return false;
   }
 }
