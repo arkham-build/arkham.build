@@ -1,7 +1,7 @@
 import { HTTPException } from "hono/http-exception";
-import type { Database } from "../../db/db.ts";
-import { getAccountIdentityByEmail } from "./queries/identities.ts";
-import { getLatestVerificationTokenByEmail } from "./queries/verification-tokens.ts";
+import type { Database } from "../../../db/db.ts";
+import { getAccountIdentityByEmail } from "../queries/identities.ts";
+import { getLatestVerificationTokenByEmail } from "../queries/verification-tokens.ts";
 
 export async function assertEmailAvailable(
   db: Database,

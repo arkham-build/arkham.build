@@ -9,9 +9,10 @@ import { zodValidator } from "../../../lib/validation.ts";
 import {
   beginOAuthAuthorization,
   redirectToOAuthError,
-} from "../oauth/flow.ts";
-import { setSessionCookie } from "../oauth/session-cookie.ts";
-import { getOAuthContext, validateOAuthState } from "../oauth/state.ts";
+} from "../lib/oauth/flow.ts";
+import { setSessionCookie } from "../lib/oauth/session-cookie.ts";
+import { getOAuthContext, validateOAuthState } from "../lib/oauth/state.ts";
+import { sessionAuth } from "../lib/session-auth-middleware.ts";
 import {
   accountNameExists,
   updateAccountName,
@@ -21,7 +22,6 @@ import {
   connectOAuthIdentityToAccount,
   getAccountIdentityByProviderUserId,
 } from "../queries/identities.ts";
-import { sessionAuth } from "../session-auth-middleware.ts";
 
 const routes = new Hono<HonoEnv>();
 

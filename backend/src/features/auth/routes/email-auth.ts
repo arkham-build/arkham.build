@@ -14,15 +14,17 @@ import {
   assertEmailAvailable,
   assertVerificationTokenCooldown,
   isUniqueViolation,
-} from "../assertions.ts";
+} from "../lib/assertions.ts";
 import {
   generateRandomToken,
   hashPassword,
   hashToken,
   verifyPassword,
-} from "../crypto.ts";
-import { verificationEmailTemplate } from "../email-templates.ts";
-import { setSessionCookie } from "../oauth/session-cookie.ts";
+} from "../lib/crypto.ts";
+import { verificationEmailTemplate } from "../lib/email-templates.ts";
+import { setSessionCookie } from "../lib/oauth/session-cookie.ts";
+import { sessionAuth } from "../lib/session-auth-middleware.ts";
+import { assertTurnstileToken } from "../lib/turnstile.ts";
 import {
   accountNameExists,
   createAccount,
@@ -39,8 +41,6 @@ import {
   consumeVerificationToken,
   replaceVerificationToken,
 } from "../queries/verification-tokens.ts";
-import { sessionAuth } from "../session-auth-middleware.ts";
-import { assertTurnstileToken } from "../turnstile.ts";
 
 const routes = new Hono<HonoEnv>();
 

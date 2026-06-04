@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { EmailTemplate } from "../../lib/email/base-template.ts";
+import type { EmailTemplate } from "../../../lib/email/base-template.ts";
 
 export const passwordResetEmailParamsSchema = z.object({
   resetUrl: z.url(),

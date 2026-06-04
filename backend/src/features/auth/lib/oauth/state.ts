@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { deleteCookie, getSignedCookie, setSignedCookie } from "hono/cookie";
 import { z } from "zod";
-import { OAuthFlowError, type OAuthProvider } from "../../../lib/oauth.ts";
+import { OAuthFlowError, type OAuthProvider } from "../../../../lib/oauth.ts";
 
 export const OAuthIntentSchema = z.enum(["login", "signup", "connect"]);
 

@@ -4,7 +4,7 @@ import {
   SessionResponseSchema,
 } from "@arkham-build/shared";
 import type { Selectable } from "kysely";
-import type { Account, AccountIdentity } from "../../db/schema.types.ts";
+import type { Account, AccountIdentity } from "../../../db/schema.types.ts";
 
 type AccountIdentitySummary = Pick<
   Selectable<AccountIdentity>,

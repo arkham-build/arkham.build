@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
-import { sessionAuth } from "../auth/session-auth-middleware.ts";
+import { sessionAuth } from "../auth/lib/session-auth-middleware.ts";
 import { findAccountByUsername, updateAccountUsername } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();

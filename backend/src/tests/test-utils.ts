@@ -4,7 +4,7 @@ import { test as base } from "vitest";
 import { appFactory } from "../app.ts";
 import { type Database, getDatabase } from "../db/db.ts";
 import type { DB } from "../db/schema.types.ts";
-import { hashPassword } from "../features/auth/crypto.ts";
+import { hashPassword } from "../features/auth/lib/crypto.ts";
 import { createSession } from "../features/auth/queries/sessions.ts";
 import type { EnqueueOptions, JobDispatcher } from "../jobs/dispatcher.ts";
 import type { DeliverEmailJobData } from "../jobs/job-types.ts";

@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
-import type { HonoEnv } from "../../lib/hono-env.ts";
+import type { HonoEnv } from "../../../lib/hono-env.ts";
 
 const TURNSTILE_VERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";

@@ -9,15 +9,16 @@ import { zodValidator } from "../../../lib/validation.ts";
 import {
   assertEmailAvailable,
   assertVerificationTokenCooldown,
-} from "../assertions.ts";
+} from "../lib/assertions.ts";
 import {
   generateRandomToken,
   hashPassword,
   hashToken,
   verifyPassword,
-} from "../crypto.ts";
-import { verificationEmailTemplate } from "../email-templates.ts";
-import { mapAccountSessionToResponse } from "../mapping.ts";
+} from "../lib/crypto.ts";
+import { verificationEmailTemplate } from "../lib/email-templates.ts";
+import { mapAccountSessionToResponse } from "../lib/mapping.ts";
+import { sessionAuth } from "../lib/session-auth-middleware.ts";
 import {
   countUsableLoginIdentities,
   createEmailIdentity,
@@ -32,7 +33,6 @@ import {
   deleteVerificationTokensByAccountIdentityIdAndEmail,
   replaceVerificationToken,
 } from "../queries/verification-tokens.ts";
-import { sessionAuth } from "../session-auth-middleware.ts";
 
 const routes = new Hono<HonoEnv>();
 

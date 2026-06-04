@@ -9,9 +9,9 @@ import {
   assertVerificationTokenCooldown,
   isEmail,
   throwInvalidResetTokenError,
-} from "../assertions.ts";
-import { generateRandomToken, hashPassword, hashToken } from "../crypto.ts";
-import { passwordResetEmailTemplate } from "../email-templates.ts";
+} from "../lib/assertions.ts";
+import { generateRandomToken, hashPassword, hashToken } from "../lib/crypto.ts";
+import { passwordResetEmailTemplate } from "../lib/email-templates.ts";
 import {
   getAccountIdentity,
   getAccountIdentityByEmail,
