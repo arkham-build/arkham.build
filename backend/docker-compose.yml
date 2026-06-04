@@ -13,7 +13,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
-      - ./src/tasks/dump-test-seeds.sh:/scripts/dump-test-seeds.sh
+      - ./scripts/dump-test-seeds.sh:/scripts/dump-test-seeds.sh
       - ./src/tests/seeds:/app/src/tests/seeds
 
   mailcrab:
@@ -21,6 +21,20 @@ services:
     ports:
       - "1025:1025"
       - "1080:1080"
+
+  pgboss-dashboard:
+    image: node:24-alpine
+    working_dir: /app
+    command: sh -c "npm install -g @pg-boss/dashboard@1.1.3 && pg-boss-dashboard"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/api-arkham-build?sslmode=disable
+      PGBOSS_SCHEMA: pgboss
+      PORT: 1090
+    ports:
+      - "1090:1090"
 
 volumes:
   postgres_data:

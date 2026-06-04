@@ -10,6 +10,7 @@
     "compose:up": "COMPOSE_MENU=0 docker compose up -d --build",
     "compose:down": "docker compose down",
     "dbmate": "dbmate",
+    "dbmate:new:pgboss": "node scripts/create-pg-boss-migration.mjs",
     "dev": "node --watch --experimental-strip-types --env-file=.env src/main.ts",
     "dev:inspect": "node --inspect=localhost:9229 --experimental-strip-types --env-file=.env src/main.ts",
     "generate:database-types": "kysely-codegen --out-file src/db/schema.types.ts",
@@ -27,6 +28,7 @@
     "kysely": "0.28.14",
     "nodemailer": "7.0.12",
     "pg": "8.19.0",
+    "pg-boss": "12.18.2",
     "tar": "7.5.13"
   },
   "devDependencies": {
