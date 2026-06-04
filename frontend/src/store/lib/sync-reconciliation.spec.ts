@@ -24,7 +24,10 @@ describe("sync reconciliation", () => {
       });
 
       expect(plan).toEqual({
-        fetchIds: ["1", "2"],
+        fetchTargets: [
+          { provider: "account", id: "1" },
+          { provider: "account", id: "2" },
+        ],
         removeIds: [],
         skippedIds: [],
       });
@@ -45,7 +48,7 @@ describe("sync reconciliation", () => {
       });
 
       expect(plan).toEqual({
-        fetchIds: [],
+        fetchTargets: [],
         removeIds: ["remote"],
         skippedIds: [],
       });
@@ -67,9 +70,31 @@ describe("sync reconciliation", () => {
       });
 
       expect(plan).toEqual({
-        fetchIds: [],
+        fetchTargets: [],
         removeIds: [],
         skippedIds: ["saving", "conflict"],
+      });
+    });
+
+    it("skips removing arkhamdb decks when arkhamdb is unavailable", () => {
+      const plan = getDeckReconciliationPlan({
+        data: makeData({
+          decks: {
+            remote: makeDeck("remote", "v1", {
+              source: "arkhamdb",
+            }),
+          },
+        }),
+        manifest: makeManifest([], { arkhamdbAvailable: false }),
+        syncDecks: makeSyncDecks({
+          remote: makeSyncItem("v1"),
+        }),
+      });
+
+      expect(plan).toEqual({
+        fetchTargets: [],
+        removeIds: [],
+        skippedIds: ["remote"],
       });
     });
   });
@@ -140,7 +165,10 @@ describe("sync reconciliation", () => {
           ["latest", "v1"],
         ]),
         plan: {
-          fetchIds: ["previous", "latest"],
+          fetchTargets: [
+            { provider: "account", id: "previous" },
+            { provider: "account", id: "latest" },
+          ],
           removeIds: [],
           skippedIds: [],
         },
@@ -184,7 +212,7 @@ describe("sync reconciliation", () => {
         },
         manifest: makeManifest([]),
         plan: {
-          fetchIds: [],
+          fetchTargets: [],
           removeIds: ["remote"],
           skippedIds: [],
         },
@@ -214,11 +242,11 @@ describe("sync reconciliation", () => {
         }),
         deckEdits: {},
         manifest: makeManifest([
-          ["parent", "v1"],
-          ["child", "v1"],
+          ["parent", "v1", "arkhamdb"],
+          ["child", "v1", "arkhamdb"],
         ]),
         plan: {
-          fetchIds: ["child"],
+          fetchTargets: [{ provider: "arkhamdb", id: "child" }],
           removeIds: [],
           skippedIds: [],
         },
@@ -255,7 +283,7 @@ describe("sync reconciliation", () => {
         deckEdits: {},
         manifest: makeManifest([]),
         plan: {
-          fetchIds: [],
+          fetchTargets: [],
           removeIds: [],
           skippedIds: ["conflict"],
         },
@@ -276,14 +304,23 @@ describe("sync reconciliation", () => {
   });
 });
 
-function makeManifest(decks: [string, string][]): DeckManifestResponse {
+function makeManifest(
+  decks: Array<[string, string] | [string, string, "account" | "arkhamdb"]>,
+  { arkhamdbAvailable = true }: { arkhamdbAvailable?: boolean } = {},
+): DeckManifestResponse {
   return {
     version: "manifest-version",
-    decks: decks.map(([id, version]) => ({
+    decks: decks.map(([id, version, provider = "account"]) => ({
+      provider,
       id,
       version,
       updatedAt: "2026-01-01T00:00:00.000Z",
     })),
+    arkhamdbSyncToken: null,
+    providers: {
+      account: { available: true },
+      arkhamdb: { available: arkhamdbAvailable },
+    },
   };
 }
 

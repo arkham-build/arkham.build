@@ -4,6 +4,7 @@ import {
   DeckConflictResponseSchema,
   DeckManifestResponseSchema,
   DeckSchema,
+  type DeckSyncTarget,
 } from "@arkham-build/shared";
 import type { Hono } from "hono";
 import { afterEach, describe, expect, vi } from "vitest";
@@ -40,7 +41,7 @@ function getSession(app: Hono<HonoEnv>, cookie: string) {
 function postBatch(
   app: Hono<HonoEnv>,
   cookie: string,
-  ids: string[],
+  targets: DeckSyncTarget[],
   arkhamdbSyncToken?: string,
 ) {
   return app.request("/v2/decks/batch", {
@@ -49,7 +50,7 @@ function postBatch(
       "Content-Type": "application/json",
       Cookie: cookie,
     },
-    body: JSON.stringify({ arkhamdbSyncToken, ids }),
+    body: JSON.stringify({ arkhamdbSyncToken, targets }),
   });
 }
 
@@ -376,7 +377,10 @@ describe("Deck routes", () => {
         version: "22222222",
       });
 
-      const res = await postBatch(app, sessionCookie, ["deck-2", "deck-1"]);
+      const res = await postBatch(app, sessionCookie, [
+        { provider: "account", id: "deck-2" },
+        { provider: "account", id: "deck-1" },
+      ]);
       expect(res.status).toBe(200);
 
       const body = DeckBatchResponseSchema.parse(await res.json());
@@ -430,7 +434,12 @@ describe("Deck routes", () => {
         }),
       );
 
-      const res = await postBatch(app, sessionCookie, ["123"], snapshot.id);
+      const res = await postBatch(
+        app,
+        sessionCookie,
+        [{ provider: "arkhamdb", id: "123" }],
+        snapshot.id,
+      );
       expect(res.status).toBe(200);
 
       const body = DeckBatchResponseSchema.parse(await res.json());

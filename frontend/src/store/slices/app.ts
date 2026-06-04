@@ -44,7 +44,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     queryCards,
     { refresh, locale, overrides } = {},
   ) {
-    const persistedState = await hydrate();
+    const persistedState = refresh ? undefined : await hydrate();
 
     if (!refresh && persistedState?.metadata?.dataVersion?.cards_updated_at) {
       const metadata = {
@@ -392,7 +392,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       const undoHistory = { ...state.data.undoHistory };
 
       for (const id of Object.keys(decks)) {
-        if (isSyncedStorageProvider(decks[id]?.source)) {
+        if (!isSyncedStorageProvider(decks[id]?.source)) {
           delete decks[id];
           delete history[id];
           delete edits[id];

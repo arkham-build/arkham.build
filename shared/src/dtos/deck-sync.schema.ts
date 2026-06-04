@@ -1,6 +1,15 @@
 import { z } from "zod";
 import { DeckIdSchema, DeckSchema } from "../schemas/deck.schema.ts";
 
+export const SyncedDeckProviderSchema = z.enum(["account", "arkhamdb"]);
+export type SyncedDeckProvider = z.infer<typeof SyncedDeckProviderSchema>;
+
+export const DeckSyncTargetSchema = z.object({
+  provider: SyncedDeckProviderSchema,
+  id: DeckIdSchema,
+});
+export type DeckSyncTarget = z.infer<typeof DeckSyncTargetSchema>;
+
 export const DeckWritePayloadSchema = DeckSchema.omit({
   date_creation: true,
   date_update: true,
@@ -9,22 +18,29 @@ export const DeckWritePayloadSchema = DeckSchema.omit({
 });
 export type DeckWritePayload = z.infer<typeof DeckWritePayloadSchema>;
 
-export const DeckManifestItemSchema = z.object({
-  id: DeckIdSchema,
+export const DeckManifestItemSchema = DeckSyncTargetSchema.extend({
   version: z.string(),
   updatedAt: z.string(),
 });
 export type DeckManifestItem = z.infer<typeof DeckManifestItemSchema>;
 
+const DeckManifestProviderStateSchema = z.object({
+  available: z.boolean(),
+});
+
 export const DeckManifestResponseSchema = z.object({
   version: z.string(),
   decks: z.array(DeckManifestItemSchema),
   arkhamdbSyncToken: z.string().nullish(),
+  providers: z.object({
+    account: DeckManifestProviderStateSchema,
+    arkhamdb: DeckManifestProviderStateSchema,
+  }),
 });
 export type DeckManifestResponse = z.infer<typeof DeckManifestResponseSchema>;
 
 export const DeckBatchRequestSchema = z.object({
-  ids: z.array(DeckIdSchema),
+  targets: z.array(DeckSyncTargetSchema),
   arkhamdbSyncToken: z.string().nullish(),
 });
 export type DeckBatchRequest = z.infer<typeof DeckBatchRequestSchema>;

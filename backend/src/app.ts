@@ -50,7 +50,6 @@ export function appFactory(
   app.route("/v1/cache", cacheRouter);
 
   const pub = new Hono<HonoEnv>();
-  app.route("/admin", adminRouter);
   pub.route("/arkhamdb-decklists", arkhamDbDecklistsRouter);
   pub.route("/fan-made-project-info", fanMadeProjectInfoRouter);
   pub.route("/recommendations", recommendationsRouter);

@@ -41,7 +41,7 @@ export type SettingsSlice = {
   saveSettings(
     client: HttpClient,
     payload: Settings,
-    opts?: { expectedRevision?: string | null },
+    opts?: { expectedRevision?: string | null; keepListState?: boolean },
   ): Promise<void>;
   setSettings(payload: Partial<Settings>): Promise<void>;
 };
@@ -169,7 +169,7 @@ export const createSettingsSlice: StateCreator<
       // TODO: once reprint packs are returned localized by the API, remove this.
       await changeLanguage(settings.locale);
 
-      await state.init(
+      await get().init(
         (locale) => queryMetadata(client, locale),
         (locale) => queryDataVersion(client, locale),
         (locale) => queryCards(client, locale),
@@ -211,6 +211,10 @@ export const createSettingsSlice: StateCreator<
       }),
     );
 
+    if (!isCurrentAccount(get(), accountId)) {
+      return;
+    }
+
     get().setSettingsSync({
       accountId,
       revision: response.revision,
@@ -237,8 +241,17 @@ export const createSettingsSlice: StateCreator<
 
     try {
       const response = await fetchSettings(client);
+
+      if (!isCurrentAccount(get(), accountId)) {
+        return;
+      }
+
       await get().applyRemoteSettings(client, response);
     } catch (error) {
+      if (!isCurrentAccount(get(), accountId)) {
+        return;
+      }
+
       get().setSettingsSync({
         status: "error",
         error: getErrorMessage(error),
@@ -249,7 +262,7 @@ export const createSettingsSlice: StateCreator<
     }
   },
   async saveSettings(client, settings, opts) {
-    await get().applySettings(client, settings);
+    await get().applySettings(client, settings, opts);
 
     const state = get();
     const accountId = state.auth.session?.account.id;
@@ -280,6 +293,10 @@ export const createSettingsSlice: StateCreator<
         expectedRevision,
       });
 
+      if (!isCurrentAccount(get(), accountId)) {
+        return;
+      }
+
       get().setSettingsSync({
         accountId,
         revision: response.revision,
@@ -290,6 +307,10 @@ export const createSettingsSlice: StateCreator<
       });
       await dehydrate(get(), "app");
     } catch (error) {
+      if (!isCurrentAccount(get(), accountId)) {
+        return;
+      }
+
       if (isSettingsConflictError(error)) {
         get().setSettingsSync({
           accountId,
@@ -334,6 +355,13 @@ export const createSettingsSlice: StateCreator<
     await dehydrate(get(), "app");
   },
 });
+
+function isCurrentAccount(state: StoreState, accountId: string) {
+  return (
+    state.auth.status === "authenticated" &&
+    state.auth.session?.account.id === accountId
+  );
+}
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Unknown error";

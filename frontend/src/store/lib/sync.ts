@@ -84,6 +84,22 @@ export function updateDeckSyncSaving(
   };
 }
 
+export function replaceDeckSyncItems(
+  sync: StoreState["sync"],
+  items: StoreState["sync"]["decks"]["items"],
+): StoreState["sync"] {
+  return {
+    ...sync,
+    decks: {
+      ...sync.decks,
+      manifestVersion: null,
+      status: getDecksSyncStatus(items),
+      error: null,
+      items,
+    },
+  };
+}
+
 export function updateDeckSyncError(
   sync: StoreState["sync"],
   deckId: DeckId,
@@ -171,17 +187,27 @@ function updateDeckSyncItem(
   };
 }
 
+const DECK_SYNC_STATUS_PRIORITY: Record<SyncStatus, number> = {
+  idle: 0,
+  synced: 1,
+  saving: 2,
+  loading: 3,
+  error: 4,
+  conflict: 5,
+};
+
 function getDecksSyncStatus(items: StoreState["sync"]["decks"]["items"]) {
-  let status = "synced";
+  let status: SyncStatus = "synced";
 
   for (const item of Object.values(items)) {
-    if (item.status === "conflict") return "conflict";
-    if (item.status === "saving") status = "saving";
-    if (item.status === "loading") status = "loading";
-    if (item.status === "error") status = "error";
+    if (
+      DECK_SYNC_STATUS_PRIORITY[item.status] > DECK_SYNC_STATUS_PRIORITY[status]
+    ) {
+      status = item.status;
+    }
   }
 
-  return status as SyncStatus;
+  return status;
 }
 
 function getInitialDeckSyncItem(): DeckSyncItemState {

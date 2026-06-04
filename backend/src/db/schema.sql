@@ -1668,6 +1668,13 @@ CREATE UNIQUE INDEX idx_account_identity_provider_email ON public.account_identi
 
 
 --
+-- Name: idx_account_identity_provider_pending_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_account_identity_provider_pending_email ON public.account_identity USING btree (provider, pending_email) WHERE (pending_email IS NOT NULL);
+
+
+--
 -- Name: idx_account_identity_provider_uid; Type: INDEX; Schema: public; Owner: -
 --
 

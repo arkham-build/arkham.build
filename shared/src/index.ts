@@ -53,12 +53,16 @@ export {
   DeckManifestItemSchema,
   type DeckManifestResponse,
   DeckManifestResponseSchema,
+  type DeckSyncTarget,
+  DeckSyncTargetSchema,
   type DeckUpdateRequest,
   DeckUpdateRequestSchema,
   type DeckUpgradeRequest,
   DeckUpgradeRequestSchema,
   type DeckWritePayload,
   DeckWritePayloadSchema,
+  type SyncedDeckProvider,
+  SyncedDeckProviderSchema,
 } from "./dtos/deck-sync.schema.ts";
 export {
   type DecklistMetaResponse,

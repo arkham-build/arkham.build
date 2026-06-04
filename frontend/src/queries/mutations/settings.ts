@@ -45,7 +45,7 @@ export function useSaveSettingsMutation() {
     mutationKey: ["settings", "save"],
     mutationFn: (payload: {
       settings: Settings;
-      opts?: { expectedRevision?: string | null };
+      opts?: { expectedRevision?: string | null; keepListState?: boolean };
     }) => saveSettings(client, payload.settings, payload.opts),
   });
 }

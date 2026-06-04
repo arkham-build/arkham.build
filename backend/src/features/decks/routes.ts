@@ -9,6 +9,7 @@ import {
   DeckManifestItemSchema,
   DeckManifestResponseSchema,
   DeckSchema,
+  type DeckSyncTarget,
   type DeckUpdateRequest,
   DeckUpdateRequestSchema,
   type DeckUpgradeRequest,
@@ -61,12 +62,14 @@ routes.get("/manifest", sessionAuth(), async (c) => {
 
   let arkhamdbDeckManifest: DeckManifestItem[] = [];
   let arkhamdbSyncToken: string | null = null;
+  let arkhamdbAvailable = false;
 
   if (arkhamdbIdentity) {
     try {
       const remoteManifest = await fetchArkhamDbDeckManifest(c);
       arkhamdbDeckManifest = remoteManifest.decks;
       arkhamdbSyncToken = remoteManifest.arkhamdbSyncToken;
+      arkhamdbAvailable = true;
     } catch {}
   }
 
@@ -74,6 +77,7 @@ routes.get("/manifest", sessionAuth(), async (c) => {
 
   const accountDeckManifest = accountDecks.map((deck) =>
     DeckManifestItemSchema.parse({
+      provider: ACCOUNT_PROVIDER_TYPE,
       id: deck.id,
       updatedAt: deck.updated_at.toISOString(),
       version: deck.version ?? "",
@@ -86,6 +90,10 @@ routes.get("/manifest", sessionAuth(), async (c) => {
     version: createDeckManifestVersion(decks),
     decks,
     arkhamdbSyncToken,
+    providers: {
+      account: { available: true },
+      arkhamdb: { available: arkhamdbAvailable },
+    },
   });
 
   return c.json(manifest);
@@ -96,10 +104,14 @@ routes.post(
   sessionAuth(),
   zodValidator("json", DeckBatchRequestSchema),
   async (c) => {
-    const { arkhamdbSyncToken, ids } = c.req.valid("json");
+    const { arkhamdbSyncToken, targets } = c.req.valid("json");
 
-    const accountIds = ids.filter((id) => !isArkhamDbDeckId(id)).map(String);
-    const arkhamdbIds = ids.filter(isArkhamDbDeckId);
+    const accountIds = targets
+      .filter((target) => target.provider === ACCOUNT_PROVIDER_TYPE)
+      .map((target) => String(target.id));
+    const arkhamdbIds = targets
+      .filter((target) => target.provider === ARKHAMDB_PROVIDER_TYPE)
+      .map((target) => target.id);
 
     const accountDecks = await listAccountDecksByIds(
       c.get("db"),
@@ -108,7 +120,10 @@ routes.post(
     );
 
     const decksById = new Map(
-      accountDecks.map((deck) => [String(deck.id), mapDeckRowToDto(deck)]),
+      accountDecks.map((deck) => [
+        getDeckTargetKey({ provider: ACCOUNT_PROVIDER_TYPE, id: deck.id }),
+        mapDeckRowToDto(deck),
+      ]),
     );
 
     if (arkhamdbIds.length) {
@@ -119,15 +134,21 @@ routes.post(
       );
 
       for (const deck of arkhamdbDecks) {
-        decksById.set(String(deck.id), deck);
+        decksById.set(
+          getDeckTargetKey({ provider: ARKHAMDB_PROVIDER_TYPE, id: deck.id }),
+          deck,
+        );
       }
     }
 
     return c.json(
       DeckBatchResponseSchema.parse(
-        ids.map((id) => {
-          const deck = decksById.get(String(id));
-          assert(deck, `Missing deck ${String(id)} in batch response.`);
+        targets.map((target) => {
+          const deck = decksById.get(getDeckTargetKey(target));
+          assert(
+            deck,
+            `Missing deck ${target.provider}:${String(target.id)} in batch response.`,
+          );
           return deck;
         }),
       ),
@@ -202,6 +223,10 @@ routes.post(
 export default routes;
 
 type DeckContext = Parameters<typeof fetchArkhamDbDeck>[0];
+
+function getDeckTargetKey(target: DeckSyncTarget) {
+  return `${target.provider}:${String(target.id)}`;
+}
 
 const localCrud = {
   async create(c: DeckContext, payload: SharedDeck) {

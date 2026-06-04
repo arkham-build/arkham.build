@@ -1,4 +1,8 @@
-import type { DeckId, DeckManifestResponse } from "@arkham-build/shared";
+import type {
+  DeckId,
+  DeckManifestResponse,
+  DeckSyncTarget,
+} from "@arkham-build/shared";
 import type { Deck, Id } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
 import type {
@@ -14,7 +18,7 @@ type DataState = StoreState["data"];
 type DeckEditsState = StoreState["deckEdits"];
 
 type DeckReconciliationPlan = {
-  fetchIds: DeckId[];
+  fetchTargets: DeckSyncTarget[];
   removeIds: Id[];
   skippedIds: Id[];
 };
@@ -101,7 +105,7 @@ export function getDeckReconciliationPlan({
   manifest: DeckManifestResponse;
   syncDecks: DecksSyncState;
 }): DeckReconciliationPlan {
-  const fetchIds: DeckId[] = [];
+  const fetchTargets: DeckSyncTarget[] = [];
   const skippedIds = new Set<Id>();
 
   for (const item of manifest.decks) {
@@ -117,11 +121,18 @@ export function getDeckReconciliationPlan({
       !syncItem ||
       syncItem.version !== item.version
     ) {
-      fetchIds.push(item.id);
+      fetchTargets.push({ provider: item.provider, id: item.id });
     }
   }
 
   const removeIds = Object.keys(syncDecks.items).reduce<Id[]>((acc, id) => {
+    const deck = data.decks[id];
+
+    if (deck?.source === "arkhamdb" && !manifest.providers.arkhamdb.available) {
+      skippedIds.add(id);
+      return acc;
+    }
+
     if (manifestHasDeckId(manifest, id)) return acc;
 
     const item = syncDecks.items[id];
@@ -136,7 +147,7 @@ export function getDeckReconciliationPlan({
   }, []);
 
   return {
-    fetchIds,
+    fetchTargets,
     removeIds,
     skippedIds: Array.from(skippedIds),
   };

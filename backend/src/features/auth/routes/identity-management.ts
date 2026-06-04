@@ -9,6 +9,7 @@ import { zodValidator } from "../../../lib/validation.ts";
 import {
   assertEmailAvailable,
   assertVerificationTokenCooldown,
+  isUniqueViolation,
 } from "../lib/assertions.ts";
 import {
   generateRandomToken,
@@ -78,32 +79,42 @@ routes.post(
     const token = generateRandomToken();
     const passwordHash = await hashPassword(password);
 
-    await db.transaction().execute(async (tx) => {
-      const accountIdentity = await createEmailIdentity(
-        tx,
-        account.id,
-        email,
-        passwordHash,
-      );
+    try {
+      await db.transaction().execute(async (tx) => {
+        const accountIdentity = await createEmailIdentity(
+          tx,
+          account.id,
+          email,
+          passwordHash,
+        );
 
-      await replaceVerificationToken(tx, {
-        accountIdentityId: accountIdentity.id,
-        email,
-        tokenHash: hashToken(token),
-        tokenType: "email_verification",
-        expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
+        await replaceVerificationToken(tx, {
+          accountIdentityId: accountIdentity.id,
+          email,
+          tokenHash: hashToken(token),
+          tokenType: "email_verification",
+          expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
+        });
+
+        const template = verificationEmailTemplate({
+          token,
+          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+        });
+
+        await dispatcher.enqueueEmail(
+          { subject: template.subject, text: template.text, to: email },
+          { tx },
+        );
       });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new HTTPException(400, {
+          message: "An account is already registered for this email",
+        });
+      }
 
-      const template = verificationEmailTemplate({
-        token,
-        verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
-      });
-
-      await dispatcher.enqueueEmail(
-        { subject: template.subject, text: template.text, to: email },
-        { tx },
-      );
-    });
+      throw error;
+    }
 
     return new Response(null, { status: 201 });
   },
@@ -165,46 +176,60 @@ routes.patch(
     const passwordHash = newPassword ? await hashPassword(newPassword) : null;
     const previousPendingEmail = emailIdentity.pending_email;
 
-    await db.transaction().execute(async (tx) => {
-      if (passwordHash) {
-        await updateAccountIdentityPasswordHash(
+    try {
+      await db.transaction().execute(async (tx) => {
+        if (passwordHash) {
+          await updateAccountIdentityPasswordHash(
+            tx,
+            emailIdentity.id,
+            passwordHash,
+          );
+        }
+
+        if (!nextEmail || !token) {
+          return;
+        }
+
+        if (previousPendingEmail && previousPendingEmail !== nextEmail) {
+          await deleteVerificationTokensByAccountIdentityIdAndEmail(
+            tx,
+            emailIdentity.id,
+            previousPendingEmail,
+            "email_verification",
+          );
+        }
+
+        await updateAccountIdentityPendingEmail(
           tx,
           emailIdentity.id,
-          passwordHash,
+          nextEmail,
         );
-      }
+        await replaceVerificationToken(tx, {
+          accountIdentityId: emailIdentity.id,
+          email: nextEmail,
+          tokenHash: hashToken(token),
+          tokenType: "email_verification",
+          expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
+        });
+        const template = verificationEmailTemplate({
+          token,
+          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+        });
 
-      if (!nextEmail || !token) {
-        return;
-      }
-
-      if (previousPendingEmail && previousPendingEmail !== nextEmail) {
-        await deleteVerificationTokensByAccountIdentityIdAndEmail(
-          tx,
-          emailIdentity.id,
-          previousPendingEmail,
-          "email_verification",
+        await dispatcher.enqueueEmail(
+          { subject: template.subject, text: template.text, to: nextEmail },
+          { tx },
         );
+      });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new HTTPException(400, {
+          message: "An account is already registered for this email",
+        });
       }
 
-      await updateAccountIdentityPendingEmail(tx, emailIdentity.id, nextEmail);
-      await replaceVerificationToken(tx, {
-        accountIdentityId: emailIdentity.id,
-        email: nextEmail,
-        tokenHash: hashToken(token),
-        tokenType: "email_verification",
-        expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
-      });
-      const template = verificationEmailTemplate({
-        token,
-        verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
-      });
-
-      await dispatcher.enqueueEmail(
-        { subject: template.subject, text: template.text, to: nextEmail },
-        { tx },
-      );
-    });
+      throw error;
+    }
 
     return new Response(null, { status: 200 });
   },
@@ -278,7 +303,7 @@ routes.delete("/oauth/:provider", sessionAuth(), async (c) => {
 
   await db.transaction().execute(async (tx) => {
     const usableLoginIdentityCount = await countUsableLoginIdentities(
-      db,
+      tx,
       account.id,
     );
 

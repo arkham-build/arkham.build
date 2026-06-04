@@ -119,6 +119,10 @@ describe("sync slice", () => {
       version: "1",
       decks: [],
       arkhamdbSyncToken: null,
+      providers: {
+        account: { available: true },
+        arkhamdb: { available: true },
+      },
     });
 
     store.setState({
@@ -212,7 +216,7 @@ describe("sync slice", () => {
     expect(deckRequests.fetchDeckBatch).toHaveBeenCalledWith(
       expect.anything(),
       {
-        ids: ["remote"],
+        targets: [{ provider: "account", id: "remote" }],
       },
     );
     expect(store.getState().data.decks.remote).toMatchObject({
@@ -278,7 +282,7 @@ describe("sync slice", () => {
     expect(deckRequests.fetchDeckBatch).toHaveBeenCalledWith(
       expect.anything(),
       {
-        ids: ["remote"],
+        targets: [{ provider: "account", id: "remote" }],
       },
     );
     expect(store.getState().sync.decks.items.remote).toMatchObject({

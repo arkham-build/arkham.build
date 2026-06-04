@@ -34,6 +34,7 @@ import { decodeExtraSlots, encodeExtraSlots } from "./slots";
 import {
   isStorageProviderAvailable,
   isSyncedStorageProvider,
+  replaceDeckSyncItems,
   updateDeckSyncError,
   updateDeckSyncSaving,
   updateDeckSyncSuccess,
@@ -406,16 +407,7 @@ export const deleteAdapter = {
           undoHistory,
         },
         deckEdits,
-        sync: {
-          ...prev.sync,
-          decks: {
-            ...prev.sync.decks,
-            manifestVersion: null,
-            status: "synced",
-            error: null,
-            items: syncItems,
-          },
-        },
+        sync: replaceDeckSyncItems(prev.sync, syncItems),
       };
     });
   },

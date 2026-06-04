@@ -335,6 +335,73 @@ describe("app deck write-through actions", () => {
     expect(saveFolders).toHaveBeenCalledWith(client);
   });
 
+  it("preserves other sync conflicts after deleting a deck", async () => {
+    const deck = makeTestDeck({
+      id: "remote",
+      source: "account",
+      version: "1",
+    });
+    const conflictDeck = makeTestDeck({
+      id: "conflict",
+      source: "account",
+      version: "2",
+    });
+
+    vi.mocked(deckRequests.deleteDeck).mockResolvedValue(undefined);
+    setAuthenticated(store);
+    store.setState({
+      data: makeData({
+        decks: {
+          remote: deck,
+          conflict: conflictDeck,
+        },
+        history: {
+          remote: [],
+          conflict: [],
+        },
+      }),
+      sync: {
+        ...makeSync({
+          remote: makeSyncItem("1"),
+          conflict: {
+            version: "2",
+            status: "conflict",
+            lastSyncedAt: null,
+            error: null,
+            conflict: {
+              kind: "update",
+              remoteVersion: "3",
+            },
+          },
+        }),
+        decks: {
+          ...makeSync({
+            remote: makeSyncItem("1"),
+            conflict: {
+              version: "2",
+              status: "conflict",
+              lastSyncedAt: null,
+              error: null,
+              conflict: {
+                kind: "update",
+                remoteVersion: "3",
+              },
+            },
+          }).decks,
+          status: "conflict",
+        },
+      },
+    });
+
+    await store.getState().deleteDeck(client, "remote");
+
+    expect(store.getState().sync.decks.items.remote).toBeUndefined();
+    expect(store.getState().sync.decks.items.conflict).toMatchObject({
+      status: "conflict",
+    });
+    expect(store.getState().sync.decks.status).toBe("conflict");
+  });
+
   it("keeps account decks when backend deletion fails", async () => {
     const deck = makeTestDeck({
       id: "remote",

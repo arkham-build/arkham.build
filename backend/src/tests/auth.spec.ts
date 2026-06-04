@@ -1159,6 +1159,67 @@ describe("Auth routes", () => {
       );
     });
 
+    test("rejects creating an email identity with a duplicate pending email", async ({
+      dependencies,
+    }) => {
+      const { app, config, db } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "oauth-duplicate-pending-email" })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "email",
+          pending_email: "reserved@example.com",
+          password_hash: "hash",
+        })
+        .executeTakeFirstOrThrow();
+
+      const oauthAccount = await db
+        .insertInto("account")
+        .values({ name: "oauth-duplicate-pending-email-target" })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: oauthAccount.id,
+          provider: "arkhamdb",
+          provider_user_id: "oauth-duplicate-pending-email-target-user",
+          verified_at: new Date(),
+        })
+        .executeTakeFirstOrThrow();
+
+      const session = await db
+        .insertInto("session")
+        .values({
+          account_id: oauthAccount.id,
+          expires_at: new Date(Date.now() + 60 * 60 * 1000),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+
+      const res = await createEmailIdentity(
+        app,
+        cookie,
+        "reserved@example.com",
+        "SecurePassword123!",
+      );
+
+      expect(res.status).toBe(400);
+      expect(await res.text()).toContain(
+        "An account is already registered for this email",
+      );
+    });
+
     test("does not reserve the pending email for signup", async ({
       dependencies,
     }) => {
@@ -1311,6 +1372,38 @@ describe("Auth routes", () => {
           },
         ],
       });
+    });
+
+    test("rejects changing to a duplicate pending email", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "duplicate-pending-email-owner" })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "email",
+          pending_email: "reserved@example.com",
+          password_hash: "hash",
+        })
+        .executeTakeFirstOrThrow();
+
+      const res = await updateCredentials(app, sessionCookie, {
+        currentPassword: TEST_ACCOUNT.password,
+        newEmail: "reserved@example.com",
+      });
+
+      expect(res.status).toBe(400);
+      expect(await res.text()).toContain(
+        "An account is already registered for this email",
+      );
     });
 
     test("does not persist credential changes when email sending fails", async ({

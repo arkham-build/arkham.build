@@ -1,4 +1,5 @@
 import type {
+  DeckSyncTarget,
   FolderSyncResponse,
   FolderSyncState as RemoteFolderSyncState,
 } from "@arkham-build/shared";
@@ -110,13 +111,15 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       get().clearAccountState();
     }
 
-    const results = await Promise.allSettled([
+    const settingsResults = await Promise.allSettled([
       state.loadRemoteSettings(client),
-      state.loadRemoteFolders(client),
-      state.syncDecks(client),
+    ]);
+    const syncResults = await Promise.allSettled([
+      get().loadRemoteFolders(client),
+      get().syncDecks(client),
     ]);
 
-    const errors = results.flatMap((result) =>
+    const errors = [...settingsResults, ...syncResults].flatMap((result) =>
       result.status === "rejected" ? [result.reason] : [],
     );
 
@@ -367,17 +370,24 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
         syncDecks,
       });
 
-      const remoteDecks = isEmpty(plan.fetchIds)
+      const remoteDecks = isEmpty(plan.fetchTargets)
         ? []
         : await fetchDeckBatch(client, {
-            ids: plan.fetchIds,
+            targets: plan.fetchTargets,
             arkhamdbSyncToken: manifest.arkhamdbSyncToken,
           });
 
-      const remoteDeckIds = new Set(remoteDecks.map((deck) => String(deck.id)));
+      const remoteDeckTargets = new Set(
+        remoteDecks.map((deck) =>
+          getDeckTargetKey({
+            provider: getSyncedDeckProvider(deck.source),
+            id: deck.id,
+          }),
+        ),
+      );
 
-      const missingFetchIds = plan.fetchIds.filter(
-        (id) => !remoteDeckIds.has(String(id)),
+      const missingFetchIds = plan.fetchTargets.filter(
+        (target) => !remoteDeckTargets.has(getDeckTargetKey(target)),
       );
 
       if (!isEmpty(missingFetchIds)) {
@@ -440,7 +450,15 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     }));
 
     try {
-      const [remoteDeck] = await fetchDeckBatch(client, { ids: [id] });
+      const deck = get().data.decks[id];
+      assert(
+        deck && isSyncedDeckSource(deck.source),
+        `Deck ${id} is not a synced deck.`,
+      );
+
+      const [remoteDeck] = await fetchDeckBatch(client, {
+        targets: [{ provider: deck.source, id }],
+      });
       assert(remoteDeck, `Remote deck ${id} could not be loaded.`);
 
       applyRemoteDeck(set, remoteDeck);
@@ -496,6 +514,26 @@ function getDeckConflict(state: StoreState, id: string | number) {
   const conflict = state.sync.decks.items[id]?.conflict;
   assert(conflict, `Deck ${id} does not have a conflict.`);
   return conflict;
+}
+
+function isSyncedDeckSource(
+  source: StoreState["data"]["decks"][string]["source"],
+): source is "account" | "arkhamdb" {
+  return source === "account" || source === "arkhamdb";
+}
+
+function getSyncedDeckProvider(
+  source: StoreState["data"]["decks"][string]["source"],
+): "account" | "arkhamdb" {
+  assert(
+    isSyncedDeckSource(source),
+    `Unsupported synced deck source: ${source}`,
+  );
+  return source;
+}
+
+function getDeckTargetKey(target: DeckSyncTarget) {
+  return `${target.provider}:${String(target.id)}`;
 }
 
 function applyRemoteDeck(

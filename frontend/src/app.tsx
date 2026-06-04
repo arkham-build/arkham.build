@@ -170,7 +170,6 @@ function AppInner() {
                 component={InstallFanMadeContent}
                 path="/install-fan-made-content"
               />
-              <Route component={Core2026Reveal} path="/blog/core-2026-reveal" />
               <Route component={Login} path="/auth/login" />
               <Route component={Signup} path="/auth/signup" />
               <Route component={CompleteSignup} path="/auth/signup/complete" />

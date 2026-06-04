@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useApplySettingsMutation } from "@/queries/mutations/settings";
+import { useSaveSettingsMutation } from "@/queries/mutations/settings";
 import { useStore } from "@/store";
 import { LocaleSelect } from "./locale-select";
 import { useToast } from "./ui/toast.hooks";
@@ -24,12 +24,12 @@ function useApplyLocaleSetting(
 ) {
   const { t } = useTranslation();
   const toast = useToast();
-  const applySettingsMutation = useApplySettingsMutation();
+  const saveSettingsMutation = useSaveSettingsMutation();
 
   const onLocaleChange = useCallback(
     async (locale: string) => {
       try {
-        await applySettingsMutation.mutateAsync({
+        await saveSettingsMutation.mutateAsync({
           settings: {
             ...settings,
             locale,
@@ -43,11 +43,11 @@ function useApplyLocaleSetting(
         });
       }
     },
-    [applySettingsMutation, settings, t, toast],
+    [saveSettingsMutation, settings, t, toast],
   );
 
   return {
-    isPending: applySettingsMutation.isPending,
+    isPending: saveSettingsMutation.isPending,
     onLocaleChange,
   };
 }

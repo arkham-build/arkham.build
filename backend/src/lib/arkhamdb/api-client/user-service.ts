@@ -170,6 +170,7 @@ function mapArkhamDbDeckToManifestItem(
   const dto = mapArkhamDbDeckToDto(deck);
 
   return {
+    provider: "arkhamdb",
     id: dto.id,
     updatedAt: dto.date_update,
     version: dto.version,
