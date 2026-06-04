@@ -20,7 +20,7 @@ export async function request<T, E extends HonoEnv = HonoEnv>(
 ): Promise<WrappedResponse<T>> {
   const config = c.get("config");
 
-  const res = await fetch(`${config.config.ARKHAMDB_BASE_URL}${path}`, {
+  const res = await fetch(`${config.ARKHAMDB_BASE_URL}${path}`, {
     ...options,
     headers: {
       ...options?.headers,

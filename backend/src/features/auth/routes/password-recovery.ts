@@ -34,6 +34,7 @@ routes.post(
     const { emailOrUsername } = c.req.valid("json");
     const config = c.get("config");
     const db = c.get("db");
+    const dispatcher = c.get("dispatcher");
 
     const accountIdentity = isEmail(emailOrUsername)
       ? await getAccountIdentityByEmail(db, emailOrUsername)
@@ -55,13 +56,15 @@ routes.post(
           expiryHours: config.PASSWORD_RESET_TOKEN_EXPIRY_HOURS,
         });
 
-        await c.get("emailService").sendTemplate(
-          passwordResetEmailTemplate({
-            resetUrl: `${config.FRONTEND_URL}/auth/reset-password#token=${encodeURIComponent(
-              token,
-            )}`,
-          }),
-          email,
+        const template = passwordResetEmailTemplate({
+          resetUrl: `${config.FRONTEND_URL}/auth/reset-password#token=${encodeURIComponent(
+            token,
+          )}`,
+        });
+
+        await dispatcher.enqueueEmail(
+          { subject: template.subject, text: template.text, to: email },
+          { tx },
         );
       });
     }

@@ -51,6 +51,7 @@ routes.post(
   async (c) => {
     const db = c.get("db");
     const config = c.get("config");
+    const dispatcher = c.get("dispatcher");
     const account = c.get("account");
     const { email, password } = c.req.valid("json");
 
@@ -85,12 +86,14 @@ routes.post(
         expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
       });
 
-      await c.get("emailService").sendTemplate(
-        verificationEmailTemplate({
-          token,
-          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
-        }),
-        email,
+      const template = verificationEmailTemplate({
+        token,
+        verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+      });
+
+      await dispatcher.enqueueEmail(
+        { subject: template.subject, text: template.text, to: email },
+        { tx },
       );
     });
 
@@ -105,6 +108,7 @@ routes.patch(
   async (c) => {
     const db = c.get("db");
     const config = c.get("config");
+    const dispatcher = c.get("dispatcher");
     const account = c.get("account");
     const { currentPassword, newEmail, newPassword } = c.req.valid("json");
 
@@ -183,12 +187,14 @@ routes.patch(
         tokenType: "email_verification",
         expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
       });
-      await c.get("emailService").sendTemplate(
-        verificationEmailTemplate({
-          token,
-          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
-        }),
-        nextEmail,
+      const template = verificationEmailTemplate({
+        token,
+        verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+      });
+
+      await dispatcher.enqueueEmail(
+        { subject: template.subject, text: template.text, to: nextEmail },
+        { tx },
       );
     });
 

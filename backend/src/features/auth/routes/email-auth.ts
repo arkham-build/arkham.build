@@ -47,7 +47,7 @@ const routes = new Hono<HonoEnv>();
 routes.post("/signup", zodValidator("json", SignupRequestSchema), async (c) => {
   const db = c.get("db");
   const config = c.get("config");
-  const emailService = c.get("emailService");
+  const dispatcher = c.get("dispatcher");
   const { name, email, password, captchaToken } = c.req.valid("json");
 
   await assertTurnstileToken(c, captchaToken);
@@ -79,12 +79,14 @@ routes.post("/signup", zodValidator("json", SignupRequestSchema), async (c) => {
       expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
     });
 
-    await emailService.sendTemplate(
-      verificationEmailTemplate({
-        token,
-        verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
-      }),
-      email,
+    const template = verificationEmailTemplate({
+      token,
+      verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+    });
+
+    await dispatcher.enqueueEmail(
+      { subject: template.subject, text: template.text, to: email },
+      { tx },
     );
   });
 
@@ -225,6 +227,7 @@ routes.post(
     const { email } = c.req.valid("json");
     const db = c.get("db");
     const config = c.get("config");
+    const dispatcher = c.get("dispatcher");
 
     const accountIdentity = await getAccountIdentityByEmail(db, email);
 
@@ -242,12 +245,14 @@ routes.post(
           tokenType: "email_verification",
           expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
         });
-        await c.get("emailService").sendTemplate(
-          verificationEmailTemplate({
-            token,
-            verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
-          }),
-          email,
+        const template = verificationEmailTemplate({
+          token,
+          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
+        });
+
+        await dispatcher.enqueueEmail(
+          { subject: template.subject, text: template.text, to: email },
+          { tx },
         );
       });
     }

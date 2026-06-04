@@ -3,7 +3,6 @@ import assert from "node:assert";
 import type { Hono } from "hono";
 import { describe, expect, vi } from "vitest";
 import { appFactory } from "../app.ts";
-import type { EmailService } from "../lib/email/email-service.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import type { MockMailer } from "./mocks/email.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
@@ -405,7 +404,7 @@ describe("Auth routes", () => {
     test("creates a new account and sends verification email", async ({
       dependencies,
     }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
       const res = await signup(app, {
         name: "testuser",
@@ -414,22 +413,22 @@ describe("Auth routes", () => {
       });
 
       expect(res.status).toBe(201);
-      expect(emailService.mailer.sentEmails).toHaveLength(1);
-      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      expect(mailer.sentEmails).toHaveLength(1);
+      const token = extractToken(mailer.sentEmails[0]?.body);
       expect(token).toBeTruthy();
-      expect(emailService.mailer.sentEmails[0]?.body).toContain(
+      expect(mailer.sentEmails[0]?.body).toContain(
         "Or copy and paste this verification token:",
       );
-      expect(emailService.mailer.sentEmails[0]?.body).toContain(`\n${token}\n`);
-      expect(emailService.mailer.sentEmails[0]?.to).toEqual("test@example.com");
+      expect(mailer.sentEmails[0]?.body).toContain(`\n${token}\n`);
+      expect(mailer.sentEmails[0]?.to).toEqual("test@example.com");
     });
 
     test("does not create an account or verification token when email sending fails", async ({
       dependencies,
     }) => {
-      const { app, db, emailService } = dependencies;
+      const { app, db, mailer } = dependencies;
 
-      emailService.mailer.failOnce();
+      mailer.failOnce();
 
       const res = await signup(app, {
         name: "signup-email-fail",
@@ -438,7 +437,7 @@ describe("Auth routes", () => {
       });
 
       expect(res.status).toBe(500);
-      expect(emailService.mailer.sentEmails).toHaveLength(0);
+      expect(mailer.sentEmails).toHaveLength(0);
 
       const account = await db
         .selectFrom("account")
@@ -477,14 +476,14 @@ describe("Auth routes", () => {
     test("requires captcha when turnstile is enabled", async ({
       dependencies,
     }) => {
-      const { config, db, emailService } = dependencies;
+      const { config, db, mailer, dispatcher } = dependencies;
       const app = appFactory(
         {
           ...config,
           TURNSTILE_SECRET_KEY: "turnstile-secret",
         },
         db,
-        emailService,
+        dispatcher,
       );
 
       const res = await signup(app, {
@@ -495,20 +494,20 @@ describe("Auth routes", () => {
 
       expect(res.status).toBe(400);
       expect(await res.text()).toContain("Captcha is required");
-      expect(emailService.mailer.sentEmails).toHaveLength(0);
+      expect(mailer.sentEmails).toHaveLength(0);
     });
 
     test("verifies captcha when turnstile is enabled", async ({
       dependencies,
     }) => {
-      const { config, db, emailService } = dependencies;
+      const { config, db, mailer, dispatcher } = dependencies;
       const app = appFactory(
         {
           ...config,
           TURNSTILE_SECRET_KEY: "turnstile-secret",
         },
         db,
-        emailService,
+        dispatcher,
       );
 
       vi.stubGlobal(
@@ -537,7 +536,7 @@ describe("Auth routes", () => {
             body: expect.any(URLSearchParams),
           }),
         );
-        expect(emailService.mailer.sentEmails).toHaveLength(1);
+        expect(mailer.sentEmails).toHaveLength(1);
       } finally {
         vi.unstubAllGlobals();
       }
@@ -546,14 +545,14 @@ describe("Auth routes", () => {
     test("rejects invalid captcha when turnstile is enabled", async ({
       dependencies,
     }) => {
-      const { config, db, emailService } = dependencies;
+      const { config, db, mailer, dispatcher } = dependencies;
       const app = appFactory(
         {
           ...config,
           TURNSTILE_SECRET_KEY: "turnstile-secret",
         },
         db,
-        emailService,
+        dispatcher,
       );
 
       vi.stubGlobal(
@@ -582,7 +581,7 @@ describe("Auth routes", () => {
 
         expect(res.status).toBe(400);
         expect(await res.text()).toContain("Captcha verification failed");
-        expect(emailService.mailer.sentEmails).toHaveLength(0);
+        expect(mailer.sentEmails).toHaveLength(0);
       } finally {
         vi.unstubAllGlobals();
       }
@@ -644,7 +643,7 @@ describe("Auth routes", () => {
 
   describe("POST /v2/auth/verify-email", () => {
     test("verifies email with valid token", async ({ dependencies }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
       await signup(app, {
         name: "testuser",
@@ -652,7 +651,7 @@ describe("Auth routes", () => {
         password: "SecurePassword123!",
       });
 
-      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      const token = extractToken(mailer.sentEmails[0]?.body);
       assert(token, "No verification token found");
 
       const res = await verifyEmail(app, token);
@@ -666,7 +665,7 @@ describe("Auth routes", () => {
     });
 
     test("token can only be used once", async ({ dependencies }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
       await signup(app, {
         name: "testuser",
@@ -674,7 +673,7 @@ describe("Auth routes", () => {
         password: "SecurePassword123!",
       });
 
-      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      const token = extractToken(mailer.sentEmails[0]?.body);
       assert(token, "No verification token found");
 
       const res1 = await verifyEmail(app, token);
@@ -689,9 +688,9 @@ describe("Auth routes", () => {
     test("logs in with valid credentials after verification", async ({
       dependencies,
     }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, emailService, {
+      await signupAndVerify(app, mailer, {
         name: "testuser",
         email: "login@example.com",
         password: "SecurePassword123!",
@@ -705,9 +704,9 @@ describe("Auth routes", () => {
     });
 
     test("does not log in with invalid password", async ({ dependencies }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, emailService, {
+      await signupAndVerify(app, mailer, {
         name: "testuser",
         email: "wrong-pass@example.com",
         password: "SecurePassword123!",
@@ -752,9 +751,9 @@ describe("Auth routes", () => {
     test("returns user information for authenticated user", async ({
       dependencies,
     }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, emailService, {
+      await signupAndVerify(app, mailer, {
         name: "testuser",
         email: "me@example.com",
         password: "SecurePassword123!",
@@ -864,7 +863,7 @@ describe("Auth routes", () => {
     test("creates a new email identity for an oauth-only account", async ({
       dependencies,
     }) => {
-      const { app, config, db, emailService } = dependencies;
+      const { app, config, db, mailer } = dependencies;
 
       const account = await db
         .insertInto("account")
@@ -901,10 +900,8 @@ describe("Auth routes", () => {
       );
 
       expect(res.status).toBe(201);
-      expect(emailService.mailer.sentEmails).toHaveLength(1);
-      expect(emailService.mailer.sentEmails[0]?.to).toBe(
-        "new-email@example.com",
-      );
+      expect(mailer.sentEmails).toHaveLength(1);
+      expect(mailer.sentEmails[0]?.to).toBe("new-email@example.com");
 
       const meRes = await app.request("/v2/auth/me", {
         method: "GET",
@@ -933,7 +930,7 @@ describe("Auth routes", () => {
       );
       expect(loginRes.status).toBe(401);
 
-      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      const token = extractToken(mailer.sentEmails[0]?.body);
       assert(token, "No verification token found");
 
       const verifyRes = await verifyEmail(app, token);
@@ -950,7 +947,7 @@ describe("Auth routes", () => {
     test("does not create an email identity or verification token when email sending fails", async ({
       dependencies,
     }) => {
-      const { app, config, db, emailService } = dependencies;
+      const { app, config, db, mailer } = dependencies;
 
       const account = await db
         .insertInto("account")
@@ -979,7 +976,7 @@ describe("Auth routes", () => {
 
       const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
 
-      emailService.mailer.failOnce();
+      mailer.failOnce();
 
       const res = await createEmailIdentity(
         app,
@@ -989,7 +986,7 @@ describe("Auth routes", () => {
       );
 
       expect(res.status).toBe(500);
-      expect(emailService.mailer.sentEmails).toHaveLength(0);
+      expect(mailer.sentEmails).toHaveLength(0);
 
       const identity = await db
         .selectFrom("account_identity")
@@ -1121,7 +1118,7 @@ describe("Auth routes", () => {
     test("invalidates the pending email token when another verification token is generated for the same email", async ({
       dependencies,
     }) => {
-      const { app, config, db, emailService } = dependencies;
+      const { app, config, db, mailer } = dependencies;
 
       const account = await db
         .insertInto("account")
@@ -1158,12 +1155,10 @@ describe("Auth routes", () => {
       );
       expect(pendingRes.status).toBe(201);
 
-      const pendingToken = extractToken(
-        emailService.mailer.sentEmails[0]?.body,
-      );
+      const pendingToken = extractToken(mailer.sentEmails[0]?.body);
       assert(pendingToken, "No verification token found");
 
-      await signupAndVerify(app, emailService, {
+      await signupAndVerify(app, mailer, {
         name: "claimed-email-user",
         email: "claimed@example.com",
         password: "SecurePassword123!",
@@ -1196,7 +1191,7 @@ describe("Auth routes", () => {
     test("starts an email change and stores the pending email", async ({
       dependencies,
     }) => {
-      const { app, emailService, sessionCookie } = dependencies;
+      const { app, mailer, sessionCookie } = dependencies;
 
       const res = await updateCredentials(app, sessionCookie, {
         currentPassword: TEST_ACCOUNT.password,
@@ -1204,8 +1199,8 @@ describe("Auth routes", () => {
       });
 
       expect(res.status).toBe(200);
-      expect(emailService.mailer.sentEmails).toHaveLength(1);
-      expect(emailService.mailer.sentEmails[0]?.to).toBe("updated@example.com");
+      expect(mailer.sentEmails).toHaveLength(1);
+      expect(mailer.sentEmails[0]?.to).toBe("updated@example.com");
 
       const meRes = await app.request("/v2/auth/me", {
         method: "GET",
@@ -1228,9 +1223,9 @@ describe("Auth routes", () => {
     test("does not persist credential changes when email sending fails", async ({
       dependencies,
     }) => {
-      const { app, db, emailService, sessionCookie } = dependencies;
+      const { app, db, mailer, sessionCookie } = dependencies;
 
-      emailService.mailer.failOnce();
+      mailer.failOnce();
 
       const res = await updateCredentials(app, sessionCookie, {
         currentPassword: TEST_ACCOUNT.password,
@@ -1239,7 +1234,7 @@ describe("Auth routes", () => {
       });
 
       expect(res.status).toBe(500);
-      expect(emailService.mailer.sentEmails).toHaveLength(0);
+      expect(mailer.sentEmails).toHaveLength(0);
 
       const identity = await db
         .selectFrom("account_identity")
@@ -1299,7 +1294,7 @@ describe("Auth routes", () => {
     });
 
     test("changes email and password together", async ({ dependencies }) => {
-      const { app, emailService, sessionCookie } = dependencies;
+      const { app, mailer, sessionCookie } = dependencies;
 
       const res = await updateCredentials(app, sessionCookie, {
         currentPassword: TEST_ACCOUNT.password,
@@ -1309,7 +1304,7 @@ describe("Auth routes", () => {
 
       expect(res.status).toBe(200);
 
-      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      const token = extractToken(mailer.sentEmails[0]?.body);
       assert(token, "No verification token found");
 
       const verifyRes = await verifyEmail(app, token);
@@ -1355,7 +1350,7 @@ describe("Auth routes", () => {
     });
 
     test("cancels a pending email change", async ({ dependencies }) => {
-      const { app, db, emailService, sessionCookie } = dependencies;
+      const { app, db, mailer, sessionCookie } = dependencies;
 
       const updateRes = await updateCredentials(app, sessionCookie, {
         currentPassword: TEST_ACCOUNT.password,
@@ -1363,7 +1358,7 @@ describe("Auth routes", () => {
       });
       expect(updateRes.status).toBe(200);
 
-      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      const token = extractToken(mailer.sentEmails[0]?.body);
       assert(token, "No verification token found");
 
       const cancelRes = await cancelPendingEmailChange(app, sessionCookie);
@@ -1404,7 +1399,7 @@ describe("Auth routes", () => {
     test("cancels a pending email identity creation", async ({
       dependencies,
     }) => {
-      const { app, config, db, emailService } = dependencies;
+      const { app, config, db, mailer } = dependencies;
 
       const account = await db
         .insertInto("account")
@@ -1441,7 +1436,7 @@ describe("Auth routes", () => {
       );
       expect(createRes.status).toBe(201);
 
-      const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+      const token = extractToken(mailer.sentEmails[0]?.body);
       assert(token, "No verification token found");
 
       const cancelRes = await cancelPendingEmailChange(app, cookie);
@@ -1480,9 +1475,9 @@ describe("Auth routes", () => {
 
   describe("POST /v2/auth/logout", () => {
     test("logs out authenticated user", async ({ dependencies }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, emailService, {
+      await signupAndVerify(app, mailer, {
         name: "testuser",
         email: "logout@example.com",
         password: "SecurePassword123!",
@@ -1528,7 +1523,7 @@ describe("Auth routes", () => {
       vi.useFakeTimers();
 
       try {
-        const { app, emailService } = dependencies;
+        const { app, mailer } = dependencies;
 
         await signup(app, {
           name: "testuser",
@@ -1536,20 +1531,16 @@ describe("Auth routes", () => {
           password: "SecurePassword123!",
         });
 
-        emailService.mailer.reset();
+        mailer.reset();
 
         vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
 
         const res = await resendVerification(app, "resend@example.com");
 
         expect(res.status).toBe(200);
-        expect(emailService.mailer.sentEmails).toHaveLength(1);
-        expect(emailService.mailer.sentEmails[0]?.to).toEqual(
-          "resend@example.com",
-        );
-        expect(
-          extractToken(emailService.mailer.sentEmails[0]?.body),
-        ).toBeTruthy();
+        expect(mailer.sentEmails).toHaveLength(1);
+        expect(mailer.sentEmails[0]?.to).toEqual("resend@example.com");
+        expect(extractToken(mailer.sentEmails[0]?.body)).toBeTruthy();
       } finally {
         vi.useRealTimers();
       }
@@ -1561,7 +1552,7 @@ describe("Auth routes", () => {
       vi.useFakeTimers();
 
       try {
-        const { app, db, emailService } = dependencies;
+        const { app, db, mailer } = dependencies;
 
         await signup(app, {
           name: "resend-email-fail",
@@ -1569,12 +1560,12 @@ describe("Auth routes", () => {
           password: "SecurePassword123!",
         });
 
-        const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+        const token = extractToken(mailer.sentEmails[0]?.body);
         assert(token, "No verification token found");
 
-        emailService.mailer.reset();
+        mailer.reset();
         vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
-        emailService.mailer.failOnce();
+        mailer.failOnce();
 
         const res = await resendVerification(
           app,
@@ -1582,7 +1573,7 @@ describe("Auth routes", () => {
         );
 
         expect(res.status).toBe(500);
-        expect(emailService.mailer.sentEmails).toHaveLength(0);
+        expect(mailer.sentEmails).toHaveLength(0);
         expect(
           await countVerificationTokens(
             db,
@@ -1604,7 +1595,7 @@ describe("Auth routes", () => {
       vi.useFakeTimers();
 
       try {
-        const { app, emailService } = dependencies;
+        const { app, mailer } = dependencies;
 
         await signup(app, {
           name: "testuser",
@@ -1612,13 +1603,13 @@ describe("Auth routes", () => {
           password: "SecurePassword123!",
         });
 
-        const oldToken = extractToken(emailService.mailer.sentEmails[0]?.body);
+        const oldToken = extractToken(mailer.sentEmails[0]?.body);
 
         vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
 
         await resendVerification(app, "resend-works@example.com");
 
-        const newToken = extractToken(emailService.mailer.sentEmails[1]?.body);
+        const newToken = extractToken(mailer.sentEmails[1]?.body);
         assert(newToken, "No new verification token found");
 
         assert(oldToken, "No old verification token found");
@@ -1635,31 +1626,31 @@ describe("Auth routes", () => {
     test("returns 200 for non-existent email without revealing existence", async ({
       dependencies,
     }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
       const res = await resendVerification(app, "nonexistent@example.com");
 
       expect(res.status).toBe(200);
-      expect(emailService.mailer.sentEmails).toHaveLength(0);
+      expect(mailer.sentEmails).toHaveLength(0);
     });
 
     test("does not send email for already verified account", async ({
       dependencies,
     }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, emailService, {
+      await signupAndVerify(app, mailer, {
         name: "testuser",
         email: "already-verified@example.com",
         password: "SecurePassword123!",
       });
 
-      emailService.mailer.reset();
+      mailer.reset();
 
       const res = await resendVerification(app, "already-verified@example.com");
 
       expect(res.status).toBe(200);
-      expect(emailService.mailer.sentEmails).toHaveLength(0);
+      expect(mailer.sentEmails).toHaveLength(0);
     });
 
     test("rate limits requests within 5 minute window", async ({
@@ -1668,7 +1659,7 @@ describe("Auth routes", () => {
       vi.useFakeTimers();
 
       try {
-        const { app, emailService } = dependencies;
+        const { app, mailer } = dependencies;
 
         await signup(app, {
           name: "testuser",
@@ -1676,7 +1667,7 @@ describe("Auth routes", () => {
           password: "SecurePassword123!",
         });
 
-        emailService.mailer.reset();
+        mailer.reset();
 
         vi.advanceTimersByTime(4 * 60 * 1000 + 1000);
 
@@ -1688,7 +1679,7 @@ describe("Auth routes", () => {
         expect(res.status).toBe(429);
         const body: any = await res.json();
         expect(body.cause?.retryAfter).toBeDefined();
-        expect(emailService.mailer.sentEmails).toHaveLength(0);
+        expect(mailer.sentEmails).toHaveLength(0);
       } finally {
         vi.useRealTimers();
       }
@@ -1698,7 +1689,7 @@ describe("Auth routes", () => {
       vi.useFakeTimers();
 
       try {
-        const { app, emailService } = dependencies;
+        const { app, mailer } = dependencies;
 
         await signup(app, {
           name: "testuser",
@@ -1706,7 +1697,7 @@ describe("Auth routes", () => {
           password: "SecurePassword123!",
         });
 
-        emailService.mailer.reset();
+        mailer.reset();
 
         vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
 
@@ -1716,7 +1707,7 @@ describe("Auth routes", () => {
         );
 
         expect(res.status).toBe(200);
-        expect(emailService.mailer.sentEmails).toHaveLength(1);
+        expect(mailer.sentEmails).toHaveLength(1);
       } finally {
         vi.useRealTimers();
       }
@@ -1727,26 +1718,22 @@ describe("Auth routes", () => {
     test("sends password reset email for verified account", async ({
       dependencies,
     }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, emailService, {
+      await signupAndVerify(app, mailer, {
         name: "testuser",
         email: "forgot@example.com",
         password: "SecurePassword123!",
       });
 
-      emailService.mailer.reset();
+      mailer.reset();
 
       const res = await forgotPassword(app, "forgot@example.com");
 
       expect(res.status).toBe(200);
-      expect(emailService.mailer.sentEmails).toHaveLength(1);
-      expect(emailService.mailer.sentEmails[0]?.to).toEqual(
-        "forgot@example.com",
-      );
-      expect(
-        extractToken(emailService.mailer.sentEmails[0]?.body),
-      ).toBeTruthy();
+      expect(mailer.sentEmails).toHaveLength(1);
+      expect(mailer.sentEmails[0]?.to).toEqual("forgot@example.com");
+      expect(extractToken(mailer.sentEmails[0]?.body)).toBeTruthy();
     });
 
     test("does not replace the existing reset token when email sending fails", async ({
@@ -1755,29 +1742,29 @@ describe("Auth routes", () => {
       vi.useFakeTimers();
 
       try {
-        const { app, db, emailService } = dependencies;
+        const { app, db, mailer } = dependencies;
 
-        await signupAndVerify(app, emailService, {
+        await signupAndVerify(app, mailer, {
           name: "forgot-email-fail",
           email: "forgot-email-fail@example.com",
           password: "OldPassword123!",
         });
 
-        emailService.mailer.reset();
+        mailer.reset();
 
         await forgotPassword(app, "forgot-email-fail@example.com");
 
-        const token = extractToken(emailService.mailer.sentEmails[0]?.body);
+        const token = extractToken(mailer.sentEmails[0]?.body);
         assert(token, "No verification token found");
 
-        emailService.mailer.reset();
+        mailer.reset();
         vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
-        emailService.mailer.failOnce();
+        mailer.failOnce();
 
         const res = await forgotPassword(app, "forgot-email-fail@example.com");
 
         expect(res.status).toBe(500);
-        expect(emailService.mailer.sentEmails).toHaveLength(0);
+        expect(mailer.sentEmails).toHaveLength(0);
         expect(
           await countVerificationTokens(
             db,
@@ -1796,18 +1783,18 @@ describe("Auth routes", () => {
     test("returns 200 for non-existent email without revealing existence", async ({
       dependencies,
     }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
       const res = await forgotPassword(app, "nonexistent-forgot@example.com");
 
       expect(res.status).toBe(200);
-      expect(emailService.mailer.sentEmails).toHaveLength(0);
+      expect(mailer.sentEmails).toHaveLength(0);
     });
 
     test("does not send email for unverified account", async ({
       dependencies,
     }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
       await signup(app, {
         name: "testuser",
@@ -1815,12 +1802,12 @@ describe("Auth routes", () => {
         password: "SecurePassword123!",
       });
 
-      emailService.mailer.reset();
+      mailer.reset();
 
       const res = await forgotPassword(app, "unverified-forgot@example.com");
 
       expect(res.status).toBe(200);
-      expect(emailService.mailer.sentEmails).toHaveLength(0);
+      expect(mailer.sentEmails).toHaveLength(0);
     });
 
     test("rate limits requests within 5 minute window", async ({
@@ -1829,20 +1816,20 @@ describe("Auth routes", () => {
       vi.useFakeTimers();
 
       try {
-        const { app, emailService } = dependencies;
+        const { app, mailer } = dependencies;
 
-        await signupAndVerify(app, emailService, {
+        await signupAndVerify(app, mailer, {
           name: "testuser",
           email: "rate-limit-forgot@example.com",
           password: "SecurePassword123!",
         });
 
-        emailService.mailer.reset();
+        mailer.reset();
 
         await forgotPassword(app, "rate-limit-forgot@example.com");
-        expect(emailService.mailer.sentEmails).toHaveLength(1);
+        expect(mailer.sentEmails).toHaveLength(1);
 
-        emailService.mailer.reset();
+        mailer.reset();
 
         vi.advanceTimersByTime(4 * 60 * 1000 + 1000);
 
@@ -1851,7 +1838,7 @@ describe("Auth routes", () => {
         expect(res.status).toBe(429);
         const body: any = await res.json();
         expect(body.cause?.retryAfter).toBeDefined();
-        expect(emailService.mailer.sentEmails).toHaveLength(0);
+        expect(mailer.sentEmails).toHaveLength(0);
       } finally {
         vi.useRealTimers();
       }
@@ -1861,20 +1848,20 @@ describe("Auth routes", () => {
       vi.useFakeTimers();
 
       try {
-        const { app, emailService } = dependencies;
+        const { app, mailer } = dependencies;
 
-        await signupAndVerify(app, emailService, {
+        await signupAndVerify(app, mailer, {
           name: "testuser",
           email: "rate-limit-forgot-wait@example.com",
           password: "SecurePassword123!",
         });
 
-        emailService.mailer.reset();
+        mailer.reset();
 
         await forgotPassword(app, "rate-limit-forgot-wait@example.com");
-        expect(emailService.mailer.sentEmails).toHaveLength(1);
+        expect(mailer.sentEmails).toHaveLength(1);
 
-        emailService.mailer.reset();
+        mailer.reset();
 
         vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
 
@@ -1884,7 +1871,7 @@ describe("Auth routes", () => {
         );
 
         expect(res.status).toBe(200);
-        expect(emailService.mailer.sentEmails).toHaveLength(1);
+        expect(mailer.sentEmails).toHaveLength(1);
       } finally {
         vi.useRealTimers();
       }
@@ -1893,9 +1880,9 @@ describe("Auth routes", () => {
 
   describe("POST /v2/auth/reset-password", () => {
     test("resets password with valid token", async ({ dependencies }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, emailService, {
+      await signupAndVerify(app, mailer, {
         name: "testuser",
         email: "reset@example.com",
         password: "OldPassword123!",
@@ -1903,7 +1890,7 @@ describe("Auth routes", () => {
 
       await forgotPassword(app, "reset@example.com");
 
-      const resetToken = extractToken(emailService.mailer.sentEmails[1]?.body);
+      const resetToken = extractToken(mailer.sentEmails[1]?.body);
       assert(resetToken, "No verification token found");
 
       const res = await resetPassword(app, resetToken, "NewPassword123!");
@@ -1932,9 +1919,9 @@ describe("Auth routes", () => {
     test("invalidates all sessions after password reset", async ({
       dependencies,
     }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, emailService, {
+      await signupAndVerify(app, mailer, {
         name: "testuser",
         email: "session-invalidate@example.com",
         password: "OldPassword123!",
@@ -1950,7 +1937,7 @@ describe("Auth routes", () => {
 
       await forgotPassword(app, "session-invalidate@example.com");
 
-      const resetToken = extractToken(emailService.mailer.sentEmails[1]?.body);
+      const resetToken = extractToken(mailer.sentEmails[1]?.body);
       assert(resetToken, "No verification token found");
 
       await resetPassword(app, resetToken, "NewPassword123!");
@@ -1964,9 +1951,9 @@ describe("Auth routes", () => {
     });
 
     test("token can only be used once", async ({ dependencies }) => {
-      const { app, emailService } = dependencies;
+      const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, emailService, {
+      await signupAndVerify(app, mailer, {
         name: "testuser",
         email: "reset-once@example.com",
         password: "OldPassword123!",
@@ -1974,7 +1961,7 @@ describe("Auth routes", () => {
 
       await forgotPassword(app, "reset-once@example.com");
 
-      const resetToken = extractToken(emailService.mailer.sentEmails[1]?.body);
+      const resetToken = extractToken(mailer.sentEmails[1]?.body);
       assert(resetToken, "No verification token found");
 
       const res1 = await resetPassword(app, resetToken, "NewPassword123!");
@@ -2153,13 +2140,12 @@ function mockArkhamDbOAuth(userId: number) {
 
 async function signupAndVerify(
   app: Hono<HonoEnv>,
-  emailService: EmailService<MockMailer>,
+  mailer: MockMailer,
   params: SignupParams,
 ) {
   await signup(app, params);
   const token = extractToken(
-    emailService.mailer.sentEmails[emailService.mailer.sentEmails.length - 1]
-      ?.body,
+    mailer.sentEmails[mailer.sentEmails.length - 1]?.body,
   );
   if (!token) throw new Error("No verification token found");
   await verifyEmail(app, token);

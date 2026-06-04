@@ -6,8 +6,9 @@ import { type Database, getDatabase } from "../db/db.ts";
 import type { DB } from "../db/schema.types.ts";
 import { hashPassword } from "../features/auth/crypto.ts";
 import { createSession } from "../features/auth/queries/sessions.ts";
+import type { EnqueueOptions, JobDispatcher } from "../jobs/dispatcher.ts";
+import type { DeliverEmailJobData } from "../jobs/job-types.ts";
 import { type Config, configFromEnv } from "../lib/config.ts";
-import { createEmailService } from "../lib/email/email-service.ts";
 import { MockMailer } from "./mocks/email.ts";
 
 export const TEST_ACCOUNT = {
@@ -62,6 +63,22 @@ export async function createAuthenticatedSessionCookie(
   return `${config.SESSION_COOKIE_NAME}=${session.id}`;
 }
 
+class TestJobDispatcher implements JobDispatcher {
+  private readonly mailer: MockMailer;
+
+  constructor(mailer: MockMailer) {
+    this.mailer = mailer;
+  }
+
+  enqueueEmail(data: DeliverEmailJobData, _options?: EnqueueOptions) {
+    return this.mailer.send(data.to, data.subject, data.text);
+  }
+
+  async enqueueIngestArkhamDbDecklists() {}
+  async enqueueIngestJsonData() {}
+  async enqueuePurgeCloudflareCache() {}
+}
+
 async function getDependencies() {
   const container = globalThis.postgresContainer;
   assert(container, "PostgreSQL container not started.");
@@ -87,11 +104,12 @@ async function getDependencies() {
 
   const db = getTestDatabase();
 
-  const emailService = createEmailService(new MockMailer());
-  const app = appFactory(config, db, emailService);
+  const mailer = new MockMailer();
+  const dispatcher = new TestJobDispatcher(mailer);
+  const app = appFactory(config, db, dispatcher);
 
   const sessionCookie = await createAuthenticatedSessionCookie(db, config);
-  return { app, db, emailService, config, sessionCookie };
+  return { app, config, db, dispatcher, mailer, sessionCookie };
 }
 
 export const test = base.extend<{
