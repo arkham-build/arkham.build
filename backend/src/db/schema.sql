@@ -472,7 +472,8 @@ CREATE TABLE public.account_identity (
     verified_at timestamp without time zone,
     email character varying(255),
     password_hash text,
-    pending_email character varying(255)
+    pending_email character varying(255),
+    state jsonb
 );
 
 
@@ -2509,4 +2510,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260523120000'),
     ('20260524095500'),
     ('20260529120000'),
-    ('20260604090000');
+    ('20260604090000'),
+    ('20260604123000');
