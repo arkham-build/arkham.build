@@ -6,10 +6,7 @@ import type { HonoEnv, SessionAuthHonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
 import { sessionAuth } from "../auth/lib/session-auth-middleware.ts";
 import { mapAccountFolderStateToSyncResponse } from "./mapping.ts";
-import {
-  findAccountFolderStateByAccountId,
-  upsertAccountFolderState,
-} from "./queries.ts";
+import { findAccountFolderStateByAccountId } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
 
@@ -30,23 +27,49 @@ routes.put(
     const accountId = getAccountId(c);
     const payload = c.req.valid("json");
 
-    const current = await findAccountFolderStateByAccountId(db, accountId);
-    const currentRevision = current?.revision ?? null;
+    const revision = randomUUID();
+    const accountFolderState =
+      payload.expectedRevision == null
+        ? await db
+            .insertInto("account_folder")
+            .values({
+              account_id: accountId,
+              revision,
+              state: payload.state,
+            })
+            .onConflict((oc) => oc.column("account_id").doNothing())
+            .returning(["state", "revision"])
+            .executeTakeFirst()
+        : await db
+            .insertInto("account_folder")
+            .values({
+              account_id: accountId,
+              revision,
+              state: payload.state,
+            })
+            .onConflict((oc) =>
+              oc
+                .column("account_id")
+                .doUpdateSet({
+                  revision,
+                  state: payload.state,
+                })
+                .where(
+                  "account_folder.revision",
+                  "=",
+                  payload.expectedRevision,
+                ),
+            )
+            .returning(["state", "revision"])
+            .executeTakeFirst();
 
-    if (currentRevision !== payload.expectedRevision) {
+    if (!accountFolderState) {
+      const current = await findAccountFolderStateByAccountId(db, accountId);
       throw new HTTPException(409, {
         message: "Stored folder revision does not match the expected revision",
         cause: mapAccountFolderStateToSyncResponse(current),
       });
     }
-
-    const revision = randomUUID();
-    const accountFolderState = await upsertAccountFolderState(
-      db,
-      accountId,
-      revision,
-      payload.state,
-    );
 
     return c.json(mapAccountFolderStateToSyncResponse(accountFolderState));
   },

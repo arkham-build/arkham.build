@@ -6,10 +6,7 @@ import type { HonoEnv, SessionAuthHonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
 import { sessionAuth } from "../auth/lib/session-auth-middleware.ts";
 import { mapAccountSettingsToResponse } from "./mapping.ts";
-import {
-  findAccountSettingsByAccountId,
-  upsertAccountSettings,
-} from "./queries.ts";
+import { findAccountSettingsByAccountId } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
 
@@ -30,24 +27,52 @@ routes.put(
     const accountId = getAccountId(c);
     const payload = c.req.valid("json");
 
-    const current = await findAccountSettingsByAccountId(db, accountId);
-    const currentRevision = current?.revision ?? null;
+    const revision = randomUUID();
+    const accountSettings =
+      payload.expectedRevision == null
+        ? await db
+            .insertInto("account_settings")
+            .values({
+              account_id: accountId,
+              collection: payload.collection,
+              revision,
+              settings: payload.settings,
+            })
+            .onConflict((oc) => oc.column("account_id").doNothing())
+            .returning(["settings", "collection", "revision"])
+            .executeTakeFirst()
+        : await db
+            .insertInto("account_settings")
+            .values({
+              account_id: accountId,
+              collection: payload.collection,
+              revision,
+              settings: payload.settings,
+            })
+            .onConflict((oc) =>
+              oc
+                .column("account_id")
+                .doUpdateSet({
+                  collection: payload.collection,
+                  revision,
+                  settings: payload.settings,
+                })
+                .where(
+                  "account_settings.revision",
+                  "=",
+                  payload.expectedRevision,
+                ),
+            )
+            .returning(["settings", "collection", "revision"])
+            .executeTakeFirst();
 
-    if (currentRevision !== payload.expectedRevision) {
+    if (!accountSettings) {
+      const current = await findAccountSettingsByAccountId(db, accountId);
       throw new HTTPException(409, {
         message: "Stored setting revision does not match the expected revision",
         cause: mapAccountSettingsToResponse(current),
       });
     }
-
-    const revision = randomUUID();
-    const accountSettings = await upsertAccountSettings(
-      db,
-      accountId,
-      revision,
-      payload.collection,
-      payload.settings,
-    );
 
     return c.json(mapAccountSettingsToResponse(accountSettings));
   },

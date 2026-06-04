@@ -227,46 +227,63 @@ const localCrud = {
   async update(c: DeckContext, deckId: string, payload: DeckUpdateRequest) {
     const db = c.get("db");
     const accountId = c.get("account").id;
-    const current = await findAccountDeckById(db, accountId, deckId);
-
-    if (!current) {
-      throwDeckConflict(null, null);
-    }
-
-    if ((current.version ?? "") !== payload.expectedVersion) {
-      throwDeckConflict(mapDeckRowToDto(current), current.version ?? null);
-    }
-
     const { expectedVersion: _, id: __, version, ...deckPayload } = payload;
+
     const deck = await db
       .updateTable("deck")
       .set({
         ...mapDeckWriteDtoToInsert(deckPayload),
-        provider_type: current.provider_type,
         updated_at: new Date(),
         version,
       })
-      .where("id", "=", current.id)
+      .where("account_id", "=", accountId)
+      .where("id", "=", deckId)
+      .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
+      .where((eb) =>
+        payload.expectedVersion === ""
+          ? eb.or([eb("version", "is", null), eb("version", "=", "")])
+          : eb("version", "=", payload.expectedVersion),
+      )
       .returningAll()
-      .executeTakeFirstOrThrow();
+      .executeTakeFirst();
 
-    return mapDeckRowToDto(deck);
+    if (deck) {
+      return mapDeckRowToDto(deck);
+    }
+
+    const current = await findAccountDeckById(db, accountId, deckId);
+    throwDeckConflict(
+      current ? mapDeckRowToDto(current) : null,
+      current?.version ?? null,
+    );
   },
 
   async delete(c: DeckContext, deckId: string, payload: DeckDeleteRequest) {
     const db = c.get("db");
     const accountId = c.get("account").id;
+
+    const deleted = await db
+      .deleteFrom("deck")
+      .where("account_id", "=", accountId)
+      .where("id", "=", deckId)
+      .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
+      .where((eb) =>
+        payload.expectedVersion === ""
+          ? eb.or([eb("version", "is", null), eb("version", "=", "")])
+          : eb("version", "=", payload.expectedVersion),
+      )
+      .returning(["id"])
+      .executeTakeFirst();
+
+    if (deleted) {
+      return;
+    }
+
     const current = await findAccountDeckById(db, accountId, deckId);
-
-    if (!current) {
-      throwDeckConflict(null, null);
-    }
-
-    if ((current.version ?? "") !== payload.expectedVersion) {
-      throwDeckConflict(mapDeckRowToDto(current), current.version ?? null);
-    }
-
-    await db.deleteFrom("deck").where("id", "=", current.id).executeTakeFirst();
+    throwDeckConflict(
+      current ? mapDeckRowToDto(current) : null,
+      current?.version ?? null,
+    );
   },
 
   async upgrade(
