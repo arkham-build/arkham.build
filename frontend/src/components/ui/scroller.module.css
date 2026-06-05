@@ -47,7 +47,10 @@
     scrollbar-width: thin;
     scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar);
     scrollbar-gutter: stable;
-    padding-right: var(--scrollbar-padding);
+  }
+
+  .scroller.padded .viewport {
+    padding-inline: var(--scrollbar-padding);
   }
 
   .viewport-hover {

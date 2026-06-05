@@ -298,7 +298,7 @@ export function UpgradeModal(props: Props) {
                 <FieldLabel htmlFor="xp-gained">
                   {t("common.exiled_cards")}
                 </FieldLabel>
-                <Scroller className={css["exile"]}>
+                <Scroller className={css["exile"]} padded>
                   <ul>
                     {exilableCards.map(({ card, limit }) => (
                       <ListCard

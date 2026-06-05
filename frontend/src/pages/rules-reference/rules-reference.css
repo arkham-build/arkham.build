@@ -34,9 +34,9 @@ html[data-theme="light"] {
 .toc-container {
   background: var(--palette-point-five);
   border-radius: var(--rounded);
-  padding: 0.625rem;
   border: 1px solid var(--palette-2);
   position: fixed;
+  padding-block: 0.625rem;
   top: 0.25rem;
   right: 0.25rem;
   flex-flow: column nowrap;
@@ -69,6 +69,12 @@ html[data-theme="light"] {
   flex: 0 0 auto;
   font-size: var(--text-xl);
   text-align: center;
+  padding-inline: var(--scrollbar-padding);
+}
+
+.toc-search {
+  flex: 0 0 auto;
+  padding-inline: var(--scrollbar-padding);
 }
 
 .toc-nav {
@@ -76,6 +82,7 @@ html[data-theme="light"] {
   display: flex;
   flex-flow: row wrap;
   gap: 0.375rem;
+  padding-inline: var(--scrollbar-padding);
 }
 
 .toc-inner {

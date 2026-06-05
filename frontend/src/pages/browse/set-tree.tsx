@@ -98,7 +98,7 @@ export function SetTree({
   });
 
   return (
-    <Scroller className={css["tree"]}>
+    <Scroller className={css["tree"]} padded>
       <Tabs
         className={css["chapter-tabs"]}
         value={chapterTab}

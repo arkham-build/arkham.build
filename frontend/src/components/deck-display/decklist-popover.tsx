@@ -24,8 +24,8 @@ export function DecklistPopover(props: Props) {
           </Button>
         </PopoverTrigger>
         <PopoverContent>
-          <Plane className={css["popover"]}>
-            <Scroller>
+          <Plane className={css["popover"]} size="none">
+            <Scroller padded>
               <Decklist deck={deck} />
             </Scroller>
           </Plane>

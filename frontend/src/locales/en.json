@@ -152,7 +152,8 @@
       "errata_notice": "Errata ({{date}})",
       "faq": {
         "empty": "No FAQ entries available.",
-        "error": "Failed to load FAQ entries."
+        "error": "Failed to load FAQ entries.",
+        "title": "FAQ"
       },
       "scan": "Scan of {{code}}",
       "section_actions": "Actions",

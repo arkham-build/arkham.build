@@ -135,7 +135,7 @@ export function ModalInner(props: ModalInnerProps) {
   );
 
   return (
-    <Scroller type="always">
+    <Scroller type="always" padded>
       <div
         className={cx(css["inner"], className)}
         onMouseDown={stopPropagation}

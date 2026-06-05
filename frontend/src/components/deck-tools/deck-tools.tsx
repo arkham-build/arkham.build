@@ -38,7 +38,7 @@ export function DeckTools(props: Props) {
   );
 
   return scrollable ? (
-    <Scroller className={css["scroller"]} type="always">
+    <Scroller className={css["scroller"]} padded type="always">
       {node}
     </Scroller>
   ) : (

@@ -20,11 +20,11 @@ export function NotesPreview(props: Props) {
   const descriptionMd = useDeferredValue(deck.description_md ?? "");
 
   return (
-    <Plane className={css["preview"]} size="sm">
+    <Plane className={css["preview"]} size="none">
       <h2 className={css["preview-title"]}>
         {t("deck_edit.notes.toolbar.preview")}
       </h2>
-      <Scroller>
+      <Scroller padded>
         <div className={css["preview-inner"]}>
           {bannerUrl && (
             <div className={css["banner"]}>

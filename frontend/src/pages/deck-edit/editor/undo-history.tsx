@@ -20,7 +20,7 @@ export function UndoHistory(props: Props) {
   const history = useStore((state) => selectUndoHistory(state, deck));
 
   return (
-    <Scroller className={css["scroller"]}>
+    <Scroller padded>
       <Plane
         className={css["container"]}
         data-testid="undo-history"

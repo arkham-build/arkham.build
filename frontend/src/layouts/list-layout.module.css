@@ -6,7 +6,6 @@
   display: grid;
 
   height: 100dvh;
-  column-gap: 1rem;
   margin-inline: auto;
   max-width: var(--layout-max-width);
   padding-inline: var(--layout-padding);

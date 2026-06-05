@@ -10,5 +10,6 @@
     height: 80dvh;
     z-index: 2;
     box-shadow: var(--shadow-lg);
+    padding-block: 0.625rem;
   }
 }

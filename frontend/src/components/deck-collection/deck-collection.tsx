@@ -166,6 +166,7 @@ export function DeckCollection() {
       {deckCollection.total ? (
         <Scroller
           className={css["scroller"]}
+          padded
           ref={
             setScrollParent as unknown as React.RefObject<HTMLDivElement | null>
           }

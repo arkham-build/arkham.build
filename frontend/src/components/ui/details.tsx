@@ -44,6 +44,7 @@ export function Details(props: Props) {
 
       {scrollHeight ? (
         <Scroller
+          padded
           data-testid="details-content"
           className={cx(css["details-content"], css["scrollable"])}
           style={cssVariables as React.CSSProperties}

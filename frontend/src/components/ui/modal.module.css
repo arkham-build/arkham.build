@@ -8,7 +8,6 @@
   width: 100%;
   z-index: 90;
   container-type: inline-size;
-  padding-left: var(--scrollbar-padding);
 
   &.center {
     display: grid;

@@ -217,6 +217,40 @@ function AccountMenu(props: {
 
   const actionNodes = (
     <>
+      {!hideLocaleSwitch && (
+        <>
+          <DropdownItem>
+            <LocaleQuickSwitch fullWidth portal={false} />
+          </DropdownItem>
+          <hr />
+        </>
+      )}
+      {session && (
+        <>
+          <DropdownItem>
+            <p className={css["logged-in-as"]}>
+              {t("auth.menu.logged_in_as", {
+                name: session.account.name,
+              })}
+            </p>
+          </DropdownItem>
+          <Link asChild href="~/settings?tab=account">
+            <DropdownButton as="a" data-testid="masthead-account">
+              <UserIcon />
+              {t("settings.account.title")}
+            </DropdownButton>
+          </Link>
+          <DropdownButton
+            data-testid="masthead-account-sync"
+            disabled={isSyncPending || logoutMutation.isPending}
+            onClick={onSyncAccount}
+          >
+            <RefreshCwIcon />
+            {t("auth.menu.sync_account")}
+          </DropdownButton>
+          <hr />
+        </>
+      )}
       {collapseNav && (
         <>
           <NavDropdownLink
@@ -246,33 +280,6 @@ function AccountMenu(props: {
             <BookOpenTextIcon />
             {t("masthead.rules")}
           </NavDropdownLink>
-          <hr />
-        </>
-      )}
-      {session && (
-        <>
-          <Link asChild href="~/settings?tab=account">
-            <DropdownButton as="a" data-testid="masthead-account">
-              <UserIcon />
-              {t("settings.account.title")}
-            </DropdownButton>
-          </Link>
-          <DropdownButton
-            data-testid="masthead-account-sync"
-            disabled={isSyncPending || logoutMutation.isPending}
-            onClick={onSyncAccount}
-          >
-            <RefreshCwIcon />
-            {t("auth.menu.sync_account")}
-          </DropdownButton>
-          <hr />
-        </>
-      )}
-      {!hideLocaleSwitch && (
-        <>
-          <DropdownItem>
-            <LocaleQuickSwitch fullWidth portal={false} />
-          </DropdownItem>
           <hr />
         </>
       )}
@@ -312,15 +319,6 @@ function AccountMenu(props: {
       )}
       <PopoverContent>
         <DropdownMenu>
-          {session && (
-            <DropdownItem>
-              <p className={css["logged-in-as"]}>
-                {t("auth.menu.logged_in_as", {
-                  name: session.account.name,
-                })}
-              </p>
-            </DropdownItem>
-          )}
           {actionNodes}
           {session && (
             <>

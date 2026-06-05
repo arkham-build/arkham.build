@@ -52,7 +52,7 @@ export function NotesEditor(props: Props) {
 
   return (
     <div className={css["container"]}>
-      <Scroller>
+      <Scroller padded>
         <div className={css["notes-editor"]}>
           <Field full helpText={t("deck_edit.notes.description_help")} padded>
             <FieldLabel>{t("deck_edit.notes.description")}</FieldLabel>

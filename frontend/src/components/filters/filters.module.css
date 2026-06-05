@@ -1,5 +1,5 @@
 .filters {
-  --filters-spacing-x: 0.625rem;
+  --filters-spacing-x: var(--scrollbar-padding);
   --filters-spacing-y: 0.5rem;
 
   display: flex;
@@ -12,8 +12,8 @@
 .header {
   display: flex;
   align-items: center;
-  gap: var(--filters-spacing-x);
-  padding-inline: calc(var(--filters-spacing-x));
+  gap: var(--filters-spacing-y);
+  padding-inline: var(--filters-spacing-x);
   padding-top: var(--filters-spacing-y);
   margin-bottom: 0.25rem;
   gap: 0.25rem;
@@ -32,16 +32,10 @@
 }
 
 .type-filter {
-  padding-inline: var(--filters-spacing-x);
   padding-top: var(--filters-spacing-y);
 }
 
-.card-type-filter {
-  padding-inline: calc(var(--filters-spacing-x));
-}
-
 .children {
-  padding-inline: var(--filters-spacing-x);
   padding-top: var(--filters-spacing-y);
 }
 
@@ -59,7 +53,8 @@
 }
 
 .content {
-  padding: var(--filters-spacing-y) 0 1rem var(--filters-spacing-x);
+  padding-top: var(--filters-spacing-y);
+  padding-bottom: 0.625rem;
 }
 
 .content > * + * {

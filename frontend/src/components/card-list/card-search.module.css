@@ -1,5 +1,5 @@
 .container {
-  padding: 1px;
+  padding: var(--scrollbar-padding);
   position: relative;
   z-index: 3;
 }

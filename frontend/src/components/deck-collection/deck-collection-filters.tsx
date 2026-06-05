@@ -77,9 +77,10 @@ export function DeckCollectionFilters(props: Props) {
           </PopoverTrigger>
           <PopoverContent>
             <Scroller
-              type="auto"
               className={css["filters-container"]}
               data-testid="deck-filters-expanded"
+              padded
+              type="auto"
             >
               {factionOptions.length > 1 && (
                 <FactionToggle

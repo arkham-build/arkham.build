@@ -53,7 +53,7 @@
   box-shadow: var(--shadow-md);
   border-radius: var(--rounded);
   width: min(22rem, 95dvh);
-  padding: 1rem;
+  padding-block: 1rem;
 }
 
 .list > * + * {

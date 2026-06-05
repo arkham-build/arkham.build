@@ -1,7 +1,7 @@
 .nav {
   display: flex;
   flex: 0 0 auto;
-  padding: 0.25rem 1px;
+  padding: 0.25rem var(--scrollbar-padding);
   gap: 0.25rem;
   font-family: var(--font-family-ui);
   align-items: center;

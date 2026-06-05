@@ -84,7 +84,10 @@ export function Editor(props: Props) {
           ))}
         </TabsList>
 
-        <Scroller className={css["editor-tabs-content"]}>
+        <Scroller
+          className={css["editor-tabs-content"]}
+          viewportClassName={css["editor-tabs-content-viewport"]}
+        >
           <TabsContent value="slots" data-testid="editor-tabs-slots">
             <EditorGroup
               deck={deck}

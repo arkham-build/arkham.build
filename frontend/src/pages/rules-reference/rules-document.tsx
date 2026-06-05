@@ -85,7 +85,7 @@ export function RulesDocument({
         <h1 className="toc-title">{t("rules.toc")}</h1>
 
         {searchEnabled && (
-          <div className="toc-inner">
+          <div className="toc-search">
             <SearchInput
               className="rules-search"
               id="rules-search"
@@ -108,7 +108,7 @@ export function RulesDocument({
           </Button>
         </nav>
 
-        <Scroller className="toc-inner">
+        <Scroller className="toc-inner" padded>
           <RulesToc renderToc={renderToc} search={search} />
         </Scroller>
       </div>

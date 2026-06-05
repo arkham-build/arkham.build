@@ -2,7 +2,7 @@
   .decklist-validation {
     background: rgba(255, 0, 0, 0.05);
     border: 1px solid var(--nord-11);
-    padding: 0.25rem;
+    padding: 0.375rem;
     border-radius: 0.25rem;
     font-size: var(--text-sm);
   }

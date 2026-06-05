@@ -87,7 +87,7 @@
     --layout-max-width: 118rem;
 
     --scrollbar-size: 10px;
-    --scrollbar-padding: 14px;
+    --scrollbar-padding: 10px;
 
     --error: var(--nord-11);
   }

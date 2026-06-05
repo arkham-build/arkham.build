@@ -8,7 +8,6 @@
 
 .scroller {
   flex: 1 1 auto;
-  padding-left: 0.625rem;
   padding-bottom: 0.75rem;
 }
 
@@ -34,7 +33,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding-top: 0.75rem;
-  padding-inline: 0.75rem;
+  padding-inline: var(--scrollbar-padding);
 }
 
 .title {

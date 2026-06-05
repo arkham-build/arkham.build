@@ -114,7 +114,7 @@ export function Filters(props: Props) {
           </Button>
         </HotkeyTooltip>
       </div>
-      <Scroller type="hover">
+      <Scroller type="hover" padded>
         <div className={css["content"]}>
           {filters.map((filter, id) => {
             const params = {
