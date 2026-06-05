@@ -1423,7 +1423,7 @@
       "title": "Resultados de búsqueda"
     },
     "settings": {
-      "backup": {
+      "support": {
         "confirm": "¿Seguro que quieres restaurar esta copia de seguridad? Cualquier dato existente se sobreescribirá.",
         "create": "Crear copia de seguridad",
         "help": "Crea una copia de seguridad de tus ajustes, mazos y colección de cartas como un archivo JSON. Puedes usar este archivo para restaurar tus datos en cualquier dispositivo.",

@@ -1416,7 +1416,7 @@
       "title": "Search results"
     },
     "settings": {
-      "backup": {
+      "support": {
         "confirm": "确定要恢复此备份吗？所有现有数据将被覆盖。",
         "create": "创建备份",
         "help": "将你的设置、卡组和卡牌收藏备份为JSON文件。可用此文件在本设备或其他设备上恢复数据。",

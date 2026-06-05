@@ -1417,7 +1417,7 @@
       "title": "Ergebnisse"
     },
     "settings": {
-      "backup": {
+      "support": {
         "confirm": "Bist du sicher, dass du diese Sicherung wiederherstellen möchtest? Alle aktuellen Daten werden überschrieben.",
         "create": "Sicherung erstellen",
         "help": "Erstelle eine Sicherung deiner Einstellungen, Decks und Kartensammlung als JSON Datei. Diese Datei kann genutzt werden, um deine Daten auf diesem oder einem anderen Gerät wiederherzustellen.",

@@ -1387,7 +1387,7 @@
       "title": "Wyniki wyszukiwania"
     },
     "settings": {
-      "backup": {
+      "support": {
         "confirm": "Jesteś pewien, że chcesz przywrócić tą kopię zapasową? Wszelkie istniejące dane zostaną nadpisane.",
         "create": "Stwórz kopię zapasową",
         "help": "Stwórz kopię zapasową swoich ustawień, talii oraz kolekcji kart jako plik JSON. Możesz użyć tego pliku, by przywrócić swoje dane na tym, bądź innym urządzeniu.",

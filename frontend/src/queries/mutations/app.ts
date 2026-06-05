@@ -9,12 +9,3 @@ export function useDismissBannerMutation() {
     mutationFn: (bannerId: string) => dismissBanner(bannerId),
   });
 }
-
-export function useRestoreBackupMutation() {
-  const restore = useStore((state) => state.restore);
-
-  return useMutation({
-    mutationKey: ["app", "restore-backup"],
-    mutationFn: (file: File) => restore(file),
-  });
-}

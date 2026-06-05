@@ -8,7 +8,7 @@ import { inferChapterNumber } from "@/utils/chapters";
 import { randomId } from "@/utils/crypto";
 import { download } from "@/utils/download";
 import { time, timeEnd } from "@/utils/time";
-import { prepareBackup, restoreBackup } from "../lib/backup";
+import { prepareBackup } from "../lib/backup";
 import {
   createAdapter,
   deleteAdapter,
@@ -375,10 +375,6 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       `arkham-build-${new Date().toISOString()}.json`,
       "application/json",
     );
-  },
-  async restore(buffer) {
-    set(await restoreBackup(get(), buffer));
-    await dehydrate(get(), "app");
   },
   async dismissBanner(bannerId) {
     set((state) => {

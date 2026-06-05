@@ -49,10 +49,6 @@
     "auth": {
       "email": "Email",
       "email_or_username": "Email or username",
-      "password": "Password",
-      "password_validation": "Minimum 8 characters",
-      "username": "Username",
-      "username_validation": "Letters, numbers, underscores, and hyphens only",
       "errors": {
         "account_not_verified": "Your account has not been verified yet. Please <verifyLink>verify</verifyLink> your email before logging in.",
         "captcha_load_failed": "Failed to load Turnstile captcha.",
@@ -65,13 +61,11 @@
         "verify_email_failed": "Email verification failed: {{error}}",
         "verify_email_send_failed": "Failed to resend verification email: {{error}}"
       },
-      "oauth_errors": {
-        "arkhamdb_invalid_response": "ArkhamDB sign-in failed. Please try again.",
-        "arkhamdb_no_decks": "Your ArkhamDB account must have at least one deck before you can continue.",
-        "identity_belongs_to_another_account": "This ArkhamDB account is already linked to another account.",
-        "invalid_state": "ArkhamDB sign-in expired or became invalid. Please try again.",
-        "oauth_failed": "ArkhamDB sign-in failed. Please try again.",
-        "oauth_missing_code": "ArkhamDB sign-in was cancelled or did not complete. Please try again."
+      "forgot_password": {
+        "description": "Enter your email or username and we'll send you instructions on how to reset your password.",
+        "submit": "Send password reset instructions",
+        "success": "If an account exists, you'll receive a reset link shortly.",
+        "title": "Forgot password"
       },
       "login": {
         "forgot_password": "Forgot password?",
@@ -86,35 +80,41 @@
         "sync_error": "Failed to sync data: {{error}}",
         "syncing": "Syncing account data..."
       },
+      "oauth_errors": {
+        "arkhamdb_invalid_response": "ArkhamDB sign-in failed. Please try again.",
+        "arkhamdb_no_decks": "Your ArkhamDB account must have at least one deck before you can continue.",
+        "identity_belongs_to_another_account": "This ArkhamDB account is already linked to another account.",
+        "invalid_state": "ArkhamDB sign-in expired or became invalid. Please try again.",
+        "oauth_failed": "ArkhamDB sign-in failed. Please try again.",
+        "oauth_missing_code": "ArkhamDB sign-in was cancelled or did not complete. Please try again."
+      },
+      "password": "Password",
+      "password_validation": "Minimum 8 characters",
+      "reset_password": {
+        "confirm_password": "Confirm password",
+        "password": "New password",
+        "success": "Password reset successfully. You can now log in.",
+        "title": "Reset password"
+      },
       "signup": {
-        "title": "Sign up",
-        "verifying": "Verifying...",
+        "complete_profile": {
+          "description": "Choose a username for your account. This will be displayed publicly on your decks and contributions.",
+          "title": "Complete your profile"
+        },
         "has_account": "Already have an account?",
         "success": "Signed up successfully! Please check your email to verify your account.",
-        "with_arkhamdb": "Sign up with ArkhamDB",
-        "complete_profile": {
-          "title": "Complete your profile",
-          "description": "Choose a username for your account. This will be displayed publicly on your decks and contributions."
-        }
+        "title": "Sign up",
+        "verifying": "Verifying...",
+        "with_arkhamdb": "Sign up with ArkhamDB"
       },
-      "forgot_password": {
-        "title": "Forgot password",
-        "description": "Enter your email or username and we'll send you instructions on how to reset your password.",
-        "submit": "Send password reset instructions",
-        "success": "If an account exists, you'll receive a reset link shortly."
-      },
+      "username": "Username",
+      "username_validation": "Letters, numbers, underscores, and hyphens only",
       "verify_email": {
-        "title": "Verify email",
-        "token": "Verification token",
-        "success": "Email verified! You can now log in.",
         "resend": "Resend verification email",
-        "resend_success": "Verification email sent successfully. Please check your inbox."
-      },
-      "reset_password": {
-        "title": "Reset password",
-        "password": "New password",
-        "confirm_password": "Confirm password",
-        "success": "Password reset successfully. You can now log in."
+        "resend_success": "Verification email sent successfully. Please check your inbox.",
+        "success": "Email verified! You can now log in.",
+        "title": "Verify email",
+        "token": "Verification token"
       }
     },
     "browse": {
@@ -850,8 +850,8 @@
         "xp_required_help": "Amount of XP required to build this deck from scratch."
       },
       "tags": {
-        "private": "Device",
         "account": "arkham.build",
+        "private": "Device",
         "sealed": "Sealed",
         "shared": "Shared"
       },
@@ -922,19 +922,6 @@
         "title": "Tags"
       },
       "title": "Decks"
-    },
-    "deck_sync": {
-      "conflict": {
-        "action_error": "Failed to resolve deck conflict: {{error}}",
-        "collection_badge": "Deck conflict needs attention",
-        "description": "This deck changed remotely before your change completed. Refresh to apply the latest remote state.",
-        "description_remote_missing": "This deck was deleted remotely before your change completed. Discard the local deck to match the remote state.",
-        "discard_local": "Discard local deck",
-        "edit_locked": "Resolve the deck conflict before editing.",
-        "refresh": "Refresh",
-        "remote_version": "Remote version: {{version}}",
-        "title": "Deck sync conflict"
-      }
     },
     "deck_create": {
       "default_name": {
@@ -1122,6 +1109,19 @@
         "entry_title": "Version {{version}}",
         "entry_title_current": "Current version",
         "title": "Versions"
+      }
+    },
+    "deck_sync": {
+      "conflict": {
+        "action_error": "Failed to resolve deck conflict: {{error}}",
+        "collection_badge": "Deck conflict needs attention",
+        "description": "This deck changed remotely before your change completed. Refresh to apply the latest remote state.",
+        "description_remote_missing": "This deck was deleted remotely before your change completed. Discard the local deck to match the remote state.",
+        "discard_local": "Discard local deck",
+        "edit_locked": "Resolve the deck conflict before editing.",
+        "refresh": "Refresh",
+        "remote_version": "Remote version: {{version}}",
+        "title": "Deck sync conflict"
       }
     },
     "deck_view": {
@@ -1507,30 +1507,6 @@
     },
     "settings": {
       "account": {
-        "oauth": {
-          "connect": "Connect",
-          "connect_help": "Connect your {{provider}} account to sync your decks and login with it.",
-          "connected": "Connected",
-          "details": "Details",
-          "providers": {
-            "arkhamdb": "ArkhamDB"
-          },
-          "disconnect": "Disconnect",
-          "disconnect_error": "Failed to disconnect {{provider}}: {{error}}",
-          "disconnecting": "Disconnecting {{provider}}...",
-          "disconnected": "There is a problem with this connection, please reconnect.",
-          "last_error": "Last error",
-          "last_synced_at": "Last sync",
-          "none": "None",
-          "reconnect": "Refresh",
-          "status": {
-            "healthy": "Healthy",
-            "unhealthy": "Unhealthy"
-          },
-          "sync_status": "Sync status",
-          "title": "Connections",
-          "user_id": "User ID"
-        },
         "email": {
           "add": "Add email",
           "add_help": "Add an email address and password as an alternative way to sign in.",
@@ -1550,6 +1526,30 @@
           "status_verified": "Verified",
           "title": "Credentials"
         },
+        "oauth": {
+          "connect": "Connect",
+          "connect_help": "Connect your {{provider}} account to sync your decks and login with it.",
+          "connected": "Connected",
+          "details": "Details",
+          "disconnect": "Disconnect",
+          "disconnect_error": "Failed to disconnect {{provider}}: {{error}}",
+          "disconnected": "There is a problem with this connection, please reconnect.",
+          "disconnecting": "Disconnecting {{provider}}...",
+          "last_error": "Last error",
+          "last_synced_at": "Last sync",
+          "none": "None",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "Refresh",
+          "status": {
+            "healthy": "Healthy",
+            "unhealthy": "Unhealthy"
+          },
+          "sync_status": "Sync status",
+          "title": "Connections",
+          "user_id": "User ID"
+        },
         "profile": {
           "save": "Save profile",
           "saving": "Saving profile...",
@@ -1558,18 +1558,6 @@
           "username_help": "Letters, numbers, underscores, and hyphens only"
         },
         "title": "Account"
-      },
-      "backup": {
-        "confirm": "Are you sure you want to restore this backup? Any existing data will be overwritten.",
-        "create": "Create backup",
-        "help": "Create a backup of your settings, decks and card collection as a JSON file. You can use this file to restore your data on this device or another device.",
-        "help_warning": "When a backup is restored, <strong>any existing data will be overwritten.</strong>",
-        "metadata_title": "Application data",
-        "no_file_selected": "No file selected",
-        "restore": "Restore backup",
-        "restore_error": "Failed to restore backup: {{error}}",
-        "restore_success": "Backup restored successfully.",
-        "title": "Backup & Restore"
       },
       "card_data": {
         "card_count": "Card count",
@@ -1636,7 +1624,6 @@
         "title": "Display"
       },
       "error": "Failed to save settings: {{error}}",
-      "load_error": "Failed to load account settings. Using local settings: {{error}}",
       "general": {
         "default_environment": "Default environment",
         "default_taboo": "Default taboo list",
@@ -1650,6 +1637,7 @@
         "deck_view_scans": "Deck view (scans)",
         "title": "Lists"
       },
+      "load_error": "Failed to load account settings. Using local settings: {{error}}",
       "locale": {
         "help": "This changes the display language of the app, including card and metadata text.",
         "title": "Language"
@@ -1657,6 +1645,14 @@
       "preview": "Preview",
       "save": "Save settings",
       "saving": "Saving settings...",
+      "support": {
+        "create": "Export data",
+        "data_export_title": "Data export",
+        "help": "Export a copy of your settings, decks and card collection as a JSON file.",
+        "metadata_title": "Application data",
+        "no_file_selected": "No file selected",
+        "title": "Support"
+      },
       "title": "Settings"
     },
     "suzi_standalone_setup": {

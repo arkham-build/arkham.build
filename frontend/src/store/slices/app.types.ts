@@ -61,7 +61,6 @@ export type AppSlice = {
   ): Promise<Id>;
 
   backup(): void;
-  restore(file: File): Promise<void>;
 
   dismissBanner(bannerId: string): Promise<void>;
 };

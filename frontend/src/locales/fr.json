@@ -1133,7 +1133,7 @@
       "title": "La saison des prévisualisations est arrivée !"
     },
     "settings": {
-      "backup": {
+      "support": {
         "confirm": "Êtes-vous sûr de vouloir restaurer cette sauvegarde ? Toutes les données existantes seront écrasées.",
         "create": "Créer une sauvegarde",
         "help": "Créez une sauvegarde de vos paramètres, decks et collection de cartes au format JSON. Vous pourrez l’utiliser pour restaurer vos données sur cet appareil ou un autre.",

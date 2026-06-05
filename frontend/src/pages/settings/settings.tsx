@@ -22,10 +22,10 @@ import { selectSession } from "@/store/selectors/auth";
 import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
 import { AccountSettings } from "./account-settings";
-import { BackupRestore } from "./backup-restore";
 import { CardDataSync } from "./card-data-sync";
 import { CardDisplaySettings } from "./card-display";
 import { CardModalPopularDecksSetting } from "./card-modal-popular-decks";
+import { DataExport } from "./data-export";
 import { DefaultEnvironmentSetting } from "./default-environment";
 import { DevModeSetting } from "./dev-mode";
 import { FontSizeSetting } from "./font-size";
@@ -93,9 +93,9 @@ function Settings() {
               <Icon iconNode={featherText} />
               <span>{t("fan_made_content.title")}</span>
             </TabsTrigger>
-            <TabsTrigger data-testid="tab-backup" value="backup">
+            <TabsTrigger data-testid="tab-support" value="support">
               <DatabaseBackupIcon />
-              <span>{t("settings.backup.title")}</span>
+              <span>{t("settings.support.title")}</span>
             </TabsTrigger>
           </TabsList>
           <TabsContent value="account">
@@ -225,17 +225,17 @@ function ApplicationSettings({
           <FanMadeContent settings={settings} setSettings={setSettings} />
         </Section>
       </TabsContent>
-      <TabsContent value="backup">
+      <TabsContent value="support">
         <PortaledSaveButton />
-        <Section title={t("settings.backup.metadata_title")}>
+        <Section title={t("settings.support.metadata_title")}>
           <CardDataSync showDetails />
           <MetadataRefresh />
         </Section>
         <Section title={t("settings.developer.title")}>
           <DevModeSetting settings={settings} setSettings={setSettings} />
         </Section>
-        <Section title={t("settings.backup.title")}>
-          <BackupRestore />
+        <Section title={t("settings.support.data_export_title")}>
+          <DataExport />
         </Section>
       </TabsContent>
     </form>
