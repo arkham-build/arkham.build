@@ -63,8 +63,7 @@
         "rate_limited": "Too many requests. Please wait {{interval}} before trying again",
         "signup_failed": "Signup failed: {{error}}",
         "verify_email_failed": "Email verification failed: {{error}}",
-        "verify_email_send_failed": "Failed to resend verification email: {{error}}",
-        "resend_error": "Failed to resend verification: {{error}}"
+        "verify_email_send_failed": "Failed to resend verification email: {{error}}"
       },
       "oauth_errors": {
         "arkhamdb_invalid_response": "ArkhamDB sign-in failed. Please try again.",
@@ -77,7 +76,6 @@
       "login": {
         "forgot_password": "Forgot password?",
         "no_account": "Don't have an account?",
-        "signup_link": "Sign up",
         "title": "Log in",
         "with_arkhamdb": "Log in with ArkhamDB"
       },
@@ -96,12 +94,10 @@
         "with_arkhamdb": "Sign up with ArkhamDB",
         "complete_profile": {
           "title": "Complete your profile",
-          "description": "Choose a username for your account. This will be displayed publicly on your decks and contributions.",
-          "success": "Profile completed! You can now start building decks."
+          "description": "Choose a username for your account. This will be displayed publicly on your decks and contributions."
         }
       },
       "forgot_password": {
-        "back_to_login": "Back to login",
         "title": "Forgot password",
         "description": "Enter your email or username and we'll send you instructions on how to reset your password.",
         "submit": "Send password reset instructions",
@@ -147,8 +143,7 @@
       "faq": {
         "empty": "No FAQ entries available.",
         "error": "Failed to load FAQ entries.",
-        "loading": "Loading FAQ entries...",
-        "title": "FAQ"
+        "loading": "Loading FAQ entries..."
       },
       "scan": "Scan of {{code}}",
       "section_actions": "Actions",

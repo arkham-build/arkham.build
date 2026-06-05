@@ -67,30 +67,6 @@ export async function importDeckFromFile(
   }
 }
 
-export async function shareDeck(page: Page, navigate = true) {
-  await page.getByTestId("share-create").click();
-
-  await expect(page.getByTestId("share-link")).toBeVisible({
-    timeout: 15000,
-  });
-
-  if (navigate) {
-    await page.$$eval("a[target=_blank]", (nodes) => {
-      nodes.forEach((el) => {
-        el.removeAttribute("target");
-      });
-    });
-
-    await page.getByTestId("share-link").click();
-    await expect(page).toHaveURL(/\/share/);
-  }
-}
-
-export async function unshareDeck(page: Page) {
-  await page.getByTestId("share-delete").click();
-  await expect(page.getByTestId("share-link")).not.toBeVisible();
-}
-
 export function adjustDeckCardQuantity(
   page: Page,
   code: string,

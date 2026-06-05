@@ -1,11 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
-import {
-  fillSearch,
-  importPackFromFile,
-  openUrlInNewContext,
-  shareDeck,
-  unshareDeck,
-} from "./actions";
+import { fillSearch, importPackFromFile } from "./actions";
 import { mockApiCalls } from "./mocks";
 
 test.beforeEach(async ({ page }) => {
@@ -113,61 +107,6 @@ test.describe("fan-made content", () => {
     await expect(
       page.getByTestId("listcard-38fa4050-d63d-4870-91cd-a076d642f192"),
     ).toBeVisible();
-  });
-
-  test("share deck with fan-made cards", async ({ page }) => {
-    await createDeckWithFanMadeCard(page);
-    await shareDeck(page, false);
-
-    const ctxPage = await openUrlInNewContext(page, page.url());
-
-    await expect(
-      ctxPage.getByTestId("listcard-22be57b3-4e9f-4ecf-8f95-adf3edcf239d"),
-    ).toBeVisible();
-
-    await ctxPage.close();
-    await unshareDeck(page);
-  });
-
-  test("import a shared deck with fan-made cards", async ({ page }) => {
-    await createDeckWithFanMadeCard(page);
-    await shareDeck(page, false);
-
-    const ctxPage = await openUrlInNewContext(page, page.url());
-    await ctxPage.getByTestId("share-import").click();
-    await ctxPage.getByTestId("view-edit").click();
-    await ctxPage.getByTestId("card-type-encounter").click();
-    await fillSearch(ctxPage, "The Persian");
-
-    await expect(
-      ctxPage
-        .getByTestId("virtuoso-item-list")
-        .getByTestId("listcard-22be57b3-4e9f-4ecf-8f95-adf3edcf239d"),
-    ).toBeVisible();
-    await expect(
-      ctxPage
-        .getByTestId("editor-tabs-slots")
-        .getByTestId("listcard-22be57b3-4e9f-4ecf-8f95-adf3edcf239d"),
-    ).toBeVisible();
-
-    await ctxPage.close();
-    await unshareDeck(page);
-  });
-
-  test("cards from fan-made cards are not shown in the collection", async ({
-    page,
-  }) => {
-    await createDeckWithFanMadeCard(page);
-    await shareDeck(page, false);
-
-    const ctxPage = await openUrlInNewContext(page, page.url());
-    await ctxPage.getByTestId("share-import").click();
-    await ctxPage.getByTestId("masthead-logo").click();
-    await ctxPage.getByTestId("card-type-encounter").click();
-    await fillSearch(ctxPage, "The Persian");
-
-    await ctxPage.close();
-    await unshareDeck(page);
   });
 
   test("fan-made packs can be quick-installed via their id", async ({

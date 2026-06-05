@@ -25,15 +25,25 @@ function ResetPassword() {
   const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();
 
-    await resetPasswordMutation.mutateAsync({ token, password });
+    try {
+      await resetPasswordMutation.mutateAsync({ token, password });
 
-    toast.show({
-      children: t("auth.reset_password.success"),
-      variant: "success",
-      duration: 5000,
-    });
+      toast.show({
+        children: t("auth.reset_password.success"),
+        variant: "success",
+        duration: 5000,
+      });
 
-    navigate("/auth/login");
+      navigate("/auth/login");
+    } catch (error) {
+      toast.show({
+        children: t("auth.errors.password_reset_failed", {
+          error: String(error),
+        }),
+        variant: "error",
+        duration: 5000,
+      });
+    }
   };
 
   return (
