@@ -4,6 +4,11 @@
   max-width: 100%;
 }
 
+.select.full-width {
+  width: 100%;
+  min-width: 0;
+}
+
 .control-row {
   display: inline-flex;
   align-items: center;

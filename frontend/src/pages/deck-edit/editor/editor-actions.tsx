@@ -82,20 +82,22 @@ export function EditorActions(props: Props) {
             </TooltipContent>
           </Tooltip>
         )}
-        <HotkeyTooltip keybind="cmd+s" description={t("deck_edit.save")}>
+        <HotkeyTooltip
+          keybind="cmd+s"
+          description={
+            hasSyncConflict
+              ? t("deck_sync.conflict.edit_locked")
+              : connectionLock
+                ? connectionLock
+                : readonly
+                  ? t("deck_edit.read_only")
+                  : t("deck_edit.save")
+          }
+        >
           <Button
             data-testid="editor-save"
             onClick={onSaveClose}
             disabled={hasSyncConflict || !!connectionLock || readonly}
-            tooltip={
-              hasSyncConflict
-                ? t("deck_sync.conflict.edit_locked")
-                : connectionLock
-                  ? connectionLock
-                  : readonly
-                    ? t("deck_edit.readonly")
-                    : undefined
-            }
             variant="primary"
           >
             <SaveIcon />

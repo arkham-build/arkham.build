@@ -1536,7 +1536,6 @@
           "disconnect_error": "Fehler beim Trennen von {{provider}}: {{error}}",
           "disconnecting": "{{provider}} wird getrennt...",
           "last_synced_at": "Letzte Synchronisierung",
-          "not_connected": "Nicht verbunden",
           "providers": {
             "arkhamdb": "ArkhamDB"
           },

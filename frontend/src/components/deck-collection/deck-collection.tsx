@@ -1,11 +1,5 @@
 import type { DeckId } from "@arkham-build/shared";
-import {
-  BookTextIcon,
-  EllipsisIcon,
-  PlusIcon,
-  Trash2Icon,
-  UploadIcon,
-} from "lucide-react";
+import { EllipsisIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Virtuoso } from "react-virtuoso";
@@ -115,12 +109,6 @@ export function DeckCollection() {
               <DeckCollectionImport />
             </Popover>
           )}
-          <Link to="/decklists" asChild>
-            <Button as="a" data-testid="collection-deck-guides" size="sm">
-              <BookTextIcon />
-              {t("decklists.browse.title")}
-            </Button>
-          </Link>
           <Popover onOpenChange={setPopoverOpen} open={popoverOpen}>
             <PopoverTrigger asChild>
               <Button

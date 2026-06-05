@@ -82,9 +82,9 @@
       "logout": "Logout",
       "menu": {
         "logged_in_as": "Logged in as {{name}}",
-        "sync_account": "Sync account",
-        "sync_error": "Failed to sync account: {{error}}",
-        "syncing": "Syncing account..."
+        "sync_account": "Sync data",
+        "sync_error": "Failed to sync data: {{error}}",
+        "syncing": "Syncing account data..."
       },
       "signup": {
         "title": "Sign up",
@@ -140,7 +140,6 @@
     },
     "card_view": {
       "actions": {
-        "faq": "View FAQ",
         "open_on_arkhamdb": "Open on ArkhamDB",
         "reviews": "View reviews",
         "show_original_image": "Show original card image",
@@ -153,13 +152,11 @@
       "errata_notice": "Errata ({{date}})",
       "faq": {
         "empty": "No FAQ entries available.",
-        "error": "Failed to load FAQ entries.",
-        "loading": "Loading FAQ entries..."
+        "error": "Failed to load FAQ entries."
       },
       "scan": "Scan of {{code}}",
       "section_actions": "Actions",
       "section_deckbuilding": "Deckbuilding",
-      "section_faq": "FAQ",
       "section_printings": "Printings",
       "thumbnail": "Thumbnail of {{code}}"
     },
@@ -282,7 +279,6 @@
       "no_entries": "No entries",
       "non_collection_cards": "{{count}} non-collection cards",
       "none": "None",
-      "nonexceptional": "Non-exceptional",
       "ok": "OK",
       "or": "or",
       "pack_one": "pack",
@@ -799,11 +795,6 @@
       "victory": "Victory",
       "xp": "XP"
     },
-    "connect": {
-      "error": "Failed to connect {{provider}}: {{error}}",
-      "syncing": "Syncing {{provider}}...",
-      "title": "Connecting {{provider}}..."
-    },
     "deck": {
       "actions": {
         "archive": "Archive deck",
@@ -839,8 +830,7 @@
         "increment_xp": "Increase available amount of XP for this upgrade",
         "no_changes": "No changes.",
         "summary": "{{xpSpent}} of {{xp}} XP spent",
-        "title": "Latest upgrade",
-        "xp_spent": "XP spent"
+        "title": "Latest upgrade"
       },
       "limited_decks": {
         "Collector": "Collector",
@@ -859,7 +849,6 @@
         "xp_required_help": "Amount of XP required to build this deck from scratch."
       },
       "tags": {
-        "limited_pool": "Limited pool",
         "private": "Device",
         "account": "arkham.build",
         "sealed": "Sealed",
@@ -887,8 +876,7 @@
         "resource_cost_tooltip": "{{count}} {{cards}} of cost {{cost}}",
         "resource_costs": "Resource costs",
         "skill_icons": "Skill icons",
-        "skill_icons_tooltip": "{{count}} {{skill}} {{icons}}",
-        "title": "Deck tools"
+        "skill_icons_tooltip": "{{count}} {{skill}} {{icons}}"
       },
       "validation": {
         "card_not_in_limited_pool": "The following cards are not part of this deck's card pool:",
@@ -944,9 +932,7 @@
         "edit_locked": "Resolve the deck conflict before editing.",
         "refresh": "Refresh",
         "remote_version": "Remote version: {{version}}",
-        "title": "Deck sync conflict",
-        "toast_many": "{{count}} deck conflicts need attention.",
-        "toast_one": "1 deck conflict needs attention."
+        "title": "Deck sync conflict"
       }
     },
     "deck_create": {
@@ -986,7 +972,6 @@
         "move_to_side_deck": "Move to side deck",
         "quick_discard": "Discard changes (and stay on page)",
         "quick_save_deck": "Save deck (and stay on page)",
-        "quick_upgrade": "Upgrade {{name}}",
         "set_quantity": "Set deck quantity",
         "set_side_quantity": "Set side deck quantity"
       },
@@ -1324,9 +1309,6 @@
         "placeholder": "Select encounter sets...",
         "title": "Encounter set"
       },
-      "environment": {
-        "title": "Environment"
-      },
       "fan_made_content": {
         "all": "Show everything",
         "fan_made": "Fan-made content only",
@@ -1356,8 +1338,6 @@
         "no_level": "Null",
         "title": "Level"
       },
-      "locked": "This filter is locked",
-      "or": "or",
       "ownership": {
         "owned": "Owned",
         "title": "Ownership",
@@ -1486,6 +1466,11 @@
       },
       "sort_by": "Sort by"
     },
+    "masthead": {
+      "browse": "Browse",
+      "navigation": "Primary navigation",
+      "rules": "Rules"
+    },
     "popular_decks": {
       "decklists_link": "Browse all deck guides",
       "error": "Popular deck guides could not be loaded: {{error}}",
@@ -1526,7 +1511,6 @@
           "connect_help": "Connect your {{provider}} account to sync your decks and login with it.",
           "connected": "Connected",
           "details": "Details",
-          "not_connected": "Not connected",
           "providers": {
             "arkhamdb": "ArkhamDB"
           },
@@ -1609,21 +1593,6 @@
         "show_previews_help": "When this is checked, unreleased cards will be shown in the application and can be added to decks.",
         "title": "Collection"
       },
-      "connections": {
-        "disconnected_all": "There is a problem with one of your connections. Please refresh it in the settings.",
-        "items_synced": "Items synced",
-        "last_modified": "Data timestamp",
-        "lock": "Another {{provider}} operation is in progress, please wait...",
-        "no_errors": "No errors",
-        "provider_error": "Syncing {{provider}} failed: {{error}}",
-        "provider_syncing": "Syncing {{provider}}...",
-        "sync": "Sync",
-        "sync_all": "Sync {{collectionLabels}} decks",
-        "sync_errors": "Sync errors",
-        "sync_status": "Sync status",
-        "syncing": "Sync in progress",
-        "username": "Username"
-      },
       "conflict": {
         "description": "Your account settings changed somewhere else. Refresh to load the remote version, or overwrite it with your current local changes.",
         "overwrite": "Overwrite",
@@ -1653,8 +1622,6 @@
         "card_skill_icons_simple": "Simple",
         "font_size": "Font size",
         "font_size_preview": "Armitage had an idea that the alphabet might be something esoterically used by certain forbidden cults which have come down from old times, and which have inherited many forms and traditions from the wizards of the Saracenic world.",
-        "hide_weaknesses": "Hide weaknesses in player card lists",
-        "hide_weaknesses_help": "When this is checked, weaknesses are hidden in player card lists by default and need to be enabled in the <strong>Subtype</strong> filter to be visible.",
         "show_card_modal_popular_decks": "Show popular decks in card modals",
         "show_card_modal_popular_decks_help": "When this is checked, popular decks containing the card will be shown in the card modal.",
         "show_move_to_side_deck": "Show \"Move to side deck\" button",

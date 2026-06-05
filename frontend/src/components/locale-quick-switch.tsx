@@ -5,7 +5,12 @@ import { useStore } from "@/store";
 import { LocaleSelect } from "./locale-select";
 import { useToast } from "./ui/toast.hooks";
 
-export function LocaleQuickSwitch() {
+export function LocaleQuickSwitch(props: {
+  variant?: "compact";
+  fullWidth?: boolean;
+  portal?: boolean;
+}) {
+  const { variant, fullWidth, portal } = props;
   const settings = useStore((state) => state.settings);
   const { isPending, onLocaleChange } = useApplyLocaleSetting(settings);
 
@@ -14,7 +19,9 @@ export function LocaleQuickSwitch() {
       onValueChange={onLocaleChange}
       value={settings.locale}
       loading={isPending}
-      variant="compact"
+      variant={variant}
+      fullWidth={fullWidth}
+      portal={portal}
     />
   );
 }

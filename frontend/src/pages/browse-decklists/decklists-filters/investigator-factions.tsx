@@ -17,7 +17,7 @@ export function InvestigatorFactions({
     (faction) => faction !== "mythos" && faction !== "multiclass",
   ).map((faction) => ({
     code: faction,
-    name: t(`common.faction.${faction}`),
+    name: t(`common.factions.${faction}`),
   }));
 
   return (

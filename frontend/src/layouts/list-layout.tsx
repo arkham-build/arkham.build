@@ -23,7 +23,6 @@ type Props = {
   filters?: React.ReactNode;
   hideSidebarCollapse?: boolean;
   inert?: boolean;
-  mastheadContent?: React.ReactNode;
   noFade?: boolean;
   sidebar: React.ReactNode;
   sidebarWidthMax: string;
@@ -36,7 +35,6 @@ export function ListLayout(props: Props) {
     filters,
     hideSidebarCollapse,
     inert,
-    mastheadContent,
     noFade,
     sidebar,
     sidebarWidthMax,
@@ -131,7 +129,7 @@ export function ListLayout(props: Props) {
       onClick={onContentClick}
       style={{ "--sidebar-width-max": sidebarWidthMax } as React.CSSProperties}
     >
-      <Masthead className={css["header"]}>{mastheadContent}</Masthead>
+      <Masthead className={css["header"]} />
       <div
         className={cx(css["sidebar"], floatingSidebar && css["floating"])}
         data-state={sidebarOpen ? "open" : "closed"}
