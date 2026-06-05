@@ -64,6 +64,9 @@ env:
     NODE_ENV: production
     PORT: 3000
     POSTGRES_HOST: api-arkham-build-db
+    FROM_EMAIL: noreply@arkham.build
+    SMTP_PORT: 465
+    SMTP_SECURE: true
   secret:
     - ADMIN_API_KEY
     - CLOUDFLARE_API_TOKEN
@@ -71,6 +74,9 @@ env:
     - DATABASE_URL
     - INGEST_URL_ARKHAMDB_DECKLISTS
     - POSTGRES_PASSWORD
+    - SMTP_HOST
+    - SMTP_PASS
+    - SMTP_USER
     - TURNSTILE_SECRET_KEY
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
