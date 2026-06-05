@@ -10,23 +10,17 @@ import localEncounterSets from "../../../../data/encounter_sets.json" with {
   type: "json",
 };
 import localPacks from "../../../../data/packs.json" with { type: "json" };
-import type { WithItemTranslations } from "../../../../lib/json-data.types.ts";
 
 type LocalCard = JsonDataCard & {
   code: string;
   patch?: boolean;
 };
 
-type Card = WithItemTranslations<JsonDataCard>;
-type Cycle = WithItemTranslations<JsonDataCycle>;
-type EncounterSet = WithItemTranslations<JsonDataEncounterSet>;
-type Pack = WithItemTranslations<JsonDataPack>;
-
 type Input = {
-  cards: Card[];
-  cycles: Cycle[];
-  encounterSets: EncounterSet[];
-  packs: Pack[];
+  cards: JsonDataCard[];
+  cycles: JsonDataCycle[];
+  encounterSets: JsonDataEncounterSet[];
+  packs: JsonDataPack[];
 };
 
 export function applyLocalData(input: Input): Input {
@@ -38,7 +32,7 @@ export function applyLocalData(input: Input): Input {
   };
 }
 
-function applyLocalCards(cards: Card[]) {
+function applyLocalCards(cards: JsonDataCard[]) {
   const merged = new Map(cards.map((card) => [card.code, card]));
 
   for (const localCard of localCardData as LocalCard[]) {
@@ -55,16 +49,13 @@ function applyLocalCards(cards: Card[]) {
       continue;
     }
 
-    merged.set(localCard.code, {
-      ...nextCard,
-      translations: [],
-    });
+    merged.set(localCard.code, nextCard);
   }
 
   return Array.from(merged.values());
 }
 
-function applyLocalCycles(cycles: Cycle[]) {
+function applyLocalCycles(cycles: JsonDataCycle[]) {
   const merged = new Map(cycles.map((cycle) => [cycle.code, cycle]));
 
   for (const cycle of localCycles) {
@@ -74,20 +65,20 @@ function applyLocalCycles(cycles: Cycle[]) {
   return Array.from(merged.values());
 }
 
-function applyLocalEncounterSets(encounterSets: EncounterSet[]) {
+function applyLocalEncounterSets(encounterSets: JsonDataEncounterSet[]) {
   const merged = new Map(encounterSets.map((set) => [set.code, set]));
 
   for (const encounterSet of localEncounterSets) {
-    merged.set((encounterSet as JsonDataEncounterSet).code, {
-      ...(encounterSet as JsonDataEncounterSet),
-      translations: [],
-    });
+    merged.set(
+      (encounterSet as JsonDataEncounterSet).code,
+      encounterSet as JsonDataEncounterSet,
+    );
   }
 
   return Array.from(merged.values());
 }
 
-function applyLocalPacks(packs: Pack[]) {
+function applyLocalPacks(packs: JsonDataPack[]) {
   const merged = new Map(packs.map((pack) => [pack.code, pack]));
 
   const rcore = merged.get("rcore");
@@ -110,19 +101,13 @@ function stripPatch({ patch, ...card }: LocalCard) {
 function normalizeLocalCycle({
   preview,
   ...cycle
-}: JsonDataCycle & { preview?: boolean }): Cycle {
-  return {
-    ...cycle,
-    translations: [],
-  };
+}: JsonDataCycle & { preview?: boolean }): JsonDataCycle {
+  return cycle;
 }
 
 function normalizeLocalPack({
   preview,
   ...pack
-}: JsonDataPack & { preview?: boolean }): Pack {
-  return {
-    ...pack,
-    translations: [],
-  };
+}: JsonDataPack & { preview?: boolean }): JsonDataPack {
+  return pack;
 }

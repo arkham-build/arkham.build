@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import type { z } from "zod";
 import type { Config } from "../../../../lib/config.ts";
 import type {
   Coded,
@@ -14,6 +15,10 @@ export function downloadJsonDataRepo(config: Config) {
   return downloadRepo(config.INGEST_JSON_DATA_REPO, "json-data");
 }
 
+export function downloadMetadataRepo(config: Config) {
+  return downloadRepo(config.INGEST_METADATA_REPO, "metadata");
+}
+
 type Opts = {
   file: string;
   locales: string[];
@@ -25,6 +30,14 @@ export async function getMetadataWithTranslations<T extends Coded>(
 ) {
   const { data, translations } = await readDataWithTranslations<T>(root, opts);
   return { data, translations: translationTable(translations) };
+}
+
+export async function getJsonData<T>(
+  root: string,
+  file: string,
+  schema: z.ZodType<T>,
+) {
+  return schema.parse(await safeReadJson<unknown>(path.join(root, file)));
 }
 
 async function readDataWithTranslations<T>(root: string, opts: Opts) {

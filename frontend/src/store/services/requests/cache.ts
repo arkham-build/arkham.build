@@ -1,7 +1,13 @@
-import type { ApiCard, DataVersion } from "@arkham-build/shared";
+import type {
+  ApiCard,
+  DataVersion,
+  JsonDataRulesVersion,
+} from "@arkham-build/shared";
+import type { Campaign } from "@/store/schemas/campaign.schema";
 import type { Cycle } from "@/store/schemas/cycle.schema";
 import type { EncounterSet } from "@/store/schemas/encounter-set.schema";
 import type { Pack } from "@/store/schemas/pack.schema";
+import type { Scenario } from "@/store/schemas/scenario.schema";
 import type { TabooSet } from "@/store/schemas/taboo-set.schema";
 import type { HttpClient } from "../http-client";
 
@@ -10,10 +16,13 @@ export type MetadataApiResponse = {
 };
 
 export type MetadataResponse = {
+  campaign: Campaign[];
   cycle: Cycle[];
   pack: Pack[];
   card_encounter_set: EncounterSet[];
+  scenario: Scenario[];
   taboo_set: TabooSet[];
+  rules_versions: JsonDataRulesVersion[];
 };
 
 export async function queryMetadata(

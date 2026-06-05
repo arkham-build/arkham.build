@@ -8,6 +8,7 @@ import {
   SpecialistAccess,
   SpecialistInvestigators,
 } from "@/components/card-modal/specialist";
+import { CardScenarios } from "@/components/card-scenarios/card-scenarios";
 import { CustomizationsEditor } from "@/components/customizations/customizations-editor";
 import PackIcon from "@/components/icons/pack-icon";
 import { OwnershipPartitionedCardList } from "@/components/ownership-partitioned-card-list";
@@ -35,6 +36,7 @@ import { cx } from "@/utils/cx";
 import { displayPackName, formatRelationTitle } from "@/utils/formatting";
 import { and } from "@/utils/fp";
 import { isEmpty } from "@/utils/is-empty";
+import { CardFaq } from "./card-faq";
 import css from "./card-view.module.css";
 
 type Props = {
@@ -76,7 +78,7 @@ function CardSetNav(props: { currentCard: CardWithRelations }) {
       if (reprintPackCodes) {
         const targetType = currentCard.card.encounter_code
           ? "campaign"
-          : "investigator";
+          : "player";
 
         const reprint = Object.keys(reprintPackCodes).reduce(
           (acc, curr) => {
@@ -141,7 +143,7 @@ function CardSetNav(props: { currentCard: CardWithRelations }) {
     <div>
       <div className={css["card-set-nav-title"]}>
         <h3>
-          {<PackIcon code={targetPack.code} />}
+          <PackIcon code={targetPack.code} />
           {displayPackName(targetPack)}
         </h3>
       </div>
@@ -172,31 +174,30 @@ function CardSetLink(props: {
   const { shift, cardListIndex, filteredCards, oldFormat } = props;
 
   const targetCard = filteredCards[cardListIndex + shift];
+  if (!targetCard) return null;
 
-  if (targetCard) {
-    const url = oldFormat ? oldFormatCardUrl(targetCard) : cardUrl(targetCard);
+  const url = oldFormat ? oldFormatCardUrl(targetCard) : cardUrl(targetCard);
 
-    return (
-      <Link to={url} asChild>
-        <Button
-          className={cx(
-            css["card-set-button"],
-            shift < 0 ? css["prev"] : css["next"],
-          )}
-          as="a"
-        >
-          {shift < 0 && <ChevronsLeftIcon />}
-          <span
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
-            dangerouslySetInnerHTML={{
-              __html: parseCardTitle(displayAttribute(targetCard, "name")),
-            }}
-          />
-          {shift > 0 && <ChevronsRightIcon />}
-        </Button>
-      </Link>
-    );
-  }
+  return (
+    <Link to={url} asChild>
+      <Button
+        className={cx(
+          css["card-set-button"],
+          shift < 0 ? css["prev"] : css["next"],
+        )}
+        as="a"
+      >
+        {shift < 0 && <ChevronsLeftIcon />}
+        <span
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
+          dangerouslySetInnerHTML={{
+            __html: parseCardTitle(displayAttribute(targetCard, "name")),
+          }}
+        />
+        {shift > 0 && <ChevronsRightIcon />}
+      </Button>
+    </Link>
+  );
 }
 
 export function CardViewCards({
@@ -222,6 +223,12 @@ export function CardViewCards({
           ) : undefined}
         </Card>
       </div>
+
+      <CardFaq code={cardWithRelations.card.code} />
+
+      {cardWithRelations.card.encounter_code && (
+        <CardScenarios card={cardWithRelations.card} />
+      )}
 
       {official(cardWithRelations.card) && !cardWithRelations.card.preview && (
         <PopularDecks scope={cardWithRelations.card} />

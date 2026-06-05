@@ -15,7 +15,6 @@ import type { LookupTable, LookupTables } from "./lookup-tables.types";
 function getInitialLookupTables(): LookupTables {
   return {
     actions: {},
-    encounterCode: {},
     level: {},
     packsByCycle: {},
     properties: {
@@ -42,6 +41,7 @@ function getInitialLookupTables(): LookupTables {
     },
     encounterCodesByPack: {},
     reprintPacksByPack: {},
+    scenarioCodesByEncounterSet: {},
     skillBoosts: {},
     subtypeCode: {},
     traits: {},
@@ -65,6 +65,7 @@ export function createLookupTables(metadata: Metadata, settings: Settings) {
 
   createRelations(metadata, lookupTables);
   addPacksToLookupTables(metadata, lookupTables);
+  addScenariosToLookupTables(metadata, lookupTables);
 
   timeEnd("refresh_lookup_tables");
 
@@ -99,8 +100,6 @@ function addCardToLookupTables(tables: LookupTables, card: Card) {
       indexBySkillBoosts(tables, card);
       indexByUses(tables, card);
     }
-  } else {
-    // TODO: add enemy filters.
   }
 }
 
@@ -112,7 +111,6 @@ function indexByCodes(tables: LookupTables, card: Card) {
   }
 
   if (card.encounter_code) {
-    setInLookupTable(card.code, tables.encounterCode, card.encounter_code);
     setInLookupTable(
       card.encounter_code,
       tables.encounterCodesByPack,
@@ -521,6 +519,21 @@ function addPacksToLookupTables(
           }
         }
       }
+    }
+  }
+}
+
+function addScenariosToLookupTables(
+  metadata: Metadata,
+  lookupTables: LookupTables,
+) {
+  for (const scenario of Object.values(metadata.scenarios)) {
+    for (const { code } of scenario.encounter_sets) {
+      setInLookupTable(
+        scenario.code,
+        lookupTables.scenarioCodesByEncounterSet,
+        code,
+      );
     }
   }
 }

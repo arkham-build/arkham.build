@@ -7,6 +7,7 @@
   },
   "scripts": {
     "analyze": "npx vite-bundle-visualizer",
+    "assets:grimoire": "node ./scripts/copy-grimoire-assets.ts",
     "build": "vite build",
     "check": "tsc --noEmit",
     "dev": "vite",

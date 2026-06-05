@@ -57,8 +57,9 @@ env:
     CORS_ORIGINS: "https://arkham.build,*.arkham-build-prod.pages.dev,http://localhost:3000"
     DBMATE_MIGRATIONS_DIR: /app/backend/src/db/migrations
     DBMATE_SCHEMA_FILE: /app/backend/src/db/schema.sql
+    INGEST_METADATA_REPO: arkham-build/arkhamlcg-metadata@main
     INGEST_JSON_DATA_REPO: Kamalisk/arkhamdb-json-data@master
-    INGEST_TABOO_DATA_REPO: zzorba/arkham-cards-data@master
+    INGEST_TABOO_DATA_REPO: fspoettel/arkham-cards-data@master
     METADATA_LOCALES: "de,en,es,fr,it,ko,pl,ru,uk,zh,zh-cn"
     NODE_ENV: production
     PORT: 3000

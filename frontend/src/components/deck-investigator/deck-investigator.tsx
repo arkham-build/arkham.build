@@ -150,7 +150,10 @@ export function DeckInvestigator(props: Props) {
               />
             );
           })}
-          <SpecialistAccess card={deck.investigatorBack.card} />
+          <SpecialistAccess
+            card={deck.investigatorBack.card}
+            investigatorFront={deck.investigatorFront.card}
+          />
         </div>
       )}
     </div>

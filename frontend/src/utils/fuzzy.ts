@@ -2,15 +2,15 @@ import { isEmpty } from "./is-empty";
 import { normalizeDiacritics } from "./normalize-diacritics";
 
 export function fuzzyMatch(haystack: string[], needle: RegExp) {
-  return haystack.some((part) => needle.test(prepare(part)));
+  return haystack.some((part) => needle.test(prepareSearchText(part)));
+}
+
+export function prepareSearchText(str: string) {
+  return normalizeDiacritics(str).trim();
 }
 
 function escapeRegex(str: string) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function prepare(str: string) {
-  return normalizeDiacritics(str).trim();
 }
 
 /**
@@ -19,7 +19,7 @@ function prepare(str: string) {
  * 20 chars to accomodate "[...] at a skill test [...]".
  */
 export function prepareNeedle(str: string, tokenDistance = 20) {
-  const parts = prepare(str).split(/\s+/);
+  const parts = prepareSearchText(str).split(/\s+/);
   if (isEmpty(parts)) return null;
 
   const expression = parts

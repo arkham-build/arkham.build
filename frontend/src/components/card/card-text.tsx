@@ -1,11 +1,8 @@
-import { PenLineIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { parseCardTextHtml } from "@/utils/card-utils";
-import { formatDate } from "@/utils/formatting";
 import css from "./card.module.css";
 
 type Props = {
-  errataDate?: string | null;
   flavor?: string;
   size: "full" | "compact" | "tooltip";
   text?: string;
@@ -14,7 +11,7 @@ type Props = {
 };
 
 export function CardText(props: Props) {
-  const { errataDate, flavor, size, text, typeCode, victory } = props;
+  const { flavor, size, text, typeCode, victory } = props;
   const { t } = useTranslation();
 
   const swapFlavor = ["agenda", "act", "story"].includes(typeCode);
@@ -39,15 +36,6 @@ export function CardText(props: Props) {
     </div>
   );
 
-  const errataNode = !!errataDate && size !== "tooltip" && (
-    <p className={css["errata"]}>
-      <PenLineIcon />
-      {t("card_view.errata_notice", {
-        date: formatDate(errataDate),
-      })}
-    </p>
-  );
-
   const flavorNode = !!flavor && size !== "tooltip" && (
     <div className={css["flavor"]}>
       <p
@@ -59,18 +47,16 @@ export function CardText(props: Props) {
     </div>
   );
 
-  if (!flavorNode && !textNode && !errataNode) return null;
+  if (!flavorNode && !textNode) return null;
 
   return swapFlavor ? (
     <>
       {flavorNode}
       {textNode}
-      {errataNode}
     </>
   ) : (
     <>
       {textNode}
-      {errataNode}
       {flavorNode}
     </>
   );

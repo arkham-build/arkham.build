@@ -98,10 +98,12 @@ export function validateFanMadeProject(project: FanMadeProject): void {
 export function cloneMetadata(metadata: StoreState["metadata"]) {
   return {
     ...metadata,
+    campaigns: { ...metadata.campaigns },
     cards: { ...metadata.cards },
     encounterSets: { ...metadata.encounterSets },
     packs: { ...metadata.packs },
     cycles: { ...metadata.cycles },
+    scenarios: { ...metadata.scenarios },
   };
 }
 
@@ -212,15 +214,7 @@ export function extractHiddenSlots(deck: Deck, metadata: Metadata) {
     for (const [code, quantity] of slots) {
       const isFanMade = meta.fan_made_content?.cards?.[code];
 
-      const isUnreleasedEncounter =
-        metadata.cards[code].pack_code === "core_2026" &&
-        !!metadata.cards[code].encounter_code;
-
-      if (
-        isFanMade ||
-        isUnreleasedEncounter ||
-        isPreview(metadata.cards[code])
-      ) {
+      if (isFanMade || isPreview(metadata.cards[code])) {
         hiddenSlots[key] ??= {};
         hiddenSlots[key][code] = quantity;
         delete deck[key]?.[code];
@@ -242,8 +236,8 @@ export function extractHiddenSlots(deck: Deck, metadata: Metadata) {
   deck.meta = JSON.stringify(meta);
 }
 
-function isPreview(card: Card) {
-  return ["mar", "tom", "mig", "and", "car"].includes(card.pack_code);
+function isPreview(_: Card) {
+  return false;
 }
 
 export function applyHiddenSlots(deck: Deck, metadata: Metadata) {

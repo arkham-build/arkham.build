@@ -7,7 +7,7 @@ export type LookupTable<
 
 export type LookupTables = {
   actions: LookupTable<string>;
-  encounterCode: LookupTable<string>;
+  encounterCodesByPack: LookupTable<string>;
   level: LookupTable<number>;
   packsByCycle: LookupTable<string>;
   properties: {
@@ -49,7 +49,7 @@ export type LookupTables = {
     otherVersions: LookupTable<string>;
   };
   reprintPacksByPack: LookupTable<string>;
-  encounterCodesByPack: LookupTable<string>;
+  scenarioCodesByEncounterSet: LookupTable<string>;
   skillBoosts: LookupTable<string>;
   subtypeCode: LookupTable<string>;
   traits: LookupTable<string>;

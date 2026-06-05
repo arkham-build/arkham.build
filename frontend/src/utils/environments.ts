@@ -20,10 +20,14 @@ export const environments = {
       "cycle:investigator_decks_ch2",
     ];
   },
-  cpa(cycle: string) {
+  cpa(cycle: string, chapter: 2 | 1) {
     const packs = [];
 
-    if (cycle !== "core") {
+    if (cycle === "core") {
+      packs.push("rcore");
+    } else if (cycle === "core_2026") {
+      packs.push("core_2026");
+    } else {
       packs.push(`${cycle}p`);
     }
 
@@ -31,7 +35,11 @@ export const environments = {
       packs.push(RETURN_TO_CYCLES[cycle]);
     }
 
-    packs.push("cycle:investigator", "cycle:core", "rtnotz");
+    if (chapter === 2) {
+      packs.push("cycle:core_ch2", "cycle:investigator_decks_ch2");
+    } else {
+      packs.push("cycle:investigator", "cycle:core", "rtnotz");
+    }
 
     return packs;
   },

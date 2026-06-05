@@ -258,6 +258,7 @@ function CardDataSyncTask() {
     const upToDate =
       remoteDataVersion.locale === dataVersion.locale &&
       remoteDataVersion.cards_updated_at === dataVersion.cards_updated_at &&
+      remoteDataVersion.metadata_version === dataVersion.metadata_version &&
       remoteDataVersion.translation_updated_at ===
         dataVersion.translation_updated_at;
 

@@ -105,6 +105,8 @@ export type DeckMeta = {
   [key in `annotation_${string}`]: string | null;
 } & {
   [key in `card_pool_extension_${string}`]: string | null;
+} & {
+  [key in `custom_behavior:${string}`]: string | null;
 };
 
 type DeckSizeSelection = {

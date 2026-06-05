@@ -18,6 +18,7 @@ jobs:
         with:
           ruby-version: 3.4
           bundler-cache: false
+      - uses: 1password/install-cli-action@v3
       - run: gem install kamal
       - run: |
           mkdir -p ~/.ssh
@@ -26,9 +27,8 @@ jobs:
       - run: npm ci
       - working-directory: backend
         env:
-          KAMAL_REGISTRY_USERNAME: ${{ secrets.KAMAL_REGISTRY_USERNAME }}
-          KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          INGEST_URL_ARKHAMDB_DECKLISTS: ${{ secrets.INGEST_URL_ARKHAMDB_DECKLISTS }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          OP_ACCOUNT: ${{ secrets.OP_ACCOUNT }}
+          OP_VAULT: ${{ secrets.OP_VAULT }}
+          OP_ITEM: ${{ secrets.OP_ITEM }}
         run: kamal deploy

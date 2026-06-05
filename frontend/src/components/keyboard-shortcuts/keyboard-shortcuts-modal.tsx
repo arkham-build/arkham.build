@@ -244,7 +244,7 @@ export function KeyboardShortcutsModal() {
                       {categoryShortcuts.map(({ keybind, description }) => (
                         <Fragment key={keybind}>
                           <dt className={css["shortcut-keybind"]}>
-                            <Keybind keybind={keybind} />
+                            <Keybind keybind={keybind} alwaysVisible />
                           </dt>
                           <dd className={css["shortcut-description"]}>
                             {description}

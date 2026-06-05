@@ -342,16 +342,38 @@
   }
 
   .errata {
-    display: flex;
-    gap: 0.375rem;
-    align-items: center;
-    flex-flow: row nowrap;
     color: var(--nord-13);
     font-size: var(--card-text-size-sm);
     font-style: italic;
     text-align: left;
     border-left: 2px solid var(--nord-13);
     padding-left: 0.75rem;
+  }
+
+  .errata > * + * {
+    margin-top: 0.125rem;
+  }
+
+  .errata-header {
+    display: flex;
+    gap: 0.375rem;
+    align-items: center;
+    flex-flow: row nowrap;
+  }
+
+  .errata-header > svg {
+    flex: 0 0 auto;
+    width: 1em;
+    height: 1em;
+  }
+
+  .errata-content {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .errata-content p {
+    margin: 0;
   }
 
   .flavor {

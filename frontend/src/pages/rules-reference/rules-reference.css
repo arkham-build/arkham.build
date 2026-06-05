@@ -99,6 +99,11 @@ html[data-theme="light"] {
   padding-left: 1rem;
 }
 
+.toc ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
 .toc a {
   text-decoration: none;
 }
@@ -157,8 +162,81 @@ html[data-theme="light"] .toc a {
   box-shadow: var(--shadow);
 }
 
-.grimoire {
+.grimoire-header,
+.grimoire-list,
+.grimoire-status {
   max-width: 90ch;
   margin-inline: auto;
-  padding-block: 1rem;
+}
+
+.grimoire-entry-copy > * + *,
+.grimoire-entry > * + *,
+.grimoire-header > * + *,
+.grimoire-list > * + * {
+  margin-top: 1rem;
+}
+
+.grimoire-list {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1rem;
+}
+
+.grimoire-entry-title a {
+  color: currentColor;
+  text-decoration: none;
+  text-wrap: balance;
+}
+
+.grimoire-references {
+  flex-wrap: wrap;
+}
+
+.grimoire-status {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+}
+
+.grimoire-text img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+  border-radius: var(--rounded);
+}
+
+.grimoire-text :where(ul) {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+
+  & li {
+    padding-left: 1.25rem;
+    position: relative;
+    &::before {
+      left: 0;
+      position: absolute;
+      top: 0;
+      font-family: "icon", sans-serif;
+    }
+  }
+}
+
+.grimoire-text > :where(ul) > li {
+  padding-left: 1.625rem;
+  &::before {
+    content: "\78";
+    font-size: 1.125em;
+  }
+}
+
+.grimoire-text :where(ul, ol) :where(ul) > li {
+  &::before {
+    content: "\77";
+  }
 }

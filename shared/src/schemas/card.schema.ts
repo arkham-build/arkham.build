@@ -311,10 +311,18 @@ const CardPoolExtensionSchema = z.object({
   selections: z.array(z.string()).optional(),
 });
 
+const CustomBehaviorSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("investigator_traits"),
+    values: z.union([z.array(z.string()), z.literal("trait_choice")]),
+  }),
+]);
+
 export const AdditionalAttributes = {
   back_image_url: z.url().nullish(),
   back_thumbnail_url: z.url().nullish(),
   card_pool_extension: CardPoolExtensionSchema.optional(),
+  custom_behavior: CustomBehaviorSchema.optional(),
   image_url: z.url().nullish(),
   thumbnail_url: z.url().nullish(),
 };

@@ -25,6 +25,7 @@ export function CardDataSync(props: Props) {
     dataVersion &&
     data.locale === dataVersion.locale &&
     data.cards_updated_at === dataVersion.cards_updated_at &&
+    data.metadata_version === dataVersion.metadata_version &&
     data.translation_updated_at === dataVersion.translation_updated_at &&
     data.ingested_commit_id === dataVersion.ingested_commit_id;
 

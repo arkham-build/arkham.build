@@ -3,6 +3,8 @@ import { AlertCircleIcon, ExternalLinkIcon } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { usePopularDecklistsQuery } from "@/queries/decklists";
+import { useStore } from "@/store";
+import { selectLookupTables } from "@/store/selectors/shared";
 import { deckSearchQuery } from "@/store/services/requests/decklists-search";
 import { displayAttribute, getCanonicalCardCode } from "@/utils/card-utils";
 import { getAccentColorsForFaction } from "@/utils/use-accent-color";
@@ -21,7 +23,10 @@ export function PopularDecks(props: Props) {
   const { scope } = props;
   const { t } = useTranslation();
 
-  const enabled = !scope.encounter_code;
+  const lookupTables = useStore(selectLookupTables);
+
+  const enabled =
+    !scope.encounter_code && !lookupTables.relations.bonded[scope.code];
 
   const scopeParams = {
     filters: {

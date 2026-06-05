@@ -206,7 +206,19 @@ function selectCardOptions(
 
     cards.push(...Object.values(metadata.cards).filter(filterFn));
   } else {
+    const investigatorSlots = Array.from([
+      deck.investigatorFront.card.code,
+      deck.investigatorBack.card.code,
+    ]).reduce(
+      (acc, code) => {
+        acc[code] = 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
     const deckSlots = {
+      ...investigatorSlots,
       ...deck.slots,
       ...deck.sideSlots,
       ...deck.exileSlots,

@@ -46,8 +46,13 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
   ) {
     const persistedState = refresh ? undefined : await hydrate();
 
-    if (!refresh && persistedState?.metadata?.dataVersion?.cards_updated_at) {
+    if (
+      !refresh &&
+      persistedState?.metadata?.dataVersion?.cards_updated_at &&
+      persistedState.metadata.dataVersion.metadata_version != null
+    ) {
       const metadata = {
+        ...getInitialMetadata(),
         ...persistedState.metadata,
         factions: mappedByCode(factions),
         subtypes: mappedByCode(subTypes),
@@ -91,10 +96,12 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       dataVersion: dataVersionResponse,
       cards: {},
       taboos: {},
+      campaigns: mappedByCode(metadataResponse.campaign ?? []),
       cycles: mappedByCode(metadataResponse.cycle),
       packs: mappedByCode(metadataResponse.pack),
       encounterSets: mappedByCode(metadataResponse.card_encounter_set),
       factions: mappedByCode(factions),
+      scenarios: mappedByCode(metadataResponse.scenario ?? []),
       subtypes: mappedByCode(subTypes),
       types: mappedByCode(types),
       tabooSets: mappedById(metadataResponse.taboo_set),
@@ -238,6 +245,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     cb?.();
 
     deleteAdapter.transition(set, deck.id);
+
     await dehydrate(get(), "app", "edits");
 
     if (shouldSyncFolders && get().auth.status === "authenticated") {
@@ -248,12 +256,15 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     const state = get();
 
     const deck = deleteAdapter.format(state, id);
+    assert(deck, `Deck ${id} does not exist.`);
+
     const previousId = deck.previous_deck;
     const shouldSyncFolders = hasFolderAssignmentsForDelete(
       state,
       deck.id,
       true,
     );
+
     assert(previousId, "Deck does not have a previous deck");
     assert(state.data.decks[previousId], "Previous deck does not exist");
 

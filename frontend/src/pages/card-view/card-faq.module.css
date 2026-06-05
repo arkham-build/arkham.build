@@ -1,0 +1,18 @@
+.status {
+  display: flex;
+  align-items: center;
+  min-height: 1.5rem;
+  font-size: var(--text-sm);
+}
+
+.list {
+  padding-left: 1.25rem;
+}
+
+.list > * + * {
+  margin-top: 0.75rem;
+}
+
+.question {
+  font-weight: 700;
+}

@@ -158,6 +158,8 @@ function PrintingGroups(props: {
   selectLabel?: string;
   showCopyId: boolean;
 }) {
+  const { t } = useTranslation();
+
   const {
     cardCode,
     linked,
@@ -174,9 +176,13 @@ function PrintingGroups(props: {
 
   return printingsByChapter.map(([chapter, chapterPrintings]) => (
     <div className={css["meta-printing-group"]} key={chapter}>
-      <p className={cx(css["meta-property"], css["meta-chapter"])}>
-        {`Chapter ${chapter}`}
-      </p>
+      {chapter <= 2 && (
+        <p className={cx(css["meta-property"], css["meta-chapter"])}>
+          {t("settings.collection.chapter", {
+            number: chapter,
+          })}
+        </p>
+      )}
       {chapterPrintings.map((printing) => {
         const active = cardCode === printing.card.code;
 

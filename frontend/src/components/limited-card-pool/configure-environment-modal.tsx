@@ -16,6 +16,7 @@ import { capitalize, displayPackName } from "@/utils/formatting";
 import { useAccentColor } from "@/utils/use-accent-color";
 import { PackName } from "../pack-name";
 import { Button } from "../ui/button";
+import { Checkbox } from "../ui/checkbox";
 import { Combobox } from "../ui/combobox/combobox";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { Field } from "../ui/field";
@@ -278,6 +279,7 @@ function CampaignPlayalongTab(props: TabProps) {
   const { t } = useTranslation();
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedChapter, setSelectedChapter] = useState<string>("2");
   const cycles = useStore(selectCampaignCycles);
 
   const campaignPlayalongProject = useStore(
@@ -288,7 +290,7 @@ function CampaignPlayalongTab(props: TabProps) {
     if (!selectedItems.length) return;
     const cycle = selectedItems[0];
 
-    const packs = environments.cpa(cycle);
+    const packs = environments.cpa(cycle, +selectedChapter as 1 | 2);
 
     if (campaignPlayalongProject) {
       const packCodes = campaignPlayalongProject.data.packs.map(
@@ -308,7 +310,7 @@ function CampaignPlayalongTab(props: TabProps) {
 
   return (
     <>
-      <Field full padded bordered>
+      <Field className={css["cpa"]} full padded bordered>
         <Combobox
           autoFocus
           id="cycle-select-combobox"
@@ -327,6 +329,14 @@ function CampaignPlayalongTab(props: TabProps) {
               .map((code) => cycles.find((cycle) => cycle.code === code))
               .filter(Boolean) as CycleWithPacks[]
           }
+        />
+        <Checkbox
+          checked={selectedChapter === "1"}
+          data-testid="cpa-use-chapter-1"
+          label={t(
+            "deck_edit.config.card_pool.substitute_chapter_2_with_chapter_1",
+          )}
+          onCheckedChange={(checked) => setSelectedChapter(checked ? "1" : "2")}
         />
       </Field>
       <EnvironmentsTabConfirm

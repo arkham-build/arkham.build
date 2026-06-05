@@ -50,10 +50,12 @@ export const createUISlice: StateCreator<StoreState, [], [], UISlice> = (
   cacheFanMadeProject(project) {
     set((state) => {
       const meta = {
+        campaigns: {},
         cards: {},
         packs: {},
         cycles: {},
         encounterSets: {},
+        scenarios: {},
       } as Metadata;
 
       addProjectToMetadata(meta, project);

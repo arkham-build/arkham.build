@@ -253,6 +253,7 @@ test.describe("environments", () => {
       .getByTestId("combobox-input")
       .fill("dunwich");
     await page.getByTestId("combobox-menu-item-dwl").click();
+    await page.getByTestId("cpa-use-chapter-1").check();
     await page
       .getByTestId("limited-card-pool-environment-campaign_playalong-apply")
       .click();

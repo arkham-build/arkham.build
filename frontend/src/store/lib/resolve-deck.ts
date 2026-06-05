@@ -1,7 +1,12 @@
 import type { Attachments } from "@arkham-build/shared";
 import { type Card, countExperience } from "@arkham-build/shared";
-import { decodeExileSlots, isSpecialCard } from "@/utils/card-utils";
+import {
+  decodeExileSlots,
+  isSpecialCard,
+  splitMultiValue,
+} from "@/utils/card-utils";
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
+import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import type { Deck } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
@@ -54,7 +59,7 @@ export function resolveDeck(
     );
   }
 
-  const investigatorFront = getInvestigatorForSide(
+  let investigatorFront = getInvestigatorForSide(
     deps,
     collator,
     deck.taboo_id,
@@ -117,6 +122,13 @@ export function resolveDeck(
     customizations,
   );
 
+  investigatorFront = applyInvestigatorTraitBehavior(
+    investigatorFront,
+    cards.slots,
+    deck.slots,
+    deckMeta,
+  );
+
   const availableAttachments = Object.entries(
     getAttachableCards(deck, deps.metadata),
   ).reduce<Attachments[]>((acc, [code, value]) => {
@@ -164,6 +176,75 @@ export function resolveDeck(
   } as ResolvedDeck;
 
   return resolved as ResolvedDeck;
+}
+
+function applyInvestigatorTraitBehavior(
+  investigatorFront: CardWithRelations,
+  deckCards: Record<string, { card: Card }>,
+  quantities: Record<string, number>,
+  deckMeta: DeckMeta,
+) {
+  const gainedTraits = Object.entries(deckCards).flatMap(([code, { card }]) => {
+    if ((quantities[code] ?? 0) <= 0) return [];
+
+    const behavior = card.custom_behavior;
+    if (behavior?.type !== "investigator_traits") return [];
+
+    if (Array.isArray(behavior.values)) return behavior.values;
+
+    const selection = deckMeta[`custom_behavior:${card.code}`];
+    return selection ? [selection] : [];
+  });
+
+  if (!gainedTraits.length) return investigatorFront;
+
+  const card = appendTraits(investigatorFront.card, gainedTraits);
+  if (card === investigatorFront.card) return investigatorFront;
+
+  return {
+    ...investigatorFront,
+    card,
+  };
+}
+
+function appendTraits(card: Card, traits: string[]) {
+  const existingTraits = splitMultiValue(card.real_traits);
+
+  const seenTraits = new Set(
+    existingTraits.map((trait) => trait.toLowerCase()),
+  );
+
+  const addedTraits = traits.reduce<string[]>((acc, trait) => {
+    const normalized = trait.trim();
+    if (!normalized || seenTraits.has(normalized.toLowerCase())) return acc;
+
+    seenTraits.add(normalized.toLowerCase());
+    acc.push(normalized);
+    return acc;
+  }, []);
+
+  if (!addedTraits.length) return card;
+
+  const allTraits = [...existingTraits, ...addedTraits];
+
+  return {
+    ...card,
+    real_traits: formatTraits(allTraits),
+    traits: formatDisplayTraits(allTraits),
+  };
+}
+
+function formatTraits(traits: string[]) {
+  return `${traits.join(". ")}.`;
+}
+
+function formatDisplayTraits(traits: string[]) {
+  return formatTraits(
+    traits.map((trait) => {
+      const key = `common.traits.${trait}`;
+      return i18n.exists(key) ? i18n.t(key) : trait;
+    }),
+  );
 }
 
 function getInvestigatorForSide(
@@ -214,20 +295,17 @@ export function getDeckLimitOverride(
     return deckLimit;
   }
 
-  if (sealed[code] != null) {
-    return Math.min(sealed[code], deckLimit);
-  }
+  let sealedTotal = sealed[code] ?? 0;
 
-  const duplicates = lookupTables.relations.duplicates[code];
-  if (!duplicates) return undefined;
-
-  for (const duplicateCode of Object.keys(duplicates)) {
+  for (const duplicateCode of Object.keys(
+    lookupTables.relations.duplicates[code] ?? {},
+  )) {
     if (sealed[duplicateCode] != null) {
-      return Math.min(sealed[duplicateCode], deckLimit);
+      sealedTotal += sealed[duplicateCode];
     }
   }
 
-  return undefined;
+  return Math.min(sealedTotal, deckLimit);
 }
 
 /**

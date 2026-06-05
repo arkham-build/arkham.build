@@ -1,0 +1,7 @@
+.container > * + * {
+  margin-top: 0.5rem;
+}
+
+.title {
+  font-size: var(--text-sm);
+}

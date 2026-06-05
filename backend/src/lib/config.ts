@@ -1,17 +1,6 @@
 import { z } from "zod";
 
-const repoRefSchema = z.string().transform((value) => {
-  const separatorIndex = value.lastIndexOf("@");
-
-  if (separatorIndex === -1 || separatorIndex === value.length - 1) {
-    throw new Error(`Invalid repo ref: ${value}`);
-  }
-
-  return {
-    repo: value.slice(0, separatorIndex),
-    branch: value.slice(separatorIndex + 1),
-  };
-});
+const repoRefSchema = z.string().transform(parseRepoRef);
 
 export const configSchema = z.object({
   ARKHAMDB_BASE_URL: z.url(),
@@ -20,6 +9,7 @@ export const configSchema = z.object({
   ARKHAMDB_OAUTH_REDIRECT_URI: z.url(),
   ADMIN_API_KEY: z.string(),
   INGEST_JSON_DATA_REPO: repoRefSchema,
+  INGEST_METADATA_REPO: repoRefSchema,
   INGEST_TABOO_DATA_REPO: repoRefSchema,
   INGEST_URL_ARKHAMDB_DECKLISTS: z.string(),
   CORS_ORIGINS: z.string(),
@@ -76,4 +66,17 @@ export function configFromEnv(
 ): Config {
   const config = configSchema.parse({ ...process.env, ...overrides });
   return config;
+}
+
+function parseRepoRef(value: string) {
+  const separatorIndex = value.lastIndexOf("@");
+
+  if (separatorIndex === -1 || separatorIndex === value.length - 1) {
+    throw new Error(`Invalid repo ref: ${value}`);
+  }
+
+  return {
+    repo: value.slice(0, separatorIndex),
+    branch: value.slice(separatorIndex + 1),
+  };
 }

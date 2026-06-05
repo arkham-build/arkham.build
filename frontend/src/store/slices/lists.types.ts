@@ -212,7 +212,11 @@ export type ListsSlice = {
   setFilterOpen(id: number, open: boolean): void;
 
   setActiveList(value: string | undefined): void;
-  setSearchValue(value: string, deck?: ResolvedDeck): void;
+  setSearchValue(
+    value: string,
+    deck?: ResolvedDeck,
+    opts?: { clearMode?: boolean },
+  ): void;
   setSearchFlag(
     flag: keyof Omit<Search, "value">,
     value: boolean,

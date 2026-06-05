@@ -54,11 +54,22 @@ export function resolveCards(
       let source = cardMapping.get(card.duplicate_of);
 
       if (source?.duplicate_of || source?.reprint_of) {
-        source = {
-          ...cardMapping.get(
+        const ancestor =
+          cardMapping.get(
             (source?.duplicate_of || source?.reprint_of) as string,
-          ),
+          ) ?? {};
+
+        const patched = {
+          ...ancestor,
           ...source,
+        };
+
+        source = {
+          ...ancestor,
+          ...source,
+          translations: source.reprint_of
+            ? source.translations
+            : patched.translations,
         };
       }
 
@@ -68,8 +79,15 @@ export function resolveCards(
       cardMapping.set(id, expanded);
       // expand reprint cards. these are not duplicates due to chapter switch.
     } else if (card.reprint_of) {
-      const source = cardMapping.get(card.reprint_of);
-      const expanded = { ...source, ...card, id } as Out;
+      const source: In = cardMapping.get(card.reprint_of) ?? ({} as In);
+
+      const expanded = {
+        ...source,
+        ...card,
+        id,
+        translations: card.translations,
+      } as Out;
+
       cards.push(expanded);
       cardMapping.set(id, expanded);
     } else {

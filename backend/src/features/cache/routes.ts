@@ -1,6 +1,12 @@
+import type { JsonDataScenario } from "@arkham-build/shared";
 import { type Context, Hono } from "hono";
-import { compress } from "hono/compress";
+import type { Selectable } from "kysely";
 import type { Database } from "../../db/db.ts";
+import type {
+  CampaignScenario,
+  ScenarioEncounterSet,
+  ScenarioEncounterSetCard,
+} from "../../db/schema.types.ts";
 import {
   applyCacheHeaders,
   type CacheResource,
@@ -10,61 +16,59 @@ import type { HonoEnv } from "../../lib/hono-env.ts";
 import { applyLocaleTranslations, mapCardRowToV1Card } from "./mapping.ts";
 import { getDataVersionByLocale } from "./queries.ts";
 
-const routes = new Hono<HonoEnv>();
+const router = new Hono<HonoEnv>();
 
-routes.use("*", compress({ threshold: 0 }));
-routes.use("*", async (c, next) => {
-  await next();
-  appendVaryHeader(c.res.headers, "Accept-Encoding");
-});
+const METADATA_VERSION = 2;
 
-routes.get("/cards", (c) =>
+router.get("/cards", (c) =>
   cachedResponse(c, {
     locale: "en",
     resource: "cards",
-    buildResponse: buildCardsResponse,
+    buildResponse: cardsResponse,
   }),
 );
 
-routes.get("/cards/:locale", (c) =>
+router.get("/cards/:locale", (c) =>
   cachedResponse(c, {
     locale: c.req.param("locale"),
     resource: "cards",
-    buildResponse: buildCardsResponse,
+    buildResponse: cardsResponse,
   }),
 );
 
-routes.get("/metadata", (c) =>
+router.get("/metadata", (c) =>
   cachedResponse(c, {
     locale: "en",
     resource: "metadata",
-    buildResponse: buildMetadataResponse,
+    buildResponse: metadataResponse,
   }),
 );
 
-routes.get("/metadata/:locale", (c) =>
+router.get("/metadata/:locale", (c) =>
   cachedResponse(c, {
     locale: c.req.param("locale"),
     resource: "metadata",
-    buildResponse: buildMetadataResponse,
+    buildResponse: metadataResponse,
   }),
 );
 
-routes.get("/version", (c) =>
+router.get("/version", (c) =>
   cachedResponse(c, {
     locale: "en",
     resource: "version",
-    buildResponse: buildVersionResponse,
+    buildResponse: versionResponse,
   }),
 );
 
-routes.get("/version/:locale", (c) =>
+router.get("/version/:locale", (c) =>
   cachedResponse(c, {
     locale: c.req.param("locale"),
     resource: "version",
-    buildResponse: buildVersionResponse,
+    buildResponse: versionResponse,
   }),
 );
+
+export default router;
 
 type DataVersion = Awaited<ReturnType<typeof getDataVersionByLocale>>;
 
@@ -84,7 +88,18 @@ async function cachedResponse<T>(
 ) {
   const db = c.get("db");
   const version = await getDataVersionByLocale(db, options.locale);
-  const etag = `${options.resource}:${options.locale}:${version.cards_updated_at.valueOf()}:${version.translation_updated_at.valueOf()}`;
+  const etagParts = [
+    options.resource,
+    options.locale,
+    version.cards_updated_at.valueOf(),
+    version.translation_updated_at.valueOf(),
+  ];
+
+  if (options.resource !== "cards") {
+    etagParts.push(METADATA_VERSION);
+  }
+
+  const etag = etagParts.join(":");
 
   applyCacheHeaders(c, { etag, resource: options.resource });
 
@@ -93,65 +108,155 @@ async function cachedResponse<T>(
     : c.json(await options.buildResponse(db, options.locale, version));
 }
 
-async function buildCardsResponse(db: Database, locale: string) {
+async function cardsResponse(db: Database, locale: string) {
   const cards = await db.selectFrom("card").selectAll().execute();
 
-  const all_card = cards.map((card) =>
-    applyLocaleTranslations(mapCardRowToV1Card(card), locale),
+  const all_card = cards.map((c) =>
+    applyLocaleTranslations(mapCardRowToV1Card(c), locale),
   );
 
   return { data: { all_card } };
 }
 
-async function buildMetadataResponse(db: Database, locale: string) {
-  const [packs, cycles, encounterSets, tabooSets] = await Promise.all([
+async function metadataResponse(db: Database, locale: string) {
+  const [
+    packs,
+    cycles,
+    encounterSets,
+    tabooSets,
+    campaigns,
+    campaignScenarios,
+    scenarios,
+    scenarioEncounterSets,
+    scenarioEncounterSetCards,
+    rulesVersions,
+  ] = await Promise.all([
     db.selectFrom("pack").selectAll().execute(),
     db.selectFrom("cycle").selectAll().execute(),
     db.selectFrom("encounter_set").selectAll().execute(),
     db.selectFrom("taboo_set").selectAll().execute(),
+    db.selectFrom("campaign").selectAll().execute(),
+    db.selectFrom("campaign_scenario").selectAll().execute(),
+    db.selectFrom("scenario").selectAll().execute(),
+    db.selectFrom("scenario_encounter_set").selectAll().execute(),
+    db.selectFrom("scenario_encounter_set_card").selectAll().execute(),
+    db.selectFrom("rules_version").selectAll().orderBy("date").execute(),
   ]);
+
+  const scenarioCodesByCampaign =
+    groupScenarioCodesByCampaign(campaignScenarios);
+
+  const cardIdsByScenarioEncounterSet = groupCardIdsByScenarioEncounterSet(
+    scenarioEncounterSetCards,
+  );
+
+  const encounterSetsByScenario = groupEncounterSetsByScenario(
+    scenarioEncounterSets,
+    cardIdsByScenarioEncounterSet,
+  );
 
   return {
     data: {
-      pack: packs.map((pack) => applyLocaleTranslations(pack, locale)),
-      cycle: cycles.map((cycle) => applyLocaleTranslations(cycle, locale)),
-      card_encounter_set: encounterSets.map((encounterSet) =>
-        applyLocaleTranslations(encounterSet, locale),
+      pack: packs.map((p) => applyLocaleTranslations(p, locale)),
+      cycle: cycles.map((c) => applyLocaleTranslations(c, locale)),
+      card_encounter_set: encounterSets.map((es) =>
+        applyLocaleTranslations(es, locale),
       ),
-      taboo_set: tabooSets.map((tabooSet) => ({
-        id: tabooSet.id,
-        card_count: tabooSet.card_count,
-        name: tabooSet.name,
-        date: tabooSet.date_start,
+      taboo_set: tabooSets.map((t) => ({
+        id: t.id,
+        card_count: t.card_count,
+        name: t.name,
+        date: t.date_start,
+      })),
+      campaign: campaigns.map((campaign) =>
+        applyLocaleTranslations(
+          {
+            ...campaign,
+            scenarios: scenarioCodesByCampaign[campaign.code] ?? [],
+          },
+          locale,
+        ),
+      ),
+      scenario: scenarios.map((scenario) =>
+        applyLocaleTranslations(
+          {
+            ...scenario,
+            encounter_sets: encounterSetsByScenario[scenario.code] ?? [],
+          },
+          locale,
+        ),
+      ),
+      rules_versions: rulesVersions.map((version) => ({
+        citation: version.citation,
+        date: new Date(version.date).toISOString().slice(0, 10),
       })),
     },
   };
 }
 
-function buildVersionResponse(
-  _db: Database,
-  _locale: string,
-  version: DataVersion,
-) {
+function versionResponse(_db: Database, _locale: string, version: DataVersion) {
   return Promise.resolve({
     data: {
-      all_card_updated: [version],
+      all_card_updated: [
+        {
+          ...version,
+          metadata_version: METADATA_VERSION,
+        },
+      ],
     },
   });
 }
 
-function appendVaryHeader(headers: Headers, value: string) {
-  const current = headers.get("Vary");
-  if (!current) {
-    headers.set("Vary", value);
-    return;
-  }
-
-  const values = current.split(",").map((part) => part.trim().toLowerCase());
-
-  if (!values.includes(value.toLowerCase())) {
-    headers.set("Vary", `${current}, ${value}`);
-  }
+function groupScenarioCodesByCampaign(records: Selectable<CampaignScenario>[]) {
+  return records
+    .toSorted((a, b) => a.position - b.position)
+    .reduce<Record<string, string[]>>((acc, curr) => {
+      const scenarios = acc[curr.campaign_code] ?? [];
+      scenarios.push(curr.scenario_code);
+      acc[curr.campaign_code] = scenarios;
+      return acc;
+    }, {});
 }
 
-export default routes;
+type CardIdsByScenarioEncounterSet = Record<string, Record<string, string[]>>;
+
+function groupCardIdsByScenarioEncounterSet(
+  records: Selectable<ScenarioEncounterSetCard>[],
+) {
+  return records
+    .toSorted((a, b) => a.position - b.position)
+    .reduce<CardIdsByScenarioEncounterSet>((acc, curr) => {
+      const encounterSets = acc[curr.scenario_code] ?? {};
+      const cards = encounterSets[curr.encounter_code] ?? [];
+      cards.push(curr.card_id);
+      encounterSets[curr.encounter_code] = cards;
+      acc[curr.scenario_code] = encounterSets;
+      return acc;
+    }, {});
+}
+
+function groupEncounterSetsByScenario(
+  records: Selectable<ScenarioEncounterSet>[],
+  cardIdsByScenarioEncounterSet: CardIdsByScenarioEncounterSet,
+) {
+  return records
+    .toSorted((a, b) => a.position - b.position)
+    .reduce<Record<string, JsonDataScenario["encounter_sets"]>>((acc, curr) => {
+      const cards =
+        cardIdsByScenarioEncounterSet[curr.scenario_code]?.[
+          curr.encounter_code
+        ];
+      const encounterSet: JsonDataScenario["encounter_sets"][number] = {
+        code: curr.encounter_code,
+      };
+
+      if (cards?.length) {
+        encounterSet.cards = cards;
+      }
+
+      const encounterSets = acc[curr.scenario_code] ?? [];
+      encounterSets.push(encounterSet);
+      acc[curr.scenario_code] = encounterSets;
+      return acc;
+    }, {});
+}

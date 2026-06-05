@@ -125,7 +125,18 @@
         "complete_task": "Complete task",
         "open_card_page": "Card page",
         "reviews": "Reviews"
+      },
+      "custom_behavior": {
+        "investigator_traits": {
+          "help": "{{card}} can add a new trait to your your investigator's traits.",
+          "title": "Investigator trait choice"
+        }
       }
+    },
+    "card_scenarios": {
+      "standalone": "Standalone",
+      "title": "Scenarios using <em>{{name}}</em>",
+      "tooltip": "{{name}} <em>({{campaignName}})</em>"
     },
     "card_view": {
       "actions": {
@@ -461,7 +472,6 @@
         "Dhole": "Dhole",
         "Dilemma": "Dilemma",
         "Dinosaur": "Dinosaur",
-        "Dionsaur": "Dionsaur",
         "Distortion": "Distortion",
         "Dormant": "Dormant",
         "Double": "Double",
@@ -756,6 +766,7 @@
       "uses": {
         "aether": "Aether",
         "ammo": "Ammo",
+        "arrow": "Arrow",
         "bounties": "Bounties",
         "brilliance": "Brilliance",
         "chances": "Chances",
@@ -1006,6 +1017,7 @@
           "placeholder": "Select packs...",
           "section_title": "Card pool settings",
           "selected_cards": "Selected cards",
+          "substitute_chapter_2_with_chapter_1": "Substitute chapter 2 core and investigator decks with chapter 1 equivalents",
           "title": "Limited card pool"
         },
         "name": "Deck name",
@@ -1491,6 +1503,15 @@
     },
     "rules": {
       "back_to_top": "Back to top",
+      "grimoire": {
+        "empty": "No grimoire content found.",
+        "error": "Failed to load grimoire content.",
+        "intro_description": "The Arkham Grimoire is a comprehensive collection of rulings covering all known situations in the game. As a living document, it is maintained online and updated as new cards, rules, and interactions are introduced or discovered. This document contains information pertaining to more advanced topics such as the interpretation of card text, the resolution of timing conflicts, frequently asked questions, and a list of all keywords and other rules text.",
+        "intro_title": "The Arkham Grimoire",
+        "loading": "Loading grimoire content...",
+        "open_link": "Open the Grimoire",
+        "references": "References"
+      },
       "search_placeholder": "Search keywords...",
       "title": "Rules reference",
       "toc": "Table of contents"

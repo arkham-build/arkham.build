@@ -120,7 +120,7 @@ export interface ArkhamdbUser {
 export interface Campaign {
   code: string;
   name: string;
-  translations: Json;
+  translations: { locale: string; name: string }[];
 }
 
 export interface CampaignScenario {
@@ -345,7 +345,7 @@ export interface GrimoireEntry {
   section: string;
   text: string | null;
   title: string;
-  translations: Json;
+  translations: { locale: string; title?: string; text?: string }[];
 }
 
 export interface GrimoireEntryReference {
@@ -360,7 +360,7 @@ export interface GrimoireSection {
   position: number;
   text: string | null;
   title: string;
-  translations: Json;
+  translations: { locale: string; title?: string; text?: string }[];
 }
 
 export interface OauthToken {
@@ -500,7 +500,7 @@ export interface Scenario {
   campaign_code: string | null;
   code: string;
   name: string;
-  translations: Json;
+  translations: { locale: string; name: string }[];
 }
 
 export interface ScenarioEncounterSet {

@@ -690,11 +690,12 @@
   .longform {
     font-family: var(--font-family-ui);
     line-height: 1.5;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   .longform :where(h1, h2, h3, h4, h5, h6) {
     line-height: 1.25;
+    text-wrap: balance;
   }
 
   .longform h1 {
@@ -808,6 +809,11 @@
 
   .longform :where(h1, h2, h3, h4, h5, h6) a {
     color: currentColor;
+  }
+
+  .longform li :where(ul, ol),
+  .longform li + li {
+    margin-top: 1rem;
   }
 
   .longform :where(.icon-rogue) {

@@ -49,6 +49,8 @@ export function CardSearch(props: Props) {
   const [inputValue, setInputValue] = useState(search.value ?? "");
   const [iconSlotSize, setIconSlotSize] = useState(0);
 
+  const pasted = useRef(false);
+
   useEffect(() => {
     const updateIconSlotSize = () => {
       if (iconSlotRef.current) {
@@ -76,15 +78,25 @@ export function CardSearch(props: Props) {
 
   const onValueChange = useCallback(
     (val: string) => {
+      const changeOpts = {
+        clearMode: val.length <= 1 || pasted.current,
+      };
+
+      pasted.current = false;
       setInputValue(val);
-      debouncedSetSearchValue(val, resolvedDeck);
+      debouncedSetSearchValue(val, resolvedDeck, changeOpts);
+
       if (easterEggHandler(val)) {
         setInputValue("");
-        debouncedSetSearchValue("", resolvedDeck);
+        debouncedSetSearchValue("", resolvedDeck, changeOpts);
       }
     },
     [debouncedSetSearchValue, easterEggHandler, resolvedDeck],
   );
+
+  const onInputPaste = useCallback(() => {
+    pasted.current = true;
+  }, []);
 
   const onToggleGameText = useCallback(
     (val: boolean | string) => {
@@ -153,6 +165,7 @@ export function CardSearch(props: Props) {
             inputClassName={css["field-input"]}
             onValueChange={onValueChange}
             onKeyDown={onInputKeyDown}
+            onPaste={onInputPaste}
             placeholder={t("lists.search.placeholder")}
             iconSlotSize={iconSlotSize}
             iconSlot={

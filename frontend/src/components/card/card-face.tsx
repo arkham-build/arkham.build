@@ -10,6 +10,7 @@ import { CardThumbnail } from "../card-thumbnail";
 import { Button } from "../ui/button";
 import css from "./card.module.css";
 import { CardDetails } from "./card-details";
+import { CardErrata } from "./card-errata";
 import { CardHeader } from "./card-header";
 import { CardIcons } from "./card-icons";
 import { CardMeta } from "./card-meta";
@@ -81,7 +82,6 @@ export function CardFace(props: Props) {
 
       <div className={css["content"]}>
         <CardText
-          errataDate={card.errata_date}
           flavor={displayAttribute(card, "flavor")}
           size={size}
           text={displayAttribute(card, "text")}
@@ -98,6 +98,13 @@ export function CardFace(props: Props) {
             </Button>
           )}
         </CardTabooText>
+        {!!card.errata_date && (
+          <CardErrata
+            cardCode={card.code}
+            errataDate={card.errata_date}
+            size={size}
+          />
+        )}
         <CardMeta
           linked={size !== "tooltip"}
           onPrintingSelect={onPrintingSelect}

@@ -93,7 +93,10 @@ export function parseCardTextHtml(
   let parsed = cardText;
 
   if (opts?.bullets) {
-    parsed = parsed.replaceAll(/^\s?(-|–)/gm, `<i class="icon-bullet"></i>`);
+    parsed = parsed.replaceAll(
+      /^\s?(-(?!-)|–)/gm,
+      `<i class="icon-bullet"></i>`,
+    );
   }
 
   parsed = parsed

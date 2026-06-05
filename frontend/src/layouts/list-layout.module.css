@@ -75,7 +75,7 @@
   contain: size layout style;
 
   > :not(.collapse) {
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 }
 

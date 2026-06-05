@@ -70,3 +70,7 @@
   gap: 0.375rem;
   border: 1px solid var(--accent-color);
 }
+
+.cpa > * + * {
+  margin-top: 0.75rem;
+}

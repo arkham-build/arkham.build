@@ -1355,7 +1355,9 @@ export const selectCampaignCycles = createSelector(
   (cycles) =>
     cycles.filter(
       (cycle) =>
-        official(cycle) && !CYCLES_WITH_STANDALONE_PACKS.includes(cycle.code),
+        official(cycle) &&
+        (cycle.code.includes("core") ||
+          !CYCLES_WITH_STANDALONE_PACKS.includes(cycle.code)),
     ),
 );
 

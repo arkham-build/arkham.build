@@ -7,7 +7,13 @@ export function localizeArkhamDBBaseUrl() {
   const baseUrl = new URL(import.meta.env.VITE_ARKHAMDB_BASE_URL);
   if (lng === "en") return baseUrl.origin;
 
-  baseUrl.hostname = `${lng}.${baseUrl.hostname}`;
+  // ArkhamDB does not support `zh-cn` yet.
+  if (lng === "zh-CN") {
+    baseUrl.hostname = `zh.${baseUrl.hostname}`;
+  } else {
+    baseUrl.hostname = `${lng}.${baseUrl.hostname}`;
+  }
+
   return baseUrl.origin;
 }
 

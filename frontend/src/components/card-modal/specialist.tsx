@@ -22,6 +22,7 @@ import { CardSet } from "../cardset";
 
 type Props = {
   card: Card;
+  investigatorFront?: Card;
 };
 
 const selectSpecialistAccess = createSelector(
@@ -31,6 +32,7 @@ const selectSpecialistAccess = createSelector(
   selectShowFanMadeRelations,
   selectStaticBuildQlInterpreter,
   (_: StoreState, card: Card) => card,
+  (_: StoreState, _card: Card, investigatorFront?: Card) => investigatorFront,
   (
     metadata,
     settings,
@@ -38,6 +40,7 @@ const selectSpecialistAccess = createSelector(
     showFanMadeRelations,
     buildQlInterpreter,
     investigatorBack,
+    investigatorFront,
   ) => {
     const investigatorFilter = filterInvestigatorAccess(
       investigatorBack,
@@ -47,6 +50,7 @@ const selectSpecialistAccess = createSelector(
           properties: "all",
           level: "all",
         },
+        investigatorFront,
       },
     );
 
@@ -68,10 +72,10 @@ const selectSpecialistAccess = createSelector(
 );
 
 export function SpecialistAccess(props: Props) {
-  const { card } = props;
+  const { card, investigatorFront } = props;
 
   const specialistAccess = useStore((state) =>
-    selectSpecialistAccess(state, card),
+    selectSpecialistAccess(state, card, investigatorFront),
   );
 
   if (isEmpty(specialistAccess)) return null;

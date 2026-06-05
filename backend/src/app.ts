@@ -8,9 +8,11 @@ import authRouter, {
   arkhamdbOAuthRoutes,
 } from "./features/auth/routes/index.ts";
 import cacheRouter from "./features/cache/routes.ts";
+import customizationSheetRouter from "./features/customization_sheet/routes.ts";
 import decksRouter from "./features/decks/routes.ts";
 import fanMadeProjectInfoRouter from "./features/fan-made-content/routes.ts";
 import foldersRouter from "./features/folders/routes.ts";
+import grimoireRouter from "./features/grimoire/routes.ts";
 import profileRouter from "./features/profile/routes.ts";
 import recommendationsRouter from "./features/recommendations/routes.ts";
 import sealedDeckRouter from "./features/sealed-decks/routes.ts";
@@ -52,8 +54,10 @@ export function appFactory(
   const pub = new Hono<HonoEnv>();
   pub.route("/arkhamdb-decklists", arkhamDbDecklistsRouter);
   pub.route("/fan-made-project-info", fanMadeProjectInfoRouter);
+  pub.route("/", grimoireRouter);
   pub.route("/recommendations", recommendationsRouter);
   pub.route("/sealed-deck", sealedDeckRouter);
+  pub.route("/customization_sheet", customizationSheetRouter);
   app.route("/v2/public", pub);
 
   app.route("/v2/auth", authRouter);

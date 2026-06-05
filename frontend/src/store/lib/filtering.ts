@@ -1110,13 +1110,11 @@ export function filterInvestigatorAccess(
   const mode = config?.targetDeck ?? "slots";
 
   let investigator = investigatorBack;
-  if (
-    config?.investigatorFront &&
-    config.investigatorFront.code !== investigatorBack.code
-  ) {
+  if (config?.investigatorFront) {
     investigator = {
       ...investigatorBack,
-      real_traits: config.investigatorFront.real_traits,
+      real_traits:
+        config.investigatorFront.real_traits ?? investigatorBack.real_traits,
     };
   }
 

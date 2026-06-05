@@ -58,7 +58,7 @@
   contain: size layout style;
 
   & > * {
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 }
 
