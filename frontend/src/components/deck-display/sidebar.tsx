@@ -394,11 +394,13 @@ function SidebarActions(props: {
                         onClick={() => onUpload(provider)}
                       >
                         <UploadIcon />
-                        {t("deck_view.actions.upload", {
-                          provider: t(
-                            `deck_edit.config.storage_provider.${provider}`,
-                          ),
-                        })}
+                        {provider === "account"
+                          ? t("deck_view.actions.upload_account")
+                          : t("deck_view.actions.upload", {
+                              provider: t(
+                                `deck_edit.config.storage_provider.${provider}`,
+                              ),
+                            })}
                       </DropdownButton>
                     ))}
                   <DropdownButton
@@ -536,11 +538,13 @@ function Sharing(props: {
                     size="sm"
                   >
                     <UploadIcon />
-                    {t("deck_view.actions.upload", {
-                      provider: t(
-                        `deck_edit.config.storage_provider.${provider}`,
-                      ),
-                    })}
+                    {provider === "account"
+                      ? t("deck_view.actions.upload_account")
+                      : t("deck_view.actions.upload", {
+                          provider: t(
+                            `deck_edit.config.storage_provider.${provider}`,
+                          ),
+                        })}
                   </Button>
                 ))}
               </nav>

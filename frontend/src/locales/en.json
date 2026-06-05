@@ -1141,7 +1141,7 @@
         "save_upgrade_close_short": "Save and close",
         "save_upgrade_short": "Upgrade",
         "upload": "Upload to {{provider}}",
-        "upload_remote": "Upload to your account"
+        "upload_account": "Upload to your account"
       },
       "discounts": {
         "adaptable": "Adaptable",
