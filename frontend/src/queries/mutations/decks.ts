@@ -1,9 +1,8 @@
-import type { StorageProvider } from "@arkham-build/shared";
+import type { Deck, Id, StorageProvider } from "@arkham-build/shared";
 import { useMutation } from "@tanstack/react-query";
 import type { DeckDisplayType } from "@/components/deck-display/deck-display";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Deck, Id } from "@/store/schemas/deck.schema";
 import { useHttpClient } from "@/store/services/http-client.context";
 import type { DeckUpgradePayload } from "@/store/slices/app.types";
 

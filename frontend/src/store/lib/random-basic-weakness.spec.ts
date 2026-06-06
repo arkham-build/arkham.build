@@ -1,7 +1,6 @@
-import type { Settings } from "@arkham-build/shared";
+import type { Deck, Settings } from "@arkham-build/shared";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
-import type { Deck } from "@/store/schemas/deck.schema";
 import { getMockStore } from "@/test/get-mock-store";
 import {
   selectLocaleSortingCollator,

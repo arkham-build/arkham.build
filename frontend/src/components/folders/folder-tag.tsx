@@ -1,5 +1,5 @@
+import type { Id } from "@arkham-build/shared";
 import { useStore } from "@/store";
-import type { Id } from "@/store/schemas/deck.schema";
 import { Tag } from "../ui/tag";
 import { FolderIcon } from "./folder-icon";
 

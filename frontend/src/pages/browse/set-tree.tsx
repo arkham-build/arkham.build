@@ -1,3 +1,4 @@
+import type { Cycle, EncounterSet, Pack } from "@arkham-build/shared";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
@@ -10,9 +11,6 @@ import { useTabUrlState } from "@/components/ui/tabs.hooks";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useStore } from "@/store";
 import { sortByEncounterSet } from "@/store/lib/sorting";
-import type { Cycle } from "@/store/schemas/cycle.schema";
-import type { EncounterSet } from "@/store/schemas/encounter-set.schema";
-import type { Pack } from "@/store/schemas/pack.schema";
 import {
   groupCyclesByChapter,
   selectCyclesAndPacks,

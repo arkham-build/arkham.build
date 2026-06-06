@@ -1,18 +1,20 @@
 import type {
   Attachments,
   Card,
+  Cycle,
+  Deck,
+  DeckFanMadeContent,
+  DeckMeta,
+  EncounterSet,
   FactionName,
   JsonDataSubtype,
   JsonDataType,
   OptionSelect,
+  Pack,
   SealedDeckResponse,
   SkillIcon,
+  TabooSet,
 } from "@arkham-build/shared";
-import type { Cycle } from "../schemas/cycle.schema";
-import type { Deck, Slots } from "../schemas/deck.schema";
-import type { EncounterSet } from "../schemas/encounter-set.schema";
-import type { Pack } from "../schemas/pack.schema";
-import type { TabooSet } from "../schemas/taboo-set.schema";
 import type { AttachmentQuantities } from "../slices/deck-edits.types";
 
 export type Coded = {
@@ -64,50 +66,6 @@ export type Customizations = Record<
   string,
   Record<number | string, Customization>
 >;
-
-export type DeckFanMadeContent = {
-  cards: Record<string, Card>;
-  cycles: Record<string, Cycle>;
-  encounter_sets: Record<string, EncounterSet>;
-  packs: Record<string, Pack>;
-};
-
-export type DeckFanMadeContentSlots = {
-  slots: Slots;
-  sideSlots: Slots | null;
-  ignoreDeckLimitSlots: Slots | null;
-  investigator_code: string;
-};
-
-export type DeckMeta = {
-  alternate_back?: string | null;
-  alternate_front?: string | null;
-  buildql_deck_options_override?: string | null;
-  card_pool?: string | null;
-  deck_size_selected?: string | null;
-  extra_deck?: string | null;
-  fan_made_content?: DeckFanMadeContent;
-  hidden_slots?: DeckFanMadeContentSlots;
-  faction_1?: string | null;
-  faction_2?: string | null;
-  faction_selected?: string | null;
-  option_selected?: string | null;
-  sealed_deck_name?: string | null;
-  sealed_deck?: string | null;
-  transform_into?: string | null;
-  banner_url?: string | null;
-  intro_md?: string | null;
-} & {
-  [key in `cus_${string}`]: string | null;
-} & {
-  [key in `attachments_${string}`]: string | null;
-} & {
-  [key in `annotation_${string}`]: string | null;
-} & {
-  [key in `card_pool_extension_${string}`]: string | null;
-} & {
-  [key in `custom_behavior:${string}`]: string | null;
-};
 
 type DeckSizeSelection = {
   type: "deckSize";

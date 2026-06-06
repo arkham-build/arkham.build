@@ -1,4 +1,4 @@
-import type { Card as CardType } from "@arkham-build/shared";
+import type { Card as CardType, Pack } from "@arkham-build/shared";
 import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Link, useSearchParams } from "wouter";
@@ -18,7 +18,6 @@ import { filterBacksides } from "@/store/lib/filtering";
 import { getRelatedCards } from "@/store/lib/resolve-card";
 import { sortByPosition } from "@/store/lib/sorting";
 import type { CardWithRelations } from "@/store/lib/types";
-import type { Pack } from "@/store/schemas/pack.schema";
 import {
   selectLookupTables,
   selectMetadata,

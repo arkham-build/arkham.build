@@ -1,7 +1,6 @@
+import type { Cycle, Pack } from "@arkham-build/shared";
 import { type Card, SKILL_KEYS } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
-import type { Cycle } from "@/store/schemas/cycle.schema";
-import type { Pack } from "@/store/schemas/pack.schema";
 import { assert } from "./assert";
 import {
   CYCLES_WITH_STANDALONE_PACKS,

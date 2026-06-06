@@ -1,8 +1,13 @@
 import { z } from "zod";
+import type { Card } from "./card.schema.ts";
+import type { Cycle } from "./cycle.schema.ts";
+import type { EncounterSet } from "./encounter-set.schema.ts";
+import type { Pack } from "./pack.schema.ts";
 import { StorageProviderSchema } from "./settings.schema.ts";
 
 export const DeckIdSchema = z.union([z.number(), z.string()]);
 export type DeckId = z.infer<typeof DeckIdSchema>;
+export type Id = DeckId;
 
 export const SlotsSchema = z.record(z.string(), z.number());
 export type Slots = z.infer<typeof SlotsSchema>;
@@ -57,3 +62,47 @@ export function isDeck(x: unknown): x is Deck {
   }
   return res.success;
 }
+
+export type DeckFanMadeContent = {
+  cards: Record<string, Card>;
+  cycles: Record<string, Cycle>;
+  encounter_sets: Record<string, EncounterSet>;
+  packs: Record<string, Pack>;
+};
+
+export type DeckFanMadeContentSlots = {
+  slots: Slots;
+  sideSlots: Slots | null;
+  ignoreDeckLimitSlots: Slots | null;
+  investigator_code: string;
+};
+
+export type DeckMeta = {
+  alternate_back?: string | null;
+  alternate_front?: string | null;
+  buildql_deck_options_override?: string | null;
+  card_pool?: string | null;
+  deck_size_selected?: string | null;
+  extra_deck?: string | null;
+  fan_made_content?: DeckFanMadeContent;
+  hidden_slots?: DeckFanMadeContentSlots;
+  faction_1?: string | null;
+  faction_2?: string | null;
+  faction_selected?: string | null;
+  option_selected?: string | null;
+  sealed_deck_name?: string | null;
+  sealed_deck?: string | null;
+  transform_into?: string | null;
+  banner_url?: string | null;
+  intro_md?: string | null;
+} & {
+  [key in `cus_${string}`]: string | null;
+} & {
+  [key in `attachments_${string}`]: string | null;
+} & {
+  [key in `annotation_${string}`]: string | null;
+} & {
+  [key in `card_pool_extension_${string}`]: string | null;
+} & {
+  [key in `custom_behavior:${string}`]: string | null;
+};

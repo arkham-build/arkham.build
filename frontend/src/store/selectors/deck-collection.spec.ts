@@ -1,5 +1,5 @@
+import type { Deck } from "@arkham-build/shared";
 import { describe, expect, it } from "vitest";
-import type { Deck } from "@/store/schemas/deck.schema";
 import { selectDecksDisplayList } from "@/store/selectors/deck-collection";
 import { getMockStore } from "@/test/get-mock-store";
 import { ARCHIVE_FOLDER_ID } from "@/utils/constants";

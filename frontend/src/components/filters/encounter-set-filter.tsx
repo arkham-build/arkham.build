@@ -1,7 +1,7 @@
+import type { EncounterSet } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import type { EncounterSet } from "@/store/schemas/encounter-set.schema";
 import {
   selectActiveListFilter,
   selectEncounterSetMapper,

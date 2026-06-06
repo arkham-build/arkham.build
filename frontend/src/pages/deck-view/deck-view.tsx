@@ -1,3 +1,4 @@
+import type { Id } from "@arkham-build/shared";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
@@ -14,7 +15,6 @@ import { useArkhamDbDecklistMetaQuery } from "@/queries/decklists";
 import { useArkhamDbDeckQuery } from "@/queries/legacy";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";
-import type { Id } from "@/store/schemas/deck.schema";
 import {
   getDeckHistory,
   selectDeckHistoryCached,

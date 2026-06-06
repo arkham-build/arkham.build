@@ -1,7 +1,7 @@
+import type { Pack } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import type { Pack } from "@/store/schemas/pack.schema";
 import {
   selectActiveListFilter,
   selectFilterChanges,

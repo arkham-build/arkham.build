@@ -1,5 +1,5 @@
+import type { Deck, DeckMeta, Slots } from "@arkham-build/shared";
 import { type Card, countExperience } from "@arkham-build/shared";
-import type { Deck, Slots } from "@/store/schemas/deck.schema";
 import { decodeExileSlots, isSpecialCard } from "@/utils/card-utils";
 import { range } from "@/utils/range";
 import type { StoreState } from "../slices";
@@ -10,7 +10,6 @@ import type {
   CardWithRelations,
   Customizations,
   DeckCharts,
-  DeckMeta,
   ResolvedCard,
   ResolvedDeck,
 } from "./types";

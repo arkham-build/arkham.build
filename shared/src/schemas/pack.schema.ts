@@ -14,3 +14,13 @@ export const JsonDataPackSchema = z.object({
 });
 
 export type JsonDataPack = z.infer<typeof JsonDataPackSchema>;
+
+export const PackSchema = JsonDataPackSchema.extend({
+  icon_url: z.string().nullish(),
+  name: z.string().nullish(),
+  official: z.boolean().nullish(),
+  preview: z.boolean().nullish(),
+  real_name: z.string(),
+});
+
+export type Pack = z.infer<typeof PackSchema>;

@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, Cycle, Pack } from "@arkham-build/shared";
 import {
   ASSET_SLOT_ORDER,
   FACTION_ORDER,
@@ -73,8 +73,6 @@ import {
   sortByName,
 } from "../lib/sorting";
 import { isResolvedDeck, type ResolvedDeck } from "../lib/types";
-import type { Cycle } from "../schemas/cycle.schema";
-import type { Pack } from "../schemas/pack.schema";
 import type { StoreState } from "../slices";
 import type {
   AssetFilter,

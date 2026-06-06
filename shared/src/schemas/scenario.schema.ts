@@ -13,3 +13,9 @@ export const JsonDataScenarioSchema = z.object({
 });
 
 export type JsonDataScenario = z.infer<typeof JsonDataScenarioSchema>;
+
+export const ScenarioSchema = JsonDataScenarioSchema.extend({
+  real_name: z.string(),
+});
+
+export type Scenario = z.infer<typeof ScenarioSchema>;

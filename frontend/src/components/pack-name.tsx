@@ -1,5 +1,4 @@
-import type { Cycle } from "@/store/schemas/cycle.schema";
-import type { Pack } from "@/store/schemas/pack.schema";
+import type { Cycle, Pack } from "@arkham-build/shared";
 import { displayPackName, shortenPackName } from "@/utils/formatting";
 import PackIcon from "./icons/pack-icon";
 

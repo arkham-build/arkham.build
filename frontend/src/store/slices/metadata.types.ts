@@ -1,17 +1,17 @@
 import type {
+  Campaign,
   Card,
+  Cycle,
   DataVersion,
+  EncounterSet,
   JsonDataFaction,
   JsonDataSubtype,
   JsonDataType,
+  Pack,
+  Scenario,
+  Taboo,
+  TabooSet,
 } from "@arkham-build/shared";
-import type { Campaign } from "../schemas/campaign.schema";
-import type { Cycle } from "../schemas/cycle.schema";
-import type { EncounterSet } from "../schemas/encounter-set.schema";
-import type { Pack } from "../schemas/pack.schema";
-import type { Scenario } from "../schemas/scenario.schema";
-import type { Taboo } from "../schemas/taboo.schema";
-import type { TabooSet } from "../schemas/taboo-set.schema";
 
 export type Metadata = {
   campaigns: Record<string, Campaign>;

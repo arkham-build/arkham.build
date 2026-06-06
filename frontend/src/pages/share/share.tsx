@@ -1,3 +1,4 @@
+import type { Deck } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useParams } from "wouter";
@@ -8,7 +9,6 @@ import { Loader } from "@/components/ui/loader";
 import { useShareQuery } from "@/queries/legacy";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";
-import type { Deck } from "@/store/schemas/deck.schema";
 import { selectDeckValid } from "@/store/selectors/decks";
 import {
   selectLocaleSortingCollator,

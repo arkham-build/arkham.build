@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, Cycle, Pack } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import { official } from "@/utils/card-utils";
 import i18n from "@/utils/i18n";
@@ -11,8 +11,6 @@ import { addProjectToMetadata, cloneMetadata } from "../lib/fan-made-content";
 import { createLookupTables } from "../lib/lookup-tables";
 import type { LookupTables } from "../lib/lookup-tables.types";
 import type { ResolvedDeck } from "../lib/types";
-import type { Cycle } from "../schemas/cycle.schema";
-import type { Pack } from "../schemas/pack.schema";
 import type { StoreState } from "../slices";
 import type { Metadata } from "../slices/metadata.types";
 

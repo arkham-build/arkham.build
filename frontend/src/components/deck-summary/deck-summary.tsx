@@ -1,3 +1,4 @@
+import type { Id } from "@arkham-build/shared";
 import {
   ArchiveIcon,
   ArchiveRestoreIcon,
@@ -13,7 +14,6 @@ import { Link, useLocation } from "wouter";
 import type { DeckValidationResult } from "@/store/lib/deck-validation";
 import { deckTags } from "@/store/lib/resolve-deck";
 import type { DeckSummary as DeckSummaryType } from "@/store/lib/types";
-import type { Id } from "@/store/schemas/deck.schema";
 import { displayAttribute, getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { CardThumbnail } from "../card-thumbnail";

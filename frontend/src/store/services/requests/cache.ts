@@ -1,14 +1,14 @@
 import type {
   ApiCard,
+  Campaign,
+  Cycle,
   DataVersion,
+  EncounterSet,
   JsonDataRulesVersion,
+  Pack,
+  Scenario,
+  TabooSet,
 } from "@arkham-build/shared";
-import type { Campaign } from "@/store/schemas/campaign.schema";
-import type { Cycle } from "@/store/schemas/cycle.schema";
-import type { EncounterSet } from "@/store/schemas/encounter-set.schema";
-import type { Pack } from "@/store/schemas/pack.schema";
-import type { Scenario } from "@/store/schemas/scenario.schema";
-import type { TabooSet } from "@/store/schemas/taboo-set.schema";
 import type { HttpClient } from "../http-client";
 
 export type MetadataApiResponse = {

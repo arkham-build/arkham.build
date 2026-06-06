@@ -1,5 +1,4 @@
 /** biome-ignore-all lint/performance/noBarrelFile: TECH DEBT: look into `exports` */
-
 export {
   type ArkhamDBIdentity,
   ArkhamDBIdentitySchema,
@@ -35,7 +34,6 @@ export {
   type VerifyEmailRequest,
   VerifyEmailRequestSchema,
 } from "./dtos/auth.schema.ts";
-
 export {
   type DateRange,
   DateRangeSchema,
@@ -99,24 +97,20 @@ export {
   type UpdateProfileRequest,
   UpdateProfileRequestSchema,
 } from "./dtos/profile.schema.ts";
-
 export {
   type RecommendationsRequest,
   RecommendationsRequestSchema,
 } from "./dtos/recommendations-request.schema.ts";
-
 export {
   type Recommendation,
   RecommendationSchema,
   type RecommendationsResponse,
   RecommendationsResponseSchema,
 } from "./dtos/recommendations-response.schema.ts";
-
 export {
   type SealedDeckResponse,
   SealedDeckResponseSchema,
 } from "./dtos/sealed-deck-response.schema.ts";
-
 export {
   type SettingsRequest,
   SettingsRequestSchema,
@@ -125,7 +119,6 @@ export {
 } from "./dtos/settings.schema.ts";
 
 export { cardLevel, countExperience, realCardLevel } from "./lib/card-utils.ts";
-
 export {
   ASSET_SLOT_ORDER,
   DECKLIST_SEARCH_MAX_XP,
@@ -147,7 +140,6 @@ export {
   decodeSearch,
   encodeSearch,
 } from "./lib/search-params.ts";
-
 export {
   type JsonDataFaction,
   JsonDataFactionSchema,
@@ -159,6 +151,8 @@ export {
   JsonValueSchema,
 } from "./schemas/base.schema.ts";
 export {
+  type Campaign,
+  CampaignSchema,
   type JsonDataCampaign,
   JsonDataCampaignSchema,
 } from "./schemas/campaign.schema.ts";
@@ -178,33 +172,37 @@ export {
   JsonDataCardSchema,
   type OptionSelect,
 } from "./schemas/card.schema.ts";
-
 export {
+  type Cycle,
+  CycleSchema,
   type JsonDataCycle,
   JsonDataCycleSchema,
 } from "./schemas/cycle.schema.ts";
-
 export {
   type DataVersion,
   DataVersionSchema,
 } from "./schemas/data-version.schema.ts";
-
 export {
   type Deck,
+  type DeckFanMadeContent,
+  type DeckFanMadeContentSlots,
   type DeckId,
   DeckIdSchema,
+  type DeckMeta,
   type DeckProblem,
   DeckProblemSchema,
   DeckSchema,
+  type Id,
   isDeck,
   type Slots,
   SlotsSchema,
 } from "./schemas/deck.schema.ts";
 export {
+  type EncounterSet,
+  EncounterSetSchema,
   type JsonDataEncounterSet,
   JsonDataEncounterSetSchema,
 } from "./schemas/encounter-set.schema.ts";
-
 export {
   type Errata,
   ErrataSchema,
@@ -218,41 +216,38 @@ export {
   type FanMadeProject,
   FanMadeProjectSchema,
 } from "./schemas/fan-made-project.schema.ts";
-
 export {
   type FanMadeProjectInfo,
   FanMadeProjectInfoSchema,
 } from "./schemas/fan-made-project-info.schema.ts";
-
 export {
   type Faq,
   FaqSchema,
   type JsonDataFaq,
   JsonDataFaqSchema,
 } from "./schemas/faq.schema.ts";
-
 export {
   type GrimoireEntry,
   GrimoireEntrySchema,
   type GrimoireSection,
   GrimoireSectionSchema,
 } from "./schemas/grimoire.schema.ts";
-
 export {
   type JsonDataPack,
   JsonDataPackSchema,
+  type Pack,
+  PackSchema,
 } from "./schemas/pack.schema.ts";
-
 export {
   type JsonDataRulesVersion,
   JsonDataRulesVersionSchema,
 } from "./schemas/rules-version.schema.ts";
-
 export {
   type JsonDataScenario,
   JsonDataScenarioSchema,
+  type Scenario,
+  ScenarioSchema,
 } from "./schemas/scenario.schema.ts";
-
 export {
   type Collection,
   CollectionSchema,
@@ -269,6 +264,12 @@ export {
   StorageProviderSchema,
 } from "./schemas/settings.schema.ts";
 export {
+  type Taboo,
+  TabooSchema,
+} from "./schemas/taboo.schema.ts";
+export {
   type JsonDataTabooSet,
   JsonDataTabooSetSchema,
+  type TabooSet,
+  TabooSetSchema,
 } from "./schemas/taboo-set.schema.ts";

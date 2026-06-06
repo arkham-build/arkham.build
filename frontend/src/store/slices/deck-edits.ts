@@ -1,3 +1,4 @@
+import type { Id } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
@@ -8,7 +9,6 @@ import { clampAttachmentQuantity } from "../lib/attachments";
 import { randomBasicWeaknessForDeck } from "../lib/random-basic-weakness";
 import { getDeckLimitOverride } from "../lib/resolve-deck";
 import { dehydrate } from "../persist";
-import type { Id } from "../schemas/deck.schema";
 import { selectResolvedDeckById } from "../selectors/decks";
 import { selectLookupTables, selectMetadata } from "../selectors/shared";
 import type { StoreState } from ".";

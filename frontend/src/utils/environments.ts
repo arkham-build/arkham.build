@@ -1,5 +1,4 @@
-import type { Cycle } from "@/store/schemas/cycle.schema";
-import type { Pack } from "@/store/schemas/pack.schema";
+import type { Cycle, Pack } from "@arkham-build/shared";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { RETURN_TO_CYCLES } from "./constants";
 

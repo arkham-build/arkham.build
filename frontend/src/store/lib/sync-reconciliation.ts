@@ -1,9 +1,10 @@
 import type {
+  Deck,
   DeckId,
   DeckManifestResponse,
   DeckSyncTarget,
+  Id,
 } from "@arkham-build/shared";
-import type { Deck, Id } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
 import type {
   DeckSyncItemState,

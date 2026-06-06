@@ -1,7 +1,7 @@
+import type { Deck } from "@arkham-build/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { StoreApi } from "zustand";
 import { makeDeck } from "@/store/lib/deck-factory";
-import type { Deck } from "@/store/schemas/deck.schema";
 import * as deckRequests from "@/store/services/requests/decks";
 import { getMockHttpClient, getMockStore } from "@/test/get-mock-store";
 import type { StoreState } from ".";

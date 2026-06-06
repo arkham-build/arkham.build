@@ -1,3 +1,4 @@
+import type { Id } from "@arkham-build/shared";
 import { CircleQuestionMarkIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -9,7 +10,6 @@ import {
   useRefreshDeckConflictMutation,
 } from "@/queries/mutations/decks";
 import { useStore } from "@/store";
-import type { Id } from "@/store/schemas/deck.schema";
 import { isDeckConflictError } from "@/store/services/requests/decks";
 import type { DeckSyncItemState } from "@/store/slices/sync.types";
 import { cx } from "@/utils/cx";

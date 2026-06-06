@@ -1,8 +1,7 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, Pack } from "@arkham-build/shared";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import type { Pack } from "@/store/schemas/pack.schema";
 import {
   selectLimitedPoolPackOptions,
   selectPackMapper,

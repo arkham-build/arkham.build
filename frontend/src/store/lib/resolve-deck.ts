@@ -1,4 +1,4 @@
-import type { Attachments } from "@arkham-build/shared";
+import type { Attachments, Deck, DeckMeta } from "@arkham-build/shared";
 import { type Card, countExperience } from "@arkham-build/shared";
 import {
   decodeExileSlots,
@@ -8,7 +8,6 @@ import {
 import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
-import type { Deck } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
 import { getAttachableCards } from "./attachments";
 import { applyCardChanges } from "./card-edits";
@@ -24,12 +23,7 @@ import {
 import type { LookupTables } from "./lookup-tables.types";
 import { resolveCardWithRelations } from "./resolve-card";
 import { decodeExtraSlots, decodeSlots } from "./slots";
-import type {
-  CardWithRelations,
-  DeckMeta,
-  DeckSummary,
-  ResolvedDeck,
-} from "./types";
+import type { CardWithRelations, DeckSummary, ResolvedDeck } from "./types";
 
 /**
  * Given a decoded deck, resolve all cards and metadata for display.
@@ -77,6 +71,10 @@ export function resolveDeck(
     "alternate_back",
   );
 
+  if (!investigatorFront || !investigatorBack) {
+    throw new Error(`Investigator not found: ${deck.investigator_code}`);
+  }
+
   if (
     deckMeta.buildql_deck_options_override &&
     SPECIAL_CARD_CODES.GENERIC_CUSTOM_INVESTIGATORS.includes(
@@ -92,10 +90,6 @@ export function resolveDeck(
   const hasExtraDeck = !!investigatorBack.card.side_deck_options;
   const hasParallel = !!investigator.relations?.parallel;
   const hasReplacements = !isEmpty(investigator.relations?.replacement);
-
-  if (!investigatorFront || !investigatorBack) {
-    throw new Error(`Investigator not found: ${deck.investigator_code}`);
-  }
 
   const sealedDeck = decodeSealedDeck(deckMeta);
 

@@ -1,5 +1,4 @@
-import type { StorageProvider } from "@arkham-build/shared";
-import type { Deck, Id } from "@/store/schemas/deck.schema";
+import type { Deck, Id, StorageProvider } from "@arkham-build/shared";
 import type { HttpClient } from "@/store/services/http-client";
 import type {
   AllCardResponse,

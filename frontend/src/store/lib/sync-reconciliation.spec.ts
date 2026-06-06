@@ -1,6 +1,5 @@
-import type { DeckManifestResponse } from "@arkham-build/shared";
+import type { Deck, DeckManifestResponse } from "@arkham-build/shared";
 import { describe, expect, it } from "vitest";
-import type { Deck } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
 import type { DecksSyncState, SyncStatus } from "../slices/sync.types";
 import {

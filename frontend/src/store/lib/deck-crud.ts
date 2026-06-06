@@ -1,4 +1,9 @@
-import type { Deck, DeckId, StorageProvider } from "@arkham-build/shared";
+import type {
+  Deck,
+  DeckId,
+  DeckMeta,
+  StorageProvider,
+} from "@arkham-build/shared";
 import type { StoreApi } from "zustand";
 import { incrementVersion } from "@/utils/arkhamdb";
 import { assert } from "@/utils/assert";
@@ -40,7 +45,7 @@ import {
   updateDeckSyncSuccess,
 } from "./sync";
 import { rebuildDeckHistory } from "./sync-reconciliation";
-import type { DeckMeta, ResolvedDeck } from "./types";
+import type { ResolvedDeck } from "./types";
 
 export const createAdapter = {
   format(state: StoreState): Deck {

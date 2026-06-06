@@ -1,4 +1,4 @@
-import type { Deck, Id, Slots } from "@/store/schemas/deck.schema";
+import type { Deck, DeckMeta, Id, Slots } from "@arkham-build/shared";
 import { decodeExileSlots } from "@/utils/card-utils";
 import { isEmpty } from "@/utils/is-empty";
 import { omit } from "@/utils/omit";
@@ -16,12 +16,7 @@ import {
 } from "./deck-meta";
 import { type ChangeStats, getChangeStats } from "./deck-upgrades";
 import { decodeExtraSlots, encodeExtraSlots } from "./slots";
-import type {
-  Annotations,
-  Customizations,
-  DeckMeta,
-  ResolvedDeck,
-} from "./types";
+import type { Annotations, Customizations, ResolvedDeck } from "./types";
 
 /**
  * Given a stored deck, apply deck edits and return a new, serializable deck.

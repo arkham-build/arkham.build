@@ -1,8 +1,8 @@
+import { type Deck, isDeck } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import { formatDeckImport } from "../lib/deck-io";
 import { dehydrate } from "../persist";
-import { type Deck, isDeck } from "../schemas/deck.schema";
 import type { StoreState } from ".";
 import type { SharingSlice } from "./sharing.types";
 

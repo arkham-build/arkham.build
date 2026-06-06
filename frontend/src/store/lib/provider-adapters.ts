@@ -1,5 +1,5 @@
+import { type Deck, DeckSchema } from "@arkham-build/shared";
 import type { StoreApi } from "zustand";
-import { type Deck, DeckSchema } from "@/store/schemas/deck.schema";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
@@ -9,7 +9,6 @@ import {
 import type { StoreState } from "../slices";
 import { mapValidationToProblem } from "./deck-io";
 import { validateDeck } from "./deck-validation";
-import { applyHiddenSlots } from "./fan-made-content";
 import { resolveDeck } from "./resolve-deck";
 
 interface ProviderAdapter {
@@ -23,7 +22,6 @@ class ArkhamDBAdapter implements ProviderAdapter {
     let state = this.stateGetter();
 
     const deck = DeckSchema.parse(_deck);
-    applyHiddenSlots(deck, selectMetadata(state));
 
     state = this.stateGetter();
 

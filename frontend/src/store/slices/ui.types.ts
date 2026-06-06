@@ -1,6 +1,8 @@
-import type { FanMadeProject } from "@arkham-build/shared";
-import type { Deck } from "@/store/schemas/deck.schema";
-import type { DeckFanMadeContent } from "../lib/types";
+import type {
+  Deck,
+  DeckFanMadeContent,
+  FanMadeProject,
+} from "@arkham-build/shared";
 
 export type CardModalConfig = {
   listOrder?: string[];

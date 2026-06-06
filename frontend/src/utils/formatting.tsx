@@ -1,12 +1,14 @@
-import type { StorageProvider } from "@arkham-build/shared";
+import type {
+  Campaign,
+  Cycle,
+  EncounterSet,
+  Pack,
+  Scenario,
+  StorageProvider,
+  TabooSet,
+} from "@arkham-build/shared";
 import i18next from "i18next";
 import { createSelector } from "reselect";
-import type { Campaign } from "@/store/schemas/campaign.schema";
-import type { Cycle } from "@/store/schemas/cycle.schema";
-import type { EncounterSet } from "@/store/schemas/encounter-set.schema";
-import type { Pack } from "@/store/schemas/pack.schema";
-import type { Scenario } from "@/store/schemas/scenario.schema";
-import type { TabooSet } from "@/store/schemas/taboo-set.schema";
 import i18n from "@/utils/i18n";
 import { LOCALES } from "./constants";
 

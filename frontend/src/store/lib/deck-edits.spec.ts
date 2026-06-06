@@ -1,6 +1,6 @@
+import { type Deck, DeckSchema } from "@arkham-build/shared";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
-import { type Deck, DeckSchema } from "@/store/schemas/deck.schema";
 import { getMockStore } from "@/test/get-mock-store";
 import type { StoreState } from "../slices";
 import { applyDeckEdits } from "./deck-edits";

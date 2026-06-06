@@ -1,6 +1,10 @@
-import type { Card, DeckOptionSelectType } from "@arkham-build/shared";
-import type { Annotations, DeckMeta, ResolvedDeck } from "../lib/types";
-import type { Id } from "../schemas/deck.schema";
+import type {
+  Card,
+  DeckMeta,
+  DeckOptionSelectType,
+  Id,
+} from "@arkham-build/shared";
+import type { Annotations, ResolvedDeck } from "../lib/types";
 import type { AvailableUpgrades } from "../selectors/lists";
 
 export type Slot =

@@ -1,3 +1,4 @@
+import { DeckSchema } from "@arkham-build/shared";
 import deckCustomizable from "@test/fixtures/decks/customizable.json";
 import deckSizeAllSpecials from "@test/fixtures/decks/deck_size_all_specials.json";
 import deckSizeParallelAgnes from "@test/fixtures/decks/deck_size_parallel_agnes.json";
@@ -14,7 +15,6 @@ import deckXpRequired from "@test/fixtures/decks/xp_required.json";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import { getMockStore } from "@/test/get-mock-store";
-import { DeckSchema } from "../schemas/deck.schema";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,

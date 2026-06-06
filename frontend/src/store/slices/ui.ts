@@ -1,9 +1,9 @@
+import type { DeckFanMadeContent } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import {
   addProjectToMetadata,
   buildCacheFromDecks,
 } from "../lib/fan-made-content";
-import type { DeckFanMadeContent } from "../lib/types";
 import type { StoreState } from ".";
 import type { Metadata } from "./metadata.types";
 import type { UISlice, UIState } from "./ui.types";

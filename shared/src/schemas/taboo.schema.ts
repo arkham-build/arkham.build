@@ -1,7 +1,7 @@
 import { ApiCardSchema } from "@arkham-build/shared";
 import type z from "zod";
 
-const TabooSchema = ApiCardSchema.pick({
+export const TabooSchema = ApiCardSchema.pick({
   back_text: true,
   code: true,
   customization_change: true,

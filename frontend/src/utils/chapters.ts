@@ -1,4 +1,4 @@
-import type { Pack } from "@/store/schemas/pack.schema";
+import type { Pack } from "@arkham-build/shared";
 import type { Printing } from "@/store/selectors/shared";
 
 export const FAN_MADE_CHAPTER = 99;

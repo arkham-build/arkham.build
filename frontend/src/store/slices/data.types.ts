@@ -1,5 +1,5 @@
+import type { Deck, Id } from "@arkham-build/shared";
 import type { ChangeRecord } from "../lib/deck-edits";
-import type { Deck, Id } from "../schemas/deck.schema";
 import type { HttpClient } from "../services/http-client";
 
 export type UndoEntry = {

@@ -2,6 +2,7 @@ import {
   type ApiDeckRequirements,
   type Card,
   cardLevel,
+  type DeckMeta,
   type DeckOption,
 } from "@arkham-build/shared";
 import {
@@ -23,7 +24,7 @@ import {
   makeOptionFilter,
 } from "./filtering";
 import type { LookupTables } from "./lookup-tables.types";
-import type { DeckMeta, ResolvedDeck } from "./types";
+import type { ResolvedDeck } from "./types";
 
 export type DeckValidationResult = {
   valid: boolean;
@@ -256,17 +257,19 @@ function validateInvestigator(deck: ResolvedDeck) {
 
   let valid = true;
 
+  const deckMeta = deck.metaParsed as DeckMeta & Record<string, unknown>;
+
   for (const option of investigatorBack.deck_options) {
     if (option.deck_size_select) {
-      valid = !!deck.metaParsed.deck_size_selected;
+      valid = !!deckMeta.deck_size_selected;
     } else if (option.faction_select) {
       valid =
-        !!(option.id && deck.metaParsed[option.id as keyof DeckMeta]) ||
-        !!deck.metaParsed.faction_selected ||
-        (!!deck.metaParsed.faction_1 && !!deck.metaParsed.faction_2);
+        !!(option.id && deckMeta[option.id]) ||
+        !!deckMeta.faction_selected ||
+        (!!deckMeta.faction_1 && !!deckMeta.faction_2);
     } else if (option.option_select) {
       const key = option.id ?? "option_selected";
-      valid = !!deck.metaParsed[key as keyof DeckMeta];
+      valid = !!deckMeta[key];
     }
 
     if (!valid) break;

@@ -1,8 +1,8 @@
+import type { Id } from "@arkham-build/shared";
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useStore } from "@/store";
-import type { Id } from "@/store/schemas/deck.schema";
 import type { StoreState } from "@/store/slices";
 import { cx } from "@/utils/cx";
 import { debounce } from "@/utils/debounce";

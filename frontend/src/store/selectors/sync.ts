@@ -1,5 +1,5 @@
+import type { Id } from "@arkham-build/shared";
 import { createSelector } from "reselect";
-import type { Id } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
 
 export const selectDeckHasConflict = createSelector(

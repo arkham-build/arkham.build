@@ -1,5 +1,9 @@
-import type { SealedDeckResponse } from "@arkham-build/shared";
-import type { Deck, Slots } from "@/store/schemas/deck.schema";
+import type {
+  Deck,
+  DeckMeta,
+  SealedDeckResponse,
+  Slots,
+} from "@arkham-build/shared";
 import type { AttachmentQuantities } from "@/store/slices/deck-edits.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { range } from "@/utils/range";
@@ -8,7 +12,6 @@ import type {
   CardWithRelations,
   Customization,
   Customizations,
-  DeckMeta,
   Selection,
   Selections,
 } from "./types";

@@ -1,4 +1,4 @@
-import type { StorageProvider } from "@arkham-build/shared";
+import type { Deck, Id, StorageProvider } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
@@ -12,7 +12,6 @@ import {
 import { useStore } from "@/store";
 import { formatDeckAsText, formatDeckShare } from "@/store/lib/deck-io";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Deck, Id } from "@/store/schemas/deck.schema";
 import { useHttpClient } from "@/store/services/http-client.context";
 import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import { download } from "@/utils/download";

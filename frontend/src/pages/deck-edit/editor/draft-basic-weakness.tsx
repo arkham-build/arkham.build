@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, Slots } from "@arkham-build/shared";
 import {
   DicesIcon,
   ExternalLinkIcon,
@@ -27,7 +27,6 @@ import { useStore } from "@/store";
 import type { LookupTables } from "@/store/lib/lookup-tables.types";
 import { randomBasicWeaknessForDeck } from "@/store/lib/random-basic-weakness";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Slots } from "@/store/schemas/deck.schema";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";

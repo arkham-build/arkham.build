@@ -1,8 +1,8 @@
+import type { Deck } from "@arkham-build/shared";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { StoreApi } from "zustand";
 import * as deckRequests from "@/store/services/requests/decks";
 import { getMockHttpClient, getMockStore } from "@/test/get-mock-store";
-import type { Deck } from "../schemas/deck.schema";
 import type { StoreState } from ".";
 
 vi.mock("@/store/services/requests/decks", () => ({

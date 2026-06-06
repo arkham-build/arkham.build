@@ -1,5 +1,5 @@
+import type { Deck } from "@arkham-build/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Deck } from "@/store/schemas/deck.schema";
 import { createHttpClient } from "@/store/services/http-client";
 import { getMockHttpClient, getMockStore } from "@/test/get-mock-store";
 

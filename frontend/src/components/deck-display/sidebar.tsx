@@ -1,3 +1,4 @@
+import type { Id } from "@arkham-build/shared";
 import {
   ArchiveIcon,
   ArchiveRestoreIcon,
@@ -31,7 +32,6 @@ import { useImportSharedDeckMutation } from "@/queries/mutations/decks";
 import { useStore } from "@/store";
 import { isSyncedStorageProvider } from "@/store/lib/sync";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Id } from "@/store/schemas/deck.schema";
 import { selectDeckCreateStorageProviderOptions } from "@/store/selectors/deck-create";
 import type { History } from "@/store/selectors/decks";
 import { selectDeckHasConflict } from "@/store/selectors/sync";

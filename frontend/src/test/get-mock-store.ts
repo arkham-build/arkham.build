@@ -1,8 +1,8 @@
+import type { Pack } from "@arkham-build/shared";
 import allCardStub from "@test/fixtures/stubs/all_card.json";
 import dataVersionStub from "@test/fixtures/stubs/data_version.json";
 import metadataStub from "@test/fixtures/stubs/metadata.json";
 import { useStore } from "@/store";
-import type { Pack } from "@/store/schemas/pack.schema";
 import factions from "@/store/services/data/factions.json";
 import subTypes from "@/store/services/data/subtypes.json";
 import types from "@/store/services/data/types.json";

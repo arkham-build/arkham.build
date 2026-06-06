@@ -1,8 +1,8 @@
 import type {
   FolderSyncResponse,
+  Id,
   SettingsResponse,
 } from "@arkham-build/shared";
-import type { Id } from "../schemas/deck.schema";
 import type { HttpClient } from "../services/http-client";
 import type { AuthState } from "./auth.types";
 
