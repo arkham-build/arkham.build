@@ -1,7 +1,6 @@
 import assert from "node:assert";
 import {
   type ArkhamDbIdentityState,
-  type Deck,
   type DeckWritePayload,
   SlotsSchema,
 } from "@arkham-build/shared";
@@ -16,6 +15,7 @@ import {
   mergeAdditionalMeta,
   storeAdditionalMetadata,
 } from "../additional-metadata.ts";
+import { extractHiddenSlots } from "../hidden-slots.ts";
 import { refreshAccessToken } from "./api-oauth.ts";
 import {
   ArkhamDbOperationResponseSchema,
@@ -137,9 +137,12 @@ export function saveDeck(
 
 export function createDeck(
   c: Context<SessionAuthHonoEnv>,
-  deck: DeckWritePayload,
+  _deck: DeckWritePayload,
 ) {
   return withArkhamDbExecutor(c, async (executor) => {
+    const deck = { ..._deck };
+    extractHiddenSlots(deck);
+
     const { data: operation } = await executeArkhamDbRequest(
       executor,
       "/deck/new",
@@ -193,10 +196,11 @@ export function createDeck(
 export function upgradeDeck(
   c: Context<SessionAuthHonoEnv>,
   id: string | number,
-  deck: Pick<Deck, "exile_string" | "meta" | "xp">,
+  _deck: DeckWritePayload,
 ) {
   return withArkhamDbExecutor(c, async (executor) => {
-    const storedDeck = await storeAdditionalMetadata(executor.db, id, deck);
+    const deck = { ..._deck };
+    extractHiddenSlots(deck);
 
     const { data: operation } = await executeArkhamDbRequest(
       executor,
@@ -205,8 +209,8 @@ export function upgradeDeck(
       {
         method: "PUT",
         body: encodeParams({
-          exiles: storedDeck.exile_string ?? undefined,
-          meta: storedDeck.meta,
+          exiles: deck.exile_string ?? undefined,
+          meta: deck.meta,
           xp: deck.xp ?? 0,
         }),
       },

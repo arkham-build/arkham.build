@@ -147,7 +147,7 @@ export async function createArkhamDbDeck(
 export async function upgradeArkhamDbDeck(
   c: Context<SessionAuthHonoEnv>,
   id: string | number,
-  deck: Pick<Deck, "exile_string" | "meta" | "xp">,
+  deck: DeckWritePayload,
 ): Promise<Deck> {
   const response = await upgradeDeck(c, id, deck);
   return {

@@ -454,9 +454,11 @@ const arkhamdbCrud = {
       (current.xp ?? 0) +
       (current.xp_adjustment ?? 0) -
       (current.xp_spent ?? 0);
+
     const upgradeXp = Math.max((payload.deck.xp ?? 0) - currentCarryoverXp, 0);
 
     return await upgradeArkhamDbDeck(c, previousDeckId, {
+      ...payload.deck,
       exile_string: payload.deck.exile_string,
       meta: payload.deck.meta,
       xp: upgradeXp,

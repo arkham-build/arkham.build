@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
+import type { DeckWritePayload } from "@arkham-build/shared";
 import { HTTPException } from "hono/http-exception";
 import type { Database } from "../../db/db.ts";
 import type { ArkhamdbDeckAdditionalMetadata } from "../../db/schema.types.ts";
 import { isEmpty } from "../is-empty.ts";
+import type { ArkhamDbRemoteDeck } from "./api-client/core/dtos.ts";
+import { applyHiddenSlots, extractHiddenSlots } from "./hidden-slots.ts";
 
 export function decodeDeckMeta(meta: string): Record<string, unknown> {
   try {
@@ -38,16 +41,16 @@ export function partitionDeckMeta(meta: Record<string, unknown>) {
   return { additionalMeta, deckMeta };
 }
 
-type DeckWithMeta = {
-  meta?: string | null;
-};
-
-export async function storeAdditionalMetadata<T extends DeckWithMeta>(
+export async function storeAdditionalMetadata<T extends DeckWritePayload>(
   database: Database,
   id: string | number,
   deck: T,
 ): Promise<T> {
-  const meta = decodeDeckMeta(deck.meta ?? "");
+  const preparedDeck = { ...deck };
+
+  extractHiddenSlots(preparedDeck);
+
+  const meta = decodeDeckMeta(preparedDeck.meta ?? "");
 
   if (meta["amk"]) {
     throw new HTTPException(400, {
@@ -56,7 +59,7 @@ export async function storeAdditionalMetadata<T extends DeckWithMeta>(
   }
 
   const { additionalMeta, deckMeta } = partitionDeckMeta(meta);
-  if (isEmpty(additionalMeta)) return deck;
+  if (isEmpty(additionalMeta)) return preparedDeck;
 
   const amk = await upsertAdditionalMetadata(database, {
     deckId: id,
@@ -64,30 +67,36 @@ export async function storeAdditionalMetadata<T extends DeckWithMeta>(
   });
 
   return {
-    ...deck,
+    ...preparedDeck,
     meta: JSON.stringify({ ...deckMeta, amk }),
   };
 }
 
-export async function mergeAdditionalMeta<T extends DeckWithMeta>(
+export async function mergeAdditionalMeta(
   database: Database,
-  deck: T,
-): Promise<T> {
+  deck: ArkhamDbRemoteDeck,
+): Promise<ArkhamDbRemoteDeck> {
   const meta = decodeDeckMeta(deck.meta ?? "");
-  if (!meta || !meta["amk"]) return deck;
+  let mergedDeck = { ...deck };
 
-  const { amk, ...rest } = meta;
+  if (meta["amk"]) {
+    const { amk, ...rest } = meta;
 
-  if (typeof amk !== "string") {
-    return { ...deck, meta: JSON.stringify(rest) };
+    if (typeof amk !== "string") {
+      mergedDeck = { ...mergedDeck, meta: JSON.stringify(rest) };
+    } else {
+      const additionalMeta = await findAdditionalMetadata(database, amk);
+
+      mergedDeck = {
+        ...mergedDeck,
+        meta: JSON.stringify({ ...rest, ...additionalMeta }),
+      };
+    }
   }
 
-  const additionalMeta = await findAdditionalMetadata(database, amk);
+  applyHiddenSlots(mergedDeck);
 
-  return {
-    ...deck,
-    meta: JSON.stringify({ ...rest, ...additionalMeta }),
-  };
+  return mergedDeck;
 }
 
 type AdditionalMetadataInput = {
