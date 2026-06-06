@@ -544,6 +544,17 @@ CREATE TABLE public.account_settings (
 
 
 --
+-- Name: arkhamdb_deck_additional_metadata; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arkhamdb_deck_additional_metadata (
+    id text DEFAULT (uuidv7())::text NOT NULL,
+    deck_id integer NOT NULL,
+    data jsonb NOT NULL
+);
+
+
+--
 -- Name: arkhamdb_deck_snapshot; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1315,6 +1326,14 @@ ALTER TABLE ONLY public.account
 
 ALTER TABLE ONLY public.account_settings
     ADD CONSTRAINT account_settings_pkey PRIMARY KEY (account_id);
+
+
+--
+-- Name: arkhamdb_deck_additional_metadata arkhamdb_deck_additional_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arkhamdb_deck_additional_metadata
+    ADD CONSTRAINT arkhamdb_deck_additional_metadata_pkey PRIMARY KEY (id);
 
 
 --
@@ -2665,4 +2684,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260604103000'),
     ('20260604123000'),
     ('20260604234500'),
-    ('20260606120000');
+    ('20260606120000'),
+    ('20260606130000');

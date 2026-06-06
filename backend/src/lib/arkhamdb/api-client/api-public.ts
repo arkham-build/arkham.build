@@ -1,26 +1,27 @@
 import type { Context } from "hono";
 import type { z } from "zod";
 import type { HonoEnv } from "../../hono-env.ts";
+import { mergeAdditionalMeta } from "../additional-metadata.ts";
 import {
   type ArkhamDbRemoteDeck,
   ArkhamDbRemoteDeckSchema,
 } from "./core/dtos.ts";
 import { request, type WrappedResponse } from "./core/request.ts";
 
-export function fetchDeck(
+export async function fetchDeck(
   c: Context<HonoEnv>,
   query: { id: string | number; type: string },
 ) {
-  return publicRequest(
+  const response = await publicRequest(
     c,
     `/${query.type}/${query.id}`,
     ArkhamDbRemoteDeckSchema,
   );
 
-  // return {
-  //   ...res,
-  //   data: await mergeAdditionalMeta(c.env.DATABASE, res.data),
-  // };
+  return {
+    ...response,
+    data: await mergeAdditionalMeta(c.get("db"), response.data),
+  };
 }
 
 export async function fetchDeckHistory(

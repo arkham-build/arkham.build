@@ -12,9 +12,14 @@ import { updateAccountIdentityState } from "../../auth/account-identities.ts";
 import { upsertOAuthToken } from "../../auth/oauth-tokens.ts";
 import type { SessionAuthHonoEnv } from "../../hono-env.ts";
 import type { OAuthAccessToken } from "../../oauth.ts";
+import {
+  mergeAdditionalMeta,
+  storeAdditionalMetadata,
+} from "../additional-metadata.ts";
 import { refreshAccessToken } from "./api-oauth.ts";
 import {
   ArkhamDbOperationResponseSchema,
+  type ArkhamDbRemoteDeck,
   ArkhamDbRemoteDeckSchema,
   ArkhamDbRemoteDecksSchema,
   ArkhamDbSuccessResponseSchema,
@@ -27,13 +32,18 @@ import {
 import { request, type WrappedResponse } from "./core/request.ts";
 
 export function fetchDeck(c: Context<SessionAuthHonoEnv>, id: string | number) {
-  return withArkhamDbExecutor(c, (executor) =>
-    executeArkhamDbRequest(
+  return withArkhamDbExecutor(c, async (executor) => {
+    const response = await executeArkhamDbRequest(
       executor,
       `/deck/load/${id}`,
       ArkhamDbRemoteDeckSchema,
-    ),
-  );
+    );
+
+    return {
+      ...response,
+      data: await mergeAdditionalMeta(executor.db, response.data),
+    };
+  });
 }
 
 export function syncDecks(
@@ -72,7 +82,16 @@ export function syncDecks(
         status: "healthy",
       });
 
-      return response;
+      if (response.status !== 200) {
+        return response;
+      }
+
+      assert(response.data, "Missing deck data for successful sync.");
+
+      return {
+        ...response,
+        data: await mergeAdditionalMetadataForDecks(executor.db, response.data),
+      };
     } catch (error) {
       await patchArkhamDbIdentityFailure(executor, error);
       throw error;
@@ -86,6 +105,8 @@ export function saveDeck(
   deck: DeckWritePayload,
 ) {
   return withArkhamDbExecutor(c, async (executor) => {
+    const storedDeck = await storeAdditionalMetadata(executor.db, id, deck);
+
     const { data: operation } = await executeArkhamDbRequest(
       executor,
       `/deck/save/${id}`,
@@ -93,28 +114,24 @@ export function saveDeck(
       {
         method: "PUT",
         body: encodeParams({
-          description_md: deck.description_md,
-          exile_string: deck.exile_string ?? undefined,
-          ignored: stringifyOptionalSlots(deck.ignoreDeckLimitSlots),
-          meta: deck.meta,
-          name: deck.name,
-          problem: deck.problem,
-          side: stringifyOptionalSlots(deck.sideSlots),
-          slots: JSON.stringify(SlotsSchema.parse(deck.slots)),
-          taboo: deck.taboo_id ?? undefined,
-          tags: deck.tags,
-          xp_adjustment: deck.xp_adjustment ?? undefined,
-          xp_spent: deck.xp_spent ?? undefined,
+          description_md: storedDeck.description_md,
+          exile_string: storedDeck.exile_string ?? undefined,
+          ignored: stringifyOptionalSlots(storedDeck.ignoreDeckLimitSlots),
+          meta: storedDeck.meta,
+          name: storedDeck.name,
+          problem: storedDeck.problem,
+          side: stringifyOptionalSlots(storedDeck.sideSlots),
+          slots: JSON.stringify(SlotsSchema.parse(storedDeck.slots)),
+          taboo: storedDeck.taboo_id ?? undefined,
+          tags: storedDeck.tags,
+          xp_adjustment: storedDeck.xp_adjustment ?? undefined,
+          xp_spent: storedDeck.xp_spent ?? undefined,
         }),
       },
     );
 
     assertSuccessfulOperation(operation);
-    return await executeArkhamDbRequest(
-      executor,
-      `/deck/load/${operation.msg}`,
-      ArkhamDbRemoteDeckSchema,
-    );
+    return await loadDeck(executor, operation.msg);
   });
 }
 
@@ -139,6 +156,12 @@ export function createDeck(
 
     assertSuccessfulOperation(operation);
 
+    const storedDeck = await storeAdditionalMetadata(
+      executor.db,
+      operation.msg,
+      deck,
+    );
+
     const { data: saveOperation } = await executeArkhamDbRequest(
       executor,
       `/deck/save/${operation.msg}`,
@@ -146,28 +169,24 @@ export function createDeck(
       {
         method: "PUT",
         body: encodeParams({
-          description_md: deck.description_md,
-          exile_string: deck.exile_string ?? undefined,
-          ignored: stringifyOptionalSlots(deck.ignoreDeckLimitSlots),
-          meta: deck.meta,
-          name: deck.name,
-          problem: deck.problem,
-          side: stringifyOptionalSlots(deck.sideSlots),
-          slots: JSON.stringify(SlotsSchema.parse(deck.slots)),
-          taboo: deck.taboo_id ?? undefined,
-          tags: deck.tags,
-          xp_adjustment: deck.xp_adjustment ?? undefined,
-          xp_spent: deck.xp_spent ?? undefined,
+          description_md: storedDeck.description_md,
+          exile_string: storedDeck.exile_string ?? undefined,
+          ignored: stringifyOptionalSlots(storedDeck.ignoreDeckLimitSlots),
+          meta: storedDeck.meta,
+          name: storedDeck.name,
+          problem: storedDeck.problem,
+          side: stringifyOptionalSlots(storedDeck.sideSlots),
+          slots: JSON.stringify(SlotsSchema.parse(storedDeck.slots)),
+          taboo: storedDeck.taboo_id ?? undefined,
+          tags: storedDeck.tags,
+          xp_adjustment: storedDeck.xp_adjustment ?? undefined,
+          xp_spent: storedDeck.xp_spent ?? undefined,
         }),
       },
     );
 
     assertSuccessfulOperation(saveOperation);
-    return await executeArkhamDbRequest(
-      executor,
-      `/deck/load/${saveOperation.msg}`,
-      ArkhamDbRemoteDeckSchema,
-    );
+    return await loadDeck(executor, saveOperation.msg);
   });
 }
 
@@ -177,6 +196,8 @@ export function upgradeDeck(
   deck: Pick<Deck, "exile_string" | "meta" | "xp">,
 ) {
   return withArkhamDbExecutor(c, async (executor) => {
+    const storedDeck = await storeAdditionalMetadata(executor.db, id, deck);
+
     const { data: operation } = await executeArkhamDbRequest(
       executor,
       `/deck/upgrade/${id}`,
@@ -184,19 +205,15 @@ export function upgradeDeck(
       {
         method: "PUT",
         body: encodeParams({
-          exiles: deck.exile_string ?? undefined,
-          meta: deck.meta,
+          exiles: storedDeck.exile_string ?? undefined,
+          meta: storedDeck.meta,
           xp: deck.xp ?? 0,
         }),
       },
     );
 
     assertSuccessfulOperation(operation);
-    return await executeArkhamDbRequest(
-      executor,
-      `/deck/load/${operation.msg}`,
-      ArkhamDbRemoteDeckSchema,
-    );
+    return await loadDeck(executor, operation.msg);
   });
 }
 
@@ -226,6 +243,26 @@ export function refreshArkhamDbAccessTokenForAccount(
   return withArkhamDbExecutor(c, (executor) =>
     refreshArkhamDbAccessTokenForConnection(executor),
   );
+}
+
+async function loadDeck(executor: ArkhamDbExecutor, id: string | number) {
+  const response = await executeArkhamDbRequest(
+    executor,
+    `/deck/load/${id}`,
+    ArkhamDbRemoteDeckSchema,
+  );
+
+  return {
+    ...response,
+    data: await mergeAdditionalMeta(executor.db, response.data),
+  };
+}
+
+async function mergeAdditionalMetadataForDecks(
+  db: ArkhamDbExecutor["db"],
+  decks: ArkhamDbRemoteDeck[],
+) {
+  return await Promise.all(decks.map((deck) => mergeAdditionalMeta(db, deck)));
 }
 
 async function executeArkhamDbRequest<T, R = never>(

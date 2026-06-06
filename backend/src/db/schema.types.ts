@@ -83,6 +83,12 @@ export interface AccountSettings {
   settings: Json | null;
 }
 
+export interface ArkhamdbDeckAdditionalMetadata {
+  data: Json;
+  deck_id: number;
+  id: Generated<string>;
+}
+
 export interface ArkhamdbDecklist {
   canonical_investigator_code: string;
   date_creation: Timestamp;
@@ -581,6 +587,7 @@ export interface DB {
   account_identity: AccountIdentity;
   account_moderation_action: AccountModerationAction;
   account_settings: AccountSettings;
+  arkhamdb_deck_additional_metadata: ArkhamdbDeckAdditionalMetadata;
   arkhamdb_deck_snapshot: ArkhamdbDeckSnapshot;
   arkhamdb_decklist: ArkhamdbDecklist;
   arkhamdb_ranking_cache: ArkhamdbRankingCache;
