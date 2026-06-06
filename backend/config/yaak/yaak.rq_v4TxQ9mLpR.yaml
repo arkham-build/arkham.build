@@ -1,0 +1,38 @@
+type: http_request
+model: http_request
+id: rq_v4TxQ9mLpR
+createdAt: 2026-06-06T10:20:30
+updatedAt: 2026-06-06T08:14:08.590798
+workspaceId: wk_bBoraEVHnK
+folderId: fl_k2Yxg7LqPm
+authentication: {}
+authenticationType: null
+body:
+  text: |
+    {
+      "endReason": "manual end"
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Authorization
+  value: Bearer ${[ admin_api_key ]}
+  id: Gt8Lm1QpRs
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: Hm4Nz7QxLp
+method: POST
+name: End account moderation action
+sortPriority: 5000.003
+url: ${[ base_url ]}/admin/account_moderation_actions/:id/end
+urlParameters:
+- enabled: true
+  name: :id
+  value: 019e9bfe-375c-744d-b689-c8747fa9bee6
+  id: XPwAPIEgSc
+- enabled: true
+  name: ''
+  value: ''
+  id: Vtr3UNRcJq

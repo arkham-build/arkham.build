@@ -1,0 +1,32 @@
+type: http_request
+model: http_request
+id: rq_jK8pLm2QxR
+createdAt: 2026-06-06T10:05:30
+updatedAt: 2026-06-06T08:06:00.684883
+workspaceId: wk_bBoraEVHnK
+folderId: fl_k2Yxg7LqPm
+authentication: {}
+authenticationType: null
+body:
+  text: |
+    {
+      "username": "fffelice",
+      "type": "warning",
+      "reason": "test moderation action"
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Authorization
+  value: Bearer ${[ admin_api_key ]}
+  id: KJ2s9Pq4Lm
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: Np7Tz1Wx8Q
+method: POST
+name: Create account moderation action
+sortPriority: 5000.001
+url: ${[ base_url ]}/admin/account_moderation_actions
+urlParameters: []

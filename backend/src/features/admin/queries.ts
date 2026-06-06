@@ -1,5 +1,6 @@
 import type { FanMadeProjectInfo } from "@arkham-build/shared";
 import type { Database } from "../../db/db.ts";
+import type { ModerationActionType } from "../../db/schema.types.ts";
 
 export async function findAppDataVersions(db: Database) {
   const [rankingCache, dataVersion] = await Promise.all([
@@ -24,6 +25,76 @@ export async function findAppDataVersions(db: Database) {
     metadata_updated_at: dataVersion.cards_updated_at,
     card_count: dataVersion.card_count,
   };
+}
+
+export async function findAccountByUsername(db: Database, username: string) {
+  return await db
+    .selectFrom("account")
+    .select(["id", "name"])
+    .where("name", "=", username)
+    .executeTakeFirst();
+}
+
+export async function findAccountModerationActionById(
+  db: Database,
+  id: string,
+) {
+  return await db
+    .selectFrom("account_moderation_action")
+    .selectAll()
+    .where("id", "=", id)
+    .executeTakeFirst();
+}
+
+export async function listAccountModerationActionsByAccountId(
+  db: Database,
+  accountId: string,
+) {
+  return await db
+    .selectFrom("account_moderation_action")
+    .selectAll()
+    .where("account_id", "=", accountId)
+    .orderBy("created_at", "desc")
+    .execute();
+}
+
+export function createAccountModerationAction(
+  db: Database,
+  accountId: string,
+  type: ModerationActionType,
+  reason: string,
+  endsAt?: Date,
+  endReason?: string,
+) {
+  return db
+    .insertInto("account_moderation_action")
+    .values({
+      account_id: accountId,
+      scope: "account",
+      type,
+      reason,
+      ends_at: endsAt,
+      end_reason: endReason,
+    })
+    .returning(["id"])
+    .executeTakeFirstOrThrow();
+}
+
+export async function endAccountModerationAction(
+  db: Database,
+  id: string,
+  endsAt: Date,
+  endReason: string,
+) {
+  return await db
+    .updateTable("account_moderation_action")
+    .set({
+      ends_at: endsAt,
+      end_reason: endReason,
+    })
+    .where("id", "=", id)
+    .returning(["id", "ends_at", "end_reason"])
+    .executeTakeFirstOrThrow();
 }
 
 export function upsertFanMadeProjectInfo(

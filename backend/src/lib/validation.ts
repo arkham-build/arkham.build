@@ -2,7 +2,10 @@ import { HTTPException } from "hono/http-exception";
 import { validator } from "hono/validator";
 import type { ZodType } from "zod";
 
-export function zodValidator<T>(type: "json" | "form", schema: ZodType<T>) {
+export function zodValidator<T>(
+  type: "json" | "form" | "query",
+  schema: ZodType<T>,
+) {
   return validator(type, (value) => {
     const result = schema.safeParse(value);
 
