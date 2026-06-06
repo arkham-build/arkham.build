@@ -1,9 +1,9 @@
 import type { Database } from "../../../db/db.ts";
+import { getAccountIdentityByProviderUserId } from "../../../lib/auth/account-identities.ts";
+import { upsertOAuthToken } from "../../../lib/auth/oauth-tokens.ts";
+import { createSession } from "../../../lib/auth/sessions.ts";
 import type { Config } from "../../../lib/config.ts";
 import type { OAuthAccessToken } from "../../../lib/oauth.ts";
-import { getAccountIdentityByProviderUserId } from "./identities.ts";
-import { upsertOAuthToken } from "./oauth-tokens.ts";
-import { createSession } from "./sessions.ts";
 
 export interface CreateAccountParams {
   name: string;
@@ -82,14 +82,6 @@ export async function upsertAccountFromOAuth(
 
     return { session, existing };
   });
-}
-
-export async function getAccount(db: Database, id: string) {
-  return await db
-    .selectFrom("account")
-    .selectAll()
-    .where("id", "=", id)
-    .executeTakeFirst();
 }
 
 export async function accountNameExists(

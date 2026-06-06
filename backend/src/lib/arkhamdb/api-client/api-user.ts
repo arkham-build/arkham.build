@@ -8,8 +8,8 @@ import {
 import type { Context } from "hono";
 import type { z } from "zod";
 import type { AccountIdentity } from "../../../db/schema.types.ts";
-import { updateAccountIdentityState } from "../../../features/auth/queries/identities.ts";
-import { upsertOAuthToken } from "../../../features/auth/queries/oauth-tokens.ts";
+import { updateAccountIdentityState } from "../../auth/account-identities.ts";
+import { upsertOAuthToken } from "../../auth/oauth-tokens.ts";
 import type { SessionAuthHonoEnv } from "../../hono-env.ts";
 import type { OAuthAccessToken } from "../../oauth.ts";
 import { refreshAccessToken } from "./api-oauth.ts";

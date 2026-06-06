@@ -1,10 +1,11 @@
 import type { MiddlewareHandler } from "hono";
 import { getCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
-import type { SessionAuthHonoEnv } from "../../../lib/hono-env.ts";
-import { getAccount } from "../queries/accounts.ts";
-import { getSession, updateSessionActivity } from "../queries/sessions.ts";
-import { setSessionCookie } from "./oauth/session-cookie.ts";
+import type { SessionAuthHonoEnv } from "../hono-env.ts";
+import { assertAccountNotBanned } from "./account-moderation-actions.ts";
+import { findAccountForAuth } from "./accounts.ts";
+import { setSessionCookie } from "./session-cookie.ts";
+import { getSession, updateSessionActivity } from "./sessions.ts";
 
 export function sessionAuth(): MiddlewareHandler<SessionAuthHonoEnv> {
   return async (c, next) => {
@@ -23,12 +24,13 @@ export function sessionAuth(): MiddlewareHandler<SessionAuthHonoEnv> {
       throw new HTTPException(401, { message: "Invalid or expired session" });
     }
 
-    const account = await getAccount(db, session.account_id);
+    const account = await findAccountForAuth(db, session.account_id);
 
     if (!account) {
       throw new HTTPException(401, { message: "Account not found" });
     }
 
+    assertAccountNotBanned(account);
     await updateSessionActivity(db, sessionId, config.SESSION_EXPIRY_HOURS);
 
     c.set("session", session);

@@ -5,9 +5,9 @@ import { appFactory } from "../app.ts";
 import { type Database, getDatabase } from "../db/db.ts";
 import type { DB } from "../db/schema.types.ts";
 import { hashPassword } from "../features/auth/lib/crypto.ts";
-import { createSession } from "../features/auth/queries/sessions.ts";
 import type { EnqueueOptions, JobDispatcher } from "../jobs/dispatcher.ts";
 import type { DeliverEmailJobData } from "../jobs/job-types.ts";
+import { createSession } from "../lib/auth/sessions.ts";
 import { type Config, configFromEnv } from "../lib/config.ts";
 import { MockMailer } from "./mocks/email.ts";
 

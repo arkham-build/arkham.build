@@ -3,6 +3,12 @@ import {
   ResetPasswordRequestSchema,
 } from "@arkham-build/shared";
 import { Hono } from "hono";
+import {
+  getAccountIdentity,
+  getAccountIdentityByEmail,
+  getAccountIdentityByUsername,
+} from "../../../lib/auth/account-identities.ts";
+import { deleteSessionsByAccountId } from "../../../lib/auth/sessions.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { zodValidator } from "../../../lib/validation.ts";
 import {
@@ -12,13 +18,7 @@ import {
 } from "../lib/assertions.ts";
 import { generateRandomToken, hashPassword, hashToken } from "../lib/crypto.ts";
 import { passwordResetEmailTemplate } from "../lib/email-templates.ts";
-import {
-  getAccountIdentity,
-  getAccountIdentityByEmail,
-  getAccountIdentityByUsername,
-  updateAccountIdentityPasswordHash,
-} from "../queries/identities.ts";
-import { deleteSessionsByAccountId } from "../queries/sessions.ts";
+import { updateAccountIdentityPasswordHash } from "../queries/identities.ts";
 import {
   consumeVerificationToken,
   getVerificationTokenByHash,

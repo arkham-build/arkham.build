@@ -8,6 +8,16 @@ import {
 import { Hono } from "hono";
 import { deleteCookie, getCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
+import {
+  getAccountIdentity,
+  getAccountIdentityByEmail,
+  getAccountIdentityByEmailOrPendingEmail,
+} from "../../../lib/auth/account-identities.ts";
+import { assertAccountNotBanned } from "../../../lib/auth/account-moderation-actions.ts";
+import { findAccountForAuth } from "../../../lib/auth/accounts.ts";
+import { sessionAuth } from "../../../lib/auth/session-auth-middleware.ts";
+import { setSessionCookie } from "../../../lib/auth/session-cookie.ts";
+import { createSession, deleteSession } from "../../../lib/auth/sessions.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { zodValidator } from "../../../lib/validation.ts";
 import {
@@ -22,22 +32,12 @@ import {
   verifyPassword,
 } from "../lib/crypto.ts";
 import { verificationEmailTemplate } from "../lib/email-templates.ts";
-import { setSessionCookie } from "../lib/oauth/session-cookie.ts";
-import { sessionAuth } from "../lib/session-auth-middleware.ts";
 import { assertTurnstileToken } from "../lib/turnstile.ts";
-import {
-  accountNameExists,
-  createAccount,
-  getAccount,
-} from "../queries/accounts.ts";
+import { accountNameExists, createAccount } from "../queries/accounts.ts";
 import {
   activatePendingAccountIdentityEmail,
-  getAccountIdentity,
-  getAccountIdentityByEmail,
-  getAccountIdentityByEmailOrPendingEmail,
   updateAccountIdentityVerified,
 } from "../queries/identities.ts";
-import { createSession, deleteSession } from "../queries/sessions.ts";
 import {
   consumeVerificationToken,
   replaceVerificationToken,
@@ -120,8 +120,10 @@ routes.post("/login", zodValidator("json", LoginRequestSchema), async (c) => {
     });
   }
 
-  const account = await getAccount(db, accountIdentity.account_id);
+  const account = await findAccountForAuth(db, accountIdentity.account_id);
   assert(account, "Account should exist for valid account identity");
+
+  assertAccountNotBanned(account);
 
   const session = await createSession(
     db,

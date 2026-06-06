@@ -832,6 +832,51 @@ describe("Auth routes", () => {
 
       expect(res.status).toBe(403);
     });
+
+    test("does not log in banned users", async ({ dependencies }) => {
+      const { app, db, mailer } = dependencies;
+
+      await signupAndVerify(app, mailer, {
+        name: "testuser",
+        email: "banned@example.com",
+        password: "SecurePassword123!",
+      });
+
+      const account = await db
+        .selectFrom("account")
+        .select(["id"])
+        .where("name", "=", "testuser")
+        .executeTakeFirstOrThrow();
+
+      await createModerationAction(db, account.id, "ban");
+
+      const res = await login(app, "banned@example.com", "SecurePassword123!");
+
+      expect(res.status).toBe(403);
+      expect(await res.text()).toContain("Account is banned");
+    });
+
+    test("allows warned users to log in", async ({ dependencies }) => {
+      const { app, db, mailer } = dependencies;
+
+      await signupAndVerify(app, mailer, {
+        name: "testuser",
+        email: "warned@example.com",
+        password: "SecurePassword123!",
+      });
+
+      const account = await db
+        .selectFrom("account")
+        .select(["id"])
+        .where("name", "=", "testuser")
+        .executeTakeFirstOrThrow();
+
+      await createModerationAction(db, account.id, "warning");
+
+      const res = await login(app, "warned@example.com", "SecurePassword123!");
+
+      expect(res.status).toBe(200);
+    });
   });
 
   describe("GET /v2/auth/me", () => {
@@ -934,6 +979,28 @@ describe("Auth routes", () => {
       });
 
       expect(res.status).toBe(401);
+    });
+
+    test("returns 403 for banned authenticated users", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+
+      const account = await db
+        .selectFrom("account")
+        .select(["id"])
+        .where("name", "=", TEST_ACCOUNT.name)
+        .executeTakeFirstOrThrow();
+
+      await createModerationAction(db, account.id, "ban");
+
+      const res = await app.request("/v2/auth/me", {
+        method: "GET",
+        headers: { Cookie: sessionCookie },
+      });
+
+      expect(res.status).toBe(403);
+      expect(await res.text()).toContain("Account is banned");
     });
   });
 
@@ -2356,6 +2423,22 @@ function extractToken(
 ): string | null | undefined {
   const match = emailBody?.match(/token=([a-zA-Z0-9-_]+)/);
   return match ? match[1] : null;
+}
+
+async function createModerationAction(
+  db: HonoEnv["Variables"]["db"],
+  accountId: string,
+  type: "ban" | "warning",
+) {
+  return await db
+    .insertInto("account_moderation_action")
+    .values({
+      account_id: accountId,
+      scope: "account",
+      type,
+      reason: `${type} reason`,
+    })
+    .executeTakeFirstOrThrow();
 }
 
 async function countVerificationTokens(

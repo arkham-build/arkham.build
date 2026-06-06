@@ -2,9 +2,9 @@ import { randomUUID } from "node:crypto";
 import { FolderSyncRequestSchema } from "@arkham-build/shared";
 import { type Context, Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { sessionAuth } from "../../lib/auth/session-auth-middleware.ts";
 import type { HonoEnv, SessionAuthHonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
-import { sessionAuth } from "../auth/lib/session-auth-middleware.ts";
 import { mapAccountFolderStateToSyncResponse } from "./mapping.ts";
 import { findAccountFolderStateByAccountId } from "./queries.ts";
 

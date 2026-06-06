@@ -5,8 +5,8 @@ import type { Database } from "../../../../db/db.ts";
 import {
   getAccountIdentityByAccountIdAndProvider,
   updateAccountIdentityState,
-} from "../../../../features/auth/queries/identities.ts";
-import { findArkhamDbIdentityWithTokenByAccountId } from "../../../../features/auth/queries/oauth-tokens.ts";
+} from "../../../auth/account-identities.ts";
+import { findArkhamDbIdentityWithTokenByAccountId } from "../../../auth/oauth-tokens.ts";
 import type { SessionAuthHonoEnv } from "../../../hono-env.ts";
 
 export type ArkhamDbExecutor = {

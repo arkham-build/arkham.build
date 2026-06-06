@@ -1,4 +1,4 @@
-import type { Database } from "../../../db/db.ts";
+import type { Database } from "../../db/db.ts";
 
 export async function createSession(
   db: Database,

@@ -4,6 +4,11 @@ import {
 } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import {
+  getAccountIdentityByAccountIdAndProvider,
+  listAccountIdentitiesByAccountId,
+} from "../../../lib/auth/account-identities.ts";
+import { sessionAuth } from "../../../lib/auth/session-auth-middleware.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { zodValidator } from "../../../lib/validation.ts";
 import {
@@ -19,14 +24,11 @@ import {
 } from "../lib/crypto.ts";
 import { verificationEmailTemplate } from "../lib/email-templates.ts";
 import { mapAccountSessionToResponse } from "../lib/mapping.ts";
-import { sessionAuth } from "../lib/session-auth-middleware.ts";
 import {
   countUsableLoginIdentities,
   createEmailIdentity,
   deleteEmailIdentity,
   disconnectOAuthIdentity,
-  getAccountIdentityByAccountIdAndProvider,
-  listAccountIdentitiesByAccountId,
   updateAccountIdentityPasswordHash,
   updateAccountIdentityPendingEmail,
 } from "../queries/identities.ts";

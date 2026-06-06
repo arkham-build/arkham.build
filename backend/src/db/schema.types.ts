@@ -22,6 +22,10 @@ export type JsonPrimitive = boolean | number | string | null;
 
 export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
+export type ModerationActionScope = "account";
+
+export type ModerationActionType = "ban" | "warning";
+
 export type PgbossJobState =
   | "active"
   | "cancelled"
@@ -57,6 +61,19 @@ export interface AccountIdentity {
   state: Json | null;
   updated_at: Generated<Timestamp>;
   verified_at: Timestamp | null;
+}
+
+export interface AccountModerationAction {
+  account_id: string;
+  created_at: Generated<Timestamp>;
+  created_by: string | null;
+  end_reason: string | null;
+  ended_by: string | null;
+  ends_at: Timestamp | null;
+  id: Generated<string>;
+  reason: string;
+  scope: ModerationActionScope;
+  type: ModerationActionType;
 }
 
 export interface AccountSettings {
@@ -562,6 +579,7 @@ export interface DB {
   account: Account;
   account_folder: AccountFolder;
   account_identity: AccountIdentity;
+  account_moderation_action: AccountModerationAction;
   account_settings: AccountSettings;
   arkhamdb_deck_snapshot: ArkhamdbDeckSnapshot;
   arkhamdb_decklist: ArkhamdbDecklist;

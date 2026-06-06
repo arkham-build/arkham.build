@@ -6,12 +6,12 @@ import type {
   DeckWritePayload,
 } from "@arkham-build/shared";
 import type { Context } from "hono";
-import { getAccountIdentityByAccountIdAndProvider } from "../../../features/auth/queries/identities.ts";
 import {
   createArkhamDbDeckSnapshot,
   findArkhamDbDeckSnapshotByAccountIdAndId,
   findLatestArkhamDbDeckSnapshotByAccountIdentityId,
 } from "../../../features/decks/queries.ts";
+import { getAccountIdentityByAccountIdAndProvider } from "../../auth/account-identities.ts";
 import type { SessionAuthHonoEnv } from "../../hono-env.ts";
 import {
   createDeck,

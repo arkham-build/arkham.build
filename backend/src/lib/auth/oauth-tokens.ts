@@ -3,9 +3,9 @@ import {
   ArkhamDbIdentityStateSchema,
 } from "@arkham-build/shared";
 import { type Selectable, sql } from "kysely";
-import type { Database } from "../../../db/db.ts";
-import type { AccountIdentity, OauthToken } from "../../../db/schema.types.ts";
-import type { OAuthAccessToken } from "../../../lib/oauth.ts";
+import type { Database } from "../../db/db.ts";
+import type { AccountIdentity, OauthToken } from "../../db/schema.types.ts";
+import type { OAuthAccessToken } from "../oauth.ts";
 
 export type ArkhamDbIdentityWithToken = {
   identity: Selectable<AccountIdentity>;
@@ -99,10 +99,6 @@ export async function listArkhamDbIdentitiesNeedingRefresh(
   }));
 }
 
-function parseArkhamDbIdentityState(value: unknown) {
-  return value == null ? null : ArkhamDbIdentityStateSchema.parse(value);
-}
-
 export function upsertOAuthToken(
   db: Database,
   accountIdentityId: string,
@@ -126,4 +122,8 @@ export function upsertOAuthToken(
       }),
     )
     .execute();
+}
+
+function parseArkhamDbIdentityState(value: unknown) {
+  return value == null ? null : ArkhamDbIdentityStateSchema.parse(value);
 }

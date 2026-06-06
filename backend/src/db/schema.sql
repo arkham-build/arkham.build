@@ -23,6 +23,20 @@ CREATE SCHEMA pgboss;
 
 
 --
+-- Name: btree_gist; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION btree_gist; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION btree_gist IS 'support for indexing common datatypes in GiST';
+
+
+--
 -- Name: job_state; Type: TYPE; Schema: pgboss; Owner: -
 --
 
@@ -33,6 +47,25 @@ CREATE TYPE pgboss.job_state AS ENUM (
     'completed',
     'cancelled',
     'failed'
+);
+
+
+--
+-- Name: moderation_action_scope; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.moderation_action_scope AS ENUM (
+    'account'
+);
+
+
+--
+-- Name: moderation_action_type; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.moderation_action_type AS ENUM (
+    'warning',
+    'ban'
 );
 
 
@@ -474,6 +507,27 @@ CREATE TABLE public.account_identity (
     password_hash text,
     pending_email character varying(255),
     state jsonb
+);
+
+
+--
+-- Name: account_moderation_action; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.account_moderation_action (
+    id uuid DEFAULT uuidv7() NOT NULL,
+    account_id uuid NOT NULL,
+    scope public.moderation_action_scope NOT NULL,
+    type public.moderation_action_type NOT NULL,
+    reason text NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    created_by uuid,
+    ends_at timestamp without time zone,
+    end_reason text,
+    ended_by uuid,
+    CONSTRAINT chk_account_moderation_action_end_fields CHECK (((ends_at IS NULL) = (end_reason IS NULL))),
+    CONSTRAINT chk_account_moderation_action_ended_by CHECK (((ended_by IS NULL) OR (ends_at IS NOT NULL))),
+    CONSTRAINT chk_account_moderation_action_ends_after_created CHECK (((ends_at IS NULL) OR (ends_at > created_at)))
 );
 
 
@@ -1232,6 +1286,14 @@ ALTER TABLE ONLY public.account_identity
 
 
 --
+-- Name: account_moderation_action account_moderation_action_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_moderation_action
+    ADD CONSTRAINT account_moderation_action_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: account account_name_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1389,6 +1451,14 @@ ALTER TABLE ONLY public.errata
 
 ALTER TABLE ONLY public.errata_scenario
     ADD CONSTRAINT errata_scenario_pkey PRIMARY KEY (errata_id, scenario_code);
+
+
+--
+-- Name: account_moderation_action ex_account_moderation_action_no_overlapping_bans; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_moderation_action
+    ADD CONSTRAINT ex_account_moderation_action_no_overlapping_bans EXCLUDE USING gist (account_id WITH =, scope WITH =, tsrange(created_at, COALESCE(ends_at, 'infinity'::timestamp without time zone), '[)'::text) WITH &&) WHERE ((type = 'ban'::public.moderation_action_type));
 
 
 --
@@ -1679,6 +1749,20 @@ CREATE UNIQUE INDEX idx_account_identity_provider_pending_email ON public.accoun
 --
 
 CREATE UNIQUE INDEX idx_account_identity_provider_uid ON public.account_identity USING btree (provider, provider_user_id) WHERE (provider_user_id IS NOT NULL);
+
+
+--
+-- Name: idx_account_moderation_action_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_account_moderation_action_account_id ON public.account_moderation_action USING btree (account_id);
+
+
+--
+-- Name: idx_account_moderation_action_account_type_scope_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_account_moderation_action_account_type_scope_created_at ON public.account_moderation_action USING btree (account_id, type, scope, created_at DESC);
 
 
 --
@@ -2099,6 +2183,30 @@ ALTER TABLE ONLY public.account_folder
 
 ALTER TABLE ONLY public.account_identity
     ADD CONSTRAINT account_identity_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id) ON DELETE CASCADE;
+
+
+--
+-- Name: account_moderation_action account_moderation_action_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_moderation_action
+    ADD CONSTRAINT account_moderation_action_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id) ON DELETE CASCADE;
+
+
+--
+-- Name: account_moderation_action account_moderation_action_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_moderation_action
+    ADD CONSTRAINT account_moderation_action_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.account(id) ON DELETE SET NULL;
+
+
+--
+-- Name: account_moderation_action account_moderation_action_ended_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_moderation_action
+    ADD CONSTRAINT account_moderation_action_ended_by_fkey FOREIGN KEY (ended_by) REFERENCES public.account(id) ON DELETE SET NULL;
 
 
 --
@@ -2556,4 +2664,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260604090000'),
     ('20260604103000'),
     ('20260604123000'),
-    ('20260604234500');
+    ('20260604234500'),
+    ('20260606120000');

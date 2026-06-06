@@ -32,10 +32,10 @@ import {
   saveArkhamDbDeck,
   upgradeArkhamDbDeck,
 } from "../../lib/arkhamdb/api-client/user-service.ts";
+import { getAccountIdentityByAccountIdAndProvider } from "../../lib/auth/account-identities.ts";
+import { sessionAuth } from "../../lib/auth/session-auth-middleware.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
-import { sessionAuth } from "../auth/lib/session-auth-middleware.ts";
-import { getAccountIdentityByAccountIdAndProvider } from "../auth/queries/identities.ts";
 import {
   ACCOUNT_PROVIDER_TYPE,
   createDeckManifestVersion,

@@ -3,6 +3,9 @@ import { CompleteProfileRequestSchema } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { arkhamdbOAuthProvider } from "../../../lib/arkhamdb/oauth-provider.ts";
+import { getAccountIdentityByProviderUserId } from "../../../lib/auth/account-identities.ts";
+import { sessionAuth } from "../../../lib/auth/session-auth-middleware.ts";
+import { setSessionCookie } from "../../../lib/auth/session-cookie.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { OAuthFlowError } from "../../../lib/oauth.ts";
 import { zodValidator } from "../../../lib/validation.ts";
@@ -10,18 +13,13 @@ import {
   beginOAuthAuthorization,
   redirectToOAuthError,
 } from "../lib/oauth/flow.ts";
-import { setSessionCookie } from "../lib/oauth/session-cookie.ts";
 import { getOAuthContext, validateOAuthState } from "../lib/oauth/state.ts";
-import { sessionAuth } from "../lib/session-auth-middleware.ts";
 import {
   accountNameExists,
   updateAccountName,
   upsertAccountFromOAuth,
 } from "../queries/accounts.ts";
-import {
-  connectOAuthIdentityToAccount,
-  getAccountIdentityByProviderUserId,
-} from "../queries/identities.ts";
+import { connectOAuthIdentityToAccount } from "../queries/identities.ts";
 
 const routes = new Hono<HonoEnv>();
 

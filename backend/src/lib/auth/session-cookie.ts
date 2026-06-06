@@ -1,6 +1,6 @@
 import type { Context } from "hono";
 import { setCookie } from "hono/cookie";
-import type { Config } from "../../../../lib/config.ts";
+import type { Config } from "../config.ts";
 
 export function setSessionCookie(c: Context, sessionId: string): void {
   const config = c.get("config") as Config;
