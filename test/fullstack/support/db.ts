@@ -5,41 +5,12 @@ import { hashPassword } from "../../../backend/src/features/auth/lib/crypto.ts";
 import { createSession } from "../../../backend/src/lib/auth/sessions.ts";
 import { apiUrl, databaseUrl, sessionCookieName } from "./env.ts";
 
-export async function createAccount() {
-  const db = getDatabase(databaseUrl);
-  const suffix = randomUUID();
-  const email = `e2e-${suffix}@example.com`;
-  const name = `e2e-${suffix}`;
-  const password = "SecurePassword123!";
+export function createAccount() {
+  return createAccountWithVerification(new Date());
+}
 
-  try {
-    const account = await db
-      .insertInto("account")
-      .values({ name })
-      .returning(["id", "name"])
-      .executeTakeFirstOrThrow();
-
-    await db
-      .insertInto("account_identity")
-      .values({
-        account_id: account.id,
-        email,
-        password_hash: await hashPassword(password),
-        provider: "email",
-        provider_user_id: email,
-        verified_at: new Date(),
-      })
-      .executeTakeFirstOrThrow();
-
-    return {
-      accountId: account.id,
-      email,
-      name,
-      password,
-    };
-  } finally {
-    await db.destroy();
-  }
+export function createUnverifiedAccount() {
+  return createAccountWithVerification(null);
 }
 
 export async function createAuthenticatedAccount(page: Page) {
@@ -76,6 +47,43 @@ export async function getAccountName(accountId: string) {
       .executeTakeFirstOrThrow();
 
     return account.name;
+  } finally {
+    await db.destroy();
+  }
+}
+
+async function createAccountWithVerification(verifiedAt: Date | null) {
+  const db = getDatabase(databaseUrl);
+  const suffix = randomUUID();
+  const email = `e2e-${suffix}@example.com`;
+  const name = `e2e-${suffix}`;
+  const password = "SecurePassword123!";
+
+  try {
+    const account = await db
+      .insertInto("account")
+      .values({ name })
+      .returning(["id", "name"])
+      .executeTakeFirstOrThrow();
+
+    await db
+      .insertInto("account_identity")
+      .values({
+        account_id: account.id,
+        email,
+        password_hash: await hashPassword(password),
+        provider: "email",
+        provider_user_id: email,
+        verified_at: verifiedAt,
+      })
+      .executeTakeFirstOrThrow();
+
+    return {
+      accountId: account.id,
+      email,
+      name,
+      password,
+    };
   } finally {
     await db.destroy();
   }
