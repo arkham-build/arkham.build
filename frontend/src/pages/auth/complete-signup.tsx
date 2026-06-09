@@ -36,11 +36,7 @@ function SignupArkhamDB() {
     return null;
   }
 
-  const hasEmailIdentity = session.identities.some(
-    (identity) => identity.provider === "email",
-  );
-
-  if (hasEmailIdentity) {
+  if (session.account.profileComplete) {
     navigate("~/");
     return null;
   }

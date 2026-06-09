@@ -155,6 +155,7 @@ describe("data slice", () => {
             account: {
               id: "account-id",
               name: "User",
+              profileComplete: true,
             },
             identities: [],
           },

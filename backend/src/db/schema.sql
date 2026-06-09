@@ -476,7 +476,8 @@ CREATE TABLE public.account (
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT uuidv7() NOT NULL,
     name character varying(64) NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    profile_completed boolean DEFAULT true NOT NULL
 );
 
 
@@ -2685,4 +2686,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260604123000'),
     ('20260604234500'),
     ('20260606120000'),
-    ('20260606130000');
+    ('20260606130000'),
+    ('20260609120000');

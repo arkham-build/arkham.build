@@ -56,7 +56,10 @@ export async function upsertAccountFromOAuth(
     if (!accountIdentity) {
       const account = await tx
         .insertInto("account")
-        .values({ name: `provider_${params.providerUserId}` })
+        .values({
+          name: `provider_${params.providerUserId}`,
+          profile_completed: false,
+        })
         .returningAll()
         .executeTakeFirstOrThrow();
 
@@ -98,7 +101,7 @@ export async function accountNameExists(
   return (await query.executeTakeFirst()) != null;
 }
 
-export async function updateAccountName(
+export async function completeAccountProfile(
   db: Database,
   accountId: string,
   name: string,
@@ -106,7 +109,7 @@ export async function updateAccountName(
   const now = new Date();
   return await db
     .updateTable("account")
-    .set({ name, updated_at: now })
+    .set({ name, profile_completed: true, updated_at: now })
     .where("id", "=", accountId)
     .executeTakeFirst();
 }

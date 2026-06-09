@@ -107,6 +107,7 @@ export const SessionResponseSchema = z.object({
   account: z.object({
     id: z.uuid(),
     name: z.string().max(64),
+    profileComplete: z.boolean(),
   }),
   identities: z.array(IdentitySchema),
 });

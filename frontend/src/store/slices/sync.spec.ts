@@ -35,6 +35,7 @@ describe("sync slice", () => {
           account: {
             id: "new-account",
             name: "User",
+            profileComplete: true,
           },
           identities: [
             {
@@ -132,6 +133,7 @@ describe("sync slice", () => {
           account: {
             id: "account-id",
             name: "User",
+            profileComplete: true,
           },
           identities: [
             {

@@ -1,7 +1,14 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Route, Router, Switch, useLocation, useSearch } from "wouter";
+import {
+  Redirect,
+  Route,
+  Router,
+  Switch,
+  useLocation,
+  useSearch,
+} from "wouter";
 import { useBrowserLocation } from "wouter/use-browser-location";
 import { ErrorBoundary } from "./components/error-boundary";
 import { KeyboardShortcutsModal } from "./components/keyboard-shortcuts/keyboard-shortcuts-modal";
@@ -14,6 +21,7 @@ import {
   useRefreshMetadataMutation,
 } from "./queries/cache";
 import { useStore } from "./store";
+import { selectSession } from "./store/selectors/auth";
 import { selectIsInitialized } from "./store/selectors/shared";
 import type { HttpClient } from "./store/services/http-client";
 import { HttpClientProvider } from "./store/services/http-client.provider";
@@ -128,58 +136,72 @@ function AppInner() {
       <Suspense fallback={<Loader delay={300} show />}>
         {storeInitialized && (
           <Router hook={useBrowserLocation}>
-            <Switch>
-              <Route component={Index} path="/" />
-              <Route component={BrowseRoutes} path="/browse" />
-              <Route component={BrowseRoutes} path="/browse/pack/:pack_code" />
-              <Route
-                component={BrowseRoutes}
-                path="/browse/cycle/:cycle_code"
-              />
-              <Route
-                component={BrowseRoutes}
-                path="/browse/encounter_set/:encounter_code"
-              />
-              <Route component={Search} path="/search" />
-              <Route component={CardView} path="/card/:code" />
-              <Route
-                component={CardViewUsable}
-                path="/card/:code/usable_cards"
-              />
-              <Route component={ChooseInvestigator} path="/deck/create" />
-              <Route component={DeckCreate} path="/deck/create/:code" />
-              <Route component={DeckView} path="/:type/view/:id" />
-              <Route component={DeckView} path="/:type/view/:id/:slug" />
-              <Route component={DeckEdit} nest path="/deck/edit/:id" />
-              <Route component={Settings} path="/settings" />
-              <Route component={About} path="/about" />
-              <Route component={Share} path="/share/:id" />
-              <Route component={CollectionStats} path="/collection-stats" />
-              <Route component={BrowseDecklists} path="/decklists" />
-              <Route component={Rules} path="/rules" />
-              <Route component={Core2026Reveal} path="/blog/core-2026-reveal" />
-              <Route
-                component={Investigator2026Reveal}
-                path="/blog/investigator-2026-reveal"
-              />
-              <Route
-                component={FanMadeContentPreview}
-                path="/fan-made-content/preview/:id"
-              />
-              <Route
-                component={InstallFanMadeContent}
-                path="/install-fan-made-content"
-              />
-              <Route component={Login} path="/auth/login" />
-              <Route component={Signup} path="/auth/signup" />
-              <Route component={CompleteSignup} path="/auth/signup/complete" />
-              <Route component={ForgotPassword} path="/auth/forgot-password" />
-              <Route component={VerifyEmail} path="/auth/verify-email" />
-              <Route component={ResetPassword} path="/auth/reset-password" />
-              <Route path="*">
-                <ErrorStatus statusCode={404} />
-              </Route>
-            </Switch>
+            <ProfileCompletionRouteGuard>
+              <Switch>
+                <Route component={Index} path="/" />
+                <Route component={BrowseRoutes} path="/browse" />
+                <Route
+                  component={BrowseRoutes}
+                  path="/browse/pack/:pack_code"
+                />
+                <Route
+                  component={BrowseRoutes}
+                  path="/browse/cycle/:cycle_code"
+                />
+                <Route
+                  component={BrowseRoutes}
+                  path="/browse/encounter_set/:encounter_code"
+                />
+                <Route component={Search} path="/search" />
+                <Route component={CardView} path="/card/:code" />
+                <Route
+                  component={CardViewUsable}
+                  path="/card/:code/usable_cards"
+                />
+                <Route component={ChooseInvestigator} path="/deck/create" />
+                <Route component={DeckCreate} path="/deck/create/:code" />
+                <Route component={DeckView} path="/:type/view/:id" />
+                <Route component={DeckView} path="/:type/view/:id/:slug" />
+                <Route component={DeckEdit} nest path="/deck/edit/:id" />
+                <Route component={Settings} path="/settings" />
+                <Route component={About} path="/about" />
+                <Route component={Share} path="/share/:id" />
+                <Route component={CollectionStats} path="/collection-stats" />
+                <Route component={BrowseDecklists} path="/decklists" />
+                <Route component={Rules} path="/rules" />
+                <Route
+                  component={Core2026Reveal}
+                  path="/blog/core-2026-reveal"
+                />
+                <Route
+                  component={Investigator2026Reveal}
+                  path="/blog/investigator-2026-reveal"
+                />
+                <Route
+                  component={FanMadeContentPreview}
+                  path="/fan-made-content/preview/:id"
+                />
+                <Route
+                  component={InstallFanMadeContent}
+                  path="/install-fan-made-content"
+                />
+                <Route component={Login} path="/auth/login" />
+                <Route component={Signup} path="/auth/signup" />
+                <Route
+                  component={CompleteSignup}
+                  path="/auth/signup/complete"
+                />
+                <Route
+                  component={ForgotPassword}
+                  path="/auth/forgot-password"
+                />
+                <Route component={VerifyEmail} path="/auth/verify-email" />
+                <Route component={ResetPassword} path="/auth/reset-password" />
+                <Route path="*">
+                  <ErrorStatus statusCode={404} />
+                </Route>
+              </Switch>
+            </ProfileCompletionRouteGuard>
             <RouteReset />
             <CardDataSyncTask />
             <AppTasks />
@@ -189,6 +211,23 @@ function AppInner() {
       </Suspense>
     </>
   );
+}
+
+function ProfileCompletionRouteGuard(props: { children: React.ReactNode }) {
+  const authStatus = useStore((state) => state.auth.status);
+  const session = useStore(selectSession);
+  const [pathname] = useLocation();
+
+  if (
+    authStatus === "authenticated" &&
+    session &&
+    !session.account.profileComplete &&
+    pathname !== "/auth/signup/complete"
+  ) {
+    return <Redirect to="/auth/signup/complete" />;
+  }
+
+  return props.children;
 }
 
 function RouteReset() {

@@ -39,7 +39,7 @@ import {
 
 const routes = new Hono<HonoEnv>();
 
-routes.get("/me", sessionAuth(), async (c) => {
+routes.get("/me", sessionAuth({ requireCompleteProfile: false }), async (c) => {
   const db = c.get("db");
   const account = c.get("account");
   const identities = await listAccountIdentitiesByAccountId(db, account.id);

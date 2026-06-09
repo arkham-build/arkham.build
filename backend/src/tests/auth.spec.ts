@@ -191,14 +191,31 @@ describe("Auth routes", () => {
 
         const identity = await db
           .selectFrom("account_identity")
-          .select(["provider", "provider_user_id"])
+          .innerJoin("account", "account.id", "account_identity.account_id")
+          .select([
+            "account.profile_completed",
+            "account_identity.provider",
+            "account_identity.provider_user_id",
+          ])
           .where("provider", "=", "arkhamdb")
           .where("provider_user_id", "=", "12345")
           .executeTakeFirst();
 
         expect(identity).toMatchObject({
+          profile_completed: false,
           provider: "arkhamdb",
           provider_user_id: "12345",
+        });
+
+        const cookie = res.headers.get("set-cookie") ?? "";
+        const meRes = await app.request("/v2/auth/me", {
+          method: "GET",
+          headers: { Cookie: cookie },
+        });
+
+        expect(meRes.status).toBe(200);
+        expect(await meRes.json()).toMatchObject({
+          account: { profileComplete: false },
         });
       } finally {
         vi.unstubAllGlobals();
@@ -484,6 +501,70 @@ describe("Auth routes", () => {
       } finally {
         vi.unstubAllGlobals();
       }
+    });
+  });
+
+  describe("POST /v2/auth/complete-profile", () => {
+    test("completes an incomplete OAuth profile", async ({ dependencies }) => {
+      const { app, config, db } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "provider_incomplete", profile_completed: false })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "incomplete",
+          verified_at: new Date(),
+        })
+        .executeTakeFirstOrThrow();
+
+      const session = await db
+        .insertInto("session")
+        .values({
+          account_id: account.id,
+          expires_at: new Date(Date.now() + 60 * 60 * 1000),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+
+      const blockedRes = await app.request("/v2/auth/email", {
+        method: "POST",
+        headers: { Cookie: cookie, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "incomplete@example.com",
+          password: "SecurePassword123!",
+        }),
+      });
+
+      expect(blockedRes.status).toBe(403);
+      expect(await blockedRes.text()).toContain("Profile completion required");
+
+      const res = await app.request("/v2/auth/complete-profile", {
+        method: "POST",
+        headers: { Cookie: cookie, "Content-Type": "application/json" },
+        body: JSON.stringify({ username: "complete-user" }),
+      });
+
+      expect(res.status).toBe(200);
+
+      const updatedAccount = await db
+        .selectFrom("account")
+        .select(["name", "profile_completed"])
+        .where("id", "=", account.id)
+        .executeTakeFirstOrThrow();
+
+      expect(updatedAccount).toEqual({
+        name: "complete-user",
+        profile_completed: true,
+      });
     });
   });
 

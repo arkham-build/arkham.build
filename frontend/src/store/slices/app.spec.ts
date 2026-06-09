@@ -475,7 +475,7 @@ function setAuthenticated(
     auth: {
       status: "authenticated",
       session: {
-        account: { id: "account-id", name: "user" },
+        account: { id: "account-id", name: "user", profileComplete: true },
         identities,
       },
     },

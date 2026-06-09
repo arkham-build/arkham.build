@@ -25,6 +25,7 @@ describe("auth slice", () => {
           account: {
             id: "account-id",
             name: "Test User",
+            profileComplete: true,
           },
           identities: [
             {
@@ -82,6 +83,7 @@ describe("auth slice", () => {
           account: {
             id: "account-id",
             name: "Test User",
+            profileComplete: true,
           },
           identities: [
             {
@@ -136,6 +138,7 @@ describe("auth slice", () => {
           account: {
             id: "account-id",
             name: "Test User",
+            profileComplete: true,
           },
           identities: [
             {

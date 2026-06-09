@@ -16,7 +16,7 @@ import {
 import { getOAuthContext, validateOAuthState } from "../lib/oauth/state.ts";
 import {
   accountNameExists,
-  updateAccountName,
+  completeAccountProfile,
   upsertAccountFromOAuth,
 } from "../queries/accounts.ts";
 import { connectOAuthIdentityToAccount } from "../queries/identities.ts";
@@ -25,7 +25,7 @@ const routes = new Hono<HonoEnv>();
 
 routes.post(
   "/complete-profile",
-  sessionAuth(),
+  sessionAuth({ requireCompleteProfile: false }),
   zodValidator("json", CompleteProfileRequestSchema),
   async (c) => {
     const db = c.get("db");
@@ -39,7 +39,7 @@ routes.post(
         });
       }
 
-      await updateAccountName(tx, account.id, username);
+      await completeAccountProfile(tx, account.id, username);
     });
 
     return new Response(null, { status: 200 });

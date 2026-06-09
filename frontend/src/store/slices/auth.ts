@@ -67,13 +67,15 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
     }
 
     if (get().auth.status === "authenticated") {
-      try {
-        await get().bootstrapAuthenticatedState(client);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        await get().refreshSession(client);
+      if (get().auth.session?.account.profileComplete) {
+        try {
+          await get().bootstrapAuthenticatedState(client);
+        } catch (error) {
+          console.error(error);
+        }
       }
+
+      await get().refreshSession(client);
     }
 
     await dehydrate(get(), "app");
@@ -81,17 +83,21 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
 
   async login(client, payload) {
     await postLogin(client, payload);
+
     const session = await fetchSession(client);
     set({
       auth: { session, status: "authenticated" },
     });
-    try {
-      await get().bootstrapAuthenticatedState(client);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      await get().refreshSession(client);
+
+    if (session.account.profileComplete) {
+      try {
+        await get().bootstrapAuthenticatedState(client);
+      } catch (error) {
+        console.error(error);
+      }
     }
+
+    await get().refreshSession(client);
     await dehydrate(get(), "app");
   },
 

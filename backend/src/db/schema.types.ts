@@ -40,6 +40,7 @@ export interface Account {
   created_at: Generated<Timestamp>;
   id: Generated<string>;
   name: string;
+  profile_completed: Generated<boolean>;
   updated_at: Generated<Timestamp>;
 }
 

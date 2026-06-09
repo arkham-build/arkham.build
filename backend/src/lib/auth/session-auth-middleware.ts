@@ -7,8 +7,15 @@ import { findAccountForAuth } from "./accounts.ts";
 import { setSessionCookie } from "./session-cookie.ts";
 import { getSession, updateSessionActivity } from "./sessions.ts";
 
-export function sessionAuth(): MiddlewareHandler<SessionAuthHonoEnv> {
+type SessionAuthOptions = {
+  requireCompleteProfile?: boolean;
+};
+
+export function sessionAuth(
+  options: SessionAuthOptions = {},
+): MiddlewareHandler<SessionAuthHonoEnv> {
   return async (c, next) => {
+    const { requireCompleteProfile = true } = options;
     const config = c.get("config");
     const db = c.get("db");
 
@@ -31,6 +38,11 @@ export function sessionAuth(): MiddlewareHandler<SessionAuthHonoEnv> {
     }
 
     assertAccountNotBanned(account);
+
+    if (requireCompleteProfile && !account.profile_completed) {
+      throw new HTTPException(403, { message: "Profile completion required" });
+    }
+
     await updateSessionActivity(db, sessionId, config.SESSION_EXPIRY_HOURS);
 
     c.set("session", session);

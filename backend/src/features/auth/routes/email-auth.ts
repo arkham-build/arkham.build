@@ -135,20 +135,24 @@ routes.post("/login", zodValidator("json", LoginRequestSchema), async (c) => {
   return new Response(null, { status: 200 });
 });
 
-routes.post("/logout", sessionAuth(), async (c) => {
-  const db = c.get("db");
-  const config = c.get("config");
+routes.post(
+  "/logout",
+  sessionAuth({ requireCompleteProfile: false }),
+  async (c) => {
+    const db = c.get("db");
+    const config = c.get("config");
 
-  c.set("skipSessionCookieRefresh", true);
+    c.set("skipSessionCookieRefresh", true);
 
-  const sessionId = getCookie(c, config.SESSION_COOKIE_NAME);
-  if (sessionId) {
-    await deleteSession(db, sessionId);
-  }
+    const sessionId = getCookie(c, config.SESSION_COOKIE_NAME);
+    if (sessionId) {
+      await deleteSession(db, sessionId);
+    }
 
-  deleteCookie(c, config.SESSION_COOKIE_NAME);
-  return new Response(null, { status: 200 });
-});
+    deleteCookie(c, config.SESSION_COOKIE_NAME);
+    return new Response(null, { status: 200 });
+  },
+);
 
 routes.post(
   "/verify-email",
