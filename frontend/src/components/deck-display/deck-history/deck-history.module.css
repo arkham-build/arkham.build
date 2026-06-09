@@ -8,7 +8,7 @@
 }
 
 .entry {
-  padding: 1rem;
+  padding: 0.75rem;
   border-radius: var(--rounded);
   background: var(--palette-point-five);
   border: 1px solid var(--palette-1);
@@ -50,6 +50,25 @@
 
 .entry > * + * {
   margin-top: 1rem;
+}
+
+.entry-meta {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 0.375rem;
+  align-items: center;
+}
+
+.entry-meta > * + * {
+  &::before {
+    content: "|";
+    padding-right: 0.375rem;
+    color: var(--palette-3);
+  }
+}
+
+.entry-date {
+  font-size: var(--text-xs);
 }
 
 .entry-container {

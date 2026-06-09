@@ -55,6 +55,7 @@ import {
   filterOfficial,
   filterOwnership,
   filterPackCode,
+  filterPlayerCards,
   filterProperties,
   filterSealed,
   filterSkillIcons,
@@ -664,7 +665,7 @@ const selectBaseListCards = createSelector(
         const value = cardTypeFilter.value as CardTypeFilter;
 
         if (value === "player") {
-          filters.push(not(filterEncounterCards));
+          filters.push(filterPlayerCards);
         } else if (value === "encounter") {
           filters.push(filterEncounterCards);
         }
@@ -1198,7 +1199,7 @@ export const selectInvestigatorOptions = createSelector(
     >((acc, code) => {
       const card = metadata.cards[code];
 
-      if (card && !card.duplicate_of_code && !card.encounter_code) {
+      if (card && !card.duplicate_of_code && filterPlayerCards(card)) {
         acc.push(card);
       }
 

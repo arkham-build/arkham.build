@@ -149,6 +149,8 @@ export type CustomizationUpgrade = {
 };
 
 export type HistoryEntry = ChangeStats & {
+  dateCreation: string;
+  dateUpdate: string;
   differences: {
     slots: SlotUpgrade[];
     extraSlots: SlotUpgrade[];
@@ -164,6 +166,7 @@ function getHistoryEntry(
   changes: ChangeRecord,
   metadata: StoreState["metadata"],
   collator: Intl.Collator,
+  deck: Pick<ResolvedDeck, "date_creation" | "date_update">,
 ): HistoryEntry {
   const { customizations, exileSlots, id, stats, tabooSetId } = changes;
 
@@ -233,6 +236,8 @@ function getHistoryEntry(
   return {
     id,
     ...stats,
+    dateCreation: deck.date_creation,
+    dateUpdate: deck.date_update,
     differences,
   };
 }
@@ -242,27 +247,31 @@ export function getDeckHistory(
   metadata: StoreState["metadata"],
   collator: Intl.Collator,
 ) {
-  const changes: ChangeRecord[] = [];
+  const history: HistoryEntry[] = [];
 
   for (let i = 0; i < decks.length - 1; i++) {
     const prev = decks[i];
     const next = decks[i + 1];
-    changes.unshift(getChangeRecord(prev, next, false));
-  }
 
-  const history = changes.map((change) =>
-    getHistoryEntry(change, metadata, collator),
-  );
+    history.unshift(
+      getHistoryEntry(
+        getChangeRecord(prev, next, false),
+        metadata,
+        collator,
+        next,
+      ),
+    );
+  }
 
   history.push({
     id: decks[0].id,
     changes: {
-      exileSlots: {},
       customizations: {},
       slots: {},
       extraSlots: {},
-      tabooSetId: null,
     },
+    dateCreation: decks[0].date_creation,
+    dateUpdate: decks[0].date_update,
     differences: {
       slots: [],
       extraSlots: [],
@@ -274,7 +283,7 @@ export function getDeckHistory(
     xpSpent: 0,
     xp: 0,
     modifierStats: {},
-  } as HistoryEntry);
+  });
 
   return history;
 }
@@ -373,7 +382,7 @@ export const selectLatestUpgrade = createSelector(
     if (!prev || !next) return undefined;
     time("latest_upgrade");
     const changes = getChangeRecord(prev, next, false);
-    const differences = getHistoryEntry(changes, metadata, collator);
+    const differences = getHistoryEntry(changes, metadata, collator, next);
     timeEnd("latest_upgrade");
     return differences as UpgradeStats & HistoryEntry;
   },
@@ -421,6 +430,7 @@ export const selectUndoHistory = createSelector(
         getChangeRecord(prev, deck, true),
         metadata,
         collator,
+        deck,
       ),
       version: "current",
       dateUpdate: new Date().toISOString(),
@@ -429,7 +439,10 @@ export const selectUndoHistory = createSelector(
     if (!data.undoHistory?.[deck.id]) return [current];
 
     const history = data.undoHistory?.[deck.id].map((undoEntry) => ({
-      data: getHistoryEntry(undoEntry.changes, metadata, collator),
+      data: getHistoryEntry(undoEntry.changes, metadata, collator, {
+        date_creation: undoEntry.date_update,
+        date_update: undoEntry.date_update,
+      }),
       dateUpdate: undoEntry.date_update,
       version: undoEntry.version,
     }));

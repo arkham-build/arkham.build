@@ -13,7 +13,10 @@ export default function ChartContainer(props: { deck: ResolvedDeck }) {
   return (
     <Plane className={css["charts-wrap"]}>
       <SkillIconsChart data={toChartableData(deck.stats.charts.skillIcons)} />
-      <CostCurveChart data={toChartableData(deck.stats.charts.costCurve)} />
+      <CostCurveChart
+        costs={deck.stats.charts.costs}
+        data={toChartableData(deck.stats.charts.costCurve)}
+      />
       <TraitsChart
         data={toChartableData(deck.stats.charts.traits, "value")}
         deck={deck}

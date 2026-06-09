@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
 import { CardViewCards } from "@/pages/card-view/card-view-cards";
 import { useStore } from "@/store";
+import { filterPlayerCards } from "@/store/lib/filtering";
 import type { CardWithRelations } from "@/store/lib/types";
 import { selectCardWithRelations } from "@/store/selectors/card-view";
 import {
@@ -60,7 +61,7 @@ function CardView() {
     isInvestigator && !isStaticInvestigator(cardWithRelations.card);
 
   const deckbuildable =
-    !cardWithRelations.card.encounter_code && !isInvestigator;
+    filterPlayerCards(cardWithRelations.card) && !isInvestigator;
 
   const parallel = (cardWithRelations as CardWithRelations).relations?.parallel
     ?.card;

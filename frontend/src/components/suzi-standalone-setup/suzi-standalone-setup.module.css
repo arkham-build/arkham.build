@@ -48,7 +48,7 @@
   &:focus-visible {
     transform: translateY(-0.25rem);
     transition: transform 0.125s ease;
-    border: 2px solid var(--focus);
+    border: 2px solid var(--color-focus);
   }
 }
 

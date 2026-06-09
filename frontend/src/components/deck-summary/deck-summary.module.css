@@ -6,7 +6,7 @@
   transition: border 0.15s ease-in-out;
 
   &:focus-within {
-    border-color: 1px solid var(--focus);
+    border-color: 1px solid var(--color-focus);
   }
 }
 

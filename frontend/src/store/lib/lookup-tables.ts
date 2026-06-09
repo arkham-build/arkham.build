@@ -10,6 +10,7 @@ import {
 import { time, timeEnd } from "@/utils/time";
 import { selectSettingsTabooId } from "../selectors/shared";
 import type { Metadata } from "../slices/metadata.types";
+import { filterPlayerCards } from "./filtering";
 import type { LookupTable, LookupTables } from "./lookup-tables.types";
 
 function getInitialLookupTables(): LookupTables {
@@ -232,7 +233,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
       !card.duplicate_of_code &&
       !card.alt_art_investigator &&
       !card.alternate_of_code &&
-      !card.encounter_code
+      filterPlayerCards(card)
     ) {
       investigatorsByName[card.real_name] ??= [];
       investigatorsByName[card.real_name].push(card.code);

@@ -28,7 +28,8 @@
     "@fast-csv/parse": "5.0.5",
     "@hono/node-server": "2.0.2",
     "async-mutex": "0.5.0",
-    "hono": "4.12.14",
+    "dbmate": "2.31.0",
+    "hono": "4.12.21",
     "kysely": "0.28.17",
     "nodemailer": "7.0.12",
     "pg": "8.19.0",
@@ -42,7 +43,6 @@
     "@tsconfig/strictest": "2.0.8",
     "@types/nodemailer": "7.0.5",
     "@types/pg": "8.16.0",
-    "dbmate": "2.31.0",
     "kysely-codegen": "0.20.0"
   }
 }

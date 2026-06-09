@@ -29,32 +29,59 @@ test.describe("deck description", () => {
     ).toContainText(".32 Colt");
   });
 
-  test("redirect FAQ links to arkhamdb", async ({ page }) => {
+  test("redirect FAQ links to arkhamdb", async ({ page, context }) => {
+    const arkhamdbBaseUrl = process.env.VITE_ARKHAMDB_BASE_URL as string;
+
+    await context.route(`${arkhamdbBaseUrl}/**`, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "text/html",
+        body: "<html></html>",
+      }),
+    );
+
     await importDeckFromFile(page, "./deck_description.json", {
       navigate: "view",
     });
     await page.getByTestId("tab-notes").click();
 
-    const nextPagePromise = page.waitForEvent("popup");
-    await page.getByRole("link", { name: "ruling" }).click();
-    const nextPage = await nextPagePromise;
+    const [nextPage] = await Promise.all([
+      page.waitForEvent("popup"),
+      page.getByRole("link", { name: "ruling" }).click(),
+    ]);
 
-    const nextPageOrigin = new URL(nextPage.url()).origin;
-    expect(nextPageOrigin).toEqual(process.env.VITE_ARKHAMDB_BASE_URL);
+    await expect(nextPage).toHaveURL(
+      `${arkhamdbBaseUrl}/card/60132#review-5227`,
+    );
   });
 
-  test("redirect other relative links to arkhamdb", async ({ page }) => {
+  test("redirect other relative links to arkhamdb", async ({
+    page,
+    context,
+  }) => {
+    const arkhamdbBaseUrl = process.env.VITE_ARKHAMDB_BASE_URL as string;
+
+    await context.route(`${arkhamdbBaseUrl}/**`, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "text/html",
+        body: "<html></html>",
+      }),
+    );
+
     await importDeckFromFile(page, "./deck_description.json", {
       navigate: "view",
     });
     await page.getByTestId("tab-notes").click();
 
-    const nextPagePromise = page.waitForEvent("popup");
-    await page.getByRole("link", { name: "decklist" }).click();
-    const nextPage = await nextPagePromise;
+    const [nextPage] = await Promise.all([
+      page.waitForEvent("popup"),
+      page.getByRole("link", { name: "decklist" }).click(),
+    ]);
 
-    const nextPageOrigin = new URL(nextPage.url()).origin;
-    expect(nextPageOrigin).toEqual(process.env.VITE_ARKHAMDB_BASE_URL);
+    await expect(nextPage).toHaveURL(
+      `${arkhamdbBaseUrl}/decklist/view/51880/old-yorick-shot-guns-1.0`,
+    );
   });
 
   test("redirect card links with nested content flow content", async ({

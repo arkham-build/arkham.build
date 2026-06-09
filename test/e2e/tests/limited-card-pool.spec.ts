@@ -44,7 +44,7 @@ test.describe("limited card pool", () => {
     await createLimitedPoolDeck(page);
     await fillSearch(page, "machete");
     await expect(page.getByTestId("listcard-01520")).toBeVisible();
-    await page.getByTestId("search").getByRole("button").click();
+    await page.getByTestId("search").getByTestId("search-clear").click();
     await fillSearch(page, "runic axe");
     await expect(page.getByTestId("listcard-09022")).not.toBeVisible();
   });

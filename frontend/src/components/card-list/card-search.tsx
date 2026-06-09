@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { selectActiveListSearch } from "@/store/selectors/lists";
+import { selectActiveList } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
 import { debounce } from "@/utils/debounce";
@@ -9,6 +10,7 @@ import { useAgathaEasterEggTrigger } from "@/utils/easter-egg-agatha";
 import { useHotkey } from "@/utils/use-hotkey";
 import { useResolvedDeck } from "../resolved-deck-context";
 import { Checkbox } from "../ui/checkbox";
+import { CopyToClipboard } from "../ui/copy-to-clipboard";
 import { ErrorBubble } from "../ui/error-bubble";
 import { SearchInput } from "../ui/search-input";
 import { Tag } from "../ui/tag";
@@ -42,6 +44,7 @@ export function CardSearch(props: Props) {
   const { resolvedDeck } = useResolvedDeck();
 
   const search = useStore(selectActiveListSearch);
+  const activeList = useStore(selectActiveList);
   assert(search, "Search bar requires an active list.");
 
   const easterEggHandler = useAgathaEasterEggTrigger();
@@ -50,6 +53,20 @@ export function CardSearch(props: Props) {
   const [iconSlotSize, setIconSlotSize] = useState(0);
 
   const pasted = useRef(false);
+
+  const cardType = useMemo(() => {
+    const id = activeList?.filters.indexOf("card_type");
+    if (id == null || id < 0) return "";
+    const value = activeList?.filterValues[id]?.value;
+    return value === "player" || value === "encounter" ? value : "";
+  }, [activeList]);
+
+  const shareUrl = useMemo(() => {
+    const url = new URL("/search", window.location.origin);
+    url.searchParams.set("q", inputValue);
+    if (cardType) url.searchParams.set("card_type", cardType);
+    return url.toString();
+  }, [cardType, inputValue]);
 
   useEffect(() => {
     const updateIconSlotSize = () => {
@@ -131,25 +148,35 @@ export function CardSearch(props: Props) {
   );
 
   const iconSlotNode = (
-    <DefaultTooltip
-      tooltip={search.buildQlError?.message}
-      options={{ paused: !search.buildQlError }}
-    >
-      <a
-        className={cx(
-          css["buildql-tag"],
-          search.mode === "buildql" && css["active"],
-        )}
-        href="https://github.com/arkham-build/arkham.build/blob/main/frontend/src/store/lib/buildql/buildql.md#buildql"
-        target="_blank"
-        rel="noreferrer"
+    <>
+      <DefaultTooltip
+        tooltip={search.buildQlError?.message}
+        options={{ paused: !search.buildQlError }}
       >
-        <Tag size="xs">
-          {!!search.buildQlError && <ErrorBubble />}
-          BuildQL
-        </Tag>
-      </a>
-    </DefaultTooltip>
+        <a
+          className={cx(
+            css["buildql-tag"],
+            search.mode === "buildql" && css["active"],
+          )}
+          href="https://github.com/arkham-build/arkham.build/blob/main/frontend/src/store/lib/buildql/buildql.md#buildql"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <Tag size="xs">
+            {!!search.buildQlError && <ErrorBubble />}
+            BuildQL
+          </Tag>
+        </a>
+      </DefaultTooltip>
+      {!!inputValue && (
+        <CopyToClipboard
+          size="sm"
+          text={shareUrl}
+          tooltip={t("lists.search.share")}
+          variant="bare"
+        />
+      )}
+    </>
   );
 
   return (

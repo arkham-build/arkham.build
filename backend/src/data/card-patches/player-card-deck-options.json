@@ -93,6 +93,7 @@
           "max": 3
         },
         "trait": ["relic", "charm"],
+        "type": ["asset"],
         "limit": 1,
         "error": "Too many off-class cards for Collector."
       }

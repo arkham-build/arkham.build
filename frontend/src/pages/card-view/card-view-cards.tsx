@@ -31,6 +31,7 @@ import {
   oldFormatCardUrl,
   parseCardTitle,
 } from "@/utils/card-utils";
+import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { displayPackName, formatRelationTitle } from "@/utils/formatting";
 import { and } from "@/utils/fp";
@@ -109,19 +110,21 @@ function CardSetNav(props: { currentCard: CardWithRelations }) {
           and([
             filterBacksides,
             (card) => {
-              if (targetPack.reprint_type !== "rcore") {
-                const cardPack = metadata.packs[card.pack_code];
-
-                const cycleMatches =
-                  cardPack.cycle_code === targetPack.cycle_code;
-
-                const reprintTypeMatches =
-                  !!card.encounter_code === !!currentCard.card.encounter_code;
-
-                return cycleMatches && reprintTypeMatches;
+              const cardPack = metadata.packs[card.pack_code];
+              if (
+                CYCLES_WITH_STANDALONE_PACKS.includes(targetPack.cycle_code) ||
+                targetPack.reprint_type === "rcore"
+              ) {
+                return card.pack_code === targetPack.code;
               }
 
-              return card.pack_code === targetPack.code;
+              const cycleMatches =
+                cardPack.cycle_code === targetPack.cycle_code;
+
+              const reprintTypeMatches =
+                !!card.encounter_code === !!currentCard.card.encounter_code;
+
+              return cycleMatches && reprintTypeMatches;
             },
           ]),
         )

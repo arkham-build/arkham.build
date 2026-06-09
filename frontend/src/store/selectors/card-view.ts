@@ -1,11 +1,11 @@
 import type { Card } from "@arkham-build/shared";
 import { createSelector } from "reselect";
-import { not, or } from "@/utils/fp";
+import { or } from "@/utils/fp";
 import {
   filterAlternates,
-  filterEncounterCards,
   filterInvestigatorAccess,
   filterInvestigatorWeaknessAccess,
+  filterPlayerCards,
 } from "../lib/filtering";
 import { resolveCardWithRelations } from "../lib/resolve-card";
 import { makeSortFunction } from "../lib/sorting";
@@ -78,8 +78,7 @@ export const selectUsableByInvestigators = createSelector(
         if (!c) return false;
         const investigator = c.card;
         const isValidInvestigator =
-          not(filterEncounterCards)(investigator) &&
-          filterAlternates(investigator);
+          filterPlayerCards(investigator) && filterAlternates(investigator);
 
         if (!isValidInvestigator) return false;
 

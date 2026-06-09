@@ -43,6 +43,15 @@
   text-align: center;
 }
 
+.cost-summary {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-inline: auto;
+  margin-bottom: 0.375rem;
+  font-size: var(--text-sm);
+}
+
 .chart-tooltip {
   background-color: var(--palette-1);
   border: 1px solid var(--palette-2);

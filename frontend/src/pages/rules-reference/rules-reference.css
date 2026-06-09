@@ -133,7 +133,7 @@ html[data-theme="light"] .toc a {
 }
 
 .rules .green {
-  background: var(--nord-14);
+  background: var(--color-success);
   color: var(--nord-0);
 }
 

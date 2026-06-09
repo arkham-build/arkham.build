@@ -61,22 +61,22 @@
     --icon-3xl: 2rem;
 
     --guardian: #5cb4fd;
+    --multiclass: #e4d083;
     --mystic: #ba81f2;
+    --mythos: var(--nord-4);
+    --neutral: var(--nord-4);
     --rogue: #48b14f;
     --seeker: #efa345;
     --survivor: #ee4a53;
-    --multiclass: #e4d083;
-    --mythos: var(--nord-4);
-    --neutral: var(--nord-4);
 
     --guardian-dark: #1c6e9f;
-    --seeker-dark: #ba6d2a;
-    --rogue-dark: #1e6b24;
-    --mystic-dark: #554c9e;
-    --survivor-dark: #bd2330;
-    --neutral-dark: var(--nord-3);
     --multiclass-dark: #997b2d;
+    --mystic-dark: #554c9e;
     --mythos-dark: var(--nord-3);
+    --neutral-dark: var(--nord-3);
+    --rogue-dark: #1e6b24;
+    --seeker-dark: #ba6d2a;
+    --survivor-dark: #bd2330;
 
     --rounded: 0.25rem;
     --rounded-lg: 1rem;
@@ -128,7 +128,7 @@
     --color-link: var(--nord-9);
     --color-scrollbar-thumb: #969ba5;
     --color-scrollbar: rgba(0, 0, 0, 0.05);
-    --focus: var(--nord-6);
+    --color-success: var(--nord-14);
 
     --background-select: url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA0LjkgMTAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDQuOSAxMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiNkOGRlZTk7fQo8L3N0eWxlPgo8dGl0bGU+YXJyb3dzPC90aXRsZT4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIxLjQsNC43IDIuNSwzLjIgMy41LDQuNyAiLz4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIzLjUsNS4zIDIuNSw2LjggMS40LDUuMyAiLz4KPC9zdmc+);
   }
@@ -155,12 +155,12 @@
     --text-mythos: var(--mythos-dark);
     --text-neutral: var(--neutral-dark);
 
+    --color-focus: var(--text);
     --color-inverted: var(--white);
+    --color-link: var(--nord-10);
     --color-scrollbar-thumb: #969ba5;
     --color-scrollbar: rgba(0, 0, 0, 0.05);
-    --color-link: var(--nord-10);
-
-    --focus: var(--text);
+    --color-success: color-mix(in srgb, var(--nord-14) 80%, var(--nord-2) 20%);
 
     --willpower: #02456d;
     --intellect: #56224e;
@@ -238,7 +238,7 @@
     text-decoration-style: dotted;
 
     &:focus-visible {
-      outline: 1px solid var(--focus);
+      outline: 1px solid var(--color-focus);
     }
   }
 
@@ -335,7 +335,7 @@
     }
 
     &:focus-visible {
-      outline: 1px solid var(--focus);
+      outline: 1px solid var(--color-focus);
     }
   }
 

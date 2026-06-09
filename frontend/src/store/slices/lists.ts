@@ -11,7 +11,7 @@ import { and, not } from "@/utils/fp";
 import { parse as parseBuildQl } from "../lib/buildql/parser";
 import {
   filterBacksides,
-  filterEncounterCards,
+  filterPlayerCards,
   filterPreviews,
   filterType,
 } from "../lib/filtering";
@@ -1005,7 +1005,7 @@ export function makeLists(
       systemFilter: and([
         systemFilter,
         filterType(["investigator"]),
-        not(filterEncounterCards),
+        filterPlayerCards,
       ]),
       initialValues,
       key: "create_deck",

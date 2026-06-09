@@ -1,7 +1,7 @@
 import { createSelector } from "reselect";
 import {
   filterDuplicates,
-  filterEncounterCards,
+  filterPlayerCards,
   filterType,
 } from "@/store/lib/filtering";
 import { makeSortFunction } from "@/store/lib/sorting";
@@ -26,7 +26,7 @@ export const selectPlayerCardsFilter = createSelector(
   selectLookupTables,
   (lookupTables) => {
     const playerCardFilter = and([
-      not(filterEncounterCards),
+      filterPlayerCards,
       not(filterType(["investigator"])),
       filterDuplicates,
       (c) => lookupTables.relations.bonded[c.code] == null,

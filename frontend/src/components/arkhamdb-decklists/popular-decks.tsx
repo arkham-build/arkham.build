@@ -4,6 +4,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { usePopularDecklistsQuery } from "@/queries/decklists";
 import { useStore } from "@/store";
+import { filterPlayerCards } from "@/store/lib/filtering";
 import { selectLookupTables } from "@/store/selectors/shared";
 import { deckSearchQuery } from "@/store/services/requests/decklists-search";
 import { displayAttribute, getCanonicalCardCode } from "@/utils/card-utils";
@@ -26,7 +27,7 @@ export function PopularDecks(props: Props) {
   const lookupTables = useStore(selectLookupTables);
 
   const enabled =
-    !scope.encounter_code && !lookupTables.relations.bonded[scope.code];
+    filterPlayerCards(scope) && !lookupTables.relations.bonded[scope.code];
 
   const scopeParams = {
     filters: {

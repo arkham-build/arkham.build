@@ -34,8 +34,8 @@
 }
 
 .diff-quantity.positive {
-  color: var(--nord-14);
-  border-color: var(--nord-14);
+  color: var(--color-success);
+  border-color: var(--color-success);
 }
 
 .diff-quantity.negative {

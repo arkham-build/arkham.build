@@ -1,6 +1,7 @@
 import type { Cycle, Pack } from "@arkham-build/shared";
 import { type Card, SKILL_KEYS } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
+import { filterPlayerCards } from "@/store/lib/filtering";
 import { assert } from "./assert";
 import {
   CYCLES_WITH_STANDALONE_PACKS,
@@ -152,7 +153,7 @@ export function isRandomBasicWeaknessLike(card: Card) {
   return (
     card.subtype_code === "basicweakness" ||
     (card.subtype_code === "weakness" &&
-      !card.encounter_code &&
+      filterPlayerCards(card) &&
       !card.restrictions)
   );
 }

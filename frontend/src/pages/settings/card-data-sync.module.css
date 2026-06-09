@@ -19,7 +19,7 @@
 }
 
 .sync.uptodate .status-icon {
-  color: var(--nord-14);
+  color: var(--color-success);
 }
 
 .info {

@@ -198,6 +198,7 @@ function DeckEditInner() {
   const getListCardProps = useCallback(
     (card: Card) => ({
       onChangeCardQuantity:
+        // always allow removing weaknesses and campaign cards
         canEdit || card.encounter_code || card.subtype_code
           ? onChangeCardQuantity
           : undefined,

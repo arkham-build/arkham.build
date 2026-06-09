@@ -7,7 +7,7 @@ import type { Modifier } from "@/store/lib/deck-upgrades";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { History, HistoryEntry } from "@/store/selectors/decks";
 import { cx } from "@/utils/cx";
-import { formatUpgradeXP } from "@/utils/formatting";
+import { formatDateTime, formatUpgradeXP } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import type { DeckOrigin } from "../types";
 import { CustomizableDiff } from "./customizable-diff";
@@ -61,6 +61,7 @@ export function DeckHistory(props: Props) {
             deck={deck}
             // biome-ignore lint/suspicious/noArrayIndexKey: no natural key available.
             key={idx}
+            showDates={origin === "local"}
             showDiscounts
             showUpgradeXp={!isLast}
             title={titleNode}
@@ -81,6 +82,7 @@ export function DeckHistoryEntry(props: {
   data: HistoryEntry;
   deck: ResolvedDeck;
   showUpgradeXp?: boolean;
+  showDates?: boolean;
   showDiscounts?: boolean;
   size?: "sm";
   title: React.ReactNode;
@@ -93,6 +95,7 @@ export function DeckHistoryEntry(props: {
     data,
     deck,
     size,
+    showDates,
     showDiscounts,
     showUpgradeXp,
     title,
@@ -171,6 +174,24 @@ export function DeckHistoryEntry(props: {
               </Fragment>
             ))}
           </dl>
+        </div>
+      )}
+      {showDates && (
+        <div className={css["entry-meta"]} data-testid="history-entry-meta">
+          <span className={css["entry-date"]}>
+            {t("deck_view.history.created")}:{" "}
+            <time dateTime={data.dateCreation}>
+              {formatDateTime(data.dateCreation)}
+            </time>
+          </span>
+          {data.dateUpdate && (
+            <span className={css["entry-date"]}>
+              {t("deck_view.history.updated")}:{" "}
+              <time dateTime={data.dateUpdate}>
+                {formatDateTime(data.dateUpdate)}
+              </time>
+            </span>
+          )}
         </div>
       )}
     </li>

@@ -12,6 +12,14 @@ function Search() {
   const { t } = useTranslation();
 
   const [searchParams] = useSearchParams();
+  const query = searchParams.get("q") || "";
+
+  const cardTypeParam = searchParams.get("card_type");
+
+  const cardType =
+    cardTypeParam === "player" || cardTypeParam === "encounter"
+      ? cardTypeParam
+      : "";
 
   const activeListId = useStore((state) => state.activeList);
   const isInitalized = useStore(selectIsInitialized);
@@ -31,7 +39,7 @@ function Search() {
     addList(
       listKey,
       {
-        card_type: "",
+        card_type: cardType,
       },
       {
         search: "",
@@ -41,13 +49,13 @@ function Search() {
     );
 
     setActiveList(listKey);
-    setSearchValue(searchParams.get("q") || "");
+    setSearchValue(query);
 
     return () => {
       removeList(listKey);
       setActiveList(undefined);
     };
-  }, [addList, removeList, setActiveList, searchParams, setSearchValue]);
+  }, [addList, cardType, query, removeList, setActiveList, setSearchValue]);
 
   const listCards = useStore((state) =>
     selectListCards(state, undefined, undefined),

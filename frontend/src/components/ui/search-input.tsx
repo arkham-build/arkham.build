@@ -85,7 +85,13 @@ export function SearchInput({
         <div className={css["icon_clear"]}>
           {iconSlot}
           {!!value && (
-            <Button iconOnly onClick={onClear} variant="bare" size="sm">
+            <Button
+              data-testid="search-clear"
+              iconOnly
+              onClick={onClear}
+              variant="bare"
+              size="sm"
+            >
               <XIcon />
             </Button>
           )}

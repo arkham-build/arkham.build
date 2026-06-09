@@ -21,12 +21,12 @@ export function CopyToClipboard(props: Props) {
 
   return (
     <Button
+      {...rest}
       tooltip={
         isCopied
           ? t("ui.copy_to_clipboard_success")
           : (tooltip ?? t("ui.copy_to_clipboard"))
       }
-      {...rest}
       iconOnly
       onClick={onClick}
     >

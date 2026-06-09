@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.57.0
+      image: mcr.microsoft.com/playwright:v1.60.0
     env:
       VITE_PAGE_NAME: ${{ vars.VITE_PAGE_NAME }}
       VITE_API_LEGACY_URL: ${{ vars.VITE_API_LEGACY_URL }}
@@ -22,8 +22,8 @@ jobs:
       VITE_CARD_IMAGE_URL: ${{ vars.VITE_CARD_IMAGE_URL }}
       E2E_BASE_URL: ${{ inputs.BASE_URL || vars.PRODUCTION_BASE_URL }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           cache: "npm"
           node-version-file: "package.json"

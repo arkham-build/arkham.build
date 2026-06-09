@@ -82,6 +82,7 @@
   opacity: 0.4;
   cursor: help;
   text-decoration: none;
+  vertical-align: center;
 
   &:hover {
     opacity: 1;

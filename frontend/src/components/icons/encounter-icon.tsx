@@ -92,6 +92,9 @@ function getEncounterIcon(code?: string | null) {
     case "venom":
       return "yigs_venom";
 
+    case "pillars_of_judgment":
+      return "pillars_of_judgement";
+
     case "the_city_of_archives":
       return "city_of_archives";
 

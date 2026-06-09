@@ -47,7 +47,7 @@ function Connection(props: { connection: OAuthConnection }) {
   const statusProps =
     status === "connected"
       ? {
-          color: "var(--nord-14)",
+          color: "var(--color-success)",
           icon: <CheckIcon />,
           label: t("settings.account.oauth.connected"),
         }

@@ -868,11 +868,13 @@
         "upload_loading": "Uploading deck to {{provider}}..."
       },
       "tools": {
+        "average_cost": "Average cost: {{cost}}",
         "cards": "Cards",
         "count": "Count",
         "factions": "Classes",
         "factions_tooltip": "{{count}} {{faction}} {{cards}}",
         "loading": "Loading deck tools...",
+        "median_cost": "Median cost: {{cost}}",
         "resource_cost": "Resource cost",
         "resource_cost_tooltip": "{{count}} {{cards}} of cost {{cost}}",
         "resource_costs": "Resource costs",
@@ -1144,12 +1146,14 @@
       },
       "history": {
         "added": "Added",
+        "created": "Created",
         "current_upgrade": "Current upgrade",
         "discounts": "Discounts",
         "initial_deck": "Initial deck",
         "no_changes": "No changes",
         "removed": "Removed",
         "slot_changes": "{{slot}} changes",
+        "updated": "Updated",
         "upgrade": "Upgrade #{{index}}",
         "upgrade_xp": "XP available: {{xp}}{{adjustment}} (spent: {{spent}})"
       },
@@ -1463,6 +1467,7 @@
         "include_game_text": "Game text",
         "include_name": "Name",
         "placeholder": "Search cards...",
+        "share": "Share query",
         "title": "Search"
       },
       "sort_by": "Sort by"

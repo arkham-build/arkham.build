@@ -14,7 +14,7 @@ import {
   cardToMarkdown,
 } from "@/pages/deck-edit/editor/notes-rte/cards-to-markdown";
 import { useStore } from "@/store";
-import { filterEncounterCards } from "@/store/lib/filtering";
+import { filterEncounterCards, filterPlayerCards } from "@/store/lib/filtering";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectListCards } from "@/store/selectors/lists";
@@ -24,7 +24,7 @@ import {
   selectMetadata,
 } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
-import { and, not } from "@/utils/fp";
+import { and } from "@/utils/fp";
 import css from "./notes-rte.module.css";
 import {
   type CardOrigin,
@@ -192,7 +192,7 @@ function selectCardOptions(
 
     cards.push(...(listCards?.cards ?? []));
   } else if (origin === "player") {
-    const filterFn = not(filterEncounterCards);
+    const filterFn = filterPlayerCards;
 
     cards.push(...Object.values(metadata.cards).filter(filterFn));
   } else if (origin === "campaign") {

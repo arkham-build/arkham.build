@@ -65,6 +65,11 @@ export function filterEncounterCards(card: Card) {
   return !!card.encounter_code; // filter out encounter cards (story player cards).
 }
 
+export function filterPlayerCards(card: Card) {
+  // Reward cards are encounter cards with level >= 0.
+  return !card.encounter_code || card.xp != null;
+}
+
 // needs to filter out some bad data that would otherwise end up in player cards (i.e. 04325).
 export function filterMythosCards(card: Card) {
   return card.faction_code !== "mythos";
