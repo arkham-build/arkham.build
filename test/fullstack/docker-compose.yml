@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+
+  mailcrab:
+    image: marlonb/mailcrab:latest
+
+  runner:
+    image: mcr.microsoft.com/playwright:v1.60.0
+    depends_on:
+      - postgres
+      - mailcrab
+    environment:
+      E2E_MAILCRAB_URL: http://mailcrab:1080
+      E2E_POSTGRES_HOST: postgres
+      E2E_POSTGRES_PASSWORD: postgres
+      E2E_POSTGRES_PORT: 5432
+      E2E_POSTGRES_USER: postgres
+    volumes:
+      - ../..:/work
+      - /work/node_modules
+    working_dir: /work
+    command: >-
+      bash -lc "npm i && npm run test:fullstack:ci"

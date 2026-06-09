@@ -19,7 +19,10 @@ async function main() {
   await registerQueues(boss);
   await registerEmailWorker(boss, new SMTPMailer(config));
   await registerTaskWorkers(boss);
-  await registerSchedules(boss);
+
+  if (config.ENABLE_JOB_SCHEDULES) {
+    await registerSchedules(boss);
+  }
 
   log("info", "Worker started");
 

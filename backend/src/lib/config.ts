@@ -8,6 +8,10 @@ export const configSchema = z.object({
   ARKHAMDB_OAUTH_CLIENT_SECRET: z.string(),
   ARKHAMDB_OAUTH_REDIRECT_URI: z.url(),
   ADMIN_API_KEY: z.string(),
+  ENABLE_JOB_SCHEDULES: z
+    .enum(["true", "false"])
+    .default("true")
+    .transform((value) => value === "true"),
   INGEST_JSON_DATA_REPO: repoRefSchema,
   INGEST_METADATA_REPO: repoRefSchema,
   INGEST_TABOO_DATA_REPO: repoRefSchema,

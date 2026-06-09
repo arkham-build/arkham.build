@@ -1,0 +1,55 @@
+name: "[Account E2E] Tests"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "shared/**"
+      - "test/e2e-account/**"
+      - ".github/workflows/account-e2e-tests.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "shared/**"
+      - "test/e2e-account/**"
+      - ".github/workflows/account-e2e-tests.yml"
+
+jobs:
+  e2e:
+    name: End-to-End Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+      mailcrab:
+        image: marlonb/mailcrab:latest
+    env:
+      E2E_MAILCRAB_URL: http://mailcrab:1080
+      E2E_POSTGRES_HOST: postgres
+      E2E_POSTGRES_PASSWORD: postgres
+      E2E_POSTGRES_PORT: 5432
+      E2E_POSTGRES_USER: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: "npm"
+          node-version-file: "package.json"
+      - run: npm i
+      - run: npm run test:e2e:account:ci
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-account-e2e
+          path: playwright-report/
