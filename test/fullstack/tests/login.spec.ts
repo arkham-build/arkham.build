@@ -1,12 +1,12 @@
 import { expect, type Page } from "@playwright/test";
 import { test } from "../fixtures.ts";
+import { login } from "../lib/auth.ts";
 import { createAccount, createUnverifiedAccount } from "../lib/db.ts";
 
 test.describe("login", () => {
   test("authenticates a verified account", async ({ page }) => {
     const account = await createAccount();
 
-    await page.goto("/auth/login");
     await login(page, account.email, account.password);
 
     await expect(page).toHaveURL(/\/$/);
@@ -16,7 +16,6 @@ test.describe("login", () => {
   test("rejects invalid password", async ({ page }) => {
     const account = await createAccount();
 
-    await page.goto("/auth/login");
     await login(page, account.email, "WrongPassword123!");
 
     await expect(page.getByText("Invalid email or password")).toBeVisible();
@@ -24,7 +23,6 @@ test.describe("login", () => {
   });
 
   test("rejects unknown email", async ({ page }) => {
-    await page.goto("/auth/login");
     await login(page, "unknown@example.com", "SecurePassword123!");
 
     await expect(page.getByText("Invalid email or password")).toBeVisible();
@@ -34,7 +32,6 @@ test.describe("login", () => {
   test("rejects unverified account", async ({ page }) => {
     const account = await createUnverifiedAccount();
 
-    await page.goto("/auth/login");
     await login(page, account.email, account.password);
 
     await expect(
@@ -46,10 +43,9 @@ test.describe("login", () => {
   test("redirects after login", async ({ page }) => {
     const account = await createAccount();
 
-    await page.goto(
-      `/auth/login?redirect=${encodeURIComponent("/settings?tab=account")}`,
-    );
-    await login(page, account.email, account.password);
+    await login(page, account.email, account.password, {
+      redirect: "/settings?tab=account",
+    });
 
     await expect(page).toHaveURL(/\/settings\?tab=account$/);
     await expect(page.locator("#profile-username")).toHaveValue(account.name);
@@ -58,7 +54,6 @@ test.describe("login", () => {
   test("persists the session", async ({ page }) => {
     const account = await createAccount();
 
-    await page.goto("/auth/login");
     await login(page, account.email, account.password);
     await expect(page).toHaveURL(/\/$/);
 
@@ -71,7 +66,6 @@ test.describe("login", () => {
   test("logs out", async ({ page }) => {
     const account = await createAccount();
 
-    await page.goto("/auth/login");
     await login(page, account.email, account.password);
     await expect(page).toHaveURL(/\/$/);
 
@@ -83,12 +77,6 @@ test.describe("login", () => {
     await expect(page.getByRole("link", { name: "Log in" })).toBeVisible();
   });
 });
-
-async function login(page: Page, email: string, password: string) {
-  await page.locator("#email").fill(email);
-  await page.locator("#password").fill(password);
-  await page.getByRole("button", { name: "Log in" }).click();
-}
 
 async function expectAuthenticatedAs(page: Page, name: string) {
   await page.getByTestId("masthead-settings").click();

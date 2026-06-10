@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { expect, type Page } from "@playwright/test";
 import { test } from "../fixtures.ts";
+import { login } from "../lib/auth.ts";
 import { createAccount, createUnverifiedAccount } from "../lib/db.ts";
 import {
   assertNoPasswordResetEmail,
@@ -65,7 +66,6 @@ test.describe("forgot password", () => {
       "Password reset failed: Error: Invalid or expired password reset token",
     );
 
-    await page.goto("/auth/login");
     await login(page, account.email, account.password);
     await expect(page).toHaveURL(/\/$/);
   });
@@ -86,7 +86,6 @@ test.describe("forgot password", () => {
       "Password reset failed: Error: Invalid or expired password reset token",
     );
 
-    await page.goto("/auth/login");
     await login(page, account.email, secondNewPassword);
     await expect(page.getByText("Invalid email or password")).toBeVisible();
 
@@ -116,10 +115,4 @@ async function resetPassword(page: Page, resetUrl: string, password: string) {
   await page.locator("#password").fill(password);
   await page.locator("#confirm-password").fill(password);
   await page.getByRole("button", { name: "Reset password" }).click();
-}
-
-async function login(page: Page, email: string, password: string) {
-  await page.locator("#email").fill(email);
-  await page.locator("#password").fill(password);
-  await page.getByRole("button", { name: "Log in" }).click();
 }
