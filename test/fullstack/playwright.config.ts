@@ -10,7 +10,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 2 : undefined,
-  reporter: "html",
+  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "html",
   use: {
     baseURL: frontendUrl,
     trace: "on-first-retry",
@@ -28,6 +28,7 @@ export default defineConfig({
     command: `${process.execPath} --experimental-strip-types ${path.join(import.meta.dirname, "stack.ts")}`,
     env: createStackEnv(),
     reuseExistingServer: false,
+    stdout: "pipe",
     timeout: 300000,
     url: frontendUrl,
   },

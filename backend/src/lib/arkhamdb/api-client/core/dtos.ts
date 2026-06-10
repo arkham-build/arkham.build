@@ -6,6 +6,11 @@ const SafeSlotsSchema = z.preprocess(
   SlotsSchema.nullish(),
 );
 
+const SafeRequiredSlotsSchema = z.preprocess(
+  (value) => (Array.isArray(value) ? {} : value),
+  SlotsSchema,
+);
+
 export const ArkhamDbRemoteDeckSchema = z.object({
   date_creation: z.string().nullish(),
   date_update: z.string().nullish(),
@@ -19,7 +24,7 @@ export const ArkhamDbRemoteDeckSchema = z.object({
   name: z.string(),
   problem: z.union([DeckProblemSchema, z.string()]).nullish(),
   sideSlots: SafeSlotsSchema,
-  slots: SlotsSchema,
+  slots: SafeRequiredSlotsSchema,
   taboo: z.number().nullish(),
   tags: z.string().nullish(),
   user_id: z.number().nullish(),

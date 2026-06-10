@@ -1,3 +1,11 @@
+x-arkhamdb-mysql-environment: &arkhamdb-mysql-environment
+  ARKHAMDB_WEBSITE_URL: arkhamdb
+  MYSQL_DATABASE: symfony
+  MYSQL_DOCKER_HOST_NAME: arkhamdb-mariadb
+  MYSQL_PASSWORD: symfony_password
+  MYSQL_TCP_PORT: "3306"
+  MYSQL_USER: symfony_user
+
 services:
   postgres:
     image: postgres:18-alpine
@@ -9,12 +17,70 @@ services:
   mailcrab:
     image: marlonb/mailcrab:latest
 
+  arkhamdb:
+    build:
+      context: ./arkhamdb-docker
+      args:
+        <<: *arkhamdb-mysql-environment
+    environment:
+      <<: *arkhamdb-mysql-environment
+      ARKHAMDB_DOCKER_TEST_API_KEY: test-arkhamdb-api-key
+    volumes:
+      - ./arkhamdb-docker/arkhamdb-json-data:/data
+      - ./arkhamdb-docker/images:/code/web/bundles/cards
+    depends_on:
+      arkhamdb-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "arkhamdb-healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  arkhamdb-init:
+    build:
+      context: ./arkhamdb-docker
+      args:
+        <<: *arkhamdb-mysql-environment
+    environment:
+      <<: *arkhamdb-mysql-environment
+    volumes:
+      - ./arkhamdb-docker/arkhamdb-json-data:/data
+    depends_on:
+      arkhamdb-mariadb:
+        condition: service_healthy
+    command: arkhamdb-init
+
+  arkhamdb-mariadb:
+    image: mariadb:10.2
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      <<: *arkhamdb-mysql-environment
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - arkhamdb-data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h localhost -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} --silent",
+        ]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+
   runner:
     image: mcr.microsoft.com/playwright:v1.60.0
     depends_on:
-      - postgres
-      - mailcrab
+      arkhamdb:
+        condition: service_healthy
+      mailcrab:
+        condition: service_started
+      postgres:
+        condition: service_started
     environment:
+      E2E_ARKHAMDB_BASE_URL: http://arkhamdb
+      E2E_ARKHAMDB_TEST_API_KEY: test-arkhamdb-api-key
       E2E_MAILCRAB_URL: http://mailcrab:1080
       E2E_POSTGRES_HOST: postgres
       E2E_POSTGRES_PASSWORD: postgres
@@ -26,3 +92,6 @@ services:
     working_dir: /work
     command: >-
       bash -lc "npm i && npm run test:fullstack:ci"
+
+volumes:
+  arkhamdb-data:

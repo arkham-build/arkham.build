@@ -5,6 +5,10 @@ import { Client } from "pg";
 import { PgBoss } from "pg-boss";
 import { EMAIL_DELIVER_QUEUE } from "../../backend/src/jobs/job-types.ts";
 import {
+  createArkhamDbOAuthApp,
+  waitForArkhamDbReady,
+} from "./lib/arkhamdb.ts";
+import {
   apiUrl,
   createStackEnv,
   databaseUrl,
@@ -38,7 +42,7 @@ type State = {
 const rootDir = path.resolve(import.meta.dirname, "../..");
 const schemaPath = path.join(rootDir, "backend/src/db/schema.sql");
 const vitePath = path.join(rootDir, "node_modules/vite/bin/vite.js");
-const childEnv = createStackEnv();
+let childEnv = createStackEnv();
 const state: State = {
   createdDatabase: false,
   children: [],
@@ -59,27 +63,41 @@ await main().catch(async (error) => {
 });
 
 async function main() {
+  console.info("Creating test database...");
   await createDatabase();
   state.createdDatabase = true;
 
+  console.info("Waiting for ArkhamDB...");
+  await waitForArkhamDbReady();
+  console.info("Creating ArkhamDB OAuth app...");
+  const oauthApp = await createArkhamDbOAuthApp();
+  childEnv = createStackEnv({
+    ARKHAMDB_OAUTH_CLIENT_ID: oauthApp.clientId,
+    ARKHAMDB_OAUTH_CLIENT_SECRET: oauthApp.clientSecret,
+  });
+
+  console.info("Building frontend...");
   await runCommand(
     process.execPath,
     [vitePath, "build"],
     path.join(rootDir, "frontend"),
   );
 
+  console.info("Starting worker...");
   startProcess("worker", process.execPath, [
     "--experimental-strip-types",
     "backend/src/worker.ts",
   ]);
   await waitForWorkerReady();
 
+  console.info("Starting API...");
   startProcess("api", process.execPath, [
     "--experimental-strip-types",
     "backend/src/main.ts",
   ]);
   await waitForApiReady();
 
+  console.info("Starting frontend...");
   startProcess(
     "frontend",
     process.execPath,
@@ -87,6 +105,7 @@ async function main() {
     path.join(rootDir, "frontend"),
   );
   await waitForUrl(frontendUrl, (response) => response.ok);
+  console.info("Fullstack server ready.");
 }
 
 async function shutdown(code: number) {

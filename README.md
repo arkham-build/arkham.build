@@ -36,6 +36,10 @@ npm run dev -w {workspace}
 # E2E test
 npm run test:e2e
 
+# Fullstack E2E test in Docker
+# Requires submodules: git submodule update --init --recursive
+npm run test:fullstack:docker
+
 ```
 
 Individual workspaces may contain additional commands in their `package.json` file.

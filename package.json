@@ -18,7 +18,7 @@
     "prepare:e2e": "playwright install --with-deps",
     "test:e2e": "playwright test --config test/e2e/playwright.config.ts",
     "test:fullstack": "playwright test --config test/fullstack/playwright.config.ts",
-    "test:fullstack:docker": "docker compose -f test/fullstack/docker-compose.yml up --build --abort-on-container-exit --exit-code-from runner",
+    "test:fullstack:docker": "bash -lc 'set -e; compose=\"docker compose -f test/fullstack/docker-compose.yml\"; trap \"$compose down\" EXIT; $compose up --build --wait -d postgres mailcrab arkhamdb || { $compose logs arkhamdb-init; exit 1; }; $compose run --rm runner'",
     "test:fullstack:ci": "CI=1 playwright test --config test/fullstack/playwright.config.ts",
     "update-snapshots:local": "PW_TEST_HTML_REPORT_OPEN='never' playwright test --config test/e2e/playwright.config.ts --update-snapshots",
     "update-snapshots:docker": "docker run -it --rm --ipc=host -v .:/work/ mcr.microsoft.com/playwright:v1.60.0 /bin/bash -c 'cd /work && npm i && PW_TEST_HTML_REPORT_OPEN=never npx playwright test --config test/e2e/playwright.config.ts --update-snapshots'"

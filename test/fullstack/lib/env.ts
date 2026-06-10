@@ -22,6 +22,11 @@ export const databaseUrl =
 export const mailcrabUrl =
   process.env.E2E_MAILCRAB_URL ?? "http://localhost:1080";
 
+export const arkhamDbBaseUrl =
+  process.env.E2E_ARKHAMDB_BASE_URL ?? "http://localhost:8000";
+export const arkhamDbTestApiKey =
+  process.env.E2E_ARKHAMDB_TEST_API_KEY ?? "test-arkhamdb-api-key";
+
 export const sessionCookieName =
   process.env.E2E_SESSION_COOKIE_NAME ?? "arkham-build-session";
 
@@ -29,12 +34,12 @@ export function applyFullstackEnv() {
   Object.assign(process.env, createFullstackEnv());
 }
 
-export function createStackEnv() {
+export function createStackEnv(overrides: Record<string, string> = {}) {
   return {
     ...process.env,
     ...createFullstackEnv(),
     ADMIN_API_KEY: "test-admin-api-key",
-    ARKHAMDB_BASE_URL: "https://arkhamdb.com",
+    ARKHAMDB_BASE_URL: arkhamDbBaseUrl,
     ARKHAMDB_OAUTH_CLIENT_ID: "test-client-id",
     ARKHAMDB_OAUTH_CLIENT_SECRET: "test-client-secret",
     ARKHAMDB_OAUTH_REDIRECT_URI: `${apiUrl}/auth/arkhamdb/callback`,
@@ -64,17 +69,20 @@ export function createStackEnv() {
     SMTP_USER: "",
     VITE_API_LEGACY_URL: apiUrl,
     VITE_API_URL: apiUrl,
-    VITE_ARKHAMDB_BASE_URL: "https://arkhamdb.com",
+    VITE_ARKHAMDB_BASE_URL: arkhamDbBaseUrl,
     VITE_CARD_IMAGE_URL: "https://assets.arkham.build",
     VITE_PAGE_NAME: "arkham.build",
     VITE_SHOW_PREVIEW_BANNER: "false",
     VITE_TURNSTILE_SITE_KEY: "",
+    ...overrides,
   };
 }
 
 function createFullstackEnv() {
   return {
     E2E_API_PORT: apiPort,
+    E2E_ARKHAMDB_BASE_URL: arkhamDbBaseUrl,
+    E2E_ARKHAMDB_TEST_API_KEY: arkhamDbTestApiKey,
     E2E_API_URL: apiUrl,
     E2E_DATABASE_URL: databaseUrl,
     E2E_DB_NAME: dbName,

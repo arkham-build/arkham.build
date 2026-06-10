@@ -13,7 +13,8 @@
       "!**/coverage",
       "!**/playwright-report",
       "!**/test-results",
-      "!**/.wrangler"
+      "!**/.wrangler",
+      "!test/fullstack/arkhamdb-docker"
     ],
     "maxSize": 10000000
   },
