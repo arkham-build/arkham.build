@@ -4,7 +4,6 @@ import type { Hono } from "hono";
 import { describe, expect, vi } from "vitest";
 import { appFactory } from "../app.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
-import type { MockMailer } from "./mocks/email.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
 
 describe("Auth routes", () => {
@@ -172,54 +171,56 @@ describe("Auth routes", () => {
       const oauth = await startOAuthFlow(app, "/auth/arkhamdb/signup");
       mockArkhamDbOAuth(12345);
 
-      try {
-        const res = await app.request(
-          `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
-          {
-            method: "GET",
-            headers: { Cookie: oauth.cookie },
-          },
-        );
-
-        expect(res.status).toBe(302);
-        expect(res.headers.get("location")).toBe(
-          `${config.FRONTEND_URL}/auth/signup/complete`,
-        );
-        expect(res.headers.get("set-cookie")).toContain(
-          `${config.SESSION_COOKIE_NAME}=`,
-        );
-
-        const identity = await db
-          .selectFrom("account_identity")
-          .innerJoin("account", "account.id", "account_identity.account_id")
-          .select([
-            "account.profile_completed",
-            "account_identity.provider",
-            "account_identity.provider_user_id",
-          ])
-          .where("provider", "=", "arkhamdb")
-          .where("provider_user_id", "=", "12345")
-          .executeTakeFirst();
-
-        expect(identity).toMatchObject({
-          profile_completed: false,
-          provider: "arkhamdb",
-          provider_user_id: "12345",
-        });
-
-        const cookie = res.headers.get("set-cookie") ?? "";
-        const meRes = await app.request("/v2/auth/me", {
+      const res = await app.request(
+        `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
+        {
           method: "GET",
-          headers: { Cookie: cookie },
-        });
+          headers: { Cookie: oauth.cookie },
+        },
+      );
 
-        expect(meRes.status).toBe(200);
-        expect(await meRes.json()).toMatchObject({
-          account: { profileComplete: false },
-        });
-      } finally {
-        vi.unstubAllGlobals();
-      }
+      expect(res.status).toBe(302);
+      expect(res.headers.get("location")).toBe(
+        `${config.FRONTEND_URL}/auth/signup/complete`,
+      );
+      expect(res.headers.get("set-cookie")).toContain(
+        `${config.SESSION_COOKIE_NAME}=`,
+      );
+
+      const identity = await db
+        .selectFrom("account_identity")
+        .innerJoin("account", "account.id", "account_identity.account_id")
+        .select([
+          "account.profile_completed",
+          "account_identity.provider",
+          "account_identity.provider_user_id",
+        ])
+        .where("provider", "=", "arkhamdb")
+        .where("provider_user_id", "=", "12345")
+        .executeTakeFirst();
+
+      expect(identity).toMatchObject({
+        profile_completed: false,
+        provider: "arkhamdb",
+        provider_user_id: "12345",
+      });
+
+      const sessionSetCookie = res.headers
+        .getSetCookie()
+        .find((cookie) => cookie.startsWith(`${config.SESSION_COOKIE_NAME}=`));
+      assert(sessionSetCookie, "Missing session cookie");
+      const [cookie] = sessionSetCookie.split(";", 1);
+      assert(cookie, "Missing session cookie");
+
+      const meRes = await app.request("/v2/auth/me", {
+        method: "GET",
+        headers: { Cookie: cookie },
+      });
+
+      expect(meRes.status).toBe(200);
+      expect(await meRes.json()).toMatchObject({
+        account: { profileComplete: false },
+      });
     });
 
     test("logs in an existing oauth account", async ({ dependencies }) => {
@@ -244,23 +245,19 @@ describe("Auth routes", () => {
       const oauth = await startOAuthFlow(app, "/auth/arkhamdb/login");
       mockArkhamDbOAuth(12345);
 
-      try {
-        const res = await app.request(
-          `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
-          {
-            method: "GET",
-            headers: { Cookie: oauth.cookie },
-          },
-        );
+      const res = await app.request(
+        `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
+        {
+          method: "GET",
+          headers: { Cookie: oauth.cookie },
+        },
+      );
 
-        expect(res.status).toBe(302);
-        expect(res.headers.get("location")).toBe(`${config.FRONTEND_URL}/`);
-        expect(res.headers.get("set-cookie")).toContain(
-          `${config.SESSION_COOKIE_NAME}=`,
-        );
-      } finally {
-        vi.unstubAllGlobals();
-      }
+      expect(res.status).toBe(302);
+      expect(res.headers.get("location")).toBe(`${config.FRONTEND_URL}/`);
+      expect(res.headers.get("set-cookie")).toContain(
+        `${config.SESSION_COOKIE_NAME}=`,
+      );
     });
 
     test("connects an OAuth identity for the authenticated account", async ({
@@ -281,35 +278,31 @@ describe("Auth routes", () => {
       );
       mockArkhamDbOAuth(12345);
 
-      try {
-        const res = await app.request(
-          `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
-          {
-            method: "GET",
-            headers: { Cookie: oauth.cookie },
-          },
-        );
+      const res = await app.request(
+        `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
+        {
+          method: "GET",
+          headers: { Cookie: oauth.cookie },
+        },
+      );
 
-        expect(res.status).toBe(302);
-        expect(res.headers.get("location")).toBe(
-          `${config.FRONTEND_URL}/settings?tab=account`,
-        );
+      expect(res.status).toBe(302);
+      expect(res.headers.get("location")).toBe(
+        `${config.FRONTEND_URL}/settings?tab=account`,
+      );
 
-        const identity = await db
-          .selectFrom("account_identity")
-          .select(["account_id", "provider", "provider_user_id"])
-          .where("provider", "=", "arkhamdb")
-          .where("provider_user_id", "=", "12345")
-          .executeTakeFirst();
+      const identity = await db
+        .selectFrom("account_identity")
+        .select(["account_id", "provider", "provider_user_id"])
+        .where("provider", "=", "arkhamdb")
+        .where("provider_user_id", "=", "12345")
+        .executeTakeFirst();
 
-        expect(identity).toMatchObject({
-          account_id: account.id,
-          provider: "arkhamdb",
-          provider_user_id: "12345",
-        });
-      } finally {
-        vi.unstubAllGlobals();
-      }
+      expect(identity).toMatchObject({
+        account_id: account.id,
+        provider: "arkhamdb",
+        provider_user_id: "12345",
+      });
     });
 
     test("reconnect clears stale unhealthy arkhamdb state", async ({
@@ -346,42 +339,38 @@ describe("Auth routes", () => {
       );
       mockArkhamDbOAuth(12345);
 
-      try {
-        const res = await app.request(
-          `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
-          {
-            method: "GET",
-            headers: { Cookie: oauth.cookie },
-          },
-        );
-
-        expect(res.status).toBe(302);
-        expect(res.headers.get("location")).toBe(
-          `${config.FRONTEND_URL}/settings?tab=account`,
-        );
-
-        const sessionRes = await app.request("/v2/auth/me", {
+      const res = await app.request(
+        `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
+        {
           method: "GET",
-          headers: { Cookie: sessionCookie },
-        });
+          headers: { Cookie: oauth.cookie },
+        },
+      );
 
-        expect(sessionRes.status).toBe(200);
-        const body = (await sessionRes.json()) as { identities: unknown[] };
-        expect(body.identities).toContainEqual(
-          expect.objectContaining({
-            provider: "arkhamdb",
-            providerUserId: "12345",
-            details: {
-              status: "healthy",
-              lastSyncedAt: null,
-              lastError: null,
-              username: null,
-            },
-          }),
-        );
-      } finally {
-        vi.unstubAllGlobals();
-      }
+      expect(res.status).toBe(302);
+      expect(res.headers.get("location")).toBe(
+        `${config.FRONTEND_URL}/settings?tab=account`,
+      );
+
+      const sessionRes = await app.request("/v2/auth/me", {
+        method: "GET",
+        headers: { Cookie: sessionCookie },
+      });
+
+      expect(sessionRes.status).toBe(200);
+      const body = (await sessionRes.json()) as { identities: unknown[] };
+      expect(body.identities).toContainEqual(
+        expect.objectContaining({
+          provider: "arkhamdb",
+          providerUserId: "12345",
+          details: {
+            status: "healthy",
+            lastSyncedAt: null,
+            lastError: null,
+            username: null,
+          },
+        }),
+      );
     });
 
     test("redirects signup failures back to signup with oauth_error", async ({
@@ -392,22 +381,18 @@ describe("Auth routes", () => {
       const oauth = await startOAuthFlow(app, "/auth/arkhamdb/signup");
       mockArkhamDbOAuthResponse([]);
 
-      try {
-        const res = await app.request(
-          `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
-          {
-            method: "GET",
-            headers: { Cookie: oauth.cookie },
-          },
-        );
+      const res = await app.request(
+        `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
+        {
+          method: "GET",
+          headers: { Cookie: oauth.cookie },
+        },
+      );
 
-        expect(res.status).toBe(302);
-        expect(res.headers.get("location")).toBe(
-          `${config.FRONTEND_URL}/auth/signup?oauth_error=arkhamdb_no_decks`,
-        );
-      } finally {
-        vi.unstubAllGlobals();
-      }
+      expect(res.status).toBe(302);
+      expect(res.headers.get("location")).toBe(
+        `${config.FRONTEND_URL}/auth/signup?oauth_error=arkhamdb_no_decks`,
+      );
     });
 
     test("redirects missing signup code back to signup with oauth_error", async ({
@@ -439,22 +424,18 @@ describe("Auth routes", () => {
       const oauth = await startOAuthFlow(app, "/auth/arkhamdb/login");
       mockArkhamDbOAuth(12345);
 
-      try {
-        const res = await app.request(
-          "/auth/arkhamdb/callback?code=test-code&state=wrong-state",
-          {
-            method: "GET",
-            headers: { Cookie: oauth.cookie },
-          },
-        );
+      const res = await app.request(
+        "/auth/arkhamdb/callback?code=test-code&state=wrong-state",
+        {
+          method: "GET",
+          headers: { Cookie: oauth.cookie },
+        },
+      );
 
-        expect(res.status).toBe(302);
-        expect(res.headers.get("location")).toBe(
-          `${config.FRONTEND_URL}/auth/login?oauth_error=invalid_state`,
-        );
-      } finally {
-        vi.unstubAllGlobals();
-      }
+      expect(res.status).toBe(302);
+      expect(res.headers.get("location")).toBe(
+        `${config.FRONTEND_URL}/auth/login?oauth_error=invalid_state`,
+      );
     });
 
     test("redirects connect conflicts back to account settings with oauth_error", async ({
@@ -485,22 +466,18 @@ describe("Auth routes", () => {
       );
       mockArkhamDbOAuth(12345);
 
-      try {
-        const res = await app.request(
-          `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
-          {
-            method: "GET",
-            headers: { Cookie: oauth.cookie },
-          },
-        );
+      const res = await app.request(
+        `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
+        {
+          method: "GET",
+          headers: { Cookie: oauth.cookie },
+        },
+      );
 
-        expect(res.status).toBe(302);
-        expect(res.headers.get("location")).toBe(
-          `${config.FRONTEND_URL}/settings?tab=account&oauth_error=identity_belongs_to_another_account`,
-        );
-      } finally {
-        vi.unstubAllGlobals();
-      }
+      expect(res.status).toBe(302);
+      expect(res.headers.get("location")).toBe(
+        `${config.FRONTEND_URL}/settings?tab=account&oauth_error=identity_belongs_to_another_account`,
+      );
     });
   });
 
@@ -688,26 +665,22 @@ describe("Auth routes", () => {
         ),
       );
 
-      try {
-        const res = await signup(app, {
-          name: "captcha-success",
-          email: "captcha-success@example.com",
-          password: "SecurePassword123!",
-          captchaToken: "captcha-token",
-        });
+      const res = await signup(app, {
+        name: "captcha-success",
+        email: "captcha-success@example.com",
+        password: "SecurePassword123!",
+        captchaToken: "captcha-token",
+      });
 
-        expect(res.status).toBe(201);
-        expect(globalThis.fetch).toHaveBeenCalledWith(
-          "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-          expect.objectContaining({
-            method: "POST",
-            body: expect.any(URLSearchParams),
-          }),
-        );
-        expect(mailer.sentEmails).toHaveLength(1);
-      } finally {
-        vi.unstubAllGlobals();
-      }
+      expect(res.status).toBe(201);
+      expect(globalThis.fetch).toHaveBeenCalledWith(
+        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        expect.objectContaining({
+          method: "POST",
+          body: expect.any(URLSearchParams),
+        }),
+      );
+      expect(mailer.sentEmails).toHaveLength(1);
     });
 
     test("rejects invalid captcha when turnstile is enabled", async ({
@@ -739,20 +712,16 @@ describe("Auth routes", () => {
         ),
       );
 
-      try {
-        const res = await signup(app, {
-          name: "captcha-fail",
-          email: "captcha-fail@example.com",
-          password: "SecurePassword123!",
-          captchaToken: "captcha-token",
-        });
+      const res = await signup(app, {
+        name: "captcha-fail",
+        email: "captcha-fail@example.com",
+        password: "SecurePassword123!",
+        captchaToken: "captcha-token",
+      });
 
-        expect(res.status).toBe(400);
-        expect(await res.text()).toContain("Captcha verification failed");
-        expect(mailer.sentEmails).toHaveLength(0);
-      } finally {
-        vi.unstubAllGlobals();
-      }
+      expect(res.status).toBe(400);
+      expect(await res.text()).toContain("Captcha verification failed");
+      expect(mailer.sentEmails).toHaveLength(0);
     });
 
     test("returns a clear error for duplicate usernames", async ({
@@ -853,18 +822,10 @@ describe("Auth routes", () => {
   });
 
   describe("POST /v2/auth/login", () => {
-    test("logs in with valid credentials after verification", async ({
-      dependencies,
-    }) => {
-      const { app, mailer } = dependencies;
+    test("logs in with valid credentials", async ({ dependencies }) => {
+      const { app } = dependencies;
 
-      await signupAndVerify(app, mailer, {
-        name: "testuser",
-        email: "login@example.com",
-        password: "SecurePassword123!",
-      });
-
-      const res = await login(app, "login@example.com", "SecurePassword123!");
+      const res = await login(app, TEST_ACCOUNT.email, TEST_ACCOUNT.password);
 
       expect(res.status).toBe(200);
       const cookies = res.headers.get("set-cookie");
@@ -872,15 +833,9 @@ describe("Auth routes", () => {
     });
 
     test("does not log in with invalid password", async ({ dependencies }) => {
-      const { app, mailer } = dependencies;
+      const { app } = dependencies;
 
-      await signupAndVerify(app, mailer, {
-        name: "testuser",
-        email: "wrong-pass@example.com",
-        password: "SecurePassword123!",
-      });
-
-      const res = await login(app, "wrong-pass@example.com", "WrongPassword!");
+      const res = await login(app, TEST_ACCOUNT.email, "WrongPassword!");
       expect(res.status).toBe(401);
     });
 
@@ -915,46 +870,34 @@ describe("Auth routes", () => {
     });
 
     test("does not log in banned users", async ({ dependencies }) => {
-      const { app, db, mailer } = dependencies;
-
-      await signupAndVerify(app, mailer, {
-        name: "testuser",
-        email: "banned@example.com",
-        password: "SecurePassword123!",
-      });
+      const { app, db } = dependencies;
 
       const account = await db
         .selectFrom("account")
         .select(["id"])
-        .where("name", "=", "testuser")
+        .where("name", "=", TEST_ACCOUNT.name)
         .executeTakeFirstOrThrow();
 
       await createModerationAction(db, account.id, "ban");
 
-      const res = await login(app, "banned@example.com", "SecurePassword123!");
+      const res = await login(app, TEST_ACCOUNT.email, TEST_ACCOUNT.password);
 
       expect(res.status).toBe(403);
       expect(await res.text()).toContain("Account is banned");
     });
 
     test("allows warned users to log in", async ({ dependencies }) => {
-      const { app, db, mailer } = dependencies;
-
-      await signupAndVerify(app, mailer, {
-        name: "testuser",
-        email: "warned@example.com",
-        password: "SecurePassword123!",
-      });
+      const { app, db } = dependencies;
 
       const account = await db
         .selectFrom("account")
         .select(["id"])
-        .where("name", "=", "testuser")
+        .where("name", "=", TEST_ACCOUNT.name)
         .executeTakeFirstOrThrow();
 
       await createModerationAction(db, account.id, "warning");
 
-      const res = await login(app, "warned@example.com", "SecurePassword123!");
+      const res = await login(app, TEST_ACCOUNT.email, TEST_ACCOUNT.password);
 
       expect(res.status).toBe(200);
     });
@@ -964,32 +907,23 @@ describe("Auth routes", () => {
     test("returns user information for authenticated user", async ({
       dependencies,
     }) => {
-      const { app, mailer } = dependencies;
-
-      await signupAndVerify(app, mailer, {
-        name: "testuser",
-        email: "me@example.com",
-        password: "SecurePassword123!",
-      });
-
-      const loginRes = await login(app, "me@example.com", "SecurePassword123!");
-      const cookies = loginRes.headers.get("set-cookie");
+      const { app, sessionCookie } = dependencies;
 
       const res = await app.request("/v2/auth/me", {
         method: "GET",
-        headers: { Cookie: cookies || "" },
+        headers: { Cookie: sessionCookie },
       });
 
       expect(res.status).toBe(200);
 
       expect(await res.json()).toMatchObject({
         account: {
-          name: "testuser",
+          name: TEST_ACCOUNT.name,
         },
         identities: [
           {
             provider: "email",
-            email: "me@example.com",
+            email: TEST_ACCOUNT.email,
             pendingEmail: null,
             verified: true,
           },
@@ -1460,11 +1394,12 @@ describe("Auth routes", () => {
       const pendingToken = extractToken(mailer.sentEmails[0]?.body);
       assert(pendingToken, "No verification token found");
 
-      await signupAndVerify(app, mailer, {
+      const signupRes = await signup(app, {
         name: "claimed-email-user",
         email: "claimed@example.com",
         password: "SecurePassword123!",
       });
+      expect(signupRes.status).toBe(201);
 
       const verifyRes = await verifyEmail(app, pendingToken);
       expect(verifyRes.status).toBe(400);
@@ -1809,31 +1744,18 @@ describe("Auth routes", () => {
 
   describe("POST /v2/auth/logout", () => {
     test("logs out authenticated user", async ({ dependencies }) => {
-      const { app, mailer } = dependencies;
-
-      await signupAndVerify(app, mailer, {
-        name: "testuser",
-        email: "logout@example.com",
-        password: "SecurePassword123!",
-      });
-
-      const loginRes = await login(
-        app,
-        "logout@example.com",
-        "SecurePassword123!",
-      );
-      const cookies = loginRes.headers.get("set-cookie");
+      const { app, sessionCookie } = dependencies;
 
       const res = await app.request("/v2/auth/logout", {
         method: "POST",
-        headers: { Cookie: cookies || "" },
+        headers: { Cookie: sessionCookie },
       });
 
       expect(res.status).toBe(200);
 
       const meRes = await app.request("/v2/auth/me", {
         method: "GET",
-        headers: { Cookie: cookies || "" },
+        headers: { Cookie: sessionCookie },
       });
 
       expect(meRes.status).toBe(401);
@@ -1856,28 +1778,24 @@ describe("Auth routes", () => {
     }) => {
       vi.useFakeTimers();
 
-      try {
-        const { app, mailer } = dependencies;
+      const { app, mailer } = dependencies;
 
-        await signup(app, {
-          name: "testuser",
-          email: "resend@example.com",
-          password: "SecurePassword123!",
-        });
+      await signup(app, {
+        name: "testuser",
+        email: "resend@example.com",
+        password: "SecurePassword123!",
+      });
 
-        mailer.reset();
+      mailer.reset();
 
-        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+      vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
 
-        const res = await resendVerification(app, "resend@example.com");
+      const res = await resendVerification(app, "resend@example.com");
 
-        expect(res.status).toBe(200);
-        expect(mailer.sentEmails).toHaveLength(1);
-        expect(mailer.sentEmails[0]?.to).toEqual("resend@example.com");
-        expect(extractToken(mailer.sentEmails[0]?.body)).toBeTruthy();
-      } finally {
-        vi.useRealTimers();
-      }
+      expect(res.status).toBe(200);
+      expect(mailer.sentEmails).toHaveLength(1);
+      expect(mailer.sentEmails[0]?.to).toEqual("resend@example.com");
+      expect(extractToken(mailer.sentEmails[0]?.body)).toBeTruthy();
     });
 
     test("does not replace the existing verification token when email sending fails", async ({
@@ -1885,42 +1803,38 @@ describe("Auth routes", () => {
     }) => {
       vi.useFakeTimers();
 
-      try {
-        const { app, db, mailer } = dependencies;
+      const { app, db, mailer } = dependencies;
 
-        await signup(app, {
-          name: "resend-email-fail",
-          email: "resend-email-fail@example.com",
-          password: "SecurePassword123!",
-        });
+      await signup(app, {
+        name: "resend-email-fail",
+        email: "resend-email-fail@example.com",
+        password: "SecurePassword123!",
+      });
 
-        const token = extractToken(mailer.sentEmails[0]?.body);
-        assert(token, "No verification token found");
+      const token = extractToken(mailer.sentEmails[0]?.body);
+      assert(token, "No verification token found");
 
-        mailer.reset();
-        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
-        mailer.failOnce();
+      mailer.reset();
+      vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+      mailer.failOnce();
 
-        const res = await resendVerification(
-          app,
+      const res = await resendVerification(
+        app,
+        "resend-email-fail@example.com",
+      );
+
+      expect(res.status).toBe(500);
+      expect(mailer.sentEmails).toHaveLength(0);
+      expect(
+        await countVerificationTokens(
+          db,
           "resend-email-fail@example.com",
-        );
+          "email_verification",
+        ),
+      ).toBe(1);
 
-        expect(res.status).toBe(500);
-        expect(mailer.sentEmails).toHaveLength(0);
-        expect(
-          await countVerificationTokens(
-            db,
-            "resend-email-fail@example.com",
-            "email_verification",
-          ),
-        ).toBe(1);
-
-        const verifyRes = await verifyEmail(app, token);
-        expect(verifyRes.status).toBe(200);
-      } finally {
-        vi.useRealTimers();
-      }
+      const verifyRes = await verifyEmail(app, token);
+      expect(verifyRes.status).toBe(200);
     });
 
     test("new token works after resending verification", async ({
@@ -1928,33 +1842,29 @@ describe("Auth routes", () => {
     }) => {
       vi.useFakeTimers();
 
-      try {
-        const { app, mailer } = dependencies;
+      const { app, mailer } = dependencies;
 
-        await signup(app, {
-          name: "testuser",
-          email: "resend-works@example.com",
-          password: "SecurePassword123!",
-        });
+      await signup(app, {
+        name: "testuser",
+        email: "resend-works@example.com",
+        password: "SecurePassword123!",
+      });
 
-        const oldToken = extractToken(mailer.sentEmails[0]?.body);
+      const oldToken = extractToken(mailer.sentEmails[0]?.body);
 
-        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+      vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
 
-        await resendVerification(app, "resend-works@example.com");
+      await resendVerification(app, "resend-works@example.com");
 
-        const newToken = extractToken(mailer.sentEmails[1]?.body);
-        assert(newToken, "No new verification token found");
+      const newToken = extractToken(mailer.sentEmails[1]?.body);
+      assert(newToken, "No new verification token found");
 
-        assert(oldToken, "No old verification token found");
-        const oldRes = await verifyEmail(app, oldToken);
-        expect(oldRes.status).toBe(400);
+      assert(oldToken, "No old verification token found");
+      const oldRes = await verifyEmail(app, oldToken);
+      expect(oldRes.status).toBe(400);
 
-        const res = await verifyEmail(app, newToken);
-        expect(res.status).toBe(200);
-      } finally {
-        vi.useRealTimers();
-      }
+      const res = await verifyEmail(app, newToken);
+      expect(res.status).toBe(200);
     });
 
     test("returns 200 for non-existent email without revealing existence", async ({
@@ -1973,15 +1883,7 @@ describe("Auth routes", () => {
     }) => {
       const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, mailer, {
-        name: "testuser",
-        email: "already-verified@example.com",
-        password: "SecurePassword123!",
-      });
-
-      mailer.reset();
-
-      const res = await resendVerification(app, "already-verified@example.com");
+      const res = await resendVerification(app, TEST_ACCOUNT.email);
 
       expect(res.status).toBe(200);
       expect(mailer.sentEmails).toHaveLength(0);
@@ -1992,59 +1894,51 @@ describe("Auth routes", () => {
     }) => {
       vi.useFakeTimers();
 
-      try {
-        const { app, mailer } = dependencies;
+      const { app, mailer } = dependencies;
 
-        await signup(app, {
-          name: "testuser",
-          email: "rate-limit-resend@example.com",
-          password: "SecurePassword123!",
-        });
+      await signup(app, {
+        name: "testuser",
+        email: "rate-limit-resend@example.com",
+        password: "SecurePassword123!",
+      });
 
-        mailer.reset();
+      mailer.reset();
 
-        vi.advanceTimersByTime(4 * 60 * 1000 + 1000);
+      vi.advanceTimersByTime(4 * 60 * 1000 + 1000);
 
-        const res = await resendVerification(
-          app,
-          "rate-limit-resend@example.com",
-        );
+      const res = await resendVerification(
+        app,
+        "rate-limit-resend@example.com",
+      );
 
-        expect(res.status).toBe(429);
-        const body: any = await res.json();
-        expect(body.cause?.retryAfter).toBeDefined();
-        expect(mailer.sentEmails).toHaveLength(0);
-      } finally {
-        vi.useRealTimers();
-      }
+      expect(res.status).toBe(429);
+      const body: any = await res.json();
+      expect(body.cause?.retryAfter).toBeDefined();
+      expect(mailer.sentEmails).toHaveLength(0);
     });
 
     test("allows request after 5 minute cooldown", async ({ dependencies }) => {
       vi.useFakeTimers();
 
-      try {
-        const { app, mailer } = dependencies;
+      const { app, mailer } = dependencies;
 
-        await signup(app, {
-          name: "testuser",
-          email: "rate-limit-resend-wait@example.com",
-          password: "SecurePassword123!",
-        });
+      await signup(app, {
+        name: "testuser",
+        email: "rate-limit-resend-wait@example.com",
+        password: "SecurePassword123!",
+      });
 
-        mailer.reset();
+      mailer.reset();
 
-        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+      vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
 
-        const res = await resendVerification(
-          app,
-          "rate-limit-resend-wait@example.com",
-        );
+      const res = await resendVerification(
+        app,
+        "rate-limit-resend-wait@example.com",
+      );
 
-        expect(res.status).toBe(200);
-        expect(mailer.sentEmails).toHaveLength(1);
-      } finally {
-        vi.useRealTimers();
-      }
+      expect(res.status).toBe(200);
+      expect(mailer.sentEmails).toHaveLength(1);
     });
   });
 
@@ -2054,19 +1948,11 @@ describe("Auth routes", () => {
     }) => {
       const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, mailer, {
-        name: "testuser",
-        email: "forgot@example.com",
-        password: "SecurePassword123!",
-      });
-
-      mailer.reset();
-
-      const res = await forgotPassword(app, "forgot@example.com");
+      const res = await forgotPassword(app, TEST_ACCOUNT.email);
 
       expect(res.status).toBe(200);
       expect(mailer.sentEmails).toHaveLength(1);
-      expect(mailer.sentEmails[0]?.to).toEqual("forgot@example.com");
+      expect(mailer.sentEmails[0]?.to).toEqual(TEST_ACCOUNT.email);
       expect(extractToken(mailer.sentEmails[0]?.body)).toBeTruthy();
     });
 
@@ -2075,43 +1961,27 @@ describe("Auth routes", () => {
     }) => {
       vi.useFakeTimers();
 
-      try {
-        const { app, db, mailer } = dependencies;
+      const { app, db, mailer } = dependencies;
 
-        await signupAndVerify(app, mailer, {
-          name: "forgot-email-fail",
-          email: "forgot-email-fail@example.com",
-          password: "OldPassword123!",
-        });
+      await forgotPassword(app, TEST_ACCOUNT.email);
 
-        mailer.reset();
+      const token = extractToken(mailer.sentEmails[0]?.body);
+      assert(token, "No verification token found");
 
-        await forgotPassword(app, "forgot-email-fail@example.com");
+      mailer.reset();
+      vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+      mailer.failOnce();
 
-        const token = extractToken(mailer.sentEmails[0]?.body);
-        assert(token, "No verification token found");
+      const res = await forgotPassword(app, TEST_ACCOUNT.email);
 
-        mailer.reset();
-        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
-        mailer.failOnce();
+      expect(res.status).toBe(500);
+      expect(mailer.sentEmails).toHaveLength(0);
+      expect(
+        await countVerificationTokens(db, TEST_ACCOUNT.email, "password_reset"),
+      ).toBe(1);
 
-        const res = await forgotPassword(app, "forgot-email-fail@example.com");
-
-        expect(res.status).toBe(500);
-        expect(mailer.sentEmails).toHaveLength(0);
-        expect(
-          await countVerificationTokens(
-            db,
-            "forgot-email-fail@example.com",
-            "password_reset",
-          ),
-        ).toBe(1);
-
-        const resetRes = await resetPassword(app, token, "NewPassword123!");
-        expect(resetRes.status).toBe(200);
-      } finally {
-        vi.useRealTimers();
-      }
+      const resetRes = await resetPassword(app, token, "NewPassword123!");
+      expect(resetRes.status).toBe(200);
     });
 
     test("returns 200 for non-existent email without revealing existence", async ({
@@ -2149,66 +2019,39 @@ describe("Auth routes", () => {
     }) => {
       vi.useFakeTimers();
 
-      try {
-        const { app, mailer } = dependencies;
+      const { app, mailer } = dependencies;
 
-        await signupAndVerify(app, mailer, {
-          name: "testuser",
-          email: "rate-limit-forgot@example.com",
-          password: "SecurePassword123!",
-        });
+      await forgotPassword(app, TEST_ACCOUNT.email);
+      expect(mailer.sentEmails).toHaveLength(1);
 
-        mailer.reset();
+      mailer.reset();
 
-        await forgotPassword(app, "rate-limit-forgot@example.com");
-        expect(mailer.sentEmails).toHaveLength(1);
+      vi.advanceTimersByTime(4 * 60 * 1000 + 1000);
 
-        mailer.reset();
+      const res = await forgotPassword(app, TEST_ACCOUNT.email);
 
-        vi.advanceTimersByTime(4 * 60 * 1000 + 1000);
-
-        const res = await forgotPassword(app, "rate-limit-forgot@example.com");
-
-        expect(res.status).toBe(429);
-        const body: any = await res.json();
-        expect(body.cause?.retryAfter).toBeDefined();
-        expect(mailer.sentEmails).toHaveLength(0);
-      } finally {
-        vi.useRealTimers();
-      }
+      expect(res.status).toBe(429);
+      const body: any = await res.json();
+      expect(body.cause?.retryAfter).toBeDefined();
+      expect(mailer.sentEmails).toHaveLength(0);
     });
 
     test("allows request after 5 minute cooldown", async ({ dependencies }) => {
       vi.useFakeTimers();
 
-      try {
-        const { app, mailer } = dependencies;
+      const { app, mailer } = dependencies;
 
-        await signupAndVerify(app, mailer, {
-          name: "testuser",
-          email: "rate-limit-forgot-wait@example.com",
-          password: "SecurePassword123!",
-        });
+      await forgotPassword(app, TEST_ACCOUNT.email);
+      expect(mailer.sentEmails).toHaveLength(1);
 
-        mailer.reset();
+      mailer.reset();
 
-        await forgotPassword(app, "rate-limit-forgot-wait@example.com");
-        expect(mailer.sentEmails).toHaveLength(1);
+      vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
 
-        mailer.reset();
+      const res = await forgotPassword(app, TEST_ACCOUNT.email);
 
-        vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
-
-        const res = await forgotPassword(
-          app,
-          "rate-limit-forgot-wait@example.com",
-        );
-
-        expect(res.status).toBe(200);
-        expect(mailer.sentEmails).toHaveLength(1);
-      } finally {
-        vi.useRealTimers();
-      }
+      expect(res.status).toBe(200);
+      expect(mailer.sentEmails).toHaveLength(1);
     });
   });
 
@@ -2216,22 +2059,16 @@ describe("Auth routes", () => {
     test("resets password with valid token", async ({ dependencies }) => {
       const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, mailer, {
-        name: "testuser",
-        email: "reset@example.com",
-        password: "OldPassword123!",
-      });
+      await forgotPassword(app, TEST_ACCOUNT.email);
 
-      await forgotPassword(app, "reset@example.com");
-
-      const resetToken = extractToken(mailer.sentEmails[1]?.body);
+      const resetToken = extractToken(mailer.sentEmails[0]?.body);
       assert(resetToken, "No verification token found");
 
       const res = await resetPassword(app, resetToken, "NewPassword123!");
 
       expect(res.status).toBe(200);
 
-      const loginRes = await login(app, "reset@example.com", "NewPassword123!");
+      const loginRes = await login(app, TEST_ACCOUNT.email, "NewPassword123!");
 
       expect(loginRes.status).toBe(200);
     });
@@ -2253,32 +2090,18 @@ describe("Auth routes", () => {
     test("invalidates all sessions after password reset", async ({
       dependencies,
     }) => {
-      const { app, mailer } = dependencies;
+      const { app, mailer, sessionCookie } = dependencies;
 
-      await signupAndVerify(app, mailer, {
-        name: "testuser",
-        email: "session-invalidate@example.com",
-        password: "OldPassword123!",
-      });
+      await forgotPassword(app, TEST_ACCOUNT.email);
 
-      const loginRes = await login(
-        app,
-        "session-invalidate@example.com",
-        "OldPassword123!",
-      );
-
-      const cookies = loginRes.headers.get("set-cookie");
-
-      await forgotPassword(app, "session-invalidate@example.com");
-
-      const resetToken = extractToken(mailer.sentEmails[1]?.body);
+      const resetToken = extractToken(mailer.sentEmails[0]?.body);
       assert(resetToken, "No verification token found");
 
       await resetPassword(app, resetToken, "NewPassword123!");
 
       const meRes = await app.request("/v2/auth/me", {
         method: "GET",
-        headers: { Cookie: cookies || "" },
+        headers: { Cookie: sessionCookie },
       });
 
       expect(meRes.status).toBe(401);
@@ -2287,15 +2110,9 @@ describe("Auth routes", () => {
     test("token can only be used once", async ({ dependencies }) => {
       const { app, mailer } = dependencies;
 
-      await signupAndVerify(app, mailer, {
-        name: "testuser",
-        email: "reset-once@example.com",
-        password: "OldPassword123!",
-      });
+      await forgotPassword(app, TEST_ACCOUNT.email);
 
-      await forgotPassword(app, "reset-once@example.com");
-
-      const resetToken = extractToken(mailer.sentEmails[1]?.body);
+      const resetToken = extractToken(mailer.sentEmails[0]?.body);
       assert(resetToken, "No verification token found");
 
       const res1 = await resetPassword(app, resetToken, "NewPassword123!");
@@ -2483,20 +2300,6 @@ function mockArkhamDbOAuth(userId: number) {
       xp_spent: 0,
     },
   ]);
-}
-
-async function signupAndVerify(
-  app: Hono<HonoEnv>,
-  mailer: MockMailer,
-  params: SignupParams,
-) {
-  await signup(app, params);
-  const token = extractToken(
-    mailer.sentEmails[mailer.sentEmails.length - 1]?.body,
-  );
-  if (!token) throw new Error("No verification token found");
-  await verifyEmail(app, token);
-  return token;
 }
 
 function extractToken(

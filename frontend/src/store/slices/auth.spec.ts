@@ -1,6 +1,12 @@
-import type { Deck } from "@arkham-build/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createHttpClient } from "@/store/services/http-client";
+import {
+  makeAuthenticatedAuth,
+  makeData,
+  makeSyncItem,
+  makeSyncState,
+  makeTestDeck,
+} from "@/test/factories";
 import { getMockHttpClient, getMockStore } from "@/test/get-mock-store";
 
 describe("auth slice", () => {
@@ -20,35 +26,17 @@ describe("auth slice", () => {
     const store = await getMockStore();
 
     store.setState({
-      auth: {
-        session: {
-          account: {
-            id: "account-id",
-            name: "Test User",
-            profileComplete: true,
-          },
-          identities: [
-            {
-              provider: "email",
-              email: "test@example.com",
-              pendingEmail: null,
-              verified: true,
-            },
-          ],
-        },
-        status: "authenticated",
-      },
-      data: {
-        ...store.getState().data,
+      auth: makeAuthenticatedAuth(),
+      data: makeData({
         decks: {
-          local: makeDeck({ id: "local" }),
-          remote: makeDeck({ id: "remote", source: "account" }),
+          local: makeTestDeck({ id: "local" }),
+          remote: makeTestDeck({ id: "remote", source: "account" }),
         },
         history: {
           local: [],
           remote: [],
         },
-      },
+      }),
       deckEdits: {
         remote: {},
       },
@@ -57,7 +45,7 @@ describe("auth slice", () => {
           remote: "2026-01-01T00:00:00.000Z",
         },
       },
-      sync: makeSync(),
+      sync: makeSyncState({ deckItems: { remote: makeSyncItem() } }),
     });
 
     fetchMock.mockResolvedValue(new Response(null, { status: 200 }));
@@ -78,29 +66,11 @@ describe("auth slice", () => {
     const store = await getMockStore();
 
     store.setState({
-      auth: {
-        session: {
-          account: {
-            id: "account-id",
-            name: "Test User",
-            profileComplete: true,
-          },
-          identities: [
-            {
-              provider: "email",
-              email: "test@example.com",
-              pendingEmail: null,
-              verified: true,
-            },
-          ],
-        },
-        status: "authenticated",
-      },
-      data: {
-        ...store.getState().data,
+      auth: makeAuthenticatedAuth(),
+      data: makeData({
         decks: {
-          local: makeDeck({ id: "local" }),
-          remote: makeDeck({ id: "remote", source: "account" }),
+          local: makeTestDeck({ id: "local" }),
+          remote: makeTestDeck({ id: "remote", source: "account" }),
         },
         folders: {
           folder: { id: "folder", name: "Folder" },
@@ -113,8 +83,8 @@ describe("auth slice", () => {
           local: [],
           remote: [],
         },
-      },
-      sync: makeSync(),
+      }),
+      sync: makeSyncState({ deckItems: { remote: makeSyncItem() } }),
     });
 
     fetchMock.mockResolvedValue(new Response(null, { status: 200 }));
@@ -133,35 +103,17 @@ describe("auth slice", () => {
     const store = await getMockStore();
 
     store.setState({
-      auth: {
-        session: {
-          account: {
-            id: "account-id",
-            name: "Test User",
-            profileComplete: true,
-          },
-          identities: [
-            {
-              provider: "email",
-              email: "test@example.com",
-              pendingEmail: null,
-              verified: true,
-            },
-          ],
-        },
-        status: "authenticated",
-      },
-      data: {
-        ...store.getState().data,
+      auth: makeAuthenticatedAuth(),
+      data: makeData({
         decks: {
-          local: makeDeck({ id: "local" }),
-          remote: makeDeck({ id: "remote", source: "account" }),
+          local: makeTestDeck({ id: "local" }),
+          remote: makeTestDeck({ id: "remote", source: "account" }),
         },
         history: {
           local: [],
           remote: [],
         },
-      },
+      }),
       deckEdits: {
         remote: {},
       },
@@ -170,7 +122,7 @@ describe("auth slice", () => {
           remote: "2026-01-01T00:00:00.000Z",
         },
       },
-      sync: makeSync(),
+      sync: makeSyncState({ deckItems: { remote: makeSyncItem() } }),
     });
 
     fetchMock.mockResolvedValue(
@@ -200,69 +152,3 @@ describe("auth slice", () => {
     expect(store.getState().sync.folders.accountId).toBeNull();
   });
 });
-
-function makeSync() {
-  return {
-    settings: {
-      accountId: "account-id",
-      revision: "1",
-      lastSyncedAt: Date.now(),
-      status: "synced" as const,
-      error: null,
-      conflict: null,
-    },
-    decks: {
-      accountId: "account-id",
-      manifestVersion: "1",
-      lastSyncedAt: Date.now(),
-      status: "synced" as const,
-      error: null,
-      items: {
-        remote: {
-          version: "1",
-          status: "synced" as const,
-          lastSyncedAt: Date.now(),
-          error: null,
-          conflict: null,
-        },
-      },
-    },
-    folders: {
-      accountId: "account-id",
-      revision: "1",
-      lastSyncedAt: Date.now(),
-      status: "synced" as const,
-      error: null,
-      conflict: null,
-    },
-  };
-}
-
-function makeDeck(overrides: Partial<Deck> = {}): Deck {
-  return {
-    date_creation: "2026-01-01T00:00:00.000Z",
-    date_update: "2026-01-01T00:00:00.000Z",
-    description_md: "",
-    exile_string: null,
-    id: "deck-id",
-    ignoreDeckLimitSlots: null,
-    investigator_code: "01001",
-    investigator_name: "Investigator",
-    meta: "{}",
-    name: "Deck",
-    next_deck: null,
-    previous_deck: null,
-    problem: null,
-    sideSlots: null,
-    slots: {},
-    source: null,
-    taboo_id: null,
-    tags: "",
-    user_id: null,
-    version: "1",
-    xp: null,
-    xp_adjustment: null,
-    xp_spent: null,
-    ...overrides,
-  };
-}

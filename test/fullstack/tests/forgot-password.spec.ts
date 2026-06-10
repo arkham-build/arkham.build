@@ -1,11 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { expect, type Page } from "@playwright/test";
 import { test } from "../fixtures.ts";
-import { createAccount, createUnverifiedAccount } from "../support/db.ts";
+import { createAccount, createUnverifiedAccount } from "../lib/db.ts";
 import {
   assertNoPasswordResetEmail,
   waitForPasswordResetUrl,
-} from "../support/mailcrab.ts";
+} from "../lib/mailcrab.ts";
 
 const newPassword = "NewSecurePassword123!";
 const secondNewPassword = "SecondSecurePassword123!";

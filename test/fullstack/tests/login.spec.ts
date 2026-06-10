@@ -1,6 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import { test } from "../fixtures.ts";
-import { createAccount, createUnverifiedAccount } from "../support/db.ts";
+import { createAccount, createUnverifiedAccount } from "../lib/db.ts";
 
 test.describe("login", () => {
   test("authenticates a verified account", async ({ page }) => {

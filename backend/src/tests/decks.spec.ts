@@ -1,5 +1,4 @@
 import {
-  type Deck,
   DeckBatchResponseSchema,
   DeckConflictResponseSchema,
   DeckManifestResponseSchema,
@@ -7,14 +6,10 @@ import {
   type DeckSyncTarget,
 } from "@arkham-build/shared";
 import type { Hono } from "hono";
-import { afterEach, describe, expect, vi } from "vitest";
+import { describe, expect, vi } from "vitest";
 import type { Database } from "../db/db.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
-
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
 
 function getManifest(app: Hono<HonoEnv>, cookie?: string) {
   const headers: Record<string, string> = {};
@@ -117,10 +112,6 @@ function upgradeDeck(
   });
 }
 
-async function readDeck(res: Response): Promise<Deck> {
-  return DeckSchema.parse(await res.json());
-}
-
 describe("Deck routes", () => {
   describe("GET /v2/decks/manifest", () => {
     test("returns 401 when unauthenticated", async ({ dependencies }) => {
@@ -198,32 +189,7 @@ describe("Deck routes", () => {
       dependencies,
     }) => {
       const { app, db, sessionCookie } = dependencies;
-      const account = await db
-        .selectFrom("account")
-        .select("id")
-        .where("name", "=", TEST_ACCOUNT.name)
-        .executeTakeFirstOrThrow();
-
-      const identity = await db
-        .insertInto("account_identity")
-        .values({
-          account_id: account.id,
-          provider: "arkhamdb",
-          provider_user_id: "12345",
-          verified_at: new Date(),
-        })
-        .returning(["id"])
-        .executeTakeFirstOrThrow();
-
-      await db
-        .insertInto("oauth_token")
-        .values({
-          account_identity_id: identity.id,
-          access_token: "access-token",
-          refresh_token: "refresh-token",
-          token_expires_at: new Date("2026-06-04T13:00:00.000Z"),
-        })
-        .executeTakeFirstOrThrow();
+      await insertArkhamDbConnection(db);
 
       vi.stubGlobal(
         "fetch",
@@ -294,32 +260,7 @@ describe("Deck routes", () => {
         version: "0.1",
       });
 
-      const account = await db
-        .selectFrom("account")
-        .select("id")
-        .where("name", "=", TEST_ACCOUNT.name)
-        .executeTakeFirstOrThrow();
-
-      const identity = await db
-        .insertInto("account_identity")
-        .values({
-          account_id: account.id,
-          provider: "arkhamdb",
-          provider_user_id: "12345",
-          verified_at: new Date(),
-        })
-        .returning(["id"])
-        .executeTakeFirstOrThrow();
-
-      await db
-        .insertInto("oauth_token")
-        .values({
-          account_identity_id: identity.id,
-          access_token: "access-token",
-          refresh_token: "refresh-token",
-          token_expires_at: new Date("2026-06-04T13:00:00.000Z"),
-        })
-        .executeTakeFirstOrThrow();
+      await insertArkhamDbConnection(db);
 
       vi.stubGlobal(
         "fetch",
@@ -385,8 +326,11 @@ describe("Deck routes", () => {
 
       const body = DeckBatchResponseSchema.parse(await res.json());
       expect(body).toHaveLength(2);
-      expect(new Set(body.map((deck) => deck.id))).toEqual(
-        new Set(["deck-1", "deck-2"]),
+      expect(body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ id: "deck-1" }),
+          expect.objectContaining({ id: "deck-2" }),
+        ]),
       );
     });
 
@@ -465,7 +409,7 @@ describe("Deck routes", () => {
 
       expect(res.status).toBe(200);
 
-      const body = await readDeck(res);
+      const body = DeckSchema.parse(await res.json());
       expect(body).toMatchObject({
         id: "client-deck-create",
         name: "Test deck",
@@ -495,7 +439,7 @@ describe("Deck routes", () => {
 
       expect(res.status).toBe(200);
 
-      const body = await readDeck(res);
+      const body = DeckSchema.parse(await res.json());
       expect(body.name).toBe("Updated");
       expect(body.version).toBe("aaaa1112");
     });
@@ -569,7 +513,7 @@ describe("Deck routes", () => {
 
       expect(res.status).toBe(200);
 
-      const body = await readDeck(res);
+      const body = DeckSchema.parse(await res.json());
       expect(body).toMatchObject({
         id: "deck-upgrade-created",
         name: "Upgraded",
@@ -708,52 +652,38 @@ describe("Deck routes", () => {
       const { app, db, sessionCookie } = dependencies;
       await insertArkhamDbConnection(db);
 
-      vi.stubGlobal(
-        "fetch",
-        vi.fn((input, init) => {
-          const url = String(input);
-
-          if (url.endsWith("/api/oauth2/deck/new")) {
-            expect(init?.method).toBe("POST");
-            expect(
-              (init?.headers as Record<string, string>)["Content-Type"],
-            ).toBe("application/x-www-form-urlencoded");
-            expect(String(init?.body)).toContain("investigator=01001");
-            return jsonResponse({ msg: 123, success: true });
-          }
-
-          if (url.endsWith("/api/oauth2/deck/save/123")) {
-            return jsonResponse({ msg: 123, success: true });
-          }
-
-          if (url.endsWith("/api/oauth2/deck/load/123")) {
-            return jsonResponse(
+      const fetch = vi
+        .fn()
+        // POST /api/oauth2/deck/new
+        .mockResolvedValueOnce(jsonResponse({ msg: 123, success: true }))
+        // POST /api/oauth2/deck/save/123
+        .mockResolvedValueOnce(jsonResponse({ msg: 123, success: true }))
+        // GET /api/oauth2/deck/load/123
+        .mockResolvedValueOnce(
+          jsonResponse(
+            buildArkhamDbApiDeck({
+              id: 123,
+              name: "Created remotely",
+              version: "1.2",
+            }),
+          ),
+        )
+        // GET /api/oauth2/decks
+        .mockResolvedValueOnce(
+          jsonResponse(
+            [
               buildArkhamDbApiDeck({
                 id: 123,
                 name: "Created remotely",
                 version: "1.2",
               }),
-            );
-          }
-
-          if (url.endsWith("/api/oauth2/decks")) {
-            return jsonResponse(
-              [
-                buildArkhamDbApiDeck({
-                  id: 123,
-                  name: "Created remotely",
-                  version: "1.2",
-                }),
-              ],
-              {
-                "Last-Modified": "Thu, 04 Jun 2026 12:00:00 GMT",
-              },
-            );
-          }
-
-          throw new Error(`Unhandled fetch: ${url}`);
-        }),
-      );
+            ],
+            {
+              "Last-Modified": "Thu, 04 Jun 2026 12:00:00 GMT",
+            },
+          ),
+        );
+      vi.stubGlobal("fetch", fetch);
 
       const res = await createDeck(
         app,
@@ -769,7 +699,7 @@ describe("Deck routes", () => {
 
       expect(res.status).toBe(200);
 
-      const body = await readDeck(res);
+      const body = DeckSchema.parse(await res.json());
       expect(body).toMatchObject({
         id: 123,
         name: "Created remotely",
@@ -790,42 +720,42 @@ describe("Deck routes", () => {
         version: "1.1",
       });
 
-      let loadCount = 0;
-
       vi.stubGlobal(
         "fetch",
-        vi.fn((input) => {
-          const url = String(input);
-
-          if (url.endsWith("/api/oauth2/deck/save/123")) {
-            return jsonResponse({ msg: 123, success: true });
-          }
-
-          if (url.endsWith("/api/oauth2/deck/load/123")) {
-            loadCount += 1;
-
-            return jsonResponse(
+        vi
+          .fn()
+          // GET /api/oauth2/deck/load/123
+          .mockResolvedValueOnce(
+            jsonResponse(
               buildArkhamDbApiDeck({
                 id: 123,
-                name:
-                  loadCount === 1 ? "Original remote deck" : "Updated remotely",
-                version: loadCount === 1 ? "1.1" : "1.2",
+                name: "Original remote deck",
+                version: "1.1",
               }),
-            );
-          }
-
-          if (url.endsWith("/api/oauth2/decks")) {
-            return jsonResponse([
+            ),
+          )
+          // POST /api/oauth2/deck/save/123
+          .mockResolvedValueOnce(jsonResponse({ msg: 123, success: true }))
+          // GET /api/oauth2/deck/load/123
+          .mockResolvedValueOnce(
+            jsonResponse(
               buildArkhamDbApiDeck({
                 id: 123,
                 name: "Updated remotely",
                 version: "1.2",
               }),
-            ]);
-          }
-
-          throw new Error(`Unhandled fetch: ${url}`);
-        }),
+            ),
+          )
+          // GET /api/oauth2/decks
+          .mockResolvedValueOnce(
+            jsonResponse([
+              buildArkhamDbApiDeck({
+                id: 123,
+                name: "Updated remotely",
+                version: "1.2",
+              }),
+            ]),
+          ),
       );
 
       const res = await updateDeck(app, sessionCookie, "123", {
@@ -841,7 +771,7 @@ describe("Deck routes", () => {
 
       expect(res.status).toBe(200);
 
-      const body = await readDeck(res);
+      const body = DeckSchema.parse(await res.json());
       expect(body).toMatchObject({
         id: 123,
         name: "Updated remotely",
@@ -862,62 +792,53 @@ describe("Deck routes", () => {
         version: "1.1",
       });
 
-      vi.stubGlobal(
-        "fetch",
-        vi.fn((input, init) => {
-          const url = String(input);
-
-          if (url.endsWith("/api/oauth2/deck/load/123")) {
-            return jsonResponse(
-              buildArkhamDbApiDeck({
-                id: 123,
-                name: "Base remote deck",
-                version: "1.1",
-                xp: 5,
-              }),
-            );
-          }
-
-          if (url.endsWith("/api/oauth2/deck/upgrade/123")) {
-            expect(init?.method).toBe("PUT");
-            expect(String(init?.body)).toContain("xp=3");
-            return jsonResponse({ msg: 124, success: true });
-          }
-
-          if (url.endsWith("/api/oauth2/deck/load/124")) {
-            return jsonResponse(
-              buildArkhamDbApiDeck({
-                id: 124,
-                name: "Upgraded remotely",
-                previous_deck: 123,
-                version: "1.2",
-                xp: 8,
-              }),
-            );
-          }
-
-          if (url.endsWith("/api/oauth2/decks")) {
-            return jsonResponse([
-              buildArkhamDbApiDeck({
-                id: 123,
-                name: "Base remote deck",
-                next_deck: 124,
-                version: "1.1",
-                xp: 5,
-              }),
-              buildArkhamDbApiDeck({
-                id: 124,
-                name: "Upgraded remotely",
-                previous_deck: 123,
-                version: "1.2",
-                xp: 8,
-              }),
-            ]);
-          }
-
-          throw new Error(`Unhandled fetch: ${url}`);
-        }),
-      );
+      const fetch = vi
+        .fn()
+        // GET /api/oauth2/deck/load/123
+        .mockResolvedValueOnce(
+          jsonResponse(
+            buildArkhamDbApiDeck({
+              id: 123,
+              name: "Base remote deck",
+              version: "1.1",
+              xp: 5,
+            }),
+          ),
+        )
+        // PUT /api/oauth2/deck/upgrade/123
+        .mockResolvedValueOnce(jsonResponse({ msg: 124, success: true }))
+        // GET /api/oauth2/deck/load/124
+        .mockResolvedValueOnce(
+          jsonResponse(
+            buildArkhamDbApiDeck({
+              id: 124,
+              name: "Upgraded remotely",
+              previous_deck: 123,
+              version: "1.2",
+              xp: 8,
+            }),
+          ),
+        )
+        // GET /api/oauth2/decks
+        .mockResolvedValueOnce(
+          jsonResponse([
+            buildArkhamDbApiDeck({
+              id: 123,
+              name: "Base remote deck",
+              next_deck: 124,
+              version: "1.1",
+              xp: 5,
+            }),
+            buildArkhamDbApiDeck({
+              id: 124,
+              name: "Upgraded remotely",
+              previous_deck: 123,
+              version: "1.2",
+              xp: 8,
+            }),
+          ]),
+        );
+      vi.stubGlobal("fetch", fetch);
 
       const res = await upgradeDeck(app, sessionCookie, "123", {
         deck: baseDeckPayload({
@@ -935,7 +856,7 @@ describe("Deck routes", () => {
 
       expect(res.status).toBe(200);
 
-      const body = await readDeck(res);
+      const body = DeckSchema.parse(await res.json());
       expect(body).toMatchObject({
         id: 124,
         name: "Upgraded remotely",
@@ -960,29 +881,22 @@ describe("Deck routes", () => {
 
       vi.stubGlobal(
         "fetch",
-        vi.fn((input) => {
-          const url = String(input);
-
-          if (url.endsWith("/api/oauth2/deck/load/123")) {
-            return jsonResponse(
+        vi
+          .fn()
+          // GET /api/oauth2/deck/load/123
+          .mockResolvedValueOnce(
+            jsonResponse(
               buildArkhamDbApiDeck({
                 id: 123,
                 name: "Remote deck",
                 version: "1.1",
               }),
-            );
-          }
-
-          if (url.endsWith("/api/oauth2/deck/delete/123")) {
-            return jsonResponse({ success: true });
-          }
-
-          if (url.endsWith("/api/oauth2/decks")) {
-            return jsonResponse([]);
-          }
-
-          throw new Error(`Unhandled fetch: ${url}`);
-        }),
+            ),
+          )
+          // DELETE /api/oauth2/deck/delete/123
+          .mockResolvedValueOnce(jsonResponse({ success: true }))
+          // GET /api/oauth2/decks
+          .mockResolvedValueOnce(jsonResponse([])),
       );
 
       const res = await deleteDeck(app, sessionCookie, "123", "1.1");

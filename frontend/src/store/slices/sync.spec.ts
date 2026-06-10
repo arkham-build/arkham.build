@@ -1,7 +1,14 @@
-import type { Deck } from "@arkham-build/shared";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { StoreApi } from "zustand";
 import * as deckRequests from "@/store/services/requests/decks";
+import {
+  makeAuthenticatedAuth,
+  makeConflictSyncItem,
+  makeData,
+  makeSyncItem,
+  makeSyncState,
+  makeTestDeck,
+} from "@/test/factories";
 import { getMockHttpClient, getMockStore } from "@/test/get-mock-store";
 import type { StoreState } from ".";
 
@@ -29,35 +36,17 @@ describe("sync slice", () => {
     const syncDecks = vi.fn().mockResolvedValue(undefined);
 
     store.setState({
-      auth: {
-        status: "authenticated",
-        session: {
-          account: {
-            id: "new-account",
-            name: "User",
-            profileComplete: true,
-          },
-          identities: [
-            {
-              provider: "email",
-              email: "user@example.com",
-              pendingEmail: null,
-              verified: true,
-            },
-          ],
-        },
-      },
-      data: {
-        ...store.getState().data,
+      auth: makeAuthenticatedAuth({ account: { id: "new-account" } }),
+      data: makeData({
         decks: {
-          local: makeDeck({ id: "local" }),
-          remote: makeDeck({ id: "remote", source: "account" }),
+          local: makeTestDeck({ id: "local" }),
+          remote: makeTestDeck({ id: "remote", source: "account" }),
         },
         history: {
           local: [],
           remote: [],
         },
-      },
+      }),
       deckEdits: {
         remote: {},
       },
@@ -66,34 +55,12 @@ describe("sync slice", () => {
           remote: "2026-01-01T00:00:00.000Z",
         },
       },
-      sync: {
-        settings: {
-          accountId: "old-account",
-          revision: "1",
-          lastSyncedAt: Date.now(),
-          status: "synced",
-          error: null,
-          conflict: null,
+      sync: makeSyncState({
+        accountId: "old-account",
+        deckItems: {
+          remote: makeSyncItem(),
         },
-        decks: {
-          accountId: "old-account",
-          manifestVersion: "1",
-          lastSyncedAt: Date.now(),
-          status: "synced",
-          error: null,
-          items: {
-            remote: makeSyncItem(),
-          },
-        },
-        folders: {
-          accountId: "old-account",
-          revision: "1",
-          lastSyncedAt: Date.now(),
-          status: "synced",
-          error: null,
-          conflict: null,
-        },
-      },
+      }),
       loadRemoteSettings,
       loadRemoteFolders,
       syncDecks,
@@ -127,35 +94,12 @@ describe("sync slice", () => {
     });
 
     store.setState({
-      auth: {
-        status: "authenticated",
-        session: {
-          account: {
-            id: "account-id",
-            name: "User",
-            profileComplete: true,
-          },
-          identities: [
-            {
-              provider: "email",
-              email: "user@example.com",
-              pendingEmail: null,
-              verified: true,
-            },
-          ],
-        },
-      },
-      sync: {
-        ...store.getState().sync,
-        decks: {
-          accountId: "account-id",
-          manifestVersion: "1",
-          lastSyncedAt: null,
-          status: "idle",
-          error: null,
-          items: {},
-        },
-      },
+      auth: makeAuthenticatedAuth(),
+      sync: makeSyncState({
+        deckItems: {},
+        deckStatus: "idle",
+        manifestVersion: "1",
+      }),
       refreshSession,
     });
 
@@ -165,7 +109,7 @@ describe("sync slice", () => {
   });
 
   it("refreshes a conflicted deck with the remote deck", async () => {
-    const remoteDeck = makeDeck({
+    const remoteDeck = makeTestDeck({
       id: "remote",
       name: "Remote deck",
       source: "account",
@@ -174,40 +118,34 @@ describe("sync slice", () => {
 
     vi.mocked(deckRequests.fetchDeckBatch).mockResolvedValue([remoteDeck]);
     store.setState({
-      data: {
-        ...store.getState().data,
+      data: makeData({
         decks: {
-          remote: makeDeck({ id: "remote", source: "account", version: "1" }),
+          remote: makeTestDeck({
+            id: "remote",
+            source: "account",
+            version: "1",
+          }),
         },
         history: {
           remote: [],
         },
-      },
+      }),
       deckEdits: {
         remote: { name: "Unsaved" },
       },
-      sync: {
-        ...store.getState().sync,
-        decks: {
-          accountId: "account-id",
-          manifestVersion: "manifest",
-          lastSyncedAt: null,
-          status: "conflict",
-          error: null,
-          items: {
-            remote: {
-              version: "1",
-              status: "conflict",
-              lastSyncedAt: null,
-              error: null,
-              conflict: {
-                kind: "update",
-                remoteVersion: "2",
-              },
+      sync: makeSyncState({
+        deckStatus: "conflict",
+        manifestVersion: "manifest",
+        deckItems: {
+          remote: makeConflictSyncItem({
+            version: "1",
+            conflict: {
+              kind: "update",
+              remoteVersion: "2",
             },
-          },
+          }),
         },
-      },
+      }),
     });
 
     const result = await store
@@ -234,7 +172,7 @@ describe("sync slice", () => {
   });
 
   it("refreshes a delete conflict when the remote deck still exists", async () => {
-    const remoteDeck = makeDeck({
+    const remoteDeck = makeTestDeck({
       id: "remote",
       name: "Remote deck",
       source: "account",
@@ -243,37 +181,31 @@ describe("sync slice", () => {
 
     vi.mocked(deckRequests.fetchDeckBatch).mockResolvedValue([remoteDeck]);
     store.setState({
-      data: {
-        ...store.getState().data,
+      data: makeData({
         decks: {
-          remote: makeDeck({ id: "remote", source: "account", version: "1" }),
+          remote: makeTestDeck({
+            id: "remote",
+            source: "account",
+            version: "1",
+          }),
         },
         history: {
           remote: [],
         },
-      },
-      sync: {
-        ...store.getState().sync,
-        decks: {
-          accountId: "account-id",
-          manifestVersion: "manifest",
-          lastSyncedAt: null,
-          status: "conflict",
-          error: null,
-          items: {
-            remote: {
-              version: "1",
-              status: "conflict",
-              lastSyncedAt: null,
-              error: null,
-              conflict: {
-                kind: "delete",
-                remoteVersion: "2",
-              },
+      }),
+      sync: makeSyncState({
+        deckStatus: "conflict",
+        manifestVersion: "manifest",
+        deckItems: {
+          remote: makeConflictSyncItem({
+            version: "1",
+            conflict: {
+              kind: "delete",
+              remoteVersion: "2",
             },
-          },
+          }),
         },
-      },
+      }),
     });
 
     const result = await store
@@ -296,28 +228,19 @@ describe("sync slice", () => {
 
   it("rejects refresh when the remote deck is gone", async () => {
     store.setState({
-      sync: {
-        ...store.getState().sync,
-        decks: {
-          accountId: "account-id",
-          manifestVersion: "manifest",
-          lastSyncedAt: null,
-          status: "conflict",
-          error: null,
-          items: {
-            remote: {
-              version: "1",
-              status: "conflict",
-              lastSyncedAt: null,
-              error: null,
-              conflict: {
-                kind: "update",
-                remoteVersion: null,
-              },
+      sync: makeSyncState({
+        deckStatus: "conflict",
+        manifestVersion: "manifest",
+        deckItems: {
+          remote: makeConflictSyncItem({
+            version: "1",
+            conflict: {
+              kind: "update",
+              remoteVersion: null,
             },
-          },
+          }),
         },
-      },
+      }),
     });
 
     await expect(
@@ -338,37 +261,31 @@ describe("sync slice", () => {
 
   it("removes a local deck when discarding a conflict without a remote deck", async () => {
     store.setState({
-      data: {
-        ...store.getState().data,
+      data: makeData({
         decks: {
-          remote: makeDeck({ id: "remote", source: "account", version: "1" }),
+          remote: makeTestDeck({
+            id: "remote",
+            source: "account",
+            version: "1",
+          }),
         },
         history: {
           remote: [],
         },
-      },
-      sync: {
-        ...store.getState().sync,
-        decks: {
-          accountId: "account-id",
-          manifestVersion: "manifest",
-          lastSyncedAt: null,
-          status: "conflict",
-          error: null,
-          items: {
-            remote: {
-              version: "1",
-              status: "conflict",
-              lastSyncedAt: null,
-              error: null,
-              conflict: {
-                kind: "update",
-                remoteVersion: null,
-              },
+      }),
+      sync: makeSyncState({
+        deckStatus: "conflict",
+        manifestVersion: "manifest",
+        deckItems: {
+          remote: makeConflictSyncItem({
+            version: "1",
+            conflict: {
+              kind: "update",
+              remoteVersion: null,
             },
-          },
+          }),
         },
-      },
+      }),
     });
 
     const result = await store
@@ -381,42 +298,3 @@ describe("sync slice", () => {
     expect(store.getState().sync.decks.items.remote).toBeUndefined();
   });
 });
-
-function makeSyncItem() {
-  return {
-    version: "1",
-    status: "synced" as const,
-    lastSyncedAt: Date.now(),
-    error: null,
-    conflict: null,
-  };
-}
-
-function makeDeck(overrides: Partial<Deck> = {}): Deck {
-  return {
-    date_creation: "2026-01-01T00:00:00.000Z",
-    date_update: "2026-01-01T00:00:00.000Z",
-    description_md: "",
-    exile_string: null,
-    id: "deck-id",
-    ignoreDeckLimitSlots: null,
-    investigator_code: "01001",
-    investigator_name: "Investigator",
-    meta: "{}",
-    name: "Deck",
-    next_deck: null,
-    previous_deck: null,
-    problem: null,
-    sideSlots: null,
-    slots: {},
-    source: null,
-    taboo_id: null,
-    tags: "",
-    user_id: null,
-    version: "1",
-    xp: null,
-    xp_adjustment: null,
-    xp_spent: null,
-    ...overrides,
-  };
-}

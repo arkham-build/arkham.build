@@ -2,7 +2,7 @@ import {
   PostgreSqlContainer,
   type StartedPostgreSqlContainer,
 } from "@testcontainers/postgresql";
-import { afterAll, beforeAll } from "vitest";
+import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { applySqlFiles } from "../db/db.helpers.ts";
 import { getTestDatabase, seedTestAccount } from "./test-utils.ts";
 
@@ -19,6 +19,11 @@ beforeAll(async () => {
 
   await database.destroy();
   await globalThis.postgresContainer.snapshot();
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.useRealTimers();
 });
 
 afterAll(async () => {

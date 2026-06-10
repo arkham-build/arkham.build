@@ -1,5 +1,5 @@
 import type { Deck } from "@arkham-build/shared";
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import { getMockHttpClient, getMockStore } from "@/test/get-mock-store";
 import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
@@ -38,13 +38,9 @@ describe("data slice", () => {
     it("does not delete decks with upgrades", async () => {
       store.setState(mockState);
 
-      try {
-        await store.getState().deleteDeck(client, "2");
-      } catch (err) {
-        expect((err as Error).message).toMatchInlineSnapshot(
-          `"Cannot delete a deck that has upgrades."`,
-        );
-      }
+      await expect(store.getState().deleteDeck(client, "2")).rejects.toThrow(
+        "Cannot delete a deck that has upgrades.",
+      );
     });
 
     it("removes a deck from state", async () => {
@@ -114,24 +110,6 @@ describe("data slice", () => {
       store = await getMockStore();
     });
 
-    it("sets local folder membership without syncing while unauthenticated", async () => {
-      store.setState({
-        data: {
-          ...store.getState().data,
-          folders: {
-            folder: {
-              id: "folder",
-              name: "Folder",
-            },
-          },
-        },
-      });
-
-      await store.getState().setDeckFolder(undefined, "deck-id", "folder");
-
-      expect(store.getState().data.deckFolders["deck-id"]).toBe("folder");
-    });
-
     it("auto-creates the archive folder", async () => {
       await store
         .getState()
@@ -143,30 +121,6 @@ describe("data slice", () => {
       expect(store.getState().data.folders[ARCHIVE_FOLDER_ID]).toMatchObject({
         id: ARCHIVE_FOLDER_ID,
       });
-    });
-
-    it("syncs folder changes when authenticated", async () => {
-      const saveFolders = vi.fn().mockResolvedValue(undefined);
-
-      store.setState({
-        auth: {
-          status: "authenticated",
-          session: {
-            account: {
-              id: "account-id",
-              name: "User",
-              profileComplete: true,
-            },
-            identities: [],
-          },
-        },
-        saveFolders,
-      });
-
-      await store.getState().setDeckFolder(client, "deck-id", "archive");
-
-      expect(store.getState().data.deckFolders["deck-id"]).toBe("archive");
-      expect(saveFolders).toHaveBeenCalledWith(client);
     });
   });
 

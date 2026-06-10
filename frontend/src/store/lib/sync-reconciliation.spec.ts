@@ -1,6 +1,10 @@
 import type { Deck, DeckManifestResponse } from "@arkham-build/shared";
 import { describe, expect, it } from "vitest";
-import type { StoreState } from "../slices";
+import {
+  makeData,
+  makeTestDeck,
+  makeSyncItem as makeTestSyncItem,
+} from "@/test/factories";
 import type { DecksSyncState, SyncStatus } from "../slices/sync.types";
 import {
   applyRemoteDeckReconciliation,
@@ -338,29 +342,17 @@ function makeSyncDecks(
 }
 
 function makeSyncItem(version: string, status: SyncStatus = "synced") {
-  return {
+  return makeTestSyncItem({
     version,
     status,
-    lastSyncedAt: null,
-    error: null,
     conflict:
       status === "conflict"
         ? {
-            kind: "update" as const,
+            kind: "update",
             remoteVersion: "v2",
           }
         : null,
-  };
-}
-
-function makeData(overrides: Partial<StoreState["data"]> = {}) {
-  return {
-    decks: {},
-    folders: {},
-    deckFolders: {},
-    history: {},
-    ...overrides,
-  };
+  });
 }
 
 function makeDeck(
@@ -368,30 +360,5 @@ function makeDeck(
   version = "v1",
   overrides: Partial<Deck> = {},
 ): Deck {
-  return {
-    date_creation: "2026-01-01T00:00:00.000Z",
-    date_update: "2026-01-01T00:00:00.000Z",
-    description_md: "",
-    exile_string: null,
-    id,
-    ignoreDeckLimitSlots: null,
-    investigator_code: "01001",
-    investigator_name: "Investigator",
-    meta: "{}",
-    name: "Deck",
-    next_deck: null,
-    previous_deck: null,
-    problem: null,
-    sideSlots: null,
-    slots: {},
-    source: null,
-    taboo_id: null,
-    tags: "",
-    user_id: null,
-    version,
-    xp: null,
-    xp_adjustment: null,
-    xp_spent: null,
-    ...overrides,
-  };
+  return makeTestDeck({ id, version, ...overrides });
 }

@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { test } from "../fixtures.ts";
-import { createAuthenticatedAccount, getAccountName } from "../support/db.ts";
+import { createAuthenticatedAccount, getAccountName } from "../lib/db.ts";
 
 test("authenticated user can update account settings", async ({ page }) => {
   const account = await createAuthenticatedAccount(page);

@@ -1,6 +1,4 @@
-import type { Hono } from "hono";
 import { describe, expect } from "vitest";
-import type { HonoEnv } from "../lib/hono-env.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
 
 describe("Admin routes", () => {
@@ -8,23 +6,41 @@ describe("Admin routes", () => {
     test("lists moderation actions by username", async ({ dependencies }) => {
       const { app, config } = dependencies;
 
-      await createAccountModerationAction(app, config.ADMIN_API_KEY, {
-        username: TEST_ACCOUNT.name,
-        type: "warning",
-        reason: "list warning reason",
+      await app.request("/admin/account_moderation_actions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: TEST_ACCOUNT.name,
+          type: "warning",
+          reason: "list warning reason",
+        }),
       });
-      await createAccountModerationAction(app, config.ADMIN_API_KEY, {
-        username: TEST_ACCOUNT.name,
-        type: "ban",
-        reason: "list ban reason",
-        endsAt: "2030-01-01T00:00:00.000Z",
-        endReason: "list ban expires",
+      await app.request("/admin/account_moderation_actions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: TEST_ACCOUNT.name,
+          type: "ban",
+          reason: "list ban reason",
+          endsAt: "2030-01-01T00:00:00.000Z",
+          endReason: "list ban expires",
+        }),
       });
 
-      const res = await listAccountModerationActions(
-        app,
-        config.ADMIN_API_KEY,
-        TEST_ACCOUNT.name,
+      const res = await app.request(
+        `/admin/account_moderation_actions?username=${TEST_ACCOUNT.name}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+          },
+        },
       );
 
       expect(res.status).toBe(200);
@@ -66,15 +82,18 @@ describe("Admin routes", () => {
     test("creates a warning", async ({ dependencies }) => {
       const { app, config, db } = dependencies;
 
-      const res = await createAccountModerationAction(
-        app,
-        config.ADMIN_API_KEY,
-        {
+      const res = await app.request("/admin/account_moderation_actions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           username: TEST_ACCOUNT.name,
           type: "warning",
           reason: "warning reason",
-        },
-      );
+        }),
+      });
 
       expect(res.status).toBe(201);
 
@@ -94,15 +113,18 @@ describe("Admin routes", () => {
     test("creates a ban", async ({ dependencies }) => {
       const { app, config, db } = dependencies;
 
-      const res = await createAccountModerationAction(
-        app,
-        config.ADMIN_API_KEY,
-        {
+      const res = await app.request("/admin/account_moderation_actions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           username: TEST_ACCOUNT.name,
           type: "ban",
           reason: "ban reason",
-        },
-      );
+        }),
+      });
 
       expect(res.status).toBe(201);
 
@@ -124,17 +146,20 @@ describe("Admin routes", () => {
       const { app, config, db } = dependencies;
       const endsAt = "2030-01-01T00:00:00.000Z";
 
-      const res = await createAccountModerationAction(
-        app,
-        config.ADMIN_API_KEY,
-        {
+      const res = await app.request("/admin/account_moderation_actions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           username: TEST_ACCOUNT.name,
           type: "ban",
           reason: "temporary ban reason",
           endsAt,
           endReason: "temporary ban expires",
-        },
-      );
+        }),
+      });
 
       expect(res.status).toBe(201);
 
@@ -156,27 +181,33 @@ describe("Admin routes", () => {
     }) => {
       const { app, config } = dependencies;
 
-      const firstRes = await createAccountModerationAction(
-        app,
-        config.ADMIN_API_KEY,
-        {
+      const firstRes = await app.request("/admin/account_moderation_actions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           username: TEST_ACCOUNT.name,
           type: "ban",
           reason: "first ban",
-        },
-      );
+        }),
+      });
 
       expect(firstRes.status).toBe(201);
 
-      const secondRes = await createAccountModerationAction(
-        app,
-        config.ADMIN_API_KEY,
-        {
+      const secondRes = await app.request("/admin/account_moderation_actions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           username: TEST_ACCOUNT.name,
           type: "ban",
           reason: "second ban",
-        },
-      );
+        }),
+      });
 
       expect(secondRes.status).toBe(409);
       expect(await secondRes.text()).toContain(
@@ -189,23 +220,31 @@ describe("Admin routes", () => {
     test("ends an active moderation action", async ({ dependencies }) => {
       const { app, config, db } = dependencies;
 
-      const createRes = await createAccountModerationAction(
-        app,
-        config.ADMIN_API_KEY,
-        {
+      const createRes = await app.request("/admin/account_moderation_actions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           username: TEST_ACCOUNT.name,
           type: "warning",
           reason: "end warning reason",
-        },
-      );
+        }),
+      });
 
       const { id } = (await createRes.json()) as { id: string };
 
-      const endRes = await endAccountModerationAction(
-        app,
-        config.ADMIN_API_KEY,
-        id,
-        "manual end",
+      const endRes = await app.request(
+        `/admin/account_moderation_actions/${id}/end`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ endReason: "manual end" }),
+        },
       );
 
       expect(endRes.status).toBe(200);
@@ -225,32 +264,45 @@ describe("Admin routes", () => {
     }) => {
       const { app, config } = dependencies;
 
-      const createRes = await createAccountModerationAction(
-        app,
-        config.ADMIN_API_KEY,
-        {
+      const createRes = await app.request("/admin/account_moderation_actions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           username: TEST_ACCOUNT.name,
           type: "warning",
           reason: "already ended reason",
-        },
-      );
+        }),
+      });
 
       const { id } = (await createRes.json()) as { id: string };
 
-      const firstEndRes = await endAccountModerationAction(
-        app,
-        config.ADMIN_API_KEY,
-        id,
-        "manual end",
+      const firstEndRes = await app.request(
+        `/admin/account_moderation_actions/${id}/end`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ endReason: "manual end" }),
+        },
       );
 
       expect(firstEndRes.status).toBe(200);
 
-      const secondEndRes = await endAccountModerationAction(
-        app,
-        config.ADMIN_API_KEY,
-        id,
-        "manual end again",
+      const secondEndRes = await app.request(
+        `/admin/account_moderation_actions/${id}/end`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${config.ADMIN_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ endReason: "manual end again" }),
+        },
       );
 
       expect(secondEndRes.status).toBe(409);
@@ -260,55 +312,3 @@ describe("Admin routes", () => {
     });
   });
 });
-
-function listAccountModerationActions(
-  app: Hono<HonoEnv>,
-  adminApiKey: string,
-  username: string,
-) {
-  const query = new URLSearchParams({ username });
-
-  return app.request(`/admin/account_moderation_actions?${query.toString()}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${adminApiKey}`,
-    },
-  });
-}
-
-function createAccountModerationAction(
-  app: Hono<HonoEnv>,
-  adminApiKey: string,
-  payload: {
-    username: string;
-    type: "warning" | "ban";
-    reason: string;
-    endsAt?: string;
-    endReason?: string;
-  },
-) {
-  return app.request("/admin/account_moderation_actions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${adminApiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-}
-
-function endAccountModerationAction(
-  app: Hono<HonoEnv>,
-  adminApiKey: string,
-  id: string,
-  endReason: string,
-) {
-  return app.request(`/admin/account_moderation_actions/${id}/end`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${adminApiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ endReason }),
-  });
-}

@@ -1,10 +1,25 @@
 import { type ChildProcess, spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { setTimeout as delay } from "node:timers/promises";
 import { Client } from "pg";
 import { PgBoss } from "pg-boss";
 import { EMAIL_DELIVER_QUEUE } from "../../backend/src/jobs/job-types.ts";
+import {
+  apiUrl,
+  createStackEnv,
+  databaseUrl,
+  dbName,
+  frontendPort,
+  frontendUrl,
+  mailcrabUrl,
+  postgresAdminDb,
+  postgresHost,
+  postgresPassword,
+  postgresPort,
+  postgresUser,
+  runId,
+} from "./lib/env.ts";
+import { fetchJson, waitForCondition, waitForUrl } from "./lib/wait.ts";
 
 type MailCrabMessage = {
   id: string;
@@ -20,38 +35,15 @@ type State = {
   shuttingDown: boolean;
 };
 
-const mailcrabUrl = process.env.E2E_MAILCRAB_URL ?? "http://localhost:1080";
-
-const apiPort = process.env.E2E_API_PORT ?? "8788";
-const apiUrl = process.env.E2E_API_URL ?? `http://localhost:${apiPort}`;
-
-const frontendPort = process.env.E2E_FRONTEND_PORT ?? "3100";
-const frontendUrl =
-  process.env.E2E_FRONTEND_URL ?? `http://localhost:${frontendPort}`;
-
-const dbName = process.env.E2E_DB_NAME ?? "arkham_build_e2e";
-const postgresHost = process.env.E2E_POSTGRES_HOST ?? "localhost";
-const postgresPort = process.env.E2E_POSTGRES_PORT ?? "5432";
-const postgresUser = process.env.E2E_POSTGRES_USER ?? "postgres";
-const postgresPassword = process.env.E2E_POSTGRES_PASSWORD ?? "postgres";
-const postgresAdminDb = process.env.E2E_POSTGRES_ADMIN_DB ?? "postgres";
-const databaseUrl =
-  process.env.E2E_DATABASE_URL ??
-  `postgres://${postgresUser}:${postgresPassword}@${postgresHost}:${postgresPort}/${dbName}?sslmode=disable`;
-
-const runId = process.env.E2E_RUN_ID ?? dbName;
-
 const rootDir = path.resolve(import.meta.dirname, "../..");
+const schemaPath = path.join(rootDir, "backend/src/db/schema.sql");
+const vitePath = path.join(rootDir, "node_modules/vite/bin/vite.js");
+const childEnv = createStackEnv();
 const state: State = {
   createdDatabase: false,
   children: [],
   shuttingDown: false,
 };
-
-const schemaPath = path.join(rootDir, "backend/src/db/schema.sql");
-const vitePath = path.join(rootDir, "node_modules/vite/bin/vite.js");
-
-const childEnv = createChildEnv();
 
 process.once("SIGINT", () => {
   void shutdown(0);
@@ -269,49 +261,6 @@ async function waitForWorkerReady() {
   }
 }
 
-async function waitForUrl(
-  url: string,
-  predicate: (response: Response) => boolean,
-) {
-  await waitForCondition(async () => {
-    try {
-      const response = await fetch(url, {
-        redirect: "manual",
-      });
-      return predicate(response);
-    } catch {
-      return false;
-    }
-  });
-}
-
-async function waitForCondition(
-  predicate: () => Promise<boolean>,
-  timeoutMs = 60000,
-) {
-  const startedAt = Date.now();
-
-  while (Date.now() - startedAt < timeoutMs) {
-    if (await predicate()) {
-      return;
-    }
-
-    await delay(500);
-  }
-
-  throw new Error("Timed out waiting for condition");
-}
-
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`Request failed for ${url}: ${response.status}`);
-  }
-
-  return (await response.json()) as T;
-}
-
 async function getAdminClient() {
   const client = new Client({
     connectionString: `postgres://${postgresUser}:${postgresPassword}@${postgresHost}:${postgresPort}/${postgresAdminDb}?sslmode=disable`,
@@ -319,48 +268,6 @@ async function getAdminClient() {
 
   await client.connect();
   return client;
-}
-
-function createChildEnv() {
-  return {
-    ...process.env,
-    ADMIN_API_KEY: "test-admin-api-key",
-    ARKHAMDB_BASE_URL: "https://arkhamdb.com",
-    ARKHAMDB_OAUTH_CLIENT_ID: "test-client-id",
-    ARKHAMDB_OAUTH_CLIENT_SECRET: "test-client-secret",
-    ARKHAMDB_OAUTH_REDIRECT_URI: `${apiUrl}/auth/arkhamdb/callback`,
-    CORS_ORIGINS: frontendUrl,
-    ENABLE_JOB_SCHEDULES: "false",
-    FROM_EMAIL: "noreply@arkham-build.local",
-    FRONTEND_URL: frontendUrl,
-    INGEST_JSON_DATA_REPO: "example/arkhamdb-json-data@master",
-    INGEST_METADATA_REPO: "example/metadata-repo@master",
-    INGEST_TABOO_DATA_REPO: "example/arkham-cards-data@master",
-    INGEST_URL_ARKHAMDB_DECKLISTS: "http://example.com/decklists",
-    METADATA_LOCALES: "en",
-    NODE_ENV: "test",
-    PORT: apiPort,
-    POSTGRES_DB: dbName,
-    POSTGRES_HOST: postgresHost,
-    POSTGRES_PASSWORD: postgresPassword,
-    POSTGRES_PORT: postgresPort,
-    POSTGRES_USER: postgresUser,
-    SESSION_SECRET: "test-session-secret-at-least-32-characters-long",
-    SMTP_HOST: new URL(mailcrabUrl).hostname,
-    SMTP_PASS: "",
-    SMTP_PORT: "1025",
-    SMTP_SECURE: "false",
-    SMTP_USER: "",
-    VITE_API_LEGACY_URL: apiUrl,
-    VITE_API_URL: apiUrl,
-    VITE_ARKHAMDB_BASE_URL: "https://arkhamdb.com",
-    VITE_CARD_IMAGE_URL: "https://assets.arkham.build",
-    VITE_PAGE_NAME: "arkham.build",
-    VITE_SHOW_PREVIEW_BANNER: "false",
-    VITE_TURNSTILE_SITE_KEY: "",
-    DATABASE_URL: databaseUrl,
-    DBMATE_MIGRATIONS_DIR: "src/db/migrations",
-  };
 }
 
 function quoteIdentifier(value: string) {

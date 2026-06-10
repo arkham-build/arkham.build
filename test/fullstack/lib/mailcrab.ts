@@ -1,5 +1,6 @@
 import { setTimeout as delay } from "node:timers/promises";
 import { mailcrabUrl } from "./env.ts";
+import { fetchJson } from "./wait.ts";
 
 type MailCrabMessage = {
   id: string;
@@ -63,14 +64,4 @@ function extractPasswordResetUrl(text: string) {
   return (
     text.match(/https?:\/\/\S+\/auth\/reset-password#token=\S+/)?.[0] ?? null
   );
-}
-
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`Request failed for ${url}: ${response.status}`);
-  }
-
-  return (await response.json()) as T;
 }

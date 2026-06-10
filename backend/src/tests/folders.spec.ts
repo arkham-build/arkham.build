@@ -1,51 +1,25 @@
-import {
-  type FolderSyncResponse,
-  FolderSyncResponseSchema,
-} from "@arkham-build/shared";
-import type { Hono } from "hono";
+import { FolderSyncResponseSchema } from "@arkham-build/shared";
 import { describe, expect } from "vitest";
-import type { HonoEnv } from "../lib/hono-env.ts";
 import { test } from "./test-utils.ts";
-
-function getFolders(app: Hono<HonoEnv>, cookie?: string) {
-  return app.request("/v2/folders", {
-    method: "GET",
-    ...(cookie ? { headers: { Cookie: cookie } } : {}),
-  });
-}
-
-function putFolders(
-  app: Hono<HonoEnv>,
-  cookie: string,
-  payload: Record<string, unknown>,
-) {
-  return app.request("/v2/folders", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: cookie,
-    },
-    body: JSON.stringify(payload),
-  });
-}
-
-async function readFolders(res: Response): Promise<FolderSyncResponse> {
-  return FolderSyncResponseSchema.parse(await res.json());
-}
 
 describe("Folders routes", () => {
   describe("GET /v2/folders", () => {
     test("returns 401 when unauthenticated", async ({ dependencies }) => {
       const { app } = dependencies;
-      const res = await getFolders(app);
+      const res = await app.request("/v2/folders", { method: "GET" });
       expect(res.status).toBe(401);
     });
 
     test("returns null state when no row exists", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
-      const res = await getFolders(app, sessionCookie);
+      const res = await app.request("/v2/folders", {
+        method: "GET",
+        headers: { Cookie: sessionCookie },
+      });
       expect(res.status).toBe(200);
-      expect(await readFolders(res)).toMatchInlineSnapshot(`
+      expect(
+        FolderSyncResponseSchema.parse(await res.json()),
+      ).toMatchInlineSnapshot(`
         {
           "revision": null,
           "state": null,
@@ -60,21 +34,25 @@ describe("Folders routes", () => {
     }) => {
       const { app, sessionCookie } = dependencies;
 
-      const res = await putFolders(app, sessionCookie, {
-        expectedRevision: null,
-        state: {
-          deckFolders: { deck: "folder" },
-          folders: {
-            folder: { id: "folder", name: "Folder" },
-          },
+      const res = await app.request("/v2/folders", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: sessionCookie,
         },
+        body: JSON.stringify({
+          expectedRevision: null,
+          state: {
+            deckFolders: { deck: "folder" },
+            folders: {
+              folder: { id: "folder", name: "Folder" },
+            },
+          },
+        }),
       });
 
       expect(res.status).toBe(200);
-
-      const body = await readFolders(res);
-
-      expect(body).toMatchObject({
+      expect(FolderSyncResponseSchema.parse(await res.json())).toMatchObject({
         revision: expect.any(String),
         state: {
           deckFolders: { deck: "folder" },
@@ -88,11 +66,18 @@ describe("Folders routes", () => {
     test("returns 400 for invalid payload", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
-      const res = await putFolders(app, sessionCookie, {
-        state: {
-          deckFolders: {},
-          folders: {},
+      const res = await app.request("/v2/folders", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: sessionCookie,
         },
+        body: JSON.stringify({
+          state: {
+            deckFolders: {},
+            folders: {},
+          },
+        }),
       });
 
       expect(res.status).toBe(400);
@@ -101,31 +86,45 @@ describe("Folders routes", () => {
     test("updates folders when revision matches", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
-      const createRes = await putFolders(app, sessionCookie, {
-        expectedRevision: null,
-        state: {
-          deckFolders: { deck: "folder" },
-          folders: {
-            folder: { id: "folder", name: "Folder" },
-          },
+      const createRes = await app.request("/v2/folders", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: sessionCookie,
         },
+        body: JSON.stringify({
+          expectedRevision: null,
+          state: {
+            deckFolders: { deck: "folder" },
+            folders: {
+              folder: { id: "folder", name: "Folder" },
+            },
+          },
+        }),
       });
 
-      const created = await readFolders(createRes);
+      const created = FolderSyncResponseSchema.parse(await createRes.json());
 
-      const updateRes = await putFolders(app, sessionCookie, {
-        expectedRevision: created.revision,
-        state: {
-          deckFolders: { deck: "folder-2" },
-          folders: {
-            "folder-2": { id: "folder-2", name: "Folder 2" },
-          },
+      const updateRes = await app.request("/v2/folders", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: sessionCookie,
         },
+        body: JSON.stringify({
+          expectedRevision: created.revision,
+          state: {
+            deckFolders: { deck: "folder-2" },
+            folders: {
+              "folder-2": { id: "folder-2", name: "Folder 2" },
+            },
+          },
+        }),
       });
 
       expect(updateRes.status).toBe(200);
 
-      const updated = await readFolders(updateRes);
+      const updated = FolderSyncResponseSchema.parse(await updateRes.json());
 
       expect(updated).toMatchObject({
         revision: expect.not.stringMatching(created.revision as string),
@@ -137,49 +136,80 @@ describe("Folders routes", () => {
         },
       });
 
-      const getRes = await getFolders(app, sessionCookie);
-      expect(await readFolders(getRes)).toEqual(updated);
+      const getRes = await app.request("/v2/folders", {
+        method: "GET",
+        headers: { Cookie: sessionCookie },
+      });
+      expect(FolderSyncResponseSchema.parse(await getRes.json())).toEqual(
+        updated,
+      );
     });
 
     test("returns 409 when revision is stale", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
-      const createRes = await putFolders(app, sessionCookie, {
-        expectedRevision: null,
-        state: {
-          deckFolders: { deck: "folder" },
-          folders: {
-            folder: { id: "folder", name: "Folder" },
-          },
+      const createRes = await app.request("/v2/folders", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: sessionCookie,
         },
+        body: JSON.stringify({
+          expectedRevision: null,
+          state: {
+            deckFolders: { deck: "folder" },
+            folders: {
+              folder: { id: "folder", name: "Folder" },
+            },
+          },
+        }),
       });
-      const created = await readFolders(createRes);
+      const created = FolderSyncResponseSchema.parse(await createRes.json());
 
-      const updateRes = await putFolders(app, sessionCookie, {
-        expectedRevision: created.revision,
-        state: {
-          deckFolders: { deck: "folder-2" },
-          folders: {
-            "folder-2": { id: "folder-2", name: "Folder 2" },
-          },
+      const updateRes = await app.request("/v2/folders", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: sessionCookie,
         },
+        body: JSON.stringify({
+          expectedRevision: created.revision,
+          state: {
+            deckFolders: { deck: "folder-2" },
+            folders: {
+              "folder-2": { id: "folder-2", name: "Folder 2" },
+            },
+          },
+        }),
       });
-      const updated = await readFolders(updateRes);
+      const updated = FolderSyncResponseSchema.parse(await updateRes.json());
 
-      const conflictRes = await putFolders(app, sessionCookie, {
-        expectedRevision: created.revision,
-        state: {
-          deckFolders: { deck: "folder-3" },
-          folders: {
-            "folder-3": { id: "folder-3", name: "Folder 3" },
-          },
+      const conflictRes = await app.request("/v2/folders", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: sessionCookie,
         },
+        body: JSON.stringify({
+          expectedRevision: created.revision,
+          state: {
+            deckFolders: { deck: "folder-3" },
+            folders: {
+              "folder-3": { id: "folder-3", name: "Folder 3" },
+            },
+          },
+        }),
       });
 
       expect(conflictRes.status).toBe(409);
 
-      const getRes = await getFolders(app, sessionCookie);
-      expect(await readFolders(getRes)).toEqual(updated);
+      const getRes = await app.request("/v2/folders", {
+        method: "GET",
+        headers: { Cookie: sessionCookie },
+      });
+      expect(FolderSyncResponseSchema.parse(await getRes.json())).toEqual(
+        updated,
+      );
     });
   });
 });

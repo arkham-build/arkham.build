@@ -30,14 +30,10 @@ describe("toRemoteSettings()", () => {
     const remote = toRemoteSettings(settings);
 
     expect(remote).not.toBeNull();
-    if (remote === null) {
-      throw new Error("Expected remote settings");
-    }
-
-    expect(remote.cardShowCollectionNumber).toBeUndefined();
-    expect(remote.cardShowUniqueIcon).toBeUndefined();
-    expect(remote.flags).toBeUndefined();
-    expect(remote.tabooSetId).toBeUndefined();
+    expect(remote?.cardShowCollectionNumber).toBeUndefined();
+    expect(remote?.cardShowUniqueIcon).toBeUndefined();
+    expect(remote?.flags).toBeUndefined();
+    expect(remote?.tabooSetId).toBeUndefined();
   });
 });
 

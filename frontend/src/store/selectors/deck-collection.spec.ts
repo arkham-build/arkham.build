@@ -1,6 +1,6 @@
-import type { Deck } from "@arkham-build/shared";
 import { describe, expect, it } from "vitest";
 import { selectDecksDisplayList } from "@/store/selectors/deck-collection";
+import { makeTestDeck } from "@/test/factories";
 import { getMockStore } from "@/test/get-mock-store";
 import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 
@@ -12,7 +12,7 @@ describe("selectDecksDisplayList", () => {
       data: {
         ...store.getState().data,
         decks: {
-          deck: makeDeck({ id: "deck" }),
+          deck: makeTestDeck({ id: "deck" }),
         },
         history: {
           deck: [],
@@ -42,7 +42,7 @@ describe("selectDecksDisplayList", () => {
       data: {
         ...store.getState().data,
         decks: {
-          deck: makeDeck({ id: "deck" }),
+          deck: makeTestDeck({ id: "deck" }),
         },
         history: {
           deck: [],
@@ -82,32 +82,3 @@ describe("selectDecksDisplayList", () => {
     });
   });
 });
-
-function makeDeck(overrides: Partial<Deck> = {}): Deck {
-  return {
-    date_creation: "2026-01-01T00:00:00.000Z",
-    date_update: "2026-01-01T00:00:00.000Z",
-    description_md: "",
-    exile_string: null,
-    id: "deck-id",
-    ignoreDeckLimitSlots: null,
-    investigator_code: "01001",
-    investigator_name: "Investigator",
-    meta: "{}",
-    name: "Deck",
-    next_deck: null,
-    previous_deck: null,
-    problem: null,
-    sideSlots: null,
-    slots: {},
-    source: null,
-    taboo_id: null,
-    tags: "",
-    user_id: null,
-    version: "1",
-    xp: null,
-    xp_adjustment: null,
-    xp_spent: null,
-    ...overrides,
-  };
-}
