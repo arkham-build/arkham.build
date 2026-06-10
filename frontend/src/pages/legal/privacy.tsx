@@ -7,6 +7,7 @@ import css from "./legal-page.module.css";
 
 function Privacy() {
   const goBack = useGoBack();
+  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
 
   return (
     <AppLayout title="Privacy Policy">
@@ -19,18 +20,19 @@ function Privacy() {
 
         <h2>Controller</h2>
         <p>
-          arkham.build is operated by Felix Spöttel, Germany. For privacy
-          questions or GDPR requests, contact{" "}
-          <a href="mailto:privacy@arkham.build">privacy@arkham.build</a>.
+          Controller: Felix Spöttel ({adminEmail}), Germany. See the{" "}
+          <a href="/legal-notice">Legal Notice</a> for legal notice information.
         </p>
 
         <h2>Personal data we process</h2>
         <p>
           We process account data such as email address, password/authentication
           data, ArkhamDB provider ID, profile data, and user-generated text or
-          structured data. We also process technical data such as UUIDs in
-          application logs, anonymized/redacted debug logs, and IP addresses at
-          Cloudflare proxy level.
+          structured data. If you report abuse, we process the report content,
+          reported content or account identifiers, contact details you provide,
+          timestamps, and moderation notes or actions. We also process technical
+          data such as UUIDs in application logs, anonymized/redacted debug
+          logs, and IP addresses at Cloudflare proxy level.
         </p>
 
         <h2>Purposes and legal bases</h2>
@@ -40,15 +42,35 @@ function Privacy() {
           <a href="/terms">Terms of Service</a>. The legal basis is Art. 6(1)(b)
           GDPR. We process security, abuse-prevention, debugging, and
           transactional/security email data based on legitimate interests under
-          Art. 6(1)(f) GDPR. Where legal obligations apply, the legal basis is
-          Art. 6(1)(c) GDPR.
+          Art. 6(1)(f) GDPR. We process abuse reports and moderation records to
+          review reported content or accounts, enforce the Terms of Service,
+          prevent abuse, and protect users and the service. The legal basis is
+          our legitimate interest under Art. 6(1)(f) GDPR. Where legal
+          obligations apply, the legal basis is Art. 6(1)(c) GDPR.
         </p>
 
-        <h2>Cookies and local storage</h2>
+        <h2>Abuse reports and moderation</h2>
+        <p>
+          You can report abuse by contacting{" "}
+          <a href={`mailto:${adminEmail}`}>{adminEmail}</a>. We review reports
+          to decide whether content or account activity violates the Terms of
+          Service or applicable law. We may keep records of reports, review
+          notes, and actions taken to handle repeat abuse, document decisions,
+          protect users, and defend legal claims.
+        </p>
+
+        <h2>Cookies, local storage, and anti-abuse checks</h2>
         <p>
           We use a session cookie for authentication. We use IndexedDB for local
           user data and preferences. We do not use analytics cookies,
           advertising cookies, tracking pixels, or marketing cookies.
+        </p>
+        <p>
+          We use Cloudflare Turnstile on signup to protect the service from spam
+          and abuse. Cloudflare may process technical data such as your IP
+          address, browser and device signals, and interaction data for this
+          security purpose. The legal basis is our legitimate interest in abuse
+          prevention and service security under Art. 6(1)(f) GDPR.
         </p>
 
         <h2>Third-party embeds</h2>
@@ -66,9 +88,9 @@ function Privacy() {
         <h2>Processors</h2>
         <p>
           We use OVH Cloud for hosting/database infrastructure in Canada,
-          Cloudflare for CDN/proxy services and backup object storage with
-          global proxy processing and R2 storage in Western Europe, and Scaleway
-          for transactional email in France.
+          Cloudflare for CDN/proxy services, Turnstile anti-abuse checks, and
+          backup object storage with global proxy processing and R2 storage in
+          Western Europe, and Scaleway for transactional email in France.
         </p>
 
         <h2>International transfers</h2>
@@ -83,8 +105,11 @@ function Privacy() {
         <p>
           Account data is kept while your account exists. If you delete your
           account, private user content is deleted and public contributions are
-          anonymized. Debug logs are retained for 30 days. Backups are retained
-          for up to 365 days. Inactive accounts are not deleted automatically.
+          anonymized. Debug logs are retained for 30 days. Abuse reports and
+          moderation records are retained only as long as needed to handle the
+          report, enforce the Terms of Service, protect the service, or meet
+          legal obligations. Backups are retained for up to 365 days. Inactive
+          accounts are not deleted automatically.
         </p>
 
         <h2>Your rights</h2>
@@ -94,8 +119,8 @@ function Privacy() {
           export, profile/email correction, password reset/change, OAuth
           disconnect, and account deletion are available as self-service
           features where provided. For manual requests, contact{" "}
-          <a href="mailto:privacy@arkham.build">privacy@arkham.build</a>. You
-          may also complain to your competent data protection authority.
+          <a href={`mailto:${adminEmail}`}>{adminEmail}</a>. You may also
+          complain to your competent data protection authority.
         </p>
 
         <h2>Children</h2>

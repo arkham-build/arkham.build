@@ -69,6 +69,8 @@ export function createStackEnv(overrides: Record<string, string> = {}) {
     SMTP_USER: "",
     VITE_API_LEGACY_URL: apiUrl,
     VITE_API_URL: apiUrl,
+    VITE_ADMIN_EMAIL: "info@example.com",
+    VITE_LEGAL_NOTICE: "Example legal notice\\nEmail: info@example.com",
     VITE_ARKHAMDB_BASE_URL: arkhamDbBaseUrl,
     VITE_CARD_IMAGE_URL: "https://assets.arkham.build",
     VITE_PAGE_NAME: "arkham.build",
@@ -95,6 +97,8 @@ function createFullstackEnv() {
     E2E_POSTGRES_PORT: postgresPort,
     E2E_POSTGRES_USER: postgresUser,
     E2E_RUN_ID: runId,
+    VITE_ADMIN_EMAIL: "info@example.com",
+    VITE_LEGAL_NOTICE: "Example legal notice\\nEmail: info@example.com",
     VITE_API_URL: apiUrl,
   };
 }

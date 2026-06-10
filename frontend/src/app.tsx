@@ -54,6 +54,8 @@ const Privacy = lazy(() => import("./pages/legal/privacy"));
 
 const Terms = lazy(() => import("./pages/legal/terms"));
 
+const LegalNotice = lazy(() => import("./pages/legal/legal-notice"));
+
 const Share = lazy(() => import("./pages/share/share"));
 
 const Search = lazy(() => import("./pages/search/search"));
@@ -171,6 +173,7 @@ function AppInner() {
                 <Route component={About} path="/about" />
                 <Route component={Privacy} path="/privacy" />
                 <Route component={Terms} path="/terms" />
+                <Route component={LegalNotice} path="/legal-notice" />
                 <Route component={Share} path="/share/:id" />
                 <Route component={CollectionStats} path="/collection-stats" />
                 <Route component={BrowseDecklists} path="/decklists" />

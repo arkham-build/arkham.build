@@ -7,6 +7,7 @@ type Variant = "info";
 type Props = {
   as?: React.JSX.ElementType;
   children: React.ReactNode;
+  className?: string;
   variant?: "info";
 };
 
@@ -21,13 +22,13 @@ function getIconForVariant(variant?: Variant) {
 }
 
 export function Notice(props: Props) {
-  const { as = "div", children, variant } = props;
+  const { as = "div", className, children, variant } = props;
   const Element = as;
 
   const icon = getIconForVariant(variant);
 
   return (
-    <Element className={cx(css["notice"], variant && css[variant])}>
+    <Element className={cx(css["notice"], variant && css[variant], className)}>
       {!!icon && <div className={css["notice-icon"]}>{icon}</div>}
       <div className={css["notice-content"]}>{children}</div>
     </Element>

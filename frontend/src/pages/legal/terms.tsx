@@ -7,6 +7,7 @@ import css from "./legal-page.module.css";
 
 function Terms() {
   const goBack = useGoBack();
+  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
 
   return (
     <AppLayout title="Terms of Service">
@@ -17,10 +18,9 @@ function Terms() {
         <h1>Terms of Service</h1>
         <p className={css["meta"]}>Last updated: June 10, 2026</p>
 
-        <h2>Operator</h2>
         <p>
-          arkham.build is operated by Felix Spöttel, Germany. Contact:{" "}
-          <a href="mailto:privacy@arkham.build">privacy@arkham.build</a>.
+          arkham.build is operated by Felix Spöttel ({adminEmail}). See the{" "}
+          <a href="/legal-notice">Legal Notice</a> for legal notice information.
         </p>
 
         <h2>Service</h2>
@@ -63,15 +63,24 @@ function Terms() {
         <h2>Acceptable use</h2>
         <p>
           You must not misuse the service, attempt unauthorized access, disrupt
-          the service, upload unlawful content, or infringe the rights of
-          others.
+          the service, upload unlawful content, harass others, impersonate
+          others, or infringe the rights of others.
+        </p>
+
+        <h2>Reporting abuse</h2>
+        <p>
+          If you believe content or account activity on arkham.build is abusive,
+          unlawful, infringing, or otherwise violates these Terms, contact{" "}
+          <a href={`mailto:${adminEmail}`}>{adminEmail}</a>. Include the URL or
+          ID of the content or account and a short description of the issue.
         </p>
 
         <h2>Moderation and admin actions</h2>
         <p>
           We may review content or accounts when needed to operate the service,
-          handle abuse, or enforce these Terms. Moderation and admin actions are
-          logged.
+          handle abuse reports, prevent abuse, or enforce these Terms. We may
+          hide, remove, or restrict content, and may suspend or delete accounts.
+          Moderation and admin actions are logged.
         </p>
 
         <h2>Account deletion</h2>

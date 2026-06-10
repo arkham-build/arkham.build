@@ -1,21 +1,22 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { Notice } from "@/components/ui/notice";
 import { useToast } from "@/components/ui/toast.hooks";
 import { ErrorBox } from "@/pages/auth/error-box";
 import { useDeleteAccountMutation } from "@/queries/mutations/auth";
 import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
-import { cx } from "@/utils/cx";
 import { Section } from "./section";
 import css from "./settings.module.css";
 
-export function AccountDeletion() {
+export function AccountPrivacy() {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
   const toast = useToast();
+  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
   const session = useStore(selectSession);
   const deleteAccountMutation = useDeleteAccountMutation();
   const [confirmation, setConfirmation] = useState("");
@@ -42,15 +43,29 @@ export function AccountDeletion() {
   };
 
   return (
-    <Section title={t("settings.account.delete.title")}>
-      <form
-        className={cx(css["account-container"], css["account-delete"])}
-        onSubmit={onSubmit}
-      >
+    <Section title={t("settings.account.privacy_rights.title")}>
+      <Notice variant="info">
+        <p>
+          <Trans
+            i18nKey="settings.account.privacy_rights.body"
+            t={t}
+            components={{
+              privacyEmail: <a href={`mailto:${adminEmail}`}>{adminEmail}</a>,
+            }}
+            values={{
+              adminEmail,
+            }}
+          />
+        </p>
+      </Notice>
+      <form className={css["account-container"]} onSubmit={onSubmit}>
+        <h3>{t("settings.account.delete.title")}</h3>
         {deleteAccountMutation.error && (
           <ErrorBox>{deleteAccountMutation.error.message}</ErrorBox>
         )}
-        <p>{t("settings.account.delete.help")}</p>
+        <p className={css["account-delete-help"]}>
+          {t("settings.account.delete.help")}
+        </p>
         <Field
           full
           helpText={t("settings.account.delete.confirm_help", {

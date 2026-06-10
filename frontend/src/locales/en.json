@@ -1571,6 +1571,10 @@
           "help": "Permanently delete your arkham.build account and associated data. This deletes server-side credentials, sessions, account-synced decks, settings, and OAuth connections. Account-linked decks are removed from this device. Device-only decks, settings, and other browser data is not deleted. Content synced to ArkhamDB is not deleted from ArkhamDB.",
           "submit": "Delete account",
           "title": "Delete account"
+        },
+        "privacy_rights": {
+          "body": "You can export your data from the Support tab and delete your account below. For GDPR requests that are not self-service, such as restriction or objection requests, contact <privacyEmail>{{adminEmail}}</privacyEmail>.",
+          "title": "Privacy and data rights"
         }
       },
       "card_data": {
@@ -1707,7 +1711,8 @@
       "arkham_title": "Arkham Horror: The Card Game™",
       "ffg": "Fantasy Flight Games (FFG)",
       "terms": "Terms of Service",
-      "privacy": "Privacy Policy"
+      "privacy": "Privacy Policy",
+      "legal_notice": "Legal Notice"
     },
     "external_embed": {
       "load": "Load external content",

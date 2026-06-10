@@ -299,6 +299,7 @@ function AccountMenu(props: {
           {t("help.about")}
         </DropdownButton>
       </Link>
+      <hr />
       <Link asChild href="~/terms">
         <DropdownButton as="a" data-testid="masthead-terms">
           {t("footer.terms")}
@@ -307,6 +308,11 @@ function AccountMenu(props: {
       <Link asChild href="~/privacy">
         <DropdownButton as="a" data-testid="masthead-privacy">
           {t("footer.privacy")}
+        </DropdownButton>
+      </Link>
+      <Link asChild href="~/legal-notice">
+        <DropdownButton as="a" data-testid="masthead-legal-notice">
+          {t("footer.legal_notice")}
         </DropdownButton>
       </Link>
     </>
