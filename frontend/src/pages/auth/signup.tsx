@@ -3,7 +3,7 @@ import {
   PATTERN_VALID_USERNAME,
 } from "@arkham-build/shared";
 import { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -13,6 +13,7 @@ import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
 import { createPasswordMatchPattern, errorMapper } from "./helpers";
 import { OAuthSeparator } from "./oauth-separator";
+import css from "./signup.module.css";
 import { Turnstile } from "./turnstile";
 
 function Signup() {
@@ -137,6 +138,17 @@ function Signup() {
         {turnstileSiteKey && (
           <Turnstile onChange={onTurnstileChange} siteKey={turnstileSiteKey} />
         )}
+
+        <p className={css["legal-copy"]}>
+          <Trans
+            i18nKey="auth.signup.legal_acceptance"
+            t={t}
+            components={{
+              terms: <a href="/terms">{t("footer.terms")}</a>,
+              privacy: <a href="/privacy">{t("footer.privacy")}</a>,
+            }}
+          />
+        </p>
 
         <Button
           disabled={

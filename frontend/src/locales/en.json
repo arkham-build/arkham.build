@@ -105,7 +105,8 @@
         "success": "Signed up successfully! Please check your email to verify your account.",
         "title": "Sign up",
         "verifying": "Verifying...",
-        "with_arkhamdb": "Sign up with ArkhamDB"
+        "with_arkhamdb": "Sign up with ArkhamDB",
+        "legal_acceptance": "By creating an account, you agree to the <terms>Terms of Service</terms> and acknowledge the <privacy>Privacy Policy</privacy>."
       },
       "username": "Username",
       "username_validation": "Letters, numbers, underscores, and hyphens only",
@@ -1691,6 +1692,14 @@
         "next": "Next",
         "previous": "Previous"
       }
+    },
+    "footer": {
+      "disclaimer": "<arkham>Arkham Horror: The Card Game™</arkham> and all related content © <ffg>Fantasy Flight Games (FFG)</ffg>. This site is not produced, endorsed by, or affiliated with FFG.",
+      "legal": "Legal",
+      "arkham_title": "Arkham Horror: The Card Game™",
+      "ffg": "Fantasy Flight Games (FFG)",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
     }
   }
 }

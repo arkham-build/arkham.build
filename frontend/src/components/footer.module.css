@@ -6,10 +6,15 @@
   padding-top: 0.25rem;
 }
 
-.footer p {
+.footer-inner {
   border-top: 1px dashed var(--palette-1);
   padding-top: 0.25rem;
-  line-height: 1;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.footer p {
+  margin: 0;
 }
 
 .footer a {

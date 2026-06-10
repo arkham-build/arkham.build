@@ -299,6 +299,16 @@ function AccountMenu(props: {
           {t("help.about")}
         </DropdownButton>
       </Link>
+      <Link asChild href="~/terms">
+        <DropdownButton as="a" data-testid="masthead-terms">
+          {t("footer.terms")}
+        </DropdownButton>
+      </Link>
+      <Link asChild href="~/privacy">
+        <DropdownButton as="a" data-testid="masthead-privacy">
+          {t("footer.privacy")}
+        </DropdownButton>
+      </Link>
     </>
   );
 

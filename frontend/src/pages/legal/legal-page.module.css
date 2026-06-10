@@ -1,0 +1,8 @@
+.legal-page {
+  max-width: 72ch;
+  margin-inline: auto;
+}
+
+.meta {
+  color: var(--palette-three-point-five);
+}
