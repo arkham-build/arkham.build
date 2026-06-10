@@ -28,7 +28,11 @@ export function NotesPreview(props: Props) {
         <div className={css["preview-inner"]}>
           {bannerUrl && (
             <div className={css["banner"]}>
-              <img alt="Deck banner" src={bannerUrl} />
+              <img
+                alt="Deck banner"
+                referrerPolicy="no-referrer"
+                src={bannerUrl}
+              />
             </div>
           )}
           {introMd && <DeckDescription content={introMd} centered />}

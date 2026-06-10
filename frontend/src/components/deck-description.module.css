@@ -9,3 +9,33 @@
 .description > * + * {
   margin-top: 1.5em;
 }
+
+.description :global(.external-embed-placeholder) {
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+  min-height: 12rem;
+  border: 1px dashed var(--palette-2);
+  padding: 0.25rem;
+  text-align: center;
+}
+
+.description :global(.external-embed-placeholder p) {
+  margin: 0;
+}
+
+.description :global(.external-embed-placeholder button) {
+  border: 1px solid var(--palette-2);
+  border-radius: var(--rounded);
+  background: var(--palette-1);
+  color: var(--text);
+  cursor: pointer;
+  padding: 0.5rem;
+  font-size: var(--text-sm);
+}
+
+.description :global(.external-embed-placeholder iframe) {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}

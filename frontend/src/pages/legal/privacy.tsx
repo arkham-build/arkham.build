@@ -53,10 +53,14 @@ function Privacy() {
 
         <h2>Third-party embeds</h2>
         <p>
-          User-generated content may contain links or embeds to third-party
-          services. Third-party embeds are not loaded automatically. If you
-          choose to load an embed, the third party may process your data under
-          its own privacy policy.
+          User-generated content may contain links, images, or embeds to
+          third-party services. External images may load automatically, which
+          means the image provider may receive technical data such as your IP
+          address, browser information, and request time. We set a no-referrer
+          policy to avoid sending the arkham.build page URL where supported.
+          Third-party embeds are not loaded automatically. If you choose to load
+          an embed, the third party may process your data under its own privacy
+          policy.
         </p>
 
         <h2>Processors</h2>

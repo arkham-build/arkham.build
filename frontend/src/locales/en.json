@@ -1700,6 +1700,11 @@
       "ffg": "Fantasy Flight Games (FFG)",
       "terms": "Terms of Service",
       "privacy": "Privacy Policy"
+    },
+    "external_embed": {
+      "load": "Load external content",
+      "notice": "This external content is blocked until you choose to load it. Loading it may allow the provider to process your data and set cookies.",
+      "title": "External content"
     }
   }
 }

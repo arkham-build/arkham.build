@@ -150,7 +150,11 @@ export function DeckDisplay(props: DeckDisplayProps) {
           {headerSlot && <div>{headerSlot}</div>}
           {deck.metaParsed?.banner_url && (
             <div className={css["banner"]}>
-              <img alt="Deck banner" src={deck.metaParsed.banner_url} />
+              <img
+                alt="Deck banner"
+                referrerPolicy="no-referrer"
+                src={deck.metaParsed.banner_url}
+              />
             </div>
           )}
           {deck.metaParsed.intro_md && (
