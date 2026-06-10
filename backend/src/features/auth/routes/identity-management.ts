@@ -3,11 +3,13 @@ import {
   UpdateCredentialsRequestSchema,
 } from "@arkham-build/shared";
 import { Hono } from "hono";
+import { deleteCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
 import {
   getAccountIdentityByAccountIdAndProvider,
   listAccountIdentitiesByAccountId,
 } from "../../../lib/auth/account-identities.ts";
+import { deleteAccountById } from "../../../lib/auth/accounts.ts";
 import { sessionAuth } from "../../../lib/auth/session-auth-middleware.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { zodValidator } from "../../../lib/validation.ts";
@@ -38,6 +40,23 @@ import {
 } from "../queries/verification-tokens.ts";
 
 const routes = new Hono<HonoEnv>();
+
+routes.delete(
+  "/account",
+  sessionAuth({ requireCompleteProfile: false }),
+  async (c) => {
+    const db = c.get("db");
+    const config = c.get("config");
+    const account = c.get("account");
+
+    c.set("skipSessionCookieRefresh", true);
+
+    await deleteAccountById(db, account.id);
+    deleteCookie(c, config.SESSION_COOKIE_NAME, { path: "/" });
+
+    return new Response(null, { status: 204 });
+  },
+);
 
 routes.get("/me", sessionAuth({ requireCompleteProfile: false }), async (c) => {
   const db = c.get("db");

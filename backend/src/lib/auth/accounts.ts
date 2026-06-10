@@ -6,6 +6,10 @@ export type AuthAccount = Selectable<Account> & {
   active_account_ban_id: string | null;
 };
 
+export async function deleteAccountById(db: Database, id: string) {
+  return await db.deleteFrom("account").where("id", "=", id).executeTakeFirst();
+}
+
 export async function findAccountForAuth(
   db: Database,
   id: string,

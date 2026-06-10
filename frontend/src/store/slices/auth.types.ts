@@ -8,6 +8,7 @@ export type AuthState = {
 
 export type AuthSlice = {
   auth: AuthState;
+  deleteAccount(client: HttpClient): Promise<void>;
   handleUnauthorized(): Promise<void>;
   initSession(client: HttpClient): Promise<void>;
   login(client: HttpClient, payload: LoginRequest): Promise<void>;

@@ -61,6 +61,23 @@ export function useAccountSyncMutation() {
   });
 }
 
+export function useDeleteAccountMutation() {
+  const client = useHttpClient();
+  const deleteAccount = useStore((state) => state.deleteAccount);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["auth", "delete-account"],
+    mutationFn: () => deleteAccount(client),
+    onSuccess: () => {
+      queryClient.setQueryData(authKeys.session(), null);
+      void queryClient.invalidateQueries({
+        queryKey: authKeys.session(),
+      });
+    },
+  });
+}
+
 export function useSignupMutation() {
   const client = useHttpClient();
 

@@ -149,7 +149,7 @@ routes.post(
       await deleteSession(db, sessionId);
     }
 
-    deleteCookie(c, config.SESSION_COOKIE_NAME);
+    deleteCookie(c, config.SESSION_COOKIE_NAME, { path: "/" });
     return new Response(null, { status: 200 });
   },
 );

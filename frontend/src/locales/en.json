@@ -1563,7 +1563,15 @@
           "username": "Username",
           "username_help": "Letters, numbers, underscores, and hyphens only"
         },
-        "title": "Account"
+        "title": "Account",
+        "delete": {
+          "confirm_help": "Type {{username}} to confirm account deletion.",
+          "confirm_label": "Confirmation",
+          "deleting": "Deleting account...",
+          "help": "Permanently delete your arkham.build account and associated data. This deletes server-side credentials, sessions, account-synced decks, settings, and OAuth connections. Account-linked decks are removed from this device. Device-only decks, settings, and other browser data is not deleted. Content synced to ArkhamDB is not deleted from ArkhamDB.",
+          "submit": "Delete account",
+          "title": "Delete account"
+        }
       },
       "card_data": {
         "card_count": "Card count",

@@ -56,6 +56,13 @@ export async function postLogout(client: HttpClient): Promise<void> {
   });
 }
 
+export async function deleteAccount(client: HttpClient): Promise<void> {
+  await client.request("/v2/auth/account", {
+    method: "DELETE",
+    credentials: "include",
+  });
+}
+
 export async function postCreateEmailIdentity(
   client: HttpClient,
   payload: CreateEmailIdentityRequest,

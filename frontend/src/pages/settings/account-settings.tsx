@@ -1,5 +1,6 @@
 import type { SessionResponse } from "@arkham-build/shared";
 import { Redirect } from "wouter";
+import { AccountDeletion } from "./account-deletion";
 import { AccountEmail } from "./account-email";
 import { AccountProfile } from "./account-profile";
 import { OAuthConnections } from "./connections";
@@ -25,6 +26,7 @@ export function AccountSettings({
         <AccountEmail />
         <OAuthConnections />
       </div>
+      <AccountDeletion />
     </>
   );
 }

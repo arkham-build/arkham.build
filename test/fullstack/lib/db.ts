@@ -36,6 +36,22 @@ export async function createAuthenticatedAccount(page: Page) {
   }
 }
 
+export async function accountExists(accountId: string) {
+  const db = getDatabase(databaseUrl);
+
+  try {
+    const account = await db
+      .selectFrom("account")
+      .select("id")
+      .where("id", "=", accountId)
+      .executeTakeFirst();
+
+    return !!account;
+  } finally {
+    await db.destroy();
+  }
+}
+
 export async function getAccountName(accountId: string) {
   const db = getDatabase(databaseUrl);
 

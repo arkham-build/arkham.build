@@ -56,6 +56,161 @@ describe("Auth routes", () => {
     });
   });
 
+  describe("DELETE /v2/auth/account", () => {
+    test("requires authentication", async ({ dependencies }) => {
+      const { app } = dependencies;
+
+      const res = await app.request("/v2/auth/account", {
+        method: "DELETE",
+      });
+
+      expect(res.status).toBe(401);
+    });
+
+    test("deletes the account and cascades private account data", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+
+      const account = await db
+        .selectFrom("account")
+        .select(["id"])
+        .where("name", "=", TEST_ACCOUNT.name)
+        .executeTakeFirstOrThrow();
+
+      const arkhamdbIdentity = await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "delete-account-arkhamdb-user",
+          verified_at: new Date(),
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("oauth_token")
+        .values({
+          account_identity_id: arkhamdbIdentity.id,
+          access_token: "access-token",
+        })
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("arkhamdb_deck_snapshot")
+        .values({
+          account_identity_id: arkhamdbIdentity.id,
+          decks: JSON.stringify([]),
+          last_modified: null,
+        })
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_settings")
+        .values({
+          account_id: account.id,
+          collection: {},
+          settings: {},
+        })
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_folder")
+        .values({
+          account_id: account.id,
+          state: {},
+        })
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("deck")
+        .values({
+          account_id: account.id,
+          id: "delete-account-deck",
+          investigator_code: "01001",
+          investigator_name: "Roland Banks",
+          meta: {},
+          name: "Delete Account Deck",
+          provider_type: "account",
+          slots: { "01006": 1 },
+          version: "1.0",
+        })
+        .executeTakeFirstOrThrow();
+
+      const res = await app.request("/v2/auth/account", {
+        method: "DELETE",
+        headers: { Cookie: sessionCookie },
+      });
+
+      expect(res.status).toBe(204);
+
+      await expect(
+        db
+          .selectFrom("account")
+          .select(["id"])
+          .where("id", "=", account.id)
+          .executeTakeFirst(),
+      ).resolves.toBeUndefined();
+      await expect(
+        db
+          .selectFrom("account_identity")
+          .select(["id"])
+          .where("account_id", "=", account.id)
+          .execute(),
+      ).resolves.toHaveLength(0);
+      await expect(
+        db
+          .selectFrom("session")
+          .select(["id"])
+          .where("account_id", "=", account.id)
+          .execute(),
+      ).resolves.toHaveLength(0);
+      await expect(
+        db
+          .selectFrom("account_settings")
+          .select(["account_id"])
+          .where("account_id", "=", account.id)
+          .execute(),
+      ).resolves.toHaveLength(0);
+      await expect(
+        db
+          .selectFrom("account_folder")
+          .select(["account_id"])
+          .where("account_id", "=", account.id)
+          .execute(),
+      ).resolves.toHaveLength(0);
+      await expect(
+        db
+          .selectFrom("deck")
+          .select(["id"])
+          .where("account_id", "=", account.id)
+          .execute(),
+      ).resolves.toHaveLength(0);
+      await expect(
+        db
+          .selectFrom("oauth_token")
+          .select(["account_identity_id"])
+          .where("account_identity_id", "=", arkhamdbIdentity.id)
+          .execute(),
+      ).resolves.toHaveLength(0);
+      await expect(
+        db
+          .selectFrom("arkhamdb_deck_snapshot")
+          .select(["id"])
+          .where("account_identity_id", "=", arkhamdbIdentity.id)
+          .execute(),
+      ).resolves.toHaveLength(0);
+
+      const meRes = await app.request("/v2/auth/me", {
+        method: "GET",
+        headers: { Cookie: sessionCookie },
+      });
+
+      expect(meRes.status).toBe(401);
+    });
+  });
+
   describe("DELETE /v2/auth/oauth/:provider", () => {
     test("requires authentication", async ({ dependencies }) => {
       const { app } = dependencies;

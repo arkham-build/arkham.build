@@ -2,7 +2,11 @@ import { randomUUID } from "node:crypto";
 import { expect, type Page } from "@playwright/test";
 import { test } from "../fixtures.ts";
 import { login } from "../lib/auth.ts";
-import { createAuthenticatedAccount, getAccountName } from "../lib/db.ts";
+import {
+  accountExists,
+  createAuthenticatedAccount,
+  getAccountName,
+} from "../lib/db.ts";
 import { waitForEmailVerificationUrl } from "../lib/mailcrab.ts";
 
 const newPassword = "NewSecurePassword123!";
@@ -99,6 +103,25 @@ test.describe("account settings", () => {
 
     await login(page, account.email, account.password);
     await expect(page).toHaveURL(/\/$/);
+  });
+
+  test("user deletes their account", async ({ page }) => {
+    const account = await createAuthenticatedAccount(page);
+
+    await openAccountSettings(page);
+
+    const deleteButton = page.getByRole("button", { name: "Delete account" });
+    await expect(deleteButton).toBeDisabled();
+
+    await page.locator("#delete-account-confirmation").fill(account.name);
+    await expect(deleteButton).toBeEnabled();
+    await deleteButton.click();
+
+    await expect(page).toHaveURL(/\/$/);
+    await expect.poll(() => accountExists(account.accountId)).toBe(false);
+
+    await login(page, account.email, account.password);
+    await expect(page.getByText("Invalid email or password")).toBeVisible();
   });
 });
 

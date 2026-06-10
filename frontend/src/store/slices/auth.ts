@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 import { dehydrate } from "../persist/index.ts";
 import {
+  deleteAccount as deleteAccountRequest,
   fetchSession,
   postLogin,
   postLogout,
@@ -21,6 +22,15 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
   get,
 ) => ({
   auth: getInitialAuthState(),
+
+  async deleteAccount(client) {
+    try {
+      await deleteAccountRequest(client);
+    } finally {
+      get().clearAccountState({ session: null, status: "unauthenticated" });
+      await dehydrate(get(), "app");
+    }
+  },
 
   async handleUnauthorized() {
     const state = get();
