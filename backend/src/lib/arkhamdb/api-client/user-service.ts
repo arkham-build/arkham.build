@@ -6,11 +6,8 @@ import type {
   DeckWritePayload,
 } from "@arkham-build/shared";
 import type { Context } from "hono";
-import {
-  createArkhamDbDeckSnapshot,
-  findArkhamDbDeckSnapshotByAccountIdAndId,
-  findLatestArkhamDbDeckSnapshotByAccountIdentityId,
-} from "../../../features/decks/queries.ts";
+import type { Database } from "../../../db/db.ts";
+import type { ArkhamdbDeckSnapshot } from "../../../db/schema.types.ts";
 import { getAccountIdentityByAccountIdAndProvider } from "../../auth/account-identities.ts";
 import type { SessionAuthHonoEnv } from "../../hono-env.ts";
 import {
@@ -175,4 +172,56 @@ function mapArkhamDbDeckToManifestItem(
     updatedAt: dto.date_update,
     version: dto.version,
   };
+}
+
+async function createArkhamDbDeckSnapshot(
+  db: Database,
+  accountIdentityId: string,
+  lastModified: string | null,
+  decks: ArkhamdbDeckSnapshot["decks"],
+) {
+  return await db
+    .insertInto("arkhamdb_deck_snapshot")
+    .values({
+      account_identity_id: accountIdentityId,
+      decks: JSON.stringify(decks),
+      last_modified: lastModified,
+    })
+    .returning(["id", "decks", "last_modified"])
+    .executeTakeFirstOrThrow();
+}
+
+async function findLatestArkhamDbDeckSnapshotByAccountIdentityId(
+  db: Database,
+  accountIdentityId: string,
+) {
+  return await db
+    .selectFrom("arkhamdb_deck_snapshot")
+    .select(["id", "decks", "last_modified"])
+    .where("account_identity_id", "=", accountIdentityId)
+    .orderBy("created_at", "desc")
+    .executeTakeFirst();
+}
+
+async function findArkhamDbDeckSnapshotByAccountIdAndId(
+  db: Database,
+  accountId: string,
+  snapshotId: string,
+) {
+  return await db
+    .selectFrom("arkhamdb_deck_snapshot")
+    .innerJoin(
+      "account_identity",
+      "account_identity.id",
+      "arkhamdb_deck_snapshot.account_identity_id",
+    )
+    .select([
+      "arkhamdb_deck_snapshot.id",
+      "arkhamdb_deck_snapshot.decks",
+      "arkhamdb_deck_snapshot.last_modified",
+    ])
+    .where("account_identity.account_id", "=", accountId)
+    .where("account_identity.provider", "=", "arkhamdb")
+    .where("arkhamdb_deck_snapshot.id", "=", snapshotId)
+    .executeTakeFirst();
 }

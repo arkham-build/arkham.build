@@ -290,6 +290,7 @@ function AccountMenu(props: {
       >
         <KeyboardIcon /> {t("help.shortcuts.title")}
       </DropdownButton>
+      <hr />
       <Link asChild href="~/about">
         <DropdownButton
           as="a"
@@ -299,7 +300,6 @@ function AccountMenu(props: {
           {t("help.about")}
         </DropdownButton>
       </Link>
-      <hr />
       <Link asChild href="~/terms">
         <DropdownButton as="a" data-testid="masthead-terms">
           {t("footer.terms")}
