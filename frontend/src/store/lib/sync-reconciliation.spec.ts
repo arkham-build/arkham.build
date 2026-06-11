@@ -304,6 +304,36 @@ describe("sync reconciliation", () => {
       );
       expect(result.syncDecks.status).toBe("conflict");
     });
+
+    it("marks reconciliation partial when non-conflicted decks are skipped", () => {
+      const result = applyRemoteDeckReconciliation({
+        accountId: "account-id",
+        data: makeData({
+          decks: {
+            skipped: makeDeck("skipped"),
+          },
+        }),
+        deckEdits: {},
+        manifest: makeManifest([]),
+        plan: {
+          fetchTargets: [],
+          removeIds: [],
+          skippedIds: ["skipped"],
+        },
+        remoteDecks: [],
+        syncDecks: makeSyncDecks(
+          {
+            skipped: makeSyncItem("v1"),
+          },
+          "previous-manifest-version",
+        ),
+      });
+
+      expect(result.syncDecks.manifestVersion).toBe(
+        "previous-manifest-version",
+      );
+      expect(result.syncDecks.status).toBe("partial");
+    });
   });
 });
 

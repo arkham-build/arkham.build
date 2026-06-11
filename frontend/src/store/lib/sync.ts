@@ -193,10 +193,11 @@ function updateDeckSyncItem(
 const DECK_SYNC_STATUS_PRIORITY: Record<SyncStatus, number> = {
   idle: 0,
   synced: 1,
-  saving: 2,
-  loading: 3,
-  error: 4,
-  conflict: 5,
+  partial: 2,
+  saving: 3,
+  loading: 4,
+  error: 5,
+  conflict: 6,
 };
 
 function getDecksSyncStatus(items: StoreState["sync"]["decks"]["items"]) {

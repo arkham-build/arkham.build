@@ -270,7 +270,7 @@ function getReconciliationStatus(
     if (items[id]?.status === "conflict") return "conflict";
   }
 
-  return "saving";
+  return "partial";
 }
 
 export function rebuildDeckHistory(decks: Record<DeckId, Deck>) {

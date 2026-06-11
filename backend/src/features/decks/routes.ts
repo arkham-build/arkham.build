@@ -69,7 +69,17 @@ routes.get("/manifest", sessionAuth(), async (c) => {
       arkhamdbDeckManifest = remoteManifest.decks;
       arkhamdbSyncToken = remoteManifest.arkhamdbSyncToken;
       arkhamdbAvailable = true;
-    } catch {}
+    } catch (error) {
+      if (!isArkhamDbManifestUnavailableError(error)) {
+        throw error;
+      }
+
+      c.get("logger")("warn", "ArkhamDB deck manifest unavailable", {
+        accountId,
+        error: error.message,
+        ...(error instanceof ApiError ? { status: error.status } : {}),
+      });
+    }
   }
 
   const accountDecks = await listAccountDecksForManifest(db, accountId);
@@ -225,6 +235,14 @@ function getDeckTargetKey(target: DeckSyncTarget) {
 
 function getCrud(provider: SyncedDeckProvider) {
   return provider === ARKHAMDB_PROVIDER_TYPE ? arkhamdbCrud : localCrud;
+}
+
+function isArkhamDbManifestUnavailableError(error: unknown): error is Error {
+  return (
+    error instanceof ApiError ||
+    (error instanceof Error &&
+      error.message === "Missing ArkhamDB identity or OAuth token for account.")
+  );
 }
 
 const localCrud = {

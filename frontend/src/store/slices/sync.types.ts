@@ -11,6 +11,7 @@ export type SyncStatus =
   | "loading"
   | "saving"
   | "synced"
+  | "partial"
   | "conflict"
   | "error";
 
