@@ -38,10 +38,9 @@ function Privacy() {
         <p>
           We process account, login, profile, and account deletion data to
           provide arkham.build under the <a href="/terms">Terms of Service</a>.
-          The legal basis is Art. 6(1)(b) GDPR. We process security,
-          abuse-prevention, debugging, service email, abuse reports, and
-          moderation records based on our legitimate interests under Art.
-          6(1)(f) GDPR.
+          We process security, abuse-prevention, debugging, service email, abuse
+          reports, and moderation records based on our legitimate interests
+          under Art. 6(1)(f) GDPR.
         </p>
 
         <h2>Cookies, local storage, and anti-abuse checks</h2>
@@ -53,8 +52,7 @@ function Privacy() {
           We use Cloudflare Turnstile on signup to protect the service from spam
           and abuse. Cloudflare may process technical data such as your IP
           address, browser and device signals, and interaction data for this
-          security purpose. The legal basis is our legitimate interest in abuse
-          prevention and service security under Art. 6(1)(f) GDPR.
+          security purpose.
         </p>
 
         <h2>Third-party embeds</h2>
@@ -88,7 +86,8 @@ function Privacy() {
           anonymized. Debug logs are retained for 30 days. Abuse reports and
           moderation records are kept only as long as needed to handle abuse,
           protect the service, or meet legal obligations. Backups are retained
-          for up to 365 days. Inactive accounts are not deleted automatically.
+          for up to 365 days. Accounts with no activity for two years are
+          deleted automatically.
         </p>
 
         <h2>Your rights</h2>

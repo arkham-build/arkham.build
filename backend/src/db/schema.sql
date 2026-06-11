@@ -477,7 +477,8 @@ CREATE TABLE public.account (
     id uuid DEFAULT uuidv7() NOT NULL,
     name character varying(64) NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
-    profile_completed boolean DEFAULT true NOT NULL
+    profile_completed boolean DEFAULT true NOT NULL,
+    last_activity_at timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -1772,6 +1773,13 @@ CREATE UNIQUE INDEX idx_account_identity_provider_uid ON public.account_identity
 
 
 --
+-- Name: idx_account_last_activity_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_account_last_activity_at ON public.account USING btree (last_activity_at);
+
+
+--
 -- Name: idx_account_moderation_action_account_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2687,4 +2695,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260604234500'),
     ('20260606120000'),
     ('20260606130000'),
-    ('20260609120000');
+    ('20260609120000'),
+    ('20260611120000');

@@ -43,7 +43,12 @@ export function sessionAuth(
       throw new HTTPException(403, { message: "Profile completion required" });
     }
 
-    await updateSessionActivity(db, sessionId, config.SESSION_EXPIRY_HOURS);
+    await updateSessionActivity(
+      db,
+      sessionId,
+      session.account_id,
+      config.SESSION_EXPIRY_HOURS,
+    );
 
     c.set("session", session);
     c.set("account", account);

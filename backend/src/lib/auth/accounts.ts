@@ -10,6 +10,14 @@ export async function deleteAccountById(db: Database, id: string) {
   return await db.deleteFrom("account").where("id", "=", id).executeTakeFirst();
 }
 
+export async function updateAccountActivity(db: Database, id: string) {
+  return await db
+    .updateTable("account")
+    .set({ last_activity_at: new Date() })
+    .where("id", "=", id)
+    .executeTakeFirst();
+}
+
 export async function findAccountForAuth(
   db: Database,
   id: string,

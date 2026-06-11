@@ -79,6 +79,7 @@ function Terms() {
         <h2>Account deletion</h2>
         <p>
           You may delete your account where self-service deletion is available.
+          Accounts with no activity for two years are deleted automatically.
           Private user content is deleted, public contributions are anonymized,
           and backup copies expire through the normal backup retention process.
         </p>

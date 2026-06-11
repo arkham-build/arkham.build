@@ -39,6 +39,7 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 export interface Account {
   created_at: Generated<Timestamp>;
   id: Generated<string>;
+  last_activity_at: Generated<Timestamp>;
   name: string;
   profile_completed: Generated<boolean>;
   updated_at: Generated<Timestamp>;

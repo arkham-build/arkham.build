@@ -1,4 +1,5 @@
 import type { Database } from "../../db/db.ts";
+import { updateAccountActivity } from "./accounts.ts";
 
 export async function createSession(
   db: Database,
@@ -7,7 +8,7 @@ export async function createSession(
 ) {
   const expiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000);
 
-  return await db
+  const session = await db
     .insertInto("session")
     .values({
       account_id: accountId,
@@ -15,6 +16,10 @@ export async function createSession(
     })
     .returningAll()
     .executeTakeFirstOrThrow();
+
+  await updateAccountActivity(db, accountId);
+
+  return session;
 }
 
 export async function deleteSession(db: Database, id: string) {
@@ -51,12 +56,13 @@ export async function cleanupExpiredSessions(db: Database) {
 export async function updateSessionActivity(
   db: Database,
   sessionId: string,
+  accountId: string,
   expiryHours: number,
 ) {
   const now = new Date();
   const expiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000);
 
-  return await db
+  const result = await db
     .updateTable("session")
     .set({
       last_activity_at: now,
@@ -64,4 +70,8 @@ export async function updateSessionActivity(
     })
     .where("id", "=", sessionId)
     .executeTakeFirst();
+
+  await updateAccountActivity(db, accountId);
+
+  return result;
 }
