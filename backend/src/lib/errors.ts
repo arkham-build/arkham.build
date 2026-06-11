@@ -1,8 +1,8 @@
+import { STATUS_CODES } from "node:http";
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { ZodError } from "zod";
 import type { HonoEnv } from "./hono-env.ts";
-import { statusText } from "./http-status.ts";
 
 export function errorHandler(err: unknown, c: Context<HonoEnv>) {
   if (err instanceof HTTPException) {
@@ -30,12 +30,12 @@ export function errorHandler(err: unknown, c: Context<HonoEnv>) {
     console.error(err);
   }
 
-  return c.json({ message: statusText(500) }, 500);
+  return c.json({ message: STATUS_CODES[500] as string }, 500);
 }
 
 function formatError(err: HTTPException & { cause?: unknown }) {
   return {
-    message: err.message || statusText(err.status),
+    message: err.message || (STATUS_CODES[err.status] as string),
     cause: formatErrorCause(err.cause),
   };
 }

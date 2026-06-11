@@ -1139,36 +1139,36 @@ describe("Auth routes", () => {
           },
         ],
       });
+    });
 
-      test("refreshes account activity for authenticated requests", async ({
-        dependencies,
-      }) => {
-        const { app, db, sessionCookie } = dependencies;
-        const inactiveAt = new Date("2024-06-11T12:00:00Z");
+    test("refreshes account activity for authenticated requests", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      const inactiveAt = new Date("2024-06-11T12:00:00Z");
 
-        await db
-          .updateTable("account")
-          .set({ last_activity_at: inactiveAt })
-          .where("name", "=", TEST_ACCOUNT.name)
-          .executeTakeFirstOrThrow();
+      await db
+        .updateTable("account")
+        .set({ last_activity_at: inactiveAt })
+        .where("name", "=", TEST_ACCOUNT.name)
+        .executeTakeFirstOrThrow();
 
-        const res = await app.request("/v2/auth/me", {
-          method: "GET",
-          headers: { Cookie: sessionCookie },
-        });
-
-        expect(res.status).toBe(200);
-
-        const account = await db
-          .selectFrom("account")
-          .select(["last_activity_at"])
-          .where("name", "=", TEST_ACCOUNT.name)
-          .executeTakeFirstOrThrow();
-
-        expect(account.last_activity_at.getTime()).toBeGreaterThan(
-          inactiveAt.getTime(),
-        );
+      const res = await app.request("/v2/auth/me", {
+        method: "GET",
+        headers: { Cookie: sessionCookie },
       });
+
+      expect(res.status).toBe(200);
+
+      const account = await db
+        .selectFrom("account")
+        .select(["last_activity_at"])
+        .where("name", "=", TEST_ACCOUNT.name)
+        .executeTakeFirstOrThrow();
+
+      expect(account.last_activity_at.getTime()).toBeGreaterThan(
+        inactiveAt.getTime(),
+      );
     });
 
     test("returns 401 when not authenticated", async ({ dependencies }) => {

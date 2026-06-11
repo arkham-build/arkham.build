@@ -1,10 +1,13 @@
 import { UpdateProfileRequestSchema } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import {
+  findAccountByUsername,
+  updateAccountUsername,
+} from "../../lib/auth/accounts.ts";
 import { sessionAuth } from "../../lib/auth/session-auth-middleware.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
-import { findAccountByUsername, updateAccountUsername } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
 

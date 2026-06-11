@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { arkhamdbOAuthProvider } from "../../../lib/arkhamdb/oauth-provider.ts";
 import { getAccountIdentityByProviderUserId } from "../../../lib/auth/account-identities.ts";
+import { accountNameExists } from "../../../lib/auth/accounts.ts";
 import { sessionAuth } from "../../../lib/auth/session-auth-middleware.ts";
 import { setSessionCookie } from "../../../lib/auth/session-cookie.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
@@ -15,7 +16,6 @@ import {
 } from "../lib/oauth/flow.ts";
 import { getOAuthContext, validateOAuthState } from "../lib/oauth/state.ts";
 import {
-  accountNameExists,
   completeAccountProfile,
   upsertAccountFromOAuth,
 } from "../queries/accounts.ts";

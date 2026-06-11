@@ -1,11 +1,16 @@
 import { randomUUID } from "node:crypto";
-import { SettingsRequestSchema } from "@arkham-build/shared";
-import { type Context, Hono } from "hono";
+import {
+  SettingsRequestSchema,
+  SettingsResponseSchema,
+} from "@arkham-build/shared";
+import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import type { Selectable } from "kysely";
+import type { AccountSettings } from "../../db/schema.types.ts";
 import { sessionAuth } from "../../lib/auth/session-auth-middleware.ts";
-import type { HonoEnv, SessionAuthHonoEnv } from "../../lib/hono-env.ts";
+import type { HonoEnv } from "../../lib/hono-env.ts";
+import { upsertRevisionedAccountState } from "../../lib/revisioned-account-state.ts";
 import { zodValidator } from "../../lib/validation.ts";
-import { mapAccountSettingsToResponse } from "./mapping.ts";
 import { findAccountSettingsByAccountId } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
@@ -13,7 +18,7 @@ const routes = new Hono<HonoEnv>();
 routes.get("/", sessionAuth(), async (c) => {
   const accountSettings = await findAccountSettingsByAccountId(
     c.get("db"),
-    getAccountId(c),
+    c.get("account").id,
   );
   return c.json(mapAccountSettingsToResponse(accountSettings));
 });
@@ -24,47 +29,17 @@ routes.put(
   zodValidator("json", SettingsRequestSchema),
   async (c) => {
     const db = c.get("db");
-    const accountId = getAccountId(c);
+    const accountId = c.get("account").id;
     const payload = c.req.valid("json");
 
-    const revision = randomUUID();
-    const accountSettings =
-      payload.expectedRevision == null
-        ? await db
-            .insertInto("account_settings")
-            .values({
-              account_id: accountId,
-              collection: payload.collection,
-              revision,
-              settings: payload.settings,
-            })
-            .onConflict((oc) => oc.column("account_id").doNothing())
-            .returning(["settings", "collection", "revision"])
-            .executeTakeFirst()
-        : await db
-            .insertInto("account_settings")
-            .values({
-              account_id: accountId,
-              collection: payload.collection,
-              revision,
-              settings: payload.settings,
-            })
-            .onConflict((oc) =>
-              oc
-                .column("account_id")
-                .doUpdateSet({
-                  collection: payload.collection,
-                  revision,
-                  settings: payload.settings,
-                })
-                .where(
-                  "account_settings.revision",
-                  "=",
-                  payload.expectedRevision,
-                ),
-            )
-            .returning(["settings", "collection", "revision"])
-            .executeTakeFirst();
+    const accountSettings = await upsertRevisionedAccountState(db, {
+      accountId,
+      collection: payload.collection,
+      expectedRevision: payload.expectedRevision,
+      revision: randomUUID(),
+      settings: payload.settings,
+      table: "account_settings",
+    });
 
     if (!accountSettings) {
       const current = await findAccountSettingsByAccountId(db, accountId);
@@ -78,8 +53,16 @@ routes.put(
   },
 );
 
-function getAccountId(c: Context<SessionAuthHonoEnv>) {
-  return c.get("account").id;
+function mapAccountSettingsToResponse(
+  accountSettings:
+    | Pick<Selectable<AccountSettings>, "collection" | "revision" | "settings">
+    | undefined,
+) {
+  return SettingsResponseSchema.parse({
+    collection: accountSettings?.collection ?? null,
+    revision: accountSettings?.revision ?? null,
+    settings: accountSettings?.settings ?? null,
+  });
 }
 
 export default routes;

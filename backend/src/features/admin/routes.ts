@@ -3,12 +3,13 @@ import { type Context, Hono } from "hono";
 import { bearerAuth } from "hono/bearer-auth";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
+import { findAccountByUsername } from "../../lib/auth/accounts.ts";
+import { isExclusionViolation } from "../../lib/db-errors.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
 import {
   createAccountModerationAction,
   endAccountModerationAction,
-  findAccountByUsername,
   findAccountModerationActionById,
   findAppDataVersions,
   listAccountModerationActionsByAccountId,
@@ -151,14 +152,5 @@ routes.post(
     return c.json(await endAccountModerationAction(db, id, now, endReason));
   },
 );
-
-function isExclusionViolation(error: unknown): error is { code: string } {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    error.code === "23P01"
-  );
-}
 
 export default routes;

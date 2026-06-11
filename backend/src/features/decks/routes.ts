@@ -18,6 +18,7 @@ import {
 } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import type { Database } from "../../db/db.ts";
 import { ApiError } from "../../lib/arkhamdb/api-client/core/errors.ts";
 import {
   ARKHAMDB_PROVIDER_TYPE,
@@ -276,11 +277,7 @@ const localCrud = {
       return mapDeckRowToDto(deck);
     }
 
-    const current = await findAccountDeckById(db, accountId, deckId);
-    throwDeckConflict(
-      current ? mapDeckRowToDto(current) : null,
-      current?.version ?? null,
-    );
+    return await throwCurrentLocalDeckConflict(db, accountId, deckId);
   },
 
   async delete(c: DeckContext, deckId: string, payload: DeckDeleteRequest) {
@@ -304,11 +301,7 @@ const localCrud = {
       return;
     }
 
-    const current = await findAccountDeckById(db, accountId, deckId);
-    throwDeckConflict(
-      current ? mapDeckRowToDto(current) : null,
-      current?.version ?? null,
-    );
+    await throwCurrentLocalDeckConflict(db, accountId, deckId);
   },
 
   async upgrade(
@@ -319,23 +312,6 @@ const localCrud = {
     const db = c.get("db");
     const accountId = c.get("account").id;
     const { deck, expectedVersion } = payload;
-    const current = await findAccountDeckById(db, accountId, previousDeckId);
-
-    if (!current) {
-      throwDeckConflict(null, null);
-    }
-
-    if (current.version !== expectedVersion) {
-      throwDeckConflict(mapDeckRowToDto(current), current.version ?? null);
-    }
-
-    if (current.next_deck) {
-      throwDeckConflict(
-        mapDeckRowToDto(current),
-        current.version ?? null,
-        "Deck already has an upgrade",
-      );
-    }
 
     const nextDeck = await db.transaction().execute(async (tx) => {
       const lockedCurrent = await tx
@@ -345,22 +321,16 @@ const localCrud = {
         .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
         .where("id", "=", previousDeckId)
         .forUpdate()
-        .executeTakeFirstOrThrow();
+        .executeTakeFirst();
 
-      if (lockedCurrent.version !== expectedVersion) {
-        throwDeckConflict(
-          mapDeckRowToDto(lockedCurrent),
-          lockedCurrent.version ?? null,
-        );
+      if (!lockedCurrent) {
+        throwDeckConflict(null, null);
       }
 
-      if (lockedCurrent.next_deck) {
-        throwDeckConflict(
-          mapDeckRowToDto(lockedCurrent),
-          lockedCurrent.version ?? null,
-          "Deck already has an upgrade",
-        );
-      }
+      const current = mapDeckRowToDto(lockedCurrent);
+      const currentVersion = lockedCurrent.version ?? null;
+      assertExpectedDeckVersion(current, expectedVersion, currentVersion);
+      assertDeckHasNoUpgrade(current, currentVersion);
 
       const { id, source: _, version, ...deckPayload } = deck;
       const createdDeckId = String(id);
@@ -400,30 +370,12 @@ const arkhamdbCrud = {
   },
 
   async update(c: DeckContext, deckId: string, payload: DeckUpdateRequest) {
-    const current = await fetchArkhamDbDeckOrNull(c, deckId);
-
-    if (!current) {
-      throwDeckConflict(null, null);
-    }
-
-    if (current.version !== payload.expectedVersion) {
-      throwDeckConflict(current, current.version);
-    }
-
+    await fetchMatchingArkhamDbDeck(c, deckId, payload.expectedVersion);
     return await saveArkhamDbDeck(c, deckId, payload);
   },
 
   async delete(c: DeckContext, deckId: string, payload: DeckDeleteRequest) {
-    const current = await fetchArkhamDbDeckOrNull(c, deckId);
-
-    if (!current) {
-      throwDeckConflict(null, null);
-    }
-
-    if (current.version !== payload.expectedVersion) {
-      throwDeckConflict(current, current.version);
-    }
-
+    await fetchMatchingArkhamDbDeck(c, deckId, payload.expectedVersion);
     await deleteArkhamDbDeck(c, deckId);
   },
 
@@ -432,23 +384,13 @@ const arkhamdbCrud = {
     previousDeckId: string,
     payload: DeckUpgradeRequest,
   ) {
-    const current = await fetchArkhamDbDeckOrNull(c, previousDeckId);
+    const current = await fetchMatchingArkhamDbDeck(
+      c,
+      previousDeckId,
+      payload.expectedVersion,
+    );
 
-    if (!current) {
-      throwDeckConflict(null, null);
-    }
-
-    if (current.version !== payload.expectedVersion) {
-      throwDeckConflict(current, current.version);
-    }
-
-    if (current.next_deck) {
-      throwDeckConflict(
-        current,
-        current.version,
-        "Deck already has an upgrade",
-      );
-    }
+    assertDeckHasNoUpgrade(current);
 
     const currentCarryoverXp =
       (current.xp ?? 0) +
@@ -485,10 +427,53 @@ function assertUpgradeTargetDiffers(
   }
 }
 
-async function fetchArkhamDbDeckOrNull(
-  c: Parameters<typeof fetchArkhamDbDeck>[0],
-  id: string,
+async function throwCurrentLocalDeckConflict(
+  db: Database,
+  accountId: string,
+  deckId: string,
 ) {
+  const current = await findAccountDeckById(db, accountId, deckId);
+  throwDeckConflict(
+    current ? mapDeckRowToDto(current) : null,
+    current?.version ?? null,
+  );
+}
+
+async function fetchMatchingArkhamDbDeck(
+  c: DeckContext,
+  id: string,
+  expectedVersion: string,
+) {
+  const current = await fetchArkhamDbDeckOrNull(c, id);
+
+  if (!current) {
+    throwDeckConflict(null, null);
+  }
+
+  assertExpectedDeckVersion(current, expectedVersion);
+  return current;
+}
+
+function assertExpectedDeckVersion(
+  deck: SharedDeck,
+  expectedVersion: string,
+  remoteVersion: string | null = deck.version,
+) {
+  if (deck.version !== expectedVersion) {
+    throwDeckConflict(deck, remoteVersion);
+  }
+}
+
+function assertDeckHasNoUpgrade(
+  deck: SharedDeck,
+  remoteVersion: string | null = deck.version,
+) {
+  if (deck.next_deck) {
+    throwDeckConflict(deck, remoteVersion, "Deck already has an upgrade");
+  }
+}
+
+async function fetchArkhamDbDeckOrNull(c: DeckContext, id: string) {
   try {
     return await fetchArkhamDbDeck(c, id);
   } catch (error) {

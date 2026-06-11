@@ -87,20 +87,6 @@ export async function upsertAccountFromOAuth(
   });
 }
 
-export async function accountNameExists(
-  db: Database,
-  name: string,
-  excludeAccountId?: string,
-) {
-  let query = db.selectFrom("account").select(["id"]).where("name", "=", name);
-
-  if (excludeAccountId) {
-    query = query.where("id", "!=", excludeAccountId);
-  }
-
-  return (await query.executeTakeFirst()) != null;
-}
-
 export async function completeAccountProfile(
   db: Database,
   accountId: string,

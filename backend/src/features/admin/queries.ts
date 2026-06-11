@@ -27,14 +27,6 @@ export async function findAppDataVersions(db: Database) {
   };
 }
 
-export async function findAccountByUsername(db: Database, username: string) {
-  return await db
-    .selectFrom("account")
-    .select(["id", "name"])
-    .where("name", "=", username)
-    .executeTakeFirst();
-}
-
 export async function findAccountModerationActionById(
   db: Database,
   id: string,

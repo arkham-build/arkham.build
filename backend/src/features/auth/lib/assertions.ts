@@ -54,15 +54,6 @@ export function isEmail(input: string): boolean {
   return input.includes("@");
 }
 
-export function isUniqueViolation(error: unknown): error is { code: string } {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    error.code === "23505"
-  );
-}
-
 export function throwInvalidResetTokenError(): never {
   throw new HTTPException(400, {
     message: "Invalid or expired password reset token",

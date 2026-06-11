@@ -18,6 +18,40 @@ export async function updateAccountActivity(db: Database, id: string) {
     .executeTakeFirst();
 }
 
+export async function findAccountByUsername(db: Database, username: string) {
+  return await db
+    .selectFrom("account")
+    .select(["id", "name"])
+    .where("name", "=", username)
+    .executeTakeFirst();
+}
+
+export async function accountNameExists(
+  db: Database,
+  name: string,
+  excludeAccountId?: string,
+) {
+  let query = db.selectFrom("account").select(["id"]).where("name", "=", name);
+
+  if (excludeAccountId) {
+    query = query.where("id", "!=", excludeAccountId);
+  }
+
+  return (await query.executeTakeFirst()) != null;
+}
+
+export async function updateAccountUsername(
+  db: Database,
+  accountId: string,
+  username: string,
+) {
+  return await db
+    .updateTable("account")
+    .set({ name: username, updated_at: new Date() })
+    .where("id", "=", accountId)
+    .executeTakeFirst();
+}
+
 export async function findAccountForAuth(
   db: Database,
   id: string,

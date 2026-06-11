@@ -7,6 +7,7 @@ import {
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { Database } from "../../db/db.ts";
+import { publicCache } from "../../lib/cache-headers.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import {
   findCanonicalInvestigatorCode,
@@ -15,6 +16,8 @@ import {
 } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
+
+routes.use("*", publicCache(86400, true));
 
 routes.get("/:canonical_investigator_code", async (c) => {
   const request = decodeSearch<RecommendationsRequest>(
@@ -31,7 +34,6 @@ routes.get("/:canonical_investigator_code", async (c) => {
     data: { recommendations },
   });
 
-  c.header("Cache-Control", "public, max-age=86400, immutable");
   return c.json(response);
 });
 

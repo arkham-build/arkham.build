@@ -14,34 +14,29 @@ import {
   getAccountIdentityByEmailOrPendingEmail,
 } from "../../../lib/auth/account-identities.ts";
 import { assertAccountNotBanned } from "../../../lib/auth/account-moderation-actions.ts";
-import { findAccountForAuth } from "../../../lib/auth/accounts.ts";
+import {
+  accountNameExists,
+  findAccountForAuth,
+} from "../../../lib/auth/accounts.ts";
 import { sessionAuth } from "../../../lib/auth/session-auth-middleware.ts";
 import { setSessionCookie } from "../../../lib/auth/session-cookie.ts";
 import { createSession, deleteSession } from "../../../lib/auth/sessions.ts";
+import { isUniqueViolation } from "../../../lib/db-errors.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { zodValidator } from "../../../lib/validation.ts";
 import {
   assertEmailAvailable,
   assertVerificationTokenCooldown,
-  isUniqueViolation,
 } from "../lib/assertions.ts";
-import {
-  generateRandomToken,
-  hashPassword,
-  hashToken,
-  verifyPassword,
-} from "../lib/crypto.ts";
-import { verificationEmailTemplate } from "../lib/email-templates.ts";
+import { hashPassword, hashToken, verifyPassword } from "../lib/crypto.ts";
 import { assertTurnstileToken } from "../lib/turnstile.ts";
-import { accountNameExists, createAccount } from "../queries/accounts.ts";
+import { sendVerificationEmail } from "../lib/verification-email.ts";
+import { createAccount } from "../queries/accounts.ts";
 import {
   activatePendingAccountIdentityEmail,
   updateAccountIdentityVerified,
 } from "../queries/identities.ts";
-import {
-  consumeVerificationToken,
-  replaceVerificationToken,
-} from "../queries/verification-tokens.ts";
+import { consumeVerificationToken } from "../queries/verification-tokens.ts";
 
 const routes = new Hono<HonoEnv>();
 
@@ -70,25 +65,13 @@ routes.post("/signup", zodValidator("json", SignupRequestSchema), async (c) => {
       passwordHash,
     });
 
-    const token = generateRandomToken();
-
-    await replaceVerificationToken(tx, {
+    await sendVerificationEmail(tx, {
       accountIdentityId: accountIdentity.id,
+      config,
+      dispatcher,
       email,
-      tokenHash: hashToken(token),
-      tokenType: "email_verification",
-      expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
+      options: { tx },
     });
-
-    const template = verificationEmailTemplate({
-      token,
-      verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
-    });
-
-    await dispatcher.enqueueEmail(
-      { subject: template.subject, text: template.text, to: email },
-      { tx },
-    );
   });
 
   return new Response(null, { status: 201 });
@@ -249,26 +232,14 @@ routes.post(
     if (shouldResend) {
       await assertVerificationTokenCooldown(db, email, "email_verification");
 
-      const token = generateRandomToken();
-      const tokenHash = hashToken(token);
-
       await db.transaction().execute(async (tx) => {
-        await replaceVerificationToken(tx, {
+        await sendVerificationEmail(tx, {
           accountIdentityId: accountIdentity.id,
+          config,
+          dispatcher,
           email,
-          tokenHash,
-          tokenType: "email_verification",
-          expiryHours: config.VERIFICATION_TOKEN_EXPIRY_HOURS,
+          options: { tx },
         });
-        const template = verificationEmailTemplate({
-          token,
-          verificationUrl: `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
-        });
-
-        await dispatcher.enqueueEmail(
-          { subject: template.subject, text: template.text, to: email },
-          { tx },
-        );
       });
     }
 

@@ -1,4 +1,4 @@
-import type { Context } from "hono";
+import type { Context, MiddlewareHandler } from "hono";
 import type { HonoEnv } from "./hono-env.ts";
 
 export type CacheResource = "cards" | "metadata" | "version";
@@ -34,6 +34,25 @@ export function requestHasMatchingEtag(c: Context<HonoEnv>, etag: string) {
       (value) =>
         value === "*" || normalizeEtag(value) === normalizeEtag(formattedEtag),
     );
+}
+
+export function publicCache(
+  maxAge = 86400,
+  immutable = false,
+): MiddlewareHandler<HonoEnv> {
+  return async (c, next) => {
+    await next();
+
+    if (c.res.status < 300) {
+      c.header("Cache-Control", publicCacheControlHeader(maxAge, immutable));
+    }
+  };
+}
+
+export function publicCacheControlHeader(maxAge = 86400, immutable = false) {
+  const directives = ["public", `max-age=${maxAge}`];
+  if (immutable) directives.push("immutable");
+  return directives.join(", ");
 }
 
 function browserCacheControlHeader(_resource: CacheResource) {

@@ -12,21 +12,22 @@ import {
   getErrataForCard,
   getFaqForCard,
 } from "../../db/queries/grimoire.ts";
+import { publicCache } from "../../lib/cache-headers.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 
 const routes = new Hono<HonoEnv>();
 
+routes.use("*", publicCache());
+
 routes.get("/faq/card/:code", async (c) => {
   const data = await getFaqForCard(c.get("db"), c.req.param("code"));
   const faqs = CardFaqResponseSchema.parse(data);
-  c.header("Cache-Control", "public, max-age=86400");
   return c.json(faqs);
 });
 
 routes.get("/errata/card/:code", async (c) => {
   const data = await getErrataForCard(c.get("db"), c.req.param("code"));
   const errata = CardErrataResponseSchema.parse(data);
-  c.header("Cache-Control", "public, max-age=86400");
   return c.json(errata);
 });
 
@@ -45,7 +46,6 @@ routes.get("/grimoire", async (c) => {
     sections,
   });
 
-  c.header("Cache-Control", "public, max-age=86400");
   return c.json(data);
 });
 

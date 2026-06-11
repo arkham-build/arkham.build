@@ -1,11 +1,12 @@
 import assert from "node:assert";
 import type {
+  ApiCard,
   ApiDeckRequirements,
   ApiRestrictions,
 } from "@arkham-build/shared";
 import type { Selectable } from "kysely";
 import type { Card } from "../../db/schema.types.ts";
-import type { WithItemTranslations } from "../../lib/json-data.types.ts";
+import type { ItemTranslation } from "../../lib/json-data.types.ts";
 
 const TRANSLATED_KEYS = [
   "back_flavor",
@@ -25,10 +26,10 @@ const TRANSLATED_KEYS = [
 ];
 
 export function applyLocaleTranslations<T>(
-  input: WithItemTranslations<T>,
+  input: T & { translations?: ItemTranslation<T>[] },
   locale: string,
 ) {
-  const match: Record<string, unknown> | undefined = input.translations.find(
+  const match: Record<string, unknown> | undefined = input.translations?.find(
     (translation) => translation.locale === locale,
   );
 
@@ -124,7 +125,7 @@ export function mapCardRowToV1Card(card: Selectable<Card>) {
     output["alt_art_investigator"] = true;
   }
 
-  return output as Selectable<Card>;
+  return output as ApiCard;
 }
 
 function decodeTags(tags: string) {

@@ -1,3 +1,4 @@
+import { STATUS_CODES } from "node:http";
 import {
   type DecklistSearchRequest,
   DecklistSearchRequestSchema,
@@ -5,18 +6,13 @@ import {
 } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { publicCache } from "../../lib/cache-headers.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
-import { statusText } from "../../lib/http-status.ts";
 import { findDecklistMetaById, searchDecklists } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
 
-routes.use("*", async (c, next) => {
-  await next();
-  if (c.res.status < 300) {
-    c.header("Cache-Control", "public, max-age=86400, immutable");
-  }
-});
+routes.use("*", publicCache(86400, true));
 
 routes.get("/search", async (c) => {
   const searchRequest = decodeSearch<DecklistSearchRequest>(
@@ -34,7 +30,7 @@ routes.get("/:id/meta", async (c) => {
 
   if (!meta) {
     throw new HTTPException(404, {
-      message: statusText(404),
+      message: STATUS_CODES[404] as string,
       cause: `Decklist with ID ${id} not found.`,
     });
   }
