@@ -16,7 +16,7 @@ function Terms() {
           <ChevronLeftIcon /> Back
         </Button>
         <h1>Terms of Service</h1>
-        <p className={css["meta"]}>Last updated: June 10, 2026</p>
+        <p className={css["meta"]}>Last updated: June 11, 2026</p>
 
         <p>
           arkham.build is operated by Felix Spöttel ({adminEmail}). See the{" "}
@@ -33,15 +33,15 @@ function Terms() {
 
         <h2>Eligibility</h2>
         <p>
-          You may use arkham.build only if you are old enough to consent under
-          the laws that apply to you.
+          You may use arkham.build only if you are legally allowed to agree to
+          these Terms.
         </p>
 
         <h2>Accounts</h2>
         <p>
           You are responsible for keeping your account credentials secure and
           for activity under your account. You must provide accurate account
-          information and may not use another person’s account without
+          identifiers and may not use another person’s account without
           permission.
         </p>
 
@@ -55,41 +55,32 @@ function Terms() {
 
         <h2>ArkhamDB integration</h2>
         <p>
-          You may connect or sign in with ArkhamDB. Syncing selected content
-          with ArkhamDB is optional and only happens when you request it. Synced
-          content is handled by ArkhamDB.
+          You may connect or sign in with ArkhamDB. Syncing selected content is
+          optional and only happens when you request it. Synced content is
+          handled by ArkhamDB.
         </p>
 
         <h2>Acceptable use</h2>
         <p>
           You must not misuse the service, attempt unauthorized access, disrupt
           the service, upload unlawful content, harass others, impersonate
-          others, or infringe the rights of others.
-        </p>
-
-        <h2>Reporting abuse</h2>
-        <p>
-          If you believe content or account activity on arkham.build is abusive,
-          unlawful, infringing, or otherwise violates these Terms, contact{" "}
-          <a href={`mailto:${adminEmail}`}>{adminEmail}</a>. Include the URL or
-          ID of the content or account and a short description of the issue.
+          others, or infringe the rights of others. To report abuse, contact{" "}
+          <a href={`mailto:${adminEmail}`}>{adminEmail}</a> with the relevant
+          URL or ID and a short description.
         </p>
 
         <h2>Moderation and admin actions</h2>
         <p>
-          We may review content or accounts when needed to operate the service,
-          handle abuse reports, prevent abuse, or enforce these Terms. We may
-          hide, remove, or restrict content, and may suspend or delete accounts.
-          Moderation and admin actions are logged.
+          We may review content or accounts, remove or restrict content, and
+          suspend or delete accounts when needed to operate the service, prevent
+          abuse, or enforce these Terms.
         </p>
 
         <h2>Account deletion</h2>
         <p>
           You may delete your account where self-service deletion is available.
           Private user content is deleted, public contributions are anonymized,
-          sessions are invalidated, and connected OAuth accounts are
-          disconnected where applicable. Backup copies expire through the normal
-          backup retention process.
+          and backup copies expire through the normal backup retention process.
         </p>
 
         <h2>Availability</h2>
@@ -114,8 +105,7 @@ function Terms() {
         <p>
           We may update these Terms when the service or legal requirements
           change. The current version is published on this page. The{" "}
-          <a href="/privacy">Privacy Policy</a> explains how personal data is
-          processed.
+          <a href="/privacy">Privacy Policy</a> explains how data is processed.
         </p>
       </article>
     </AppLayout>

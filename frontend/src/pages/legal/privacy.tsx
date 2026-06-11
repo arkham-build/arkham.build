@@ -16,7 +16,7 @@ function Privacy() {
           <ChevronLeftIcon /> Back
         </Button>
         <h1>Privacy Policy</h1>
-        <p className={css["meta"]}>Last updated: June 10, 2026</p>
+        <p className={css["meta"]}>Last updated: June 11, 2026</p>
 
         <h2>Controller</h2>
         <p>
@@ -24,46 +24,30 @@ function Privacy() {
           <a href="/legal-notice">Legal Notice</a> for legal notice information.
         </p>
 
-        <h2>Personal data we process</h2>
+        <h2>Data we process</h2>
         <p>
-          We process account data such as email address, password/authentication
-          data, ArkhamDB provider ID, profile data, and user-generated text or
-          structured data. If you report abuse, we process the report content,
-          reported content or account identifiers, contact details you provide,
-          timestamps, and moderation notes or actions. We also process technical
-          data such as UUIDs in application logs, anonymized/redacted debug
-          logs, and IP addresses at Cloudflare proxy level.
+          We process only the data needed to operate arkham.build: email
+          address, username, password hash, ArkhamDB provider ID, session
+          identifiers, UUIDs in application logs, and IP addresses at Cloudflare
+          proxy level. If you contact us or report abuse, we process your
+          message, related content or account identifiers, timestamps, and
+          moderation notes or actions.
         </p>
 
         <h2>Purposes and legal bases</h2>
         <p>
-          We process account, login, profile, saved content, export, and
-          deletion data to provide arkham.build under the{" "}
-          <a href="/terms">Terms of Service</a>. The legal basis is Art. 6(1)(b)
-          GDPR. We process security, abuse-prevention, debugging, and
-          transactional/security email data based on legitimate interests under
-          Art. 6(1)(f) GDPR. We process abuse reports and moderation records to
-          review reported content or accounts, enforce the Terms of Service,
-          prevent abuse, and protect users and the service. The legal basis is
-          our legitimate interest under Art. 6(1)(f) GDPR. Where legal
-          obligations apply, the legal basis is Art. 6(1)(c) GDPR.
-        </p>
-
-        <h2>Abuse reports and moderation</h2>
-        <p>
-          You can report abuse by contacting{" "}
-          <a href={`mailto:${adminEmail}`}>{adminEmail}</a>. We review reports
-          to decide whether content or account activity violates the Terms of
-          Service or applicable law. We may keep records of reports, review
-          notes, and actions taken to handle repeat abuse, document decisions,
-          protect users, and defend legal claims.
+          We process account, login, profile, and account deletion data to
+          provide arkham.build under the <a href="/terms">Terms of Service</a>.
+          The legal basis is Art. 6(1)(b) GDPR. We process security,
+          abuse-prevention, debugging, service email, abuse reports, and
+          moderation records based on our legitimate interests under Art.
+          6(1)(f) GDPR.
         </p>
 
         <h2>Cookies, local storage, and anti-abuse checks</h2>
         <p>
           We use a session cookie for authentication. We use IndexedDB for local
-          user data and preferences. We do not use analytics cookies,
-          advertising cookies, tracking pixels, or marketing cookies.
+          user data and preferences.
         </p>
         <p>
           We use Cloudflare Turnstile on signup to protect the service from spam
@@ -75,22 +59,18 @@ function Privacy() {
 
         <h2>Third-party embeds</h2>
         <p>
-          User-generated content may contain links, images, or embeds to
-          third-party services. External images may load automatically, which
-          means the image provider may receive technical data such as your IP
-          address, browser information, and request time. We set a no-referrer
-          policy to avoid sending the arkham.build page URL where supported.
-          Third-party embeds are not loaded automatically. If you choose to load
-          an embed, the third party may process your data under its own privacy
+          User-generated content may contain external links, images, or embeds.
+          External images may load automatically; embeds are only loaded if you
+          choose to load them. We set a no-referrer policy where supported. The
+          third-party provider may process technical data under its own privacy
           policy.
         </p>
 
         <h2>Processors</h2>
         <p>
           We use OVH Cloud for hosting/database infrastructure in Canada,
-          Cloudflare for CDN/proxy services, Turnstile anti-abuse checks, and
-          backup object storage with global proxy processing and R2 storage in
-          Western Europe, and Scaleway for transactional email in France.
+          Cloudflare for CDN, proxy, object storage and anti-abuse services, and
+          Scaleway for transactional email in France.
         </p>
 
         <h2>International transfers</h2>
@@ -106,10 +86,9 @@ function Privacy() {
           Account data is kept while your account exists. If you delete your
           account, private user content is deleted and public contributions are
           anonymized. Debug logs are retained for 30 days. Abuse reports and
-          moderation records are retained only as long as needed to handle the
-          report, enforce the Terms of Service, protect the service, or meet
-          legal obligations. Backups are retained for up to 365 days. Inactive
-          accounts are not deleted automatically.
+          moderation records are kept only as long as needed to handle abuse,
+          protect the service, or meet legal obligations. Backups are retained
+          for up to 365 days. Inactive accounts are not deleted automatically.
         </p>
 
         <h2>Your rights</h2>
@@ -123,15 +102,9 @@ function Privacy() {
           complain to your competent data protection authority.
         </p>
 
-        <h2>Children</h2>
-        <p>
-          You must be old enough to consent to the processing of your personal
-          data under the laws that apply to you.
-        </p>
-
         <h2>Security</h2>
         <p>
-          We use measures such as HTTPS, access controls, password protection,
+          We use measures such as HTTPS, access controls, password hashing,
           admin action logging, and redacted/anonymized logs to protect user
           data.
         </p>
