@@ -45,6 +45,16 @@ export async function fetchArkhamDbDeckBatch(
       )
     : undefined;
 
+  if (!arkhamdbSyncToken) {
+    const decks: Deck[] = [];
+
+    for (const id of ids) {
+      decks.push(await fetchArkhamDbDeck(c, id));
+    }
+
+    return decks;
+  }
+
   const snapshotDecks = ArkhamDbRemoteDecksSchema.parse(snapshot?.decks ?? []);
 
   const snapshotDecksById = new Map(

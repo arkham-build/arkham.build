@@ -398,6 +398,10 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
       if (!isCurrentAccount(get(), accountId)) return;
 
+      if (remoteDecks.length) {
+        get().cacheFanMadeContent(remoteDecks);
+      }
+
       const current = get();
 
       const result = applyRemoteDeckReconciliation({
@@ -461,6 +465,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       });
       assert(remoteDeck, `Remote deck ${id} could not be loaded.`);
 
+      get().cacheFanMadeContent([remoteDeck]);
       applyRemoteDeck(set, remoteDeck);
       await dehydrate(get(), "app", "edits");
 

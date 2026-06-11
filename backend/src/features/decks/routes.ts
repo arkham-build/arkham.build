@@ -167,6 +167,9 @@ routes.post(
 
 routes.post("/", sessionAuth(), zodValidator("json", DeckSchema), async (c) => {
   const payload = c.req.valid("json");
+
+  assertDeckCanBeUploaded(payload);
+
   const deck =
     payload.source === ARKHAMDB_PROVIDER_TYPE
       ? await arkhamdbCrud.create(c, payload)
@@ -243,6 +246,14 @@ function isArkhamDbManifestUnavailableError(error: unknown): error is Error {
     (error instanceof Error &&
       error.message === "Missing ArkhamDB identity or OAuth token for account.")
   );
+}
+
+function assertDeckCanBeUploaded(deck: SharedDeck) {
+  if (deck.previous_deck) {
+    throw new HTTPException(400, {
+      message: "Upgraded decks cannot be uploaded to a synced provider",
+    });
+  }
 }
 
 const localCrud = {

@@ -108,6 +108,64 @@ describe("sync slice", () => {
     expect(refreshSession).toHaveBeenCalledOnce();
   });
 
+  it("caches fan-made content from synced decks", async () => {
+    const refreshSession = vi.fn().mockResolvedValue(undefined);
+    const remoteDeck = makeTestDeck({
+      id: "remote",
+      investigator_code: "fan-investigator",
+      meta: JSON.stringify({
+        fan_made_content: {
+          cards: {
+            "fan-investigator": {
+              code: "fan-investigator",
+              name: "Fan Investigator",
+            },
+          },
+          cycles: {},
+          packs: {},
+          encounter_sets: {},
+        },
+      }),
+      source: "account",
+      version: "2",
+    });
+
+    vi.mocked(deckRequests.fetchDeckManifest).mockResolvedValue({
+      version: "2",
+      decks: [
+        {
+          provider: "account",
+          id: "remote",
+          updatedAt: "2026-01-01T00:00:00.000Z",
+          version: "2",
+        },
+      ],
+      arkhamdbSyncToken: null,
+      providers: {
+        account: { available: true },
+        arkhamdb: { available: true },
+      },
+    });
+    vi.mocked(deckRequests.fetchDeckBatch).mockResolvedValue([remoteDeck]);
+
+    store.setState({
+      auth: makeAuthenticatedAuth(),
+      sync: makeSyncState({
+        deckItems: {},
+        deckStatus: "idle",
+        manifestVersion: "1",
+      }),
+      refreshSession,
+    });
+
+    await store.getState().syncDecks(getMockHttpClient());
+
+    expect(store.getState().data.decks.remote).toBeDefined();
+    expect(
+      store.getState().ui.fanMadeContentCache.cards?.["fan-investigator"],
+    ).toMatchObject({ code: "fan-investigator" });
+  });
+
   it("refreshes a conflicted deck with the remote deck", async () => {
     const remoteDeck = makeTestDeck({
       id: "remote",

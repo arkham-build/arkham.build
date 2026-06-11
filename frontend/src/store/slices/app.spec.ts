@@ -48,6 +48,27 @@ describe("app deck write-through actions", () => {
     expect(store.getState().data.decks.local.source).toBeNull();
   });
 
+  it("does not upload upgraded decks", async () => {
+    const deck = makeTestDeck({
+      id: "local",
+      previous_deck: "previous",
+      source: null,
+      version: "0.1",
+    });
+
+    store.setState({
+      auth: makeAuthenticatedAuth(),
+      data: makeData({ decks: { local: deck }, history: { local: [] } }),
+    });
+
+    await expect(
+      store.getState().uploadDeckToProvider(client, "local", "account"),
+    ).rejects.toThrow("Upgraded decks cannot be uploaded");
+
+    expect(deckRequests.postDeck).not.toHaveBeenCalled();
+    expect(store.getState().data.decks.local.source).toBeNull();
+  });
+
   it("keeps account deck edits when save fails", async () => {
     const deck = makeTestDeck({
       id: "remote",

@@ -397,6 +397,40 @@ describe("Deck routes", () => {
         },
       ]);
     });
+
+    test("fetches arkhamdb decks directly without a snapshot token", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      await insertArkhamDbConnection(db);
+
+      const fetch = vi.fn().mockResolvedValue(
+        jsonResponse(
+          buildArkhamDbApiDeck({
+            id: 123,
+            name: "Live deck",
+            version: "1.2",
+          }),
+        ),
+      );
+      vi.stubGlobal("fetch", fetch);
+
+      const res = await postBatch(app, sessionCookie, [
+        { provider: "arkhamdb", id: "123" },
+      ]);
+      expect(res.status).toBe(200);
+
+      const body = DeckBatchResponseSchema.parse(await res.json());
+      expect(body).toMatchObject([
+        {
+          id: 123,
+          name: "Live deck",
+          source: "arkhamdb",
+          version: "1.2",
+        },
+      ]);
+      expect(fetch).toHaveBeenCalledOnce();
+    });
   });
 
   describe("POST /v2/decks", () => {
@@ -417,6 +451,45 @@ describe("Deck routes", () => {
         investigator_code: "01001",
         version: "vcrt0001",
       });
+    });
+
+    test("rejects uploading an upgraded account deck", async ({
+      dependencies,
+    }) => {
+      const { app, sessionCookie } = dependencies;
+      const res = await createDeck(
+        app,
+        sessionCookie,
+        baseDeckPayload({
+          id: "client-deck-create",
+          previous_deck: "previous-deck",
+          source: "account",
+        }),
+      );
+
+      expect(res.status).toBe(400);
+    });
+
+    test("rejects uploading an upgraded ArkhamDB deck", async ({
+      dependencies,
+    }) => {
+      const { app, db, sessionCookie } = dependencies;
+      await insertArkhamDbConnection(db);
+      const fetch = vi.fn();
+      vi.stubGlobal("fetch", fetch);
+
+      const res = await createDeck(
+        app,
+        sessionCookie,
+        baseDeckPayload({
+          id: "client-deck-create",
+          previous_deck: "previous-deck",
+          source: "arkhamdb",
+        }),
+      );
+
+      expect(res.status).toBe(400);
+      expect(fetch).not.toHaveBeenCalled();
     });
   });
 

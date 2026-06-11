@@ -444,6 +444,11 @@ export const uploadAdapter = {
       `Deck ${deckId} is already synced.`,
     );
 
+    assert(
+      !deck.previous_deck,
+      "Upgraded decks cannot be uploaded to a synced provider.",
+    );
+
     return { ...deck, source: provider };
   },
   async persist(client: HttpClient, _state: StoreState, deck: Deck) {
