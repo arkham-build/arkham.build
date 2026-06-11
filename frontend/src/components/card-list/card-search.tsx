@@ -11,8 +11,8 @@ import { useHotkey } from "@/utils/use-hotkey";
 import { useResolvedDeck } from "../resolved-deck-context";
 import { Checkbox } from "../ui/checkbox";
 import { CopyToClipboard } from "../ui/copy-to-clipboard";
-import { ErrorBubble } from "../ui/error-bubble";
 import { SearchInput } from "../ui/search-input";
+import { StatusBubble } from "../ui/status-bubble";
 import { Tag } from "../ui/tag";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./card-search.module.css";
@@ -163,7 +163,7 @@ export function CardSearch(props: Props) {
           rel="noreferrer"
         >
           <Tag size="xs">
-            {!!search.buildQlError && <ErrorBubble />}
+            {!!search.buildQlError && <StatusBubble variant="error" />}
             BuildQL
           </Tag>
         </a>

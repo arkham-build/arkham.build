@@ -11,12 +11,16 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useImportDeckMutation } from "@/queries/mutations/decks";
+import { useStore } from "@/store";
+import { selectSession } from "@/store/selectors/auth";
 import css from "./deck-collection.module.css";
 
 export function DeckCollectionImport() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { importDeck, isPending } = useImportDeck();
+
+  const session = useStore(selectSession);
 
   const onFormSubmit = useCallback(
     async (evt: React.SubmitEvent<HTMLFormElement>) => {
@@ -33,6 +37,8 @@ export function DeckCollectionImport() {
     },
     [importDeck],
   );
+
+  if (session) return null;
 
   return (
     <Popover onOpenChange={setOpen} open={open} placement="bottom-start">

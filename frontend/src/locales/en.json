@@ -78,7 +78,16 @@
         "logged_in_as": "Logged in as {{name}}",
         "sync_account": "Sync data",
         "sync_error": "Failed to sync data: {{error}}",
-        "syncing": "Syncing account data..."
+        "syncing": "Syncing account data...",
+        "sync_status": {
+          "idle": "Account sync idle",
+          "synced": "Account sync complete",
+          "loading": "Account sync loading",
+          "saving": "Account sync saving",
+          "partial": "Account sync partially failed",
+          "error": "Account sync error",
+          "conflict": "Account sync conflict"
+        }
       },
       "oauth_errors": {
         "arkhamdb_invalid_response": "ArkhamDB sign-in failed. Please try again.",

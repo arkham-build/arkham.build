@@ -17,6 +17,7 @@ import {
 } from "@/queries/mutations/auth";
 import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
+import type { SyncStatus } from "@/store/slices/sync.types";
 import { cx } from "@/utils/cx";
 import { useMedia } from "@/utils/use-media";
 import { Logo } from "./icons/logo";
@@ -25,6 +26,7 @@ import css from "./masthead.module.css";
 import { Button } from "./ui/button";
 import { DropdownButton, DropdownItem, DropdownMenu } from "./ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { StatusBubble } from "./ui/status-bubble";
 import { useToast } from "./ui/toast.hooks";
 import { Avatar } from "./user-account/avatar";
 
@@ -211,8 +213,14 @@ function AccountMenu(props: {
   const toggleKeyboardShortcuts = useStore(
     (state) => state.toggleKeyboardShortcuts,
   );
+  const syncStatus = useAccountSyncStatus();
 
   const { isPending: isSyncPending, onSyncAccount } = useAccountSyncAction();
+
+  const displayedSyncStatus: SyncStatus = isSyncPending
+    ? "loading"
+    : syncStatus;
+
   const logoutMutation = useLogoutMutation();
 
   const actionNodes = (
@@ -248,6 +256,13 @@ function AccountMenu(props: {
             <RefreshCwIcon />
             {t("auth.menu.sync_account")}
           </DropdownButton>
+          {isProblemSyncStatus(displayedSyncStatus) && (
+            <DropdownItem>
+              <p className={css["sync-status"]}>
+                {t(`auth.menu.sync_status.${displayedSyncStatus}`)}
+              </p>
+            </DropdownItem>
+          )}
           <hr />
         </>
       )}
@@ -323,7 +338,11 @@ function AccountMenu(props: {
       {session ? (
         <PopoverTrigger asChild>
           <Button variant="bare" iconOnly size="none">
-            <Avatar account={session.account} />
+            <Avatar account={session.account}>
+              <StatusBubble
+                variant={syncStatusToBubbleVariant(displayedSyncStatus)}
+              />
+            </Avatar>
           </Button>
         </PopoverTrigger>
       ) : (
@@ -369,6 +388,50 @@ function isMastheadPathActive(
       return location.startsWith("/settings");
   }
 }
+
+function useAccountSyncStatus(): SyncStatus {
+  const settings = useStore((state) => state.sync.settings.status);
+  const decks = useStore((state) => state.sync.decks.status);
+  const folders = useStore((state) => state.sync.folders.status);
+
+  return [settings, decks, folders].reduce((current, next) =>
+    ACCOUNT_SYNC_STATUS_PRIORITY[next] > ACCOUNT_SYNC_STATUS_PRIORITY[current]
+      ? next
+      : current,
+  );
+}
+
+function isProblemSyncStatus(status: SyncStatus) {
+  return status === "conflict" || status === "error" || status === "partial";
+}
+
+function syncStatusToBubbleVariant(
+  status: SyncStatus,
+): React.ComponentProps<typeof StatusBubble>["variant"] {
+  switch (status) {
+    case "conflict":
+    case "partial":
+      return "warning";
+    case "error":
+      return "error";
+    case "loading":
+    case "saving":
+      return "loading";
+    case "idle":
+    case "synced":
+      return "success";
+  }
+}
+
+const ACCOUNT_SYNC_STATUS_PRIORITY: Record<SyncStatus, number> = {
+  idle: 0,
+  synced: 0,
+  loading: 1,
+  saving: 1,
+  partial: 2,
+  error: 3,
+  conflict: 4,
+};
 
 function useAccountSyncAction() {
   const { t } = useTranslation();

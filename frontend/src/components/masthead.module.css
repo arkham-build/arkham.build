@@ -83,10 +83,11 @@
   font-size: var(--icon-sm);
 }
 
-.logged-in-as {
+.logged-in-as,
+.sync-status {
   width: 100%;
   padding: 0.25rem 0.75rem;
-  text-align: center;
+  text-align: left;
   color: var(--palette-three-point-five);
   font-style: italic;
   word-break: break-all;

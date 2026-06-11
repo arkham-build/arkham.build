@@ -1,0 +1,48 @@
+.status-bubble {
+  top: -0.125rem;
+  right: -0.125rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--health);
+  color: var(--color-inverted);
+  border-radius: 100%;
+  padding: 1px;
+  position: absolute;
+}
+
+.status-bubble.success {
+  background: var(--color-success);
+}
+
+.status-bubble.loading {
+  background: var(--nord-10);
+  animation: pulse 1.25s ease-in-out infinite;
+}
+
+.status-bubble.warning {
+  background: var(--nord-13);
+  color: var(--nord-0);
+}
+
+.status-bubble.error {
+  background: var(--health);
+}
+
+.status-bubble svg {
+  width: 1em;
+  height: 1em;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
