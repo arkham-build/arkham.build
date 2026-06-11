@@ -23,31 +23,18 @@ jobs:
     name: End-to-End Test
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    container:
-      image: mcr.microsoft.com/playwright:v1.60.0
-    services:
-      postgres:
-        image: postgres:18-alpine
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-      mailcrab:
-        image: marlonb/mailcrab:latest
-    env:
-      E2E_MAILCRAB_URL: http://mailcrab:1080
-      E2E_POSTGRES_HOST: postgres
-      E2E_POSTGRES_PASSWORD: postgres
-      E2E_POSTGRES_PORT: 5432
-      E2E_POSTGRES_USER: postgres
     steps:
       - uses: actions/checkout@v6
+        with:
+          submodules: recursive
       - uses: actions/setup-node@v6
         with:
-          cache: "npm"
           node-version-file: "package.json"
-      - run: npm i
-      - run: npm run test:fullstack:ci
+      - run: |
+          if [ ! -d test/fullstack/arkhamdb-docker ]; then
+            git clone --depth 1 --recurse-submodules --shallow-submodules "$(git config --file .gitmodules --get submodule.test/fullstack/arkhamdb-docker.url)" test/fullstack/arkhamdb-docker
+          fi
+      - run: npm run test:fullstack:docker
       - uses: actions/upload-artifact@v4
         if: always()
         with:
