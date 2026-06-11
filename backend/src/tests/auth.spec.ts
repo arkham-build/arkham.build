@@ -340,7 +340,7 @@ describe("Auth routes", () => {
         .selectFrom("account_identity")
         .innerJoin("account", "account.id", "account_identity.account_id")
         .select([
-          "account.profile_completed",
+          "account.profile_completed_at",
           "account_identity.provider",
           "account_identity.provider_user_id",
         ])
@@ -349,7 +349,7 @@ describe("Auth routes", () => {
         .executeTakeFirst();
 
       expect(identity).toMatchObject({
-        profile_completed: false,
+        profile_completed_at: null,
         provider: "arkhamdb",
         provider_user_id: "12345",
       });
@@ -636,7 +636,7 @@ describe("Auth routes", () => {
 
       const account = await db
         .insertInto("account")
-        .values({ name: "provider_incomplete", profile_completed: false })
+        .values({ name: "provider_incomplete", profile_completed_at: null })
         .returning(["id"])
         .executeTakeFirstOrThrow();
 
@@ -676,13 +676,13 @@ describe("Auth routes", () => {
 
       const updatedAccount = await db
         .selectFrom("account")
-        .select(["name", "profile_completed"])
+        .select(["name", "profile_completed_at"])
         .where("id", "=", account.id)
         .executeTakeFirstOrThrow();
 
       expect(updatedAccount).toEqual({
         name: "complete-user",
-        profile_completed: true,
+        profile_completed_at: expect.any(Date),
       });
     });
   });

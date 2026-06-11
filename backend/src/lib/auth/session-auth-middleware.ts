@@ -39,7 +39,7 @@ export function sessionAuth(
 
     assertAccountNotBanned(account);
 
-    if (requireCompleteProfile && !account.profile_completed) {
+    if (requireCompleteProfile && account.profile_completed_at == null) {
       throw new HTTPException(403, { message: "Profile completion required" });
     }
 

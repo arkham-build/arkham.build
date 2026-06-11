@@ -58,7 +58,7 @@ export async function upsertAccountFromOAuth(
         .insertInto("account")
         .values({
           name: `provider_${params.providerUserId}`,
-          profile_completed: false,
+          profile_completed_at: null,
         })
         .returningAll()
         .executeTakeFirstOrThrow();
@@ -95,7 +95,7 @@ export async function completeAccountProfile(
   const now = new Date();
   return await db
     .updateTable("account")
-    .set({ name, profile_completed: true, updated_at: now })
+    .set({ name, profile_completed_at: now, updated_at: now })
     .where("id", "=", accountId)
     .executeTakeFirst();
 }

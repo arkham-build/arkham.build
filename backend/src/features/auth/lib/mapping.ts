@@ -21,7 +21,7 @@ type AccountIdentitySummary = Pick<
 
 type SessionAccount = Pick<
   Selectable<Account>,
-  "id" | "name" | "profile_completed"
+  "id" | "name" | "profile_completed_at"
 >;
 
 export function mapAccountSessionToResponse(
@@ -33,7 +33,7 @@ export function mapAccountSessionToResponse(
     account: {
       id: account.id,
       name: account.name,
-      profileComplete: account.profile_completed,
+      profileComplete: account.profile_completed_at != null,
     },
     identities: identities.map((identity) => {
       if (identity.provider === "email") {

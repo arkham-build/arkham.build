@@ -477,7 +477,7 @@ CREATE TABLE public.account (
     id uuid DEFAULT uuidv7() NOT NULL,
     name character varying(64) NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
-    profile_completed boolean DEFAULT true NOT NULL,
+    profile_completed_at timestamp without time zone DEFAULT now(),
     last_activity_at timestamp without time zone DEFAULT now() NOT NULL
 );
 
@@ -541,7 +541,8 @@ CREATE TABLE public.account_settings (
     account_id uuid NOT NULL,
     collection jsonb,
     revision uuid DEFAULT uuidv7() NOT NULL,
-    settings jsonb
+    settings jsonb,
+    CONSTRAINT chk_account_settings_settings_length CHECK ((octet_length(COALESCE((settings)::text, ''::text)) <= 65536))
 );
 
 
@@ -565,7 +566,8 @@ CREATE TABLE public.arkhamdb_deck_snapshot (
     account_identity_id uuid NOT NULL,
     last_modified text,
     decks jsonb NOT NULL,
-    created_at timestamp without time zone DEFAULT now() NOT NULL
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT chk_arkhamdb_deck_snapshot_decks_length CHECK ((octet_length((decks)::text) <= 52428800))
 );
 
 
@@ -826,7 +828,14 @@ CREATE TABLE public.deck (
     version character varying(8),
     xp integer,
     xp_adjustment integer,
-    xp_spent integer
+    xp_spent integer,
+    CONSTRAINT chk_deck_description_length CHECK ((octet_length(COALESCE(description, ''::text)) <= 131072)),
+    CONSTRAINT chk_deck_exile_string_length CHECK ((octet_length(COALESCE(exile_string, ''::text)) <= 4096)),
+    CONSTRAINT chk_deck_id_length CHECK ((char_length(id) <= 255)),
+    CONSTRAINT chk_deck_next_deck_length CHECK ((char_length(COALESCE(next_deck, ''::text)) <= 255)),
+    CONSTRAINT chk_deck_prev_deck_length CHECK ((char_length(COALESCE(prev_deck, ''::text)) <= 255)),
+    CONSTRAINT chk_deck_problem_length CHECK ((char_length(COALESCE(problem, ''::text)) <= 255)),
+    CONSTRAINT chk_deck_tags_length CHECK ((octet_length(COALESCE(tags, ''::text)) <= 1024))
 );
 
 
@@ -1134,7 +1143,8 @@ CREATE TABLE public.session (
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     expires_at timestamp without time zone NOT NULL,
     id uuid DEFAULT uuidv7() NOT NULL,
-    last_activity_at timestamp without time zone DEFAULT now() NOT NULL
+    last_activity_at timestamp without time zone DEFAULT now() NOT NULL,
+    token_hash text NOT NULL
 );
 
 
@@ -1635,6 +1645,14 @@ ALTER TABLE ONLY public.session
 
 
 --
+-- Name: session session_token_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.session
+    ADD CONSTRAINT session_token_hash_key UNIQUE (token_hash);
+
+
+--
 -- Name: subtype subtype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1791,6 +1809,13 @@ CREATE INDEX idx_account_moderation_action_account_id ON public.account_moderati
 --
 
 CREATE INDEX idx_account_moderation_action_account_type_scope_created_at ON public.account_moderation_action USING btree (account_id, type, scope, created_at DESC);
+
+
+--
+-- Name: idx_account_name_lower; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_account_name_lower ON public.account USING btree (lower((name)::text));
 
 
 --
@@ -2696,4 +2721,8 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260606120000'),
     ('20260606130000'),
     ('20260609120000'),
-    ('20260611120000');
+    ('20260611120000'),
+    ('20260611130000'),
+    ('20260611140000'),
+    ('20260611150000'),
+    ('20260611160000');

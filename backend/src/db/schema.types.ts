@@ -41,7 +41,7 @@ export interface Account {
   id: Generated<string>;
   last_activity_at: Generated<Timestamp>;
   name: string;
-  profile_completed: Generated<boolean>;
+  profile_completed_at: Generated<Timestamp | null>;
   updated_at: Generated<Timestamp>;
 }
 
