@@ -19,13 +19,13 @@ export function sessionAuth(
     const config = c.get("config");
     const db = c.get("db");
 
-    const sessionId = getCookie(c, config.SESSION_COOKIE_NAME);
+    const sessionToken = getCookie(c, config.SESSION_COOKIE_NAME);
 
-    if (!sessionId) {
+    if (!sessionToken) {
       throw new HTTPException(401, { message: "Unauthorized" });
     }
 
-    const session = await getSession(db, sessionId);
+    const session = await getSession(db, sessionToken);
 
     if (!session) {
       throw new HTTPException(401, { message: "Invalid or expired session" });
@@ -45,7 +45,7 @@ export function sessionAuth(
 
     await updateSessionActivity(
       db,
-      sessionId,
+      sessionToken,
       session.account_id,
       config.SESSION_EXPIRY_HOURS,
     );
@@ -56,7 +56,7 @@ export function sessionAuth(
     await next();
 
     if (!c.get("skipSessionCookieRefresh")) {
-      setSessionCookie(c, session.id);
+      setSessionCookie(c, sessionToken);
     }
   };
 }

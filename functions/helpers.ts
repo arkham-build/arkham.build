@@ -58,7 +58,7 @@ async function fetchPreview(
   type: string,
   id: string,
 ): Promise<PreviewResponse> {
-  const url = `${apiUrl}/v1/public/preview/${type}/${id}`;
+  const url = `${apiUrl}/v1/public/preview/${type}/${encodeURIComponent(id)}`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch preview: ${res.statusText}`);

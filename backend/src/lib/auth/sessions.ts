@@ -1,3 +1,4 @@
+import { createHash, randomBytes } from "node:crypto";
 import type { Database } from "../../db/db.ts";
 import { updateAccountActivity } from "./accounts.ts";
 
@@ -7,23 +8,28 @@ export async function createSession(
   expiryHours: number,
 ) {
   const expiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000);
+  const token = generateSessionToken();
 
   const session = await db
     .insertInto("session")
     .values({
       account_id: accountId,
       expires_at: expiresAt,
+      token_hash: hashSessionToken(token),
     })
     .returningAll()
     .executeTakeFirstOrThrow();
 
   await updateAccountActivity(db, accountId);
 
-  return session;
+  return { ...session, token };
 }
 
-export async function deleteSession(db: Database, id: string) {
-  return await db.deleteFrom("session").where("id", "=", id).executeTakeFirst();
+export async function deleteSession(db: Database, token: string) {
+  return await db
+    .deleteFrom("session")
+    .where("token_hash", "=", hashSessionToken(token))
+    .executeTakeFirst();
 }
 
 export async function deleteSessionsByAccountId(
@@ -36,11 +42,11 @@ export async function deleteSessionsByAccountId(
     .executeTakeFirst();
 }
 
-export async function getSession(db: Database, id: string) {
+export async function getSession(db: Database, token: string) {
   return await db
     .selectFrom("session")
     .selectAll()
-    .where("id", "=", id)
+    .where("token_hash", "=", hashSessionToken(token))
     .where("expires_at", ">", new Date())
     .orderBy("last_activity_at", "desc")
     .executeTakeFirst();
@@ -55,7 +61,7 @@ export async function cleanupExpiredSessions(db: Database) {
 
 export async function updateSessionActivity(
   db: Database,
-  sessionId: string,
+  token: string,
   accountId: string,
   expiryHours: number,
 ) {
@@ -68,10 +74,18 @@ export async function updateSessionActivity(
       last_activity_at: now,
       expires_at: expiresAt,
     })
-    .where("id", "=", sessionId)
+    .where("token_hash", "=", hashSessionToken(token))
     .executeTakeFirst();
 
   await updateAccountActivity(db, accountId);
 
   return result;
+}
+
+function generateSessionToken() {
+  return randomBytes(32).toString("base64url");
+}
+
+function hashSessionToken(token: string) {
+  return createHash("sha256").update(token).digest("hex");
 }

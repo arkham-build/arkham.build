@@ -1,11 +1,19 @@
 import { z } from "zod";
+import { maxUtf8Bytes } from "../lib/validation.ts";
 import type { Card } from "./card.schema.ts";
 import type { Cycle } from "./cycle.schema.ts";
 import type { EncounterSet } from "./encounter-set.schema.ts";
 import type { Pack } from "./pack.schema.ts";
 import { StorageProviderSchema } from "./settings.schema.ts";
 
-export const DeckIdSchema = z.union([z.number(), z.string()]);
+export const DECK_DESCRIPTION_MAX_BYTES = 128 * 1024;
+export const DECK_EXILE_STRING_MAX_BYTES = 4 * 1024;
+export const DECK_ID_MAX_LENGTH = 255;
+export const DECK_PROBLEM_MAX_LENGTH = 255;
+export const DECK_TAGS_MAX_BYTES = 1024;
+
+export const DeckStringIdSchema = z.string().max(DECK_ID_MAX_LENGTH);
+export const DeckIdSchema = z.union([z.number(), DeckStringIdSchema]);
 export type DeckId = z.infer<typeof DeckIdSchema>;
 export type Id = DeckId;
 
@@ -30,8 +38,8 @@ const SafeSlotsSchema = z.preprocess(
 export const DeckSchema = z.object({
   date_creation: z.string(),
   date_update: z.string(),
-  description_md: z.string(),
-  exile_string: z.string().nullish(),
+  description_md: maxUtf8Bytes(DECK_DESCRIPTION_MAX_BYTES),
+  exile_string: maxUtf8Bytes(DECK_EXILE_STRING_MAX_BYTES).nullish(),
   ignoreDeckLimitSlots: SafeSlotsSchema,
   id: DeckIdSchema,
   investigator_code: z.string(),
@@ -40,12 +48,14 @@ export const DeckSchema = z.object({
   name: z.string(),
   next_deck: DeckIdSchema.nullish(),
   previous_deck: DeckIdSchema.nullish(),
-  problem: z.union([DeckProblemSchema, z.string()]).nullish(),
+  problem: z
+    .union([DeckProblemSchema, z.string().max(DECK_PROBLEM_MAX_LENGTH)])
+    .nullish(),
   sideSlots: SafeSlotsSchema,
   slots: SlotsSchema,
   source: StorageProviderSchema,
   taboo_id: z.number().nullish(),
-  tags: z.string(),
+  tags: maxUtf8Bytes(DECK_TAGS_MAX_BYTES),
   user_id: z.number().nullish(),
   version: z.string(),
   xp_adjustment: z.number().nullish(),

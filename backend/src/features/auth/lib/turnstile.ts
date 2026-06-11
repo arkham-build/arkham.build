@@ -1,6 +1,10 @@
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
+import {
+  FetchTimeoutError,
+  fetchWithTimeout,
+} from "../../../lib/fetch-with-timeout.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 
 const TURNSTILE_VERIFY_URL =
@@ -36,13 +40,26 @@ export async function assertTurnstileToken(
     body.set("remoteip", remoteIp);
   }
 
-  const response = await fetch(TURNSTILE_VERIFY_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body,
-  });
+  let response: Response;
+
+  try {
+    response = await fetchWithTimeout(TURNSTILE_VERIFY_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body,
+      timeoutMs: 10_000,
+    });
+  } catch (error) {
+    if (error instanceof FetchTimeoutError) {
+      throw new HTTPException(504, {
+        message: "Captcha verification timed out",
+      });
+    }
+
+    throw error;
+  }
 
   if (!response.ok) {
     throw new HTTPException(502, {

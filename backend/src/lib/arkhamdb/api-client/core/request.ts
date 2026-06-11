@@ -1,4 +1,8 @@
 import type { Context } from "hono";
+import {
+  FetchTimeoutError,
+  fetchWithTimeout,
+} from "../../../fetch-with-timeout.ts";
 import type { HonoEnv } from "../../../hono-env.ts";
 import {
   ApiError,
@@ -21,34 +25,25 @@ export async function request<T, E extends HonoEnv = HonoEnv>(
   options: RequestInit = {},
 ): Promise<WrappedResponse<T>> {
   const config = c.get("config");
-  const controller = new AbortController();
-
-  const timeout = setTimeout(
-    () => controller.abort(),
-    ARKHAMDB_REQUEST_TIMEOUT_MS,
-  );
-
   let res: Response;
 
   try {
     const method = options.method ?? "GET";
 
-    res = await fetch(`${config.ARKHAMDB_BASE_URL}${path}`, {
+    res = await fetchWithTimeout(`${config.ARKHAMDB_BASE_URL}${path}`, {
       ...options,
       headers: {
         ...baseHeaders(method),
         ...options.headers,
       },
-      signal: controller.signal,
+      timeoutMs: ARKHAMDB_REQUEST_TIMEOUT_MS,
     });
   } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
+    if (error instanceof FetchTimeoutError) {
       throw new ApiError("ArkhamDB request timed out", 504);
     }
 
     throw error;
-  } finally {
-    clearTimeout(timeout);
   }
 
   await assertSuccessful(res);

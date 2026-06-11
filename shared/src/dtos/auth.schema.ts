@@ -2,6 +2,13 @@ import { z } from "zod";
 
 // alphanumeric characters, underscore, and hyphen only
 export const PATTERN_VALID_USERNAME = "^[a-zA-Z0-9_\-]+$";
+export const PASSWORD_MAX_LENGTH = 255;
+
+const CanonicalEmailSchema = z
+  .string()
+  .trim()
+  .pipe(z.email().max(255))
+  .transform((email) => email.toLowerCase());
 
 export const SignupRequestSchema = z.object({
   name: z
@@ -12,26 +19,25 @@ export const SignupRequestSchema = z.object({
       new RegExp(PATTERN_VALID_USERNAME),
       "Username can only contain letters, numbers, underscores, and hyphens",
     ),
-  email: z.email().max(255),
-  password: z.string().min(8),
+  email: CanonicalEmailSchema,
+  password: z.string().min(8).max(PASSWORD_MAX_LENGTH),
   captchaToken: z.string().min(1).max(2048).optional(),
 });
 
-// at least 8 characters
-export const PATTERN_VALID_PASSWORD = ".{8,}";
+export const PATTERN_VALID_PASSWORD = ".{8,255}";
 
 export type SignupRequest = z.infer<typeof SignupRequestSchema>;
 
 export const LoginRequestSchema = z.object({
-  email: z.email().max(255),
-  password: z.string(),
+  email: CanonicalEmailSchema,
+  password: z.string().max(PASSWORD_MAX_LENGTH),
 });
 
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
 export const CreateEmailIdentityRequestSchema = z.object({
-  email: z.email().max(255),
-  password: z.string().min(8),
+  email: CanonicalEmailSchema,
+  password: z.string().min(8).max(PASSWORD_MAX_LENGTH),
 });
 
 export type CreateEmailIdentityRequest = z.infer<
@@ -40,9 +46,9 @@ export type CreateEmailIdentityRequest = z.infer<
 
 export const UpdateCredentialsRequestSchema = z
   .object({
-    currentPassword: z.string().min(1),
-    newEmail: z.email().max(255).nullish(),
-    newPassword: z.string().min(8).nullish(),
+    currentPassword: z.string().min(1).max(PASSWORD_MAX_LENGTH),
+    newEmail: CanonicalEmailSchema.nullish(),
+    newPassword: z.string().min(8).max(PASSWORD_MAX_LENGTH).nullish(),
   })
   .refine((value) => value.newEmail != null || value.newPassword != null, {
     message: "At least one credential change is required",
@@ -53,7 +59,12 @@ export type UpdateCredentialsRequest = z.infer<
 >;
 
 export const ForgotPasswordRequestSchema = z.object({
-  emailOrUsername: z.string().min(1).max(255),
+  emailOrUsername: z
+    .string()
+    .trim()
+    .min(1)
+    .max(255)
+    .transform((value) => (value.includes("@") ? value.toLowerCase() : value)),
 });
 
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
@@ -116,7 +127,7 @@ export type SessionResponse = z.infer<typeof SessionResponseSchema>;
 
 export const ResetPasswordRequestSchema = z.object({
   token: z.string(),
-  password: z.string().min(8),
+  password: z.string().min(8).max(PASSWORD_MAX_LENGTH),
 });
 
 export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;
@@ -128,7 +139,7 @@ export const VerifyEmailRequestSchema = z.object({
 export type VerifyEmailRequest = z.infer<typeof VerifyEmailRequestSchema>;
 
 export const ResendVerificationRequestSchema = z.object({
-  email: z.email(),
+  email: CanonicalEmailSchema,
 });
 
 export type ResendVerificationRequest = z.infer<

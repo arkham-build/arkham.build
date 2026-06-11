@@ -1,5 +1,9 @@
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
+import {
+  FetchTimeoutError,
+  fetchWithTimeout,
+} from "../../lib/fetch-with-timeout.ts";
 
 const SealedDeckApiResponseSchema = z.object({
   mode: z.enum(["pack", "pool"]),
@@ -20,12 +24,27 @@ const SealedDeckApiResponseSchema = z.object({
 export type SealedDeckApiResponse = z.infer<typeof SealedDeckApiResponseSchema>;
 
 export async function fetchSealedDeck(id: string) {
-  const response = await fetch(`https://www.arkhamsealed.com/cardpool/${id}`, {
-    headers: {
-      Accept: "application/json",
-      "User-Agent": "arkham.build",
-    },
-  });
+  let response: Response;
+
+  try {
+    response = await fetchWithTimeout(
+      `https://www.arkhamsealed.com/cardpool/${id}`,
+      {
+        headers: {
+          Accept: "application/json",
+          "User-Agent": "arkham.build",
+        },
+      },
+    );
+  } catch (error) {
+    if (error instanceof FetchTimeoutError) {
+      throw new HTTPException(504, {
+        message: "Sealed deck request timed out.",
+      });
+    }
+
+    throw error;
+  }
 
   if (!response.ok) {
     throw new HTTPException(404, { message: "Sealed deck not found." });

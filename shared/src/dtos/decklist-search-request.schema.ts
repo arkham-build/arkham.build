@@ -5,6 +5,8 @@ import {
 } from "../lib/search-params.ts";
 import { DateRangeSchema } from "./date-range.schema.ts";
 
+export const DECKLIST_SEARCH_CARD_FILTER_LIMIT = 50;
+
 export const DecklistSearchRequestSchema = z.object({
   analyze_side_decks: z
     .preprocess(coerceStringBoolean, z.boolean())
@@ -13,14 +15,24 @@ export const DecklistSearchRequestSchema = z.object({
   canonical_investigator_code: z.string().optional(),
   description_length: z.coerce.number().int().min(0).max(1000).optional(),
   date_range: DateRangeSchema.nullish(),
-  excluded: z.preprocess(coerceStringArray, z.array(z.string())).optional(),
+  excluded: z
+    .preprocess(
+      coerceStringArray,
+      z.array(z.string()).max(DECKLIST_SEARCH_CARD_FILTER_LIMIT),
+    )
+    .optional(),
   investigator_factions: z
     .preprocess(coerceStringArray, z.array(z.string()))
     .optional(),
   limit: z.coerce.number().int().min(1).max(100).optional().default(10),
   name: z.string().max(255).optional(),
   offset: z.coerce.number().int().min(0).optional().default(0),
-  required: z.preprocess(coerceStringArray, z.array(z.string())).optional(),
+  required: z
+    .preprocess(
+      coerceStringArray,
+      z.array(z.string()).max(DECKLIST_SEARCH_CARD_FILTER_LIMIT),
+    )
+    .optional(),
   sort_by: z
     .enum(["user_reputation", "date", "likes", "popularity"])
     .default("popularity"),

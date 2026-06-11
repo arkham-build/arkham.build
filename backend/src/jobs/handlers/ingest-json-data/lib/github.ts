@@ -6,6 +6,7 @@ import { Readable } from "node:stream";
 import { finished } from "node:stream/promises";
 import * as tar from "tar";
 import type { RepoRef } from "../../../../lib/config.ts";
+import { fetchWithTimeout } from "../../../../lib/fetch-with-timeout.ts";
 
 type GitHubCommit = {
   sha?: string;
@@ -13,8 +14,9 @@ type GitHubCommit = {
 
 export async function downloadRepo(repo: RepoRef, pathPrefix: string) {
   const sha = await resolveCommitSha(repo);
-  const res = await fetch(archiveUrl(repo.repo, sha), {
+  const res = await fetchWithTimeout(archiveUrl(repo.repo, sha), {
     headers: githubHeaders(),
+    timeoutMs: 10 * 60 * 1000,
   });
 
   assert(res.ok, `Failed to download repo ${repo.repo}: ${res.statusText}`);
@@ -32,7 +34,7 @@ export async function downloadRepo(repo: RepoRef, pathPrefix: string) {
 }
 
 async function resolveCommitSha({ repo, branch }: RepoRef) {
-  const res = await fetch(commitUrl(repo, branch), {
+  const res = await fetchWithTimeout(commitUrl(repo, branch), {
     headers: githubHeaders(),
   });
 

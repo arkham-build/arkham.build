@@ -31,6 +31,6 @@ function originMatches(allowed: string, origin: string): boolean {
     // direct match
     allowed === origin ||
     // wildcard match
-    (allowed.startsWith("*") && origin.endsWith(allowed.slice(1)))
+    (allowed.startsWith("*.") && origin.endsWith(allowed.slice(1)))
   );
 }

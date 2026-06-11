@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-export const CollectionSchema = z.record(z.string(), z.number());
+export const COLLECTION_KEY_LIMIT = 5000;
+
+export const CollectionSchema = z
+  .record(z.string(), z.number())
+  .refine((value) => Object.keys(value).length <= COLLECTION_KEY_LIMIT);
 export type Collection = z.infer<typeof CollectionSchema>;
 
 const GroupingTypeSchema = z.enum([

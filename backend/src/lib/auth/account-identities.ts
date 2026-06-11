@@ -1,4 +1,4 @@
-import type { Selectable } from "kysely";
+import { type Selectable, sql } from "kysely";
 import type { Database } from "../../db/db.ts";
 import type { AccountIdentity } from "../../db/schema.types.ts";
 
@@ -20,7 +20,7 @@ export async function getAccountIdentityByUsername(
     .innerJoin("account", "account.id", "account_identity.account_id")
     .selectAll("account_identity")
     .where("account_identity.provider", "=", provider)
-    .where("account.name", "=", username)
+    .where(sql`lower(account.name)`, "=", username.toLowerCase())
     .executeTakeFirst();
 }
 

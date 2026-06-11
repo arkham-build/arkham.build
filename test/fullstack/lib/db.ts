@@ -23,7 +23,7 @@ export async function createAuthenticatedAccount(page: Page) {
     await page.context().addCookies([
       {
         name: sessionCookieName,
-        value: session.id,
+        value: session.token,
         url: apiUrl,
         httpOnly: true,
         sameSite: "Strict",

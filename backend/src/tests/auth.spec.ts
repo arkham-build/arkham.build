@@ -3,6 +3,7 @@ import assert from "node:assert";
 import type { Hono } from "hono";
 import { describe, expect, vi } from "vitest";
 import { appFactory } from "../app.ts";
+import { createSession } from "../lib/auth/sessions.ts";
 import type { HonoEnv } from "../lib/hono-env.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
 
@@ -296,18 +297,11 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const session = await db
-        .insertInto("session")
-        .values({
-          account_id: account.id,
-          expires_at: new Date(Date.now() + 60 * 60 * 1000),
-        })
-        .returning(["id"])
-        .executeTakeFirstOrThrow();
+      const session = await createSession(db, account.id, 1);
 
       const res = await app.request("/v2/auth/oauth/arkhamdb", {
         method: "DELETE",
-        headers: { Cookie: `${config.SESSION_COOKIE_NAME}=${session.id}` },
+        headers: { Cookie: `${config.SESSION_COOKIE_NAME}=${session.token}` },
       });
 
       expect(res.status).toBe(400);
@@ -656,16 +650,9 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const session = await db
-        .insertInto("session")
-        .values({
-          account_id: account.id,
-          expires_at: new Date(Date.now() + 60 * 60 * 1000),
-        })
-        .returning(["id"])
-        .executeTakeFirstOrThrow();
+      const session = await createSession(db, account.id, 1);
 
-      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
 
       const blockedRes = await app.request("/v2/auth/email", {
         method: "POST",
@@ -1241,16 +1228,9 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const session = await db
-        .insertInto("session")
-        .values({
-          account_id: account.id,
-          expires_at: new Date(Date.now() + 60 * 60 * 1000),
-        })
-        .returning(["id"])
-        .executeTakeFirstOrThrow();
+      const session = await createSession(db, account.id, 1);
 
-      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
 
       const res = await createEmailIdentity(
         app,
@@ -1325,16 +1305,9 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const session = await db
-        .insertInto("session")
-        .values({
-          account_id: account.id,
-          expires_at: new Date(Date.now() + 60 * 60 * 1000),
-        })
-        .returning(["id"])
-        .executeTakeFirstOrThrow();
+      const session = await createSession(db, account.id, 1);
 
-      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
 
       mailer.failOnce();
 
@@ -1402,16 +1375,9 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const session = await db
-        .insertInto("session")
-        .values({
-          account_id: account.id,
-          expires_at: new Date(Date.now() + 60 * 60 * 1000),
-        })
-        .returning(["id"])
-        .executeTakeFirstOrThrow();
+      const session = await createSession(db, account.id, 1);
 
-      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
 
       const res = await createEmailIdentity(
         app,
@@ -1463,16 +1429,9 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const session = await db
-        .insertInto("session")
-        .values({
-          account_id: oauthAccount.id,
-          expires_at: new Date(Date.now() + 60 * 60 * 1000),
-        })
-        .returning(["id"])
-        .executeTakeFirstOrThrow();
+      const session = await createSession(db, oauthAccount.id, 1);
 
-      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
 
       const res = await createEmailIdentity(
         app,
@@ -1508,16 +1467,9 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const session = await db
-        .insertInto("session")
-        .values({
-          account_id: account.id,
-          expires_at: new Date(Date.now() + 60 * 60 * 1000),
-        })
-        .returning(["id"])
-        .executeTakeFirstOrThrow();
+      const session = await createSession(db, account.id, 1);
 
-      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
 
       const pendingRes = await createEmailIdentity(
         app,
@@ -1557,16 +1509,9 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const session = await db
-        .insertInto("session")
-        .values({
-          account_id: account.id,
-          expires_at: new Date(Date.now() + 60 * 60 * 1000),
-        })
-        .returning(["id"])
-        .executeTakeFirstOrThrow();
+      const session = await createSession(db, account.id, 1);
 
-      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
 
       const pendingRes = await createEmailIdentity(
         app,
@@ -1871,16 +1816,9 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const session = await db
-        .insertInto("session")
-        .values({
-          account_id: account.id,
-          expires_at: new Date(Date.now() + 60 * 60 * 1000),
-        })
-        .returning(["id"])
-        .executeTakeFirstOrThrow();
+      const session = await createSession(db, account.id, 1);
 
-      const cookie = `${config.SESSION_COOKIE_NAME}=${session.id}`;
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
 
       const createRes = await createEmailIdentity(
         app,

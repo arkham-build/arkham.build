@@ -12,6 +12,7 @@ import type { Insertable, Transaction } from "kysely";
 import { connectionString, type Database, getDatabase } from "../../db/db.ts";
 import type { ArkhamdbDecklist, DB } from "../../db/schema.types.ts";
 import { type Config, configFromEnv } from "../../lib/config.ts";
+import { fetchWithTimeout } from "../../lib/fetch-with-timeout.ts";
 import { log } from "../../lib/logger.ts";
 
 export async function runIngestArkhamDbDecklists() {
@@ -307,8 +308,9 @@ type ApiDecklist = {
 };
 
 async function downloadCsvFile(config: Config, name: string): Promise<string> {
-  const res = await fetch(
+  const res = await fetchWithTimeout(
     `${config.INGEST_URL_ARKHAMDB_DECKLISTS}/${name}.csv`,
+    { timeoutMs: 10 * 60 * 1000 },
   );
   if (!res.ok) throw new Error(`Failed to fetch ${name}: ${res.statusText}`);
 

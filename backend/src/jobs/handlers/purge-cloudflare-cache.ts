@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { fetchWithTimeout } from "../../lib/fetch-with-timeout.ts";
 import { log } from "../../lib/logger.ts";
 
 const purgeConfigSchema = z.object({
@@ -30,7 +31,7 @@ type CloudflarePurgeResponse = {
 };
 
 async function purgeTags(purgeConfig: PurgeConfig, tags: string[]) {
-  const response = await fetch(cloudflarePurgeUrl(purgeConfig), {
+  const response = await fetchWithTimeout(cloudflarePurgeUrl(purgeConfig), {
     method: "POST",
     headers: {
       Authorization: `Bearer ${purgeConfig.CLOUDFLARE_API_TOKEN}`,

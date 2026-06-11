@@ -1,7 +1,8 @@
-import type {
-  DeckSyncTarget,
-  FolderSyncResponse,
-  FolderSyncState as RemoteFolderSyncState,
+import {
+  DECK_BATCH_TARGET_LIMIT,
+  type DeckSyncTarget,
+  type FolderSyncResponse,
+  type FolderSyncState as RemoteFolderSyncState,
 } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
@@ -370,12 +371,11 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
         syncDecks,
       });
 
-      const remoteDecks = isEmpty(plan.fetchTargets)
-        ? []
-        : await fetchDeckBatch(client, {
-            targets: plan.fetchTargets,
-            arkhamdbSyncToken: manifest.arkhamdbSyncToken,
-          });
+      const remoteDecks = await fetchDecksInBatches(
+        client,
+        plan.fetchTargets,
+        manifest.arkhamdbSyncToken,
+      );
 
       const remoteDeckTargets = new Set(
         remoteDecks.map((deck) =>
@@ -569,6 +569,27 @@ function applyRemoteDeck(
       ),
     };
   });
+}
+
+async function fetchDecksInBatches(
+  client: Parameters<typeof fetchDeckBatch>[0],
+  targets: DeckSyncTarget[],
+  arkhamdbSyncToken: string | null | undefined,
+) {
+  if (isEmpty(targets)) return [];
+
+  const decks: Awaited<ReturnType<typeof fetchDeckBatch>> = [];
+
+  for (let i = 0; i < targets.length; i += DECK_BATCH_TARGET_LIMIT) {
+    decks.push(
+      ...(await fetchDeckBatch(client, {
+        targets: targets.slice(i, i + DECK_BATCH_TARGET_LIMIT),
+        arkhamdbSyncToken,
+      })),
+    );
+  }
+
+  return decks;
 }
 
 function getErrorMessage(error: unknown) {

@@ -551,6 +551,7 @@ export interface Session {
   expires_at: Timestamp;
   id: Generated<string>;
   last_activity_at: Generated<Timestamp>;
+  token_hash: string;
 }
 
 export interface Subtype {

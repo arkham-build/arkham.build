@@ -1,4 +1,4 @@
-import type { Selectable } from "kysely";
+import { type Selectable, sql } from "kysely";
 import type { Database } from "../../db/db.ts";
 import type { Account } from "../../db/schema.types.ts";
 
@@ -22,7 +22,7 @@ export async function findAccountByUsername(db: Database, username: string) {
   return await db
     .selectFrom("account")
     .select(["id", "name"])
-    .where("name", "=", username)
+    .where(sql`lower(name)`, "=", username.toLowerCase())
     .executeTakeFirst();
 }
 
@@ -31,7 +31,10 @@ export async function accountNameExists(
   name: string,
   excludeAccountId?: string,
 ) {
-  let query = db.selectFrom("account").select(["id"]).where("name", "=", name);
+  let query = db
+    .selectFrom("account")
+    .select(["id"])
+    .where(sql`lower(name)`, "=", name.toLowerCase());
 
   if (excludeAccountId) {
     query = query.where("id", "!=", excludeAccountId);

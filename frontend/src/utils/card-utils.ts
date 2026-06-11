@@ -1,5 +1,6 @@
 import type { Cycle, Pack } from "@arkham-build/shared";
 import { type Card, SKILL_KEYS } from "@arkham-build/shared";
+import DOMPurify from "dompurify";
 import type { TFunction } from "i18next";
 import { filterPlayerCards } from "@/store/lib/filtering";
 import { assert } from "./assert";
@@ -107,7 +108,9 @@ export function parseCardTextHtml(
     parsed = parsed.replaceAll("\n", "<hr class='break'>");
   }
 
-  return parsed;
+  return DOMPurify.sanitize(parsed, {
+    FORBID_TAGS: ["iframe", "math"],
+  });
 }
 
 export function parseCustomizationTextHtml(customizationText: string) {

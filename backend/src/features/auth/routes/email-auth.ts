@@ -114,7 +114,7 @@ routes.post("/login", zodValidator("json", LoginRequestSchema), async (c) => {
     config.SESSION_EXPIRY_HOURS,
   );
 
-  setSessionCookie(c, session.id);
+  setSessionCookie(c, session.token);
   return new Response(null, { status: 200 });
 });
 
@@ -127,9 +127,9 @@ routes.post(
 
     c.set("skipSessionCookieRefresh", true);
 
-    const sessionId = getCookie(c, config.SESSION_COOKIE_NAME);
-    if (sessionId) {
-      await deleteSession(db, sessionId);
+    const sessionToken = getCookie(c, config.SESSION_COOKIE_NAME);
+    if (sessionToken) {
+      await deleteSession(db, sessionToken);
     }
 
     deleteCookie(c, config.SESSION_COOKIE_NAME, { path: "/" });

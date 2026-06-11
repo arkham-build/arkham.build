@@ -60,7 +60,7 @@ export async function createAuthenticatedSessionCookie(
     account.id,
     config.SESSION_EXPIRY_HOURS,
   );
-  return `${config.SESSION_COOKIE_NAME}=${session.id}`;
+  return `${config.SESSION_COOKIE_NAME}=${session.token}`;
 }
 
 class TestJobDispatcher implements JobDispatcher {

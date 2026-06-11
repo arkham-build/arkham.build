@@ -139,7 +139,7 @@ arkhamdbOAuthRoutes.get("/callback", async (c) => {
       providerUserId: identity.providerUserId,
     });
 
-    setSessionCookie(c, session.id);
+    setSessionCookie(c, session.token);
     const path = existing ? "/" : "/auth/signup/complete";
     return c.redirect(`${config.FRONTEND_URL}${path}`);
   } catch (error) {

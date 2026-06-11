@@ -39,8 +39,10 @@ export const DeckManifestResponseSchema = z.object({
 });
 export type DeckManifestResponse = z.infer<typeof DeckManifestResponseSchema>;
 
+export const DECK_BATCH_TARGET_LIMIT = 250;
+
 export const DeckBatchRequestSchema = z.object({
-  targets: z.array(DeckSyncTargetSchema),
+  targets: z.array(DeckSyncTargetSchema).max(DECK_BATCH_TARGET_LIMIT),
   arkhamdbSyncToken: z.string().nullish(),
 });
 export type DeckBatchRequest = z.infer<typeof DeckBatchRequestSchema>;

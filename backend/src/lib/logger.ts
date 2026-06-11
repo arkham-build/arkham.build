@@ -56,7 +56,7 @@ export function requestLogger() {
         duration_ms: Date.now() - begin,
         method: c.req.method,
         status: c.res.status,
-        url: c.req.url,
+        url: new URL(c.req.url).pathname,
       });
     }
   };
