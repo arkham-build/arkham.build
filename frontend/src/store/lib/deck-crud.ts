@@ -680,11 +680,12 @@ export const upgradeAdapter = {
       };
 
       if (isSyncedStorageProvider(upgrade.source)) {
+        const now = Date.now();
         patch.sync = updateDeckSyncSuccess(
-          prev.sync,
+          updateDeckSyncSuccess(prev.sync, deck.id, deck.version, now),
           upgrade.id,
           upgrade.version,
-          Date.now(),
+          now,
         );
       }
 
