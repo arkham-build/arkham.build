@@ -15,15 +15,13 @@ import {
   type DeckUpgradeRequest,
   DeckUpgradeRequestSchema,
   type Deck as SharedDeck,
+  type SyncedDeckProvider,
 } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { Database } from "../../db/db.ts";
 import { ApiError } from "../../lib/arkhamdb/api-client/core/errors.ts";
-import {
-  ARKHAMDB_PROVIDER_TYPE,
-  isArkhamDbDeckId,
-} from "../../lib/arkhamdb/api-client/mapping.ts";
+import { ARKHAMDB_PROVIDER_TYPE } from "../../lib/arkhamdb/api-client/mapping.ts";
 import {
   createArkhamDbDeck,
   deleteArkhamDbDeck,
@@ -177,9 +175,7 @@ routes.put(
 
     assertMatchingDeckId(deckId, payload.id);
 
-    const deck = isArkhamDbDeckId(deckId)
-      ? await arkhamdbCrud.update(c, deckId, payload)
-      : await localCrud.update(c, deckId, payload);
+    const deck = await getCrud(payload.source).update(c, deckId, payload);
 
     return c.json(DeckSchema.parse(deck));
   },
@@ -193,11 +189,7 @@ routes.delete(
     const payload = c.req.valid("json");
     const deckId = c.req.param("id");
 
-    if (isArkhamDbDeckId(deckId)) {
-      await arkhamdbCrud.delete(c, deckId, payload);
-    } else {
-      await localCrud.delete(c, deckId, payload);
-    }
+    await getCrud(payload.provider).delete(c, deckId, payload);
 
     return new Response(null, { status: 204 });
   },
@@ -213,9 +205,11 @@ routes.post(
 
     assertUpgradeTargetDiffers(previousDeckId, payload.deck.id);
 
-    const deck = isArkhamDbDeckId(previousDeckId)
-      ? await arkhamdbCrud.upgrade(c, previousDeckId, payload)
-      : await localCrud.upgrade(c, previousDeckId, payload);
+    const deck = await getCrud(payload.provider).upgrade(
+      c,
+      previousDeckId,
+      payload,
+    );
 
     return c.json(DeckSchema.parse(deck));
   },
@@ -227,6 +221,10 @@ type DeckContext = Parameters<typeof fetchArkhamDbDeck>[0];
 
 function getDeckTargetKey(target: DeckSyncTarget) {
   return `${target.provider}:${String(target.id)}`;
+}
+
+function getCrud(provider: SyncedDeckProvider) {
+  return provider === ARKHAMDB_PROVIDER_TYPE ? arkhamdbCrud : localCrud;
 }
 
 const localCrud = {

@@ -2,6 +2,7 @@ import {
   type DeckId,
   isArkhamDBIdentity,
   type StorageProvider,
+  type SyncedDeckProvider,
 } from "@arkham-build/shared";
 import { isDeckConflictError } from "../services/requests/decks";
 import type { StoreState } from "../slices";
@@ -34,7 +35,9 @@ export function isStorageProviderAvailable(
   }
 }
 
-export function isSyncedStorageProvider(provider: StorageProvider): boolean {
+export function isSyncedStorageProvider(
+  provider: StorageProvider,
+): provider is SyncedDeckProvider {
   return provider === "account" || provider === "arkhamdb";
 }
 

@@ -85,6 +85,7 @@ function deleteDeck(
   cookie: string,
   id: string,
   expectedVersion: string,
+  provider = "account",
 ) {
   return app.request(`/v2/decks/${id}`, {
     method: "DELETE",
@@ -92,7 +93,7 @@ function deleteDeck(
       "Content-Type": "application/json",
       Cookie: cookie,
     },
-    body: JSON.stringify({ expectedVersion }),
+    body: JSON.stringify({ expectedVersion, provider }),
   });
 }
 
@@ -108,7 +109,7 @@ function upgradeDeck(
       "Content-Type": "application/json",
       Cookie: cookie,
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ provider: "account", ...payload }),
   });
 }
 
@@ -841,6 +842,7 @@ describe("Deck routes", () => {
       vi.stubGlobal("fetch", fetch);
 
       const res = await upgradeDeck(app, sessionCookie, "123", {
+        provider: "arkhamdb",
         deck: baseDeckPayload({
           id: "124",
           name: "Upgraded remotely",
@@ -899,7 +901,13 @@ describe("Deck routes", () => {
           .mockResolvedValueOnce(jsonResponse([])),
       );
 
-      const res = await deleteDeck(app, sessionCookie, "123", "1.1");
+      const res = await deleteDeck(
+        app,
+        sessionCookie,
+        "123",
+        "1.1",
+        "arkhamdb",
+      );
       expect(res.status).toBe(204);
 
       const deleted = await db

@@ -49,17 +49,20 @@ export type DeckBatchRequest = z.infer<typeof DeckBatchRequestSchema>;
 
 export const DeckUpdateRequestSchema = DeckWritePayloadSchema.extend({
   expectedVersion: z.string(),
+  source: SyncedDeckProviderSchema,
 });
 export type DeckUpdateRequest = z.infer<typeof DeckUpdateRequestSchema>;
 
 export const DeckDeleteRequestSchema = z.object({
   expectedVersion: z.string(),
+  provider: SyncedDeckProviderSchema,
 });
 export type DeckDeleteRequest = z.infer<typeof DeckDeleteRequestSchema>;
 
 export const DeckUpgradeRequestSchema = z.object({
   deck: DeckSchema,
   expectedVersion: z.string(),
+  provider: SyncedDeckProviderSchema,
 });
 export type DeckUpgradeRequest = z.infer<typeof DeckUpgradeRequestSchema>;
 

@@ -256,6 +256,7 @@ export const updateAdapter = {
     if (!isSyncedStorageProvider(deck.source)) return deck;
 
     assert(expectedVersion, `Deck ${deck.id} does not have a sync version.`);
+    const provider = deck.source;
 
     set((prev) => ({
       sync: updateDeckSyncSaving(prev.sync, deck.id),
@@ -265,6 +266,7 @@ export const updateAdapter = {
       const remoteDeck = await putDeck(client, {
         ...deck,
         expectedVersion,
+        source: provider,
       });
       return remoteDeck;
     } catch (error) {
@@ -349,7 +351,10 @@ export const deleteAdapter = {
     }));
 
     try {
-      await deleteDeck(client, deck.id, { expectedVersion });
+      await deleteDeck(client, deck.id, {
+        expectedVersion,
+        provider: deck.source,
+      });
     } catch (error) {
       set((prev) => ({
         sync: updateDeckSyncError(prev.sync, deck.id, error, "delete"),
@@ -635,6 +640,7 @@ export const upgradeAdapter = {
       return await postDeckUpgrade(client, deck.id, {
         deck: upgrade,
         expectedVersion,
+        provider: deck.source,
       });
     } catch (error) {
       set((prev) => ({
