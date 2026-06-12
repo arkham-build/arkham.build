@@ -1,7 +1,11 @@
 import type { Context, MiddlewareHandler } from "hono";
 import type { HonoEnv } from "./hono-env.ts";
 
-export type CacheResource = "cards" | "metadata" | "version";
+export type CacheResource =
+  | "cards"
+  | "metadata"
+  | "taboo_sets_with_cards"
+  | "version";
 
 type ApplyCacheHeadersOptions = {
   etag: string;

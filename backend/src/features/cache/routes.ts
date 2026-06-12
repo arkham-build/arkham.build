@@ -4,6 +4,7 @@ import type { Selectable } from "kysely";
 import type { Database } from "../../db/db.ts";
 import type {
   CampaignScenario,
+  Card,
   ScenarioEncounterSet,
   ScenarioEncounterSetCard,
 } from "../../db/schema.types.ts";
@@ -65,6 +66,14 @@ router.get("/version/:locale", (c) =>
     locale: c.req.param("locale"),
     resource: "version",
     buildResponse: versionResponse,
+  }),
+);
+
+router.get("/taboo_sets_with_cards", (c) =>
+  cachedResponse(c, {
+    locale: "en",
+    resource: "taboo_sets_with_cards",
+    buildResponse: tabooSetsWithCardsResponse,
   }),
 );
 
@@ -194,6 +203,38 @@ async function metadataResponse(db: Database, locale: string) {
   };
 }
 
+async function tabooSetsWithCardsResponse(db: Database, locale: string) {
+  const tabooSets = await db
+    .selectFrom("taboo_set")
+    .selectAll()
+    .where("name", "is not", null)
+    .orderBy("date_start", "desc")
+    .execute();
+
+  const tabooSetIds = tabooSets.map((tabooSet) => tabooSet.id);
+  const cards = tabooSetIds.length
+    ? await db
+        .selectFrom("card")
+        .selectAll()
+        .where("taboo_set_id", "in", tabooSetIds)
+        .orderBy("code", "asc")
+        .execute()
+    : [];
+
+  const cardsByTabooSetId = groupCardsByTabooSetId(cards, locale);
+
+  return {
+    data: {
+      taboo_set: tabooSets.map((tabooSet) => ({
+        id: tabooSet.id,
+        name: tabooSet.name,
+        date: tabooSet.date_start.toISOString().slice(0, 10),
+        cards: cardsByTabooSetId[tabooSet.id] ?? [],
+      })),
+    },
+  };
+}
+
 function versionResponse(_db: Database, _locale: string, version: DataVersion) {
   return Promise.resolve({
     data: {
@@ -205,6 +246,21 @@ function versionResponse(_db: Database, _locale: string, version: DataVersion) {
       ],
     },
   });
+}
+
+function groupCardsByTabooSetId(records: Selectable<Card>[], locale: string) {
+  return records.reduce<Record<number, Record<string, unknown>[]>>(
+    (acc, curr) => {
+      const tabooSetId = curr.taboo_set_id;
+      if (!tabooSetId) return acc;
+
+      const cards = acc[tabooSetId] ?? [];
+      cards.push(applyLocaleTranslations(mapCardRowToV1Card(curr), locale));
+      acc[tabooSetId] = cards;
+      return acc;
+    },
+    {},
+  );
 }
 
 function groupScenarioCodesByCampaign(records: Selectable<CampaignScenario>[]) {
