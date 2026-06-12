@@ -72,6 +72,16 @@ export async function storeAdditionalMetadata<T extends DeckWritePayload>(
   };
 }
 
+export async function findAdditionalMetadata(db: Database, id: string) {
+  const row = await db
+    .selectFrom("arkhamdb_deck_additional_metadata")
+    .select(["data"])
+    .where("id", "=", id)
+    .executeTakeFirstOrThrow();
+
+  return parseAdditionalMetadata(row.data);
+}
+
 export async function mergeAdditionalMeta(
   database: Database,
   deck: ArkhamDbRemoteDeck,
@@ -118,16 +128,6 @@ async function upsertAdditionalMetadata(
     .executeTakeFirstOrThrow();
 
   return row.id;
-}
-
-async function findAdditionalMetadata(db: Database, id: string) {
-  const row = await db
-    .selectFrom("arkhamdb_deck_additional_metadata")
-    .select(["data"])
-    .where("id", "=", id)
-    .executeTakeFirstOrThrow();
-
-  return parseAdditionalMetadata(row.data);
 }
 
 function parseDeckId(deckId: string | number) {

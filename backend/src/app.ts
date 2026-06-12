@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
 import type { Database } from "./db/db.ts";
+import additionalMetadataRouter from "./features/additional-metadata/routes.ts";
 import adminRouter from "./features/admin/routes.ts";
 import arkhamDbDecklistsRouter from "./features/arkhamdb-decklists/routes.ts";
 import authRouter, {
@@ -50,6 +51,7 @@ export function appFactory(
   app.route("/admin", adminRouter);
 
   app.route("/v1/cache", cacheRouter);
+  app.route("/v1/public", additionalMetadataRouter);
 
   const pub = new Hono<HonoEnv>();
   pub.route("/arkhamdb-decklists", arkhamDbDecklistsRouter);
