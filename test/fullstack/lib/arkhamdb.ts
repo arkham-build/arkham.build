@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { Page } from "@playwright/test";
 import { apiUrl, arkhamDbBaseUrl, arkhamDbTestApiKey, runId } from "./env.ts";
 import { waitForCondition } from "./wait.ts";
 
@@ -82,6 +83,13 @@ export function createArkhamDbUser(
     password,
     username,
   });
+}
+
+export async function authorizeArkhamDbOAuth(page: Page, user: ArkhamDbUser) {
+  await page.locator("#username").fill(user.username);
+  await page.locator("#password").fill(user.password);
+  await page.locator("#_submit").click();
+  await page.locator('input[name="accepted"]').click();
 }
 
 async function arkhamDbTestRequest<T>(path: string, body: unknown): Promise<T> {

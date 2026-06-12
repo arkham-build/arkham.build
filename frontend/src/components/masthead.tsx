@@ -337,9 +337,16 @@ function AccountMenu(props: {
     <Popover>
       {session ? (
         <PopoverTrigger asChild>
-          <Button variant="bare" iconOnly size="none">
+          <Button
+            data-testid="masthead-account-menu"
+            variant="bare"
+            iconOnly
+            size="none"
+          >
             <Avatar account={session.account}>
               <StatusBubble
+                data-sync-status={displayedSyncStatus}
+                data-testid="masthead-account-sync-status"
                 variant={syncStatusToBubbleVariant(displayedSyncStatus)}
               />
             </Avatar>

@@ -20,6 +20,7 @@ export type UIState = {
     initialized: boolean;
     keyboardShortcutsOpen: boolean;
     navigationHistory: string[];
+    sessionInitialized: boolean;
     showLimitedAccess: boolean;
     showUnusableCards: boolean;
   };

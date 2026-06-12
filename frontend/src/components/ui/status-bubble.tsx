@@ -4,18 +4,24 @@ import css from "./status-bubble.module.css";
 
 type StatusBubbleVariant = "error" | "loading" | "success" | "warning";
 
-type Props = {
+type Props = React.ComponentPropsWithoutRef<"div"> & {
   label?: string;
   variant?: StatusBubbleVariant;
 };
 
-export function StatusBubble({ label, variant = "error" }: Props) {
+export function StatusBubble({
+  className,
+  label,
+  variant = "error",
+  ...rest
+}: Props) {
   const showIcon = variant === "error" || variant === "warning";
 
   return (
     <div
+      {...rest}
       aria-hidden={label ? undefined : true}
-      className={cx(css["status-bubble"], css[variant])}
+      className={cx(css["status-bubble"], css[variant], className)}
       role={label ? "status" : undefined}
       title={label}
     >

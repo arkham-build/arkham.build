@@ -449,6 +449,11 @@ function mergeInitialState(
       clientId:
         overrides?.app?.clientId || persistedState?.app?.clientId || randomId(),
     },
+    auth: {
+      ...initialState.auth,
+      ...persistedState?.auth,
+      ...overrides?.auth,
+    },
     settings: {
       ...initialState.settings,
       ...persistedState?.settings,

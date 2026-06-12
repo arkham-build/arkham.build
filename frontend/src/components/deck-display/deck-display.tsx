@@ -268,8 +268,6 @@ type TitleEditModalProps = {
 function TitleEditModal(props: TitleEditModalProps) {
   const { deck } = props;
 
-  const connectionLock = ""; // XXX
-
   const { t } = useTranslation();
   const modalContext = useDialogContextChecked();
   const cssVariables = useAccentColor(deck.investigatorBack.card);
@@ -317,11 +315,10 @@ function TitleEditModal(props: TitleEditModalProps) {
               </Field>
               <div className={css["name-modal-footer"]}>
                 <Button
-                  disabled={!!connectionLock || isPending}
+                  disabled={isPending}
                   variant="primary"
                   type="submit"
                   data-testid="name-edit-submit"
-                  tooltip={connectionLock}
                 >
                   {t("deck_edit.save_short")}
                 </Button>

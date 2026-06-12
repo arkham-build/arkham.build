@@ -134,6 +134,7 @@ export async function saveArkhamDbDeck(
   deck: DeckWritePayload,
 ): Promise<Deck> {
   const response = await saveDeck(c, id, deck);
+  await invalidateArkhamDbDeckSnapshots(c);
   return {
     ...mapArkhamDbDeckToDto(response.data),
     xp: response.data.xp ?? deck.xp ?? null,
@@ -145,6 +146,7 @@ export async function createArkhamDbDeck(
   deck: DeckWritePayload,
 ): Promise<Deck> {
   const response = await createDeck(c, deck);
+  await invalidateArkhamDbDeckSnapshots(c);
   return {
     ...mapArkhamDbDeckToDto(response.data),
     xp: response.data.xp ?? deck.xp ?? null,
@@ -157,18 +159,20 @@ export async function upgradeArkhamDbDeck(
   deck: DeckWritePayload,
 ): Promise<Deck> {
   const response = await upgradeDeck(c, id, deck);
+  await invalidateArkhamDbDeckSnapshots(c);
   return {
     ...mapArkhamDbDeckToDto(response.data),
     xp: response.data.xp ?? 0,
   };
 }
 
-export function deleteArkhamDbDeck(
+export async function deleteArkhamDbDeck(
   c: Context<SessionAuthHonoEnv>,
   deckId: string | number,
   all?: boolean,
 ) {
-  return deleteDeck(c, deckId, all);
+  await deleteDeck(c, deckId, all);
+  await invalidateArkhamDbDeckSnapshots(c);
 }
 
 function mapArkhamDbDeckToManifestItem(
@@ -182,6 +186,22 @@ function mapArkhamDbDeckToManifestItem(
     updatedAt: dto.date_update,
     version: dto.version,
   };
+}
+
+async function invalidateArkhamDbDeckSnapshots(c: Context<SessionAuthHonoEnv>) {
+  const identity = await getAccountIdentityByAccountIdAndProvider(
+    c.get("db"),
+    c.get("account").id,
+    "arkhamdb",
+  );
+
+  assert(identity, "Missing ArkhamDB identity for account.");
+
+  await c
+    .get("db")
+    .deleteFrom("arkhamdb_deck_snapshot")
+    .where("account_identity_id", "=", identity.id)
+    .execute();
 }
 
 async function createArkhamDbDeckSnapshot(

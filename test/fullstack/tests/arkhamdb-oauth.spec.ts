@@ -1,7 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { expect, type Page } from "@playwright/test";
-import { test } from "../fixtures.ts";
-import { type ArkhamDbUser, createArkhamDbUser } from "../lib/arkhamdb.ts";
+import { expect, type Page, test } from "@playwright/test";
+import { authorizeArkhamDbOAuth, createArkhamDbUser } from "../lib/arkhamdb.ts";
 import { createAuthenticatedAccount } from "../lib/db.ts";
 
 const completeProfileName = () => `e2e-oauth-${randomUUID()}`;
@@ -93,13 +92,6 @@ test.describe("ArkhamDB OAuth", () => {
     ).toBeVisible();
   });
 });
-
-async function authorizeArkhamDbOAuth(page: Page, user: ArkhamDbUser) {
-  await page.locator("#username").fill(user.username);
-  await page.locator("#password").fill(user.password);
-  await page.locator("#_submit").click();
-  await page.locator('input[name="accepted"]').click();
-}
 
 async function expectAuthenticatedAs(page: Page, name: string) {
   await openAccountSettings(page);

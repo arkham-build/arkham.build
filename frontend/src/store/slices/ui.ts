@@ -17,6 +17,7 @@ function getInitialUIState(): UIState {
       fanMadeContentCache: {},
       keyboardShortcutsOpen: false,
       navigationHistory: [],
+      sessionInitialized: false,
       cardModal: {
         code: undefined,
         config: undefined,

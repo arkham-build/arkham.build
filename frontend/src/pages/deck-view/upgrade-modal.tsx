@@ -77,7 +77,6 @@ export function UpgradeModal(props: Props) {
   const search = useSearch();
   const { t } = useTranslation();
 
-  const connectionLock = ""; // XXX
   const hasSyncConflict = useStore((state) =>
     selectDeckHasConflict(state, deck.id),
   );
@@ -148,7 +147,7 @@ export function UpgradeModal(props: Props) {
 
   const cssVariables = useAccentColor(deck.cards.investigator.card);
 
-  const disabled = xp === "" || !!connectionLock || hasSyncConflict;
+  const disabled = xp === "" || hasSyncConflict;
 
   useHotkey("cmd+enter", onSave, { disabled, allowInputFocused: true });
 
@@ -178,7 +177,7 @@ export function UpgradeModal(props: Props) {
                   description={
                     hasSyncConflict
                       ? t("deck_sync.conflict.edit_locked")
-                      : (connectionLock ?? t("deck_view.actions.save_upgrade"))
+                      : t("deck_view.actions.save_upgrade")
                   }
                 >
                   <Button
@@ -200,8 +199,7 @@ export function UpgradeModal(props: Props) {
                   description={
                     hasSyncConflict
                       ? t("deck_sync.conflict.edit_locked")
-                      : (connectionLock ??
-                        t("deck_view.actions.save_upgrade_close"))
+                      : t("deck_view.actions.save_upgrade_close")
                   }
                 >
                   <Button

@@ -1,5 +1,6 @@
 import type { SessionResponse } from "@arkham-build/shared";
 import { Redirect } from "wouter";
+import { useStore } from "@/store";
 import { AccountEmail } from "./account-email";
 import { AccountPrivacy } from "./account-privacy";
 import { AccountProfile } from "./account-profile";
@@ -11,12 +12,14 @@ export function AccountSettings({
 }: {
   session: SessionResponse | null;
 }) {
+  const sessionInitialized = useStore((state) => state.ui.sessionInitialized);
+
   if (!session) {
-    return (
+    return sessionInitialized ? (
       <Redirect
         to={`/auth/login?redirect=${encodeURIComponent("/settings?tab=account")}`}
       />
-    );
+    ) : null;
   }
 
   return (

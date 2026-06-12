@@ -36,9 +36,9 @@ npm run dev -w {workspace}
 # E2E test
 npm run test:e2e
 
-# Fullstack E2E test in Docker
+# Fullstack E2E tests
 # Requires submodules: git submodule update --init --recursive
-npm run test:fullstack:docker
+npm run test:fullstack
 
 ```
 

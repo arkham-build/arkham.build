@@ -158,8 +158,6 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
 
-  const connectionLock = ""; // XXX
-
   const onDuplicate = useCallback(
     (evt: React.MouseEvent) => {
       cancelEvent(evt);
@@ -246,9 +244,8 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
       <Button
         className={css["quick-action"]}
         iconOnly
-        disabled={!!connectionLock}
         onClick={onDelete}
-        tooltip={connectionLock ? connectionLock : t("deck.actions.delete")}
+        tooltip={t("deck.actions.delete")}
       >
         <Trash2Icon />
       </Button>

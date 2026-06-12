@@ -1,5 +1,4 @@
-import { expect, type Page } from "@playwright/test";
-import { test } from "../fixtures.ts";
+import { expect, type Page, test } from "@playwright/test";
 import { login } from "../lib/auth.ts";
 import { createAccount, createUnverifiedAccount } from "../lib/db.ts";
 

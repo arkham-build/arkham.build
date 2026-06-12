@@ -5,6 +5,13 @@ import { hashPassword } from "../../../backend/src/features/auth/lib/crypto.ts";
 import { createSession } from "../../../backend/src/lib/auth/sessions.ts";
 import { apiUrl, databaseUrl, sessionCookieName } from "./env.ts";
 
+export type TestAccount = {
+  accountId: string;
+  email: string;
+  name: string;
+  password: string;
+};
+
 export function createAccount() {
   return createAccountWithVerification(new Date());
 }
@@ -68,7 +75,30 @@ export async function getAccountName(accountId: string) {
   }
 }
 
-async function createAccountWithVerification(verifiedAt: Date | null) {
+export async function deleteArkhamDbOAuthToken(accountId: string) {
+  const db = getDatabase(databaseUrl);
+
+  try {
+    await db
+      .deleteFrom("oauth_token")
+      .where(
+        "account_identity_id",
+        "=",
+        db
+          .selectFrom("account_identity")
+          .select("id")
+          .where("account_id", "=", accountId)
+          .where("provider", "=", "arkhamdb"),
+      )
+      .execute();
+  } finally {
+    await db.destroy();
+  }
+}
+
+async function createAccountWithVerification(
+  verifiedAt: Date | null,
+): Promise<TestAccount> {
   const db = getDatabase(databaseUrl);
   const suffix = randomUUID();
   const email = `e2e-${suffix}@example.com`;

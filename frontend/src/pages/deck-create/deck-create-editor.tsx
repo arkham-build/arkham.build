@@ -37,8 +37,6 @@ export function DeckCreateEditor() {
   const deckCreate = useStore(selectDeckCreateChecked);
   const { back, investigator } = useStore(selectDeckCreateInvestigators);
 
-  const connectionLock = ""; // XXX
-  const provider = useStore((state) => state.deckCreate?.provider);
   const settings = useStore((state) => state.settings);
 
   const setTitle = useStore((state) => state.deckCreateSetTitle);
@@ -238,13 +236,7 @@ export function DeckCreateEditor() {
       <nav className={css["editor-nav"]}>
         <Button
           data-testid="create-save"
-          disabled={!!connectionLock && provider === "arkhamdb"}
           onClick={onDeckCreate}
-          tooltip={
-            connectionLock && provider === "arkhamdb"
-              ? connectionLock
-              : undefined
-          }
           variant="primary"
         >
           {t("deck.actions.create")}

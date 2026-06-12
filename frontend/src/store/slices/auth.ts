@@ -28,6 +28,7 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
       await deleteAccountRequest(client);
     } finally {
       get().clearAccountState({ session: null, status: "unauthenticated" });
+      setSessionInitialized(set, true);
       await dehydrate(get(), "app");
     }
   },
@@ -50,10 +51,12 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
       session: null,
       status: "unauthenticated",
     });
+    setSessionInitialized(set, true);
     await dehydrate(get(), "app");
   },
 
   async initSession(client) {
+    setSessionInitialized(set, false);
     set((state) => ({
       auth: { ...state.auth, status: "loading" },
     }));
@@ -88,6 +91,8 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
       await get().refreshSession(client);
     }
 
+    setSessionInitialized(set, true);
+
     await dehydrate(get(), "app");
   },
 
@@ -98,6 +103,7 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
     set({
       auth: { session, status: "authenticated" },
     });
+    setSessionInitialized(set, true);
 
     if (session.account.profileComplete) {
       try {
@@ -116,6 +122,7 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
       await postLogout(client);
     } finally {
       get().clearAccountState({ session: null, status: "idle" });
+      setSessionInitialized(set, true);
       await dehydrate(get(), "app");
     }
   },
@@ -124,6 +131,18 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
     await refreshSession(set, get, client);
   },
 });
+
+function setSessionInitialized(
+  set: Parameters<StateCreator<StoreState, [], [], AuthSlice>>[0],
+  sessionInitialized: boolean,
+) {
+  set((state) => ({
+    ui: {
+      ...state.ui,
+      sessionInitialized,
+    },
+  }));
+}
 
 async function refreshSession(
   set: Parameters<StateCreator<StoreState, [], [], AuthSlice>>[0],

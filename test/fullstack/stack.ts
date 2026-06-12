@@ -1,5 +1,4 @@
 import { type ChildProcess, spawn } from "node:child_process";
-import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { Client } from "pg";
 import { PgBoss } from "pg-boss";
@@ -40,7 +39,6 @@ type State = {
 };
 
 const rootDir = path.resolve(import.meta.dirname, "../..");
-const schemaPath = path.join(rootDir, "backend/src/db/schema.sql");
 const vitePath = path.join(rootDir, "node_modules/vite/bin/vite.js");
 let childEnv = createStackEnv();
 const state: State = {
@@ -82,6 +80,10 @@ async function main() {
     [vitePath, "build"],
     path.join(rootDir, "frontend"),
   );
+
+  console.info("Ingesting JSON data...");
+  await runCommand("npm", ["run", "ingest:json-data", "-w", "backend"]);
+  await waitForJsonDataReady();
 
   console.info("Starting worker...");
   startProcess("worker", process.execPath, [
@@ -135,7 +137,7 @@ function startProcess(
   const child = spawn(command, args, {
     cwd,
     env: childEnv,
-    stdio: "inherit",
+    stdio: "ignore",
   });
 
   child.on("exit", (code, signal) => {
@@ -194,22 +196,19 @@ async function createDatabase() {
     await client.end();
   }
 
-  await applySchema();
+  await applyMigrations();
 }
 
-async function applySchema() {
-  const client = new Client({
-    connectionString: databaseUrl,
-  });
-
-  const schema = sanitizeSql(await readFile(schemaPath, "utf8"));
-  await client.connect();
-
-  try {
-    await client.query(schema);
-  } finally {
-    await client.end();
-  }
+async function applyMigrations() {
+  await runCommand("npm", [
+    "run",
+    "dbmate",
+    "-w",
+    "backend",
+    "--",
+    "--no-dump-schema",
+    "up",
+  ]);
 }
 
 async function dropDatabase() {
@@ -229,6 +228,26 @@ async function dropDatabase() {
 
 async function waitForApiReady() {
   await waitForUrl(`${apiUrl}/v2/auth/me`, (response) => response.status < 500);
+}
+
+async function waitForJsonDataReady() {
+  const client = new Client({ connectionString: databaseUrl });
+  await client.connect();
+
+  try {
+    await waitForCondition(
+      async () => {
+        const result = await client.query<{
+          card_count: number;
+        }>("SELECT card_count FROM data_version WHERE locale = $1", ["en"]);
+
+        return (result.rows[0]?.card_count ?? 0) > 0;
+      },
+      10 * 60 * 1000,
+    );
+  } finally {
+    await client.end();
+  }
 }
 
 async function waitForWorkerReady() {
@@ -291,14 +310,6 @@ async function getAdminClient() {
 
 function quoteIdentifier(value: string) {
   return `"${value.replaceAll('"', '""')}"`;
-}
-
-function sanitizeSql(sql: string) {
-  return sql
-    .split("\n")
-    .filter((line) => !line.startsWith("\\"))
-    .filter((line) => line !== "SET transaction_timeout = 0;")
-    .join("\n");
 }
 
 async function waitForExit(child: ChildProcess) {

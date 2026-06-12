@@ -39,7 +39,6 @@ export function EditorActions(props: Props) {
   const hasSyncConflict = useStore((state) =>
     selectDeckHasConflict(state, deck.id),
   );
-  const connectionLock = ""; // XXX
 
   const validation = useStore((state) => selectDeckValid(state, deck));
 
@@ -87,17 +86,15 @@ export function EditorActions(props: Props) {
           description={
             hasSyncConflict
               ? t("deck_sync.conflict.edit_locked")
-              : connectionLock
-                ? connectionLock
-                : readonly
-                  ? t("deck_edit.read_only")
-                  : t("deck_edit.save")
+              : readonly
+                ? t("deck_edit.read_only")
+                : t("deck_edit.save")
           }
         >
           <Button
             data-testid="editor-save"
             onClick={onSaveClose}
-            disabled={hasSyncConflict || !!connectionLock || readonly}
+            disabled={hasSyncConflict || readonly}
             variant="primary"
           >
             <SaveIcon />

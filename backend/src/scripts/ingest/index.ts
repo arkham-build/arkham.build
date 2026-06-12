@@ -1,5 +1,3 @@
-import { enqueueWithDispatcher } from "../enqueue.ts";
+import { runIngestJsonData } from "../../jobs/handlers/ingest-json-data/index.ts";
 
-await enqueueWithDispatcher(async (dispatcher) => {
-  await dispatcher.enqueueIngestJsonData();
-});
+await runIngestJsonData();

@@ -140,8 +140,6 @@ function SidebarActions(props: {
       !hasSyncConflict,
   );
 
-  const deckConnectionLock = ""; // XXX
-
   const deleteDeck = useDeleteDeck();
 
   const onDelete = useCallback(
@@ -291,17 +289,13 @@ function SidebarActions(props: {
               <HotkeyTooltip keybind="e" description={t("deck.actions.edit")}>
                 <Button
                   data-testid="view-edit"
-                  disabled={
-                    isReadOnly || !!deckConnectionLock || hasSyncConflict
-                  }
+                  disabled={isReadOnly || hasSyncConflict}
                   as="a"
                   size="full"
                   tooltip={
                     hasSyncConflict
                       ? t("deck_sync.conflict.edit_locked")
-                      : deckConnectionLock
-                        ? deckConnectionLock
-                        : undefined
+                      : undefined
                   }
                 >
                   <PencilIcon /> {t("deck.actions.edit_short")}
@@ -441,15 +435,13 @@ function SidebarActions(props: {
                   {!!deck.previous_deck && (
                     <DropdownButton
                       data-testid="view-delete-upgrade"
-                      disabled={
-                        hasSyncConflict || isReadOnly || !!deckConnectionLock
-                      }
+                      disabled={hasSyncConflict || isReadOnly}
                       hotkey="cmd+shift+backspace"
                       onClick={onDeleteUpgrade}
                       tooltip={
                         hasSyncConflict
                           ? t("deck_sync.conflict.edit_locked")
-                          : deckConnectionLock
+                          : undefined
                       }
                     >
                       <i className="icon-xp-bold" />{" "}
@@ -458,10 +450,9 @@ function SidebarActions(props: {
                   )}
                   <DropdownButton
                     data-testid="view-delete"
-                    disabled={isReadOnly || !!deckConnectionLock}
+                    disabled={isReadOnly}
                     hotkey="cmd+backspace"
                     onClick={onDelete}
-                    tooltip={deckConnectionLock}
                   >
                     <Trash2Icon /> {t("deck.actions.delete")}
                   </DropdownButton>
