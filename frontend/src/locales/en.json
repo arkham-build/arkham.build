@@ -1573,6 +1573,7 @@
           "username_help": "Letters, numbers, underscores, and hyphens only"
         },
         "title": "Account",
+        "danger_zone": "Danger zone",
         "delete": {
           "confirm_help": "Type {{username}} to confirm account deletion.",
           "confirm_label": "Confirmation",

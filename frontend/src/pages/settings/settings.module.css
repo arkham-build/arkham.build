@@ -1,7 +1,5 @@
 .container {
-  @media screen and (min-width: 45rem) {
-    padding-top: 1rem;
-  }
+  padding-top: 0.5rem;
 }
 
 .settings {
@@ -144,12 +142,20 @@
 
 .row {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr 1fr;
+  column-gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+
+  @media screen and (min-width: 45rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.row > * {
+  min-width: 0;
 }
 
 .account-container {
-  padding: 0.5rem;
+  padding: 0.75rem;
   border: 1px solid var(--palette-1);
   border-radius: var(--rounded);
 }
@@ -169,9 +175,14 @@
 
 .account-details-properties {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.5rem 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.25rem;
   align-items: center;
+
+  @media screen and (min-width: 45rem) {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.5rem 1rem;
+  }
 
   & dt {
     font-weight: 700;
@@ -179,6 +190,11 @@
     &::after {
       content: ":";
     }
+  }
+
+  & dd {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -188,4 +204,24 @@
 
 .pending-email > * + * {
   margin-top: 0.375rem;
+}
+
+.danger-zone {
+  border: 1px solid color-mix(in srgb, var(--nord-11) 65%, transparent);
+  border-radius: var(--rounded);
+}
+
+.danger-zone > summary {
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0.75rem;
+  color: var(--nord-11);
+}
+
+.danger-zone[open] > summary {
+  border-bottom: 1px solid color-mix(in srgb, var(--nord-11) 35%, transparent);
+}
+
+.danger-zone .account-container {
+  border: 0;
 }

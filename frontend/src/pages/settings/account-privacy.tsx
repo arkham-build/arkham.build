@@ -58,37 +58,40 @@ export function AccountPrivacy() {
           />
         </p>
       </Notice>
-      <form className={css["account-container"]} onSubmit={onSubmit}>
-        <h3>{t("settings.account.delete.title")}</h3>
-        {deleteAccountMutation.error && (
-          <ErrorBox>{deleteAccountMutation.error.message}</ErrorBox>
-        )}
-        <p className={css["account-delete-help"]}>
-          {t("settings.account.delete.help")}
-        </p>
-        <Field
-          full
-          helpText={t("settings.account.delete.confirm_help", {
-            username,
-          })}
-        >
-          <FieldLabel htmlFor="delete-account-confirmation">
-            {t("settings.account.delete.confirm_label")}
-          </FieldLabel>
-          <input
-            autoComplete="off"
-            disabled={deleteAccountMutation.isPending}
-            id="delete-account-confirmation"
-            onChange={(evt) => setConfirmation(evt.target.value)}
-            required
-            type="text"
-            value={confirmation}
-          />
-        </Field>
-        <Button disabled={!canSubmit} type="submit" variant="secondary">
-          {t("settings.account.delete.submit")}
-        </Button>
-      </form>
+      <details className={css["danger-zone"]}>
+        <summary>{t("settings.account.danger_zone")}</summary>
+        <form className={css["account-container"]} onSubmit={onSubmit}>
+          <h3>{t("settings.account.delete.title")}</h3>
+          {deleteAccountMutation.error && (
+            <ErrorBox>{deleteAccountMutation.error.message}</ErrorBox>
+          )}
+          <p className={css["account-delete-help"]}>
+            {t("settings.account.delete.help")}
+          </p>
+          <Field
+            full
+            helpText={t("settings.account.delete.confirm_help", {
+              username,
+            })}
+          >
+            <FieldLabel htmlFor="delete-account-confirmation">
+              {t("settings.account.delete.confirm_label")}
+            </FieldLabel>
+            <input
+              autoComplete="off"
+              disabled={deleteAccountMutation.isPending}
+              id="delete-account-confirmation"
+              onChange={(evt) => setConfirmation(evt.target.value)}
+              required
+              type="text"
+              value={confirmation}
+            />
+          </Field>
+          <Button disabled={!canSubmit} type="submit" variant="danger">
+            {t("settings.account.delete.submit")}
+          </Button>
+        </form>
+      </details>
     </Section>
   );
 }

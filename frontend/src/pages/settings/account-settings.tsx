@@ -25,11 +25,11 @@ export function AccountSettings({
   return (
     <>
       <div className={css["row"]}>
+        <AccountProfile />
         <AccountEmail />
-        <OAuthConnections />
       </div>
       <div className={css["row"]}>
-        <AccountProfile />
+        <OAuthConnections />
         <AccountPrivacy />
       </div>
     </>
