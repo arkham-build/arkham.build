@@ -20,7 +20,7 @@ class SettingsConflictError extends ApiError {
 export async function fetchSettings(
   client: HttpClient,
 ): Promise<SettingsResponse> {
-  const res = await client.request("/v2/settings", {
+  const res = await client.request("/v2/account/settings", {
     credentials: "include",
   });
 
@@ -32,7 +32,7 @@ export async function putSettings(
   payload: SettingsRequest,
 ): Promise<SettingsResponse> {
   try {
-    const res = await client.request("/v2/settings", {
+    const res = await client.request("/v2/account/settings", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(SettingsRequestSchema.parse(payload)),

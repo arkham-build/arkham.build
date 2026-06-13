@@ -12,7 +12,7 @@ export async function syncAccount(page: Page) {
 
   const response = page.waitForResponse(
     (response) =>
-      response.url() === `${apiUrl}/v2/decks/manifest` &&
+      response.url() === `${apiUrl}/v2/account/decks/manifest` &&
       response.request().method() === "GET",
     { timeout: 120000 },
   );

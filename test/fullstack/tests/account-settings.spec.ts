@@ -123,7 +123,7 @@ test.describe("account settings", () => {
 async function saveSettings(page: Page) {
   const response = page.waitForResponse(
     (response) =>
-      response.url() === `${apiUrl}/v2/settings` &&
+      response.url() === `${apiUrl}/v2/account/settings` &&
       response.request().method() === "PUT",
   );
 

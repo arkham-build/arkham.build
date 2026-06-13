@@ -27,7 +27,10 @@ import v1PublicRouter from "./features/v1-public/routes.ts";
 import type { JobDispatcher } from "./jobs/dispatcher.ts";
 import { bodyLimitMiddleware } from "./lib/body-limit.ts";
 import type { Config } from "./lib/config.ts";
-import { corsMiddleware } from "./lib/cors.ts";
+import {
+  authenticatedCorsMiddleware,
+  publicCorsMiddleware,
+} from "./lib/cors.ts";
 import { errorHandler } from "./lib/errors.ts";
 import type { HonoEnv } from "./lib/hono-env.ts";
 import { logger, requestLogger } from "./lib/logger.ts";
@@ -41,7 +44,6 @@ export function appFactory(
 
   app.use(secureHeaders());
   app.use(bodyLimitMiddleware());
-  app.use(corsMiddleware(config));
 
   app.use(requestId());
   app.use(logger());
@@ -54,29 +56,39 @@ export function appFactory(
     return next();
   });
 
+  const publicCors = publicCorsMiddleware(config);
+
+  const v1 = new Hono<HonoEnv>();
+  v1.use("*", publicCors);
+  v1.route("/cache", cacheRouter);
+  v1.route("/public", v1PublicRouter);
+  app.route("/v1", v1);
+
+  const v2Public = new Hono<HonoEnv>();
+  v2Public.use("*", publicCors);
+  v2Public.route("/additional_metadata", additionalMetadataRouter);
+  v2Public.route("/arkhamdb-decklists", arkhamDbDecklistsRouter);
+  v2Public.route("/customization-sheet", customizationSheetRouter);
+  v2Public.route("/errata", errataRoutes);
+  v2Public.route("/fan-made-project-info", fanMadeProjectInfoRouter);
+  v2Public.route("/faq", faqRoutes);
+  v2Public.route("/grimoire", grimoireRoutes);
+  v2Public.route("/preview", previewsRouter);
+  v2Public.route("/recommendations", recommendationsRouter);
+  v2Public.route("/sealed-deck", sealedDeckRouter);
+  app.route("/v2/public", v2Public);
+
+  const v2Account = new Hono<HonoEnv>();
+  v2Account.use("*", authenticatedCorsMiddleware(config));
+  v2Account.route("/auth", authRouter);
+  v2Account.route("/decks", decksRouter);
+  v2Account.route("/folders", foldersRouter);
+  v2Account.route("/profile", profileRouter);
+  v2Account.route("/settings", settingsRouter);
+  app.route("/v2/account", v2Account);
+
   app.route("/admin", adminRouter);
-
-  // v1 route structure ported from old API, needs to stay consistent for outside consumers
   app.route("/auth/arkhamdb", arkhamdbOAuthRoutes);
-  app.route("/v1/cache", cacheRouter);
-  app.route("/v1/public", v1PublicRouter);
-
-  app.route("/v2/public/additional_metadata", additionalMetadataRouter);
-  app.route("/v2/public/arkhamdb-decklists", arkhamDbDecklistsRouter);
-  app.route("/v2/public/customization-sheet", customizationSheetRouter);
-  app.route("/v2/public/errata", errataRoutes);
-  app.route("/v2/public/fan-made-project-info", fanMadeProjectInfoRouter);
-  app.route("/v2/public/faq", faqRoutes);
-  app.route("/v2/public/grimoire", grimoireRoutes);
-  app.route("/v2/public/preview", previewsRouter);
-  app.route("/v2/public/recommendations", recommendationsRouter);
-  app.route("/v2/public/sealed-deck", sealedDeckRouter);
-
-  app.route("/v2/auth", authRouter);
-  app.route("/v2/decks", decksRouter);
-  app.route("/v2/folders", foldersRouter);
-  app.route("/v2/profile", profileRouter);
-  app.route("/v2/settings", settingsRouter);
 
   app.onError(errorHandler);
 

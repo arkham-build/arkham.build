@@ -111,7 +111,7 @@ test.describe("account folders", () => {
 async function toggleArchiveStatus(page: Page) {
   const response = page.waitForResponse(
     (response) =>
-      response.url() === `${apiUrl}/v2/folders` &&
+      response.url() === `${apiUrl}/v2/account/folders` &&
       response.request().method() === "PUT",
   );
 
@@ -124,7 +124,7 @@ async function toggleArchiveStatus(page: Page) {
 async function uploadAccountDeck(page: Page) {
   const response = page.waitForResponse(
     (response) =>
-      response.url() === `${apiUrl}/v2/decks` &&
+      response.url() === `${apiUrl}/v2/account/decks` &&
       response.request().method() === "POST",
   );
 

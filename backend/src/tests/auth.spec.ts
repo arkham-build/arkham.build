@@ -57,11 +57,11 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("DELETE /v2/auth/account", () => {
+  describe("DELETE /v2/account/auth/account", () => {
     test("requires authentication", async ({ dependencies }) => {
       const { app } = dependencies;
 
-      const res = await app.request("/v2/auth/account", {
+      const res = await app.request("/v2/account/auth/account", {
         method: "DELETE",
       });
 
@@ -139,7 +139,7 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const res = await app.request("/v2/auth/account", {
+      const res = await app.request("/v2/account/auth/account", {
         method: "DELETE",
         headers: { Cookie: sessionCookie },
       });
@@ -203,7 +203,7 @@ describe("Auth routes", () => {
           .execute(),
       ).resolves.toHaveLength(0);
 
-      const meRes = await app.request("/v2/auth/me", {
+      const meRes = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -212,11 +212,11 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("DELETE /v2/auth/oauth/:provider", () => {
+  describe("DELETE /v2/account/auth/oauth/:provider", () => {
     test("requires authentication", async ({ dependencies }) => {
       const { app } = dependencies;
 
-      const res = await app.request("/v2/auth/oauth/arkhamdb", {
+      const res = await app.request("/v2/account/auth/oauth/arkhamdb", {
         method: "DELETE",
       });
 
@@ -259,7 +259,7 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const res = await app.request("/v2/auth/oauth/arkhamdb", {
+      const res = await app.request("/v2/account/auth/oauth/arkhamdb", {
         method: "DELETE",
         headers: { Cookie: sessionCookie },
       });
@@ -299,7 +299,7 @@ describe("Auth routes", () => {
 
       const session = await createSession(db, account.id, 1);
 
-      const res = await app.request("/v2/auth/oauth/arkhamdb", {
+      const res = await app.request("/v2/account/auth/oauth/arkhamdb", {
         method: "DELETE",
         headers: { Cookie: `${config.SESSION_COOKIE_NAME}=${session.token}` },
       });
@@ -361,7 +361,7 @@ describe("Auth routes", () => {
       const [cookie] = sessionSetCookie.split(";", 1);
       assert(cookie, "Missing session cookie");
 
-      const meRes = await app.request("/v2/auth/me", {
+      const meRes = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: cookie },
       });
@@ -501,7 +501,7 @@ describe("Auth routes", () => {
         `${config.FRONTEND_URL}/settings?tab=account`,
       );
 
-      const sessionRes = await app.request("/v2/auth/me", {
+      const sessionRes = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -630,7 +630,7 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("POST /v2/auth/complete-profile", () => {
+  describe("POST /v2/account/auth/complete-profile", () => {
     test("completes an incomplete OAuth profile", async ({ dependencies }) => {
       const { app, config, db } = dependencies;
 
@@ -654,7 +654,7 @@ describe("Auth routes", () => {
 
       const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
 
-      const blockedRes = await app.request("/v2/auth/email", {
+      const blockedRes = await app.request("/v2/account/auth/email", {
         method: "POST",
         headers: { Cookie: cookie, "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -666,7 +666,7 @@ describe("Auth routes", () => {
       expect(blockedRes.status).toBe(403);
       expect(await blockedRes.text()).toContain("Profile completion required");
 
-      const res = await app.request("/v2/auth/complete-profile", {
+      const res = await app.request("/v2/account/auth/complete-profile", {
         method: "POST",
         headers: { Cookie: cookie, "Content-Type": "application/json" },
         body: JSON.stringify({ username: "complete-user" }),
@@ -687,7 +687,7 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("POST /v2/auth/signup", () => {
+  describe("POST /v2/account/auth/signup", () => {
     test("creates a new account and sends verification email", async ({
       dependencies,
     }) => {
@@ -890,7 +890,7 @@ describe("Auth routes", () => {
     test("validates required fields", async ({ dependencies }) => {
       const { app } = dependencies;
 
-      const res = await app.request("/v2/auth/signup", {
+      const res = await app.request("/v2/account/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -906,7 +906,7 @@ describe("Auth routes", () => {
     }) => {
       const { app } = dependencies;
 
-      const res = await app.request("/v2/auth/signup", {
+      const res = await app.request("/v2/account/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -920,7 +920,7 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("POST /v2/auth/verify-email", () => {
+  describe("POST /v2/account/auth/verify-email", () => {
     test("verifies email with valid token", async ({ dependencies }) => {
       const { app, mailer } = dependencies;
 
@@ -963,7 +963,7 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("POST /v2/auth/login", () => {
+  describe("POST /v2/account/auth/login", () => {
     test("logs in with valid credentials", async ({ dependencies }) => {
       const { app } = dependencies;
 
@@ -1045,13 +1045,13 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("GET /v2/auth/me", () => {
+  describe("GET /v2/account/auth/me", () => {
     test("returns user information for authenticated user", async ({
       dependencies,
     }) => {
       const { app, sessionCookie } = dependencies;
 
-      const res = await app.request("/v2/auth/me", {
+      const res = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -1100,7 +1100,7 @@ describe("Auth routes", () => {
         })
         .executeTakeFirstOrThrow();
 
-      const res = await app.request("/v2/auth/me", {
+      const res = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -1140,7 +1140,7 @@ describe("Auth routes", () => {
         .where("name", "=", TEST_ACCOUNT.name)
         .executeTakeFirstOrThrow();
 
-      const res = await app.request("/v2/auth/me", {
+      const res = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -1161,7 +1161,7 @@ describe("Auth routes", () => {
     test("returns 401 when not authenticated", async ({ dependencies }) => {
       const { app } = dependencies;
 
-      const res = await app.request("/v2/auth/me", {
+      const res = await app.request("/v2/account/auth/me", {
         method: "GET",
       });
 
@@ -1181,7 +1181,7 @@ describe("Auth routes", () => {
 
       await createModerationAction(db, account.id, "ban");
 
-      const res = await app.request("/v2/auth/me", {
+      const res = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -1191,11 +1191,11 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("POST /v2/auth/email", () => {
+  describe("POST /v2/account/auth/email", () => {
     test("requires authentication", async ({ dependencies }) => {
       const { app } = dependencies;
 
-      const res = await app.request("/v2/auth/email", {
+      const res = await app.request("/v2/account/auth/email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1243,7 +1243,7 @@ describe("Auth routes", () => {
       expect(mailer.sentEmails).toHaveLength(1);
       expect(mailer.sentEmails[0]?.to).toBe("new-email@example.com");
 
-      const meRes = await app.request("/v2/auth/me", {
+      const meRes = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: cookie },
       });
@@ -1539,11 +1539,11 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("PATCH /v2/auth/credentials", () => {
+  describe("PATCH /v2/account/auth/credentials", () => {
     test("requires authentication", async ({ dependencies }) => {
       const { app } = dependencies;
 
-      const res = await app.request("/v2/auth/credentials", {
+      const res = await app.request("/v2/account/auth/credentials", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1569,7 +1569,7 @@ describe("Auth routes", () => {
       expect(mailer.sentEmails).toHaveLength(1);
       expect(mailer.sentEmails[0]?.to).toBe("updated@example.com");
 
-      const meRes = await app.request("/v2/auth/me", {
+      const meRes = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -1737,13 +1737,16 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("DELETE /v2/auth/credentials/pending-email", () => {
+  describe("DELETE /v2/account/auth/credentials/pending-email", () => {
     test("requires authentication", async ({ dependencies }) => {
       const { app } = dependencies;
 
-      const res = await app.request("/v2/auth/credentials/pending-email", {
-        method: "DELETE",
-      });
+      const res = await app.request(
+        "/v2/account/auth/credentials/pending-email",
+        {
+          method: "DELETE",
+        },
+      );
 
       expect(res.status).toBe(401);
     });
@@ -1763,7 +1766,7 @@ describe("Auth routes", () => {
       const cancelRes = await cancelPendingEmailChange(app, sessionCookie);
       expect(cancelRes.status).toBe(200);
 
-      const meRes = await app.request("/v2/auth/me", {
+      const meRes = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -1834,7 +1837,7 @@ describe("Auth routes", () => {
       const cancelRes = await cancelPendingEmailChange(app, cookie);
       expect(cancelRes.status).toBe(200);
 
-      const meRes = await app.request("/v2/auth/me", {
+      const meRes = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: cookie },
       });
@@ -1865,18 +1868,18 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("POST /v2/auth/logout", () => {
+  describe("POST /v2/account/auth/logout", () => {
     test("logs out authenticated user", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
-      const res = await app.request("/v2/auth/logout", {
+      const res = await app.request("/v2/account/auth/logout", {
         method: "POST",
         headers: { Cookie: sessionCookie },
       });
 
       expect(res.status).toBe(200);
 
-      const meRes = await app.request("/v2/auth/me", {
+      const meRes = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -1887,7 +1890,7 @@ describe("Auth routes", () => {
     test("returns 401 when not authenticated", async ({ dependencies }) => {
       const { app } = dependencies;
 
-      const res = await app.request("/v2/auth/logout", {
+      const res = await app.request("/v2/account/auth/logout", {
         method: "POST",
       });
 
@@ -1895,7 +1898,7 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("POST /v2/auth/resend-verification", () => {
+  describe("POST /v2/account/auth/resend-verification", () => {
     test("resends verification email for unverified account", async ({
       dependencies,
     }) => {
@@ -2065,7 +2068,7 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("POST /v2/auth/forgot-password", () => {
+  describe("POST /v2/account/auth/forgot-password", () => {
     test("sends password reset email for verified account", async ({
       dependencies,
     }) => {
@@ -2178,7 +2181,7 @@ describe("Auth routes", () => {
     });
   });
 
-  describe("POST /v2/auth/reset-password", () => {
+  describe("POST /v2/account/auth/reset-password", () => {
     test("resets password with valid token", async ({ dependencies }) => {
       const { app, mailer } = dependencies;
 
@@ -2222,7 +2225,7 @@ describe("Auth routes", () => {
 
       await resetPassword(app, resetToken, "NewPassword123!");
 
-      const meRes = await app.request("/v2/auth/me", {
+      const meRes = await app.request("/v2/account/auth/me", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -2255,7 +2258,7 @@ interface SignupParams {
 }
 
 function signup(app: Hono<HonoEnv>, params: SignupParams) {
-  return app.request("/v2/auth/signup", {
+  return app.request("/v2/account/auth/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(params),
@@ -2263,7 +2266,7 @@ function signup(app: Hono<HonoEnv>, params: SignupParams) {
 }
 
 function verifyEmail(app: Hono<HonoEnv>, token: string) {
-  return app.request("/v2/auth/verify-email", {
+  return app.request("/v2/account/auth/verify-email", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token }),
@@ -2271,7 +2274,7 @@ function verifyEmail(app: Hono<HonoEnv>, token: string) {
 }
 
 function login(app: Hono<HonoEnv>, email: string, password: string) {
-  return app.request("/v2/auth/login", {
+  return app.request("/v2/account/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -2284,7 +2287,7 @@ function createEmailIdentity(
   email: string,
   password: string,
 ) {
-  return app.request("/v2/auth/email", {
+  return app.request("/v2/account/auth/email", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -2303,7 +2306,7 @@ function updateCredentials(
     newPassword?: string;
   },
 ) {
-  return app.request("/v2/auth/credentials", {
+  return app.request("/v2/account/auth/credentials", {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -2314,7 +2317,7 @@ function updateCredentials(
 }
 
 function cancelPendingEmailChange(app: Hono<HonoEnv>, cookie: string) {
-  return app.request("/v2/auth/credentials/pending-email", {
+  return app.request("/v2/account/auth/credentials/pending-email", {
     method: "DELETE",
     headers: {
       Cookie: cookie,
@@ -2323,7 +2326,7 @@ function cancelPendingEmailChange(app: Hono<HonoEnv>, cookie: string) {
 }
 
 function forgotPassword(app: Hono<HonoEnv>, emailOrUsername: string) {
-  return app.request("/v2/auth/forgot-password", {
+  return app.request("/v2/account/auth/forgot-password", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ emailOrUsername }),
@@ -2331,7 +2334,7 @@ function forgotPassword(app: Hono<HonoEnv>, emailOrUsername: string) {
 }
 
 function resetPassword(app: Hono<HonoEnv>, token: string, password: string) {
-  return app.request("/v2/auth/reset-password", {
+  return app.request("/v2/account/auth/reset-password", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token, password }),
@@ -2339,7 +2342,7 @@ function resetPassword(app: Hono<HonoEnv>, token: string, password: string) {
 }
 
 function resendVerification(app: Hono<HonoEnv>, email: string) {
-  return app.request("/v2/auth/resend-verification", {
+  return app.request("/v2/account/auth/resend-verification", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),

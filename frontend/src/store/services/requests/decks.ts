@@ -32,7 +32,7 @@ class DeckConflictError extends ApiError {
 export async function fetchDeckManifest(
   client: HttpClient,
 ): Promise<DeckManifestResponse> {
-  const res = await client.request("/v2/decks/manifest", {
+  const res = await client.request("/v2/account/decks/manifest", {
     credentials: "include",
   });
 
@@ -43,7 +43,7 @@ export async function fetchDeckBatch(
   client: HttpClient,
   payload: DeckBatchRequest,
 ): Promise<Deck[]> {
-  const res = await client.request("/v2/decks/batch", {
+  const res = await client.request("/v2/account/decks/batch", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(DeckBatchRequestSchema.parse(payload)),
@@ -57,7 +57,7 @@ export async function postDeck(
   client: HttpClient,
   payload: Deck,
 ): Promise<Deck> {
-  const res = await client.request("/v2/decks", {
+  const res = await client.request("/v2/account/decks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(DeckSchema.parse(payload)),
@@ -72,7 +72,7 @@ export async function putDeck(
   payload: DeckUpdateRequest,
 ): Promise<Deck> {
   try {
-    const res = await client.request(`/v2/decks/${payload.id}`, {
+    const res = await client.request(`/v2/account/decks/${payload.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(DeckUpdateRequestSchema.parse(payload)),
@@ -95,7 +95,7 @@ export async function postDeckUpgrade(
   payload: DeckUpgradeRequest,
 ): Promise<Deck> {
   try {
-    const res = await client.request(`/v2/decks/upgrade/${id}`, {
+    const res = await client.request(`/v2/account/decks/upgrade/${id}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(DeckUpgradeRequestSchema.parse(payload)),
@@ -118,7 +118,7 @@ export async function deleteDeck(
   payload: DeckDeleteRequest,
 ): Promise<void> {
   try {
-    await client.request(`/v2/decks/${id}`, {
+    await client.request(`/v2/account/decks/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(DeckDeleteRequestSchema.parse(payload)),

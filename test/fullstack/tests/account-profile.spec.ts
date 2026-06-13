@@ -108,6 +108,7 @@ test.describe("account settings", () => {
     const account = await createAuthenticatedAccount(page);
 
     await openAccountSettings(page);
+    await page.getByText("Danger zone", { exact: true }).click();
 
     const deleteButton = page.getByRole("button", { name: "Delete account" });
     await expect(deleteButton).toBeDisabled();

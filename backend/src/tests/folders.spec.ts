@@ -3,16 +3,16 @@ import { describe, expect } from "vitest";
 import { test } from "./test-utils.ts";
 
 describe("Folders routes", () => {
-  describe("GET /v2/folders", () => {
+  describe("GET /v2/account/folders", () => {
     test("returns 401 when unauthenticated", async ({ dependencies }) => {
       const { app } = dependencies;
-      const res = await app.request("/v2/folders", { method: "GET" });
+      const res = await app.request("/v2/account/folders", { method: "GET" });
       expect(res.status).toBe(401);
     });
 
     test("returns null state when no row exists", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
-      const res = await app.request("/v2/folders", {
+      const res = await app.request("/v2/account/folders", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -28,13 +28,13 @@ describe("Folders routes", () => {
     });
   });
 
-  describe("PUT /v2/folders", () => {
+  describe("PUT /v2/account/folders", () => {
     test("creates folders when expected revision is null", async ({
       dependencies,
     }) => {
       const { app, sessionCookie } = dependencies;
 
-      const res = await app.request("/v2/folders", {
+      const res = await app.request("/v2/account/folders", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +66,7 @@ describe("Folders routes", () => {
     test("returns 400 for invalid payload", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
-      const res = await app.request("/v2/folders", {
+      const res = await app.request("/v2/account/folders", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -86,7 +86,7 @@ describe("Folders routes", () => {
     test("updates folders when revision matches", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
-      const createRes = await app.request("/v2/folders", {
+      const createRes = await app.request("/v2/account/folders", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -105,7 +105,7 @@ describe("Folders routes", () => {
 
       const created = FolderSyncResponseSchema.parse(await createRes.json());
 
-      const updateRes = await app.request("/v2/folders", {
+      const updateRes = await app.request("/v2/account/folders", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -136,7 +136,7 @@ describe("Folders routes", () => {
         },
       });
 
-      const getRes = await app.request("/v2/folders", {
+      const getRes = await app.request("/v2/account/folders", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -148,7 +148,7 @@ describe("Folders routes", () => {
     test("returns 409 when revision is stale", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
-      const createRes = await app.request("/v2/folders", {
+      const createRes = await app.request("/v2/account/folders", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -166,7 +166,7 @@ describe("Folders routes", () => {
       });
       const created = FolderSyncResponseSchema.parse(await createRes.json());
 
-      const updateRes = await app.request("/v2/folders", {
+      const updateRes = await app.request("/v2/account/folders", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -184,7 +184,7 @@ describe("Folders routes", () => {
       });
       const updated = FolderSyncResponseSchema.parse(await updateRes.json());
 
-      const conflictRes = await app.request("/v2/folders", {
+      const conflictRes = await app.request("/v2/account/folders", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -203,7 +203,7 @@ describe("Folders routes", () => {
 
       expect(conflictRes.status).toBe(409);
 
-      const getRes = await app.request("/v2/folders", {
+      const getRes = await app.request("/v2/account/folders", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });

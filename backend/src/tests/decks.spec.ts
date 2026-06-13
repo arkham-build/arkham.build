@@ -18,14 +18,14 @@ function getManifest(app: Hono<HonoEnv>, cookie?: string) {
     headers["Cookie"] = cookie;
   }
 
-  return app.request("/v2/decks/manifest", {
+  return app.request("/v2/account/decks/manifest", {
     method: "GET",
     ...(Object.keys(headers).length ? { headers } : {}),
   });
 }
 
 function getSession(app: Hono<HonoEnv>, cookie: string) {
-  return app.request("/v2/auth/me", {
+  return app.request("/v2/account/auth/me", {
     method: "GET",
     headers: {
       Cookie: cookie,
@@ -39,7 +39,7 @@ function postBatch(
   targets: DeckSyncTarget[],
   arkhamdbSyncToken?: string,
 ) {
-  return app.request("/v2/decks/batch", {
+  return app.request("/v2/account/decks/batch", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -54,7 +54,7 @@ function createDeck(
   cookie: string,
   payload = baseDeckPayload(),
 ) {
-  return app.request("/v2/decks", {
+  return app.request("/v2/account/decks", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -70,7 +70,7 @@ function updateDeck(
   id: string,
   payload: Record<string, unknown>,
 ) {
-  return app.request(`/v2/decks/${id}`, {
+  return app.request(`/v2/account/decks/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -87,7 +87,7 @@ function deleteDeck(
   expectedVersion: string,
   provider = "account",
 ) {
-  return app.request(`/v2/decks/${id}`, {
+  return app.request(`/v2/account/decks/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -103,7 +103,7 @@ function upgradeDeck(
   id: string,
   payload: Record<string, unknown>,
 ) {
-  return app.request(`/v2/decks/upgrade/${id}`, {
+  return app.request(`/v2/account/decks/upgrade/${id}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -114,7 +114,7 @@ function upgradeDeck(
 }
 
 describe("Deck routes", () => {
-  describe("GET /v2/decks/manifest", () => {
+  describe("GET /v2/account/decks/manifest", () => {
     test("returns 401 when unauthenticated", async ({ dependencies }) => {
       const { app } = dependencies;
       const res = await getManifest(app);
@@ -305,7 +305,7 @@ describe("Deck routes", () => {
     });
   });
 
-  describe("POST /v2/decks/batch", () => {
+  describe("POST /v2/account/decks/batch", () => {
     test("returns requested decks", async ({ dependencies }) => {
       const { app, db, sessionCookie } = dependencies;
       await insertTestDeck(db, {
@@ -433,7 +433,7 @@ describe("Deck routes", () => {
     });
   });
 
-  describe("POST /v2/decks", () => {
+  describe("POST /v2/account/decks", () => {
     test("creates a deck", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
       const res = await createDeck(
@@ -493,7 +493,7 @@ describe("Deck routes", () => {
     });
   });
 
-  describe("PUT /v2/decks/:id", () => {
+  describe("PUT /v2/account/decks/:id", () => {
     test("updates a deck when version matches", async ({ dependencies }) => {
       const { app, db, sessionCookie } = dependencies;
       const seeded = await insertTestDeck(db, {
@@ -566,7 +566,7 @@ describe("Deck routes", () => {
     });
   });
 
-  describe("POST /v2/decks/upgrade/:id", () => {
+  describe("POST /v2/account/decks/upgrade/:id", () => {
     test("creates an upgraded deck and links it to the previous deck", async ({
       dependencies,
     }) => {
@@ -655,7 +655,7 @@ describe("Deck routes", () => {
     });
   });
 
-  describe("DELETE /v2/decks/:id", () => {
+  describe("DELETE /v2/account/decks/:id", () => {
     test("deletes a deck when version matches", async ({ dependencies }) => {
       const { app, db, sessionCookie } = dependencies;
       await insertTestDeck(db, {

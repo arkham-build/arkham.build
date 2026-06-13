@@ -2,11 +2,11 @@ import { describe, expect } from "vitest";
 import { test } from "./test-utils.ts";
 
 describe("Profile routes", () => {
-  describe("PATCH /v2/profile", () => {
+  describe("PATCH /v2/account/profile", () => {
     test("returns 401 when not authenticated", async ({ dependencies }) => {
       const { app } = dependencies;
 
-      const res = await app.request("/v2/profile", {
+      const res = await app.request("/v2/account/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: "updated-user" }),
@@ -18,7 +18,7 @@ describe("Profile routes", () => {
     test("updates the current username", async ({ dependencies }) => {
       const { app, db, sessionCookie } = dependencies;
 
-      const res = await app.request("/v2/profile", {
+      const res = await app.request("/v2/account/profile", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -46,7 +46,7 @@ describe("Profile routes", () => {
         .values({ name: "taken-user" })
         .executeTakeFirstOrThrow();
 
-      const res = await app.request("/v2/profile", {
+      const res = await app.request("/v2/account/profile", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

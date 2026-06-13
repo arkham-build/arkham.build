@@ -8,7 +8,7 @@ export async function patchProfile(
   client: HttpClient,
   payload: UpdateProfileRequest,
 ): Promise<void> {
-  await client.request("/v2/profile", {
+  await client.request("/v2/account/profile", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(UpdateProfileRequestSchema.parse(payload)),

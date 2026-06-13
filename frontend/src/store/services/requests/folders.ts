@@ -20,7 +20,7 @@ class FoldersConflictError extends ApiError {
 export async function fetchFolders(
   client: HttpClient,
 ): Promise<FolderSyncResponse> {
-  const res = await client.request("/v2/folders", {
+  const res = await client.request("/v2/account/folders", {
     credentials: "include",
   });
 
@@ -32,7 +32,7 @@ export async function putFolders(
   payload: FolderSyncRequest,
 ): Promise<FolderSyncResponse> {
   try {
-    const res = await client.request("/v2/folders", {
+    const res = await client.request("/v2/account/folders", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(FolderSyncRequestSchema.parse(payload)),

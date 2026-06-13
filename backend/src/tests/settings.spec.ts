@@ -3,10 +3,10 @@ import { describe, expect } from "vitest";
 import { test } from "./test-utils.ts";
 
 describe("Settings routes", () => {
-  describe("GET /v2/settings", () => {
+  describe("GET /v2/account/settings", () => {
     test("returns 401 when unauthenticated", async ({ dependencies }) => {
       const { app } = dependencies;
-      const res = await app.request("/v2/settings", { method: "GET" });
+      const res = await app.request("/v2/account/settings", { method: "GET" });
       expect(res.status).toBe(401);
     });
 
@@ -14,7 +14,7 @@ describe("Settings routes", () => {
       dependencies,
     }) => {
       const { app, sessionCookie } = dependencies;
-      const res = await app.request("/v2/settings", {
+      const res = await app.request("/v2/account/settings", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -31,13 +31,13 @@ describe("Settings routes", () => {
     });
   });
 
-  describe("PUT /v2/settings", () => {
+  describe("PUT /v2/account/settings", () => {
     test("creates settings when expected revision is null", async ({
       dependencies,
     }) => {
       const { app, sessionCookie } = dependencies;
 
-      const res = await app.request("/v2/settings", {
+      const res = await app.request("/v2/account/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +61,7 @@ describe("Settings routes", () => {
     test("returns 400 for invalid payload", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
-      const res = await app.request("/v2/settings", {
+      const res = await app.request("/v2/account/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -79,7 +79,7 @@ describe("Settings routes", () => {
     test("updates settings when revision matches", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
-      const createRes = await app.request("/v2/settings", {
+      const createRes = await app.request("/v2/account/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +94,7 @@ describe("Settings routes", () => {
 
       const created = SettingsResponseSchema.parse(await createRes.json());
 
-      const updateRes = await app.request("/v2/settings", {
+      const updateRes = await app.request("/v2/account/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +117,7 @@ describe("Settings routes", () => {
         revision: expect.not.stringMatching(created.revision as string),
       });
 
-      const getRes = await app.request("/v2/settings", {
+      const getRes = await app.request("/v2/account/settings", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });
@@ -129,7 +129,7 @@ describe("Settings routes", () => {
     test("returns 409 when revision is stale", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
-      const createRes = await app.request("/v2/settings", {
+      const createRes = await app.request("/v2/account/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -143,7 +143,7 @@ describe("Settings routes", () => {
       });
       const created = SettingsResponseSchema.parse(await createRes.json());
 
-      const updateRes = await app.request("/v2/settings", {
+      const updateRes = await app.request("/v2/account/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -157,7 +157,7 @@ describe("Settings routes", () => {
       });
       const updated = SettingsResponseSchema.parse(await updateRes.json());
 
-      const conflictRes = await app.request("/v2/settings", {
+      const conflictRes = await app.request("/v2/account/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -172,7 +172,7 @@ describe("Settings routes", () => {
 
       expect(conflictRes.status).toBe(409);
 
-      const getRes = await app.request("/v2/settings", {
+      const getRes = await app.request("/v2/account/settings", {
         method: "GET",
         headers: { Cookie: sessionCookie },
       });

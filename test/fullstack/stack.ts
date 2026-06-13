@@ -227,7 +227,10 @@ async function dropDatabase() {
 }
 
 async function waitForApiReady() {
-  await waitForUrl(`${apiUrl}/v2/auth/me`, (response) => response.status < 500);
+  await waitForUrl(
+    `${apiUrl}/v2/account/auth/me`,
+    (response) => response.status < 500,
+  );
 }
 
 async function waitForJsonDataReady() {

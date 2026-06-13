@@ -182,7 +182,7 @@ test.describe("deck sync edge cases", () => {
     await updateRemoteAccountDeck(page, deck);
 
     let failedBatchPost = false;
-    await page.route(`${apiUrl}/v2/decks/batch`, async (route) => {
+    await page.route(`${apiUrl}/v2/account/decks/batch`, async (route) => {
       if (route.request().method() !== "POST" || failedBatchPost) {
         await route.continue();
         return;
@@ -194,7 +194,7 @@ test.describe("deck sync edge cases", () => {
 
     const batchRequestFailed = page.waitForEvent("requestfailed", (request) => {
       return (
-        request.url() === `${apiUrl}/v2/decks/batch` &&
+        request.url() === `${apiUrl}/v2/account/decks/batch` &&
         request.method() === "POST"
       );
     });
@@ -250,12 +250,20 @@ async function createSyncedDeck(
   await page.getByTestId("create-provider").selectOption(provider);
   await page.getByTestId("create-title").fill(title);
 
-  const response = waitForDeckResponse(page, "POST", `${apiUrl}/v2/decks`);
+  const response = waitForDeckResponse(
+    page,
+    "POST",
+    `${apiUrl}/v2/account/decks`,
+  );
   await page.getByTestId("create-save").click();
   await response;
 
   await expect(page.getByTestId("editor-tabs-slots")).toBeVisible();
-  const saveResponse = waitForDeckResponse(page, "PUT", `${apiUrl}/v2/decks/`);
+  const saveResponse = waitForDeckResponse(
+    page,
+    "PUT",
+    `${apiUrl}/v2/account/decks/`,
+  );
   await page.getByTestId("editor-save").click();
   const savedDeck = (await (await saveResponse).json()) as Deck;
   await expect(page.getByTestId("view-edit")).toBeVisible();
@@ -264,15 +272,18 @@ async function createSyncedDeck(
 }
 
 async function updateRemoteAccountDeck(page: Page, deck: Deck) {
-  const response = await page.request.put(`${apiUrl}/v2/decks/${deck.id}`, {
-    data: {
-      ...deck,
-      expectedVersion: deck.version,
-      name: `${deck.name} Remote`,
-      source: accountProvider,
-      version: "errsync1",
+  const response = await page.request.put(
+    `${apiUrl}/v2/account/decks/${deck.id}`,
+    {
+      data: {
+        ...deck,
+        expectedVersion: deck.version,
+        name: `${deck.name} Remote`,
+        source: accountProvider,
+        version: "errsync1",
+      },
     },
-  });
+  );
 
   if (!response.ok()) {
     throw new Error(
@@ -286,7 +297,11 @@ async function editCurrentDeck(page: Page) {
   await fillSearch(page, ".45 automatic");
   await adjustListCardQuantity(page, "01016", "increment");
 
-  const response = waitForDeckResponse(page, "PUT", `${apiUrl}/v2/decks/`);
+  const response = waitForDeckResponse(
+    page,
+    "PUT",
+    `${apiUrl}/v2/account/decks/`,
+  );
   await page.getByTestId("editor-save").click();
   await response;
 
@@ -300,7 +315,7 @@ async function upgradeCurrentDeck(page: Page, xp: number) {
   const response = waitForDeckResponse(
     page,
     "POST",
-    `${apiUrl}/v2/decks/upgrade/`,
+    `${apiUrl}/v2/account/decks/upgrade/`,
   );
   await page.getByTestId("upgrade-save-close").click();
   await response;
@@ -315,7 +330,11 @@ async function deleteCurrentUpgrade(page: Page) {
     void dialog.accept();
   });
 
-  const response = waitForDeckResponse(page, "DELETE", `${apiUrl}/v2/decks/`);
+  const response = waitForDeckResponse(
+    page,
+    "DELETE",
+    `${apiUrl}/v2/account/decks/`,
+  );
   await page.getByTestId("view-more-actions").click();
   await page.getByTestId("view-delete-upgrade").click();
   await response;
@@ -328,7 +347,11 @@ async function deleteCurrentDeck(page: Page) {
     void dialog.accept();
   });
 
-  const response = waitForDeckResponse(page, "DELETE", `${apiUrl}/v2/decks/`);
+  const response = waitForDeckResponse(
+    page,
+    "DELETE",
+    `${apiUrl}/v2/account/decks/`,
+  );
   await page.getByTestId("view-more-actions").click();
   await page.getByTestId("view-delete").click();
   await response;
@@ -340,7 +363,11 @@ async function uploadDeck(
   page: Page,
   provider: Extract<StorageProvider, "account" | "arkhamdb">,
 ) {
-  const response = waitForDeckResponse(page, "POST", `${apiUrl}/v2/decks`);
+  const response = waitForDeckResponse(
+    page,
+    "POST",
+    `${apiUrl}/v2/account/decks`,
+  );
   await page.getByTestId("view-more-actions").click();
   await page.getByTestId(`view-upload-${provider}`).click();
   await response;

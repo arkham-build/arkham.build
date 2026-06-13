@@ -26,7 +26,7 @@ export async function postLogin(
   client: HttpClient,
   payload: LoginRequest,
 ): Promise<void> {
-  await client.request("/v2/auth/login", {
+  await client.request("/v2/account/auth/login", {
     unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -39,7 +39,7 @@ export async function postSignup(
   client: HttpClient,
   payload: SignupRequest,
 ): Promise<void> {
-  await client.request("/v2/auth/signup", {
+  await client.request("/v2/account/auth/signup", {
     unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -49,7 +49,7 @@ export async function postSignup(
 }
 
 export async function postLogout(client: HttpClient): Promise<void> {
-  await client.request("/v2/auth/logout", {
+  await client.request("/v2/account/auth/logout", {
     unauthorizedBehavior: "ignore",
     method: "POST",
     credentials: "include",
@@ -57,7 +57,7 @@ export async function postLogout(client: HttpClient): Promise<void> {
 }
 
 export async function deleteAccount(client: HttpClient): Promise<void> {
-  await client.request("/v2/auth/account", {
+  await client.request("/v2/account/auth/account", {
     method: "DELETE",
     credentials: "include",
   });
@@ -67,7 +67,7 @@ export async function postCreateEmailIdentity(
   client: HttpClient,
   payload: CreateEmailIdentityRequest,
 ): Promise<void> {
-  await client.request("/v2/auth/email", {
+  await client.request("/v2/account/auth/email", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(CreateEmailIdentityRequestSchema.parse(payload)),
@@ -79,7 +79,7 @@ export async function patchUpdateCredentials(
   client: HttpClient,
   payload: UpdateCredentialsRequest,
 ): Promise<void> {
-  await client.request("/v2/auth/credentials", {
+  await client.request("/v2/account/auth/credentials", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(UpdateCredentialsRequestSchema.parse(payload)),
@@ -90,7 +90,7 @@ export async function patchUpdateCredentials(
 export async function deletePendingEmailChange(
   client: HttpClient,
 ): Promise<void> {
-  await client.request("/v2/auth/credentials/pending-email", {
+  await client.request("/v2/account/auth/credentials/pending-email", {
     method: "DELETE",
     credentials: "include",
   });
@@ -100,7 +100,7 @@ export async function disconnectOAuthIdentity(
   client: HttpClient,
   provider: string,
 ): Promise<void> {
-  await client.request(`/v2/auth/oauth/${provider}`, {
+  await client.request(`/v2/account/auth/oauth/${provider}`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -109,7 +109,7 @@ export async function disconnectOAuthIdentity(
 export async function fetchSession(
   client: HttpClient,
 ): Promise<SessionResponse> {
-  const res = await client.request("/v2/auth/me", {
+  const res = await client.request("/v2/account/auth/me", {
     credentials: "include",
   });
 
@@ -120,7 +120,7 @@ export async function postVerifyEmail(
   client: HttpClient,
   payload: VerifyEmailRequest,
 ): Promise<void> {
-  await client.request("/v2/auth/verify-email", {
+  await client.request("/v2/account/auth/verify-email", {
     unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -133,7 +133,7 @@ export async function postResendVerification(
   client: HttpClient,
   payload: ResendVerificationRequest,
 ): Promise<void> {
-  await client.request("/v2/auth/resend-verification", {
+  await client.request("/v2/account/auth/resend-verification", {
     unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -146,7 +146,7 @@ export async function postForgotPassword(
   client: HttpClient,
   payload: ForgotPasswordRequest,
 ): Promise<void> {
-  await client.request("/v2/auth/forgot-password", {
+  await client.request("/v2/account/auth/forgot-password", {
     unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -159,7 +159,7 @@ export async function postResetPassword(
   client: HttpClient,
   payload: ResetPasswordRequest,
 ): Promise<void> {
-  await client.request("/v2/auth/reset-password", {
+  await client.request("/v2/account/auth/reset-password", {
     unauthorizedBehavior: "ignore",
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -172,7 +172,7 @@ export async function postCompleteProfile(
   client: HttpClient,
   payload: CompleteProfileRequest,
 ): Promise<void> {
-  await client.request("/v2/auth/complete-profile", {
+  await client.request("/v2/account/auth/complete-profile", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(CompleteProfileRequestSchema.parse(payload)),
