@@ -18,7 +18,7 @@ describe("GET /v1/public/additional_metadata/:id", () => {
       .returning(["id"])
       .executeTakeFirstOrThrow();
 
-    const res = await app.request(`/v1/public/additional_metadata/${row.id}`);
+    const res = await app.request(`/v2/public/additional_metadata/${row.id}`);
 
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual(data);

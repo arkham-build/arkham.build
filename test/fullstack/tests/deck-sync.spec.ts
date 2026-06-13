@@ -370,7 +370,10 @@ async function uploadDeck(
   );
   await page.getByTestId("view-more-actions").click();
   await page.getByTestId(`view-upload-${provider}`).click();
-  await response;
+  const uploadedDeck = (await (await response).json()) as Deck;
+  await expect(page).toHaveURL(
+    (url) => url.pathname === `/deck/view/${uploadedDeck.id}`,
+  );
   await expect(page.getByTestId("view-edit")).toBeVisible();
 }
 
