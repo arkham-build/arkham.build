@@ -860,7 +860,7 @@
         "xp_required_help": "Amount of XP required to build this deck from scratch."
       },
       "tags": {
-        "account": "Account",
+        "account": "arkham.build",
         "private": "Device",
         "sealed": "Sealed",
         "shared": "Shared"
@@ -1020,7 +1020,7 @@
           "parallel_front": "Parallel front"
         },
         "storage_provider": {
-          "account": "Account",
+          "account": "arkham.build",
           "arkhamdb": "ArkhamDB",
           "local": "Device",
           "shared": "Shared",
@@ -1176,7 +1176,7 @@
       "sharing": {
         "api_link": "Json API",
         "description": "Deck is stored on this device.",
-        "description_present": "Deck is stored in {{provider}}. It can be viewed using <a>this link</a>.",
+        "description_present": "Deck is stored via {{provider}}. It can be viewed using <a>this link</a>.",
         "title": "Access",
         "view_on_arkhamdb": "View on ArkhamDB"
       },

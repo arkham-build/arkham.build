@@ -15,23 +15,25 @@ import {
 import { publicCache } from "../../lib/cache-headers.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 
-const routes = new Hono<HonoEnv>();
-
-routes.use("*", publicCache());
-
-routes.get("/faq/card/:code", async (c) => {
+export const faqRoutes = new Hono<HonoEnv>();
+faqRoutes.use("*", publicCache());
+faqRoutes.get("/card/:code", async (c) => {
   const data = await getFaqForCard(c.get("db"), c.req.param("code"));
   const faqs = CardFaqResponseSchema.parse(data);
   return c.json(faqs);
 });
 
-routes.get("/errata/card/:code", async (c) => {
+export const errataRoutes = new Hono<HonoEnv>();
+errataRoutes.use("*", publicCache());
+errataRoutes.get("/card/:code", async (c) => {
   const data = await getErrataForCard(c.get("db"), c.req.param("code"));
   const errata = CardErrataResponseSchema.parse(data);
   return c.json(errata);
 });
 
-routes.get("/grimoire", async (c) => {
+export const grimoireRoutes = new Hono<HonoEnv>();
+grimoireRoutes.use("*", publicCache());
+grimoireRoutes.get("/", async (c) => {
   const [entries, errata, faq, sections] = await Promise.all([
     getAllGrimoireEntries(c.get("db")),
     getAllErrata(c.get("db")),
@@ -48,5 +50,3 @@ routes.get("/grimoire", async (c) => {
 
   return c.json(data);
 });
-
-export default routes;

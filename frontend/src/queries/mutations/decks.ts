@@ -103,11 +103,12 @@ export function useImportSharedDeckMutation() {
 }
 
 export function useImportDeckMutation() {
+  const client = useHttpClient();
   const importDeck = useStore((state) => state.importDeck);
 
   return useMutation({
     mutationKey: ["decks", "import"],
-    mutationFn: (input: string) => importDeck(input),
+    mutationFn: (input: string) => importDeck(client, input),
   });
 }
 

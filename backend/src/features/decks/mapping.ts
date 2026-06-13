@@ -1,44 +1,13 @@
 import { createHash } from "node:crypto";
-import { type Deck, DeckSchema, SlotsSchema } from "@arkham-build/shared";
-import type { Insertable, Selectable } from "kysely";
+import { type Deck, SlotsSchema } from "@arkham-build/shared";
+import type { Insertable } from "kysely";
 import type { Deck as DbDeck, Json } from "../../db/schema.types.ts";
 
-export const ACCOUNT_PROVIDER_TYPE = "account";
-
-type DeckRow = Selectable<DbDeck>;
 type DeckInsert = Insertable<DbDeck>;
 type DeckWriteDto = Omit<
   Deck,
   "date_creation" | "date_update" | "id" | "source" | "user_id" | "version"
 >;
-
-export function mapDeckRowToDto(deck: DeckRow): Deck {
-  return DeckSchema.parse({
-    date_creation: deck.created_at.toISOString(),
-    date_update: deck.updated_at.toISOString(),
-    description_md: deck.description ?? "",
-    exile_string: deck.exile_string,
-    id: deck.id,
-    ignoreDeckLimitSlots: parseNullableSlots(deck.ignore_deck_limit),
-    investigator_code: deck.investigator_code,
-    investigator_name: deck.investigator_name,
-    meta: stringifyJson(deck.meta),
-    name: deck.name,
-    next_deck: deck.next_deck,
-    previous_deck: deck.prev_deck,
-    problem: deck.problem,
-    sideSlots: parseNullableSlots(deck.side_slots),
-    slots: SlotsSchema.parse(deck.slots),
-    source: deck.provider_type,
-    taboo_id: deck.taboo_set_id,
-    tags: deck.tags ?? "",
-    user_id: null,
-    version: deck.version ?? "",
-    xp_adjustment: deck.xp_adjustment,
-    xp_spent: deck.xp_spent,
-    xp: deck.xp,
-  });
-}
 
 export function mapDeckWriteDtoToInsert(
   dto: DeckWriteDto,
@@ -72,32 +41,9 @@ export function mapDeckWriteDtoToInsert(
   };
 }
 
-export function createDeckManifestVersion(
-  decks: Array<{ id: string | number; updatedAt: string; version: string }>,
-) {
-  const hash = createHash("sha256");
-
-  for (const item of decks) {
-    hash.update(`${item.id}:${item.version}:${item.updatedAt}`);
-  }
-
-  return hash.digest("hex");
-}
-
-function stringifyJson(value: DeckRow["meta"]): string {
-  return value == null ? "" : JSON.stringify(value);
-}
-
 function parseJsonString(value: string): Json | null {
   if (!value) return null;
   return JSON.parse(value) as Json;
-}
-
-function parseNullableSlots(
-  value: DeckRow["side_slots"] | DeckRow["ignore_deck_limit"],
-) {
-  if (value == null) return null;
-  return SlotsSchema.parse(value);
 }
 
 function toNullableJson(value: Record<string, number> | null | undefined) {
@@ -112,4 +58,16 @@ function toNullableString(
 
 function emptyStringToNull(value: string): string | null {
   return value === "" ? null : value;
+}
+
+export function createDeckManifestVersion(
+  decks: Array<{ id: string | number; updatedAt: string; version: string }>,
+) {
+  const hash = createHash("sha256");
+
+  for (const item of decks) {
+    hash.update(`${item.id}:${item.version}:${item.updatedAt}`);
+  }
+
+  return hash.digest("hex");
 }

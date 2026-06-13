@@ -17,7 +17,7 @@ export function makePreviewRoute(
     }
 
     try {
-      const preview = await fetchPreview(ctx.env.VITE_API_LEGACY_URL, type, id);
+      const preview = await fetchPreview(ctx.env.VITE_API_URL, type, id);
       preview["og:url"] = ctx.request.url;
       return rewriteOpengraphHead(await ctx.next(), preview);
     } catch (err) {
@@ -58,7 +58,7 @@ async function fetchPreview(
   type: string,
   id: string,
 ): Promise<PreviewResponse> {
-  const url = `${apiUrl}/v1/public/preview/${type}/${encodeURIComponent(id)}`;
+  const url = `${apiUrl}/v2/public/preview/${type}/${encodeURIComponent(id)}`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch preview: ${res.statusText}`);

@@ -33,12 +33,14 @@ import {
 } from "../../lib/arkhamdb/api-client/user-service.ts";
 import { getAccountIdentityByAccountIdAndProvider } from "../../lib/auth/account-identities.ts";
 import { sessionAuth } from "../../lib/auth/session-auth-middleware.ts";
+import {
+  ACCOUNT_PROVIDER_TYPE,
+  mapDeckRowToDto,
+} from "../../lib/deck-mapping.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
 import {
-  ACCOUNT_PROVIDER_TYPE,
   createDeckManifestVersion,
-  mapDeckRowToDto,
   mapDeckWriteDtoToInsert,
 } from "./mapping.ts";
 import {

@@ -7,9 +7,9 @@ import { applyDeckEdits } from "../lib/deck-edits";
 import { makeDeckCopy } from "../lib/deck-factory";
 import { formatDeckImport } from "../lib/deck-io";
 import { dehydrate } from "../persist";
-import { selectClientId, selectMetadata } from "../selectors/shared";
+import { selectMetadata } from "../selectors/shared";
 import type { HttpClient } from "../services/http-client";
-import { importDeck } from "../services/requests/legacy";
+import { importDeck } from "../services/requests/public-decks";
 import type { StoreState } from ".";
 import type { DataSlice } from "./data.types";
 
@@ -30,8 +30,8 @@ export const createDataSlice: StateCreator<StoreState, [], [], DataSlice> = (
 ) => ({
   ...getInitialDataState(),
 
-  async importDeck(input) {
-    const { data, type } = await importDeck(selectClientId(get()), input);
+  async importDeck(client, input) {
+    const { data, type } = await importDeck(client, input);
 
     set((state) => {
       const deck = formatDeckImport(state, data, type);

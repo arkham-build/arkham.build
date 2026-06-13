@@ -50,7 +50,7 @@ export async function mockApiCalls(page: Page) {
       const json = versionsResponse;
       await route.fulfill({ json });
     }),
-    page.route(/\/public\/import/, async (route) => {
+    page.route(/\/v2\/public\/decks\/import/, async (route) => {
       const json = deckResponse;
       await route.fulfill({ json });
     }),

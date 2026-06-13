@@ -1,5 +1,5 @@
 import type { Database } from "../../db/db.ts";
-import { ACCOUNT_PROVIDER_TYPE } from "./mapping.ts";
+import { ACCOUNT_PROVIDER_TYPE } from "../../lib/deck-mapping.ts";
 
 export async function listAccountDecksForManifest(
   db: Database,

@@ -7,12 +7,10 @@
   font-size: var(--text-xs);
   color: var(--text);
   flex: 0 0 auto;
-  background: var(--palette-point-five);
   padding: 0 0.125rem;
   border-radius: var(--rounded);
 
   &.invert {
-    background: rgba(0, 0, 0, 0.1);
     color: var(--invert);
   }
 }

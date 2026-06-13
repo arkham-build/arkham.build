@@ -6,7 +6,7 @@ import type { HonoEnv } from "../../lib/hono-env.ts";
 
 const router = new Hono<HonoEnv>();
 
-router.get("/additional_metadata/:id", async (c) => {
+router.get("/:id", async (c) => {
   try {
     return c.json(await findAdditionalMetadata(c.get("db"), c.req.param("id")));
   } catch (err) {

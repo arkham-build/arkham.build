@@ -9,7 +9,7 @@ import { Loader } from "@/components/ui/loader";
 import { useShareQuery } from "@/queries/legacy";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";
-import { selectDeckValid } from "@/store/selectors/decks";
+import { getDeckHistory, selectDeckValid } from "@/store/selectors/decks";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
@@ -24,18 +24,30 @@ const selectResolvedShare = createSelector(
   selectLookupTables,
   (state: StoreState) => state.sharing,
   selectLocaleSortingCollator,
-  (_: StoreState, data: Deck | undefined) => data,
-  (metadata, lookupTables, sharing, collator, data) => {
-    if (!data) return undefined;
-    return resolveDeck(
-      {
-        metadata,
-        lookupTables,
-        sharing,
-      },
-      collator,
-      data,
+  (_: StoreState, data: Deck[] | undefined) => data,
+  (_: StoreState, __: Deck[] | undefined, id: string) => id,
+  (metadata, lookupTables, sharing, collator, data, id) => {
+    if (!data?.length) return undefined;
+
+    const decks = data.map((deck) =>
+      resolveDeck(
+        {
+          metadata,
+          lookupTables,
+          sharing,
+        },
+        collator,
+        deck,
+      ),
     );
+
+    return {
+      deck: decks.find((deck) => String(deck.id) === id) ?? decks[0],
+      history:
+        decks.length > 1
+          ? getDeckHistory(decks.toReversed(), metadata, collator)
+          : [],
+    };
   },
 );
 
@@ -51,9 +63,10 @@ export function ShareInner(props: { id: string }) {
 
   const { data, isPending, error } = useShareQuery(id);
 
-  const resolvedDeck = useStore((state) =>
-    selectResolvedShare(state, data?.data),
+  const resolvedShare = useStore((state) =>
+    selectResolvedShare(state, data, id),
   );
+  const resolvedDeck = resolvedShare?.deck;
 
   const validation = useStore((state) => selectDeckValid(state, resolvedDeck));
 
@@ -73,7 +86,7 @@ export function ShareInner(props: { id: string }) {
           origin="share"
           deck={resolvedDeck}
           validation={validation}
-          history={data?.history}
+          history={resolvedShare.history}
         />
       </CardModalProvider>
     </ResolvedDeckProvider>

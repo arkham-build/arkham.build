@@ -24,6 +24,7 @@
     "update-snapshots:docker": "docker run -it --rm --ipc=host -v .:/work/ mcr.microsoft.com/playwright:v1.60.0 /bin/bash -c 'cd /work && npm i && PW_TEST_HTML_REPORT_OPEN=never npx playwright test --config test/e2e/playwright.config.ts --update-snapshots'"
   },
   "dependencies": {
+    "marked": "17.0.3",
     "zod": "4.2.1"
   },
   "devDependencies": {
