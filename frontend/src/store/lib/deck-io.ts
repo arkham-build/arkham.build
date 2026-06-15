@@ -47,7 +47,6 @@ export function formatDeckImport(
       {
         lookupTables: selectLookupTables(state),
         metadata: selectMetadata(state),
-        sharing: state.sharing,
       },
       selectLocaleSortingCollator(state),
       deck,

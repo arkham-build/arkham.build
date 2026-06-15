@@ -31,11 +31,10 @@ function snapshotResult(state: StoreState, deck: Deck) {
   const metadata = selectMetadata(state);
   const lookupTables = selectLookupTables(state);
   const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
-  const sharing = state.sharing;
 
   return limitedSlotOccupation(
     resolveDeck(
-      { lookupTables, metadata, sharing },
+      { lookupTables, metadata },
       selectLocaleSortingCollator(state),
       deck,
     ),

@@ -207,10 +207,9 @@ const makeDeckProviderFilter = (values: StorageProvider[]) => {
       !values.length ||
       values.some((val) => {
         return (
-          (val === "shared" && deck.shared) ||
           (val === "account" && deck.source === "account") ||
           (val === "arkhamdb" && deck.source === "arkhamdb") ||
-          (val === "local" && !deck.shared && !deck.source)
+          (val === "local" && (!deck.source || deck.source === "local"))
         );
       })
     );

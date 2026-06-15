@@ -29,7 +29,7 @@ import type { CardWithRelations, DeckSummary, ResolvedDeck } from "./types";
  * Given a decoded deck, resolve all cards and metadata for display.
  */
 export function resolveDeck(
-  deps: Pick<StoreState, "metadata" | "sharing"> & {
+  deps: Pick<StoreState, "metadata"> & {
     lookupTables: LookupTables;
   },
   collator: Intl.Collator,
@@ -157,7 +157,6 @@ export function resolveDeck(
     sealedDeck,
     selections: decodeSelections(investigatorBack, deckMeta),
     sideSlots: Array.isArray(deck.sideSlots) ? {} : deck.sideSlots,
-    shared: !!deps.sharing.decks[deck.id],
     stats: {
       deckSize,
       deckSizeTotal,
@@ -308,7 +307,7 @@ export function getDeckLimitOverride(
  * skipping full card resolution, charts, and other expensive operations.
  */
 export function resolveDeckSummary(
-  deps: Pick<StoreState, "metadata" | "sharing"> & {
+  deps: Pick<StoreState, "metadata"> & {
     lookupTables: LookupTables;
   },
   collator: Intl.Collator,
@@ -375,7 +374,6 @@ export function resolveDeckSummary(
     name: deck.name,
     problem: deck.problem,
     sealedDeck: decodeSealedDeck(deckMeta),
-    shared: !!deps.sharing.decks[deck.id],
     sideSlots: Array.isArray(deck.sideSlots) ? null : (deck.sideSlots ?? null),
     slots: deck.slots,
     source: deck.source,

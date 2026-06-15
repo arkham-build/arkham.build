@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, type Deck, isDeck } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import factions from "@/store/services/data/factions.json";
 import subTypes from "@/store/services/data/subtypes.json";
@@ -16,6 +16,7 @@ import {
   upgradeAdapter,
   uploadAdapter,
 } from "../lib/deck-crud";
+import { formatDeckImport } from "../lib/deck-io";
 import { buildCacheFromDecks } from "../lib/fan-made-content";
 import { mappedByCode, mappedById } from "../lib/metadata-utils";
 import { isSyncedStorageProvider } from "../lib/sync";
@@ -210,6 +211,35 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     );
     createAdapter.transition(set, deck);
     await dehydrate(get(), "app");
+    return deck.id;
+  },
+  async importSharedDeck(importDeck, type) {
+    const state = get();
+
+    assert(
+      !state.data.decks[importDeck.id],
+      `Deck with id ${importDeck.id} already exists.`,
+    );
+
+    const deck = formatDeckImport(state, importDeck as Deck, type);
+    assert(isDeck(deck), "Invalid deck data.");
+
+    set((prev) => ({
+      data: {
+        ...prev.data,
+        decks: {
+          ...prev.data.decks,
+          [deck.id]: deck,
+        },
+        history: {
+          ...prev.data.history,
+          [deck.id]: [],
+        },
+      },
+    }));
+
+    await dehydrate(get(), "app");
+
     return deck.id;
   },
   async uploadDeckToProvider(client, deckId, provider) {

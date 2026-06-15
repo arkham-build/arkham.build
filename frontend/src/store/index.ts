@@ -12,7 +12,6 @@ import { createListsSlice } from "./slices/lists";
 import { createMetadataSlice } from "./slices/metadata";
 import { createRecommenderSlice } from "./slices/recommender";
 import { createSettingsSlice } from "./slices/settings";
-import { createSharingSlice } from "./slices/sharing";
 import { createSyncSlice } from "./slices/sync";
 import { createUISlice } from "./slices/ui";
 
@@ -29,7 +28,6 @@ const stateCreator = (...args: [any, any, any]) => ({
   ...createUISlice(...args),
   ...createDeckEditsSlice(...args),
   ...createDeckCreateSlice(...args),
-  ...createSharingSlice(...args),
   ...createDeckCollectionSlice(...args),
   ...createRecommenderSlice(...args),
 });

@@ -67,7 +67,6 @@ function ArkhamDBDeckView({ id, type }: { id: string; type: DeckDisplayType }) {
 
   const metadata = useStore(selectMetadata);
   const lookupTables = useStore(selectLookupTables);
-  const sharing = useStore((state) => state.sharing);
   const collator = useStore(selectLocaleSortingCollator);
 
   if (Number.isNaN(idInt)) {
@@ -90,7 +89,6 @@ function ArkhamDBDeckView({ id, type }: { id: string; type: DeckDisplayType }) {
       {
         metadata,
         lookupTables,
-        sharing,
       },
       collator,
       deck,

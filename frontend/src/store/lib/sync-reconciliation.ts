@@ -40,11 +40,14 @@ type DeckReconciliationResult = {
   syncDecks: DecksSyncState;
 };
 
-export function removeRemoteAccountDecks({
-  data,
-  deckEdits,
-  sharing,
-}: Pick<StoreState, "data" | "deckEdits" | "sharing">) {
+type RemoveRemoteAccountDecksOptions = {
+  preserveDeckFolders?: boolean;
+};
+
+export function removeRemoteAccountDecks(
+  { data, deckEdits }: Pick<StoreState, "data" | "deckEdits">,
+  { preserveDeckFolders = false }: RemoveRemoteAccountDecksOptions = {},
+) {
   const remoteDeckIds = new Set<DeckId>();
 
   for (const deck of Object.values(data.decks)) {
@@ -54,7 +57,7 @@ export function removeRemoteAccountDecks({
   }
 
   if (!remoteDeckIds.size) {
-    return { data, deckEdits, sharing };
+    return { data, deckEdits };
   }
 
   const nextDecks: DataState["decks"] = {};
@@ -65,17 +68,20 @@ export function removeRemoteAccountDecks({
     }
   }
 
-  const nextDeckFolders = { ...data.deckFolders };
+  const nextDeckFolders = preserveDeckFolders
+    ? data.deckFolders
+    : { ...data.deckFolders };
   const nextDeckEdits = { ...deckEdits };
-  const nextSharingDecks = { ...sharing.decks };
   const nextUndoHistory = data.undoHistory
     ? { ...data.undoHistory }
     : undefined;
 
   for (const id of remoteDeckIds) {
-    delete nextDeckFolders[id];
+    if (!preserveDeckFolders) {
+      delete nextDeckFolders[id];
+    }
+
     delete nextDeckEdits[id];
-    delete nextSharingDecks[id];
     delete nextUndoHistory?.[id];
   }
 
@@ -90,10 +96,6 @@ export function removeRemoteAccountDecks({
       undoHistory: nextUndoHistory,
     },
     deckEdits: nextDeckEdits,
-    sharing: {
-      ...sharing,
-      decks: nextSharingDecks,
-    },
   };
 }
 

@@ -150,7 +150,6 @@ export const createAdapter = {
       {
         lookupTables: selectLookupTables(state),
         metadata,
-        sharing: state.sharing,
       },
       selectLocaleSortingCollator(state),
       deck,
@@ -225,7 +224,6 @@ export const updateAdapter = {
       {
         metadata: selectMetadata(state),
         lookupTables: selectLookupTables(state),
-        sharing: state.sharing,
       },
       selectLocaleSortingCollator(state),
     ];
@@ -609,7 +607,6 @@ export const upgradeAdapter = {
       {
         lookupTables: selectLookupTables(state),
         metadata,
-        sharing: state.sharing,
       },
       selectLocaleSortingCollator(state),
       newDeck,

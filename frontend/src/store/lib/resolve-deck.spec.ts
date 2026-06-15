@@ -38,7 +38,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         DeckSchema.parse(deck),
@@ -58,7 +57,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         DeckSchema.parse(deck),
@@ -78,7 +76,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         DeckSchema.parse(deck),
@@ -98,7 +95,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         DeckSchema.parse(deck),
@@ -120,7 +116,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         DeckSchema.parse(deck),
@@ -144,7 +139,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         DeckSchema.parse(deck),
@@ -173,7 +167,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         deck,
@@ -219,7 +212,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         DeckSchema.parse(deck),
@@ -295,7 +287,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         deck,
@@ -310,7 +301,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         deck,
@@ -328,7 +318,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         deck,
@@ -347,7 +336,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         deck,
@@ -367,7 +355,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         DeckSchema.parse(deck),
@@ -395,7 +382,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         DeckSchema.parse(deck),
@@ -412,7 +398,6 @@ describe("resolveDeck", () => {
         {
           metadata: state.metadata,
           lookupTables: selectLookupTables(state),
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         DeckSchema.parse(deck),
@@ -633,7 +618,6 @@ describe("resolveDeck", () => {
           {
             metadata: state.metadata,
             lookupTables: selectLookupTables(state),
-            sharing: state.sharing,
           },
           selectLocaleSortingCollator(state),
           DeckSchema.parse(deck),
@@ -650,7 +634,6 @@ describe("resolveDeck", () => {
           {
             metadata: state.metadata,
             lookupTables: selectLookupTables(state),
-            sharing: state.sharing,
           },
           selectLocaleSortingCollator(state),
           DeckSchema.parse(deck),
@@ -667,7 +650,6 @@ describe("resolveDeck", () => {
           {
             metadata: state.metadata,
             lookupTables: selectLookupTables(state),
-            sharing: state.sharing,
           },
           selectLocaleSortingCollator(state),
           deck,

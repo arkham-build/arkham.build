@@ -289,7 +289,6 @@ function validate(store: StoreApi<StoreState>, deck: Deck) {
   return validateDeck(
     resolveDeck(
       {
-        sharing: state.sharing,
         metadata,
         lookupTables,
       },

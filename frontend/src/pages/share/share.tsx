@@ -22,11 +22,10 @@ import { ErrorStatus } from "../errors/404";
 const selectResolvedShare = createSelector(
   selectMetadata,
   selectLookupTables,
-  (state: StoreState) => state.sharing,
   selectLocaleSortingCollator,
   (_: StoreState, data: Deck[] | undefined) => data,
   (_: StoreState, __: Deck[] | undefined, id: string) => id,
-  (metadata, lookupTables, sharing, collator, data, id) => {
+  (metadata, lookupTables, collator, data, id) => {
     if (!data?.length) return undefined;
 
     const decks = data.map((deck) =>
@@ -34,7 +33,6 @@ const selectResolvedShare = createSelector(
         {
           metadata,
           lookupTables,
-          sharing,
         },
         collator,
         deck,

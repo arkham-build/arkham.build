@@ -141,7 +141,7 @@ describe("getChangeStats", () => {
         `@test/fixtures/decks/upgrades/${fileName}.json`
       );
       return resolveDeck(
-        { metadata: state.metadata, lookupTables, sharing: state.sharing },
+        { metadata: state.metadata, lookupTables },
         collator,
         deck,
       );

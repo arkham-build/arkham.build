@@ -33,7 +33,6 @@ class ArkhamDBAdapter implements ProviderAdapter {
         {
           lookupTables,
           metadata,
-          sharing: state.sharing,
         },
         selectLocaleSortingCollator(state),
         deck,

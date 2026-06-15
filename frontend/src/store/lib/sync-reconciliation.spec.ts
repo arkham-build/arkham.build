@@ -129,11 +129,6 @@ describe("sync reconciliation", () => {
         deckEdits: {
           remote: {},
         },
-        sharing: {
-          decks: {
-            remote: "2026-01-01T00:00:00.000Z",
-          },
-        },
       });
 
       expect(result.data.decks.remote).toBeUndefined();

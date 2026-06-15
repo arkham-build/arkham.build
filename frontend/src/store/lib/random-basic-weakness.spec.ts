@@ -44,7 +44,6 @@ describe("randomBasicWeaknessForDeck", () => {
       metadata: state.metadata,
       settings: state.settings,
       lookupTables: selectLookupTables(state),
-      sharing: state.sharing,
     };
 
     const weakness = randomBasicWeaknessForDeck(
@@ -94,7 +93,6 @@ describe("randomBasicWeaknessForDeck", () => {
       metadata: state.metadata,
       settings: state.settings,
       lookupTables: selectLookupTables(state),
-      sharing: state.sharing,
     };
 
     const weakness = randomBasicWeaknessForDeck(
@@ -143,7 +141,6 @@ describe("randomBasicWeaknessForDeck", () => {
       metadata: state.metadata,
       settings: state.settings,
       lookupTables: selectLookupTables(state),
-      sharing: state.sharing,
     };
 
     const weakness = randomBasicWeaknessForDeck(
@@ -190,7 +187,6 @@ describe("randomBasicWeaknessForDeck", () => {
       metadata: state.metadata,
       settings: state.settings,
       lookupTables: selectLookupTables(state),
-      sharing: state.sharing,
     };
 
     const weakness = randomBasicWeaknessForDeck(
@@ -232,7 +228,6 @@ describe("randomBasicWeaknessForDeck", () => {
       metadata: state.metadata,
       settings: state.settings,
       lookupTables: selectLookupTables(state),
-      sharing: state.sharing,
     };
 
     const weakness = randomBasicWeaknessForDeck(

@@ -9,7 +9,6 @@ import type { ListsSlice } from "./lists.types";
 import type { MetadataSlice } from "./metadata.types";
 import type { RecommenderSlice } from "./recommender.types";
 import type { SettingsSlice } from "./settings";
-import type { SharingSlice } from "./sharing.types";
 import type { SyncSlice } from "./sync.types";
 import type { UISlice } from "./ui.types";
 
@@ -25,5 +24,4 @@ export type StoreState = AppSlice &
   DeckEditsSlice &
   DeckCreateSlice &
   DeckCollectionSlice &
-  SharingSlice &
   RecommenderSlice;

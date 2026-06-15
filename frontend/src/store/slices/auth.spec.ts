@@ -40,11 +40,6 @@ describe("auth slice", () => {
       deckEdits: {
         remote: {},
       },
-      sharing: {
-        decks: {
-          remote: "2026-01-01T00:00:00.000Z",
-        },
-      },
       sync: makeSyncState({ deckItems: { remote: makeSyncItem() } }),
     });
 
@@ -56,7 +51,6 @@ describe("auth slice", () => {
     expect(store.getState().data.decks.remote).toBeUndefined();
     expect(store.getState().data.decks.local).toBeDefined();
     expect(store.getState().deckEdits.remote).toBeUndefined();
-    expect(store.getState().sharing.decks.remote).toBeUndefined();
     expect(store.getState().sync.settings.accountId).toBeNull();
     expect(store.getState().sync.decks.accountId).toBeNull();
     expect(store.getState().sync.folders.accountId).toBeNull();
@@ -117,11 +111,6 @@ describe("auth slice", () => {
       deckEdits: {
         remote: {},
       },
-      sharing: {
-        decks: {
-          remote: "2026-01-01T00:00:00.000Z",
-        },
-      },
       sync: makeSyncState({ deckItems: { remote: makeSyncItem() } }),
     });
 
@@ -146,7 +135,6 @@ describe("auth slice", () => {
     expect(store.getState().data.decks.remote).toBeUndefined();
     expect(store.getState().data.decks.local).toBeDefined();
     expect(store.getState().deckEdits.remote).toBeUndefined();
-    expect(store.getState().sharing.decks.remote).toBeUndefined();
     expect(store.getState().sync.settings.accountId).toBeNull();
     expect(store.getState().sync.decks.accountId).toBeNull();
     expect(store.getState().sync.folders.accountId).toBeNull();

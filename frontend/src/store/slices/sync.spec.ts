@@ -50,11 +50,6 @@ describe("sync slice", () => {
       deckEdits: {
         remote: {},
       },
-      sharing: {
-        decks: {
-          remote: "2026-01-01T00:00:00.000Z",
-        },
-      },
       sync: makeSyncState({
         accountId: "old-account",
         deckItems: {
@@ -71,7 +66,6 @@ describe("sync slice", () => {
     expect(store.getState().data.decks.remote).toBeUndefined();
     expect(store.getState().data.decks.local).toBeDefined();
     expect(store.getState().deckEdits.remote).toBeUndefined();
-    expect(store.getState().sharing.decks.remote).toBeUndefined();
     expect(store.getState().sync.settings.accountId).toBeNull();
     expect(store.getState().sync.decks.accountId).toBeNull();
     expect(store.getState().sync.folders.accountId).toBeNull();

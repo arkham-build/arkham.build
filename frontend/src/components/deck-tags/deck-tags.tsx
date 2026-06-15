@@ -1,6 +1,6 @@
 import type { StorageProvider } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
-import { CloudIcon, HardDriveIcon, ShareIcon } from "lucide-react";
+import { CloudIcon, HardDriveIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useShallow } from "zustand/react/shallow";
@@ -95,8 +95,6 @@ export function ProviderTagInner({
     icon = <HardDriveIcon />;
   } else if (canonicalTag === "account") {
     icon = <CloudIcon />;
-  } else if (canonicalTag === "shared") {
-    icon = <ShareIcon />;
   }
 
   const str = canonicalTag.trim();
@@ -111,9 +109,7 @@ export function ProviderTagInner({
             ? t("deck.tags.private")
             : str === "account"
               ? t("deck.tags.account")
-              : str === "shared"
-                ? t("deck.tags.shared")
-                : capitalize(str)}
+              : capitalize(str)}
       </span>
     </>
   );
@@ -122,16 +118,11 @@ export function ProviderTagInner({
 export function ProviderTag({
   deck,
 }: {
-  deck: Pick<ResolvedDeck, "source" | "shared"> | undefined;
+  deck: Pick<ResolvedDeck, "source"> | undefined;
 }) {
   const { t } = useTranslation();
 
-  let source: StorageProvider = "local";
-  if (deck?.source) {
-    source = deck.source as StorageProvider;
-  } else if (deck?.shared) {
-    source = "shared";
-  }
+  const source = (deck?.source as StorageProvider) || "local";
 
   return (
     <Tag as="li" size="xs">

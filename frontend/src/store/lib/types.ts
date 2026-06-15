@@ -140,7 +140,6 @@ export type ResolvedDeck = Omit<Deck, "sideSlots"> & {
   originalDeck: Deck;
   sealedDeck?: SealedDeckResponse;
   selections?: Selections;
-  shared: boolean;
   stats: {
     xpRequired: number;
     deckSize: number;
@@ -175,7 +174,6 @@ export type DeckSummary = Pick<
     | "extraSlots"
     | "hasParallel"
     | "sealedDeck"
-    | "shared"
     | "sideSlots"
   > & {
     stats: Omit<ResolvedDeck["stats"], "charts">;

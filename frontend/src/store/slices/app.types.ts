@@ -1,4 +1,6 @@
 import type { Deck, Id, StorageProvider } from "@arkham-build/shared";
+import type { DeckDisplayType } from "@/components/deck-display/deck-display";
+import type { ResolvedDeck } from "@/store/lib/types";
 import type { HttpClient } from "@/store/services/http-client";
 import type {
   AllCardResponse,
@@ -34,6 +36,8 @@ export type AppSlice = {
   ): Promise<boolean>;
 
   createDeck(client: HttpClient): Promise<Id>;
+
+  importSharedDeck(deck: ResolvedDeck, type: DeckDisplayType): Promise<Id>;
 
   saveDeck(client: HttpClient, deckId: Id): Promise<Id>;
 
