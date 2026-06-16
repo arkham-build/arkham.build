@@ -57,6 +57,6 @@
     "autoprefixer": "10.4.27",
     "happy-dom": "20.8.9",
     "rollup-plugin-bundle-stats": "4.22.1",
-    "vite": "8.0.5"
+    "vite": "8.0.16"
   }
 }
