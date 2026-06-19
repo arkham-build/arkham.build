@@ -89,6 +89,7 @@ async function getDependencies() {
     ARKHAMDB_OAUTH_CLIENT_SECRET: "test-client-secret",
     ARKHAMDB_OAUTH_REDIRECT_URI: "http://localhost:3001/auth/callback",
     FRONTEND_URL: "http://localhost:3000",
+    LEGACY_API_BASE_URL: "http://localhost:8787",
     POSTGRES_DB: container.getDatabase(),
     POSTGRES_HOST: container.getHost(),
     POSTGRES_PASSWORD: container.getPassword(),

@@ -57,6 +57,7 @@ export function appFactory(
   });
 
   const publicCors = publicCorsMiddleware(config);
+  const authenticatedCors = authenticatedCorsMiddleware(config);
 
   const v1 = new Hono<HonoEnv>();
   v1.use("*", publicCors);
@@ -79,7 +80,7 @@ export function appFactory(
   app.route("/v2/public", v2Public);
 
   const v2Account = new Hono<HonoEnv>();
-  v2Account.use("*", authenticatedCorsMiddleware(config));
+  v2Account.use("*", authenticatedCors);
   v2Account.route("/auth", authRouter);
   v2Account.route("/decks", decksRouter);
   v2Account.route("/folders", foldersRouter);

@@ -1,4 +1,5 @@
 import assert from "node:assert";
+import { randomUUID } from "node:crypto";
 import {
   LoginRequestSchema,
   ResendVerificationRequestSchema,
@@ -14,10 +15,7 @@ import {
   getAccountIdentityByEmailOrPendingEmail,
 } from "../../../lib/auth/account-identities.ts";
 import { assertAccountNotBanned } from "../../../lib/auth/account-moderation-actions.ts";
-import {
-  accountNameExists,
-  findAccountForAuth,
-} from "../../../lib/auth/accounts.ts";
+import { findAccountForAuth } from "../../../lib/auth/accounts.ts";
 import { sessionAuth } from "../../../lib/auth/session-auth-middleware.ts";
 import { setSessionCookie } from "../../../lib/auth/session-cookie.ts";
 import { createSession, deleteSession } from "../../../lib/auth/sessions.ts";
@@ -44,25 +42,19 @@ routes.post("/signup", zodValidator("json", SignupRequestSchema), async (c) => {
   const db = c.get("db");
   const config = c.get("config");
   const dispatcher = c.get("dispatcher");
-  const { name, email, password, captchaToken } = c.req.valid("json");
+  const { email, password, captchaToken } = c.req.valid("json");
 
   await assertTurnstileToken(c, captchaToken);
-
-  if (await accountNameExists(db, name)) {
-    throw new HTTPException(400, {
-      message: "Username is already taken",
-    });
-  }
-
   await assertEmailAvailable(db, email);
 
   const passwordHash = await hashPassword(password);
 
   await db.transaction().execute(async (tx) => {
     const { accountIdentity } = await createAccount(tx, {
-      name,
+      name: `email_${randomUUID()}`,
       email,
       passwordHash,
+      profileCompletedAt: null,
     });
 
     await sendVerificationEmail(tx, {

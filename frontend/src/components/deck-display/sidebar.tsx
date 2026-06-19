@@ -596,7 +596,7 @@ function DevModeApiLinkButton({ id }: { id: Id }) {
     <Button
       as="a"
       data-testid="share-api-link"
-      href={`${import.meta.env.VITE_API_LEGACY_URL}/v1/public/share/${id}`}
+      href={`${import.meta.env.VITE_API_URL}/v1/public/share/${id}`}
       rel="noreferrer"
       target="_blank"
       size="sm"

@@ -9,6 +9,7 @@ export interface CreateAccountParams {
   name: string;
   email: string;
   passwordHash: string;
+  profileCompletedAt: Date | null;
 }
 
 export interface CreateAccountFromOAuthParams {
@@ -21,7 +22,10 @@ export interface CreateAccountFromOAuthParams {
 export async function createAccount(db: Database, params: CreateAccountParams) {
   const account = await db
     .insertInto("account")
-    .values({ name: params.name })
+    .values({
+      name: params.name,
+      profile_completed_at: params.profileCompletedAt,
+    })
     .returningAll()
     .executeTakeFirstOrThrow();
 

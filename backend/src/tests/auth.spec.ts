@@ -685,21 +685,56 @@ describe("Auth routes", () => {
         profile_completed_at: expect.any(Date),
       });
     });
+
+    test("rejects duplicate usernames", async ({ dependencies }) => {
+      const { app, config, db } = dependencies;
+
+      await db.insertInto("account").values({ name: "taken-user" }).execute();
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "provider_duplicate", profile_completed_at: null })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const session = await createSession(db, account.id, 1);
+
+      const res = await app.request("/v2/account/auth/complete-profile", {
+        method: "POST",
+        headers: {
+          Cookie: `${config.SESSION_COOKIE_NAME}=${session.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: "taken-user" }),
+      });
+
+      expect(res.status).toBe(400);
+      expect(await res.text()).toContain("Username is already taken");
+    });
   });
 
   describe("POST /v2/account/auth/signup", () => {
-    test("creates a new account and sends verification email", async ({
+    test("creates a new incomplete account and sends verification email", async ({
       dependencies,
     }) => {
-      const { app, mailer } = dependencies;
+      const { app, db, mailer } = dependencies;
 
       const res = await signup(app, {
-        name: "testuser",
         email: "test@example.com",
         password: "SecurePassword123!",
       });
 
       expect(res.status).toBe(201);
+
+      const account = await db
+        .selectFrom("account_identity")
+        .innerJoin("account", "account.id", "account_identity.account_id")
+        .select(["account.name", "account.profile_completed_at"])
+        .where("account_identity.email", "=", "test@example.com")
+        .executeTakeFirstOrThrow();
+
+      expect(account.name).toMatch(/^email_/);
+      expect(account.profile_completed_at).toBeNull();
       expect(mailer.sentEmails).toHaveLength(1);
       const token = extractToken(mailer.sentEmails[0]?.body);
       expect(token).toBeTruthy();
@@ -726,13 +761,13 @@ describe("Auth routes", () => {
       expect(res.status).toBe(500);
       expect(mailer.sentEmails).toHaveLength(0);
 
-      const account = await db
-        .selectFrom("account")
+      const accountIdentity = await db
+        .selectFrom("account_identity")
         .select(["id"])
-        .where("name", "=", "signup-email-fail")
+        .where("email", "=", "signup-email-fail@example.com")
         .executeTakeFirst();
 
-      expect(account).toBeUndefined();
+      expect(accountIdentity).toBeUndefined();
       expect(
         await countVerificationTokens(
           db,
@@ -866,27 +901,6 @@ describe("Auth routes", () => {
       expect(mailer.sentEmails).toHaveLength(0);
     });
 
-    test("returns a clear error for duplicate usernames", async ({
-      dependencies,
-    }) => {
-      const { app } = dependencies;
-
-      await signup(app, {
-        name: "duplicate-user",
-        email: "first@example.com",
-        password: "SecurePassword123!",
-      });
-
-      const res = await signup(app, {
-        name: "duplicate-user",
-        email: "second@example.com",
-        password: "AnotherPassword123!",
-      });
-
-      expect(res.status).toBe(400);
-      expect(await res.text()).toContain("Username is already taken");
-    });
-
     test("validates required fields", async ({ dependencies }) => {
       const { app } = dependencies;
 
@@ -894,25 +908,7 @@ describe("Auth routes", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: "testuser",
-        }),
-      });
-
-      expect(res.status).toBe(400);
-    });
-
-    test("does not allow special characters in username", async ({
-      dependencies,
-    }) => {
-      const { app } = dependencies;
-
-      const res = await app.request("/v2/account/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: "test@user",
           email: "test@example.com",
-          password: "SecurePassword123!",
         }),
       });
 
@@ -972,6 +968,70 @@ describe("Auth routes", () => {
       expect(res.status).toBe(200);
       const cookies = res.headers.get("set-cookie");
       expect(cookies).toContain("arkham-build-session");
+    });
+
+    test("returns an incomplete profile until profile completion", async ({
+      dependencies,
+    }) => {
+      const { app, db, mailer } = dependencies;
+
+      await signup(app, {
+        email: "profile-incomplete@example.com",
+        password: "SecurePassword123!",
+      });
+
+      const token = extractToken(mailer.sentEmails[0]?.body);
+      assert(token, "No verification token found");
+      expect((await verifyEmail(app, token)).status).toBe(200);
+
+      const loginRes = await login(
+        app,
+        "profile-incomplete@example.com",
+        "SecurePassword123!",
+      );
+      expect(loginRes.status).toBe(200);
+
+      const cookie = getSessionCookie(loginRes);
+      const incompleteRes = await app.request("/v2/account/auth/me", {
+        method: "GET",
+        headers: { Cookie: cookie },
+      });
+
+      expect(incompleteRes.status).toBe(200);
+      expect(await incompleteRes.json()).toMatchObject({
+        account: { profileComplete: false },
+      });
+
+      const completeRes = await app.request(
+        "/v2/account/auth/complete-profile",
+        {
+          method: "POST",
+          headers: { Cookie: cookie, "Content-Type": "application/json" },
+          body: JSON.stringify({ username: "profile-complete-email" }),
+        },
+      );
+
+      expect(completeRes.status).toBe(200);
+
+      const completeSessionRes = await app.request("/v2/account/auth/me", {
+        method: "GET",
+        headers: { Cookie: cookie },
+      });
+
+      expect(await completeSessionRes.json()).toMatchObject({
+        account: {
+          name: "profile-complete-email",
+          profileComplete: true,
+        },
+      });
+
+      const account = await db
+        .selectFrom("account")
+        .select(["profile_completed_at"])
+        .where("name", "=", "profile-complete-email")
+        .executeTakeFirstOrThrow();
+
+      expect(account.profile_completed_at).toEqual(expect.any(Date));
     });
 
     test("does not log in with invalid password", async ({ dependencies }) => {
@@ -2251,7 +2311,7 @@ describe("Auth routes", () => {
 });
 
 interface SignupParams {
-  name: string;
+  name?: string;
   email: string;
   password: string;
   captchaToken?: string;
@@ -2261,7 +2321,11 @@ function signup(app: Hono<HonoEnv>, params: SignupParams) {
   return app.request("/v2/account/auth/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(params),
+    body: JSON.stringify({
+      email: params.email,
+      password: params.password,
+      captchaToken: params.captchaToken,
+    }),
   });
 }
 
@@ -2314,6 +2378,14 @@ function updateCredentials(
     },
     body: JSON.stringify(payload),
   });
+}
+
+function getSessionCookie(res: Response) {
+  const setCookie = res.headers.get("set-cookie");
+  assert(setCookie, "Missing set-cookie header");
+  const [cookie] = setCookie.split(";", 1);
+  assert(cookie, "Missing session cookie");
+  return cookie;
 }
 
 function cancelPendingEmailChange(app: Hono<HonoEnv>, cookie: string) {

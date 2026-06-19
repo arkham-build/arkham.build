@@ -16,7 +16,7 @@ function Privacy() {
           <ChevronLeftIcon /> Back
         </Button>
         <h1>Privacy Policy</h1>
-        <p className={css["meta"]}>Last updated: June 11, 2026</p>
+        <p className={css["meta"]}>Last updated: June 19, 2026</p>
 
         <h2>Controller</h2>
         <p>
@@ -66,15 +66,15 @@ function Privacy() {
 
         <h2>Processors</h2>
         <p>
-          We use OVH Cloud for hosting/database infrastructure in Canada,
+          We use Netcup GmbH for hosting/database infrastructure in the US,
           Cloudflare for CDN, proxy, object storage and anti-abuse services, and
           Scaleway for transactional email in France.
         </p>
 
         <h2>International transfers</h2>
         <p>
-          Some processing may occur outside the EU/EEA, including OVH Cloud
-          hosting in Canada and Cloudflare global infrastructure. We rely on
+          Some processing may occur outside the EU/EEA, including Netcup GmbH
+          hosting in the US and Cloudflare global infrastructure. We rely on
           adequacy decisions where applicable and Standard Contractual Clauses
           or equivalent safeguards where required.
         </p>

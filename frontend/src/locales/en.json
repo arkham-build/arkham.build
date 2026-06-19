@@ -111,7 +111,7 @@
           "title": "Complete your profile"
         },
         "has_account": "Already have an account?",
-        "success": "Signed up successfully! Please check your email to verify your account.",
+        "success": "Signed up successfully! Please check your email to verify your account. You'll choose a username after your first login.",
         "title": "Sign up",
         "verifying": "Verifying...",
         "with_arkhamdb": "Sign up with ArkhamDB",

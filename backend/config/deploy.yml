@@ -13,10 +13,10 @@ image: arkham-build/api.arkham.build
 # Deploy to these servers.
 servers:
   web:
-    - 51.222.159.112
+    - 159.195.14.203
   worker:
     hosts:
-      - 51.222.159.112
+      - 159.195.14.203
     cmd: npm run start:worker -w backend
     options:
       memory: 1024m
@@ -31,6 +31,8 @@ proxy:
   host: api-v2.arkham.build
   # Proxy connects to your container on port 80 by default.
   app_port: 3000
+  healthcheck:
+    path: /admin/up
 
 # Credentials for your image host.
 registry:
@@ -54,21 +56,28 @@ builder:
 env:
   clear:
     <<: *postgres_env_clear
+    ARKHAMDB_BASE_URL: https://arkhamdb.com
+    ARKHAMDB_OAUTH_REDIRECT_URI: https://api.arkham.build/auth/arkhamdb/callback
     CORS_ORIGINS: "https://arkham.build,*.arkham-build-prod.pages.dev,http://localhost:3000"
     DBMATE_MIGRATIONS_DIR: /app/backend/src/db/migrations
     DBMATE_SCHEMA_FILE: /app/backend/src/db/schema.sql
+    ENABLE_LEGACY_SHARE_HISTORY_PROXY: true
     INGEST_METADATA_REPO: arkham-build/arkhamlcg-metadata@main
     INGEST_JSON_DATA_REPO: Kamalisk/arkhamdb-json-data@master
     INGEST_TABOO_DATA_REPO: fspoettel/arkham-cards-data@master
+    LEGACY_API_BASE_URL: https://api-cf.arkham.build
     METADATA_LOCALES: "de,en,es,fr,it,ko,pl,ru,uk,zh,zh-cn"
     NODE_ENV: production
     PORT: 3000
     POSTGRES_HOST: api-arkham-build-db
+    FRONTEND_URL: https://arkham.build
     FROM_EMAIL: noreply@arkham.build
     SMTP_PORT: 465
     SMTP_SECURE: true
   secret:
     - ADMIN_API_KEY
+    - ARKHAMDB_OAUTH_CLIENT_ID
+    - ARKHAMDB_OAUTH_CLIENT_SECRET
     - CLOUDFLARE_API_TOKEN
     - CLOUDFLARE_ZONE_ID
     - DATABASE_URL
@@ -77,6 +86,7 @@ env:
     - SMTP_HOST
     - SMTP_PASS
     - SMTP_USER
+    - SESSION_SECRET
     - TURNSTILE_SECRET_KEY
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
@@ -112,7 +122,7 @@ ssh:
 accessories:
   db:
     image: postgres:18-alpine
-    host: 51.222.159.112
+    host: 159.195.14.203
     port: 5432
     env:
       clear:

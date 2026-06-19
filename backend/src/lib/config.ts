@@ -8,10 +8,8 @@ export const configSchema = z.object({
   ARKHAMDB_OAUTH_CLIENT_SECRET: z.string(),
   ARKHAMDB_OAUTH_REDIRECT_URI: z.url(),
   ADMIN_API_KEY: z.string(),
-  ENABLE_JOB_SCHEDULES: z
-    .enum(["true", "false"])
-    .default("true")
-    .transform((value) => value === "true"),
+  ENABLE_JOB_SCHEDULES: booleanString(true),
+  ENABLE_LEGACY_SHARE_HISTORY_PROXY: booleanString(false),
   INGEST_JSON_DATA_REPO: repoRefSchema,
   INGEST_METADATA_REPO: repoRefSchema,
   INGEST_TABOO_DATA_REPO: repoRefSchema,
@@ -19,6 +17,7 @@ export const configSchema = z.object({
   CORS_ORIGINS: z.string(),
   FROM_EMAIL: z.email(),
   FRONTEND_URL: z.url(),
+  LEGACY_API_BASE_URL: z.url(),
   HOSTNAME: z.string().default("localhost"),
   METADATA_LOCALES: z
     .preprocess(
@@ -70,6 +69,13 @@ export function configFromEnv(
 ): Config {
   const config = configSchema.parse({ ...process.env, ...overrides });
   return config;
+}
+
+function booleanString(defaultValue: boolean) {
+  return z
+    .enum(["true", "false"])
+    .default(defaultValue ? "true" : "false")
+    .transform((value) => value === "true");
 }
 
 function parseRepoRef(value: string) {

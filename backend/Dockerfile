@@ -27,7 +27,11 @@ ENV PORT=3000
 
 COPY package.json ./
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/backend/node_modules ./backend/node_modules
+RUN --mount=from=deps,source=/app/backend,target=/deps-backend \
+    if [ -d /deps-backend/node_modules ]; then \
+      mkdir -p backend && \
+      cp -a /deps-backend/node_modules backend/node_modules; \
+    fi
 COPY backend ./backend
 COPY shared ./shared
 

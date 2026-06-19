@@ -9,14 +9,14 @@ const password = "SecurePassword123!";
 test.describe("signup", () => {
   test("user signs up, verifies email, and logs in", async ({ page }) => {
     const suffix = randomUUID();
-    const name = `e2e-${suffix}`;
     const email = `e2e-${suffix}@example.com`;
+    const name = `e2e-${suffix}`;
 
-    await signup(page, { email, name, password });
+    await signup(page, { email, password });
 
     await expect(
       page.getByText(
-        "Signed up successfully! Please check your email to verify your account.",
+        "Signed up successfully! Please check your email to verify your account. You'll choose a username after your first login.",
       ),
     ).toBeVisible();
 
@@ -32,14 +32,15 @@ test.describe("signup", () => {
     await expect(page).toHaveURL(/\/auth\/login$/);
 
     await login(page, email, password);
+    await expect(page).toHaveURL(/\/auth\/signup\/complete$/);
+    await page.locator("#username").fill(name);
+    await page.getByRole("button", { name: "Complete your profile" }).click();
     await expect(page).toHaveURL(/\/$/);
   });
 
   test("rejects duplicate email", async ({ page }) => {
     const account = await createAccount();
-    const name = `e2e-${randomUUID()}`;
-
-    await signup(page, { email: account.email, name, password });
+    await signup(page, { email: account.email, password });
 
     await expect(
       page.getByText("An account is already registered for this email"),
@@ -49,10 +50,9 @@ test.describe("signup", () => {
 
 async function signup(
   page: Page,
-  options: { email: string; name: string; password: string },
+  options: { email: string; password: string },
 ) {
   await page.goto("/auth/signup");
-  await page.locator("#name").fill(options.name);
   await page.locator("#email").fill(options.email);
   await page.locator("#password").fill(options.password);
   await page.locator("#confirm-password").fill(options.password);

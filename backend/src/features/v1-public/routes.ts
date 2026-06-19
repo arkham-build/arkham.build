@@ -1,41 +1,47 @@
-import type { Deck } from "@arkham-build/shared";
-import { Hono } from "hono";
+import { DeckSchema } from "@arkham-build/shared";
+import { type Context, Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import type { Database } from "../../db/db.ts";
+import { z } from "zod";
 import {
   fetchDeck,
   fetchDeckHistory,
 } from "../../lib/arkhamdb/api-client/api-public.ts";
-import { mapArkhamDbDeckToDto } from "../../lib/arkhamdb/api-client/mapping.ts";
-import { mapDeckRowToDto } from "../../lib/deck-mapping.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
-import { resolvePublicDeck } from "../../lib/resolve-public-deck.ts";
+import { proxyLegacyApiRequest } from "../../lib/legacy-api-proxy.ts";
+import {
+  resolveLocalPublicDeck,
+  resolveLocalPublicDeckHistory,
+} from "../../lib/resolve-public-deck.ts";
 
 const routes = new Hono<HonoEnv>();
+
+const LegacyShareHistorySchema = z.object({
+  data: DeckSchema,
+  history: z.unknown(),
+});
 
 routes.get("/share/:id", async (c) => {
   const type = c.req.query("type");
   const id = c.req.param("id");
-  const deck = await resolvePublicDeck(
+  const deck = await resolveLocalPublicDeck(
     c,
     id,
     type === "decklist" ? "decklist" : "deck",
   );
-  return c.json(deck);
+  if (deck) return c.json(deck);
+
+  return proxyLegacyApiRequest(c);
 });
 
 routes.get("/share_history/:id", async (c) => {
   const id = c.req.param("id");
+  const decks = await resolveLocalPublicDeckHistory(c, id);
+  if (decks) return c.json(decks);
 
-  if (/^\d+$/.test(id)) {
-    const decks = await fetchDeckHistory(c, id);
-    return c.json(decks.map(mapArkhamDbDeckToDto));
-  }
-
-  return c.json(await fetchLocalDeckHistory(c.get("db"), id));
+  return fetchLegacyShareHistory(c);
 });
 
-routes.get("/import", async (c) => {
+routes.post("/import", async (c) => {
   const query = parseCodeFromArkhamDbUrl(c.req.query("q"));
 
   if (!query) {
@@ -57,46 +63,42 @@ routes.get("/import", async (c) => {
 routes.get("/arkhamdb/:type/:id", async (c) => {
   const id = c.req.param("id");
   const type = c.req.param("type");
-  const deck = await fetchDeck(c, { id, type }).then((res) => res.data);
-  return c.json(deck);
+
+  const data =
+    type === "deck"
+      ? await fetchDeckHistory(c, id)
+      : [await fetchDeck(c, { id, type }).then((res) => res.data)];
+
+  return c.json(data);
 });
 
-async function fetchLocalDeckHistory(db: Database, id: string) {
-  const deck = await findLocalDeck(db, id);
-  if (!deck) return [];
+async function fetchLegacyShareHistory(c: Context<HonoEnv>) {
+  if (c.get("config").ENABLE_LEGACY_SHARE_HISTORY_PROXY) {
+    return proxyLegacyApiRequest(c);
+  }
 
-  const [nextDecks, previousDecks] = await Promise.all([
-    fetchLocalSurroundingDecks(db, deck, "next_deck"),
-    fetchLocalSurroundingDecks(db, deck, "previous_deck"),
-  ]);
+  const incomingUrl = new URL(c.req.url);
+  const upstreamUrl = new URL(
+    `${incomingUrl.pathname}${incomingUrl.search}`,
+    c.get("config").LEGACY_API_BASE_URL,
+  );
 
-  return [...nextDecks.reverse(), deck, ...previousDecks];
-}
+  const response = await fetch(upstreamUrl, {
+    headers: c.req.raw.headers,
+    method: c.req.method,
+    redirect: "manual",
+  });
 
-async function fetchLocalSurroundingDecks(
-  db: Database,
-  deck: Deck,
-  idKey: "next_deck" | "previous_deck",
-  decks: Deck[] = [],
-): Promise<Deck[]> {
-  const id = deck[idKey];
-  if (!id) return decks;
+  if (!response.ok) {
+    return new Response(response.body, {
+      headers: response.headers,
+      status: response.status,
+      statusText: response.statusText,
+    });
+  }
 
-  const relatedDeck = await findLocalDeck(db, String(id));
-  if (!relatedDeck) return decks;
-
-  decks.push(relatedDeck);
-  return fetchLocalSurroundingDecks(db, relatedDeck, idKey, decks);
-}
-
-async function findLocalDeck(db: Database, id: string) {
-  const deck = await db
-    .selectFrom("deck")
-    .selectAll()
-    .where("id", "=", id)
-    .executeTakeFirst();
-
-  return deck ? mapDeckRowToDto(deck) : undefined;
+  const share = LegacyShareHistorySchema.parse(await response.json());
+  return c.json([share.data]);
 }
 
 export function parseCodeFromArkhamDbUrl(input?: string) {

@@ -11,14 +11,6 @@ const CanonicalEmailSchema = z
   .transform((email) => email.toLowerCase());
 
 export const SignupRequestSchema = z.object({
-  name: z
-    .string()
-    .min(1)
-    .max(64)
-    .regex(
-      new RegExp(PATTERN_VALID_USERNAME),
-      "Username can only contain letters, numbers, underscores, and hyphens",
-    ),
   email: CanonicalEmailSchema,
   password: z.string().min(8).max(PASSWORD_MAX_LENGTH),
   captchaToken: z.string().min(1).max(2048).optional(),
