@@ -56,11 +56,13 @@ function AccountMigration() {
           connection across devices.
         </p>
         <p>
-          Accounts are optional. The app still works locally, just like before.
-          We think most users will benefit from creating an account, and some
-          future features, such as card reviews, will require one. But the core
-          app will continue to work without an account.
+          Accounts are <b>optional</b>. You can still use the app without an
+          account, just like before. We think most users will benefit from
+          creating one, and some future features, such as card reviews, will
+          require an account. But the core functionality will continue to work
+          without one.
         </p>
+        <hr />
         <h4>What changes?</h4>
         <p>
           <b>
@@ -81,7 +83,7 @@ function AccountMigration() {
         <p>
           When creating an account, you can either sign in with ArkhamDB
           directly or create an email-based account and connect ArkhamDB later
-          in settings.
+          in settings. An account is now required to use the ArkhamDB sync.
         </p>
         <p>
           <b>
@@ -92,14 +94,20 @@ function AccountMigration() {
         </p>
         <p>
           The old “shares” system no longer exists. Your existing shares have
-          been converted to local decks.
+          been converted to local decks that are only saved on this device.
         </p>
         <p>
-          After you create an account, the app will offer to upload your local
-          decks to your account. Old share URLs will keep working, so public
-          links and ongoing game sessions do not break. However, shares can no
-          longer be updated or deleted.
+          After you create an account, the app will offer to upload all locally
+          saved decks to your account. Once uploaded, they become account decks:
+          they sync to your other devices and can be shared again with a link or
+          deck ID.
         </p>
+        <p>
+          Old share URLs will keep working, so public links and ongoing game
+          sessions do not break. However, old shares can no longer be created,
+          updated, or deleted.
+        </p>
+        <hr />
         <p>
           And that's all. You can create an account now, or continue using the
           app locally. If you already created an account on another device,
@@ -111,6 +119,12 @@ function AccountMigration() {
             Create your account
           </Button>
         </div>
+        <p>
+          <em>
+            Artwork: Card art “Eager for Death”,{" "}
+            <i className="icon-paintbrush" /> Frej Agelii
+          </em>
+        </p>
       </article>
     </main>
   );

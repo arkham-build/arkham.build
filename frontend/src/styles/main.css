@@ -817,6 +817,11 @@
     margin-top: 1rem;
   }
 
+  .longform hr {
+    height: 0;
+    border-bottom: 1px solid var(--palette-1);
+  }
+
   .longform :where(.icon-rogue) {
     color: var(--rogue);
   }

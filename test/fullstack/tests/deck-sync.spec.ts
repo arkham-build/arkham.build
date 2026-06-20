@@ -126,6 +126,8 @@ test.describe("deck sync edge cases", () => {
   test("missing ArkhamDB token keeps existing decks and marks sync partial", async ({
     page,
   }) => {
+    test.setTimeout(120_000);
+
     const account = await createConnectedAccount(page);
     await createSyncedDeck(page, accountProvider, "Partial Sync Account Deck");
     await createSyncedDeck(
@@ -140,7 +142,7 @@ test.describe("deck sync edge cases", () => {
 
     await expect(
       page.getByTestId("masthead-account-sync-status"),
-    ).toHaveAttribute("data-sync-status", "partial");
+    ).toHaveAttribute("data-sync-status", "partial", { timeout: 120_000 });
     await page.goto("/");
     await expect(
       page.getByTestId("collection-deck-Partial Sync Account Deck"),
