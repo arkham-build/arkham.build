@@ -1,5 +1,6 @@
 .connection {
-  border: 1px solid var(--palette-point-five);
+  background-color: var(--palette-point-five);
+  border: 1px solid var(--palette-1);
   padding: 0.5rem;
   border-radius: var(--rounded);
 }

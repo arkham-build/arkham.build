@@ -1,4 +1,7 @@
+import type { CompleteProfileResponse } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
+import { updateDeckSyncSuccess } from "../lib/sync.ts";
+import { rebuildDeckHistory } from "../lib/sync-reconciliation.ts";
 import { dehydrate } from "../persist/index.ts";
 import {
   deleteAccount as deleteAccountRequest,
@@ -22,6 +25,95 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
   get,
 ) => ({
   auth: getInitialAuthState(),
+
+  applyCompleteProfileResponse(response: CompleteProfileResponse) {
+    const uploads = response.uploads;
+    if (!uploads) return;
+
+    set((state) => {
+      const accountId = state.auth.session?.account.id;
+      if (!accountId) return state;
+
+      let data = state.data;
+      let deckEdits = state.deckEdits;
+      let sync = state.sync;
+
+      if (uploads.decks?.length) {
+        const now = Date.now();
+        const deckIdMap = uploads.deckIdMap ?? {};
+        const decks = { ...data.decks };
+        const deckFolders = { ...data.deckFolders };
+        const undoHistory = data.undoHistory
+          ? { ...data.undoHistory }
+          : undefined;
+        deckEdits = { ...deckEdits };
+
+        for (const [previousId, nextId] of Object.entries(deckIdMap)) {
+          delete decks[previousId];
+          delete deckEdits[previousId];
+          delete undoHistory?.[previousId];
+
+          if (
+            !uploads.folders &&
+            previousId !== nextId &&
+            deckFolders[previousId] != null
+          ) {
+            deckFolders[nextId] = deckFolders[previousId];
+            delete deckFolders[previousId];
+          }
+        }
+
+        for (const deck of uploads.decks) {
+          decks[deck.id] = deck;
+          sync = updateDeckSyncSuccess(sync, deck.id, deck.version, now);
+        }
+
+        data = {
+          ...data,
+          deckFolders,
+          decks,
+          history: rebuildDeckHistory(decks),
+          undoHistory,
+        };
+      }
+
+      if (uploads.folders) {
+        data = {
+          ...data,
+          deckFolders: uploads.folders.state?.deckFolders ?? {},
+          folders: uploads.folders.state?.folders ?? {},
+        };
+
+        sync = {
+          ...sync,
+          folders: {
+            accountId,
+            revision: uploads.folders.revision,
+            lastSyncedAt: Date.now(),
+            status: "synced",
+            error: null,
+            conflict: null,
+          },
+        };
+      }
+
+      if (uploads.settings) {
+        sync = {
+          ...sync,
+          settings: {
+            accountId,
+            revision: uploads.settings.revision,
+            lastSyncedAt: Date.now(),
+            status: "synced",
+            error: null,
+            conflict: null,
+          },
+        };
+      }
+
+      return { data, deckEdits, sync };
+    });
+  },
 
   async deleteAccount(client) {
     try {

@@ -86,7 +86,7 @@ export function CardPoolExtensionFields(props: {
   return (
     <>
       {cardsWithExtensions.map(({ card }) => (
-        <Field className={css["extension"]} key={card.code} bordered>
+        <Field className={css["extension"]} key={card.code}>
           <FieldLabel className={css["extension-name"]}>
             {displayAttribute(card, "name")}
           </FieldLabel>

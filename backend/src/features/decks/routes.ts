@@ -1,4 +1,5 @@
 import assert from "node:assert";
+import { createHash } from "node:crypto";
 import {
   DeckBatchRequestSchema,
   DeckBatchResponseSchema,
@@ -36,13 +37,10 @@ import { sessionAuth } from "../../lib/auth/session-auth-middleware.ts";
 import {
   ACCOUNT_PROVIDER_TYPE,
   mapDeckRowToDto,
+  mapDeckWriteDtoToInsert,
 } from "../../lib/deck-mapping.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
-import {
-  createDeckManifestVersion,
-  mapDeckWriteDtoToInsert,
-} from "./mapping.ts";
 import {
   findAccountDeckById,
   listAccountDecksByIds,
@@ -526,4 +524,16 @@ function throwDeckConflict(
       remoteVersion,
     }),
   });
+}
+
+function createDeckManifestVersion(
+  decks: Array<{ id: string | number; updatedAt: string; version: string }>,
+) {
+  const hash = createHash("sha256");
+
+  for (const item of decks) {
+    hash.update(`${item.id}:${item.version}:${item.updatedAt}`);
+  }
+
+  return hash.digest("hex");
 }

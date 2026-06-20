@@ -291,8 +291,8 @@ function TitleEditModal(props: TitleEditModalProps) {
             title={t("deck_edit.config.title_and_tags")}
             style={cssVariables}
           >
-            <form onSubmit={handleSubmit}>
-              <Field full padded>
+            <form className={css["name-modal-form"]} onSubmit={handleSubmit}>
+              <Field full>
                 <FieldLabel>{t("deck_edit.config.name")}</FieldLabel>
                 <input
                   data-testid="name-edit-name"
@@ -303,7 +303,7 @@ function TitleEditModal(props: TitleEditModalProps) {
                   defaultValue={deck.name}
                 />
               </Field>
-              <Field full padded helpText={t("deck_edit.config.tags_help")}>
+              <Field full helpText={t("deck_edit.config.tags_help")}>
                 <FieldLabel>{t("deck_edit.config.tags")}</FieldLabel>
                 <input
                   autoComplete="off"

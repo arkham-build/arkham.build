@@ -49,6 +49,7 @@ export function createStackEnv(overrides: Record<string, string> = {}) {
     ENABLE_JOB_SCHEDULES: "false",
     FROM_EMAIL: "noreply@arkham-build.local",
     FRONTEND_URL: frontendUrl,
+    LEGACY_API_BASE_URL: apiUrl,
     INGEST_JSON_DATA_REPO: "Kamalisk/arkhamdb-json-data@master",
     INGEST_METADATA_REPO: "arkham-build/arkhamlcg-metadata@main",
     INGEST_TABOO_DATA_REPO: "fspoettel/arkham-cards-data@master",

@@ -131,7 +131,7 @@ export function CollectionSettings(props: Props) {
   );
 
   return (
-    <Field bordered>
+    <Field>
       <FieldLabel className={css["collection-label"]} htmlFor="collection">
         <strong>{t("settings.collection.card_collection")}</strong>
         {!canShowCounts && (

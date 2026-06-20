@@ -108,7 +108,18 @@
       "signup": {
         "complete_profile": {
           "description": "Choose a username for your account. This will be displayed publicly on your decks and contributions.",
-          "title": "Complete your profile"
+          "title": "Complete your profile",
+          "upload": {
+            "decks": {
+              "help": "Uploads your local deck collection to your account.",
+              "label": "Upload local decks"
+            },
+            "settings": {
+              "help": "Uploads your collection and display preferences.",
+              "label": "Upload settings"
+            },
+            "title": "Upload local data"
+          }
         },
         "has_account": "Already have an account?",
         "success": "Signed up successfully! Please check your email to verify your account. You'll choose a username after your first login.",

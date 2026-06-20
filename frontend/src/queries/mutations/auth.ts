@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authKeys } from "@/queries/keys";
 import { useStore } from "@/store";
+import { toRemoteSettings } from "@/store/lib/settings-sync";
+import { isSyncedStorageProvider } from "@/store/lib/sync";
 import { useHttpClient } from "@/store/services/http-client.context";
 import {
   deletePendingEmailChange,
@@ -14,6 +16,7 @@ import {
   postSignup,
   postVerifyEmail,
 } from "@/store/services/requests/auth";
+import { getLocalFolderSyncState } from "@/store/slices/sync";
 
 export function useLoginMutation() {
   const client = useHttpClient();
@@ -128,23 +131,71 @@ export function useResendVerificationMutation() {
   });
 }
 
-export function useCompleteProfileMutation() {
+type CompleteProfileOnboardingPayload = Parameters<
+  typeof postCompleteProfile
+>[1] & {
+  uploadDecks: boolean;
+  uploadSettings: boolean;
+};
+
+export function useCompleteProfileOnboardingMutation() {
   const client = useHttpClient();
-  const initSession = useStore((state) => state.initSession);
   const queryClient = useQueryClient();
+  const applyCompleteProfileResponse = useStore(
+    (state) => state.applyCompleteProfileResponse,
+  );
+  const refreshSession = useStore((state) => state.refreshSession);
+  const syncDecks = useStore((state) => state.syncDecks);
 
   return useMutation({
-    mutationKey: ["auth", "complete-profile"],
-    mutationFn: (payload: Parameters<typeof postCompleteProfile>[1]) =>
-      postCompleteProfile(client, payload),
-    onSuccess: async () => {
-      await initSession(client);
+    mutationKey: ["auth", "complete-profile-onboarding"],
+    mutationFn: async (payload: CompleteProfileOnboardingPayload) => {
+      const response = await postCompleteProfile(
+        client,
+        getCompleteProfilePayload(payload),
+      );
+
+      applyCompleteProfileResponse(response);
+      await refreshSession(client);
+      await syncDecks(client);
+    },
+    onSuccess: () => {
       queryClient.setQueryData(
         authKeys.session(),
         useStore.getState().auth.session,
       );
     },
   });
+}
+
+function getCompleteProfilePayload(payload: CompleteProfileOnboardingPayload) {
+  const state = useStore.getState();
+  const uploads = {
+    decks: payload.uploadDecks ? getLocalDeckUploads() : undefined,
+    folders: getLocalFolderSyncState(state.data),
+    settings: payload.uploadSettings
+      ? {
+          collection: state.settings.collection,
+          settings: toRemoteSettings(state.settings),
+        }
+      : undefined,
+  };
+
+  return {
+    username: payload.username,
+    uploads,
+  };
+}
+
+function getLocalDeckUploads() {
+  const state = useStore.getState();
+
+  return Object.values(state.data.decks)
+    .filter((deck) => !isSyncedStorageProvider(deck.source))
+    .map((deck) => ({
+      ...deck,
+      source: "account" as const,
+    }));
 }
 
 export function useCreateEmailIdentityMutation() {

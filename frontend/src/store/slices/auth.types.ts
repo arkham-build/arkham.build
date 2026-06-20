@@ -1,4 +1,8 @@
-import type { LoginRequest, SessionResponse } from "@arkham-build/shared";
+import type {
+  CompleteProfileResponse,
+  LoginRequest,
+  SessionResponse,
+} from "@arkham-build/shared";
 import type { HttpClient } from "../services/http-client";
 
 export type AuthState = {
@@ -8,6 +12,7 @@ export type AuthState = {
 
 export type AuthSlice = {
   auth: AuthState;
+  applyCompleteProfileResponse(response: CompleteProfileResponse): void;
   deleteAccount(client: HttpClient): Promise<void>;
   handleUnauthorized(): Promise<void>;
   initSession(client: HttpClient): Promise<void>;

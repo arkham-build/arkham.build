@@ -6,13 +6,7 @@ import { useStore } from "@/store";
 import { cx } from "@/utils/cx";
 import css from "./card-data-sync.module.css";
 
-type Props = {
-  showDetails?: boolean;
-};
-
-export function CardDataSync(props: Props) {
-  const { showDetails } = props;
-
+export function CardDataSync() {
   const { t } = useTranslation();
 
   const dataVersion = useStore((state) => state.metadata.dataVersion);
@@ -32,10 +26,7 @@ export function CardDataSync(props: Props) {
   const loading = isPending;
 
   return (
-    <Field
-      bordered={showDetails}
-      className={cx(css["sync"], upToDate && css["uptodate"])}
-    >
+    <Field bordered className={cx(css["sync"], upToDate && css["uptodate"])}>
       <div className={css["status"]}>
         {loading && <p>{t("settings.card_data.loading")}</p>}
         {!!error && <p>{t("settings.card_data.error")}</p>}
@@ -53,7 +44,7 @@ export function CardDataSync(props: Props) {
             </p>
           ))}
       </div>
-      {showDetails && dataVersion && (
+      {dataVersion && (
         <dl className={css["info"]}>
           <dt>{t("settings.card_data.data_version")}:</dt>
           <dd>{dataVersion.cards_updated_at.split(".")[0]}</dd>

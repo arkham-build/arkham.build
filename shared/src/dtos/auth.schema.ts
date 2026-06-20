@@ -1,4 +1,13 @@
 import { z } from "zod";
+import { DeckSchema } from "../schemas/deck.schema.ts";
+import {
+  FolderSyncResponseSchema,
+  FolderSyncStateSchema,
+} from "./folder-sync.schema.ts";
+import {
+  SettingsRequestSchema,
+  SettingsResponseSchema,
+} from "./settings.schema.ts";
 
 // alphanumeric characters, underscore, and hyphen only
 export const PATTERN_VALID_USERNAME = "^[a-zA-Z0-9_\-]+$";
@@ -140,8 +149,32 @@ export type ResendVerificationRequest = z.infer<
 
 export const CompleteProfileRequestSchema = z.object({
   username: z.string().min(3).max(64).regex(new RegExp(PATTERN_VALID_USERNAME)),
+  uploads: z
+    .object({
+      decks: z.array(DeckSchema).optional(),
+      folders: FolderSyncStateSchema.optional(),
+      settings: SettingsRequestSchema.omit({
+        expectedRevision: true,
+      }).optional(),
+    })
+    .optional(),
 });
 
 export type CompleteProfileRequest = z.infer<
   typeof CompleteProfileRequestSchema
+>;
+
+export const CompleteProfileResponseSchema = z.object({
+  uploads: z
+    .object({
+      deckIdMap: z.record(z.string(), z.string()).optional(),
+      decks: z.array(DeckSchema).optional(),
+      folders: FolderSyncResponseSchema.optional(),
+      settings: SettingsResponseSchema.optional(),
+    })
+    .optional(),
+});
+
+export type CompleteProfileResponse = z.infer<
+  typeof CompleteProfileResponseSchema
 >;

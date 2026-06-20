@@ -1,3 +1,15 @@
+body.auth-background {
+  background:
+    linear-gradient(
+      color-mix(in srgb, var(--palette-0) 30%, transparent),
+      color-mix(in srgb, var(--palette-0) 80%, transparent)
+    ),
+    url("../../assets/login_bg.avif");
+  background-blend-mode: multiply;
+  background-position: 50% 30%;
+  background-size: cover;
+}
+
 .container {
   display: flex;
   align-items: center;
@@ -9,7 +21,7 @@
 .plane {
   width: 100%;
   max-width: 30rem;
-  background-color: var(--palette-1);
+  background-color: var(--palette-point-five);
   padding: 1.5rem;
   box-shadow: var(--shadow-md);
 }

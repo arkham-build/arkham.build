@@ -74,3 +74,7 @@
 .cpa > * + * {
   margin-top: 0.75rem;
 }
+
+.field > * + * {
+  margin-top: 0.5rem;
+}

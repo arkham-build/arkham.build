@@ -243,7 +243,7 @@ function LimitedTab(props: TabProps) {
 
   return (
     <>
-      <Field full padded bordered>
+      <Field full>
         <Combobox
           autoFocus
           id="cycle-select-combobox"
@@ -308,7 +308,7 @@ function CampaignPlayalongTab(props: TabProps) {
 
   return (
     <>
-      <Field className={css["cpa"]} full padded bordered>
+      <Field className={css["cpa"]} full>
         <Combobox
           autoFocus
           id="cycle-select-combobox"
@@ -387,7 +387,7 @@ function Limited25Tab(props: TabProps) {
 
   return (
     <>
-      <Field full padded bordered>
+      <Field full>
         <Combobox
           autoFocus
           id="cycle-select-combobox"

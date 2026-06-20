@@ -1,5 +1,9 @@
 .container {
   padding-top: 0.5rem;
+
+  @media screen and (min-width: 45rem) {
+    padding-top: 0.75rem;
+  }
 }
 
 .settings {
@@ -86,7 +90,7 @@
 }
 
 .list {
-  border: 1px solid var(--palette-point-five);
+  border: 1px solid var(--palette-1);
   padding: 1rem;
   min-width: min(24rem, 100%);
   border-radius: var(--rounded);
@@ -156,6 +160,7 @@
 
 .account-container {
   padding: 0.75rem;
+  background-color: var(--palette-point-five);
   border: 1px solid var(--palette-1);
   border-radius: var(--rounded);
 }

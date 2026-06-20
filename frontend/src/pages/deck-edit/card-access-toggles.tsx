@@ -55,7 +55,6 @@ export function CardAccessToggles(props: Props) {
 
   return (
     <Field
-      bordered
       className={cx(
         css["card-access-toggles"],
         (!showLimitedAccess || showUnusable) && css["active"],

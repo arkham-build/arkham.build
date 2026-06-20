@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: test code */
 import assert from "node:assert";
+import { CompleteProfileResponseSchema, type Deck } from "@arkham-build/shared";
 import type { Hono } from "hono";
 import { describe, expect, vi } from "vitest";
 import { appFactory } from "../app.ts";
@@ -454,6 +455,80 @@ describe("Auth routes", () => {
       });
     });
 
+    test("connects an OAuth identity for an incomplete profile", async ({
+      dependencies,
+    }) => {
+      const { app, config, db } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "connect-incomplete", profile_completed_at: null })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          email: "connect-incomplete@example.com",
+          password_hash: "hash",
+          provider: "email",
+          verified_at: new Date(),
+        })
+        .executeTakeFirstOrThrow();
+
+      const session = await createSession(db, account.id, 1);
+      const oauth = await startOAuthFlow(
+        app,
+        "/auth/arkhamdb/connect?returnTo=/auth/signup/complete",
+        `${config.SESSION_COOKIE_NAME}=${session.token}`,
+      );
+      mockArkhamDbOAuth(54321);
+
+      const res = await app.request(
+        `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
+        {
+          method: "GET",
+          headers: { Cookie: oauth.cookie },
+        },
+      );
+
+      expect(res.status).toBe(302);
+      expect(res.headers.get("location")).toBe(
+        `${config.FRONTEND_URL}/auth/signup/complete`,
+      );
+
+      const identity = await db
+        .selectFrom("account_identity")
+        .select(["account_id", "provider", "provider_user_id"])
+        .where("provider", "=", "arkhamdb")
+        .where("provider_user_id", "=", "54321")
+        .executeTakeFirst();
+
+      expect(identity).toMatchObject({
+        account_id: account.id,
+        provider: "arkhamdb",
+        provider_user_id: "54321",
+      });
+    });
+
+    test("rejects external OAuth connect returnTo", async ({
+      dependencies,
+    }) => {
+      const { app, sessionCookie } = dependencies;
+
+      const res = await app.request(
+        "/auth/arkhamdb/connect?returnTo=https://evil.example",
+        {
+          method: "GET",
+          headers: { Cookie: sessionCookie },
+        },
+      );
+
+      expect(res.status).toBe(400);
+      expect(await res.text()).toContain("Invalid returnTo");
+    });
+
     test("reconnect clears stale unhealthy arkhamdb state", async ({
       dependencies,
     }) => {
@@ -686,6 +761,220 @@ describe("Auth routes", () => {
       });
     });
 
+    test("stores onboarding uploads while completing a profile", async ({
+      dependencies,
+    }) => {
+      const { app, config, db } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({ name: "provider_uploads", profile_completed_at: null })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const session = await createSession(db, account.id, 1);
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
+
+      const res = await app.request("/v2/account/auth/complete-profile", {
+        method: "POST",
+        headers: { Cookie: cookie, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "complete-user-uploads",
+          uploads: {
+            decks: [
+              makeOnboardingDeck({
+                id: "local-root",
+                next_deck: "local-upgrade",
+              }),
+              makeOnboardingDeck({
+                id: "local-upgrade",
+                previous_deck: "local-root",
+                version: "0.2",
+              }),
+            ],
+            folders: {
+              deckFolders: { "local-root": "folder" },
+              folders: { folder: { id: "folder", name: "Folder" } },
+            },
+            settings: {
+              collection: { core: 2 },
+              settings: { locale: "en", showAllCards: false },
+            },
+          },
+        }),
+      });
+
+      expect(res.status).toBe(200);
+      expect(
+        CompleteProfileResponseSchema.parse(await res.json()),
+      ).toMatchObject({
+        uploads: {
+          deckIdMap: {
+            "local-root": "local-root",
+            "local-upgrade": "local-upgrade",
+          },
+          decks: [
+            { id: "local-root", next_deck: "local-upgrade", source: "account" },
+            {
+              id: "local-upgrade",
+              previous_deck: "local-root",
+              source: "account",
+            },
+          ],
+          folders: {
+            revision: expect.any(String),
+            state: {
+              deckFolders: { "local-root": "folder" },
+              folders: { folder: { id: "folder", name: "Folder" } },
+            },
+          },
+          settings: {
+            collection: { core: 2 },
+            revision: expect.any(String),
+            settings: { locale: "en", showAllCards: false },
+          },
+        },
+      });
+
+      const decks = await db
+        .selectFrom("deck")
+        .select(["id", "next_deck", "prev_deck"])
+        .where("account_id", "=", account.id)
+        .orderBy("id")
+        .execute();
+
+      expect(decks).toEqual([
+        { id: "local-root", next_deck: "local-upgrade", prev_deck: null },
+        { id: "local-upgrade", next_deck: null, prev_deck: "local-root" },
+      ]);
+    });
+
+    test("remaps conflicting onboarding deck ids", async ({ dependencies }) => {
+      const { app, config, db, sessionCookie } = dependencies;
+
+      const existingRes = await app.request("/v2/account/decks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: sessionCookie,
+        },
+        body: JSON.stringify(makeOnboardingDeck({ id: "conflicting-id" })),
+      });
+      expect(existingRes.status).toBe(200);
+
+      const account = await db
+        .insertInto("account")
+        .values({
+          name: "provider_conflicting_upload",
+          profile_completed_at: null,
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const session = await createSession(db, account.id, 1);
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
+
+      const res = await app.request("/v2/account/auth/complete-profile", {
+        method: "POST",
+        headers: { Cookie: cookie, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "complete-user-conflicting-upload",
+          uploads: {
+            decks: [
+              makeOnboardingDeck({
+                id: "conflicting-id",
+                next_deck: "local-upgrade-conflict",
+              }),
+              makeOnboardingDeck({
+                id: "local-upgrade-conflict",
+                previous_deck: "conflicting-id",
+                version: "0.2",
+              }),
+            ],
+            folders: {
+              deckFolders: { "conflicting-id": "folder" },
+              folders: { folder: { id: "folder", name: "Folder" } },
+            },
+          },
+        }),
+      });
+
+      expect(res.status).toBe(200);
+      const body = CompleteProfileResponseSchema.parse(await res.json());
+      const mappedRootId = body.uploads?.deckIdMap?.["conflicting-id"];
+      assert(mappedRootId, "Missing mapped deck id");
+      expect(mappedRootId).not.toBe("conflicting-id");
+
+      expect(body).toMatchObject({
+        uploads: {
+          deckIdMap: {
+            "conflicting-id": mappedRootId,
+            "local-upgrade-conflict": "local-upgrade-conflict",
+          },
+          decks: [
+            {
+              id: mappedRootId,
+              next_deck: "local-upgrade-conflict",
+              previous_deck: null,
+              source: "account",
+            },
+            {
+              id: "local-upgrade-conflict",
+              next_deck: null,
+              previous_deck: mappedRootId,
+              source: "account",
+            },
+          ],
+          folders: {
+            state: {
+              deckFolders: { [mappedRootId]: "folder" },
+            },
+          },
+        },
+      });
+    });
+
+    test("rejects duplicate onboarding deck ids", async ({ dependencies }) => {
+      const { app, config, db } = dependencies;
+
+      const account = await db
+        .insertInto("account")
+        .values({
+          name: "provider_duplicate_upload",
+          profile_completed_at: null,
+        })
+        .returning(["id"])
+        .executeTakeFirstOrThrow();
+
+      const session = await createSession(db, account.id, 1);
+      const cookie = `${config.SESSION_COOKIE_NAME}=${session.token}`;
+
+      const res = await app.request("/v2/account/auth/complete-profile", {
+        method: "POST",
+        headers: { Cookie: cookie, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "complete-user-duplicate-upload",
+          uploads: {
+            decks: [
+              makeOnboardingDeck({ id: "duplicate-upload" }),
+              makeOnboardingDeck({ id: "duplicate-upload" }),
+            ],
+          },
+        }),
+      });
+
+      expect(res.status).toBe(400);
+      expect(await res.text()).toContain("Uploaded decks must have unique ids");
+
+      const updatedAccount = await db
+        .selectFrom("account")
+        .select(["profile_completed_at"])
+        .where("id", "=", account.id)
+        .executeTakeFirstOrThrow();
+
+      expect(updatedAccount.profile_completed_at).toBeNull();
+    });
+
     test("rejects duplicate usernames", async ({ dependencies }) => {
       const { app, config, db } = dependencies;
 
@@ -753,7 +1042,6 @@ describe("Auth routes", () => {
       mailer.failOnce();
 
       const res = await signup(app, {
-        name: "signup-email-fail",
         email: "signup-email-fail@example.com",
         password: "SecurePassword123!",
       });
@@ -781,13 +1069,11 @@ describe("Auth routes", () => {
       const { app } = dependencies;
 
       await signup(app, {
-        name: "testuser",
         email: "duplicate@example.com",
         password: "SecurePassword123!",
       });
 
       const res = await signup(app, {
-        name: "anotheruser",
         email: "duplicate@example.com",
         password: "AnotherPassword123!",
       });
@@ -809,7 +1095,6 @@ describe("Auth routes", () => {
       );
 
       const res = await signup(app, {
-        name: "captcha-required",
         email: "captcha-required@example.com",
         password: "SecurePassword123!",
       });
@@ -843,7 +1128,6 @@ describe("Auth routes", () => {
       );
 
       const res = await signup(app, {
-        name: "captcha-success",
         email: "captcha-success@example.com",
         password: "SecurePassword123!",
         captchaToken: "captcha-token",
@@ -890,7 +1174,6 @@ describe("Auth routes", () => {
       );
 
       const res = await signup(app, {
-        name: "captcha-fail",
         email: "captcha-fail@example.com",
         password: "SecurePassword123!",
         captchaToken: "captcha-token",
@@ -921,7 +1204,6 @@ describe("Auth routes", () => {
       const { app, mailer } = dependencies;
 
       await signup(app, {
-        name: "testuser",
         email: "verify@example.com",
         password: "SecurePassword123!",
       });
@@ -943,7 +1225,6 @@ describe("Auth routes", () => {
       const { app, mailer } = dependencies;
 
       await signup(app, {
-        name: "testuser",
         email: "once@example.com",
         password: "SecurePassword123!",
       });
@@ -1057,7 +1338,6 @@ describe("Auth routes", () => {
       const { app } = dependencies;
 
       await signup(app, {
-        name: "testuser",
         email: "unverified@example.com",
         password: "SecurePassword123!",
       });
@@ -1540,7 +1820,6 @@ describe("Auth routes", () => {
       expect(pendingRes.status).toBe(201);
 
       const signupRes = await signup(app, {
-        name: "shared-email-signup",
         email: "shared@example.com",
         password: "SecurePassword123!",
       });
@@ -1585,7 +1864,6 @@ describe("Auth routes", () => {
       assert(pendingToken, "No verification token found");
 
       const signupRes = await signup(app, {
-        name: "claimed-email-user",
         email: "claimed@example.com",
         password: "SecurePassword123!",
       });
@@ -1967,7 +2245,6 @@ describe("Auth routes", () => {
       const { app, mailer } = dependencies;
 
       await signup(app, {
-        name: "testuser",
         email: "resend@example.com",
         password: "SecurePassword123!",
       });
@@ -1992,7 +2269,6 @@ describe("Auth routes", () => {
       const { app, db, mailer } = dependencies;
 
       await signup(app, {
-        name: "resend-email-fail",
         email: "resend-email-fail@example.com",
         password: "SecurePassword123!",
       });
@@ -2031,7 +2307,6 @@ describe("Auth routes", () => {
       const { app, mailer } = dependencies;
 
       await signup(app, {
-        name: "testuser",
         email: "resend-works@example.com",
         password: "SecurePassword123!",
       });
@@ -2083,7 +2358,6 @@ describe("Auth routes", () => {
       const { app, mailer } = dependencies;
 
       await signup(app, {
-        name: "testuser",
         email: "rate-limit-resend@example.com",
         password: "SecurePassword123!",
       });
@@ -2109,7 +2383,6 @@ describe("Auth routes", () => {
       const { app, mailer } = dependencies;
 
       await signup(app, {
-        name: "testuser",
         email: "rate-limit-resend-wait@example.com",
         password: "SecurePassword123!",
       });
@@ -2187,7 +2460,6 @@ describe("Auth routes", () => {
       const { app, mailer } = dependencies;
 
       await signup(app, {
-        name: "testuser",
         email: "unverified-forgot@example.com",
         password: "SecurePassword123!",
       });
@@ -2311,7 +2583,6 @@ describe("Auth routes", () => {
 });
 
 interface SignupParams {
-  name?: string;
   email: string;
   password: string;
   captchaToken?: string;
@@ -2451,6 +2722,35 @@ async function startOAuthFlow(
   return {
     cookie: oauthCookie,
     state,
+  };
+}
+
+function makeOnboardingDeck(overrides: Partial<Deck> = {}): Deck {
+  return {
+    date_creation: "2026-01-01T00:00:00.000Z",
+    date_update: "2026-01-01T00:00:00.000Z",
+    description_md: "",
+    exile_string: null,
+    id: "local-deck",
+    ignoreDeckLimitSlots: null,
+    investigator_code: "01001",
+    investigator_name: "Roland Banks",
+    meta: "{}",
+    name: "Local Deck",
+    next_deck: null,
+    previous_deck: null,
+    problem: null,
+    sideSlots: null,
+    slots: { "01006": 1 },
+    source: "account",
+    taboo_id: null,
+    tags: "",
+    user_id: null,
+    version: "0.1",
+    xp: null,
+    xp_adjustment: null,
+    xp_spent: null,
+    ...overrides,
   };
 }
 

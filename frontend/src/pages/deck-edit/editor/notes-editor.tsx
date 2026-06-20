@@ -54,11 +54,11 @@ export function NotesEditor(props: Props) {
     <div className={css["container"]}>
       <Scroller padded>
         <div className={css["notes-editor"]}>
-          <Field full helpText={t("deck_edit.notes.description_help")} padded>
+          <Field full helpText={t("deck_edit.notes.description_help")}>
             <FieldLabel>{t("deck_edit.notes.description")}</FieldLabel>
             <NotesRichTextEditor deck={deck} />
           </Field>
-          <Field full padded helpText={t("deck_edit.notes.banner_url_help")}>
+          <Field full helpText={t("deck_edit.notes.banner_url_help")}>
             <FieldLabel>{t("deck_edit.notes.banner_url")}</FieldLabel>
             <input
               defaultValue={deck.metaParsed.banner_url ?? ""}
@@ -67,7 +67,7 @@ export function NotesEditor(props: Props) {
               placeholder={t("deck_edit.notes.banner_url_placeholder")}
             />
           </Field>
-          <Field full padded helpText={t("deck_edit.notes.intro_help")}>
+          <Field full helpText={t("deck_edit.notes.intro_help")}>
             <FieldLabel>{t("deck_edit.notes.intro")}</FieldLabel>
             <AutoSizingTextarea
               data-testid="editor-intro"

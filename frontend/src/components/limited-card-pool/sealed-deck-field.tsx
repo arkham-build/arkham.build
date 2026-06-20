@@ -61,7 +61,6 @@ export function SealedDeckField(props: {
     <Field
       data-testid="sealed-deck-field"
       full
-      padded
       helpText={
         <Trans
           t={t}

@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react";
 import { Plane } from "@/components/ui/plane";
 import { AppLayout } from "@/layouts/app-layout";
 import css from "./auth-layout.module.css";
@@ -11,6 +12,14 @@ type Props = {
 
 export function AuthLayout(props: Props) {
   const { children, description, footer, title } = props;
+
+  useLayoutEffect(() => {
+    document.body.classList.add(css["auth-background"]);
+
+    return () => {
+      document.body.classList.remove(css["auth-background"]);
+    };
+  }, []);
 
   return (
     <AppLayout title={title}>

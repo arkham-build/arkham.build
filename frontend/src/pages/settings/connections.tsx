@@ -22,14 +22,21 @@ export function OAuthConnections() {
   return (
     <Section title={t("settings.account.oauth.title")}>
       {OAUTH_CONNECTIONS.map((connection) => (
-        <Connection connection={connection} key={connection.provider} />
+        <OAuthConnectionCard
+          connection={connection}
+          key={connection.provider}
+        />
       ))}
     </Section>
   );
 }
 
-function Connection(props: { connection: OAuthConnection }) {
-  const { connection } = props;
+export function OAuthConnectionCard(props: {
+  connection: OAuthConnection;
+  returnTo?: string;
+  variant?: "default" | "onboarding";
+}) {
+  const { connection, returnTo, variant = "default" } = props;
   const { t } = useTranslation();
   const session = useStore(selectSession);
   const toast = useToast();
@@ -43,6 +50,8 @@ function Connection(props: { connection: OAuthConnection }) {
   );
   const isConnected = !!identity;
   const canDisconnect = identity ? isDisconnectable(identity) : false;
+  const connectHref = getOAuthConnectHref(connection, returnTo);
+  const isOnboarding = variant === "onboarding";
   const status = getConnectionStatus(identity);
   const statusProps =
     status === "connected"
@@ -101,25 +110,27 @@ function Connection(props: { connection: OAuthConnection }) {
         {isConnected ? (
           <>
             <ConnectionDetails identity={identity} />
-            <div className={css.actions}>
-              <Button
-                as="a"
-                disabled={disconnectOAuthIdentityMutation.isPending}
-                href={`${import.meta.env.VITE_API_URL}/auth/arkhamdb/connect`}
-                variant="secondary"
-              >
-                {t("settings.account.oauth.reconnect")}
-              </Button>
-              <Button
-                disabled={
-                  disconnectOAuthIdentityMutation.isPending || !canDisconnect
-                }
-                onClick={onDisconnect}
-                variant="secondary"
-              >
-                {t("settings.account.oauth.disconnect")}
-              </Button>
-            </div>
+            {!isOnboarding && (
+              <div className={css.actions}>
+                <Button
+                  as="a"
+                  disabled={disconnectOAuthIdentityMutation.isPending}
+                  href={connectHref}
+                  variant="secondary"
+                >
+                  {t("settings.account.oauth.reconnect")}
+                </Button>
+                <Button
+                  disabled={
+                    disconnectOAuthIdentityMutation.isPending || !canDisconnect
+                  }
+                  onClick={onDisconnect}
+                  variant="secondary"
+                >
+                  {t("settings.account.oauth.disconnect")}
+                </Button>
+              </div>
+            )}
           </>
         ) : (
           <>
@@ -132,7 +143,7 @@ function Connection(props: { connection: OAuthConnection }) {
               <Button
                 as="a"
                 disabled={disconnectOAuthIdentityMutation.isPending}
-                href={`${import.meta.env.VITE_API_URL}/auth/arkhamdb/connect`}
+                href={connectHref}
                 variant="secondary"
               >
                 {t("settings.account.oauth.connect")}
@@ -202,4 +213,17 @@ function getConnectionStatus(identity: Identity | undefined): ConnectionStatus {
   }
 
   return "connected";
+}
+
+function getOAuthConnectHref(
+  connection: OAuthConnection,
+  returnTo: string | undefined,
+) {
+  const path = `${import.meta.env.VITE_API_URL}/auth/${connection.provider}/connect`;
+
+  if (!returnTo) {
+    return path;
+  }
+
+  return `${path}?returnTo=${encodeURIComponent(returnTo)}`;
 }

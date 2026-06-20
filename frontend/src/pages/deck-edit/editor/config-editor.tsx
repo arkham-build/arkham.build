@@ -199,7 +199,7 @@ export function MetaEditor(props: Props) {
 
   return (
     <div className={css["meta"]}>
-      <Field full padded>
+      <Field full>
         <FieldLabel>{t("deck_edit.config.name")}</FieldLabel>
         <input
           defaultValue={deck.name}
@@ -208,7 +208,7 @@ export function MetaEditor(props: Props) {
           type="text"
         />
       </Field>
-      <Field full helpText={t("deck_edit.config.tags_help")} padded>
+      <Field full helpText={t("deck_edit.config.tags_help")}>
         <FieldLabel>{t("deck_edit.config.tags")}</FieldLabel>
         <input
           defaultValue={deck.tags ?? ""}
@@ -219,7 +219,7 @@ export function MetaEditor(props: Props) {
 
       {deck.hasParallel && (
         <>
-          <Field full padded>
+          <Field full>
             <FieldLabel>
               {t("deck_edit.config.sides.investigator_front")}
             </FieldLabel>
@@ -236,7 +236,7 @@ export function MetaEditor(props: Props) {
               value={deck.investigatorFront.card.code}
             />
           </Field>
-          <Field full padded>
+          <Field full>
             <FieldLabel>
               {t("deck_edit.config.sides.investigator_back")}
             </FieldLabel>
@@ -261,7 +261,7 @@ export function MetaEditor(props: Props) {
           selections={deck.selections}
         />
       )}
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="meta-taboo-set">
           {t("deck_edit.config.taboo")}
         </FieldLabel>
@@ -272,7 +272,11 @@ export function MetaEditor(props: Props) {
         />
       </Field>
 
-      <Field data-testid="meta-limited-card-pool" full padded bordered>
+      <Field
+        className={css["meta-card-pool"]}
+        data-testid="meta-limited-card-pool"
+        full
+      >
         <FieldLabel as="div">
           {t("deck_edit.config.card_pool.section_title")}
         </FieldLabel>
@@ -290,7 +294,7 @@ export function MetaEditor(props: Props) {
       {SPECIAL_CARD_CODES.GENERIC_CUSTOM_INVESTIGATORS.includes(
         deck.investigatorBack.card.code,
       ) && (
-        <Field full padded>
+        <Field full>
           <FieldLabel htmlFor="meta-buildql-deck-option">
             {t("deck_edit.config.buildql_deck_option")}
           </FieldLabel>

@@ -129,7 +129,7 @@ export function DeckCreateEditor() {
       <PageTitle>
         {t("deck_create.title", { name: investigator.card.real_name })}
       </PageTitle>
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="provider">
           {t("deck_edit.config.storage_provider.title")}
         </FieldLabel>
@@ -157,7 +157,7 @@ export function DeckCreateEditor() {
           </Button>
         )}
       </Field>
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="title">{t("deck_edit.config.name")}</FieldLabel>
         <input
           data-testid="create-title"
@@ -168,7 +168,7 @@ export function DeckCreateEditor() {
         />
       </Field>
 
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="create-taboo">
           {t("deck_edit.config.taboo")}
         </FieldLabel>
@@ -181,7 +181,7 @@ export function DeckCreateEditor() {
 
       {investigator.relations?.parallel && (
         <>
-          <Field full padded>
+          <Field full>
             <FieldLabel htmlFor="investigator-front">
               {t("deck_edit.config.sides.investigator_front")}
             </FieldLabel>
@@ -195,7 +195,7 @@ export function DeckCreateEditor() {
               value={deckCreate.investigatorFrontCode}
             />
           </Field>
-          <Field full padded>
+          <Field full>
             <FieldLabel htmlFor="investigator-back">
               {t("deck_edit.config.sides.investigator_back")}
             </FieldLabel>
@@ -321,7 +321,7 @@ function DeckCreateCardPool({ investigator }: { investigator: Card }) {
   );
 
   return (
-    <Field full padded bordered>
+    <Field full>
       <FieldLabel>{t("deck_edit.config.card_pool.section_title")}</FieldLabel>
       <LimitedCardPoolField
         investigator={investigator}

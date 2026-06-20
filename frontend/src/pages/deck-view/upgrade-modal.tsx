@@ -225,7 +225,7 @@ export function UpgradeModal(props: Props) {
           style={cssVariables}
         >
           <div className={css["content"]}>
-            <Field bordered full>
+            <Field full>
               <FieldLabel htmlFor="xp-gained">
                 {t("deck_view.upgrade_modal.xp_gained")}
               </FieldLabel>
@@ -292,7 +292,7 @@ export function UpgradeModal(props: Props) {
               </Field>
             )}
             {!isEmpty(exilableCards) && (
-              <Field bordered>
+              <Field>
                 <FieldLabel htmlFor="xp-gained">
                   {t("common.exiled_cards")}
                 </FieldLabel>

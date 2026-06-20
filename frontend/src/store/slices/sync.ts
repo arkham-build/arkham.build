@@ -623,7 +623,7 @@ function getEmptyFolderSyncState(): RemoteFolderSyncState {
   };
 }
 
-function getLocalFolderSyncState(
+export function getLocalFolderSyncState(
   data: StoreState["data"],
 ): RemoteFolderSyncState {
   return sanitizeFolderSyncState({

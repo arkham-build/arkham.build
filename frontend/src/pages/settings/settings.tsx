@@ -228,7 +228,7 @@ function ApplicationSettings({
       <TabsContent value="support">
         <PortaledSaveButton />
         <Section title={t("settings.support.metadata_title")}>
-          <CardDataSync showDetails />
+          <CardDataSync />
           <MetadataRefresh />
         </Section>
         <Section title={t("settings.developer.title")}>

@@ -63,9 +63,9 @@ export function LimitedCardPoolField(props: Props) {
   return (
     <Dialog>
       <Field
+        className={css["field"]}
         data-testid="limited-card-pool-field"
         full
-        padded
         helpText={t("deck_edit.config.card_pool.help")}
       >
         <div className={css["environment-actions"]}>

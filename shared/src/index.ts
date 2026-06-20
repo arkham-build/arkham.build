@@ -6,6 +6,8 @@ export {
   ArkhamDbIdentityStateSchema,
   type CompleteProfileRequest,
   CompleteProfileRequestSchema,
+  type CompleteProfileResponse,
+  CompleteProfileResponseSchema,
   type CreateEmailIdentityRequest,
   CreateEmailIdentityRequestSchema,
   type EmailIdentity,
