@@ -30,7 +30,7 @@ jobs:
       - run: npm ci
       - run: npm run prepare:e2e
       - run: npm run test:e2e -- -g @smoke
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report

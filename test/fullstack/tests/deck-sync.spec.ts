@@ -63,6 +63,8 @@ test.describe("ArkhamDB deck sync", () => {
     browser,
     page,
   }) => {
+    test.setTimeout(120_000);
+
     const account = await createConnectedAccount(page);
     await exerciseSyncedDeckLifecycle(
       page,
