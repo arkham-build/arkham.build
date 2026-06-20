@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearch } from "wouter";
@@ -22,7 +22,6 @@ import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckHasConflict } from "@/store/selectors/sync";
 import { decodeExileSlots, displayAttribute } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";
 import { useAccentColor } from "@/utils/use-accent-color";

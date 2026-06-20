@@ -40,3 +40,16 @@
   max-height: 90dvh;
   padding-left: 0 0.625rem;
 }
+
+.scan-columns {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) 1rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.375rem;
+}
+
+.scan-columns-value {
+  font-size: var(--text-sm);
+  text-align: right;
+}

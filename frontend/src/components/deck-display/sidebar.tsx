@@ -1,4 +1,4 @@
-import type { Id } from "@arkham-build/shared";
+import { type Id, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import {
   ArchiveIcon,
   ArchiveRestoreIcon,
@@ -36,7 +36,6 @@ import { selectDeckCreateStorageProviderOptions } from "@/store/selectors/deck-c
 import type { History } from "@/store/selectors/decks";
 import { selectDeckHasConflict } from "@/store/selectors/sync";
 import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { useHotkey } from "@/utils/use-hotkey";
 import { DeckDetail, DeckDetails } from "../deck-details";

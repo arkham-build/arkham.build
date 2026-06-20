@@ -7,6 +7,7 @@ import {
   type SealedDeckResponse,
   SKILL_KEYS,
   type SkillKey,
+  SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
 import {
   cardUses,
@@ -17,7 +18,6 @@ import {
 import {
   NO_SLOT_STRING,
   REGEX_BONDED,
-  SPECIAL_CARD_CODES,
   TAG_REGEX_FALLBACKS,
 } from "@/utils/constants";
 import { resolveLimitedPoolPacks } from "@/utils/environments";

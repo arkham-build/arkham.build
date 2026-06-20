@@ -1469,6 +1469,7 @@
         "card_count_hidden": "({{count}} filtered)",
         "card_count_one": "{{count}} card",
         "card_count_other": "{{count}} cards",
+        "max_columns": "Max. scans per columns",
         "display": "Display",
         "display_as_detailed": "Detailed cards",
         "display_as_list": "List",

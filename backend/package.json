@@ -6,7 +6,7 @@
     "node": "24.x"
   },
   "scripts": {
-    "check": "tsc",
+    "check": "tsc --noEmit",
     "compose:up": "COMPOSE_MENU=0 docker compose up -d --build",
     "compose:down": "docker compose down",
     "dbmate": "dbmate",

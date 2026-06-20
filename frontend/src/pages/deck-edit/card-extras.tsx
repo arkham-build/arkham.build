@@ -1,11 +1,10 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { Attachments } from "@/components/attachments/attachments";
 import { getMatchingAttachables } from "@/components/attachments/attachments.helpers";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectAvailableUpgrades } from "@/store/selectors/lists";
 import { mapTabToSlot } from "@/store/slices/deck-edits.types";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import css from "./deck-edit.module.css";
 import { AddToNotes } from "./editor/add-to-notes";

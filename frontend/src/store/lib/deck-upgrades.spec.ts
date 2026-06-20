@@ -21,6 +21,7 @@ const tests = [
   ["Upgrade exceptional card", "exceptional_upgrade"],
   ["Increased deck size grants free lvl. 0 cards", "deck_size_adjust"],
   ["Upgrade into a permanent card", "permanent"],
+  ["Upgrade two copies into a lower deck limit", "limit_change"],
   ["Upgrade two cards into one", "many_to_one"],
   // Arcane Research
   ["Arcane Research: Apply one discount", "arcane_research"],

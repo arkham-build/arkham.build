@@ -46,7 +46,7 @@ servers:
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: true
-  host: api-v2.arkham.build
+  host: api.arkham.build
   # Proxy connects to your container on port 80 by default.
   app_port: 3000
   healthcheck:
@@ -156,6 +156,7 @@ logging:
     max-file: "3"
 
 aliases:
+  backup-db: server exec --primary "sudo /usr/local/bin/backup-api-arkham-build-postgres"
   console: app exec --interactive --reuse -r web "sh"
   ingest: app exec --primary --reuse -r worker "npm run ingest"
   ingest-json-data: app exec --primary --reuse -r worker "npm run ingest:json-data"

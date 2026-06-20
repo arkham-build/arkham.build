@@ -1,7 +1,8 @@
-import type {
-  Card,
-  DeckOptionSelectType,
-  SealedDeckResponse,
+import {
+  type Card,
+  type DeckOptionSelectType,
+  type SealedDeckResponse,
+  SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
 import { useCallback, useMemo } from "react";
@@ -21,7 +22,6 @@ import type { CardWithRelations, ResolvedDeck } from "@/store/lib/types";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
 import { selectBuildQlInterpreter } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { debounce } from "@/utils/debounce";
 import css from "./editor.module.css";
 import { SelectionEditor } from "./selection-editor";

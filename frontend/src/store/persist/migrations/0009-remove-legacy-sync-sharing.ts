@@ -38,7 +38,7 @@ function hasLegacyAccountDeck(state: LegacyState) {
   const sharedDeckIds = new Set(Object.keys(state.sharing?.decks ?? {}));
 
   return Object.values(state.data.decks ?? {}).some(
-    ([deck]) =>
+    (deck) =>
       deck.source === "arkhamdb" ||
       deck.source === "shared" ||
       sharedDeckIds.has(String(deck.id)),

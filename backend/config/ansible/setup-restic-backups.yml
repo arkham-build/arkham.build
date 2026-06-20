@@ -1,0 +1,128 @@
+- name: Setup Restic Postgres backups
+  hosts: all
+  become: yes
+  become_user: root
+  vars_files:
+    - restic-backup.vault.yml
+
+  tasks:
+    - name: Install restic
+      apt:
+        name: restic
+        state: present
+        update_cache: yes
+
+    - name: Create restic config directory
+      file:
+        path: /etc/restic
+        state: directory
+        owner: root
+        group: root
+        mode: '0700'
+
+    - name: Write restic backup environment
+      copy:
+        dest: /etc/restic/api-arkham-build.env
+        owner: root
+        group: root
+        mode: '0600'
+        content: |
+          RESTIC_REPOSITORY={{ restic_repository | quote }}
+          RESTIC_PASSWORD={{ restic_password | quote }}
+          AWS_ACCESS_KEY_ID={{ r2_access_key_id | quote }}
+          AWS_SECRET_ACCESS_KEY={{ r2_secret_access_key | quote }}
+          AWS_DEFAULT_REGION='auto'
+          AWS_REGION='auto'
+          POSTGRES_CONTAINER={{ postgres_container | quote }}
+          POSTGRES_DB={{ postgres_db | quote }}
+          POSTGRES_USER={{ postgres_user | quote }}
+      no_log: true
+
+    - name: Write Postgres backup script
+      copy:
+        dest: /usr/local/bin/backup-api-arkham-build-postgres
+        owner: root
+        group: root
+        mode: '0700'
+        content: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          config_file=/etc/restic/api-arkham-build.env
+          lock_file=/var/lock/api-arkham-build-postgres-backup.lock
+          timestamp=$(date -u +%Y%m%dT%H%M%SZ)
+
+          exec 9>"$lock_file"
+          flock -n 9
+
+          set -a
+          . "$config_file"
+          set +a
+
+          docker exec "$POSTGRES_CONTAINER" pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc |
+            restic backup --stdin --stdin-filename "${POSTGRES_DB}-${timestamp}.dump"
+
+          restic forget --keep-within 30d --prune
+
+    - name: Initialize restic repository
+      shell: |
+        set -e
+        set -a
+        . /etc/restic/api-arkham-build.env
+        set +a
+        restic snapshots >/dev/null 2>&1 || restic init
+      args:
+        executable: /bin/bash
+      changed_when: false
+      no_log: true
+
+    - name: Allow app user to run backup script
+      copy:
+        dest: /etc/sudoers.d/api-arkham-build-postgres-backup
+        owner: root
+        group: root
+        mode: '0440'
+        content: |
+          app ALL=(root) NOPASSWD: /usr/local/bin/backup-api-arkham-build-postgres
+        validate: /usr/sbin/visudo -cf %s
+
+    - name: Write backup systemd service
+      copy:
+        dest: /etc/systemd/system/api-arkham-build-postgres-backup.service
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Backup api-arkham-build Postgres to Restic
+          Wants=docker.service
+          After=docker.service
+
+          [Service]
+          Type=oneshot
+          ExecStart=/usr/local/bin/backup-api-arkham-build-postgres
+
+    - name: Write backup systemd timer
+      copy:
+        dest: /etc/systemd/system/api-arkham-build-postgres-backup.timer
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Nightly api-arkham-build Postgres backup
+
+          [Timer]
+          OnCalendar=*-*-* 03:00:00
+          Persistent=true
+          RandomizedDelaySec=30m
+
+          [Install]
+          WantedBy=timers.target
+
+    - name: Enable backup timer
+      systemd:
+        name: api-arkham-build-postgres-backup.timer
+        enabled: yes
+        state: started
+        daemon_reload: yes

@@ -35,6 +35,11 @@
     "patch": true
   },
   {
+    "abbreviation": "izzy",
+    "code": "12013",
+    "patch": true
+  },
+  {
     "abbreviation": "lcc",
     "code": "04107",
     "patch": true

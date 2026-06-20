@@ -814,3 +814,18 @@ exports[`Deck Validation > invalid: trait-based off-class access 1`] = `
   },
 ]
 `;
+
+exports[`Deck Validation > invalid: upgrade changes deck limit 1`] = `
+[
+  {
+    "details": [
+      {
+        "code": "02234",
+        "limit": 1,
+        "quantity": 2,
+      },
+    ],
+    "type": "INVALID_CARD_COUNT",
+  },
+]
+`;

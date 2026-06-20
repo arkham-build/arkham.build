@@ -1,10 +1,11 @@
 import {
   type Card,
+  canonicalCardName,
   countExperience,
   realCardLevel,
+  SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
 import { splitMultiValue } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";
 import type { Customization, ResolvedDeck } from "./types";
@@ -548,16 +549,36 @@ function countFreeLevel0Cards(
       (acc, [code, quantity]) => {
         const diff = quantity - (prev[slotKey][code] ?? 0);
 
-        if (diff > 0) {
-          const deckSizeAdjust =
-            next.cards[slotKey][code]?.card?.deck_requirements?.size;
+        let adjustments = 0;
 
+        if (diff > 0) {
+          const card = next.cards[slotKey][code]?.card;
+
+          const deckSizeAdjust = card.deck_requirements?.size;
           if (deckSizeAdjust != null) {
-            return acc + deckSizeAdjust * diff;
+            adjustments += deckSizeAdjust * diff;
+          }
+
+          // check if upgrade reduced limit by name and compensate.
+          const deckLimit = card.deck_limit ?? 0;
+          if (deckLimit <= 1) {
+            const cardName = canonicalCardName(card);
+            const nextLimits = limitQuantitiesByName(next)[cardName];
+            const prevLimits = limitQuantitiesByName(prev)[cardName];
+            if (
+              nextLimits &&
+              prevLimits &&
+              nextLimits.limit < prevLimits.limit
+            ) {
+              adjustments += Math.max(
+                0,
+                prevLimits.quantity - nextLimits.quantity,
+              );
+            }
           }
         }
 
-        return acc;
+        return acc + adjustments;
       },
       0,
     );
@@ -648,4 +669,30 @@ function getSwaps(slotDiff: Diff) {
   }
 
   return swaps;
+}
+
+function limitQuantitiesByName(deck: ResolvedDeck) {
+  return Object.entries(deck.slots).reduce(
+    (acc, [code, quantity]) => {
+      const card = deck.cards.slots[code]?.card;
+      if (!card) return acc;
+
+      const name = canonicalCardName(card);
+
+      if (!acc[name]) {
+        acc[name] = {
+          quantity,
+          limit: card.deck_limit ?? 0,
+        };
+
+        return acc;
+      }
+
+      acc[name].quantity += quantity;
+      acc[name].limit = Math.min(acc[name].limit, card.deck_limit ?? 0);
+
+      return acc;
+    },
+    {} as Record<string, { limit: number; quantity: number }>,
+  );
 }

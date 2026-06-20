@@ -1,9 +1,8 @@
-import type { Card, Id } from "@arkham-build/shared";
+import { type Card, type Id, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { ShuffleIcon } from "lucide-react";
 import { useCallback, useEffect, useReducer } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";

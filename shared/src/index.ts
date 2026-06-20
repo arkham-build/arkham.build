@@ -128,7 +128,13 @@ export {
   SettingsResponseSchema,
 } from "./dtos/settings.schema.ts";
 
-export { cardLevel, countExperience, realCardLevel } from "./lib/card-utils.ts";
+export {
+  canonicalCardName,
+  cardLevel,
+  countExperience,
+  realCardLevel,
+} from "./lib/card-utils.ts";
+
 export {
   ASSET_SLOT_ORDER,
   DECKLIST_SEARCH_MAX_XP,
@@ -141,6 +147,7 @@ export {
   SKILL_KEYS,
   type SkillIcon,
   type SkillKey,
+  SPECIAL_CARD_CODES,
 } from "./lib/constants.ts";
 export {
   OAUTH_FLOW_ERROR_CODES,

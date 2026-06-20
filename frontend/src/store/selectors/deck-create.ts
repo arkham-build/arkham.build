@@ -1,6 +1,6 @@
+import { SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import { assert } from "@/utils/assert";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { formatRelationTitle } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
 import { resolveCardWithRelations } from "../lib/resolve-card";

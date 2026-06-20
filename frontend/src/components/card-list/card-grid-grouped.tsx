@@ -17,8 +17,10 @@ import css from "./card-grid.module.css";
 import { Grouphead } from "./grouphead";
 import type { CardListImplementationProps } from "./types";
 
-export function CardGridGrouped(props: CardListImplementationProps) {
-  const { data, metadata, search, ...rest } = props;
+export function CardGridGrouped(
+  props: CardListImplementationProps & { scanMaxColumns: number },
+) {
+  const { data, metadata, scanMaxColumns, search, ...rest } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
@@ -125,6 +127,7 @@ export function CardGridGrouped(props: CardListImplementationProps) {
               data={data}
               index={index}
               metadata={metadata}
+              scanMaxColumns={scanMaxColumns}
             />
           )}
         />
@@ -139,9 +142,10 @@ function CardGridGroup(
     data: ListState;
     index: number;
     metadata: Metadata;
+    scanMaxColumns: number;
   } & CardListImplementationProps,
 ) {
-  const { group, data, index, metadata, ...rest } = props;
+  const { group, data, index, metadata, scanMaxColumns, ...rest } = props;
   const { cards, groupCounts } = data;
 
   const counts = groupCounts[index];
@@ -156,6 +160,17 @@ function CardGridGroup(
     [cards, counts, offset],
   );
 
+  const cssVariables = useMemo(
+    () => ({
+      "--grid-columns-2": Math.min(2, scanMaxColumns),
+      "--grid-columns-3": Math.min(3, scanMaxColumns),
+      "--grid-columns-4": Math.min(4, scanMaxColumns),
+      "--grid-columns-5": Math.min(5, scanMaxColumns),
+      "--grid-columns-6": Math.min(6, scanMaxColumns),
+    }),
+    [scanMaxColumns],
+  );
+
   return (
     <div className={css["group"]} key={group.key}>
       <Grouphead
@@ -163,7 +178,10 @@ function CardGridGroup(
         grouping={group}
         metadata={metadata}
       />
-      <div className={cx(css["group-items"], css["grouped"])}>
+      <div
+        className={cx(css["group-items"], css["grouped"])}
+        style={cssVariables as React.CSSProperties}
+      >
         {groupCards.map((card) => (
           <CardGridItem {...rest} card={card} key={card.code} />
         ))}

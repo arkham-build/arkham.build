@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { createSelector, createStructuredSelector } from "reselect";
 import { applyCardChanges } from "@/store/lib/card-edits";
 import {
@@ -18,7 +18,6 @@ import {
 } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { and } from "@/utils/fp";
 import { isEmpty } from "@/utils/is-empty";
 

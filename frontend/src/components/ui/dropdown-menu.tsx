@@ -70,7 +70,7 @@ export function DropdownRadioGroupItem(
 }
 
 export function DropdownMenuSection(props: {
-  title: React.ReactNode;
+  title?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -79,7 +79,7 @@ export function DropdownMenuSection(props: {
   return (
     <section className={cx(css["section"], className)}>
       <header className={css["header"]}>
-        <h4 className={css["title"]}>{title}</h4>
+        {title && <h4 className={css["title"]}>{title}</h4>}
       </header>
       <div className={css["content"]}>{children}</div>
     </section>

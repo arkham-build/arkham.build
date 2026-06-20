@@ -1,4 +1,4 @@
-import { type Card, cardLevel } from "@arkham-build/shared";
+import { type Card, cardLevel, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { useStore } from "@/store";
 import { selectMetadata } from "@/store/selectors/shared";
 import {
@@ -6,7 +6,6 @@ import {
   displayAttribute,
   parseCardTextHtml,
 } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import css from "./card-name.module.css";
 import { ExperienceDots } from "./experience-dots";

@@ -239,6 +239,8 @@ const tests = [
   // Myriad
   ["valid: myriad cards with different subnames", "myriad_subname"],
   ["invalid: myriad cards with different subnames", "myriad_subname_invalid"],
+  // Upgrades change deck limit
+  ["invalid: upgrade changes deck limit", "limits_by_name_invalid"],
   // Suzi
   ["valid: Suzi with valid 'at_least' constraint", "suzi"],
   [

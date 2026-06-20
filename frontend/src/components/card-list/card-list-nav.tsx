@@ -25,17 +25,24 @@ import {
   DropdownMenuSection,
   DropdownRadioGroupItem,
 } from "../ui/dropdown-menu";
+import { Field, FieldLabel } from "../ui/field";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { RadioGroup } from "../ui/radio-group";
 import { Scroller } from "../ui/scroller";
 import { Select } from "../ui/select";
+import { Slider } from "../ui/slider";
 import css from "./card-list-nav.module.css";
+
+const SCAN_MAX_COLUMNS_MIN = 1;
+const SCAN_MAX_COLUMNS_MAX = 6;
 
 type Props = {
   data: ListState | undefined;
   deck?: ResolvedDeck;
   metadata: Metadata;
+  onScanMaxColumnsChange: (value: number) => void;
   onSelectGroup: (evt: React.ChangeEvent<HTMLSelectElement>) => void;
+  scanMaxColumns: number;
   viewMode: ViewMode;
 };
 
@@ -120,13 +127,25 @@ export function CardListNav(props: Props) {
             value=""
           />
         )}
-        <DisplaySettings viewMode={props.viewMode} />
+        <DisplaySettings
+          onScanMaxColumnsChange={props.onScanMaxColumnsChange}
+          scanMaxColumns={props.scanMaxColumns}
+          viewMode={props.viewMode}
+        />
       </div>
     </nav>
   );
 }
 
-function DisplaySettings({ viewMode }: { viewMode: ViewMode }) {
+function DisplaySettings({
+  onScanMaxColumnsChange,
+  scanMaxColumns,
+  viewMode,
+}: {
+  onScanMaxColumnsChange: (value: number) => void;
+  scanMaxColumns: number;
+  viewMode: ViewMode;
+}) {
   const { t } = useTranslation();
 
   const setListViewMode = useStore((state) => state.setListViewMode);
@@ -136,6 +155,13 @@ function DisplaySettings({ viewMode }: { viewMode: ViewMode }) {
   );
 
   const setListSort = useStore((state) => state.setListSort);
+
+  const onScanMaxColumnsCommit = useCallback(
+    (value: number[]) => {
+      onScanMaxColumnsChange(value[0]);
+    },
+    [onScanMaxColumnsChange],
+  );
 
   // TECH DEBT: option names and display names have diverted, reconcile.
   const onToggleList = useCallback(() => {
@@ -163,6 +189,8 @@ function DisplaySettings({ viewMode }: { viewMode: ViewMode }) {
   useHotkey("alt+d", onToggleFullCards);
   useHotkey("alt+s", onToggleScans);
   useHotkey("alt+shift+s", onToggleScansGrouped);
+
+  const showScanColumns = viewMode === "scans" || viewMode === "scans-grouped";
 
   return (
     <Popover placement="bottom-end">
@@ -203,6 +231,27 @@ function DisplaySettings({ viewMode }: { viewMode: ViewMode }) {
                 </DropdownRadioGroupItem>
               </RadioGroup>
             </DropdownMenuSection>
+            {showScanColumns && (
+              <DropdownMenuSection>
+                <Field>
+                  <FieldLabel>{t("lists.nav.max_columns")}</FieldLabel>
+                  <div className={css["scan-columns"]}>
+                    <Slider
+                      aria-label={t("lists.nav.max_columns")}
+                      id="list-scan-max-columns"
+                      max={SCAN_MAX_COLUMNS_MAX}
+                      min={SCAN_MAX_COLUMNS_MIN}
+                      onValueChange={onScanMaxColumnsCommit}
+                      step={1}
+                      value={[scanMaxColumns]}
+                    />
+                    <output className={css["scan-columns-value"]}>
+                      {scanMaxColumns}
+                    </output>
+                  </div>
+                </Field>
+              </DropdownMenuSection>
+            )}
             <DropdownMenuSection title={t("lists.nav.sort")}>
               <SortSelect
                 selectedId={sortSelection ?? DEFAULT_LIST_SORT_ID}

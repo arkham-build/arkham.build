@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CenterLayout } from "@/layouts/center-layout";
 import { useStore } from "@/store";
 import {
@@ -17,6 +17,11 @@ import { CardlistCount } from "./card-list-count";
 import { CardListNav } from "./card-list-nav";
 import { CardSearch } from "./card-search";
 import type { CardListProps } from "./types";
+
+const LIST_SCAN_MAX_COLUMNS_KEY = "list-scan-max-columns";
+const LIST_SCAN_MAX_COLUMNS_MIN = 1;
+const LIST_SCAN_MAX_COLUMNS_MAX = 6;
+const LIST_SCAN_MAX_COLUMNS_DEFAULT = 6;
 
 interface Props extends CardListProps {
   ref?: React.Ref<HTMLDivElement>;
@@ -55,6 +60,16 @@ export function CardListContainer(props: Props) {
   const list = useStore(selectActiveList);
   assert(list, "No active list found");
   const listDisplay = list.display;
+
+  const [scanMaxColumns, setScanMaxColumns] = useState(
+    getInitialScanMaxColumns,
+  );
+
+  const onScanMaxColumnsChange = useCallback((value: number) => {
+    const clamped = clampScanMaxColumns(value);
+    setScanMaxColumns(clamped);
+    localStorage.setItem(LIST_SCAN_MAX_COLUMNS_KEY, String(clamped));
+  }, []);
 
   const onSelectGroup = useCallback(
     (evt: React.ChangeEvent<HTMLSelectElement>) => {
@@ -109,7 +124,9 @@ export function CardListContainer(props: Props) {
           deck={ctx.resolvedDeck}
           data={data}
           metadata={metadata}
+          onScanMaxColumnsChange={onScanMaxColumnsChange}
           onSelectGroup={onSelectGroup}
+          scanMaxColumns={scanMaxColumns}
           viewMode={listDisplay.viewMode}
         />
         {data && (
@@ -121,6 +138,7 @@ export function CardListContainer(props: Props) {
                 listDisplay={listDisplay}
                 metadata={metadata}
                 resolvedDeck={ctx.resolvedDeck}
+                scanMaxColumns={scanMaxColumns}
                 search={search}
               />
             )}
@@ -131,6 +149,7 @@ export function CardListContainer(props: Props) {
                 listDisplay={listDisplay}
                 metadata={metadata}
                 resolvedDeck={ctx.resolvedDeck}
+                scanMaxColumns={scanMaxColumns}
                 search={search}
               />
             )}
@@ -150,5 +169,19 @@ export function CardListContainer(props: Props) {
         <Footer className={css["footer"]} />
       </div>
     </CenterLayout>
+  );
+}
+
+function getInitialScanMaxColumns() {
+  return clampScanMaxColumns(
+    Number(localStorage.getItem(LIST_SCAN_MAX_COLUMNS_KEY)),
+  );
+}
+
+function clampScanMaxColumns(value: number) {
+  if (!Number.isInteger(value)) return LIST_SCAN_MAX_COLUMNS_DEFAULT;
+  return Math.min(
+    LIST_SCAN_MAX_COLUMNS_MAX,
+    Math.max(LIST_SCAN_MAX_COLUMNS_MIN, value),
   );
 }

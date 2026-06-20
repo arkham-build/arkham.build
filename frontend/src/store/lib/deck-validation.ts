@@ -4,6 +4,7 @@ import {
   cardLevel,
   type DeckMeta,
   type DeckOption,
+  SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
 import {
   cardLimit,
@@ -11,7 +12,6 @@ import {
   isStaticInvestigator,
   splitMultiValue,
 } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { range } from "@/utils/range";
 import { time, timeEnd } from "@/utils/time";
 import type { Metadata } from "../slices/metadata.types";
@@ -485,7 +485,7 @@ interface SlotValidator {
 class DeckLimitsValidator implements SlotValidator {
   limitOverride: number | undefined;
   violations: Record<string, DeckLimitViolation> = {};
-  quantityByName: Record<string, number> = {};
+  propertiesByName: Record<string, { quantity: number; limit: number }> = {};
   ignoreDeckLimitSlots: Record<string, number> = {};
   eldritchBranded?: string;
 
@@ -506,19 +506,29 @@ class DeckLimitsValidator implements SlotValidator {
       ? `${card.real_name} (${card.real_subname})`
       : card.real_name;
 
-    const limit = this.getCardLimit(card);
-
     // some copies of this card might be ignored, e.g. for parallel Agnes and TCU "Ace of Rods".
     const copies = quantity - (this.ignoreDeckLimitSlots[card.code] ?? 0);
+    const limit = this.getCardLimit(card);
 
-    this.quantityByName[name] ??= 0;
-    this.quantityByName[name] += copies;
+    this.propertiesByName[name] ??= {
+      quantity: 0,
+      limit,
+    };
 
-    if (this.quantityByName[name] > limit) {
+    this.propertiesByName[name].quantity += copies;
+
+    this.propertiesByName[name].limit = Math.min(
+      this.propertiesByName[name].limit,
+      limit,
+    );
+
+    if (
+      this.propertiesByName[name].quantity > this.propertiesByName[name].limit
+    ) {
       this.violations[name] = {
         code: card.code,
-        limit,
-        quantity: this.quantityByName[name],
+        limit: this.propertiesByName[name].limit,
+        quantity: this.propertiesByName[name].quantity,
       };
     }
   }

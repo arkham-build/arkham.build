@@ -1,11 +1,16 @@
-import type { Attachments, Deck, DeckMeta } from "@arkham-build/shared";
-import { type Card, countExperience } from "@arkham-build/shared";
+import {
+  type Attachments,
+  type Card,
+  countExperience,
+  type Deck,
+  type DeckMeta,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
 import {
   decodeExileSlots,
   isSpecialCard,
   splitMultiValue,
 } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import type { StoreState } from "../slices";

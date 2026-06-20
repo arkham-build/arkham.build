@@ -5,6 +5,7 @@ import {
   type FactionName,
   SKILL_KEYS,
   type SkillKey,
+  SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import {
@@ -16,7 +17,6 @@ import { inferChapterNumber } from "@/utils/chapters";
 import {
   CYCLES_WITH_STANDALONE_PACKS,
   NO_SLOT_STRING,
-  SPECIAL_CARD_CODES,
 } from "@/utils/constants";
 import { resolveLimitedPoolPacks } from "@/utils/environments";
 import {

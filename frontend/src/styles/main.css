@@ -124,6 +124,7 @@
     --health: #ae4236;
     --sanity: #2c7fc0;
 
+    --color-focus: var(--text);
     --color-inverted: var(--nord-6);
     --color-link: var(--nord-9);
     --color-scrollbar-thumb: #969ba5;

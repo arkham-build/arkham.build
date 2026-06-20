@@ -1,4 +1,8 @@
-import type { Card, Settings } from "@arkham-build/shared";
+import {
+  type Card,
+  type Settings,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
 import type { ReferenceType } from "@floating-ui/react";
 import { FileWarningIcon, StarIcon } from "lucide-react";
 import { useCallback } from "react";
@@ -13,7 +17,6 @@ import {
   isEnemyLike,
   parseCardTextHtml,
 } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { dataLanguage } from "@/utils/formatting";
 import { preventLeftClick } from "@/utils/prevent-links";

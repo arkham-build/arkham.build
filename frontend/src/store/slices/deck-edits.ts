@@ -1,8 +1,7 @@
-import type { Id } from "@arkham-build/shared";
+import { type Id, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { capitalize } from "@/utils/formatting";
 import { range } from "@/utils/range";
 import { clampAttachmentQuantity } from "../lib/attachments";

@@ -1,4 +1,8 @@
-import type { Card, Slots } from "@arkham-build/shared";
+import {
+  type Card,
+  type Slots,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
 import {
   DicesIcon,
   ExternalLinkIcon,
@@ -31,7 +35,6 @@ import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { useAccentColor } from "@/utils/use-accent-color";
 import css from "./draft-basic-weakness.module.css";
 

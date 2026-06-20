@@ -33,23 +33,23 @@
     padding-top: 0;
 
     @container (min-width: 20rem) {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(var(--grid-columns-2), 1fr);
     }
 
     @container (min-width: 33rem) {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(var(--grid-columns-3), 1fr);
     }
 
     @container (min-width: 45rem) {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(var(--grid-columns-4), 1fr);
     }
 
     @container (min-width: 60rem) {
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(var(--grid-columns-5), 1fr);
     }
 
     @container (min-width: 72rem) {
-      grid-template-columns: repeat(var(--grid-max-columns, 6), 1fr);
+      grid-template-columns: repeat(var(--grid-columns-6), 1fr);
     }
   }
 }

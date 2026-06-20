@@ -1,4 +1,5 @@
 import type { Card } from "../schemas/card.schema.ts";
+import { SPECIAL_CARD_CODES } from "./constants.ts";
 
 export function countExperience(card: Card, quantity: number) {
   if (card.customization_xp) return card.customization_xp;
@@ -27,4 +28,10 @@ export function realCardLevel(card: Card) {
   const level = cardLevel(card);
   if (level == null) return level;
   return level + (card.taboo_xp ?? 0);
+}
+
+export function canonicalCardName(card: Card) {
+  return SPECIAL_CARD_CODES.PRECIOUS_MEMENTOS.includes(card.code)
+    ? `${card.real_name} (${card.real_subname})`
+    : card.real_name;
 }
