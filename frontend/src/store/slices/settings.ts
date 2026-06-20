@@ -27,6 +27,7 @@ import { makeLists } from "./lists";
 export type SettingsSlice = {
   settings: Settings;
 } & {
+  setFlag(key: string, value: boolean): Promise<void>;
   toggleFlag(key: string): Promise<void>;
   applySettings: (
     client: HttpClient,
@@ -336,6 +337,19 @@ export const createSettingsSlice: StateCreator<
       settings: {
         ...state.settings,
         ...payload,
+      },
+    }));
+
+    await dehydrate(get(), "app");
+  },
+  async setFlag(key, value) {
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        flags: {
+          ...state.settings.flags,
+          [key]: value,
+        },
       },
     }));
 

@@ -47,6 +47,7 @@ describe("v10 legacy sync and sharing migration", () => {
     expect(state).not.toHaveProperty("connections");
     expect(state).not.toHaveProperty("remoting");
     expect(state).not.toHaveProperty("sharing");
+    expect(state.settings?.flags?.migrationNeeded).toBe(true);
   });
 
   it("makes shared decks local and preserves their folder assignments", () => {
@@ -88,6 +89,42 @@ describe("v10 legacy sync and sharing migration", () => {
       remote: "folder",
     });
     expect(state).not.toHaveProperty("sharing");
+    expect(state.settings?.flags?.migrationNeeded).toBe(true);
+  });
+
+  it("requires account migration for legacy shared deck markers", () => {
+    const state: LegacyState = {
+      data: makeData({
+        decks: {
+          local: makeTestDeck({ id: "local", source: "local" }),
+        },
+      }),
+      deckEdits: {},
+      sharing: {
+        decks: {
+          local: "2026-01-01T00:00:00.000Z",
+        },
+      },
+    };
+
+    migrate(state, 9);
+
+    expect(state.settings?.flags?.migrationNeeded).toBe(true);
+  });
+
+  it("does not require account migration without legacy account decks", () => {
+    const state: LegacyState = {
+      data: makeData({
+        decks: {
+          local: makeTestDeck({ id: "local", source: "local" }),
+        },
+      }),
+      deckEdits: {},
+    };
+
+    migrate(state, 9);
+
+    expect(state.settings?.flags?.migrationNeeded).toBeUndefined();
   });
 
   it("repairs deck links and history after removing arkhamdb decks", () => {
@@ -133,5 +170,6 @@ describe("v10 legacy sync and sharing migration", () => {
       previous: [],
       latest: [],
     });
+    expect(state.settings?.flags?.migrationNeeded).toBe(true);
   });
 });

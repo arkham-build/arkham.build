@@ -30,6 +30,10 @@ import { useColorThemeListener } from "./utils/use-color-theme";
 
 const Index = lazy(() => import("./pages/index"));
 
+const AccountMigration = lazy(
+  () => import("./pages/account-migration/account-migration"),
+);
+
 const BrowseRoutes = lazy(() => import("./pages/browse/index"));
 
 const DeckEdit = lazy(() => import("./pages/deck-edit/deck-edit"));
@@ -142,75 +146,84 @@ function AppInner() {
       <Suspense fallback={<Loader delay={300} show />}>
         {storeInitialized && (
           <Router hook={useBrowserLocation}>
-            <ProfileCompletionRouteGuard>
-              <Switch>
-                <Route component={Index} path="/" />
-                <Route component={BrowseRoutes} path="/browse" />
-                <Route
-                  component={BrowseRoutes}
-                  path="/browse/pack/:pack_code"
-                />
-                <Route
-                  component={BrowseRoutes}
-                  path="/browse/cycle/:cycle_code"
-                />
-                <Route
-                  component={BrowseRoutes}
-                  path="/browse/encounter_set/:encounter_code"
-                />
-                <Route component={Search} path="/search" />
-                <Route component={CardView} path="/card/:code" />
-                <Route
-                  component={CardViewUsable}
-                  path="/card/:code/usable_cards"
-                />
-                <Route component={ChooseInvestigator} path="/deck/create" />
-                <Route component={DeckCreate} path="/deck/create/:code" />
-                <Route component={DeckView} path="/:type/view/:id" />
-                <Route component={DeckView} path="/:type/view/:id/:slug" />
-                <Route component={DeckEdit} nest path="/deck/edit/:id" />
-                <Route component={Settings} path="/settings" />
-                <Route component={About} path="/about" />
-                <Route component={Privacy} path="/privacy" />
-                <Route component={Terms} path="/terms" />
-                <Route component={LegalNotice} path="/legal-notice" />
-                <Route component={Share} path="/share/:id" />
-                <Route component={CollectionStats} path="/collection-stats" />
-                <Route component={BrowseDecklists} path="/decklists" />
-                <Route component={Rules} path="/rules" />
-                <Route
-                  component={Core2026Reveal}
-                  path="/blog/core-2026-reveal"
-                />
-                <Route
-                  component={Investigator2026Reveal}
-                  path="/blog/investigator-2026-reveal"
-                />
-                <Route
-                  component={FanMadeContentPreview}
-                  path="/fan-made-content/preview/:id"
-                />
-                <Route
-                  component={InstallFanMadeContent}
-                  path="/install-fan-made-content"
-                />
-                <Route component={Login} path="/auth/login" />
-                <Route component={Signup} path="/auth/signup" />
-                <Route
-                  component={CompleteSignup}
-                  path="/auth/signup/complete"
-                />
-                <Route
-                  component={ForgotPassword}
-                  path="/auth/forgot-password"
-                />
-                <Route component={VerifyEmail} path="/auth/verify-email" />
-                <Route component={ResetPassword} path="/auth/reset-password" />
-                <Route path="*">
-                  <ErrorStatus statusCode={404} />
-                </Route>
-              </Switch>
-            </ProfileCompletionRouteGuard>
+            <AccountMigrationRouteGuard>
+              <ProfileCompletionRouteGuard>
+                <Switch>
+                  <Route component={Index} path="/" />
+                  <Route
+                    component={AccountMigration}
+                    path="/account-migration"
+                  />
+                  <Route component={BrowseRoutes} path="/browse" />
+                  <Route
+                    component={BrowseRoutes}
+                    path="/browse/pack/:pack_code"
+                  />
+                  <Route
+                    component={BrowseRoutes}
+                    path="/browse/cycle/:cycle_code"
+                  />
+                  <Route
+                    component={BrowseRoutes}
+                    path="/browse/encounter_set/:encounter_code"
+                  />
+                  <Route component={Search} path="/search" />
+                  <Route component={CardView} path="/card/:code" />
+                  <Route
+                    component={CardViewUsable}
+                    path="/card/:code/usable_cards"
+                  />
+                  <Route component={ChooseInvestigator} path="/deck/create" />
+                  <Route component={DeckCreate} path="/deck/create/:code" />
+                  <Route component={DeckView} path="/:type/view/:id" />
+                  <Route component={DeckView} path="/:type/view/:id/:slug" />
+                  <Route component={DeckEdit} nest path="/deck/edit/:id" />
+                  <Route component={Settings} path="/settings" />
+                  <Route component={About} path="/about" />
+                  <Route component={Privacy} path="/privacy" />
+                  <Route component={Terms} path="/terms" />
+                  <Route component={LegalNotice} path="/legal-notice" />
+                  <Route component={Share} path="/share/:id" />
+                  <Route component={CollectionStats} path="/collection-stats" />
+                  <Route component={BrowseDecklists} path="/decklists" />
+                  <Route component={Rules} path="/rules" />
+                  <Route
+                    component={Core2026Reveal}
+                    path="/blog/core-2026-reveal"
+                  />
+                  <Route
+                    component={Investigator2026Reveal}
+                    path="/blog/investigator-2026-reveal"
+                  />
+                  <Route
+                    component={FanMadeContentPreview}
+                    path="/fan-made-content/preview/:id"
+                  />
+                  <Route
+                    component={InstallFanMadeContent}
+                    path="/install-fan-made-content"
+                  />
+                  <Route component={Login} path="/auth/login" />
+                  <Route component={Signup} path="/auth/signup" />
+                  <Route
+                    component={CompleteSignup}
+                    path="/auth/signup/complete"
+                  />
+                  <Route
+                    component={ForgotPassword}
+                    path="/auth/forgot-password"
+                  />
+                  <Route component={VerifyEmail} path="/auth/verify-email" />
+                  <Route
+                    component={ResetPassword}
+                    path="/auth/reset-password"
+                  />
+                  <Route path="*">
+                    <ErrorStatus statusCode={404} />
+                  </Route>
+                </Switch>
+              </ProfileCompletionRouteGuard>
+            </AccountMigrationRouteGuard>
             <RouteReset />
             <CardDataSyncTask />
             <AppTasks />
@@ -222,6 +235,19 @@ function AppInner() {
   );
 }
 
+function AccountMigrationRouteGuard(props: { children: React.ReactNode }) {
+  const migrationNeeded = useStore(
+    (state) => state.settings.flags?.migrationNeeded === true,
+  );
+  const [pathname] = useLocation();
+
+  if (migrationNeeded && pathname !== "/account-migration") {
+    return <Redirect to="/account-migration" />;
+  }
+
+  return props.children;
+}
+
 function ProfileCompletionRouteGuard(props: { children: React.ReactNode }) {
   const authStatus = useStore((state) => state.auth.status);
   const session = useStore(selectSession);
@@ -231,7 +257,8 @@ function ProfileCompletionRouteGuard(props: { children: React.ReactNode }) {
     authStatus === "authenticated" &&
     session &&
     !session.account.profileComplete &&
-    pathname !== "/auth/signup/complete"
+    pathname !== "/auth/signup/complete" &&
+    pathname !== "/account-migration"
   ) {
     return <Redirect to="/auth/signup/complete" />;
   }

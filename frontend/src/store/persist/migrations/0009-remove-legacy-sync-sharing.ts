@@ -13,14 +13,44 @@ function migrate(_state: unknown, version: number) {
   const state = _state as LegacyState;
 
   if (version < 10) {
+    const migrationNeeded = hasLegacyAccountDeck(state);
+
     removeLegacyArkhamDbDecks(state);
     localizeSharedDecks(state);
+
+    if (migrationNeeded) {
+      markAccountMigrationNeeded(state);
+    }
+
     delete state.connections;
     delete state.remoting;
     delete state.sharing;
   }
 
   return state;
+}
+
+function hasLegacyAccountDeck(state: LegacyState) {
+  if (!state.data) {
+    return false;
+  }
+
+  const sharedDeckIds = new Set(Object.keys(state.sharing?.decks ?? {}));
+
+  return Object.values(state.data.decks ?? {}).some(
+    ([deck]) =>
+      deck.source === "arkhamdb" ||
+      deck.source === "shared" ||
+      sharedDeckIds.has(String(deck.id)),
+  );
+}
+
+function markAccountMigrationNeeded(state: LegacyState) {
+  state.settings ??= {} as StoreState["settings"];
+  state.settings.flags = {
+    ...state.settings.flags,
+    migrationNeeded: true,
+  };
 }
 
 function removeLegacyArkhamDbDecks(state: LegacyState) {
