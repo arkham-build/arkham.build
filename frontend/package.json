@@ -33,7 +33,7 @@
     "@radix-ui/react-slider": "1.3.6",
     "@radix-ui/react-tabs": "1.1.13",
     "@tanstack/react-query": "5.90.21",
-    "dompurify": "3.4.1",
+    "dompurify": "3.4.11",
     "i18next": "25.8.13",
     "i18next-resources-to-backend": "1.2.1",
     "idb-keyval": "6.2.2",
@@ -56,6 +56,6 @@
     "autoprefixer": "10.4.27",
     "happy-dom": "20.8.9",
     "rollup-plugin-bundle-stats": "4.22.1",
-    "vite": "8.0.5"
+    "vite": "8.0.16"
   }
 }
