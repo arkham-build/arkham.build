@@ -462,7 +462,7 @@ test.describe("quick edit title and tags", () => {
     await page.getByTestId("name-edit-submit").click();
 
     await expect(page.getByTestId("view-tags")).toContainText(
-      "PrivateLegacySoloMultiplayerThemeAdvanced",
+      "DeviceLegacySoloMultiplayerThemeAdvanced",
     );
   });
 
