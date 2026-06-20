@@ -11,4 +11,4 @@
 
 # Run database migrations after deployment
 echo "Running database migrations..."
-kamal app exec --reuse --primary -r web "npm run -w backend dbmate -- up"
+kamal app exec --reuse --primary -r web "dbmate --no-dump-schema up"

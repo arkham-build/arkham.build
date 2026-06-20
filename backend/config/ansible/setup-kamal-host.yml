@@ -52,9 +52,9 @@
         name: ufw
         state: present
 
-    - name: Allow SSH port 22
+    - name: Limit SSH port 22
       ufw:
-        rule: allow
+        rule: limit
         port: '22'
         proto: tcp
 
@@ -88,28 +88,37 @@
         groups: docker
         append: yes
 
-    - name: Install fail2ban
-      apt:
-        name: fail2ban
-        state: present
+    - name: Ensure journald config directory exists
+      file:
+        path: /etc/systemd/journald.conf.d
+        state: directory
+        mode: '0755'
 
-    - name: Reboot server
-      reboot:
-        reboot_timeout: 300
+    - name: Configure journald retention limits
+      copy:
+        dest: /etc/systemd/journald.conf.d/arkham-build.conf
+        mode: '0644'
+        content: |
+          [Journal]
+          SystemMaxUse=1G
+          RuntimeMaxUse=256M
+          MaxRetentionSec=14days
 
-    - name: Disable SSH password authentication
+    - name: Harden SSH authentication
       lineinfile:
         path: /etc/ssh/sshd_config
-        regexp: '^#?PasswordAuthentication'
-        line: 'PasswordAuthentication no'
+        regexp: "^#?{{ item.key }}"
+        line: "{{ item.key }} {{ item.value }}"
         state: present
-
-    - name: Disable root SSH login
-      lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: '^#?PermitRootLogin'
-        line: 'PermitRootLogin no'
-        state: present
+      loop:
+        - key: PasswordAuthentication
+          value: 'no'
+        - key: PermitRootLogin
+          value: 'no'
+        - key: KbdInteractiveAuthentication
+          value: 'no'
+        - key: ChallengeResponseAuthentication
+          value: 'no'
 
     - name: Restart SSH service
       service:

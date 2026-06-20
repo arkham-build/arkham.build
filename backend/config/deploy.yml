@@ -7,20 +7,38 @@ x-postgres_env_clear: &postgres_env_clear
   POSTGRES_USER: postgres
   POSTGRES_PORT: 5432
 
+x-app_options: &app_options
+  read-only: true
+  init: true
+  cap-drop: ALL
+  security-opt:
+    - no-new-privileges:true
+  pids-limit: 256
+
 # Name of the container image.
 image: arkham-build/api.arkham.build
 
 # Deploy to these servers.
 servers:
   web:
-    - 159.195.14.203
+    hosts:
+      - 159.195.14.203
+    options:
+      <<: *app_options
+      memory: 2g
+      cpus: 1
+      tmpfs:
+        - /tmp:rw,noexec,nosuid,nodev,size=64m
   worker:
     hosts:
       - 159.195.14.203
-    cmd: npm run start:worker -w backend
+    cmd: node --experimental-strip-types src/worker.ts
     options:
-      memory: 1024m
+      <<: *app_options
+      memory: 2g
       cpus: 1
+      tmpfs:
+        - /tmp:rw,noexec,nosuid,nodev,size=1g
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 # Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
@@ -123,7 +141,6 @@ accessories:
   db:
     image: postgres:18-alpine
     host: 159.195.14.203
-    port: 5432
     env:
       clear:
         <<: *postgres_env_clear
@@ -140,7 +157,7 @@ logging:
 
 aliases:
   console: app exec --interactive --reuse -r web "sh"
-  ingest: app exec --primary --reuse -r web "npm run ingest -w backend"
-  ingest-json-data: app exec --primary --reuse -r web "npm run ingest:json-data -w backend"
+  ingest: app exec --primary --reuse -r worker "npm run ingest"
+  ingest-json-data: app exec --primary --reuse -r worker "npm run ingest:json-data"
   logs: app logs --follow
   db-console: accessory exec db --interactive --reuse "psql -d api_arkham_build_production -U postgres"

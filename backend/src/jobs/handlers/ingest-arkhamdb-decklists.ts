@@ -2,7 +2,7 @@
 
 import assert from "node:assert";
 import { createReadStream, createWriteStream } from "node:fs";
-import { unlink } from "node:fs/promises";
+import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pipeline } from "node:stream/promises";
@@ -33,34 +33,33 @@ export async function runIngestArkhamDbDecklists() {
 
 async function ingest(config: Config, db: Database) {
   const downloadStartedAt = Date.now();
-
-  const [authorsFile, decklistsFile, statsFile, resolutions] =
-    await Promise.all([
-      downloadCsvFile(config, "authors"),
-      downloadCsvFile(config, "decklists"),
-      downloadCsvFile(config, "decklist_stats"),
-      getAllCardResolutions(db).then((res) =>
-        res.reduce((acc, curr) => {
-          acc.set(curr.id, curr.resolves_to);
-          return acc;
-        }, new Map<string, string>()),
-      ),
-    ]);
-
-  const tempFiles = [authorsFile, decklistsFile, statsFile];
-
-  const [stats, weaknessCodes] = await Promise.all([
-    loadCsvIntoMemory<ApiStats>(statsFile),
-    getWeaknessCodes(db),
-  ]);
-
-  log("info", "Downloaded ArkhamDB decklists", {
-    details: {
-      duration_ms: Date.now() - downloadStartedAt,
-    },
-  });
+  const tempDir = await mkdtemp(join(tmpdir(), "arkhamdb-decklists-"));
 
   try {
+    const [authorsFile, decklistsFile, statsFile, resolutions] =
+      await Promise.all([
+        downloadCsvFile(config, tempDir, "authors"),
+        downloadCsvFile(config, tempDir, "decklists"),
+        downloadCsvFile(config, tempDir, "decklist_stats"),
+        getAllCardResolutions(db).then((res) =>
+          res.reduce((acc, curr) => {
+            acc.set(curr.id, curr.resolves_to);
+            return acc;
+          }, new Map<string, string>()),
+        ),
+      ]);
+
+    const [stats, weaknessCodes] = await Promise.all([
+      loadCsvIntoMemory<ApiStats>(statsFile),
+      getWeaknessCodes(db),
+    ]);
+
+    log("info", "Downloaded ArkhamDB decklists", {
+      details: {
+        duration_ms: Date.now() - downloadStartedAt,
+      },
+    });
+
     const processStartedAt = Date.now();
 
     await db.transaction().execute(async (tx) => {
@@ -262,7 +261,7 @@ async function ingest(config: Config, db: Database) {
       },
     });
   } finally {
-    await Promise.all(tempFiles.map((f) => unlink(f).catch(console.error)));
+    await rm(tempDir, { force: true, recursive: true }).catch(console.error);
   }
 }
 
@@ -307,7 +306,11 @@ type ApiDecklist = {
   canonical_investigator_code: string;
 };
 
-async function downloadCsvFile(config: Config, name: string): Promise<string> {
+async function downloadCsvFile(
+  config: Config,
+  tempDir: string,
+  name: string,
+): Promise<string> {
   const res = await fetchWithTimeout(
     `${config.INGEST_URL_ARKHAMDB_DECKLISTS}/${name}.csv`,
     { timeoutMs: 10 * 60 * 1000 },
@@ -316,7 +319,7 @@ async function downloadCsvFile(config: Config, name: string): Promise<string> {
 
   assert(res.body, "Response body is null");
 
-  const tempFilePath = join(tmpdir(), `${name}-${Date.now()}.csv`);
+  const tempFilePath = join(tempDir, `${name}.csv`);
   await pipeline(res.body, createWriteStream(tempFilePath));
 
   return tempFilePath;

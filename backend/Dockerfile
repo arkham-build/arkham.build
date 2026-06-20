@@ -36,10 +36,11 @@ COPY backend ./backend
 COPY shared ./shared
 
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 && \
-    chown -R nodejs:nodejs /app
+    adduser -S nodejs -u 1001 -G nodejs
+
+WORKDIR /app/backend
 
 USER nodejs
 
 EXPOSE $PORT
-CMD ["npm", "run", "start", "-w", "backend"]
+CMD ["node", "--experimental-strip-types", "src/main.ts"]

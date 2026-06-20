@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { mkdir } from "node:fs/promises";
+import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { Readable } from "node:stream";
@@ -22,9 +22,7 @@ export async function downloadRepo(repo: RepoRef, pathPrefix: string) {
   assert(res.ok, `Failed to download repo ${repo.repo}: ${res.statusText}`);
   assert(res.body, `Failed to download repo ${repo.repo}: no body`);
 
-  const targetPath = path.join(tmpdir(), `${pathPrefix}-${Date.now()}`);
-
-  await mkdir(targetPath, { recursive: true });
+  const targetPath = await mkdtemp(path.join(tmpdir(), `${pathPrefix}-`));
 
   await finished(
     Readable.fromWeb(res.body).pipe(tar.x({ cwd: targetPath, strip: 1 })),
