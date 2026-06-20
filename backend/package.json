@@ -29,10 +29,10 @@
     "dbmate": "2.31.0",
     "hono": "4.12.25",
     "kysely": "0.28.17",
-    "nodemailer": "8.0.10",
+    "nodemailer": "9.0.1",
     "pg": "8.19.0",
     "pg-boss": "12.18.2",
-    "tar": "7.5.13"
+    "tar": "7.5.16"
   },
   "devDependencies": {
     "@testcontainers/postgresql": "11.12.0",
