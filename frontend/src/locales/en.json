@@ -1606,7 +1606,6 @@
         "loading": "Loading latest card data...",
         "locale": "Locale",
         "sync": "Sync card data",
-        "title": "Card data",
         "up_to_date": "Card data is up to date.",
         "update_available": "New card data is available."
       },
@@ -1690,7 +1689,6 @@
         "data_export_title": "Data export",
         "help": "Export a copy of your settings, decks and card collection as a JSON file.",
         "metadata_title": "Application data",
-        "no_file_selected": "No file selected",
         "title": "Support"
       },
       "title": "Settings"

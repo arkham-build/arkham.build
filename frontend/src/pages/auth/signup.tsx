@@ -41,17 +41,7 @@ function Signup() {
     return (
       <AuthLayout
         title={t("auth.signup.title")}
-        description={
-          <>
-            {t("auth.signup.success")}
-            <br />
-            <Link href="/auth/login" asChild>
-              <Button as="a" variant="primary" size="full">
-                {t("auth.login.title")}
-              </Button>
-            </Link>
-          </>
-        }
+        description={t("auth.signup.success")}
       />
     );
   }
