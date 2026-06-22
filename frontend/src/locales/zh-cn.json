@@ -7,7 +7,7 @@
         "card_design": "定制卡牌设计。",
         "code": "对代码库的重大贡献。",
         "customization_api": "用于生成定制卡牌升级的API接口。",
-        "metadata": "Card metadata support.",
+        "metadata": "卡牌元数据支持。",
         "qa": "程序测试。",
         "testing": "在初期版本开发中给予耐心反馈与测试，贡献设计理念。",
         "title": "荣誉殿堂",
@@ -46,6 +46,102 @@
       "attached": "附加于{{name}}",
       "eligible": "适用于{{name}}"
     },
+    "auth": {
+      "email": "邮箱",
+      "email_or_username": "邮箱或用户名",
+      "errors": {
+        "account_not_verified": "你的账号尚未验证。登录前请先<verifyLink>验证</verifyLink>你的邮箱。",
+        "captcha_load_failed": "加载 Turnstile 验证码失败。",
+        "forgot_password_failed": "发起密码重置失败：{{error}}",
+        "invalid_credentials": "邮箱或密码无效",
+        "login_failed": "登录失败：{{error}}",
+        "password_reset_failed": "密码重置失败：{{error}}",
+        "rate_limited": "请求过于频繁。请等待 {{interval}} 后再试",
+        "signup_failed": "注册失败：{{error}}",
+        "verify_email_failed": "邮箱验证失败：{{error}}",
+        "verify_email_send_failed": "重新发送验证邮件失败：{{error}}"
+      },
+      "forgot_password": {
+        "description": "输入你的邮箱或用户名，我们将向你发送重置密码的说明。",
+        "submit": "发送密码重置说明",
+        "success": "如果该账号存在，你将很快收到重置链接。",
+        "title": "忘记密码"
+      },
+      "login": {
+        "action": "登录",
+        "forgot_password": "忘记密码？",
+        "no_account": "还没有账号？",
+        "title": "登录",
+        "with_arkhamdb": "使用 ArkhamDB 登录"
+      },
+      "logout": "登出",
+      "menu": {
+        "logged_in_as": "已登录为 {{name}}",
+        "sync_account": "同步数据",
+        "sync_error": "同步数据失败：{{error}}",
+        "sync_status": {
+          "conflict": "账号同步冲突",
+          "error": "账号同步错误",
+          "idle": "账号同步空闲",
+          "loading": "账号同步加载中",
+          "partial": "账号同步部分失败",
+          "saving": "账号同步保存中",
+          "synced": "账号同步完成"
+        },
+        "syncing": "正在同步账号数据..."
+      },
+      "oauth_errors": {
+        "arkhamdb_invalid_response": "ArkhamDB 登录失败。请重试。",
+        "arkhamdb_no_decks": "你的 ArkhamDB 账号必须至少有一个卡组才能继续。",
+        "identity_belongs_to_another_account": "此 ArkhamDB 账号已关联到另一个账号。",
+        "invalid_state": "ArkhamDB 登录已过期或失效。请重试。",
+        "oauth_failed": "ArkhamDB 登录失败。请重试。",
+        "oauth_missing_code": "ArkhamDB 登录已取消或未完成。请重试。"
+      },
+      "password": "密码",
+      "password_validation": "至少 8 个字符",
+      "reset_password": {
+        "confirm_password": "确认密码",
+        "password": "新密码",
+        "success": "密码重置成功。你现在可以登录了。",
+        "title": "重置密码"
+      },
+      "signup": {
+        "action": "注册",
+        "complete_profile": {
+          "description": "为你的账号选择一个用户名。它将公开显示在你的卡组和贡献上。",
+          "title": "完善你的资料",
+          "upload": {
+            "decks": {
+              "help": "将你的本地卡组收藏上传到你的账号。",
+              "label": "上传本地卡组"
+            },
+            "settings": {
+              "help": "上传你的收藏和显示偏好。",
+              "label": "上传设置"
+            },
+            "title": "上传本地数据"
+          }
+        },
+        "has_account": "已有账号？",
+        "legal_acceptance": "创建账号即表示你同意<terms>服务条款</terms>并知悉<privacy>隐私政策</privacy>。",
+        "success": "注册成功！请查收邮件以验证你的账号。首次登录后你将选择用户名。",
+        "title": "注册",
+        "verifying": "正在验证...",
+        "with_arkhamdb": "使用 ArkhamDB 注册"
+      },
+      "username": "用户名",
+      "username_validation": "仅限字母、数字、下划线和连字符",
+      "verify_email": {
+        "action": "验证邮箱",
+        "resend": "重新发送验证邮件",
+        "resend_action": "重新发送验证邮件",
+        "resend_success": "验证邮件已成功发送。请查收你的收件箱。",
+        "success": "邮箱已验证！你现在可以登录了。",
+        "title": "验证邮箱",
+        "token": "验证令牌"
+      }
+    },
     "browse": {
       "title": "浏览卡牌"
     },
@@ -54,32 +150,40 @@
         "complete_task": "完成任务",
         "open_card_page": "卡牌页面",
         "reviews": "评价"
+      },
+      "custom_behavior": {
+        "investigator_traits": {
+          "help": "{{card}} 可以为你的调查员特性添加一个新特性。",
+          "title": "调查员特性选择"
+        }
       }
+    },
+    "card_scenarios": {
+      "standalone": "独立冒险",
+      "title": "使用 <em>{{name}}</em> 的场景",
+      "tooltip": "{{name}} <em>({{campaignName}})</em>"
     },
     "card_view": {
       "actions": {
-        "faq": "查看FAQ",
         "open_on_arkhamdb": "在ArkhamDB上打开",
         "reviews": "查看评论",
-        "show_original_image": "Show original card image",
-        "show_taboo_image": "Show taboo card image",
+        "show_original_image": "显示原始卡牌图像",
+        "show_taboo_image": "显示禁卡表卡牌图像",
         "usable_by": "卡池：{{prefix}}{{name}}",
         "usable_by_interpolated": "卡池：<tooltip>{{name}}</tooltip>",
         "view_backside": "背面",
         "who_can_take": "谁能使用这张卡牌？"
       },
-      "errata_notice": "Errata ({{date}})",
+      "errata_notice": "勘误（{{date}}）",
       "faq": {
         "empty": "暂无FAQ条目。",
         "error": "加载FAQ条目失败",
-        "loading": "正在加载FAQ条目...",
         "title": "常见问题"
       },
       "scan": "{{code}}的卡图",
       "section_actions": "行动",
       "section_deckbuilding": "卡组构建",
-      "section_faq": "常见问题",
-      "section_printings": "Printings",
+      "section_printings": "印刷版本",
       "thumbnail": "{{code}}的缩略图"
     },
     "choose_investigator": {
@@ -156,7 +260,7 @@
         "You cannot have more than 5 level 0 Seeker cards": "你的卡组中不能包含超过5张等级0的探求者卡牌",
         "You cannot have more than 5 level 0 Survivor cards": "你的卡组中不能包含超过5张等级0的求生者卡牌",
         "You cannot have more than one Covenant in your deck.": "你的卡组中不能包含超过一张圣约卡。",
-        "You must have at least 6 cards from each faction.": "You must have at least 6 cards from each faction.",
+        "You must have at least 6 cards from each faction.": "每个职阶至少需要 6 张卡牌。",
         "You must have at least 7 cards from 3 different factions": "你的卡组中必须包含至少7张来自3个不同职阶的卡牌",
         "You must have at least 7 cards from each class": "你的卡组中必须包含至少7张来自每个职阶的卡牌"
       },
@@ -197,12 +301,12 @@
         "value": "等级{{level}}"
       },
       "more_actions": "更多操作",
-      "myriad": "Myriad",
+      "myriad": "无数",
       "no_entries": "无条目",
-      "non_collection_cards": "{{count}} non-collection cards",
+      "non_collection_cards": "{{count}} 张收藏外卡牌",
       "none": "无",
-      "nonexceptional": "非独特",
       "ok": "确定",
+      "or": "或",
       "pack_one": "扩展包",
       "pack_other": "扩展包",
       "packs_new_format": {
@@ -228,13 +332,13 @@
         "replacement": "替换项",
         "requiredCards": "专属卡牌",
         "restrictedTo": "限定于",
-        "sideDeckRequiredCards": "Extra Deck Signatures",
+        "sideDeckRequiredCards": "额外卡组签名卡",
         "specialist": "专用卡牌",
         "specialist_investigators": "可用调查员"
       },
       "reset": "重置",
       "seal": "封印",
-      "select": "Select",
+      "select": "选择",
       "set_as_default": "设为默认",
       "shroud": "隐藏值",
       "skill": {
@@ -253,13 +357,14 @@
         "body": "身体",
         "hand": "手",
         "hand x2": "手 x2",
-        "head": "Head",
+        "head": "头部",
         "none": "无槽位",
         "tarot": "塔罗牌"
       },
       "sort_asc": "排序(升序)",
       "sort_desc": "排序(降序)",
       "specialist": "专用卡牌",
+      "stage": "阶段",
       "subtype": {
         "basicweakness": "基础弱点",
         "none": "无子类型",
@@ -389,7 +494,6 @@
         "Dhole": "蠕虫",
         "Dilemma": "困境",
         "Dinosaur": "Dinosaur",
-        "Dionsaur": "Dionsaur",
         "Distortion": "Distortion",
         "Dormant": "Dormant",
         "Double": "双倍",
@@ -684,26 +788,27 @@
       "uses": {
         "aether": "乙太",
         "ammo": "子弹",
+        "arrow": "箭矢",
         "bounties": "赏金",
-        "brilliance": "Brilliance",
+        "brilliance": "辉耀",
         "chances": "机会",
         "charges": "充能",
-        "discoveries": "Discoveries",
+        "discoveries": "发现",
         "durability": "耐久",
         "evidence": "证据",
         "inspiration": "灵感",
         "keys": "钥匙",
         "leylines": "灵脉",
-        "obligations": "Obligations",
-        "obsessions": "Obsessions",
+        "obligations": "义务",
+        "obsessions": "执念",
         "offerings": "贡品",
         "portents": "预兆",
-        "renown": "Renown",
+        "renown": "声望",
         "resources": "资源",
-        "rumors": "Rumors",
+        "rumors": "谣言",
         "secrets": "秘密",
-        "shards": "Shards",
-        "shell": "Shell",
+        "shards": "碎片",
+        "shell": "弹药",
         "signs": "标记",
         "supplies": "补给",
         "tickets": "车票",
@@ -714,12 +819,7 @@
         "wishes": "愿望"
       },
       "victory": "胜利",
-      "xp": "XP"
-    },
-    "connect": {
-      "error": "连接{{provider}}失败：{{error}}",
-      "syncing": "同步{{provider}}中...",
-      "title": "正在连接 {{provider}}..."
+      "xp": "经验值"
     },
     "deck": {
       "actions": {
@@ -752,15 +852,14 @@
       "id": "卡组ID",
       "latest_upgrade": {
         "add_to_deck": "加入当前卡组",
-        "decrement_xp": "Decrease available amount of XP for this upgrade",
-        "increment_xp": "Increase available amount of XP for this upgrade",
+        "decrement_xp": "减少本次升级可用的经验值",
+        "increment_xp": "增加本次升级可用的经验值",
         "no_changes": "无变更。",
         "summary": "已消耗 {{xpSpent}} / {{xp}} 点经验值",
-        "title": "最新升级",
-        "xp_spent": "经验值消耗"
+        "title": "最新升级"
       },
       "limited_decks": {
-        "Collector": "Collector",
+        "Collector": "收藏家",
         "Secondary Class": "副职阶",
         "Versatile": "多才多艺"
       },
@@ -776,7 +875,7 @@
         "xp_required_help": "构建该卡组所需的总经验值。"
       },
       "tags": {
-        "limited_pool": "限定卡池",
+        "account": "arkham.build",
         "private": "私人",
         "sealed": "封印",
         "shared": "共享"
@@ -794,20 +893,21 @@
         "upload_loading": "正在将卡组上传至{{provider}}..."
       },
       "tools": {
+        "average_cost": "平均费用：{{cost}}",
         "cards": "卡牌",
         "count": "计数",
         "factions": "职阶",
         "factions_tooltip": "{{count}} {{faction}} {{cards}}",
         "loading": "加载卡组工具中...",
+        "median_cost": "中位费用：{{cost}}",
         "resource_cost": "费用",
         "resource_cost_tooltip": "{{count}}张费用为{{cost}}的{{cards}}",
         "resource_costs": "资源费用",
         "skill_icons": "技能检定图标",
-        "skill_icons_tooltip": "{{count}} {{skill}} {{icons}}",
-        "title": "卡组工具"
+        "skill_icons_tooltip": "{{count}} {{skill}} {{icons}}"
       },
       "validation": {
-        "card_not_in_limited_pool": "The following cards are not part of this deck's card pool:",
+        "card_not_in_limited_pool": "以下卡牌不属于本卡组的卡池：",
         "forbidden_cards": "卡组包含禁用卡牌（调查员不允许使用的卡牌）：",
         "invalid": "卡组无效。",
         "invalid_card_count": "卡组中包含以下卡牌的非法复制数量：",
@@ -831,7 +931,9 @@
       "import": "导入",
       "import_arkhamdb": "从ArkhamDB导入",
       "import_arkhamdb_help": "输入公开的ArkhamDB卡组ID、卡组网址或卡组指南网址。卡组将被<strong>复制</strong>过来，但不会导入卡组历史记录和升级状态。若需同步ArkhamDB卡组与本应用，请<settings_link>关联你的ArkhamDB账户</settings_link>。",
+      "import_error": "导入卡组失败：{{error}}",
       "import_json": "从JSON文件导入",
+      "import_loading": "正在导入卡组...",
       "more_filters": "更多筛选条件",
       "search_placeholder": "搜索卡组...",
       "sorting": {
@@ -866,7 +968,7 @@
         "error": "获取封印卡组失败：{{error}}",
         "loading": "获取封印卡组中..."
       },
-      "title": "Create {{name}} deck"
+      "title": "创建 {{name}} 卡组"
     },
     "deck_edit": {
       "actions": {
@@ -885,37 +987,37 @@
         "move_to_side_deck": "移至副卡组",
         "quick_discard": "放弃更改（并留在当前页面）",
         "quick_save_deck": "保存卡组（停留在当前页面）",
-        "quick_upgrade": "升级{{name}}",
         "set_quantity": "设置卡组数量",
         "set_side_quantity": "设置副卡组数量"
       },
       "changes_restored": "未保存的更改已恢复。",
       "config": {
-        "buildql_deck_option": "BuildQL deckbuilding override",
+        "buildql_deck_option": "BuildQL 构筑规则覆盖",
         "card_pool": {
           "apply_environment": "应用 {{environment}} 环境",
           "campaign_playalong": "战役同步模式",
           "campaign_playalong_help": "\"战役同步模式\"是由Mythos Busters Discord服务器主办的持续性活动。该模式旨在让玩家共同体验《诡镇奇谈》战役，分享故事并营造社群氛围。",
           "choose_cycle_placeholder": "选择战役循环...",
-          "collection": "Collection",
-          "collection_help": "Set your current <settings_link>collection</settings_link> as this deck's card pool. This can be useful to freeze the deck's card pool, or to share a \"build preset\" with people sharing a physical collection.",
+          "collection": "收藏",
+          "collection_help": "将你当前的<settings_link>收藏</settings_link>设为本卡组的卡池。这有助于冻结卡组的卡池，或与共享实体收藏的人分享\"构筑预设\"。",
           "configure_environment": "配置环境",
           "current": "标准环境",
-          "current_faq25": "Current (FAQ 2.5)",
+          "current_faq25": "当前（FAQ 2.5）",
           "current_faq25_help": "在标准环境下进行牌库构建时，玩家只能使用核心卡牌、五套初始牌组以及最近发布的三部调查员扩展包。",
-          "current_help": "When deckbuilding in the the Current environment, players may use the following products: The 2026 core set, the five investigator decks, the two most recently released deckbuilding expansions and the two most recently released investigator expansions after the 2026 core set.",
+          "current_help": "在当前环境下构筑卡组时，玩家可使用以下产品：2026 核心套装、五副调查员卡组，以及 2026 核心套装之后最近发布的两个构筑扩展和最近发布的两个调查员扩展。",
           "custom": "自定义卡池",
           "help": "调查员、专属卡牌及剧情资产不受此选项影响。",
-          "help_chapter_1": "This is a Chapter 1 environment.",
+          "help_chapter_1": "这是第一章环境。",
           "legacy": "经典环境",
           "legacy_help": "在经典环境中进行牌库构筑时，玩家可以使用《诡镇奇谈：卡牌版》所有扩展产品的调查员、玩家卡牌和弱点卡来组建牌库。此模式下没有任何限制规则。",
           "limited": "限制环境",
-          "limited_faq25": "Limited (FAQ 2.5)",
+          "limited_faq25": "受限（FAQ 2.5）",
           "limited_faq25_help": "在限定环境中进行牌库构筑时，玩家只能使用核心套装、五套初始牌组以及自选的三部不同调查员扩展包中的卡牌组建牌库。",
-          "limited_help": "When deckbuilding in the the Limited environment, players may use the following products: The 2026 core set, the five investigator decks, three different player card expansions of their choice.",
+          "limited_help": "在受限环境下构筑卡组时，玩家可使用以下产品：2026 核心套装、五副调查员卡组，以及自选的三个不同玩家卡扩展。",
           "placeholder": "选择扩展包...",
           "section_title": "卡牌池设置",
           "selected_cards": "已选择卡牌",
+          "substitute_chapter_2_with_chapter_1": "用第一章的对应产品替代第二章核心套装和调查员卡组",
           "title": "限定牌池"
         },
         "name": "卡组名称",
@@ -933,6 +1035,8 @@
           "parallel_front": "平行正面"
         },
         "storage_provider": {
+          "account": "arkham.build",
+          "arkhamdb": "ArkhamDB",
           "local": "私人",
           "shared": "共享",
           "title": "存储服务商"
@@ -1034,6 +1138,19 @@
         "title": "版本"
       }
     },
+    "deck_sync": {
+      "conflict": {
+        "action_error": "解决卡组冲突失败：{{error}}",
+        "collection_badge": "卡组冲突需要处理",
+        "description": "在你的更改完成前，此卡组已在远程发生变化。刷新以应用最新的远程状态。",
+        "description_remote_missing": "在你的更改完成前，此卡组已在远程被删除。放弃本地卡组以匹配远程状态。",
+        "discard_local": "放弃本地卡组",
+        "edit_locked": "编辑前请先解决卡组冲突。",
+        "refresh": "刷新",
+        "remote_version": "远程版本：{{version}}",
+        "title": "卡组同步冲突"
+      }
+    },
     "deck_view": {
       "actions": {
         "display_as_list": "列表显示",
@@ -1043,11 +1160,8 @@
         "save_upgrade_close": "保存升级并关闭",
         "save_upgrade_close_short": "保存并关闭",
         "save_upgrade_short": "升级",
-        "upload": "上传至{{provider}}"
-      },
-      "connections": {
-        "description": "该卡组已设置为与{{provider}}同步。",
-        "view": "在{{provider}}上查看"
+        "upload": "上传至{{provider}}",
+        "upload_account": "上传"
       },
       "discounts": {
         "adaptable": "适应性",
@@ -1057,12 +1171,14 @@
       },
       "history": {
         "added": "已添加",
+        "created": "已创建",
         "current_upgrade": "当前升级",
         "discounts": "折扣",
         "initial_deck": "初始卡组",
         "no_changes": "无变更",
         "removed": "移除",
         "slot_changes": "{{slot}}变更",
+        "updated": "已更新",
         "upgrade": "升级 #{{index}}",
         "upgrade_xp": "可用经验值：{{xp}}{{adjustment}} (已消耗：{{spent}})"
       },
@@ -1074,18 +1190,12 @@
       "scans": "卡图",
       "sharing": {
         "api_link": "Json API",
-        "create": "创建分享",
-        "create_failed": "Failed to create share: {{error}}",
-        "create_tooltip": "共享功能会生成一个公开的、只读的卡组链接。任何持有该链接的人都可以查看卡组，但无法编辑。<br />共享链接可随时移除。移除共享不会影响卡组本身。",
-        "delete": "删除共享",
-        "delete_failed": "Failed to delete share: {{error}}",
         "description": "卡组已本地存储",
         "description_present": "该卡组已公开分享，可通过<a>此链接</a>查看。",
         "title": "公开分享",
-        "update": "更新共享",
-        "update_failed": "Failed to update share: {{error}}"
+        "view_on_arkhamdb": "在 ArkhamDB 上查看"
       },
-      "show_deck_list": "Show deck list",
+      "show_deck_list": "显示卡组列表",
       "tab_deck_list": "卡组",
       "tab_history": "历史记录",
       "tab_notes": "笔记",
@@ -1122,7 +1232,7 @@
         "required_cards": "所需卡牌",
         "submit": "应用",
         "title": "筛选条件",
-        "xp_range": "XP required"
+        "xp_range": "所需经验值"
       },
       "sorting": {
         "date": "最新",
@@ -1133,8 +1243,8 @@
     },
     "draw_simulator": {
       "draw_tooltip": "抽取{{count}}张{{cards}}。",
-      "mulligan_mode": "Mulligan mode",
-      "mulligan_mode_help": "When enabled, non-Tarot weaknesses and cards that start in play are redrawn automatically. After mulligan mode is disabled, the deck is shuffled once.",
+      "mulligan_mode": "调度模式",
+      "mulligan_mode_help": "启用后，非塔罗弱点牌和起始即在场的卡牌会被自动重抽。关闭调度模式后，卡组会洗牌一次。",
       "redraw": "重调",
       "redraw_tooltip": "选中的卡牌将被追加到牌库末尾，然后替换为新卡牌。",
       "reset": "重置",
@@ -1152,6 +1262,11 @@
       "preview_publish": "卡组包含{{provider}}不支持的卡牌：{{names}}。请在上传前移除它们。",
       "report": "报告问题"
     },
+    "external_embed": {
+      "load": "加载外部内容",
+      "notice": "此外部内容在你选择加载前会被拦截。加载它可能允许提供方处理你的数据并设置 cookie。",
+      "title": "外部内容"
+    },
     "fan_made_content": {
       "actions": {
         "import_file": "从文件导入",
@@ -1166,7 +1281,7 @@
       "content_types": "内容类型",
       "content_version": "内容版本",
       "empty": "未安装内容",
-      "filter_fan_made_content": "Search content...",
+      "filter_fan_made_content": "搜索内容...",
       "import_url": {
         "label": "内容网址",
         "placeholder": "输入网址...",
@@ -1177,7 +1292,7 @@
         "available_content_loading": "加载可用内容中...",
         "content_loading": "正在加载内容...",
         "fetch_failed": "加载内容失败：{{error}}",
-        "no_match": "No available content matches your filter",
+        "no_match": "没有符合筛选条件的可用内容",
         "parse_failed": "添加内容失败：{{error}}",
         "registry_failed": "无法从注册表加载可用内容：{{error}}"
       },
@@ -1185,7 +1300,7 @@
         "card_lists": "卡牌列表",
         "card_lists_help": "此设置控制卡牌列表中\"玩家自制内容\"筛选器的默认值。"
       },
-      "short_title": "Fan-made",
+      "short_title": "玩家自制",
       "status": {
         "alpha": "Alpha",
         "beta": "Beta",
@@ -1222,15 +1337,12 @@
         "title": "费用"
       },
       "cycle": {
-        "placeholder": "Select cycles...",
-        "title": "Cycle"
+        "placeholder": "选择循环...",
+        "title": "循环"
       },
       "encounter_set": {
         "placeholder": "选择遭遇组...",
         "title": "遭遇组"
-      },
-      "environment": {
-        "title": "环境"
       },
       "fan_made_content": {
         "all": "显示全部",
@@ -1261,8 +1373,6 @@
         "no_level": "无等级",
         "title": "等级"
       },
-      "locked": "This filter is locked",
-      "or": "或",
       "ownership": {
         "owned": "已拥有",
         "title": "所有权",
@@ -1309,6 +1419,15 @@
         "placeholder": "选择使用属性...",
         "title": "使用"
       }
+    },
+    "footer": {
+      "arkham_title": "诡镇奇谈：卡牌版™",
+      "disclaimer": "<arkham>诡镇奇谈：卡牌版™</arkham>及所有相关内容 © <ffg>Fantasy Flight Games (FFG)</ffg>。本网站非 FFG 制作、认可或关联。",
+      "ffg": "Fantasy Flight Games (FFG)",
+      "legal": "法律",
+      "legal_notice": "法律声明",
+      "privacy": "隐私政策",
+      "terms": "服务条款"
     },
     "help": {
       "about": "关于本站",
@@ -1373,12 +1492,13 @@
         "display_as_list": "列表",
         "display_as_list_text": "带卡牌文字的列表",
         "display_as_scans": "卡图",
-        "display_as_scans_grouped": "Scans (grouped)",
-        "export": "Export",
+        "display_as_scans_grouped": "扫描图（分组）",
+        "export": "导出",
         "jump_to": "跳转到...",
         "list_settings": "列表设置",
-        "sort": "Sort",
-        "sort_default": "User default"
+        "max_columns": "每列最大扫描图数",
+        "sort": "排序",
+        "sort_default": "用户默认"
       },
       "reset": "重置为默认值",
       "search": {
@@ -1387,9 +1507,15 @@
         "include_game_text": "游戏文本",
         "include_name": "名称",
         "placeholder": "搜索卡牌...",
-        "title": "Search"
+        "share": "分享查询",
+        "title": "搜索"
       },
       "sort_by": "按"
+    },
+    "masthead": {
+      "browse": "浏览",
+      "navigation": "主导航",
+      "rules": "规则"
     },
     "popular_decks": {
       "decklists_link": "浏览所有卡组指南",
@@ -1407,25 +1533,89 @@
       "title": "预览季已至！"
     },
     "rules": {
-      "back_to_top": "Back to top",
-      "search_placeholder": "Search keywords...",
+      "back_to_top": "返回顶部",
+      "grimoire": {
+        "empty": "未找到魔典内容。",
+        "error": "加载魔典内容失败。",
+        "intro_description": "阿卡姆魔典是一份全面的裁定合集，涵盖游戏中所有已知情况。作为一份动态文档，它在线维护，并随着新卡牌、规则和交互的引入或发现而更新。本文档包含更高级主题的信息，例如卡牌文字的解读、时机冲突的解决、常见问题，以及所有关键字和其他规则文字的列表。",
+        "intro_title": "阿卡姆魔典",
+        "loading": "正在加载魔典内容...",
+        "open_link": "打开魔典",
+        "references": "参考"
+      },
+      "search_placeholder": "搜索关键字...",
       "title": "规则参考",
-      "toc": "Table of contents"
+      "toc": "目录"
     },
     "search": {
-      "title": "Search results"
+      "title": "搜索结果"
     },
     "settings": {
-      "support": {
-        "confirm": "确定要恢复此备份吗？所有现有数据将被覆盖。",
-        "create": "创建备份",
-        "help": "将你的设置、卡组和卡牌收藏备份为JSON文件。可用此文件在本设备或其他设备上恢复数据。",
-        "help_warning": "恢复备份时，<strong>所有现有数据将被覆盖。</strong>",
-        "no_file_selected": "未选择文件",
-        "restore": "恢复备份",
-        "restore_error": "恢复备份失败：{{error}}",
-        "restore_success": "备份已成功恢复。",
-        "title": "备份与恢复"
+      "account": {
+        "danger_zone": "危险区域",
+        "delete": {
+          "confirm_help": "输入 {{username}} 以确认删除账号。",
+          "confirm_label": "确认",
+          "deleting": "正在删除账号...",
+          "help": "永久删除你的 arkham.build 账号及关联数据。这将删除服务器端凭据、会话、账号同步的卡组、设置和 OAuth 连接。账号关联的卡组将从本设备移除。仅存于设备的卡组、设置及其他浏览器数据不会被删除。已同步到 ArkhamDB 的内容不会从 ArkhamDB 删除。",
+          "submit": "删除账号",
+          "title": "删除账号"
+        },
+        "email": {
+          "add": "添加邮箱",
+          "add_help": "添加邮箱地址和密码作为另一种登录方式。",
+          "cancel_pending": "取消邮箱验证",
+          "canceling_pending": "正在取消邮箱验证...",
+          "current_password": "当前密码",
+          "new_email": "新邮箱",
+          "new_email_help": "留空以保留当前邮箱。",
+          "new_password": "新密码",
+          "new_password_help": "留空以保留当前密码。",
+          "pending": "待验证邮箱",
+          "pending_help": "查收 {{email}} 以<verifyLink>验证它</verifyLink>。",
+          "save": "更新凭据",
+          "saving": "正在保存凭据...",
+          "status": "状态",
+          "status_pending": "待验证",
+          "status_verified": "已验证",
+          "title": "凭据"
+        },
+        "oauth": {
+          "connect": "连接",
+          "connect_help": "连接你的{{provider}}账号以同步卡组并用其登录。",
+          "connected": "已连接",
+          "details": "详情",
+          "disconnect": "断开连接",
+          "disconnect_error": "断开{{provider}}连接失败：{{error}}",
+          "disconnected": "此连接存在问题，请重新连接。",
+          "disconnecting": "正在断开{{provider}}连接...",
+          "last_error": "最近错误",
+          "last_synced_at": "最近同步",
+          "none": "无",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "重新连接",
+          "status": {
+            "healthy": "正常",
+            "unhealthy": "异常"
+          },
+          "sync_status": "同步状态",
+          "title": "连接",
+          "user_id": "用户ID"
+        },
+        "privacy_rights": {
+          "body": "你可以在支持选项卡中导出你的数据，并在下方删除你的账号。对于非自助的 GDPR 请求（例如限制或反对请求），请联系 <privacyEmail />。",
+          "title": "隐私与数据权利"
+        },
+        "profile": {
+          "save": "保存资料",
+          "saving": "正在保存资料...",
+          "title": "资料",
+          "username": "用户名",
+          "username_help": "仅限字母、数字、下划线和连字符"
+        },
+        "title": "账号"
       },
       "card_data": {
         "card_count": "卡牌数量",
@@ -1434,14 +1624,13 @@
         "loading": "正在加载最新卡牌数据...",
         "locale": "语言",
         "sync": "同步卡牌数据",
-        "title": "卡牌数据",
         "up_to_date": "卡牌数据已是最新。",
         "update_available": "新卡牌数据已可用。"
       },
       "collection": {
         "card_collection": "卡牌收藏",
         "card_count": "卡牌数量",
-        "chapter": "Chapter {{number}}",
+        "chapter": "第 {{number}} 章",
         "new_format": "新格式",
         "old_format": "旧格式",
         "show_all_cards_owned": "将所有卡牌显示为已拥有",
@@ -1450,24 +1639,15 @@
         "show_previews_help": "勾选此项时，未发布的卡牌将在应用程序中显示并可加入卡组。",
         "title": "收藏"
       },
-      "connections": {
-        "disconnected_all": "你的某个连接出现问题。请在设置中重新连接。",
-        "items_synced": "已同步",
-        "last_modified": "数据时间戳",
-        "lock": "另一个{{provider}}操作正在进行中，请稍候...",
-        "no_errors": "无错误",
-        "provider_error": "同步{{provider}}失败：{{error}}",
-        "provider_syncing": "正在同步 {{provider}}...",
-        "sync": "同步",
-        "sync_all": "同步{{collectionLabels}}卡组",
-        "sync_errors": "同步错误",
-        "sync_status": "同步状态",
-        "syncing": "同步中",
-        "username": "用户名"
+      "conflict": {
+        "description": "你的账号设置已在别处更改。刷新以加载远程版本，或用你当前的本地更改覆盖它。",
+        "overwrite": "覆盖",
+        "refresh": "重新加载页面",
+        "remote_revision": "远程修订版本：{{revision}}"
       },
       "developer": {
-        "dev_mode_enabled": "Enable developer mode",
-        "title": "Developer"
+        "dev_mode_enabled": "启用开发者模式",
+        "title": "开发者"
       },
       "display": {
         "card_display": "卡牌显示设置",
@@ -1488,8 +1668,6 @@
         "card_skill_icons_simple": "简洁",
         "font_size": "字体大小",
         "font_size_preview": "人类最古老而强烈的情绪，便是恐惧；而最古老最强烈的恐惧，便是对未知的恐惧。我认为，人的思维缺乏将已知事物联系起来的能力，这是世上最仁慈的事了。",
-        "hide_weaknesses": "在玩家卡牌列表中隐藏弱点卡牌",
-        "hide_weaknesses_help": "勾选此项时，弱点卡牌默认会在玩家卡牌列表中隐藏，需在<strong>子类型</strong>过滤器中启用才能显示。",
         "show_card_modal_popular_decks": "在卡牌弹窗中显示热门牌组",
         "show_card_modal_popular_decks_help": "勾选此项后，卡牌弹窗将显示包含该卡牌的热门牌组。",
         "show_move_to_side_deck": "显示\"移至副卡组\"按钮",
@@ -1516,6 +1694,7 @@
         "deck_view_scans": "卡组视图（卡图）",
         "title": "列表"
       },
+      "load_error": "加载账号设置失败。使用本地设置：{{error}}",
       "locale": {
         "help": "这将更改应用程序的显示语言，包括卡牌和元数据文本。",
         "title": "语言"
@@ -1523,28 +1702,14 @@
       "preview": "预览",
       "save": "保存设置",
       "saving": "正在保存设置...",
-      "title": "设置",
-      "account": {
-        "oauth": {
-          "connect": "连接",
-          "connect_help": "连接你的{{provider}}账号以同步卡组并用其登录。",
-          "connected": "已连接",
-          "created_at": "连接于",
-          "details": "详情",
-          "disconnect": "断开连接",
-          "disconnect_error": "断开{{provider}}连接失败：{{error}}",
-          "disconnecting": "正在断开{{provider}}连接...",
-          "last_synced_at": "最近同步",
-          "not_connected": "未连接",
-          "providers": {
-            "arkhamdb": "ArkhamDB"
-          },
-          "reconnect": "重新连接",
-          "title": "连接",
-          "user_id": "用户ID",
-          "disconnected": "此连接存在问题，请重新连接。"
-        }
-      }
+      "support": {
+        "create": "创建备份",
+        "data_export_title": "数据导出",
+        "help": "将你的设置、卡组和卡牌收藏备份为JSON文件。可用此文件在本设备或其他设备上恢复数据。",
+        "metadata_title": "应用数据",
+        "title": "备份与恢复"
+      },
+      "title": "设置"
     },
     "suzi_standalone_setup": {
       "description": "FAQ 2.4 定义了如何构建 Suzi 的独立卡组。从你的收藏中随机抽取 1-5 级的卡牌，直到达到你所需的经验值。之后，必须从卡组中移除等量的卡牌。",
@@ -1569,7 +1734,7 @@
         "toggle": "切换章节"
       },
       "combobox": {
-        "unknown_option": "Unknown option"
+        "unknown_option": "未知选项"
       },
       "copy_to_clipboard": "复制到剪贴板",
       "copy_to_clipboard_success": "已复制",
