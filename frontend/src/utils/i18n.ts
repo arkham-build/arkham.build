@@ -31,7 +31,12 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: "en",
-    load: "languageOnly",
+    // Load the exact selected locale (e.g. `zh-cn`), not just the base language.
+    // `languageOnly` would collapse `zh-cn` -> `zh`, making the simplified locale unreachable.
+    load: "currentOnly",
+    // Keep region subtags lower-cased so they match the lower-cased locale filenames
+    // (i18next would otherwise format `zh-cn` -> `zh-CN`, which 404s on case-sensitive hosts).
+    lowerCaseLng: true,
     partialBundledLanguages: true,
     showSupportNotice: false,
     resources: {
