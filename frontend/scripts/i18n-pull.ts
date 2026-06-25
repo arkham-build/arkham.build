@@ -100,7 +100,7 @@ async function cloneRepo() {
   await fs.mkdir(localPath);
 
   execSync(
-    `git clone --filter=blob:none ${repo} ${localPath} && cd ${localPath} && git sparse-checkout init --cone && git sparse-checkout set assets/i18n && git checkout master`,
+    `git clone --filter=blob:none ${repo} "${localPath}" && git -C "${localPath}" sparse-checkout init --cone && git -C "${localPath}" sparse-checkout set assets/i18n && git -C "${localPath}" checkout master`,
     { stdio: "inherit" },
   );
 
