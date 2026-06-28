@@ -11,6 +11,9 @@
     "frontend",
     "shared"
   ],
+  "overrides": {
+    "@reduxjs/toolkit": "2.10.1"
+  },
   "scripts": {
     "dev:functions": "wrangler pages dev",
     "fmt": "biome check --write",
