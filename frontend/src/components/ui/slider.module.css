@@ -15,19 +15,40 @@
 }
 
 .track {
+  appearance: none;
+  display: block;
   background-color: var(--color-track);
   position: relative;
   flex-grow: 1;
   height: var(--track-height);
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.track:disabled {
+  cursor: default;
 }
 
 .range {
   position: absolute;
   background-color: var(--color-range);
   height: 100%;
+  top: 0;
+  left: var(--slider-range-start);
+  right: var(--slider-range-end);
 }
 
 .thumb {
+  position: absolute;
+  top: 50%;
+  left: clamp(
+    calc(var(--thumb-size) / 2),
+    var(--slider-thumb-offset),
+    calc(100% - var(--thumb-size) / 2)
+  );
+  transform: translate(-50%, -50%);
   display: block;
   width: var(--thumb-size);
   height: var(--thumb-size);
