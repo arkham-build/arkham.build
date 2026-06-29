@@ -98,9 +98,9 @@
         "arkhamdb_no_decks": "Your ArkhamDB account must have at least one deck before you can continue.",
         "oauth_account_connection_failed": "External authorization failed. Please try again.",
         "identity_belongs_to_another_account": "This external account is already linked to another account.",
-        "invalid_state": "External account connection expired or became invalid. Please try again.",
+        "invalid_state": "External authorization expired or became invalid. Please try again.",
         "oauth_failed": "ArkhamDB sign-in failed. Please try again.",
-        "oauth_missing_code": "External account connection was cancelled or did not complete. Please try again."
+        "oauth_missing_code": "External authorization was cancelled or did not complete. Please try again."
       },
       "password": "Password",
       "password_validation": "Minimum 8 characters",

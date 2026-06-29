@@ -383,7 +383,7 @@ function OAuthErrorToastTask() {
       children: t(
         i18n.exists(translationKey)
           ? translationKey
-          : "auth.oauth_errors.oauth_failed",
+          : "auth.oauth_errors.oauth_account_connection_failed",
       ),
       variant: "error",
     });
