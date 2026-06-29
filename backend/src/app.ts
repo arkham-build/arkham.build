@@ -5,10 +5,12 @@ import type { Database } from "./db/db.ts";
 import additionalMetadataRouter from "./features/additional-metadata/routes.ts";
 import adminRouter from "./features/admin/routes.ts";
 import arkhamDbDecklistsRouter from "./features/arkhamdb-decklists/routes.ts";
-import authRouter, {
+import authRouter from "./features/auth/routes/index.ts";
+import {
   arkhamdbOAuthCallbackRoutes,
   arkhamdbOAuthRoutes,
-} from "./features/auth/routes/index.ts";
+} from "./features/auth/routes/oauth.ts";
+import { steamOpenIdRoutes } from "./features/auth/routes/steam-openid.ts";
 import cacheRouter from "./features/cache/routes.ts";
 import customizationSheetRouter from "./features/customization_sheet/routes.ts";
 import decksRouter from "./features/decks/routes.ts";
@@ -90,8 +92,10 @@ export function appFactory(
   app.route("/v2/account", v2Account);
 
   app.route("/admin", adminRouter);
+
   app.route("/auth", arkhamdbOAuthCallbackRoutes);
   app.route("/auth/arkhamdb", arkhamdbOAuthRoutes);
+  app.route("/auth/steam", steamOpenIdRoutes);
 
   app.onError(errorHandler);
 

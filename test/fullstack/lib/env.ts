@@ -63,6 +63,8 @@ export function createStackEnv(overrides: Record<string, string> = {}) {
     POSTGRES_PORT: postgresPort,
     POSTGRES_USER: postgresUser,
     SESSION_SECRET: "test-session-secret-at-least-32-characters-long",
+    STEAM_OPENID_RETURN_URI: `${apiUrl}/auth/steam/callback`,
+    STEAM_WEB_API_KEY: "test-steam-web-api-key",
     SMTP_HOST: new URL(mailcrabUrl).hostname,
     SMTP_PASS: "",
     SMTP_PORT: "1025",

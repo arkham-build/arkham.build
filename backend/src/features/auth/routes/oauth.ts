@@ -23,10 +23,14 @@ import { OAuthFlowError } from "../../../lib/oauth.ts";
 import { upsertRevisionedAccountState } from "../../../lib/revisioned-account-state.ts";
 import { zodValidator } from "../../../lib/validation.ts";
 import {
-  beginOAuthAuthorization,
-  redirectToOAuthError,
-} from "../lib/oauth/flow.ts";
-import { getOAuthContext, validateOAuthState } from "../lib/oauth/state.ts";
+  beginExternalAuthAuthorization,
+  redirectToExternalAuthError,
+} from "../lib/external-auth/flow.ts";
+import { getExternalAuthConnectReturnTo } from "../lib/external-auth/return-to.ts";
+import {
+  getExternalAuthContext,
+  validateExternalAuthState,
+} from "../lib/external-auth/state.ts";
 import {
   completeAccountProfile,
   upsertAccountFromOAuth,
@@ -70,21 +74,21 @@ routes.post(
 export const arkhamdbOAuthRoutes = new Hono<HonoEnv>();
 
 arkhamdbOAuthRoutes.get("/", (c) =>
-  beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
+  beginExternalAuthAuthorization(c, arkhamdbOAuthProvider, {
     intent: "login",
     returnTo: "/auth/login",
   }),
 );
 
 arkhamdbOAuthRoutes.get("/login", (c) =>
-  beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
+  beginExternalAuthAuthorization(c, arkhamdbOAuthProvider, {
     intent: "login",
     returnTo: "/auth/login",
   }),
 );
 
 arkhamdbOAuthRoutes.get("/signup", (c) =>
-  beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
+  beginExternalAuthAuthorization(c, arkhamdbOAuthProvider, {
     intent: "signup",
     returnTo: "/auth/signup",
   }),
@@ -94,10 +98,10 @@ arkhamdbOAuthRoutes.get(
   "/connect",
   sessionAuth({ requireCompleteProfile: false }),
   (c) =>
-    beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
+    beginExternalAuthAuthorization(c, arkhamdbOAuthProvider, {
       accountId: c.get("account").id,
       intent: "connect",
-      returnTo: getConnectReturnTo(c.req.query("returnTo")),
+      returnTo: getExternalAuthConnectReturnTo(c.req.query("returnTo")),
     }),
 );
 
@@ -112,15 +116,15 @@ async function handleArkhamDbOAuthCallback(c: Context<HonoEnv>) {
   const config = c.get("config");
   const code = c.req.query("code");
   const state = c.req.query("state");
-  const oauthContext = await getOAuthContext(c);
-  const returnTo = oauthContext?.returnTo ?? "/auth/login";
+  const externalAuthContext = await getExternalAuthContext(c);
+  const returnTo = externalAuthContext?.returnTo ?? "/auth/login";
 
   try {
     if (!code) {
       throw new OAuthFlowError("oauth_missing_code");
     }
 
-    const validatedOAuthContext = await validateOAuthState(
+    const validatedExternalAuthContext = await validateExternalAuthState(
       c,
       arkhamdbOAuthProvider,
       state,
@@ -131,9 +135,9 @@ async function handleArkhamDbOAuthCallback(c: Context<HonoEnv>) {
     );
     const identity = await arkhamdbOAuthProvider.getIdentity(c, accessToken);
 
-    if (validatedOAuthContext.intent === "connect") {
+    if (validatedExternalAuthContext.intent === "connect") {
       assert(
-        validatedOAuthContext.accountId,
+        validatedExternalAuthContext.accountId,
         "Missing account ID for OAuth connect.",
       );
 
@@ -145,13 +149,13 @@ async function handleArkhamDbOAuthCallback(c: Context<HonoEnv>) {
 
       if (
         existingIdentity &&
-        existingIdentity.account_id !== validatedOAuthContext.accountId
+        existingIdentity.account_id !== validatedExternalAuthContext.accountId
       ) {
         throw new OAuthFlowError("identity_belongs_to_another_account");
       }
 
       await connectOAuthIdentityToAccount(db, {
-        accountId: validatedOAuthContext.accountId,
+        accountId: validatedExternalAuthContext.accountId,
         accessToken,
         initialArkhamDbDeckSnapshot: identity.initialArkhamDbDeckSnapshot,
         provider: arkhamdbOAuthProvider.name,
@@ -159,7 +163,7 @@ async function handleArkhamDbOAuthCallback(c: Context<HonoEnv>) {
       });
 
       return c.redirect(
-        `${config.FRONTEND_URL}${validatedOAuthContext.returnTo}`,
+        `${config.FRONTEND_URL}${validatedExternalAuthContext.returnTo}`,
       );
     }
 
@@ -175,7 +179,7 @@ async function handleArkhamDbOAuthCallback(c: Context<HonoEnv>) {
     const path = existing ? "/" : "/auth/signup/complete";
     return c.redirect(`${config.FRONTEND_URL}${path}`);
   } catch (error) {
-    return redirectToOAuthError(c, returnTo, error);
+    return redirectToExternalAuthError(c, returnTo, error);
   }
 }
 
@@ -446,22 +450,4 @@ async function findExistingAccountSettings(
     .select(["collection", "revision", "settings"])
     .where("account_id", "=", accountId)
     .executeTakeFirst();
-}
-
-function getConnectReturnTo(returnTo: string | undefined) {
-  if (!returnTo) {
-    return "/settings?tab=account";
-  }
-
-  if (!returnTo.startsWith("/")) {
-    throw new HTTPException(400, { message: "Invalid returnTo" });
-  }
-
-  const url = new URL(returnTo, "http://internal");
-
-  if (url.origin !== "http://internal") {
-    throw new HTTPException(400, { message: "Invalid returnTo" });
-  }
-
-  return `${url.pathname}${url.search}${url.hash}`;
 }
