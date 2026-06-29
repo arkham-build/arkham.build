@@ -88,6 +88,8 @@ async function getDependencies() {
     ARKHAMDB_OAUTH_CLIENT_ID: "test-client-id",
     ARKHAMDB_OAUTH_CLIENT_SECRET: "test-client-secret",
     ARKHAMDB_OAUTH_REDIRECT_URI: "http://localhost:3001/auth/callback",
+    STEAM_OPENID_RETURN_URI: "http://localhost:3001/auth/steam/callback",
+    STEAM_WEB_API_KEY: "test-steam-web-api-key",
     FRONTEND_URL: "http://localhost:3000",
     LEGACY_API_BASE_URL: "http://localhost:8787",
     POSTGRES_DB: container.getDatabase(),

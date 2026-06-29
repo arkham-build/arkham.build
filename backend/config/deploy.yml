@@ -77,6 +77,7 @@ env:
     <<: *postgres_env_clear
     ARKHAMDB_BASE_URL: https://arkhamdb.com
     ARKHAMDB_OAUTH_REDIRECT_URI: https://api.arkham.build/auth/callback
+    STEAM_OPENID_RETURN_URI: https://api.arkham.build/auth/steam/callback
     CORS_ORIGINS: "https://arkham.build,*.arkham-build-prod.pages.dev,http://localhost:3000"
     DBMATE_MIGRATIONS_DIR: /app/backend/src/db/migrations
     DBMATE_SCHEMA_FILE: /app/backend/src/db/schema.sql
@@ -106,6 +107,7 @@ env:
     - SMTP_PASS
     - SMTP_USER
     - SESSION_SECRET
+    - STEAM_WEB_API_KEY
     - TURNSTILE_SECRET_KEY
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
