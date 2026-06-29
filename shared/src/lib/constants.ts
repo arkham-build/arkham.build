@@ -138,19 +138,3 @@ export const FACTION_ORDER = [
 ] as const;
 
 export type FactionName = (typeof FACTION_ORDER)[number];
-
-export type OAuthConnection = {
-  provider: string;
-  icon: string;
-};
-
-export const OAUTH_CONNECTIONS = [
-  {
-    provider: "arkhamdb",
-    icon: "icon-elder_sign",
-  },
-  {
-    provider: "steam",
-    icon: "icon-steam",
-  },
-];

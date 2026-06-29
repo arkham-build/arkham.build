@@ -8,7 +8,7 @@ export const configSchema = z.object({
   ARKHAMDB_OAUTH_CLIENT_SECRET: z.string(),
   ARKHAMDB_OAUTH_REDIRECT_URI: z.url(),
   STEAM_OPENID_RETURN_URI: z.url(),
-  STEAM_WEB_API_KEY: z.string().min(1),
+  STEAM_WEB_API_KEY: z.string().default(""),
   ADMIN_API_KEY: z.string(),
   ENABLE_JOB_SCHEDULES: booleanString(true),
   INGEST_JSON_DATA_REPO: repoRefSchema,

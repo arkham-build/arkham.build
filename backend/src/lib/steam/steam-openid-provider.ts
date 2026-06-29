@@ -1,6 +1,8 @@
 import assert from "node:assert";
+import type { SteamIdentityDetails } from "@arkham-build/shared";
 import type { Context } from "hono";
 import { z } from "zod";
+import type { HonoEnv } from "../hono-env.ts";
 
 const STEAM_PLAYER_SUMMARIES_URL =
   "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/";
@@ -10,14 +12,8 @@ const STEAM_OPENID_IDENTIFIER_SELECT = `${STEAM_OPENID_NS}/identifier_select`;
 const STEAM_CLAIMED_ID_PATTERN =
   /^https?:\/\/steamcommunity\.com\/openid\/id\/(\d{17})$/;
 
-export type SteamProfile = {
-  avatarUrl: string;
-  displayName: string;
-  profileUrl: string;
-};
-
 export type SteamOpenIdIdentity = {
-  profile: SteamProfile;
+  profile: SteamIdentityDetails;
   providerUserId: string;
 };
 
@@ -36,7 +32,10 @@ const SteamPlayerSummariesResponseSchema = z.object({
 
 export const steamOpenIdProvider = {
   name: "steam",
-  getAuthorizationUrl(c: Context, state: string) {
+  getAuthorizationUrl(c: Context<HonoEnv>, state: string) {
+    const config = c.get("config");
+    assert(config.STEAM_WEB_API_KEY, "Steam integration not configured");
+
     const url = new URL(STEAM_OPENID_LOGIN_URL);
     url.searchParams.set("openid.ns", STEAM_OPENID_NS);
     url.searchParams.set("openid.mode", "checkid_setup");
@@ -46,7 +45,7 @@ export const steamOpenIdProvider = {
     );
     url.searchParams.set(
       "openid.realm",
-      `${new URL(c.get("config").STEAM_OPENID_RETURN_URI).origin}/`,
+      `${new URL(config.STEAM_OPENID_RETURN_URI).origin}/`,
     );
     url.searchParams.set("openid.identity", STEAM_OPENID_IDENTIFIER_SELECT);
     url.searchParams.set("openid.claimed_id", STEAM_OPENID_IDENTIFIER_SELECT);
@@ -96,11 +95,14 @@ function getSteamOpenIdCallbackParams(c: Context) {
 }
 
 async function fetchSteamProfile(
-  c: Context,
+  c: Context<HonoEnv>,
   steamId: string,
-): Promise<SteamProfile> {
+): Promise<SteamIdentityDetails> {
+  const config = c.get("config");
+  assert(config.STEAM_WEB_API_KEY, "Steam integration not configured");
+
   const url = new URL(STEAM_PLAYER_SUMMARIES_URL);
-  url.searchParams.set("key", c.get("config").STEAM_WEB_API_KEY);
+  url.searchParams.set("key", config.STEAM_WEB_API_KEY);
   url.searchParams.set("steamids", steamId);
 
   const response = await fetch(url);

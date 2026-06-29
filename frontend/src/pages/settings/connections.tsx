@@ -2,15 +2,16 @@ import {
   type Identity,
   isArkhamDBIdentity,
   isSteamIdentity,
-  OAUTH_CONNECTIONS,
-  type OAuthConnection,
 } from "@arkham-build/shared";
 import { CheckIcon, CloudOffIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { SteamIcon } from "@/components/icons/steam-icon";
 import { Button } from "@/components/ui/button";
 import { StatusPill } from "@/components/ui/status-pill";
 import { useToast } from "@/components/ui/toast.hooks";
+import {
+  OAUTH_PROVIDER_CONFIGS,
+  type OAuthProviderConfig,
+} from "@/lib/oauth-providers";
 import { useDisconnectOAuthIdentityMutation } from "@/queries/mutations/auth";
 import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
@@ -23,7 +24,7 @@ export function OAuthConnections() {
 
   return (
     <Section title={t("settings.account.oauth.title")}>
-      {OAUTH_CONNECTIONS.map((connection) => (
+      {OAUTH_PROVIDER_CONFIGS.map((connection) => (
         <OAuthConnectionCard
           connection={connection}
           key={connection.provider}
@@ -34,12 +35,12 @@ export function OAuthConnections() {
 }
 
 export function OAuthConnectionCard(props: {
-  connection: OAuthConnection;
+  connection: OAuthProviderConfig;
   returnTo?: string;
   variant?: "default" | "onboarding";
 }) {
   const { connection, returnTo, variant = "default" } = props;
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const session = useStore(selectSession);
   const toast = useToast();
   const disconnectOAuthIdentityMutation = useDisconnectOAuthIdentityMutation();
@@ -136,7 +137,7 @@ export function OAuthConnectionCard(props: {
           </>
         ) : (
           <>
-            <p>{getConnectionHelp(t, i18n, connection, providerName)}</p>
+            <p>{getConnectionHelp(t, connection, providerName)}</p>
             <div className={css.actions}>
               <Button
                 as="a"
@@ -231,12 +232,8 @@ function SteamConnectionDetails({
   );
 }
 
-function ConnectionIcon({ connection }: { connection: OAuthConnection }) {
-  if (connection.provider === "steam") {
-    return <SteamIcon className={css["provider-icon"]} />;
-  }
-
-  return <i className={connection.icon} />;
+function ConnectionIcon({ connection }: { connection: OAuthProviderConfig }) {
+  return connection.icon(css["provider-icon"]);
 }
 
 type ConnectionStatus = "connected" | "disconnected";
@@ -259,25 +256,17 @@ function getConnectionStatus(identity: Identity | undefined): ConnectionStatus {
 
 function getConnectionHelp(
   t: ReturnType<typeof useTranslation>["t"],
-  i18n: ReturnType<typeof useTranslation>["i18n"],
-  connection: OAuthConnection,
+  connection: OAuthProviderConfig,
   providerName: string,
 ) {
-  const providerKey = `settings.account.oauth.connect_help_${connection.provider}`;
-
-  return t(
-    i18n.exists(providerKey)
-      ? providerKey
-      : "settings.account.oauth.connect_help",
-    { provider: providerName },
-  );
+  return t(connection.connectHelpKey, { provider: providerName });
 }
 
 function getOAuthConnectHref(
-  connection: OAuthConnection,
+  connection: OAuthProviderConfig,
   returnTo: string | undefined,
 ) {
-  const path = `${import.meta.env.VITE_API_URL}/auth/${connection.provider}/connect`;
+  const path = `${import.meta.env.VITE_API_URL}${connection.connectPath}`;
 
   if (!returnTo) {
     return path;

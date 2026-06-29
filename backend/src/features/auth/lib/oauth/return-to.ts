@@ -1,6 +1,6 @@
 import { HTTPException } from "hono/http-exception";
 
-export function getExternalAuthConnectReturnTo(returnTo: string | undefined) {
+export function getOAuthConnectReturnTo(returnTo: string | undefined) {
   if (!returnTo) return "/settings?tab=account";
 
   if (!returnTo.startsWith("/")) {

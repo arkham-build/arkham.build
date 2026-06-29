@@ -9,7 +9,7 @@ import {
 } from "@arkham-build/shared";
 import type { Selectable } from "kysely";
 import type { Account, AccountIdentity } from "../../../db/schema.types.ts";
-import { canDisconnectExternalIdentity } from "./external-identities.ts";
+import { canDisconnectOAuthIdentity } from "./oauth-identities.ts";
 
 type AccountIdentitySummary = Pick<
   Selectable<AccountIdentity>,
@@ -48,7 +48,7 @@ export function mapAccountSessionToResponse(
         };
       }
 
-      const canDisconnect = canDisconnectExternalIdentity(
+      const canDisconnect = canDisconnectOAuthIdentity(
         identity.provider,
         usableLoginIdentityCount,
       );
@@ -66,16 +66,7 @@ export function mapAccountSessionToResponse(
 
       if (steamIdentity) return steamIdentity;
 
-      assert(
-        identity.provider_user_id,
-        "OAuth identity is missing provider_user_id",
-      );
-
-      return {
-        provider: identity.provider,
-        providerUserId: identity.provider_user_id,
-        canDisconnect,
-      };
+      return assert.fail(`Unknown OAuth provider: ${identity.provider}`);
     }),
   });
 }

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { expect, type Page, test } from "@playwright/test";
 import { authorizeArkhamDbOAuth, createArkhamDbUser } from "../lib/arkhamdb.ts";
+import { getArkhamDbConnection } from "../lib/connections.ts";
 import { createAuthenticatedAccount } from "../lib/db.ts";
 
 const completeProfileName = () => `e2e-oauth-${randomUUID()}`;
@@ -47,11 +48,15 @@ test.describe("ArkhamDB OAuth", () => {
     const arkhamDbUser = await createArkhamDbUser();
 
     await openAccountSettings(page);
-    await page.getByRole("link", { name: "Connect" }).click();
+    await getArkhamDbConnection(page)
+      .getByRole("link", { name: "Connect" })
+      .click();
     await authorizeArkhamDbOAuth(page, arkhamDbUser);
 
     await expect(page).toHaveURL(/\/settings\?tab=account$/);
-    await expect(page.getByTestId("connection-status")).toHaveText("Connected");
+    await expect(
+      getArkhamDbConnection(page).getByTestId("connection-status"),
+    ).toHaveText("Connected");
   });
 
   test("disconnects an ArkhamDB account", async ({ page }) => {
@@ -59,12 +64,18 @@ test.describe("ArkhamDB OAuth", () => {
     const arkhamDbUser = await createArkhamDbUser();
 
     await openAccountSettings(page);
-    await page.getByRole("link", { name: "Connect" }).click();
+    await getArkhamDbConnection(page)
+      .getByRole("link", { name: "Connect" })
+      .click();
     await authorizeArkhamDbOAuth(page, arkhamDbUser);
 
     await expect(page).toHaveURL(/\/settings\?tab=account$/);
-    await expect(page.getByTestId("connection-status")).toHaveText("Connected");
-    await page.getByRole("button", { name: "Disconnect" }).click();
+    await expect(
+      getArkhamDbConnection(page).getByTestId("connection-status"),
+    ).toHaveText("Connected");
+    await getArkhamDbConnection(page)
+      .getByRole("button", { name: "Disconnect" })
+      .click();
 
     await page.context().clearCookies();
     await page.goto("/auth/login");

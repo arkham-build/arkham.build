@@ -56,7 +56,7 @@ describe("Steam OpenID auth", () => {
       expect(openid.state).toBeTruthy();
     });
 
-    test("rejects external returnTo", async ({ dependencies }) => {
+    test("rejects OAuth returnTo", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
       const res = await app.request(
@@ -267,7 +267,7 @@ describe("Steam OpenID auth", () => {
 
       expect(res.status).toBe(302);
       expect(res.headers.get("location")).toBe(
-        `${config.FRONTEND_URL}/settings?tab=account&oauth_error=external_account_connection_failed`,
+        `${config.FRONTEND_URL}/settings?tab=account&oauth_error=oauth_account_connection_failed`,
       );
     });
 
@@ -292,7 +292,7 @@ describe("Steam OpenID auth", () => {
 
       expect(res.status).toBe(302);
       expect(res.headers.get("location")).toBe(
-        `${config.FRONTEND_URL}/settings?tab=account&oauth_error=external_account_connection_failed`,
+        `${config.FRONTEND_URL}/settings?tab=account&oauth_error=oauth_account_connection_failed`,
       );
     });
   });

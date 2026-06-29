@@ -104,21 +104,13 @@ export const SteamIdentitySchema = z.object({
   providerUserId: z.string(),
 });
 
-export const OAuthIdentitySchema = z.object({
-  provider: z.string().refine((provider) => provider === "arkhamdb"),
-  providerUserId: z.string(),
-  canDisconnect: z.boolean(),
-});
-
 export const IdentitySchema = z.union([
   ArkhamDBIdentitySchema,
   EmailIdentitySchema,
   SteamIdentitySchema,
-  OAuthIdentitySchema,
 ]);
 
 export type EmailIdentity = z.infer<typeof EmailIdentitySchema>;
-export type OAuthIdentity = z.infer<typeof OAuthIdentitySchema>;
 export type SteamIdentity = z.infer<typeof SteamIdentitySchema>;
 export type SteamIdentityDetails = z.infer<typeof SteamIdentityDetailsSchema>;
 export type Identity = z.infer<typeof IdentitySchema>;

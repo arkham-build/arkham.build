@@ -1,13 +1,11 @@
-import {
-  OAUTH_CONNECTIONS,
-  PATTERN_VALID_USERNAME,
-} from "@arkham-build/shared";
+import { PATTERN_VALID_USERNAME } from "@arkham-build/shared";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { LOGIN_OAUTH_PROVIDER_CONFIGS } from "@/lib/oauth-providers";
 import { useAuthSessionQuery } from "@/queries/auth";
 import { useCompleteProfileOnboardingMutation } from "@/queries/mutations/auth";
 import { useStore } from "@/store";
@@ -126,9 +124,7 @@ function SignupArkhamDB() {
         </section>
 
         {shouldShowArkhamDBConnection &&
-          OAUTH_CONNECTIONS.filter(
-            (connection) => connection.provider === "arkhamdb",
-          ).map((connection) => (
+          LOGIN_OAUTH_PROVIDER_CONFIGS.map((connection) => (
             <OAuthConnectionCard
               connection={connection}
               key={connection.provider}

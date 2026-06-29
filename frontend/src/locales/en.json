@@ -96,7 +96,7 @@
       "oauth_errors": {
         "arkhamdb_invalid_response": "ArkhamDB sign-in failed. Please try again.",
         "arkhamdb_no_decks": "Your ArkhamDB account must have at least one deck before you can continue.",
-        "external_account_connection_failed": "External account connection failed. Please try again.",
+        "oauth_account_connection_failed": "External authorization failed. Please try again.",
         "identity_belongs_to_another_account": "This external account is already linked to another account.",
         "invalid_state": "External account connection expired or became invalid. Please try again.",
         "oauth_failed": "ArkhamDB sign-in failed. Please try again.",

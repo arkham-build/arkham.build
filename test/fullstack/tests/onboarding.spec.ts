@@ -8,6 +8,7 @@ import { importDeckFromFile, upgradeDeck } from "../../e2e/tests/actions.ts";
 import { waitForAccountSync } from "../lib/account-sync.ts";
 import { authorizeArkhamDbOAuth, createArkhamDbUser } from "../lib/arkhamdb.ts";
 import { login } from "../lib/auth.ts";
+import { getArkhamDbConnection } from "../lib/connections.ts";
 import { apiUrl, databaseUrl } from "../lib/env.ts";
 import { waitForEmailVerificationUrl } from "../lib/mailcrab.ts";
 
@@ -56,14 +57,18 @@ test.describe("signup onboarding", () => {
     const arkhamDbUser = await createArkhamDbUser();
 
     await signupAndOpenCompleteProfile(page, email);
-    await page.getByRole("link", { name: "Connect" }).click();
+    await getArkhamDbConnection(page)
+      .getByRole("link", { name: "Connect" })
+      .click();
     await authorizeArkhamDbOAuth(page, arkhamDbUser);
 
     await expect(page).toHaveURL(/\/auth\/signup\/complete$/);
     await completeProfile(page, username);
 
     await openAccountSettings(page);
-    await expect(page.getByTestId("connection-status")).toHaveText("Connected");
+    await expect(
+      getArkhamDbConnection(page).getByTestId("connection-status"),
+    ).toHaveText("Connected");
   });
 
   test("uploads local decks and remaps conflicting deck ids", async ({

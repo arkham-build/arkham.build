@@ -527,9 +527,7 @@ describe("Auth routes", () => {
       });
     });
 
-    test("rejects external OAuth connect returnTo", async ({
-      dependencies,
-    }) => {
+    test("rejects OAuth connect returnTo", async ({ dependencies }) => {
       const { app, sessionCookie } = dependencies;
 
       const res = await app.request(

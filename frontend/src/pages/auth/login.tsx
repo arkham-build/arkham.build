@@ -4,6 +4,7 @@ import { Link, useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Notice } from "@/components/ui/notice";
+import { LOGIN_OAUTH_PROVIDER_CONFIGS } from "@/lib/oauth-providers";
 import { useLoginMutation } from "@/queries/mutations/auth";
 import { ApiError } from "@/store/services/requests/shared";
 import { ARKHAMDB_WARNING_VISIBLE } from "@/utils/constants";
@@ -103,15 +104,18 @@ function Login() {
         {ARKHAMDB_WARNING_VISIBLE && (
           <Notice variant="warning">{t("auth.arkhamdb_login_banner")}</Notice>
         )}
-        <Button
-          as="a"
-          href={`${import.meta.env.VITE_API_URL}/auth/arkhamdb/login`}
-          variant="secondary"
-          size="full"
-        >
-          <i className="icon-elder_sign" />
-          {t("auth.login.with_arkhamdb")}
-        </Button>
+        {LOGIN_OAUTH_PROVIDER_CONFIGS.map((provider) => (
+          <Button
+            as="a"
+            href={`${import.meta.env.VITE_API_URL}${provider.loginPath}`}
+            key={provider.provider}
+            variant="secondary"
+            size="full"
+          >
+            {provider.icon()}
+            {t(provider.loginLabelKey)}
+          </Button>
+        ))}
       </AuthForm>
     </AuthLayout>
   );

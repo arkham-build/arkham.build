@@ -19,8 +19,11 @@ import {
   assertVerificationTokenCooldown,
 } from "../lib/assertions.ts";
 import { hashPassword, verifyPassword } from "../lib/crypto.ts";
-import { canDisconnectExternalIdentity } from "../lib/external-identities.ts";
 import { mapAccountSessionToResponse } from "../lib/mapping.ts";
+import {
+  canDisconnectOAuthIdentity,
+  isKnownOAuthProvider,
+} from "../lib/oauth-identities.ts";
 import { sendVerificationEmail } from "../lib/verification-email.ts";
 import {
   countUsableLoginIdentities,
@@ -280,6 +283,12 @@ routes.delete("/oauth/:provider", sessionAuth(), async (c) => {
     });
   }
 
+  if (!isKnownOAuthProvider(provider)) {
+    throw new HTTPException(400, {
+      message: "Unknown OAuth provider",
+    });
+  }
+
   const oauthIdentity = await getAccountIdentityByAccountIdAndProvider(
     db,
     account.id,
@@ -298,7 +307,7 @@ routes.delete("/oauth/:provider", sessionAuth(), async (c) => {
       account.id,
     );
 
-    if (!canDisconnectExternalIdentity(provider, usableLoginIdentityCount)) {
+    if (!canDisconnectOAuthIdentity(provider, usableLoginIdentityCount)) {
       throw new HTTPException(400, {
         message: "Account must have at least one login identity",
       });

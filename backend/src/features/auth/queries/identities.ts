@@ -1,16 +1,25 @@
 import assert from "node:assert";
+import type { SteamIdentityDetails } from "@arkham-build/shared";
 import type { Database } from "../../../db/db.ts";
+import type { AccountIdentity } from "../../../db/schema.types.ts";
 import { createArkhamDbDeckSnapshot } from "../../../lib/arkhamdb/api-client/deck-snapshots.ts";
 import {
   getAccountIdentityByAccountIdAndProvider,
-  updateAccountIdentityState,
+  getAccountIdentityByProviderUserId,
 } from "../../../lib/auth/account-identities.ts";
 import { upsertOAuthToken } from "../../../lib/auth/oauth-tokens.ts";
-import type {
-  OAuthAccessToken,
-  OAuthProviderIdentity,
+import { isUniqueViolation } from "../../../lib/db-errors.ts";
+import {
+  type OAuthAccessToken,
+  OAuthFlowError,
+  type OAuthProviderIdentity,
 } from "../../../lib/oauth.ts";
-import type { SteamProfile } from "../../../lib/steam/steam-openid-provider.ts";
+import {
+  assertKnownOAuthProvider,
+  assertLoginOAuthProvider,
+  getLoginOAuthProviders,
+  type OAuthProviderName,
+} from "../lib/oauth-identities.ts";
 
 export async function createEmailIdentity(
   db: Database,
@@ -42,86 +51,45 @@ export interface ConnectOAuthIdentityToAccountParams {
 
 export interface ConnectSteamIdentityToAccountParams {
   accountId: string;
-  profile: SteamProfile;
+  profile: SteamIdentityDetails;
   providerUserId: string;
+}
+
+interface UpsertExternalIdentityParams {
+  accountId: string;
+  provider: OAuthProviderName;
+  providerUserId: string;
+  state: AccountIdentity["state"];
 }
 
 export async function connectSteamIdentityToAccount(
   db: Database,
   params: ConnectSteamIdentityToAccountParams,
 ) {
-  return await db.transaction().execute(async (tx) => {
-    const existingIdentity = await getAccountIdentityByAccountIdAndProvider(
-      tx,
-      params.accountId,
-      "steam",
-    );
-
-    const now = new Date();
-
-    if (existingIdentity) {
-      assert(
-        existingIdentity.provider_user_id === params.providerUserId,
-        "Steam identity provider user ID does not match the existing identity.",
-      );
-
-      return await tx
-        .updateTable("account_identity")
-        .set({ state: params.profile, updated_at: now, verified_at: now })
-        .where("id", "=", existingIdentity.id)
-        .returningAll()
-        .executeTakeFirstOrThrow();
-    }
-
-    return await tx
-      .insertInto("account_identity")
-      .values({
-        account_id: params.accountId,
-        provider: "steam",
-        provider_user_id: params.providerUserId,
-        state: params.profile,
-        verified_at: now,
-      })
-      .returningAll()
-      .executeTakeFirstOrThrow();
-  });
+  return await db.transaction().execute(async (tx) =>
+    upsertExternalIdentity(tx, {
+      accountId: params.accountId,
+      provider: "steam",
+      providerUserId: params.providerUserId,
+      state: params.profile,
+    }),
+  );
 }
 
 export async function connectOAuthIdentityToAccount(
   db: Database,
   params: ConnectOAuthIdentityToAccountParams,
 ) {
-  assertOAuthProvider(params.provider);
+  const provider = params.provider;
+  assertLoginOAuthProvider(provider);
 
   return await db.transaction().execute(async (tx) => {
-    const existingIdentity = await getAccountIdentityByAccountIdAndProvider(
-      tx,
-      params.accountId,
-      params.provider,
-    );
-
-    if (existingIdentity) {
-      assert(
-        existingIdentity.provider_user_id === params.providerUserId,
-        "OAuth identity provider user ID does not match the existing identity.",
-      );
-
-      await upsertOAuthToken(tx, existingIdentity.id, params.accessToken);
-      await updateAccountIdentityState(tx, existingIdentity.id, null);
-      await createInitialArkhamDbDeckSnapshot(tx, existingIdentity.id, params);
-      return existingIdentity;
-    }
-
-    const accountIdentity = await tx
-      .insertInto("account_identity")
-      .values({
-        account_id: params.accountId,
-        provider: params.provider,
-        provider_user_id: params.providerUserId,
-        verified_at: new Date(),
-      })
-      .returningAll()
-      .executeTakeFirstOrThrow();
+    const accountIdentity = await upsertExternalIdentity(tx, {
+      accountId: params.accountId,
+      provider,
+      providerUserId: params.providerUserId,
+      state: null,
+    });
 
     await upsertOAuthToken(tx, accountIdentity.id, params.accessToken);
     await createInitialArkhamDbDeckSnapshot(tx, accountIdentity.id, params);
@@ -135,7 +103,7 @@ export async function disconnectOAuthIdentity(
   accountId: string,
   provider: string,
 ) {
-  assertOAuthProvider(provider);
+  assertKnownOAuthProvider(provider);
 
   return await db
     .deleteFrom("account_identity")
@@ -170,7 +138,7 @@ export async function countUsableLoginIdentities(
           eb("verified_at", "is not", null),
           eb("password_hash", "is not", null),
         ]),
-        eb.and([eb("provider", "!=", "email"), eb("provider", "!=", "steam")]),
+        eb("provider", "in", getLoginOAuthProviders()),
       ]),
     )
     .executeTakeFirstOrThrow();
@@ -237,6 +205,77 @@ export async function updateAccountIdentityPasswordHash(
     .executeTakeFirst();
 }
 
+async function assertProviderUserIdAvailable(
+  db: Database,
+  accountId: string,
+  provider: string,
+  providerUserId: string,
+) {
+  const existingIdentity = await getAccountIdentityByProviderUserId(
+    db,
+    provider,
+    providerUserId,
+  );
+
+  if (existingIdentity && existingIdentity.account_id !== accountId) {
+    throw new OAuthFlowError("identity_belongs_to_another_account");
+  }
+}
+
+async function upsertExternalIdentity(
+  db: Database,
+  params: UpsertExternalIdentityParams,
+) {
+  await assertProviderUserIdAvailable(
+    db,
+    params.accountId,
+    params.provider,
+    params.providerUserId,
+  );
+
+  const existingIdentity = await getAccountIdentityByAccountIdAndProvider(
+    db,
+    params.accountId,
+    params.provider,
+  );
+
+  const now = new Date();
+
+  if (existingIdentity) {
+    assert(
+      existingIdentity.provider_user_id === params.providerUserId,
+      "OAuth identity provider user ID does not match the existing identity.",
+    );
+
+    return await db
+      .updateTable("account_identity")
+      .set({ state: params.state, updated_at: now, verified_at: now })
+      .where("id", "=", existingIdentity.id)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  }
+
+  try {
+    return await db
+      .insertInto("account_identity")
+      .values({
+        account_id: params.accountId,
+        provider: params.provider,
+        provider_user_id: params.providerUserId,
+        state: params.state,
+        verified_at: now,
+      })
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  } catch (error) {
+    if (isUniqueViolation(error)) {
+      throw new OAuthFlowError("identity_belongs_to_another_account");
+    }
+
+    throw error;
+  }
+}
+
 async function createInitialArkhamDbDeckSnapshot(
   db: Database,
   accountIdentityId: string,
@@ -250,8 +289,4 @@ async function createInitialArkhamDbDeckSnapshot(
     params.initialArkhamDbDeckSnapshot.lastModified,
     params.initialArkhamDbDeckSnapshot.decks,
   );
-}
-
-function assertOAuthProvider(provider: string) {
-  assert(provider !== "email", "Expected an OAuth provider.");
 }
