@@ -1,6 +1,7 @@
 export type OAuthFlowErrorCode =
   | "arkhamdb_invalid_response"
   | "arkhamdb_no_decks"
+  | "external_account_connection_failed"
   | "identity_belongs_to_another_account"
   | "invalid_state"
   | "oauth_failed"
@@ -9,6 +10,7 @@ export type OAuthFlowErrorCode =
 export const OAUTH_FLOW_ERROR_CODES = new Set([
   "arkhamdb_invalid_response",
   "arkhamdb_no_decks",
+  "external_account_connection_failed",
   "identity_belongs_to_another_account",
   "invalid_state",
   "oauth_failed",

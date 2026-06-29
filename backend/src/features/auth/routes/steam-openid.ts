@@ -58,7 +58,7 @@ async function handleSteamOpenIdCallback(c: Context<HonoEnv>) {
       "Missing account ID for Steam OpenID connect.",
     );
 
-    const identity = await getSteamOpenIdIdentity(c, state);
+    const identity = await steamOpenIdProvider.getIdentity(c, state);
     const existingIdentity = await getAccountIdentityByProviderUserId(
       db,
       steamOpenIdProvider.name,
@@ -83,13 +83,5 @@ async function handleSteamOpenIdCallback(c: Context<HonoEnv>) {
     );
   } catch (error) {
     return redirectToExternalAuthError(c, returnTo, error);
-  }
-}
-
-async function getSteamOpenIdIdentity(c: Context<HonoEnv>, state: string) {
-  try {
-    return await steamOpenIdProvider.getIdentity(c, state);
-  } catch (error) {
-    throw new OAuthFlowError("oauth_failed", error);
   }
 }

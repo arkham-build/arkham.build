@@ -96,10 +96,11 @@
       "oauth_errors": {
         "arkhamdb_invalid_response": "ArkhamDB sign-in failed. Please try again.",
         "arkhamdb_no_decks": "Your ArkhamDB account must have at least one deck before you can continue.",
-        "identity_belongs_to_another_account": "This ArkhamDB account is already linked to another account.",
-        "invalid_state": "ArkhamDB sign-in expired or became invalid. Please try again.",
+        "external_account_connection_failed": "External account connection failed. Please try again.",
+        "identity_belongs_to_another_account": "This external account is already linked to another account.",
+        "invalid_state": "External account connection expired or became invalid. Please try again.",
         "oauth_failed": "ArkhamDB sign-in failed. Please try again.",
-        "oauth_missing_code": "ArkhamDB sign-in was cancelled or did not complete. Please try again."
+        "oauth_missing_code": "External account connection was cancelled or did not complete. Please try again."
       },
       "password": "Password",
       "password_validation": "Minimum 8 characters",
@@ -1588,8 +1589,10 @@
           "title": "Credentials"
         },
         "oauth": {
+          "avatar": "Avatar",
           "connect": "Connect",
           "connect_help": "Connect your {{provider}} account to sync your decks and login with it.",
+          "connect_help_steam": "Connect your Steam account to sync settings and events from the Forbidden Knowledge™.",
           "connected": "Connected",
           "details": "Details",
           "disconnect": "Disconnect",
@@ -1600,7 +1603,8 @@
           "last_synced_at": "Last sync",
           "none": "None",
           "providers": {
-            "arkhamdb": "ArkhamDB"
+            "arkhamdb": "ArkhamDB",
+            "steam": "Steam"
           },
           "reconnect": "Refresh",
           "status": {

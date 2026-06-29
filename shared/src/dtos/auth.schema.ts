@@ -91,8 +91,21 @@ export const ArkhamDBIdentitySchema = z.object({
   details: ArkhamDbIdentityStateSchema,
 });
 
+export const SteamIdentityDetailsSchema = z.object({
+  avatarUrl: z.url(),
+  displayName: z.string().min(1),
+  profileUrl: z.url(),
+});
+
+export const SteamIdentitySchema = z.object({
+  canDisconnect: z.boolean(),
+  details: SteamIdentityDetailsSchema,
+  provider: z.literal("steam"),
+  providerUserId: z.string(),
+});
+
 export const OAuthIdentitySchema = z.object({
-  provider: z.string().refine((provider) => provider !== "email"),
+  provider: z.string().refine((provider) => provider === "arkhamdb"),
   providerUserId: z.string(),
   canDisconnect: z.boolean(),
 });
@@ -100,11 +113,14 @@ export const OAuthIdentitySchema = z.object({
 export const IdentitySchema = z.union([
   ArkhamDBIdentitySchema,
   EmailIdentitySchema,
+  SteamIdentitySchema,
   OAuthIdentitySchema,
 ]);
 
 export type EmailIdentity = z.infer<typeof EmailIdentitySchema>;
 export type OAuthIdentity = z.infer<typeof OAuthIdentitySchema>;
+export type SteamIdentity = z.infer<typeof SteamIdentitySchema>;
+export type SteamIdentityDetails = z.infer<typeof SteamIdentityDetailsSchema>;
 export type Identity = z.infer<typeof IdentitySchema>;
 export type ArkhamDbIdentityState = z.infer<typeof ArkhamDbIdentityStateSchema>;
 export type ArkhamDBIdentity = z.infer<typeof ArkhamDBIdentitySchema>;
@@ -113,6 +129,12 @@ export function isArkhamDBIdentity(
   identity: Identity | undefined,
 ): identity is ArkhamDBIdentity {
   return identity?.provider === "arkhamdb";
+}
+
+export function isSteamIdentity(
+  identity: Identity | undefined,
+): identity is SteamIdentity {
+  return identity?.provider === "steam";
 }
 
 export const SessionResponseSchema = z.object({

@@ -149,4 +149,8 @@ export const OAUTH_CONNECTIONS = [
     provider: "arkhamdb",
     icon: "icon-elder_sign",
   },
+  {
+    provider: "steam",
+    icon: "icon-steam",
+  },
 ];

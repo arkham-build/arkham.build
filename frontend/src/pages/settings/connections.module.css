@@ -54,3 +54,44 @@
   gap: 0.375rem;
   align-items: center;
 }
+
+.provider-icon {
+  width: 1em;
+  height: 1em;
+}
+
+.steam-profile-card {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.steam-profile-avatar {
+  display: block;
+  flex: none;
+  width: var(--icon-4xl);
+  height: var(--icon-4xl);
+  border-radius: var(--rounded);
+}
+
+.steam-profile-body {
+  min-width: 0;
+}
+
+.steam-profile-name {
+  display: block;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.steam-profile-id {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: first baseline;
+  gap: 0.375rem;
+  font-size: var(--text-xs);
+}
+
+.steam-profile-id code {
+  font: inherit;
+}

@@ -1,11 +1,13 @@
 import {
   type Identity,
   isArkhamDBIdentity,
+  isSteamIdentity,
   OAUTH_CONNECTIONS,
   type OAuthConnection,
 } from "@arkham-build/shared";
 import { CheckIcon, CloudOffIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { SteamIcon } from "@/components/icons/steam-icon";
 import { Button } from "@/components/ui/button";
 import { StatusPill } from "@/components/ui/status-pill";
 import { useToast } from "@/components/ui/toast.hooks";
@@ -37,7 +39,7 @@ export function OAuthConnectionCard(props: {
   variant?: "default" | "onboarding";
 }) {
   const { connection, returnTo, variant = "default" } = props;
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const session = useStore(selectSession);
   const toast = useToast();
   const disconnectOAuthIdentityMutation = useDisconnectOAuthIdentityMutation();
@@ -93,7 +95,7 @@ export function OAuthConnectionCard(props: {
     <article className={css["connection"]}>
       <header className={css["header"]}>
         <h3 className={css["title"]}>
-          <i className={connection.icon} />
+          <ConnectionIcon connection={connection} />
           {providerName}
         </h3>
         {isConnected && (
@@ -134,11 +136,7 @@ export function OAuthConnectionCard(props: {
           </>
         ) : (
           <>
-            <p>
-              {t("settings.account.oauth.connect_help", {
-                provider: providerName,
-              })}
-            </p>
+            <p>{getConnectionHelp(t, i18n, connection, providerName)}</p>
             <div className={css.actions}>
               <Button
                 as="a"
@@ -158,6 +156,10 @@ export function OAuthConnectionCard(props: {
 
 function ConnectionDetails({ identity }: { identity: Identity }) {
   const { t } = useTranslation();
+
+  if (isSteamIdentity(identity)) {
+    return <SteamConnectionDetails identity={identity} />;
+  }
 
   if (!isArkhamDBIdentity(identity)) return null;
 
@@ -197,6 +199,46 @@ function ConnectionDetails({ identity }: { identity: Identity }) {
   );
 }
 
+function SteamConnectionDetails({
+  identity,
+}: {
+  identity: Extract<Identity, { provider: "steam" }>;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <div className={css["steam-profile-card"]}>
+      <img
+        alt={t("settings.account.oauth.avatar")}
+        className={css["steam-profile-avatar"]}
+        src={identity.details.avatarUrl}
+      />
+      <div className={css["steam-profile-body"]}>
+        <a
+          className={css["steam-profile-name"]}
+          href={identity.details.profileUrl}
+          rel="noreferrer"
+          target="_blank"
+        >
+          {identity.details.displayName}
+        </a>
+        <div className={css["steam-profile-id"]}>
+          <span>{t("settings.account.oauth.user_id")}</span>
+          <code>{identity.providerUserId}</code>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ConnectionIcon({ connection }: { connection: OAuthConnection }) {
+  if (connection.provider === "steam") {
+    return <SteamIcon className={css["provider-icon"]} />;
+  }
+
+  return <i className={connection.icon} />;
+}
+
 type ConnectionStatus = "connected" | "disconnected";
 
 function isDisconnectable(identity: Identity) {
@@ -213,6 +255,22 @@ function getConnectionStatus(identity: Identity | undefined): ConnectionStatus {
   }
 
   return "connected";
+}
+
+function getConnectionHelp(
+  t: ReturnType<typeof useTranslation>["t"],
+  i18n: ReturnType<typeof useTranslation>["i18n"],
+  connection: OAuthConnection,
+  providerName: string,
+) {
+  const providerKey = `settings.account.oauth.connect_help_${connection.provider}`;
+
+  return t(
+    i18n.exists(providerKey)
+      ? providerKey
+      : "settings.account.oauth.connect_help",
+    { provider: providerName },
+  );
 }
 
 function getOAuthConnectHref(

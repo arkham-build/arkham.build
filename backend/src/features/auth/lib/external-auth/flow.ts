@@ -40,5 +40,5 @@ function getExternalAuthRedirectErrorCode(error: unknown) {
     return error.code;
   }
 
-  return "oauth_failed";
+  return "external_account_connection_failed";
 }

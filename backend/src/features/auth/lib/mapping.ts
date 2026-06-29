@@ -4,6 +4,8 @@ import {
   type ArkhamDbIdentityState,
   ArkhamDbIdentityStateSchema,
   SessionResponseSchema,
+  type SteamIdentity,
+  SteamIdentityDetailsSchema,
 } from "@arkham-build/shared";
 import type { Selectable } from "kysely";
 import type { Account, AccountIdentity } from "../../../db/schema.types.ts";
@@ -57,6 +59,13 @@ export function mapAccountSessionToResponse(
 
       if (arkhamdbIdentity) return arkhamdbIdentity;
 
+      const steamIdentity = mapSteamAccountIdentityToIdentity(
+        identity,
+        canDisconnect,
+      );
+
+      if (steamIdentity) return steamIdentity;
+
       assert(
         identity.provider_user_id,
         "OAuth identity is missing provider_user_id",
@@ -96,6 +105,29 @@ export function mapArkhamDbAccountIdentityToIdentity(
       status: state.status,
       username: state.username ?? null,
     },
+  };
+}
+
+export function mapSteamAccountIdentityToIdentity(
+  identity: AccountIdentitySummary,
+  canDisconnect: boolean,
+): SteamIdentity | null {
+  if (identity.provider !== "steam") {
+    return null;
+  }
+
+  assert(
+    identity.provider_user_id,
+    "Steam identity is missing provider_user_id",
+  );
+
+  const details = SteamIdentityDetailsSchema.parse(identity.state);
+
+  return {
+    provider: "steam",
+    providerUserId: identity.provider_user_id,
+    canDisconnect,
+    details,
   };
 }
 
