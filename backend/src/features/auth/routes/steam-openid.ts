@@ -1,5 +1,6 @@
 import assert from "node:assert";
 import { type Context, Hono } from "hono";
+import { getAccountIdentityByProviderUserId } from "../../../lib/auth/account-identities.ts";
 import { sessionAuth } from "../../../lib/auth/session-auth-middleware.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { OAuthFlowError } from "../../../lib/oauth.ts";
@@ -13,6 +14,7 @@ import {
   getExternalAuthContext,
   validateExternalAuthState,
 } from "../lib/external-auth/state.ts";
+import { connectSteamIdentityToAccount } from "../queries/identities.ts";
 
 export const steamOpenIdRoutes = new Hono<HonoEnv>();
 
@@ -31,6 +33,7 @@ steamOpenIdRoutes.get("/callback", handleSteamOpenIdCallback);
 
 async function handleSteamOpenIdCallback(c: Context<HonoEnv>) {
   const config = c.get("config");
+  const db = c.get("db");
   const state = c.req.query("state");
 
   const externalAuthContext = await getExternalAuthContext(c);
@@ -55,7 +58,25 @@ async function handleSteamOpenIdCallback(c: Context<HonoEnv>) {
       "Missing account ID for Steam OpenID connect.",
     );
 
-    await getSteamOpenIdIdentity(c, state);
+    const identity = await getSteamOpenIdIdentity(c, state);
+    const existingIdentity = await getAccountIdentityByProviderUserId(
+      db,
+      steamOpenIdProvider.name,
+      identity.providerUserId,
+    );
+
+    if (
+      existingIdentity &&
+      existingIdentity.account_id !== validatedExternalAuthContext.accountId
+    ) {
+      throw new OAuthFlowError("identity_belongs_to_another_account");
+    }
+
+    await connectSteamIdentityToAccount(db, {
+      accountId: validatedExternalAuthContext.accountId,
+      profile: identity.profile,
+      providerUserId: identity.providerUserId,
+    });
 
     return c.redirect(
       `${config.FRONTEND_URL}${validatedExternalAuthContext.returnTo}`,

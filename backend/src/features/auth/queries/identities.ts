@@ -10,6 +10,7 @@ import type {
   OAuthAccessToken,
   OAuthProviderIdentity,
 } from "../../../lib/oauth.ts";
+import type { SteamProfile } from "../../../lib/steam/steam-openid-provider.ts";
 
 export async function createEmailIdentity(
   db: Database,
@@ -37,6 +38,53 @@ export interface ConnectOAuthIdentityToAccountParams {
   providerUserId: string;
   accessToken: OAuthAccessToken;
   initialArkhamDbDeckSnapshot?: OAuthProviderIdentity["initialArkhamDbDeckSnapshot"];
+}
+
+export interface ConnectSteamIdentityToAccountParams {
+  accountId: string;
+  profile: SteamProfile;
+  providerUserId: string;
+}
+
+export async function connectSteamIdentityToAccount(
+  db: Database,
+  params: ConnectSteamIdentityToAccountParams,
+) {
+  return await db.transaction().execute(async (tx) => {
+    const existingIdentity = await getAccountIdentityByAccountIdAndProvider(
+      tx,
+      params.accountId,
+      "steam",
+    );
+
+    const now = new Date();
+
+    if (existingIdentity) {
+      assert(
+        existingIdentity.provider_user_id === params.providerUserId,
+        "Steam identity provider user ID does not match the existing identity.",
+      );
+
+      return await tx
+        .updateTable("account_identity")
+        .set({ state: params.profile, updated_at: now, verified_at: now })
+        .where("id", "=", existingIdentity.id)
+        .returningAll()
+        .executeTakeFirstOrThrow();
+    }
+
+    return await tx
+      .insertInto("account_identity")
+      .values({
+        account_id: params.accountId,
+        provider: "steam",
+        provider_user_id: params.providerUserId,
+        state: params.profile,
+        verified_at: now,
+      })
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  });
 }
 
 export async function connectOAuthIdentityToAccount(
