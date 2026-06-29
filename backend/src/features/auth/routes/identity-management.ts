@@ -19,6 +19,7 @@ import {
   assertVerificationTokenCooldown,
 } from "../lib/assertions.ts";
 import { hashPassword, verifyPassword } from "../lib/crypto.ts";
+import { canDisconnectExternalIdentity } from "../lib/external-identities.ts";
 import { mapAccountSessionToResponse } from "../lib/mapping.ts";
 import { sendVerificationEmail } from "../lib/verification-email.ts";
 import {
@@ -54,15 +55,13 @@ routes.get("/me", sessionAuth({ requireCompleteProfile: false }), async (c) => {
   const db = c.get("db");
   const account = c.get("account");
   const identities = await listAccountIdentitiesByAccountId(db, account.id);
-  const canDisconnectOAuthIdentity =
-    (await countUsableLoginIdentities(db, account.id)) > 1;
+  const usableLoginIdentityCount = await countUsableLoginIdentities(
+    db,
+    account.id,
+  );
 
   return c.json(
-    mapAccountSessionToResponse(
-      account,
-      identities,
-      canDisconnectOAuthIdentity,
-    ),
+    mapAccountSessionToResponse(account, identities, usableLoginIdentityCount),
   );
 });
 
@@ -299,7 +298,7 @@ routes.delete("/oauth/:provider", sessionAuth(), async (c) => {
       account.id,
     );
 
-    if (usableLoginIdentityCount <= 1) {
+    if (!canDisconnectExternalIdentity(provider, usableLoginIdentityCount)) {
       throw new HTTPException(400, {
         message: "Account must have at least one login identity",
       });

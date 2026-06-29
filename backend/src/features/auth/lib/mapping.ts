@@ -7,6 +7,7 @@ import {
 } from "@arkham-build/shared";
 import type { Selectable } from "kysely";
 import type { Account, AccountIdentity } from "../../../db/schema.types.ts";
+import { canDisconnectExternalIdentity } from "./external-identities.ts";
 
 type AccountIdentitySummary = Pick<
   Selectable<AccountIdentity>,
@@ -27,7 +28,7 @@ type SessionAccount = Pick<
 export function mapAccountSessionToResponse(
   account: SessionAccount,
   identities: AccountIdentitySummary[],
-  canDisconnect: boolean,
+  usableLoginIdentityCount: number,
 ) {
   return SessionResponseSchema.parse({
     account: {
@@ -45,6 +46,10 @@ export function mapAccountSessionToResponse(
         };
       }
 
+      const canDisconnect = canDisconnectExternalIdentity(
+        identity.provider,
+        usableLoginIdentityCount,
+      );
       const arkhamdbIdentity = mapArkhamDbAccountIdentityToIdentity(
         identity,
         canDisconnect,

@@ -170,7 +170,7 @@ export async function countUsableLoginIdentities(
           eb("verified_at", "is not", null),
           eb("password_hash", "is not", null),
         ]),
-        eb("provider", "!=", "email"),
+        eb.and([eb("provider", "!=", "email"), eb("provider", "!=", "steam")]),
       ]),
     )
     .executeTakeFirstOrThrow();
