@@ -10,6 +10,7 @@ import authRouter, {
   arkhamdbOAuthRoutes,
 } from "./features/auth/routes/index.ts";
 import cacheRouter from "./features/cache/routes.ts";
+import cardTagsRouter from "./features/card-tags/routes.ts";
 import customizationSheetRouter from "./features/customization_sheet/routes.ts";
 import decksRouter from "./features/decks/routes.ts";
 import fanMadeProjectInfoRouter from "./features/fan-made-content/routes.ts";
@@ -86,6 +87,7 @@ export function appFactory(
   v2Account.use("*", authenticatedCors);
   v2Account.use("*", bodyLimit);
   v2Account.route("/auth", authRouter);
+  v2Account.route("/card-tags", cardTagsRouter);
   v2Account.route("/decks", decksRouter);
   v2Account.route("/folders", foldersRouter);
   v2Account.route("/profile", profileRouter);

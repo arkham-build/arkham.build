@@ -483,6 +483,18 @@ CREATE TABLE public.account (
 
 
 --
+-- Name: account_card_tag; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.account_card_tag (
+    account_id uuid NOT NULL,
+    revision uuid DEFAULT uuidv7() NOT NULL,
+    state jsonb NOT NULL,
+    CONSTRAINT chk_account_card_tag_state_length CHECK ((octet_length(COALESCE((state)::text, ''::text)) <= 1048576))
+);
+
+
+--
 -- Name: account_folder; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1274,6 +1286,14 @@ ALTER TABLE ONLY pgboss.version
 
 ALTER TABLE ONLY pgboss.warning
     ADD CONSTRAINT warning_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: account_card_tag account_card_tag_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_card_tag
+    ADD CONSTRAINT account_card_tag_pkey PRIMARY KEY (account_id);
 
 
 --
@@ -2223,6 +2243,14 @@ ALTER TABLE ONLY pgboss.subscription
 
 
 --
+-- Name: account_card_tag account_card_tag_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account_card_tag
+    ADD CONSTRAINT account_card_tag_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id) ON DELETE CASCADE;
+
+
+--
 -- Name: account_folder account_folder_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2709,4 +2737,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260227194035'),
     ('20260418123000'),
     ('20260505120000'),
-    ('20260508231500');
+    ('20260508231500'),
+    ('20260705120000');

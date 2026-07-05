@@ -45,6 +45,12 @@ export interface Account {
   updated_at: Generated<Timestamp>;
 }
 
+export interface AccountCardTag {
+  account_id: string;
+  revision: Generated<string>;
+  state: Json;
+}
+
 export interface AccountFolder {
   account_id: string;
   revision: Generated<string>;
@@ -586,6 +592,7 @@ export interface VerificationToken {
 
 export interface DB {
   account: Account;
+  account_card_tag: AccountCardTag;
   account_folder: AccountFolder;
   account_identity: AccountIdentity;
   account_moderation_action: AccountModerationAction;
