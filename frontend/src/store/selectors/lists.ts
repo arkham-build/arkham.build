@@ -35,6 +35,8 @@ import { applyCardChanges } from "../lib/card-edits";
 import {
   getCardTagFilterCode,
   getCardTagNameFromFilterCode,
+  mergeCardTagNames,
+  normalizeCardTagName,
   resolveCardTagCardCode,
 } from "../lib/card-tags";
 import { getAdditionalDeckOptions } from "../lib/deck-validation";
@@ -195,6 +197,7 @@ function makeUserFilter(
           cardTags,
           metadata,
           lookupTables.relations.fronts,
+          resolvedDeck,
         );
         if (filter) filters.push(filter);
         break;
@@ -1130,10 +1133,19 @@ export const selectCardTagOptions = createSelector(
   selectLookupTables,
   selectBaseListCards,
   (state: StoreState) => state.cardTags,
+  (_: StoreState, resolvedDeck: ResolvedDeck | undefined) => resolvedDeck,
   selectLocaleSortingCollator,
   selectCardTagMapper,
-  (metadata, lookupTables, baseFilterResult, cardTags, collator, mapper) => {
-    const tagNames = new Set<string>();
+  (
+    metadata,
+    lookupTables,
+    baseFilterResult,
+    cardTags,
+    resolvedDeck,
+    collator,
+    mapper,
+  ) => {
+    const tagNames = new Map<string, string>();
     let hasFavorite = false;
 
     for (const card of baseFilterResult?.filteredCards ?? []) {
@@ -1147,15 +1159,21 @@ export const selectCardTagOptions = createSelector(
         hasFavorite = true;
       }
 
-      const assignedTagNames = cardTags.cardTags[canonicalCode];
-      if (!assignedTagNames) continue;
+      const assignedTagNames = mergeCardTagNames(
+        cardTags.cardTags[canonicalCode],
+        resolvedDeck?.deckCardTags[canonicalCode],
+      );
 
       for (const tagName of assignedTagNames) {
-        tagNames.add(tagName);
+        const normalizedName = normalizeCardTagName(tagName);
+
+        if (!tagNames.has(normalizedName)) {
+          tagNames.set(normalizedName, tagName);
+        }
       }
     }
 
-    const options = Array.from(tagNames)
+    const options = Array.from(tagNames.values())
       .map((tagName) => getCardTagFilterCode(tagName))
       .map(mapper)
       .sort((a, b) => collator.compare(a.name, b.name));

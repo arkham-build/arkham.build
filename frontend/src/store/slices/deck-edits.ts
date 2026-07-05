@@ -1,10 +1,15 @@
-import { type Id, SPECIAL_CARD_CODES } from "@arkham-build/shared";
+import {
+  CardTagSchema,
+  type Id,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
 import { capitalize } from "@/utils/formatting";
 import { range } from "@/utils/range";
 import { clampAttachmentQuantity } from "../lib/attachments";
+import { normalizeCardTagName, resolveCardTagCardCode } from "../lib/card-tags";
 import { randomBasicWeaknessForDeck } from "../lib/random-basic-weakness";
 import { getDeckLimitOverride } from "../lib/resolve-deck";
 import { dehydrate } from "../persist";
@@ -357,6 +362,33 @@ export const createDeckEditsSlice: StateCreator<
 
     dehydrate(get(), "edits").catch(console.error);
   },
+  updateDeckCardTags(deckId, cardCode, tagNames) {
+    set((state) => {
+      const canonicalCode = resolveCardTagCardCode(
+        state.metadata,
+        selectLookupTables(state).relations.fronts,
+        cardCode,
+      );
+      const nextTagNames = parseDeckCardTagNames(tagNames);
+      const edits = currentEdits(state, deckId);
+
+      return {
+        deckEdits: {
+          ...state.deckEdits,
+          [deckId]: {
+            ...edits,
+            deckCardTags: {
+              ...edits.deckCardTags,
+              [canonicalCode]: nextTagNames.length ? nextTagNames : null,
+            },
+            type: "user" as const,
+          },
+        },
+      };
+    });
+
+    dehydrate(get(), "edits").catch(console.error);
+  },
   upgradeCard(payload) {
     set((state) => getCardUpgrade(state, payload));
   },
@@ -504,6 +536,22 @@ function getCardQuantityUpdate(
   }
 
   return nextState;
+}
+
+function parseDeckCardTagNames(tagNames: string[]) {
+  const result: string[] = [];
+  const seen = new Set<string>();
+
+  for (const name of tagNames) {
+    const tagName = CardTagSchema.parse(name);
+    const normalizedName = normalizeCardTagName(tagName);
+    if (seen.has(normalizedName)) continue;
+
+    seen.add(normalizedName);
+    result.push(tagName);
+  }
+
+  return result;
 }
 
 function getCardUpgrade(

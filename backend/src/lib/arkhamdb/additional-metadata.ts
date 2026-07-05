@@ -27,6 +27,7 @@ export function partitionDeckMeta(meta: Record<string, unknown>) {
       key.startsWith("card_pool_extension_") ||
       key.startsWith("hidden_slots") ||
       key.startsWith("annotation_") ||
+      key === "deck_card_tags" ||
       key.startsWith("intro_md") ||
       key.startsWith("sealed_deck") ||
       key.startsWith("banner_url") ||

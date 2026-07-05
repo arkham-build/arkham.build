@@ -2,7 +2,12 @@ import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import type { StoreState } from "@/store/slices";
 import { getMockStore } from "@/test/get-mock-store";
-import { decodeCustomizations, encodeCustomizations } from "./deck-meta";
+import {
+  decodeCustomizations,
+  decodeDeckCardTags,
+  encodeCustomizations,
+  encodeDeckCardTags,
+} from "./deck-meta";
 import type { Customizations } from "./types";
 
 const sampleCustomizations = JSON.parse(
@@ -226,6 +231,39 @@ describe("decodeCustomizations()", () => {
         },
       }
     `);
+  });
+});
+
+describe("deck card tags", () => {
+  it("decodes valid deck card tags", () => {
+    expect(
+      decodeDeckCardTags({
+        deck_card_tags: JSON.stringify({
+          "01016": [" Upgrade ", "Campaign"],
+        }),
+      }),
+    ).toEqual({
+      "01016": ["Upgrade", "Campaign"],
+    });
+  });
+
+  it("ignores invalid deck card tags", () => {
+    expect(
+      decodeDeckCardTags({
+        deck_card_tags: JSON.stringify({
+          "01016": [""],
+        }),
+      }),
+    ).toEqual({});
+  });
+
+  it("encodes deck card tags without empty assignments", () => {
+    expect(
+      encodeDeckCardTags({
+        "01016": ["Upgrade", " upgrade "],
+        "01017": [],
+      }),
+    ).toBe('{"01016":["Upgrade"]}');
   });
 });
 

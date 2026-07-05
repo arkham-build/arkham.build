@@ -110,6 +110,8 @@ export type DeckCharts = {
 
 export type Annotations = Record<string, string | null>;
 
+export type DeckCardTags = Record<string, string[]>;
+
 export type ResolvedDeck = Omit<Deck, "sideSlots"> & {
   annotations: Annotations;
   attachments: AttachmentQuantities | undefined;
@@ -128,6 +130,7 @@ export type ResolvedDeck = Omit<Deck, "sideSlots"> & {
     slots: Record<string, ResolvedCard>;
   };
   cardPool?: string[];
+  deckCardTags: DeckCardTags;
   metaParsed: DeckMeta;
   customizations?: Customizations;
   fanMadeData?: DeckFanMadeContent;

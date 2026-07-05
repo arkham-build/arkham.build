@@ -2,7 +2,9 @@ import { CARD_TAG_NAME_MAX_LENGTH, type CardTag } from "@arkham-build/shared";
 import { PlusIcon, Settings2Icon } from "lucide-react";
 import { useId, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import type { ResolvedDeck } from "@/store/lib/types";
 import { isEmpty } from "@/utils/is-empty";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { Button } from "../ui/button";
 import { Combobox } from "../ui/combobox/combobox";
 import { ResultTag } from "../ui/combobox/combobox-results";
@@ -16,14 +18,37 @@ import {
   ModalInner,
 } from "../ui/modal";
 import css from "./card-tags.module.css";
-import { type TagItem, useCardTags } from "./use-card-tags";
+import { type TagItem, useCardTags, useDeckCardTags } from "./use-card-tags";
 
 type Props = {
   cardCode: string;
 };
 
 export function CardTags({ cardCode }: Props) {
-  const { i18n, t } = useTranslation();
+  const { canEdit, resolvedDeck } = useResolvedDeck();
+
+  return (
+    <div className={css["tags"]}>
+      {resolvedDeck && (
+        <DeckCardTags
+          cardCode={cardCode}
+          deck={resolvedDeck}
+          readonly={!canEdit}
+        />
+      )}
+      <AccountCardTags cardCode={cardCode} showLabel />
+    </div>
+  );
+}
+
+function AccountCardTags({
+  cardCode,
+  showLabel,
+}: {
+  cardCode: string;
+  showLabel: boolean;
+}) {
+  const { t } = useTranslation();
   const {
     onCreateTag,
     onDeleteTag,
@@ -33,6 +58,87 @@ export function CardTags({ cardCode }: Props) {
     selectedItems,
     tagOptions,
   } = useCardTags(cardCode);
+
+  return (
+    <div className={css["tag-section"]}>
+      <CardTagCombobox
+        id={`card-tags-${cardCode}`}
+        label={showLabel ? t("card_tags.account_title") : t("card_tags.title")}
+        onCreateTag={onCreateTag}
+        onTagsChange={onTagsChange}
+        placeholder={t("card_tags.placeholder")}
+        selectedItems={selectedItems}
+        showLabel={showLabel}
+        tagOptions={tagOptions}
+      />
+      {!isEmpty(tagOptions) && (
+        <CardTagManager
+          onDelete={onDeleteTag}
+          onError={onError}
+          onRename={onRenameTag}
+          tags={tagOptions.map((item) => item.tag)}
+        />
+      )}
+    </div>
+  );
+}
+
+function DeckCardTags({
+  cardCode,
+  deck,
+  readonly,
+}: {
+  cardCode: string;
+  deck: ResolvedDeck;
+  readonly?: boolean;
+}) {
+  const { t } = useTranslation();
+  const { onCreateTag, onTagsChange, selectedItems, tagOptions } =
+    useDeckCardTags(cardCode, deck);
+
+  if (readonly && isEmpty(selectedItems)) {
+    return null;
+  }
+
+  return (
+    <div className={css["tag-section"]}>
+      <CardTagCombobox
+        id={`deck-card-tags-${cardCode}`}
+        label={t("card_tags.deck_title")}
+        onCreateTag={onCreateTag}
+        onTagsChange={onTagsChange}
+        placeholder={t("card_tags.deck_placeholder")}
+        readonly={readonly}
+        selectedItems={selectedItems}
+        showLabel
+        tagOptions={tagOptions}
+      />
+    </div>
+  );
+}
+
+function CardTagCombobox({
+  id,
+  label,
+  onCreateTag,
+  onTagsChange,
+  placeholder,
+  readonly,
+  selectedItems,
+  showLabel,
+  tagOptions,
+}: {
+  id: string;
+  label: string;
+  onCreateTag: (name: string) => void;
+  onTagsChange: (items: TagItem[]) => void;
+  placeholder: string;
+  readonly?: boolean;
+  selectedItems: TagItem[];
+  showLabel: boolean;
+  tagOptions: TagItem[];
+}) {
+  const { i18n, t } = useTranslation();
 
   const creatable = useMemo(
     () => ({
@@ -48,30 +154,22 @@ export function CardTags({ cardCode }: Props) {
   );
 
   return (
-    <div className={css["tags"]}>
-      <Combobox
-        className={css["combobox"]}
-        creatable={creatable}
-        id={`card-tags-${cardCode}`}
-        itemToString={tagItemToString}
-        items={tagOptions}
-        label={t("card_tags.title")}
-        locale={i18n.language}
-        onValueChange={onTagsChange}
-        placeholder={t("card_tags.placeholder")}
-        renderItem={(item) => item.tag}
-        renderResult={renderTagResult}
-        selectedItems={selectedItems}
-      />
-      {!isEmpty(tagOptions) && (
-        <CardTagManager
-          onDelete={onDeleteTag}
-          onError={onError}
-          onRename={onRenameTag}
-          tags={tagOptions.map((item) => item.tag)}
-        />
-      )}
-    </div>
+    <Combobox
+      className={css["combobox"]}
+      creatable={creatable}
+      id={id}
+      itemToString={tagItemToString}
+      items={tagOptions}
+      label={label}
+      locale={i18n.language}
+      onValueChange={onTagsChange}
+      placeholder={placeholder}
+      readonly={readonly}
+      renderItem={(item) => item.tag}
+      renderResult={renderTagResult}
+      selectedItems={selectedItems}
+      showLabel={showLabel}
+    />
   );
 }
 

@@ -46,6 +46,7 @@ import { parse } from "./buildql/parser";
 import { type CardOwnershipOptions, ownedCardCount } from "./card-ownership";
 import {
   getCardTagNameFromFilterCode,
+  normalizeCardTagName,
   resolveCardTagCardCode,
 } from "./card-tags";
 import type { LookupTables } from "./lookup-tables.types";
@@ -218,6 +219,7 @@ export function filterCardTags(
   cardTags: CardTagsState,
   metadata: Metadata,
   fronts: LookupTables["relations"]["fronts"],
+  deck: Pick<ResolvedDeck, "deckCardTags"> | undefined = undefined,
 ) {
   if (!value.length) return undefined;
 
@@ -226,7 +228,7 @@ export function filterCardTags(
 
   for (const code of value) {
     const tagName = getCardTagNameFromFilterCode(code);
-    if (tagName) tagNames.add(tagName);
+    if (tagName) tagNames.add(normalizeCardTagName(tagName));
   }
 
   return (card: Card) => {
@@ -236,8 +238,14 @@ export function filterCardTags(
       return true;
     }
 
-    const assignedTagNames = cardTags.cardTags[canonicalCode];
-    return assignedTagNames?.some((tagName) => tagNames.has(tagName)) ?? false;
+    const assignedTagNames = [
+      ...(cardTags.cardTags[canonicalCode] ?? []),
+      ...(deck?.deckCardTags[canonicalCode] ?? []),
+    ];
+
+    return assignedTagNames.some((tagName) =>
+      tagNames.has(normalizeCardTagName(tagName)),
+    );
   };
 }
 

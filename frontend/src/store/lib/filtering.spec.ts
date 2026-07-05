@@ -36,6 +36,7 @@ import {
   filterTagFallback,
   makeOptionFilter,
 } from "./filtering";
+import type { ResolvedDeck } from "./types";
 
 describe("filter: investigator access", () => {
   let store: StoreApi<StoreState>;
@@ -1025,12 +1026,18 @@ describe("filter: card tags", () => {
     });
   });
 
-  function applyFilter(state: StoreState, code: string, value: string[]) {
+  function applyFilter(
+    state: StoreState,
+    code: string,
+    value: string[],
+    deck?: Pick<ResolvedDeck, "deckCardTags">,
+  ) {
     return filterCardTags(
       value,
       state.cardTags,
       state.metadata,
       selectLookupTables(state).relations.fronts,
+      deck,
     )?.(state.metadata.cards[code]);
   }
 
@@ -1072,6 +1079,20 @@ describe("filter: card tags", () => {
   it("does not match alternate cards as the same card identity", () => {
     const state = store.getState();
     expect(applyFilter(state, "90024", [CARD_TAG_FAVORITE_ID])).toBeFalsy();
+  });
+
+  it("matches deck-local tags only with deck context", () => {
+    const state = store.getState();
+    const filterCode = getCardTagFilterCode("Scenario");
+    const deck = {
+      deckCardTags: {
+        "01017": ["Scenario"],
+      },
+    } satisfies Pick<ResolvedDeck, "deckCardTags">;
+
+    expect(applyFilter(state, "01017", [filterCode])).toBeFalsy();
+    expect(applyFilter(state, "01017", [filterCode], deck)).toBeTruthy();
+    expect(applyFilter(state, "01018", [filterCode], deck)).toBeFalsy();
   });
 });
 

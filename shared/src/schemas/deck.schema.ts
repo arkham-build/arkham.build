@@ -92,6 +92,7 @@ export type DeckMeta = {
   alternate_front?: string | null;
   buildql_deck_options_override?: string | null;
   card_pool?: string | null;
+  deck_card_tags?: string | null;
   deck_size_selected?: string | null;
   extra_deck?: string | null;
   fan_made_content?: DeckFanMadeContent;

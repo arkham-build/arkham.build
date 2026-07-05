@@ -167,7 +167,10 @@
       "tooltip": "{{name}} <em>({{campaignName}})</em>"
     },
     "card_tags": {
+      "account_title": "Global tags",
       "create_named": "Create \"{{name}}\"",
+      "deck_placeholder": "Add deck tag...",
+      "deck_title": "Deck tags",
       "favorite": "Favorite",
       "manage": {
         "action": "Manage tags",

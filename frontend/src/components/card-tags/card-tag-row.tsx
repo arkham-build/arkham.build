@@ -1,6 +1,7 @@
 import { HeartIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cx } from "@/utils/cx";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { Tag } from "../ui/tag";
 import css from "./card-tag-row.module.css";
 import { useCardTagDisplay } from "./use-card-tags";
@@ -12,7 +13,11 @@ type Props = {
 
 export function CardTagRow({ cardCode, className }: Props) {
   const { t } = useTranslation();
-  const { isFavorite, selectedItems } = useCardTagDisplay(cardCode);
+  const { resolvedDeck } = useResolvedDeck();
+  const { isFavorite, selectedItems } = useCardTagDisplay(
+    cardCode,
+    resolvedDeck,
+  );
 
   if (!isFavorite && !selectedItems.length) return null;
 
@@ -27,7 +32,7 @@ export function CardTagRow({ cardCode, className }: Props) {
           </Tag>
         )}
         {selectedItems.map((item) => (
-          <Tag as="li" key={item.tag} size="sm">
+          <Tag as="li" key={item.code} size="sm">
             {item.tag}
           </Tag>
         ))}

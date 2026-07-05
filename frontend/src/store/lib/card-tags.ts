@@ -100,6 +100,27 @@ export function normalizeCardTagName(name: string): string {
   return name.trim().toLowerCase();
 }
 
+export function mergeCardTagNames(
+  ...groups: Array<Iterable<string> | undefined>
+): string[] {
+  const result: string[] = [];
+  const seen = new Set<string>();
+
+  for (const group of groups) {
+    if (!group) continue;
+
+    for (const tagName of group) {
+      const normalizedName = normalizeCardTagName(tagName);
+      if (!normalizedName || seen.has(normalizedName)) continue;
+
+      seen.add(normalizedName);
+      result.push(tagName);
+    }
+  }
+
+  return result;
+}
+
 function getFirstLookupKey(
   lookup: Record<string, string | number> | undefined,
 ): string | undefined {

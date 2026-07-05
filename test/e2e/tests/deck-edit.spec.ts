@@ -40,6 +40,63 @@ test.describe("deck edit", () => {
     await assertEditorDeckQuantity(page, "01016", 2);
   });
 
+  test("assign deck-local card tags", async ({ page }) => {
+    await page.goto("/deck/create/01001");
+    await page.getByTestId("create-save").click();
+    await fillSearch(page, ".45 automatic");
+    await adjustListCardQuantity(page, "01016", "increment");
+
+    await page
+      .getByTestId("editor-tabs-slots")
+      .getByTestId("listcard-01016")
+      .getByTestId("listcard-title")
+      .click();
+
+    await page
+      .getByTestId("deck-card-tags-01016")
+      .getByTestId("combobox-input")
+      .click();
+    await page
+      .getByTestId("deck-card-tags-01016")
+      .getByTestId("combobox-input")
+      .fill("Scenario");
+    await page.getByTestId("combobox-menu-item-create:Scenario").click();
+
+    await expect(page.getByTestId("deck-card-tags-01016")).toContainText(
+      "Scenario",
+    );
+
+    await page.locator("body").press("Escape");
+    await page
+      .getByTestId("editor-tabs-slots")
+      .getByTestId("listcard-01016")
+      .hover();
+    await expect(page.getByTestId("card-tooltip")).toContainText("Scenario");
+
+    await page.mouse.move(0, 0);
+    await fillSearch(page, "");
+    await page
+      .getByTestId("filter-Card tags")
+      .getByTestId("collapsible-trigger")
+      .click();
+    await page
+      .getByTestId("filter-Card tags")
+      .getByTestId("combobox-input")
+      .click();
+    await page
+      .getByTestId("filter-Card tags")
+      .getByTestId("combobox-input")
+      .fill("Scenario");
+    await page.getByTestId("combobox-menu-item-tag:Scenario").click();
+
+    await expect(page.getByTestId("cardlist-count").first()).toContainText(
+      "1 card",
+    );
+    await expect(
+      page.getByTestId("card-list-scroller").getByTestId("listcard-01016"),
+    ).toBeVisible();
+  });
+
   test("add card with bonds", async ({ page }) => {
     await page.goto("/deck/create/01001");
     await page.getByTestId("create-save").click();

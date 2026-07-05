@@ -4,7 +4,12 @@ import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useSaveCardTagsMutation } from "@/queries/mutations/card-tags";
 import { useStore } from "@/store";
-import { resolveCardTagCardCode } from "@/store/lib/card-tags";
+import {
+  mergeCardTagNames,
+  normalizeCardTagName,
+  resolveCardTagCardCode,
+} from "@/store/lib/card-tags";
+import type { ResolvedDeck } from "@/store/lib/types";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
@@ -19,8 +24,11 @@ export type TagItem = {
 
 const EMPTY_TAG_NAMES: string[] = [];
 
-export function useCardTagDisplay(cardCode: string) {
-  return useStore((state) => selectCardTagDisplayState(state, cardCode));
+export function useCardTagDisplay(
+  cardCode: string,
+  deck: ResolvedDeck | undefined,
+) {
+  return useStore((state) => selectCardTagDisplayState(state, cardCode, deck));
 }
 
 export function useCardFavorite(cardCode: string) {
@@ -92,6 +100,50 @@ export function useCardTags(cardCode: string) {
   };
 }
 
+export function useDeckCardTags(cardCode: string, deck: ResolvedDeck) {
+  const updateDeckCardTags = useStore((state) => state.updateDeckCardTags);
+  const { selectedItems, tagOptions } = useStore((state) =>
+    selectDeckCardTagsState(state, cardCode, deck),
+  );
+  const onError = useCardTagsError();
+
+  const onTagsChange = useCallback(
+    (nextItems: TagItem[]) => {
+      try {
+        updateDeckCardTags(
+          deck.id,
+          cardCode,
+          nextItems.map((item) => item.tag),
+        );
+      } catch (err) {
+        onError(err);
+      }
+    },
+    [cardCode, deck.id, onError, updateDeckCardTags],
+  );
+
+  const onCreateTag = useCallback(
+    (name: string) => {
+      try {
+        updateDeckCardTags(deck.id, cardCode, [
+          ...selectedItems.map((item) => item.tag),
+          name,
+        ]);
+      } catch (err) {
+        onError(err);
+      }
+    },
+    [cardCode, deck.id, onError, selectedItems, updateDeckCardTags],
+  );
+
+  return {
+    onCreateTag,
+    onTagsChange,
+    selectedItems,
+    tagOptions,
+  };
+}
+
 function usePersistCardTags() {
   const saveCardTags = useSaveCardTagsMutation();
   const authenticated = useStore(
@@ -151,28 +203,74 @@ const selectCardTagsState = createSelector(
   (cardTags, tags, metadata, fronts, collator, cardCode) => {
     const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
     const assignedTagNames = cardTags[canonicalCode] ?? EMPTY_TAG_NAMES;
-    const selectedItems = assignedTagNames.reduce<TagItem[]>((acc, tag) => {
-      acc.push({ code: tag, tag });
-      return acc;
-    }, []);
 
     return {
-      selectedItems,
+      selectedItems: assignedTagNames.map(tagNameToAccountItem),
       tagOptions: tags
         .toSorted((a, b) => collator.compare(a, b))
-        .map<TagItem>((tag) => ({
-          code: tag,
-          tag,
-        })),
+        .map(tagNameToAccountItem),
     };
+  },
+);
+
+const selectDeckCardTagsState = createSelector(
+  (state: StoreState) => state.cardTags.tags,
+  (state: StoreState) => state.metadata,
+  (state: StoreState) => selectLookupTables(state).relations.fronts,
+  selectLocaleSortingCollator,
+  (_: StoreState, cardCode: string) => cardCode,
+  (_: StoreState, __: string, deck: ResolvedDeck) => deck.deckCardTags,
+  (accountTagNames, metadata, fronts, collator, cardCode, deckCardTags) => {
+    const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
+    const assignedTagNames = deckCardTags[canonicalCode] ?? EMPTY_TAG_NAMES;
+    const deckTagNames = Object.values(deckCardTags).flat();
+    const optionTagNames = mergeCardTagNames(accountTagNames, deckTagNames);
+
+    return {
+      selectedItems: assignedTagNames.map(tagNameToDeckItem),
+      tagOptions: optionTagNames
+        .toSorted((a, b) => collator.compare(a, b))
+        .map(tagNameToDeckItem),
+    };
+  },
+);
+
+const selectDeckCardTagsForCard = createSelector(
+  (state: StoreState) => state.metadata,
+  (state: StoreState) => selectLookupTables(state).relations.fronts,
+  (_: StoreState, cardCode: string) => cardCode,
+  (_: StoreState, __: string, deck: ResolvedDeck | undefined) =>
+    deck?.deckCardTags,
+  (metadata, fronts, cardCode, deckCardTags) => {
+    if (!deckCardTags) return EMPTY_TAG_NAMES;
+
+    const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
+    return deckCardTags[canonicalCode] ?? EMPTY_TAG_NAMES;
   },
 );
 
 const selectCardTagDisplayState = createSelector(
   selectCardFavoriteState,
   selectCardTagsState,
-  (isFavorite, tags) => ({
-    isFavorite,
-    ...tags,
-  }),
+  selectDeckCardTagsForCard,
+  (isFavorite, accountTags, deckTagNames) => {
+    const tagNames = mergeCardTagNames(
+      accountTags.selectedItems.map((item) => item.tag),
+      deckTagNames,
+    );
+
+    return {
+      isFavorite,
+      selectedItems: tagNames.map(tagNameToDeckItem),
+      tagOptions: accountTags.tagOptions,
+    };
+  },
 );
+
+function tagNameToAccountItem(tag: CardTag): TagItem {
+  return { code: tag, tag };
+}
+
+function tagNameToDeckItem(tag: CardTag): TagItem {
+  return { code: normalizeCardTagName(tag), tag };
+}
