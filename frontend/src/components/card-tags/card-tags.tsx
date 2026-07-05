@@ -1,8 +1,7 @@
 import { CARD_TAG_NAME_MAX_LENGTH, type CardTag } from "@arkham-build/shared";
-import { HeartIcon, PlusIcon, Settings2Icon } from "lucide-react";
+import { PlusIcon, Settings2Icon } from "lucide-react";
 import { useId, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { Button } from "../ui/button";
 import { Combobox } from "../ui/combobox/combobox";
@@ -16,32 +15,24 @@ import {
   ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
-import css from "./card-tag-controls.module.css";
-import { type TagItem, useCardTagControls } from "./use-card-tag-controls";
+import css from "./card-tags.module.css";
+import { type TagItem, useCardTags } from "./use-card-tags";
 
 type Props = {
   cardCode: string;
-  showFavorite?: boolean;
-  showTags?: boolean;
 };
 
-export function CardTagControls({
-  cardCode,
-  showFavorite = true,
-  showTags = true,
-}: Props) {
+export function CardTags({ cardCode }: Props) {
   const { i18n, t } = useTranslation();
   const {
-    isFavorite,
     onCreateTag,
     onDeleteTag,
     onError,
     onRenameTag,
     onTagsChange,
-    onToggleFavorite,
     selectedItems,
     tagOptions,
-  } = useCardTagControls(cardCode);
+  } = useCardTags(cardCode);
 
   const creatable = useMemo(
     () => ({
@@ -57,59 +48,30 @@ export function CardTagControls({
   );
 
   return (
-    <div className={css["container"]}>
-      {showFavorite && (
-        <FavoriteButton isFavorite={isFavorite} onClick={onToggleFavorite} />
-      )}
-      {showTags && (
-        <div className={css["tags"]}>
-          <Combobox
-            className={css["combobox"]}
-            creatable={creatable}
-            id={`card-tags-${cardCode}`}
-            itemToString={tagItemToString}
-            items={tagOptions}
-            label={t("card_tags.title")}
-            locale={i18n.language}
-            onValueChange={onTagsChange}
-            placeholder={t("card_tags.placeholder")}
-            renderItem={(item) => item.tag}
-            renderResult={renderTagResult}
-            selectedItems={selectedItems}
-          />
-          {!isEmpty(tagOptions) && (
-            <CardTagManager
-              onDelete={onDeleteTag}
-              onError={onError}
-              onRename={onRenameTag}
-              tags={tagOptions.map((item) => item.tag)}
-            />
-          )}
-        </div>
+    <div className={css["tags"]}>
+      <Combobox
+        className={css["combobox"]}
+        creatable={creatable}
+        id={`card-tags-${cardCode}`}
+        itemToString={tagItemToString}
+        items={tagOptions}
+        label={t("card_tags.title")}
+        locale={i18n.language}
+        onValueChange={onTagsChange}
+        placeholder={t("card_tags.placeholder")}
+        renderItem={(item) => item.tag}
+        renderResult={renderTagResult}
+        selectedItems={selectedItems}
+      />
+      {!isEmpty(tagOptions) && (
+        <CardTagManager
+          onDelete={onDeleteTag}
+          onError={onError}
+          onRename={onRenameTag}
+          tags={tagOptions.map((item) => item.tag)}
+        />
       )}
     </div>
-  );
-}
-
-function FavoriteButton({
-  isFavorite,
-  onClick,
-}: {
-  isFavorite: boolean;
-  onClick: () => void;
-}) {
-  const { t } = useTranslation();
-
-  return (
-    <Button
-      aria-pressed={isFavorite}
-      className={cx(css["favorite"], isFavorite && css["active"])}
-      onClick={onClick}
-      full
-    >
-      <HeartIcon className={css["favorite-icon"]} />
-      {t("card_tags.favorite")}
-    </Button>
   );
 }
 

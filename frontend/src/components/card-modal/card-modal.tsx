@@ -30,7 +30,8 @@ import { Annotation } from "../annotations/annotation";
 import { PopularDecks } from "../arkhamdb-decklists/popular-decks";
 import { Card } from "../card/card";
 import { CardScenarios } from "../card-scenarios/card-scenarios";
-import { CardTagControls } from "../card-tags/card-tag-controls";
+import { CardFavorite } from "../card-tags/card-favorite";
+import { CardTags } from "../card-tags/card-tags";
 import { CardSet } from "../cardset";
 import { Customizations } from "../customizations/customizations";
 import { CustomizationsEditor } from "../customizations/customizations-editor";
@@ -284,10 +285,7 @@ export function CardModal(props: Props) {
                 className={cx(css["related"], css["shadow"])}
                 titleNode={<h2>{t("card_tags.title")}</h2>}
               >
-                <CardTagControls
-                  cardCode={cardWithRelations.card.code}
-                  showFavorite={false}
-                />
+                <CardTags cardCode={cardWithRelations.card.code} />
               </TitledContainer>
             )}
             {relationsNode}
@@ -333,10 +331,10 @@ export function CardModal(props: Props) {
                 resolvedDeck={ctx.resolvedDeck}
               />
             )}
-            <CardTagControls
-              cardCode={cardWithRelations.card.code}
-              showTags={useSidebarLayout}
-            />
+            <CardFavorite cardCode={cardWithRelations.card.code} />
+            {useSidebarLayout && (
+              <CardTags cardCode={cardWithRelations.card.code} />
+            )}
           </div>
         </div>
       </ModalInner>

@@ -7,7 +7,8 @@ import {
   CardReviewsLink,
 } from "@/components/card-modal/card-arkhamdb-links";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
-import { CardTagControls } from "@/components/card-tags/card-tag-controls";
+import { CardFavorite } from "@/components/card-tags/card-favorite";
+import { CardTags } from "@/components/card-tags/card-tags";
 import { Footer } from "@/components/footer";
 import { Masthead } from "@/components/masthead";
 import { Button } from "@/components/ui/button";
@@ -84,10 +85,7 @@ function CardView() {
               <Printings code={cardWithRelations.card.code} />
             </SidebarSection>
             <SidebarSection title={t("card_tags.title")}>
-              <CardTagControls
-                cardCode={cardWithRelations.card.code}
-                showFavorite={false}
-              />
+              <CardTags cardCode={cardWithRelations.card.code} />
             </SidebarSection>
             <SidebarSection title={t("card_view.section_actions")}>
               {isBuildableInvestigator && (
@@ -97,10 +95,7 @@ function CardView() {
                   </Button>
                 </Link>
               )}
-              <CardTagControls
-                cardCode={cardWithRelations.card.code}
-                showTags={false}
-              />
+              <CardFavorite cardCode={cardWithRelations.card.code} />
               <CardArkhamDBLink card={cardWithRelations.card} full>
                 <GlobeIcon /> {t("card_view.actions.open_on_arkhamdb")}
               </CardArkhamDBLink>

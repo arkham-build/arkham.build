@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { cx } from "@/utils/cx";
 import { Tag } from "../ui/tag";
 import css from "./card-tag-row.module.css";
-import { useCardTagDisplay } from "./use-card-tag-controls";
+import { useCardTagDisplay } from "./use-card-tags";
 
 type Props = {
   cardCode: string;

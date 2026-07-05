@@ -23,51 +23,34 @@ export function useCardTagDisplay(cardCode: string) {
   return useStore((state) => selectCardTagDisplayState(state, cardCode));
 }
 
-export function useCardTagControls(cardCode: string) {
-  const { t } = useTranslation();
-  const saveCardTags = useSaveCardTagsMutation();
-  const toast = useToast();
-
-  const createCardTagForCard = useStore((state) => state.createCardTagForCard);
-  const deleteCardTag = useStore((state) => state.deleteCardTag);
-  const renameCardTag = useStore((state) => state.renameCardTag);
-  const setCardTagsForCard = useStore((state) => state.setCardTagsForCard);
+export function useCardFavorite(cardCode: string) {
+  const isFavorite = useStore((state) =>
+    selectCardFavoriteState(state, cardCode),
+  );
   const toggleFavorite = useStore((state) => state.toggleFavorite);
-
-  const authenticated = useStore(
-    (state) => state.auth.status === "authenticated",
-  );
-  const { isFavorite, selectedItems, tagOptions } = useCardTagDisplay(cardCode);
-
-  const persist = useCallback(
-    async (action: () => Promise<unknown>) => {
-      await action();
-      if (authenticated) {
-        await saveCardTags.mutateAsync(undefined);
-      }
-    },
-    [authenticated, saveCardTags],
-  );
-
-  const onError = useCallback(
-    (err: unknown) => {
-      console.error(err);
-      toast.show({
-        children: t("card_tags.manage.error", {
-          error:
-            err instanceof Error
-              ? err.message
-              : t("card_tags.manage.unknown_error"),
-        }),
-        variant: "error",
-      });
-    },
-    [t, toast],
-  );
+  const persist = usePersistCardTags();
+  const onError = useCardTagsError();
 
   const onToggleFavorite = useCallback(() => {
     void persist(() => toggleFavorite(cardCode)).catch(onError);
   }, [cardCode, onError, persist, toggleFavorite]);
+
+  return {
+    isFavorite,
+    onToggleFavorite,
+  };
+}
+
+export function useCardTags(cardCode: string) {
+  const createCardTagForCard = useStore((state) => state.createCardTagForCard);
+  const deleteCardTag = useStore((state) => state.deleteCardTag);
+  const renameCardTag = useStore((state) => state.renameCardTag);
+  const setCardTagsForCard = useStore((state) => state.setCardTagsForCard);
+  const { selectedItems, tagOptions } = useStore((state) =>
+    selectCardTagsState(state, cardCode),
+  );
+  const persist = usePersistCardTags();
+  const onError = useCardTagsError();
 
   const onRenameTag = useCallback(
     (name: string, nextName: string) =>
@@ -99,27 +82,73 @@ export function useCardTagControls(cardCode: string) {
   );
 
   return {
-    isFavorite,
     onCreateTag,
     onDeleteTag,
     onError,
     onRenameTag,
     onTagsChange,
-    onToggleFavorite,
     selectedItems,
     tagOptions,
   };
 }
 
-const selectCardTagDisplayState = createSelector(
-  (state: StoreState) => state.cardTags.cardTags,
+function usePersistCardTags() {
+  const saveCardTags = useSaveCardTagsMutation();
+  const authenticated = useStore(
+    (state) => state.auth.status === "authenticated",
+  );
+
+  return useCallback(
+    async (action: () => Promise<unknown>) => {
+      await action();
+      if (authenticated) {
+        await saveCardTags.mutateAsync(undefined);
+      }
+    },
+    [authenticated, saveCardTags],
+  );
+}
+
+function useCardTagsError() {
+  const { t } = useTranslation();
+  const toast = useToast();
+
+  return useCallback(
+    (err: unknown) => {
+      console.error(err);
+      toast.show({
+        children: t("card_tags.manage.error", {
+          error:
+            err instanceof Error
+              ? err.message
+              : t("card_tags.manage.unknown_error"),
+        }),
+        variant: "error",
+      });
+    },
+    [t, toast],
+  );
+}
+
+const selectCardFavoriteState = createSelector(
   (state: StoreState) => state.cardTags.favorites,
+  (state: StoreState) => state.metadata,
+  (state: StoreState) => selectLookupTables(state).relations.fronts,
+  (_: StoreState, cardCode: string) => cardCode,
+  (favorites, metadata, fronts, cardCode) => {
+    const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
+    return favorites[canonicalCode] === true;
+  },
+);
+
+const selectCardTagsState = createSelector(
+  (state: StoreState) => state.cardTags.cardTags,
   (state: StoreState) => state.cardTags.tags,
   (state: StoreState) => state.metadata,
   (state: StoreState) => selectLookupTables(state).relations.fronts,
   selectLocaleSortingCollator,
   (_: StoreState, cardCode: string) => cardCode,
-  (cardTags, favorites, tags, metadata, fronts, collator, cardCode) => {
+  (cardTags, tags, metadata, fronts, collator, cardCode) => {
     const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
     const assignedTagNames = cardTags[canonicalCode] ?? EMPTY_TAG_NAMES;
     const selectedItems = assignedTagNames.reduce<TagItem[]>((acc, tag) => {
@@ -128,7 +157,6 @@ const selectCardTagDisplayState = createSelector(
     }, []);
 
     return {
-      isFavorite: favorites[canonicalCode] === true,
       selectedItems,
       tagOptions: tags
         .toSorted((a, b) => collator.compare(a, b))
@@ -138,4 +166,13 @@ const selectCardTagDisplayState = createSelector(
         })),
     };
   },
+);
+
+const selectCardTagDisplayState = createSelector(
+  selectCardFavoriteState,
+  selectCardTagsState,
+  (isFavorite, tags) => ({
+    isFavorite,
+    ...tags,
+  }),
 );

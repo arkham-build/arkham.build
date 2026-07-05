@@ -1,0 +1,7 @@
+.favorite-icon {
+  stroke: var(--survivor);
+}
+
+.favorite.active .favorite-icon {
+  fill: var(--survivor);
+}
