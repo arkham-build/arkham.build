@@ -7,7 +7,7 @@ import { TabSync } from "./tab-sync";
 
 type AppState = Pick<
   StoreState,
-  "app" | "auth" | "data" | "settings" | "sync" | "fanMadeData"
+  "app" | "auth" | "cardTags" | "data" | "settings" | "sync" | "fanMadeData"
 >;
 
 type StorageType = "app" | "edits" | "metadata";
@@ -30,6 +30,7 @@ export const appStorage = makeStorageAdapter<AppState>(
   (state) => ({
     app: state.app,
     auth: state.auth,
+    cardTags: state.cardTags,
     fanMadeData: state.fanMadeData,
     data: state.data,
     settings: state.settings,

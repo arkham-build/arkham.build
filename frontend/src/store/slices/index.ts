@@ -1,5 +1,6 @@
 import type { AppSlice } from "./app.types";
 import type { AuthSlice } from "./auth.types";
+import type { CardTagsSlice } from "./card-tags.types";
 import type { DataSlice } from "./data.types";
 import type { DeckCollectionSlice } from "./deck-collection.types";
 import type { DeckCreateSlice } from "./deck-create.types";
@@ -20,6 +21,7 @@ export type StoreState = AppSlice &
   SettingsSlice &
   SyncSlice &
   DataSlice &
+  CardTagsSlice &
   FanMadeDataSlice &
   DeckEditsSlice &
   DeckCreateSlice &
