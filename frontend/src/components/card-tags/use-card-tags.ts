@@ -5,7 +5,6 @@ import { createSelector } from "reselect";
 import { useSaveCardTagsMutation } from "@/queries/mutations/card-tags";
 import { useStore } from "@/store";
 import {
-  mergeCardTagNames,
   normalizeCardTagName,
   resolveCardTagCardCode,
 } from "@/store/lib/card-tags";
@@ -19,6 +18,7 @@ import { useToast } from "../ui/toast.hooks";
 
 export type TagItem = {
   code: string;
+  global?: boolean;
   tag: CardTag;
 };
 
@@ -224,13 +224,13 @@ const selectDeckCardTagsState = createSelector(
     const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
     const assignedTagNames = deckCardTags[canonicalCode] ?? EMPTY_TAG_NAMES;
     const deckTagNames = Object.values(deckCardTags).flat();
-    const optionTagNames = mergeCardTagNames(accountTagNames, deckTagNames);
 
     return {
       selectedItems: assignedTagNames.map(tagNameToDeckItem),
-      tagOptions: optionTagNames
-        .toSorted((a, b) => collator.compare(a, b))
-        .map(tagNameToDeckItem),
+      tagOptions: mergeTagItems({
+        accountTagNames,
+        deckTagNames,
+      }).toSorted((a, b) => collator.compare(a.tag, b.tag)),
     };
   },
 );
@@ -253,22 +253,47 @@ const selectCardTagDisplayState = createSelector(
   selectCardFavoriteState,
   selectCardTagsState,
   selectDeckCardTagsForCard,
-  (isFavorite, accountTags, deckTagNames) => {
-    const tagNames = mergeCardTagNames(
-      accountTags.selectedItems.map((item) => item.tag),
+  (isFavorite, accountTags, deckTagNames) => ({
+    isFavorite,
+    selectedItems: mergeTagItems({
+      accountTagNames: accountTags.selectedItems.map((item) => item.tag),
       deckTagNames,
-    );
-
-    return {
-      isFavorite,
-      selectedItems: tagNames.map(tagNameToDeckItem),
-      tagOptions: accountTags.tagOptions,
-    };
-  },
+    }),
+    tagOptions: accountTags.tagOptions,
+  }),
 );
 
+function mergeTagItems({
+  accountTagNames,
+  deckTagNames,
+}: {
+  accountTagNames: CardTag[];
+  deckTagNames: CardTag[];
+}) {
+  const result: TagItem[] = [];
+  const seen = new Set<string>();
+
+  for (const tagName of deckTagNames) {
+    const normalizedName = normalizeCardTagName(tagName);
+    if (!normalizedName || seen.has(normalizedName)) continue;
+
+    seen.add(normalizedName);
+    result.push(tagNameToDeckItem(tagName));
+  }
+
+  for (const tagName of accountTagNames) {
+    const normalizedName = normalizeCardTagName(tagName);
+    if (!normalizedName || seen.has(normalizedName)) continue;
+
+    seen.add(normalizedName);
+    result.push({ code: normalizedName, global: true, tag: tagName });
+  }
+
+  return result;
+}
+
 function tagNameToAccountItem(tag: CardTag): TagItem {
-  return { code: tag, tag };
+  return { code: tag, global: true, tag };
 }
 
 function tagNameToDeckItem(tag: CardTag): TagItem {

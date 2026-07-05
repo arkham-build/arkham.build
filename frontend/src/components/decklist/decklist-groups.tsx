@@ -29,6 +29,8 @@ import { CardGridItem } from "../card-list/card-grid";
 import { GroupLabel } from "../card-list/grouphead";
 import type { FilteredListCardPropsGetter } from "../card-list/types";
 import { CardScan } from "../card-scan";
+import { CardTagList } from "../card-tags/card-tag-list";
+import { useCardTagDisplay } from "../card-tags/use-card-tags";
 import { CustomizableSheet } from "../customizable-sheet";
 import { ListCard } from "../list-card/list-card";
 import css from "./decklist-groups.module.css";
@@ -121,9 +123,16 @@ export function DecklistGroup(props: DecklistGroupsProps) {
               group.cards.map((card: Card) => {
                 const listCardProps = getListCardProps?.(card);
                 return (
-                  <ListCard
-                    {...listCardProps}
-                    annotation={deck.annotations?.[card.code]}
+                  <DecklistCard
+                    card={card}
+                    deck={deck}
+                    isCardNotInLimitedPool={
+                      cardsNotInLimitedPool.find(
+                        (x) =>
+                          x.code === card.code ||
+                          x.code === card.duplicate_of_code,
+                      ) != null
+                    }
                     isForbidden={
                       forbiddenCards.find(
                         (x) =>
@@ -132,23 +141,15 @@ export function DecklistGroup(props: DecklistGroupsProps) {
                           x.target === grouping.id,
                       ) != null
                     }
-                    isCardNotInLimitedPool={
-                      cardsNotInLimitedPool.find(
-                        (x) =>
-                          x.code === card.code ||
-                          x.code === card.duplicate_of_code,
-                      ) != null
-                    }
-                    card={card}
-                    isRemoved={grouping.quantities?.[card.code] === 0}
                     isIgnored={deck.ignoreDeckLimitSlots?.[card.code]}
+                    isRemoved={grouping.quantities?.[card.code] === 0}
+                    key={card.code}
                     limitOverride={getDeckLimitOverride(
                       lookupTables,
                       deck,
                       card,
                     )}
-                    key={card.code}
-                    omitBorders
+                    listCardProps={listCardProps}
                     onChangeCardQuantity={
                       grouping.static
                         ? undefined
@@ -167,6 +168,68 @@ export function DecklistGroup(props: DecklistGroupsProps) {
       })}
     </>
   );
+}
+
+function DecklistCard({
+  card,
+  deck,
+  isCardNotInLimitedPool,
+  isForbidden,
+  isIgnored,
+  isRemoved,
+  limitOverride,
+  listCardProps,
+  onChangeCardQuantity,
+  ownedCount,
+  quantity,
+}: {
+  card: Card;
+  deck: ResolvedDeck;
+  isCardNotInLimitedPool: boolean;
+  isForbidden: boolean;
+  isIgnored?: number;
+  isRemoved: boolean;
+  limitOverride?: number;
+  listCardProps?: ReturnType<FilteredListCardPropsGetter>;
+  onChangeCardQuantity?: ReturnType<FilteredListCardPropsGetter>["onChangeCardQuantity"];
+  ownedCount?: number;
+  quantity: number;
+}) {
+  const showCardTags = useStore((state) => state.settings.cardShowTags ?? true);
+  const { selectedItems } = useCardTagDisplay(card.code, deck);
+  const visibleTags = showCardTags ? selectedItems : [];
+  const { renderCardAfter, ...restListCardProps } = listCardProps ?? {};
+
+  return (
+    <ListCard
+      {...restListCardProps}
+      annotation={deck.annotations?.[card.code]}
+      card={card}
+      isCardNotInLimitedPool={isCardNotInLimitedPool}
+      isForbidden={isForbidden}
+      isIgnored={isIgnored}
+      isRemoved={isRemoved}
+      limitOverride={limitOverride}
+      omitBorders
+      onChangeCardQuantity={onChangeCardQuantity}
+      ownedCount={ownedCount}
+      quantity={quantity}
+      renderCardAfter={
+        visibleTags.length || renderCardAfter
+          ? (card, quantity) => (
+              <CardAfterRow>
+                <CardTagList items={visibleTags} />
+                {renderCardAfter?.(card, quantity)}
+              </CardAfterRow>
+            )
+          : undefined
+      }
+    />
+  );
+}
+
+function CardAfterRow({ children }: { children: React.ReactNode }) {
+  return <div className={css["card-after-row"]}>{children}</div>;
 }
 
 function Scans(props: {

@@ -181,7 +181,7 @@
         "title": "Manage tags",
         "unknown_error": "Unknown error"
       },
-      "placeholder": "Add or create tag...",
+      "placeholder": "Add account-wide tag...",
       "title": "Tags"
     },
     "card_view": {
@@ -1689,6 +1689,7 @@
         "card_show_collection_number": "Show collection number",
         "card_show_details": "Show card details",
         "card_show_icon": "Show card icon",
+        "card_show_tags": "Show card tags",
         "card_show_thumbnail": "Show card thumbnail",
         "card_show_unique_icon": "Show unique icon",
         "card_size": "Size",

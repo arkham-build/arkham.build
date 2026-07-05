@@ -3,6 +3,7 @@ import { PlusIcon, Settings2Icon } from "lucide-react";
 import { useId, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
+import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { useResolvedDeck } from "../resolved-deck-context";
 import { Button } from "../ui/button";
@@ -17,6 +18,7 @@ import {
   ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
+import { CardTagLabel } from "./card-tag-label";
 import css from "./card-tags.module.css";
 import { type TagItem, useCardTags, useDeckCardTags } from "./use-card-tags";
 
@@ -59,18 +61,9 @@ function AccountCardTags({
     tagOptions,
   } = useCardTags(cardCode);
 
-  return (
-    <div className={css["tag-section"]}>
-      <CardTagCombobox
-        id={`card-tags-${cardCode}`}
-        label={showLabel ? t("card_tags.account_title") : t("card_tags.title")}
-        onCreateTag={onCreateTag}
-        onTagsChange={onTagsChange}
-        placeholder={t("card_tags.placeholder")}
-        selectedItems={selectedItems}
-        showLabel={showLabel}
-        tagOptions={tagOptions}
-      />
+  const labelNode = (
+    <div className={css["account-label"]}>
+      {showLabel ? t("card_tags.account_title") : t("card_tags.title")}
       {!isEmpty(tagOptions) && (
         <CardTagManager
           onDelete={onDeleteTag}
@@ -79,6 +72,21 @@ function AccountCardTags({
           tags={tagOptions.map((item) => item.tag)}
         />
       )}
+    </div>
+  );
+
+  return (
+    <div className={css["tag-section"]}>
+      <CardTagCombobox
+        id={`card-tags-${cardCode}`}
+        label={labelNode}
+        onCreateTag={onCreateTag}
+        onTagsChange={onTagsChange}
+        placeholder={t("card_tags.placeholder")}
+        selectedItems={selectedItems}
+        showLabel={showLabel}
+        tagOptions={tagOptions}
+      />
     </div>
   );
 }
@@ -129,7 +137,7 @@ function CardTagCombobox({
   tagOptions,
 }: {
   id: string;
-  label: string;
+  label: React.ReactNode;
   onCreateTag: (name: string) => void;
   onTagsChange: (items: TagItem[]) => void;
   placeholder: string;
@@ -165,7 +173,7 @@ function CardTagCombobox({
       onValueChange={onTagsChange}
       placeholder={placeholder}
       readonly={readonly}
-      renderItem={(item) => item.tag}
+      renderItem={(item) => <CardTagLabel>{item.tag}</CardTagLabel>}
       renderResult={renderTagResult}
       selectedItems={selectedItems}
       showLabel={showLabel}
@@ -268,12 +276,14 @@ function tagItemToString(item: TagItem) {
 function renderTagResult(item: TagItem, onRemove: (() => void) | undefined) {
   return (
     <ResultTag
-      className={css["tag-result"]}
+      className={cx(css["tag-result"], !item.global && css["local"])}
       data-testid={`combobox-result-${item.code}`}
       onRemove={onRemove}
       size="sm"
     >
-      {item.tag}
+      <span className={css["tag-result-content"]}>
+        <CardTagLabel>{item.tag}</CardTagLabel>
+      </span>
     </ResultTag>
   );
 }

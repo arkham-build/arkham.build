@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { cx } from "@/utils/cx";
 import { useResolvedDeck } from "../resolved-deck-context";
 import { Tag } from "../ui/tag";
+import { CardTagLabel } from "./card-tag-label";
 import css from "./card-tag-row.module.css";
 import { useCardTagDisplay } from "./use-card-tags";
 
@@ -33,7 +34,7 @@ export function CardTagRow({ cardCode, className }: Props) {
         )}
         {selectedItems.map((item) => (
           <Tag as="li" key={item.code} size="sm">
-            {item.tag}
+            <CardTagLabel>{item.tag}</CardTagLabel>
           </Tag>
         ))}
       </ul>

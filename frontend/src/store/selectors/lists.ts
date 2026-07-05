@@ -1160,8 +1160,8 @@ export const selectCardTagOptions = createSelector(
       }
 
       const assignedTagNames = mergeCardTagNames(
-        cardTags.cardTags[canonicalCode],
         resolvedDeck?.deckCardTags[canonicalCode],
+        cardTags.cardTags[canonicalCode],
       );
 
       for (const tagName of assignedTagNames) {

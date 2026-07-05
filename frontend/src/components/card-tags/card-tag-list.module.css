@@ -1,0 +1,16 @@
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tag {
+  line-height: 1.25;
+
+  &.local {
+    border: 1px solid var(--palette-3);
+  }
+}

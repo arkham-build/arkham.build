@@ -1,6 +1,8 @@
 import type { Settings } from "@arkham-build/shared";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { CardTagList } from "@/components/card-tags/card-tag-list";
+import type { TagItem } from "@/components/card-tags/use-card-tags";
 import { ListCardInner } from "@/components/list-card/list-card-inner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -11,6 +13,34 @@ import css from "./card-display.module.css";
 import type { SettingProps } from "./types";
 
 const PREVIEW_CARDS = ["01033", "11076", "10035"];
+
+function getPreviewCardTags(code: string): TagItem[] {
+  switch (code) {
+    case "01033":
+      return [
+        {
+          code: "economy",
+          global: false,
+          tag: "Economy",
+        },
+        {
+          code: "intellect-boost",
+          global: false,
+          tag: "[intellect] boost",
+        },
+      ];
+    case "11076":
+      return [
+        {
+          code: "meme",
+          global: true,
+          tag: "Meme",
+        },
+      ];
+    default:
+      return [];
+  }
+}
 
 export function CardDisplaySettings(props: SettingProps) {
   const { settings, setSettings } = props;
@@ -75,6 +105,17 @@ export function CardDisplaySettings(props: SettingProps) {
           checked={resolve("cardShowCollectionNumber")}
           onCheckedChange={(value) => {
             setValue({ cardShowCollectionNumber: !!value });
+          }}
+        />
+      </Field>
+
+      <Field>
+        <Checkbox
+          id="show-tags"
+          label={t("settings.display.card_show_tags")}
+          checked={resolve("cardShowTags") ?? true}
+          onCheckedChange={(value) => {
+            setValue({ cardShowTags: !!value });
           }}
         />
       </Field>
@@ -183,6 +224,7 @@ export function CardDisplaySettings(props: SettingProps) {
         <ol>
           {PREVIEW_CARDS.map((id) => {
             const card = metadata.cards[id];
+            const tags = getPreviewCardTags(id);
             if (!card) return null;
             return (
               <ListCardInner
@@ -197,6 +239,11 @@ export function CardDisplaySettings(props: SettingProps) {
                 omitDetails={!resolve("cardShowDetails")}
                 omitIcon={!resolve("cardShowIcon")}
                 omitThumbnail={!resolve("cardShowThumbnail")}
+                renderCardAfter={
+                  (resolve("cardShowTags") ?? true) && tags.length
+                    ? () => <CardTagList items={tags} />
+                    : undefined
+                }
                 size={resolve("cardSize")}
               />
             );

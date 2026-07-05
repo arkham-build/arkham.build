@@ -1,3 +1,23 @@
 .card-list-item-full {
   padding-block: 0.5rem;
 }
+
+.card-after-row {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.favorite {
+  position: relative;
+  &::before {
+    content: "";
+    height: 80%;
+    width: 0;
+    border-left: 0.125rem solid var(--survivor);
+    display: block;
+    top: 10%;
+    right: -0.375rem;
+    position: absolute;
+    border-radius: var(--rounded-xl);
+  }
+}

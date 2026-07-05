@@ -107,7 +107,6 @@ export function CardModal(props: Props) {
   }, [completeTask, ctx.resolvedDeck, cardWithRelations?.card, openCardModal]);
 
   const canRenderFull = useMedia("(min-width: 45rem)");
-  const useSidebarLayout = useMedia("(min-width: 38rem)");
 
   const handlePrintingSelect = useCallback(
     (card: CardT) => {
@@ -280,15 +279,13 @@ export function CardModal(props: Props) {
         <div className={css["container"]}>
           <div className={css["card"]}>
             {cardNode}
-            {!useSidebarLayout && (
-              <TitledContainer
-                className={cx(css["related"], css["shadow"])}
-                titleNode={<h2>{t("card_tags.title")}</h2>}
-              >
-                <CardTags cardCode={cardWithRelations.card.code} />
-              </TitledContainer>
-            )}
             {relationsNode}
+            <TitledContainer
+              className={cx(css["related"], css["shadow"])}
+              titleNode={t("card_tags.title")}
+            >
+              <CardTags cardCode={cardWithRelations.card.code} />
+            </TitledContainer>
           </div>
           <div
             className={css["quantities"]}
@@ -331,9 +328,6 @@ export function CardModal(props: Props) {
                 card={cardWithRelations.card}
                 resolvedDeck={ctx.resolvedDeck}
               />
-            )}
-            {useSidebarLayout && (
-              <CardTags cardCode={cardWithRelations.card.code} />
             )}
           </div>
         </div>

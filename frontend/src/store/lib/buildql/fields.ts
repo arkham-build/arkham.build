@@ -451,8 +451,8 @@ const fieldDefinitions: FieldDefinition[] = [
           card.code,
         );
         const tagNames = mergeCardTagNames(
-          cardTags.cardTags[canonicalCode],
           deckCardTags?.[canonicalCode],
+          cardTags.cardTags[canonicalCode],
         );
 
         return tagNames.length ? tagNames : null;
