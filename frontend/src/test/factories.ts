@@ -13,6 +13,7 @@ type SyncStateOptions = {
   accountId?: string | null;
   deckItems?: StoreState["sync"]["decks"]["items"];
   deckStatus?: SyncStatus;
+  cardTags?: Partial<StoreState["sync"]["cardTags"]>;
   folders?: Partial<StoreState["sync"]["folders"]>;
   lastSyncedAt?: number | null;
   manifestVersion?: string | null;
@@ -83,6 +84,7 @@ export function makeSyncState({
   accountId = "account-id",
   deckItems = {},
   deckStatus = "synced",
+  cardTags,
   folders,
   lastSyncedAt = null,
   manifestVersion = "1",
@@ -116,6 +118,15 @@ export function makeSyncState({
       error: null,
       conflict: null,
       ...folders,
+    },
+    cardTags: {
+      accountId,
+      revision: "1",
+      lastSyncedAt,
+      status: "synced",
+      error: null,
+      conflict: null,
+      ...cardTags,
     },
   };
 }

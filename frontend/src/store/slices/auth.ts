@@ -133,7 +133,8 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
       state.auth.status !== "unauthenticated" ||
       state.sync.settings.accountId != null ||
       state.sync.decks.accountId != null ||
-      state.sync.folders.accountId != null;
+      state.sync.folders.accountId != null ||
+      state.sync.cardTags.accountId != null;
 
     if (!shouldReset) {
       return;

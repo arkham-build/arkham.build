@@ -1,4 +1,5 @@
 import type {
+  CardTagsSyncResponse,
   FolderSyncResponse,
   Id,
   SettingsResponse,
@@ -55,11 +56,21 @@ export type FoldersSyncState = {
   conflict: FolderSyncResponse | null;
 };
 
+export type CardTagsSyncState = {
+  accountId: string | null;
+  revision: string | null;
+  lastSyncedAt: number | null;
+  status: SyncStatus;
+  error: string | null;
+  conflict: CardTagsSyncResponse | null;
+};
+
 export type SyncState = {
   sync: {
     settings: SettingsSyncState;
     decks: DecksSyncState;
     folders: FoldersSyncState;
+    cardTags: CardTagsSyncState;
   };
 };
 
@@ -76,10 +87,17 @@ export type SyncSlice = SyncState & {
   setSettingsSync(payload: Partial<SettingsSyncState>): void;
   setDecksSync(payload: Partial<DecksSyncState>): void;
   setFoldersSync(payload: Partial<FoldersSyncState>): void;
+  setCardTagsSync(payload: Partial<CardTagsSyncState>): void;
   setDeckSyncItem(id: Id, payload: Partial<DeckSyncItemState> | null): void;
   loadRemoteFolders(client: HttpClient): Promise<void>;
   applyRemoteFolders(payload: FolderSyncResponse): Promise<void>;
   saveFolders(
+    client: HttpClient,
+    opts?: { expectedRevision?: string | null },
+  ): Promise<void>;
+  loadRemoteCardTags(client: HttpClient): Promise<void>;
+  applyRemoteCardTags(payload: CardTagsSyncResponse): Promise<void>;
+  saveCardTags(
     client: HttpClient,
     opts?: { expectedRevision?: string | null },
   ): Promise<void>;

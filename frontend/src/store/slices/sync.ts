@@ -2,6 +2,7 @@ import {
   DECK_BATCH_TARGET_LIMIT,
   type DeckSyncTarget,
   type FolderSyncResponse,
+  type CardTagsState as RemoteCardTagsState,
   type FolderSyncState as RemoteFolderSyncState,
 } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
@@ -9,6 +10,10 @@ import { assert } from "@/utils/assert";
 import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import { normalizeArkhamDbDeck } from "../lib/arkhamdb-decks";
+import {
+  canonicalizeCardTagsState,
+  getEmptyCardTagsState,
+} from "../lib/card-tags";
 import { deleteAdapter } from "../lib/deck-crud";
 import {
   updateDeckSyncConflictError,
@@ -23,6 +28,12 @@ import {
   removeRemoteAccountDecks,
 } from "../lib/sync-reconciliation";
 import { dehydrate } from "../persist";
+import { selectLookupTables } from "../selectors/shared";
+import {
+  fetchCardTags,
+  isCardTagsConflictError,
+  putCardTags,
+} from "../services/requests/card-tags";
 import { fetchDeckBatch, fetchDeckManifest } from "../services/requests/decks";
 import {
   fetchFolders,
@@ -31,8 +42,10 @@ import {
 } from "../services/requests/folders";
 import type { StoreState } from ".";
 import type { AuthState } from "./auth.types";
+import { getInitialCardTagsState } from "./card-tags";
 import { createArchiveFolder } from "./data";
 import type {
+  CardTagsSyncState,
   DeckSyncItemState,
   DecksSyncState,
   FoldersSyncState,
@@ -84,12 +97,24 @@ function getInitialFoldersSyncState(): FoldersSyncState {
   };
 }
 
+function getInitialCardTagsSyncState(): CardTagsSyncState {
+  return {
+    accountId: null,
+    revision: null,
+    lastSyncedAt: null,
+    status: "idle",
+    error: null,
+    conflict: null,
+  };
+}
+
 function getInitialSyncState(): SyncState {
   return {
     sync: {
       settings: getInitialSettingsSyncState(),
       decks: getInitialDecksSyncState(),
       folders: getInitialFoldersSyncState(),
+      cardTags: getInitialCardTagsSyncState(),
     },
   };
 }
@@ -113,34 +138,17 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       get().clearAccountState();
     }
 
-    const errors: unknown[] = [];
+    await state.loadRemoteSettings(client);
 
-    try {
-      await state.loadRemoteSettings(client);
-    } catch (error) {
-      errors.push(error);
-    }
-
-    void get().syncDecks(client, opts).catch(console.error);
-
-    try {
-      await get().loadRemoteFolders(client);
-    } catch (error) {
-      errors.push(error);
-    }
-
-    if (errors.length === 1) {
-      throw errors[0];
-    }
-
-    if (errors.length > 1) {
-      throw new Error(errors.map(getErrorMessage).join("; "));
-    }
+    startBootstrapTask(get().syncDecks(client, opts));
+    startBootstrapTask(get().loadRemoteFolders(client));
+    startBootstrapTask(get().loadRemoteCardTags(client));
   },
 
   clearAccountState(auth?: AuthState) {
     set((state) => ({
       ...removeRemoteAccountDecks(state),
+      ...getInitialCardTagsState(),
       ...(auth ? { auth } : {}),
       sync: getInitialSyncState().sync,
     }));
@@ -176,6 +184,18 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
         ...state.sync,
         folders: {
           ...state.sync.folders,
+          ...payload,
+        },
+      },
+    }));
+  },
+
+  setCardTagsSync(payload) {
+    set((state) => ({
+      sync: {
+        ...state.sync,
+        cardTags: {
+          ...state.sync.cardTags,
           ...payload,
         },
       },
@@ -325,6 +345,135 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
         });
       } else {
         get().setFoldersSync({
+          accountId,
+          status: "error",
+          error: getErrorMessage(error),
+          conflict: null,
+        });
+      }
+
+      await dehydrate(get(), "app");
+      throw error;
+    }
+  },
+
+  async loadRemoteCardTags(client) {
+    const state = get();
+    const accountId = state.auth.session?.account.id;
+
+    assert(accountId, "Cannot load remote card tags without an account.");
+
+    state.setCardTagsSync({
+      accountId,
+      status: "loading",
+      error: null,
+      conflict: null,
+    });
+
+    try {
+      const response = await fetchCardTags(client);
+
+      if (!isCurrentAccount(get(), accountId)) return;
+
+      if (response.revision == null || response.state == null) {
+        await get().saveCardTags(client, { expectedRevision: null });
+        return;
+      }
+
+      await get().applyRemoteCardTags(response);
+    } catch (error) {
+      if (!isCurrentAccount(get(), accountId)) return;
+
+      get().setCardTagsSync({
+        accountId,
+        status: "error",
+        error: getErrorMessage(error),
+        conflict: null,
+      });
+      await dehydrate(get(), "app");
+      throw error;
+    }
+  },
+
+  async applyRemoteCardTags(payload) {
+    const accountId = get().auth.session?.account.id;
+    assert(accountId, "Cannot apply remote card tags without an account.");
+
+    const state = get();
+    const cardTags = canonicalizeCardTagsState(
+      payload.state ?? getEmptyCardTagsState(),
+      state.metadata,
+      selectLookupTables(state).relations.fronts,
+    );
+
+    set((state) => ({
+      cardTags,
+      sync: {
+        ...state.sync,
+        cardTags: {
+          ...state.sync.cardTags,
+          accountId,
+          revision: payload.revision,
+          lastSyncedAt: Date.now(),
+          status: "synced",
+          error: null,
+          conflict: null,
+        },
+      },
+    }));
+
+    await dehydrate(get(), "app");
+  },
+
+  async saveCardTags(client, opts) {
+    const state = get();
+    const accountId = state.auth.session?.account.id;
+
+    assert(accountId, "Cannot save card tags without an account.");
+
+    const expectedRevision =
+      opts?.expectedRevision !== undefined
+        ? opts.expectedRevision
+        : state.sync.cardTags.accountId === accountId
+          ? state.sync.cardTags.revision
+          : null;
+
+    state.setCardTagsSync({
+      accountId,
+      status: "saving",
+      error: null,
+      conflict: null,
+    });
+
+    try {
+      const response = await putCardTags(client, {
+        expectedRevision,
+        state: getLocalCardTagsSyncState(get()),
+      });
+
+      if (!isCurrentAccount(get(), accountId)) return;
+
+      get().setCardTagsSync({
+        accountId,
+        revision: response.revision,
+        lastSyncedAt: Date.now(),
+        status: "synced",
+        error: null,
+        conflict: null,
+      });
+      await dehydrate(get(), "app");
+    } catch (error) {
+      if (!isCurrentAccount(get(), accountId)) return;
+
+      if (isCardTagsConflictError(error)) {
+        get().setCardTagsSync({
+          accountId,
+          status: "conflict",
+          error: getErrorMessage(error),
+          conflict: error.remote,
+        });
+      } else {
+        get().setCardTagsSync({
           accountId,
           status: "error",
           error: getErrorMessage(error),
@@ -612,6 +761,10 @@ async function fetchDecksInBatches(
   return decks;
 }
 
+function startBootstrapTask(task: Promise<void>) {
+  void task.catch(console.error);
+}
+
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Unknown error";
 }
@@ -620,7 +773,8 @@ function shouldResetSyncForAccount(sync: SyncState["sync"], accountId: string) {
   return (
     accountIdMismatches(sync.settings.accountId, accountId) ||
     accountIdMismatches(sync.decks.accountId, accountId) ||
-    accountIdMismatches(sync.folders.accountId, accountId)
+    accountIdMismatches(sync.folders.accountId, accountId) ||
+    accountIdMismatches(sync.cardTags.accountId, accountId)
   );
 }
 
@@ -636,6 +790,14 @@ function getEmptyFolderSyncState(): RemoteFolderSyncState {
     folders: {},
     deckFolders: {},
   };
+}
+
+function getLocalCardTagsSyncState(state: StoreState): RemoteCardTagsState {
+  return canonicalizeCardTagsState(
+    state.cardTags,
+    state.metadata,
+    selectLookupTables(state).relations.fronts,
+  );
 }
 
 export function getLocalFolderSyncState(
