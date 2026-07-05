@@ -286,6 +286,8 @@ back:subname != null & back:subname != subname
   - legacy alias: `b`
 - **taboo_set** (string)
   - aliases: `ts`
+- **tag** (string)
+  - matches combined account and deck-local tags when available
 - **text** (text)
   - aliases: `txt`
   - legacy alias: `x`

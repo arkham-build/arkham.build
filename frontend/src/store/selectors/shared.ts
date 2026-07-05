@@ -341,12 +341,15 @@ export const selectBuildQlInterpreter = createSelector(
   selectLookupTables,
   selectSearchTextCache,
   (state: StoreState) => !!selectActiveList(state)?.search?.includeBacks,
+  (state: StoreState) => state.cardTags,
   (_: StoreState, deck?: ResolvedDeck) => deck,
-  (metadata, lookupTables, searchTextCache, matchBacks, deck) => {
+  (metadata, lookupTables, searchTextCache, matchBacks, cardTags, deck) => {
     return new Interpreter({
       fields,
       fieldLookupContext: {
+        cardTags,
         deck,
+        deckCardTags: deck?.deckCardTags,
         i18n,
         lookupTables,
         matchBacks,
@@ -362,10 +365,12 @@ export const selectStaticBuildQlInterpreter = createSelector(
   selectLookupTables,
   selectSearchTextCache,
   (state: StoreState) => !!selectActiveList(state)?.search?.includeBacks,
-  (metadata, lookupTables, searchTextCache, matchBacks) => {
+  (state: StoreState) => state.cardTags,
+  (metadata, lookupTables, searchTextCache, matchBacks, cardTags) => {
     return new Interpreter({
       fields,
       fieldLookupContext: {
+        cardTags,
         deck: undefined,
         i18n,
         lookupTables,

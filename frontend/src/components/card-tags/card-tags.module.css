@@ -22,8 +22,7 @@
   justify-content: space-between;
   line-height: 1.45;
   max-width: 100%;
-  overflow-wrap: anywhere;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem;
   width: 12rem;
 }
 
