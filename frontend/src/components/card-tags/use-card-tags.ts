@@ -182,47 +182,51 @@ function useCardTagsError() {
   );
 }
 
-const selectCardFavoriteState = createSelector(
-  (state: StoreState) => state.cardTags.favorites,
+const selectCanonicalCardTagCode = createSelector(
   (state: StoreState) => state.metadata,
   (state: StoreState) => selectLookupTables(state).relations.fronts,
   (_: StoreState, cardCode: string) => cardCode,
-  (favorites, metadata, fronts, cardCode) => {
-    const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
-    return favorites[canonicalCode] === true;
-  },
+  resolveCardTagCardCode,
+);
+
+const selectCardFavoriteState = createSelector(
+  (state: StoreState) => state.cardTags.favorites,
+  selectCanonicalCardTagCode,
+  (favorites, canonicalCode) => favorites[canonicalCode] === true,
+);
+
+const selectAccountCardTagNamesForCard = createSelector(
+  (state: StoreState) => state.cardTags.cardTags,
+  selectCanonicalCardTagCode,
+  (cardTags, canonicalCode) => cardTags[canonicalCode] ?? EMPTY_TAG_NAMES,
 );
 
 const selectCardTagsState = createSelector(
-  (state: StoreState) => state.cardTags.cardTags,
+  selectAccountCardTagNamesForCard,
   (state: StoreState) => state.cardTags.tags,
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => selectLookupTables(state).relations.fronts,
   selectLocaleSortingCollator,
-  (_: StoreState, cardCode: string) => cardCode,
-  (cardTags, tags, metadata, fronts, collator, cardCode) => {
-    const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
-    const assignedTagNames = cardTags[canonicalCode] ?? EMPTY_TAG_NAMES;
+  (assignedTagNames, tags, collator) => ({
+    selectedItems: assignedTagNames.map(tagNameToAccountItem),
+    tagOptions: tags
+      .toSorted((a, b) => collator.compare(a, b))
+      .map(tagNameToAccountItem),
+  }),
+);
 
-    return {
-      selectedItems: assignedTagNames.map(tagNameToAccountItem),
-      tagOptions: tags
-        .toSorted((a, b) => collator.compare(a, b))
-        .map(tagNameToAccountItem),
-    };
-  },
+const selectDeckCardTagsForCard = createSelector(
+  selectCanonicalCardTagCode,
+  (_: StoreState, __: string, deck: ResolvedDeck | undefined) =>
+    deck?.deckCardTags,
+  (canonicalCode, deckCardTags) =>
+    deckCardTags?.[canonicalCode] ?? EMPTY_TAG_NAMES,
 );
 
 const selectDeckCardTagsState = createSelector(
   (state: StoreState) => state.cardTags.tags,
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => selectLookupTables(state).relations.fronts,
-  selectLocaleSortingCollator,
-  (_: StoreState, cardCode: string) => cardCode,
   (_: StoreState, __: string, deck: ResolvedDeck) => deck.deckCardTags,
-  (accountTagNames, metadata, fronts, collator, cardCode, deckCardTags) => {
-    const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
-    const assignedTagNames = deckCardTags[canonicalCode] ?? EMPTY_TAG_NAMES;
+  selectDeckCardTagsForCard,
+  selectLocaleSortingCollator,
+  (accountTagNames, deckCardTags, assignedTagNames, collator) => {
     const deckTagNames = Object.values(deckCardTags).flat();
 
     return {
@@ -235,31 +239,16 @@ const selectDeckCardTagsState = createSelector(
   },
 );
 
-const selectDeckCardTagsForCard = createSelector(
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => selectLookupTables(state).relations.fronts,
-  (_: StoreState, cardCode: string) => cardCode,
-  (_: StoreState, __: string, deck: ResolvedDeck | undefined) =>
-    deck?.deckCardTags,
-  (metadata, fronts, cardCode, deckCardTags) => {
-    if (!deckCardTags) return EMPTY_TAG_NAMES;
-
-    const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
-    return deckCardTags[canonicalCode] ?? EMPTY_TAG_NAMES;
-  },
-);
-
 const selectCardTagDisplayState = createSelector(
   selectCardFavoriteState,
-  selectCardTagsState,
+  selectAccountCardTagNamesForCard,
   selectDeckCardTagsForCard,
-  (isFavorite, accountTags, deckTagNames) => ({
+  (isFavorite, accountTagNames, deckTagNames) => ({
     isFavorite,
     selectedItems: mergeTagItems({
-      accountTagNames: accountTags.selectedItems.map((item) => item.tag),
+      accountTagNames,
       deckTagNames,
     }),
-    tagOptions: accountTags.tagOptions,
   }),
 );
 

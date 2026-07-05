@@ -31,6 +31,7 @@ import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import { time, timeEnd } from "@/utils/time";
 import type { Interpreter } from "../lib/buildql/interpreter";
+import { parse as parseBuildQl } from "../lib/buildql/parser";
 import { applyCardChanges } from "../lib/card-edits";
 import {
   getCardTagFilterCode,
@@ -155,6 +156,14 @@ function listUsesCardTagFilter(list: List | undefined) {
   }
 
   return false;
+}
+
+function evaluateBuildQlSearch(value: string, buildQlInterpreter: Interpreter) {
+  try {
+    return buildQlInterpreter.evaluate(parseBuildQl(value));
+  } catch {
+    return undefined;
+  }
 }
 
 function makeUserFilter(
@@ -838,9 +847,15 @@ export const selectListCards = createSelector(
 
     if (search.value) {
       if (search.mode === "buildql") {
-        if (search.buildQlSearch) {
+        const buildQlSearchValue = search.buildQlSearchValue ?? search.value;
+        const buildQlSearch = evaluateBuildQlSearch(
+          buildQlSearchValue,
+          buildQlInterpreter,
+        );
+
+        if (buildQlSearch) {
           try {
-            filteredCards = filteredCards.filter(search.buildQlSearch);
+            filteredCards = filteredCards.filter(buildQlSearch);
           } catch {}
         }
       } else {

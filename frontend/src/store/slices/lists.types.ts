@@ -114,7 +114,7 @@ export type FilterObject<K extends FilterKey> = {
 
 export type Search = {
   buildQlError?: Error;
-  buildQlSearch?: Filter;
+  buildQlSearchValue?: string;
   includeBacks: boolean;
   includeFlavor: boolean;
   includeGameText: boolean;
@@ -122,6 +122,11 @@ export type Search = {
   mode: "buildql" | "simple";
   value: string;
 };
+
+export type SearchFlag = keyof Pick<
+  Search,
+  "includeBacks" | "includeFlavor" | "includeGameText" | "includeName"
+>;
 
 export type GroupingType =
   | "base_upgrades"
@@ -226,11 +231,7 @@ export type ListsSlice = {
     deck?: ResolvedDeck,
     opts?: { clearMode?: boolean },
   ): void;
-  setSearchFlag(
-    flag: keyof Omit<Search, "value">,
-    value: boolean,
-    deck?: ResolvedDeck,
-  ): void;
+  setSearchFlag(flag: SearchFlag, value: boolean, deck?: ResolvedDeck): void;
 
   resetFilter(id: number): void;
   resetFilters(): void;
