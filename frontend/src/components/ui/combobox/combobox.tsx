@@ -19,7 +19,7 @@ import { cx } from "@/utils/cx";
 import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";
 import { isEmpty } from "@/utils/is-empty";
 import css from "./combobox.module.css";
-import { ComboboxMenu } from "./combobox-menu";
+import { ComboboxMenu, type ComboboxMenuItem } from "./combobox-menu";
 import { ComboboxResults, type ResultRenderer } from "./combobox-results";
 
 function defaultItemToString<T extends Coded>(val: T) {
@@ -45,10 +45,15 @@ function fuzzy<T extends Coded>(
   });
 }
 
+type CreatableOptions = {
+  label: (value: string) => React.ReactNode;
+  onCreate: (value: string) => void;
+};
+
 export type Props<T extends Coded> = {
   autoFocus?: boolean;
   className?: string;
-  createItem?: (value: string, items: T[]) => T | undefined;
+  creatable?: CreatableOptions;
   defaultOpen?: boolean;
   disabled?: boolean;
   omitFloatingPortal?: boolean;
@@ -75,7 +80,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
   const {
     autoFocus,
     className,
-    createItem,
+    creatable,
     defaultOpen,
     disabled,
     id,
@@ -126,11 +131,37 @@ export function Combobox<T extends Coded>(props: Props<T>) {
 
   const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
 
-  const filteredItems = useMemo(() => {
-    const result = fuzzy(inputValue, items, itemToString);
-    const createdItem = createItem?.(inputValue, result);
-    return createdItem ? [...result, createdItem] : result;
-  }, [createItem, items, inputValue, itemToString]);
+  const filteredItems = useMemo(
+    () => fuzzy(inputValue, items, itemToString),
+    [items, inputValue, itemToString],
+  );
+
+  const menuItems = useMemo(() => {
+    const result = filteredItems.map<ComboboxMenuItem<T>>((item) => ({
+      code: item.code,
+      item,
+      type: "item",
+    }));
+
+    const createValue = inputValue.trim();
+    if (!creatable || !createValue) return result;
+
+    const hasMatchingItem = items.some(
+      (item) =>
+        itemToString(item).trim().toLowerCase() === createValue.toLowerCase(),
+    );
+
+    if (!hasMatchingItem) {
+      result.push({
+        code: `create:${createValue}`,
+        label: creatable.label(createValue),
+        type: "create",
+        value: createValue,
+      });
+    }
+
+    return result;
+  }, [creatable, filteredItems, inputValue, itemToString, items]);
 
   const setSelectedItem = useCallback(
     (item: T) => {
@@ -162,6 +193,26 @@ export function Combobox<T extends Coded>(props: Props<T>) {
     [refs.reference, onValueChange, selectedItems, limit],
   );
 
+  const setSelectedMenuItem = useCallback(
+    (menuItem: ComboboxMenuItem<T>) => {
+      if (menuItem.type === "item") {
+        setSelectedItem(menuItem.item);
+        return;
+      }
+
+      creatable?.onCreate(menuItem.value);
+      setInputValue("");
+      setOpen(false);
+
+      const ref = refs.reference.current;
+
+      if (ref instanceof HTMLInputElement && document.activeElement !== ref) {
+        ref.focus();
+      }
+    },
+    [creatable, refs.reference, setSelectedItem],
+  );
+
   const removeSelectedItem = useCallback(
     (index: number) => {
       const next = [...selectedItems] as T[];
@@ -173,8 +224,8 @@ export function Combobox<T extends Coded>(props: Props<T>) {
 
   useEffect(() => {
     listRef.current = [];
-    setActiveIndex(filteredItems.length > 0 ? 0 : undefined);
-  }, [filteredItems.length]);
+    setActiveIndex(menuItems.length > 0 ? 0 : undefined);
+  }, [menuItems.length]);
 
   useEffect(() => {
     if (isOpen) {
@@ -220,23 +271,23 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                     onEscapeBlur?.();
                   } else if (evt.key === "Enter" && activeIndex != null) {
                     evt.preventDefault();
-                    const activeItem = filteredItems[activeIndex];
+                    const activeItem = menuItems[activeIndex];
                     if (activeItem) {
-                      setSelectedItem(activeItem);
+                      setSelectedMenuItem(activeItem);
                       setOpen(false);
                     }
                   } else if (evt.key === "ArrowDown") {
                     evt.preventDefault();
                     setActiveIndex((prev) => {
-                      if (filteredItems.length === 0) return undefined;
+                      if (menuItems.length === 0) return undefined;
                       if (activeIndex == null || prev == null) return 0;
-                      return prev < filteredItems.length - 1 ? prev + 1 : prev;
+                      return prev < menuItems.length - 1 ? prev + 1 : prev;
                     });
                     if (!isOpen) setOpen(true);
                   } else if (evt.key === "ArrowUp") {
                     evt.preventDefault();
                     setActiveIndex((prev) => {
-                      if (filteredItems.length === 0) return undefined;
+                      if (menuItems.length === 0) return undefined;
                       if (prev == null) return 0;
                       return prev > 0 ? prev - 1 : prev;
                     });
@@ -285,14 +336,14 @@ export function Combobox<T extends Coded>(props: Props<T>) {
             >
               <ComboboxMenu
                 activeIndex={activeIndex}
-                items={filteredItems}
+                items={menuItems}
                 listRef={listRef}
                 noResultsLabel={noResultsLabel ?? t("common.no_results")}
                 omitItemPadding={omitItemPadding}
                 renderItem={renderItem}
                 selectedItems={selectedItems}
                 setActiveIndex={setActiveIndex}
-                setSelectedItem={setSelectedItem}
+                setSelectedItem={setSelectedMenuItem}
               />
             </div>
           </FloatingFocusManager>

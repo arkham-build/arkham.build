@@ -4,7 +4,7 @@ import {
   type CardTag,
 } from "@arkham-build/shared";
 import { HeartIcon, PlusIcon, Settings2Icon } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useSaveCardTagsMutation } from "@/queries/mutations/card-tags";
@@ -40,17 +40,8 @@ type Props = {
 
 type TagItem = {
   code: string;
-  kind: "tag";
   tag: CardTag;
 };
-
-type TagOption =
-  | TagItem
-  | {
-      code: string;
-      kind: "create";
-      name: string;
-    };
 
 const EMPTY_TAG_IDS: string[] = [];
 
@@ -119,22 +110,8 @@ export function CardTagControls({
   );
 
   const onTagsChange = useCallback(
-    (nextItems: TagOption[]) => {
-      const createItem = nextItems.find((item) => item.kind === "create");
-
-      if (createItem) {
-        void persist(async () => {
-          const tagId = await createCardTag(createItem.name);
-          await tagCard(cardCode, tagId);
-        }).catch(onError);
-        return;
-      }
-
-      const nextTagIds = new Set(
-        nextItems
-          .filter((item) => item.kind === "tag")
-          .map((item) => item.tag.id),
-      );
+    (nextItems: TagItem[]) => {
+      const nextTagIds = new Set(nextItems.map((item) => item.tag.id));
 
       void persist(async () => {
         for (const tagId of selectedTagIdSet) {
@@ -150,37 +127,30 @@ export function CardTagControls({
         }
       }).catch(onError);
     },
-    [
-      selectedTagIdSet,
-      cardCode,
-      createCardTag,
-      onError,
-      persist,
-      tagCard,
-      untagCard,
-    ],
+    [selectedTagIdSet, cardCode, onError, persist, tagCard, untagCard],
   );
 
-  const createItem = useCallback(
-    (value: string) => {
-      const name = value.trim();
-      if (!name) return undefined;
-
-      const exists = tagOptions.some(
-        (item) =>
-          item.kind === "tag" &&
-          item.tag.name.trim().toLowerCase() === name.toLowerCase(),
-      );
-
-      return exists
-        ? undefined
-        : {
-            code: `create:${name}`,
-            kind: "create" as const,
-            name,
-          };
+  const onCreateTag = useCallback(
+    (name: string) => {
+      void persist(async () => {
+        const tagId = await createCardTag(name);
+        await tagCard(cardCode, tagId);
+      }).catch(onError);
     },
-    [tagOptions],
+    [cardCode, createCardTag, onError, persist, tagCard],
+  );
+
+  const createable = useMemo(
+    () => ({
+      label: (name: string) => (
+        <>
+          <PlusIcon />
+          {t("card_tags.create_named", { name })}
+        </>
+      ),
+      onCreate: onCreateTag,
+    }),
+    [onCreateTag, t],
   );
 
   return (
@@ -192,24 +162,15 @@ export function CardTagControls({
         <div className={css["tags"]}>
           <Combobox
             className={css["combobox"]}
-            createItem={createItem}
+            creatable={createable}
             id={`card-tags-${cardCode}`}
-            itemToString={tagOptionToString}
+            itemToString={tagItemToString}
             items={tagOptions}
             label={t("card_tags.title")}
             locale={i18n.language}
             onValueChange={onTagsChange}
             placeholder={t("card_tags.placeholder")}
-            renderItem={(item) =>
-              item.kind === "tag" ? (
-                item.tag.name
-              ) : (
-                <>
-                  <PlusIcon />
-                  {t("card_tags.create_named", { name: item.name })}
-                </>
-              )
-            }
+            renderItem={(item) => item.tag.name}
             renderResult={renderTagResult}
             selectedItems={selectedItems}
           />
@@ -346,7 +307,7 @@ const selectCardTagControlsState = createSelector(
     const selectedItems = assignedTagIds.reduce<TagItem[]>((acc, tagId) => {
       const tag = tags[tagId];
       if (tag) {
-        acc.push({ code: tag.id, kind: "tag", tag });
+        acc.push({ code: tag.id, tag });
       }
       return acc;
     }, []);
@@ -360,39 +321,25 @@ const selectCardTagControlsState = createSelector(
         .sort((a, b) => collator.compare(a.name, b.name))
         .map<TagItem>((tag) => ({
           code: tag.id,
-          kind: "tag",
           tag,
         })),
     };
   },
 );
 
-function tagOptionToString(item: TagOption) {
-  return item.kind === "tag" ? item.tag.name : item.name;
+function tagItemToString(item: TagItem) {
+  return item.tag.name;
 }
 
-function renderTagResult(item: TagOption, onRemove: (() => void) | undefined) {
-  if (item.kind === "tag") {
-    return (
-      <ResultTag
-        className={css["tag-result"]}
-        data-testid={`combobox-result-${item.tag.id}`}
-        onRemove={onRemove}
-        size="sm"
-      >
-        {item.tag.name}
-      </ResultTag>
-    );
-  }
-
+function renderTagResult(item: TagItem, onRemove: (() => void) | undefined) {
   return (
     <ResultTag
       className={css["tag-result"]}
-      data-testid={`combobox-result-${item.code}`}
+      data-testid={`combobox-result-${item.tag.id}`}
       onRemove={onRemove}
       size="sm"
     >
-      {item.name}
+      {item.tag.name}
     </ResultTag>
   );
 }
