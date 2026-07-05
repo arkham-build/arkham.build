@@ -58,11 +58,7 @@ export function CardListItemCompact(props: Props) {
         visibleTags.length || renderCardAfter
           ? (card, quantity) => (
               <CardAfterRow>
-                <CardTagList
-                  card={card}
-                  favorite={isFavorite}
-                  items={visibleTags}
-                />
+                <CardTagList card={card} items={visibleTags} />
                 {renderCardAfter?.(card, quantity)}
               </CardAfterRow>
             )
