@@ -1,4 +1,3 @@
-import { CARD_TAG_FAVORITE_ID } from "@arkham-build/shared";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import { getMockStore } from "@/test/get-mock-store";
@@ -11,20 +10,15 @@ describe("card tags slice", () => {
     store = await getMockStore();
   });
 
-  it("allows a custom tag named Favorite without storing the favorite system tag", async () => {
-    const tagId = await store
+  it("allows a custom tag named Favorite without setting the favorite flag", async () => {
+    const tagName = await store
       .getState()
       .createCardTagForCard("01016", "Favorite");
 
-    expect(tagId).not.toBe(CARD_TAG_FAVORITE_ID);
-    expect(store.getState().cardTags.tags[tagId]).toMatchObject({
-      id: tagId,
-      name: "Favorite",
-    });
-    expect(store.getState().cardTags.cardTags["01016"]).toEqual([tagId]);
-    expect(
-      store.getState().cardTags.tags[CARD_TAG_FAVORITE_ID],
-    ).toBeUndefined();
+    expect(tagName).toBe("Favorite");
+    expect(store.getState().cardTags.tags).toEqual(["Favorite"]);
+    expect(store.getState().cardTags.cardTags["01016"]).toEqual(["Favorite"]);
+    expect(store.getState().cardTags.favorites["01016"]).toBeUndefined();
   });
 
   it("rejects duplicate custom tag names", async () => {
@@ -36,55 +30,42 @@ describe("card tags slice", () => {
   });
 
   it("stores card tags under the canonical card code", async () => {
-    const tagId = await store
+    const tagName = await store
       .getState()
       .createCardTagForCard("01516", "Upgrade");
 
-    await store.getState().setCardTagsForCard("07211b", [tagId]);
+    await store.getState().setCardTagsForCard("07211b", [tagName]);
 
-    expect(store.getState().cardTags.cardTags["01016"]).toEqual([tagId]);
+    expect(store.getState().cardTags.cardTags["01016"]).toEqual([tagName]);
     expect(store.getState().cardTags.cardTags["01516"]).toBeUndefined();
-    expect(store.getState().cardTags.cardTags["07211a"]).toEqual([tagId]);
+    expect(store.getState().cardTags.cardTags["07211a"]).toEqual([tagName]);
     expect(store.getState().cardTags.cardTags["07211b"]).toBeUndefined();
   });
 
-  it("toggles favorite as a virtual tag assignment", async () => {
-    await store.getState().toggleFavorite("01516");
-
-    expect(
-      store.getState().cardTags.tags[CARD_TAG_FAVORITE_ID],
-    ).toBeUndefined();
-    expect(store.getState().cardTags.cardTags["01016"]).toEqual([
-      CARD_TAG_FAVORITE_ID,
-    ]);
-
+  it("toggles favorite separately from custom tag assignments", async () => {
     await store.getState().toggleFavorite("01516");
 
     expect(store.getState().cardTags.cardTags["01016"]).toBeUndefined();
+    expect(store.getState().cardTags.favorites["01016"]).toBe(true);
+
+    await store.getState().toggleFavorite("01516");
+
+    expect(store.getState().cardTags.favorites["01016"]).toBeUndefined();
   });
 
   it("renames and deletes custom tags", async () => {
-    const tagId = await store
+    const tagName = await store
       .getState()
       .createCardTagForCard("01016", "Upgrade");
 
-    await store.getState().renameCardTag(tagId, "Campaign");
+    await store.getState().renameCardTag(tagName, "Campaign");
 
-    expect(store.getState().cardTags.tags[tagId]?.name).toBe("Campaign");
+    expect(store.getState().cardTags.tags).toEqual(["Campaign"]);
+    expect(store.getState().cardTags.cardTags["01016"]).toEqual(["Campaign"]);
 
-    await store.getState().deleteCardTag(tagId);
+    await store.getState().deleteCardTag("Campaign");
 
-    expect(store.getState().cardTags.tags[tagId]).toBeUndefined();
+    expect(store.getState().cardTags.tags).toEqual([]);
     expect(store.getState().cardTags.cardTags["01016"]).toBeUndefined();
-  });
-
-  it("does not allow modifying or deleting the favorite system tag", async () => {
-    await expect(
-      store.getState().renameCardTag(CARD_TAG_FAVORITE_ID, "Favorites"),
-    ).rejects.toThrow("Favorite tag cannot be modified.");
-
-    await expect(
-      store.getState().deleteCardTag(CARD_TAG_FAVORITE_ID),
-    ).rejects.toThrow("Favorite tag cannot be deleted.");
   });
 });

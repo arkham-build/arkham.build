@@ -150,12 +150,9 @@ test.describe("signup onboarding", () => {
     await signupAndOpenCompleteProfile(page, email);
     await completeProfile(page, username);
     const cardTagState = await getAccountCardTagState(email);
-    const tag = Object.values(cardTagState.tags).find(
-      (item) => item.name === tagName,
-    );
 
-    expect(tag).toBeDefined();
-    expect(cardTagState.cardTags["01020"]).toContain(tag?.id);
+    expect(cardTagState.tags).toContain(tagName);
+    expect(cardTagState.cardTags["01020"]).toContain(tagName);
   });
 
   test("uploads archive folder state while completing signup", async ({
@@ -390,9 +387,8 @@ async function waitForPersistedCardTag(page: Page, tagName: string) {
   await expect
     .poll(async () => {
       const state = await readPersistedAppState(page);
-      return Object.values(state.state?.cardTags?.tags ?? {}).some(
-        (tag) => tag.name === tagName,
-      );
+      const tags = state.state?.cardTags?.tags;
+      return Array.isArray(tags) && tags.includes(tagName);
     })
     .toBe(true);
 }

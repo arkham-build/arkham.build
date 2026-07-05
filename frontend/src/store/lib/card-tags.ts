@@ -1,13 +1,16 @@
-import { CARD_TAG_FAVORITE_ID, type CardTagsState } from "@arkham-build/shared";
+import type { CardTagsState } from "@arkham-build/shared";
 import type { Metadata } from "../slices/metadata.types";
 import type { LookupTables } from "./lookup-tables.types";
 
 type FrontCardLookup = LookupTables["relations"]["fronts"];
 
+const CARD_TAG_FILTER_TAG_PREFIX = "tag:";
+
 export function getEmptyCardTagsState(): CardTagsState {
   return {
-    tags: {},
+    tags: [],
     cardTags: {},
+    favorites: {},
   };
 }
 
@@ -17,27 +20,34 @@ export function canonicalizeCardTagsState(
   fronts: FrontCardLookup,
 ): CardTagsState {
   const cardTags: CardTagsState["cardTags"] = {};
+  const favorites: CardTagsState["favorites"] = {};
 
-  for (const [cardCode, tagIds] of Object.entries(state.cardTags)) {
+  for (const [cardCode, tagNames] of Object.entries(state.cardTags)) {
     const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
-    const assignedTagIds = cardTags[canonicalCode] ?? [];
-    const seen = new Set(assignedTagIds);
+    const assignedTagNames = cardTags[canonicalCode] ?? [];
+    const seen = new Set(assignedTagNames);
 
-    for (const tagId of tagIds) {
-      if (seen.has(tagId)) continue;
+    for (const tagName of tagNames) {
+      if (seen.has(tagName)) continue;
 
-      seen.add(tagId);
-      assignedTagIds.push(tagId);
+      seen.add(tagName);
+      assignedTagNames.push(tagName);
     }
 
-    if (assignedTagIds.length) {
-      cardTags[canonicalCode] = assignedTagIds;
+    if (assignedTagNames.length) {
+      cardTags[canonicalCode] = assignedTagNames;
     }
+  }
+
+  for (const cardCode of Object.keys(state.favorites)) {
+    const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
+    favorites[canonicalCode] = true;
   }
 
   return {
     tags: state.tags,
     cardTags,
+    favorites,
   };
 }
 
@@ -70,11 +80,20 @@ export function resolveCardTagCardCode(
   return code;
 }
 
-export function isKnownCardTagId(
+export function getCardTagFilterCode(tagName: string): string {
+  return `${CARD_TAG_FILTER_TAG_PREFIX}${tagName}`;
+}
+
+export function getCardTagNameFromFilterCode(code: string): string | undefined {
+  if (!code.startsWith(CARD_TAG_FILTER_TAG_PREFIX)) return undefined;
+  return code.slice(CARD_TAG_FILTER_TAG_PREFIX.length);
+}
+
+export function isKnownCardTagName(
   tags: CardTagsState["tags"],
-  tagId: string,
+  name: string,
 ): boolean {
-  return tagId === CARD_TAG_FAVORITE_ID || tags[tagId] != null;
+  return tags.includes(name);
 }
 
 export function normalizeCardTagName(name: string): string {

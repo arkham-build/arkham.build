@@ -798,8 +798,9 @@ describe("Auth routes", () => {
           username: "complete-user-uploads",
           uploads: {
             cardTags: {
-              cardTags: { "01020": ["tag", "favorite"] },
-              tags: { tag: { id: "tag", name: "Tag" } },
+              cardTags: { "01020": ["Tag"] },
+              favorites: { "01020": true },
+              tags: ["Tag"],
             },
             decks: [
               makeOnboardingDeck({
@@ -834,8 +835,9 @@ describe("Auth routes", () => {
           cardTags: {
             revision: expect.any(String),
             state: {
-              cardTags: { "01020": ["tag", "favorite"] },
-              tags: { tag: { id: "tag", name: "Tag" } },
+              cardTags: { "01020": ["Tag"] },
+              favorites: { "01020": true },
+              tags: ["Tag"],
             },
           },
           deckIdMap: {
@@ -878,8 +880,9 @@ describe("Auth routes", () => {
         .executeTakeFirstOrThrow();
 
       expect(cardTags.state).toEqual({
-        cardTags: { "01020": ["tag", "favorite"] },
-        tags: { tag: { id: "tag", name: "Tag" } },
+        cardTags: { "01020": ["Tag"] },
+        favorites: { "01020": true },
+        tags: ["Tag"],
       });
 
       const decks = await db
@@ -1025,8 +1028,9 @@ describe("Auth routes", () => {
         .values({
           account_id: account.id,
           state: {
-            cardTags: { "01020": ["existing"] },
-            tags: { existing: { id: "existing", name: "Existing" } },
+            cardTags: { "01020": ["Existing"] },
+            favorites: {},
+            tags: ["Existing"],
           },
         })
         .executeTakeFirstOrThrow();
@@ -1041,8 +1045,9 @@ describe("Auth routes", () => {
           username: "complete-user-existing-upload",
           uploads: {
             cardTags: {
-              cardTags: { "01021": ["new"] },
-              tags: { new: { id: "new", name: "New" } },
+              cardTags: { "01021": ["New"] },
+              favorites: {},
+              tags: ["New"],
             },
             folders: {
               deckFolders: {},
@@ -1064,8 +1069,9 @@ describe("Auth routes", () => {
           cardTags: {
             revision: expect.any(String),
             state: {
-              cardTags: { "01020": ["existing"] },
-              tags: { existing: { id: "existing", name: "Existing" } },
+              cardTags: { "01020": ["Existing"] },
+              favorites: {},
+              tags: ["Existing"],
             },
           },
           folders: {

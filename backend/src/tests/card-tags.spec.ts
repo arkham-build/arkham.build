@@ -45,10 +45,9 @@ describe("Card tags routes", () => {
         body: JSON.stringify({
           expectedRevision: null,
           state: {
-            cardTags: { "01020": ["tag", "favorite"] },
-            tags: {
-              tag: { id: "tag", name: "Tag" },
-            },
+            cardTags: { "01020": ["Tag"] },
+            favorites: { "01020": true },
+            tags: ["Tag"],
           },
         }),
       });
@@ -57,10 +56,9 @@ describe("Card tags routes", () => {
       expect(CardTagsSyncResponseSchema.parse(await res.json())).toMatchObject({
         revision: expect.any(String),
         state: {
-          cardTags: { "01020": ["tag", "favorite"] },
-          tags: {
-            tag: { id: "tag", name: "Tag" },
-          },
+          cardTags: { "01020": ["Tag"] },
+          favorites: { "01020": true },
+          tags: ["Tag"],
         },
       });
     });
@@ -77,8 +75,9 @@ describe("Card tags routes", () => {
         body: JSON.stringify({
           expectedRevision: null,
           state: {
-            cardTags: { "01020": ["missing"] },
-            tags: {},
+            cardTags: { "01020": ["Missing"] },
+            favorites: {},
+            tags: [],
           },
         }),
       });
@@ -100,10 +99,9 @@ describe("Card tags routes", () => {
         body: JSON.stringify({
           expectedRevision: null,
           state: {
-            cardTags: { "01020": ["tag"] },
-            tags: {
-              tag: { id: "tag", name: "Tag" },
-            },
+            cardTags: { "01020": ["Tag"] },
+            favorites: {},
+            tags: ["Tag"],
           },
         }),
       });
@@ -119,10 +117,9 @@ describe("Card tags routes", () => {
         body: JSON.stringify({
           expectedRevision: created.revision,
           state: {
-            cardTags: { "01021": ["renamed"] },
-            tags: {
-              renamed: { id: "renamed", name: "Renamed" },
-            },
+            cardTags: { "01021": ["Renamed"] },
+            favorites: {},
+            tags: ["Renamed"],
           },
         }),
       });
@@ -134,10 +131,9 @@ describe("Card tags routes", () => {
       expect(updated).toMatchObject({
         revision: expect.not.stringMatching(created.revision as string),
         state: {
-          cardTags: { "01021": ["renamed"] },
-          tags: {
-            renamed: { id: "renamed", name: "Renamed" },
-          },
+          cardTags: { "01021": ["Renamed"] },
+          favorites: {},
+          tags: ["Renamed"],
         },
       });
 
@@ -162,10 +158,9 @@ describe("Card tags routes", () => {
         body: JSON.stringify({
           expectedRevision: null,
           state: {
-            cardTags: { "01020": ["tag"] },
-            tags: {
-              tag: { id: "tag", name: "Tag" },
-            },
+            cardTags: { "01020": ["Tag"] },
+            favorites: {},
+            tags: ["Tag"],
           },
         }),
       });
@@ -180,10 +175,9 @@ describe("Card tags routes", () => {
         body: JSON.stringify({
           expectedRevision: created.revision,
           state: {
-            cardTags: { "01021": ["tag"] },
-            tags: {
-              tag: { id: "tag", name: "Tag" },
-            },
+            cardTags: { "01021": ["Tag"] },
+            favorites: {},
+            tags: ["Tag"],
           },
         }),
       });
@@ -198,10 +192,9 @@ describe("Card tags routes", () => {
         body: JSON.stringify({
           expectedRevision: created.revision,
           state: {
-            cardTags: { "01022": ["tag"] },
-            tags: {
-              tag: { id: "tag", name: "Tag" },
-            },
+            cardTags: { "01022": ["Tag"] },
+            favorites: {},
+            tags: ["Tag"],
           },
         }),
       });

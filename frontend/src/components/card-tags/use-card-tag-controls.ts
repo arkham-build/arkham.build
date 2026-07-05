@@ -1,4 +1,4 @@
-import { CARD_TAG_FAVORITE_ID, type CardTag } from "@arkham-build/shared";
+import type { CardTag } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
@@ -17,7 +17,7 @@ export type TagItem = {
   tag: CardTag;
 };
 
-const EMPTY_TAG_IDS: string[] = [];
+const EMPTY_TAG_NAMES: string[] = [];
 
 export function useCardTagDisplay(cardCode: string) {
   return useStore((state) => selectCardTagDisplayState(state, cardCode));
@@ -70,29 +70,25 @@ export function useCardTagControls(cardCode: string) {
   }, [cardCode, onError, persist, toggleFavorite]);
 
   const onRenameTag = useCallback(
-    (id: string, name: string) => persist(() => renameCardTag(id, name)),
+    (name: string, nextName: string) =>
+      persist(() => renameCardTag(name, nextName)),
     [persist, renameCardTag],
   );
 
   const onDeleteTag = useCallback(
-    (id: string) => persist(() => deleteCardTag(id)),
+    (name: string) => persist(() => deleteCardTag(name)),
     [deleteCardTag, persist],
   );
 
   const onTagsChange = useCallback(
     (nextItems: TagItem[]) => {
-      const customTagIds = nextItems
-        .map((item) => item.tag.id)
-        .filter((tagId) => tagId !== CARD_TAG_FAVORITE_ID);
-      const nextTagIds = isFavorite
-        ? [CARD_TAG_FAVORITE_ID, ...customTagIds]
-        : customTagIds;
+      const nextTagNames = nextItems.map((item) => item.tag);
 
-      void persist(() => setCardTagsForCard(cardCode, nextTagIds)).catch(
+      void persist(() => setCardTagsForCard(cardCode, nextTagNames)).catch(
         onError,
       );
     },
-    [cardCode, isFavorite, onError, persist, setCardTagsForCard],
+    [cardCode, onError, persist, setCardTagsForCard],
   );
 
   const onCreateTag = useCallback(
@@ -117,29 +113,27 @@ export function useCardTagControls(cardCode: string) {
 
 const selectCardTagDisplayState = createSelector(
   (state: StoreState) => state.cardTags.cardTags,
+  (state: StoreState) => state.cardTags.favorites,
   (state: StoreState) => state.cardTags.tags,
   (state: StoreState) => state.metadata,
   (state: StoreState) => selectLookupTables(state).relations.fronts,
   selectLocaleSortingCollator,
   (_: StoreState, cardCode: string) => cardCode,
-  (cardTags, tags, metadata, fronts, collator, cardCode) => {
+  (cardTags, favorites, tags, metadata, fronts, collator, cardCode) => {
     const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
-    const assignedTagIds = cardTags[canonicalCode] ?? EMPTY_TAG_IDS;
-    const selectedItems = assignedTagIds.reduce<TagItem[]>((acc, tagId) => {
-      const tag = tags[tagId];
-      if (tag) {
-        acc.push({ code: tag.id, tag });
-      }
+    const assignedTagNames = cardTags[canonicalCode] ?? EMPTY_TAG_NAMES;
+    const selectedItems = assignedTagNames.reduce<TagItem[]>((acc, tag) => {
+      acc.push({ code: tag, tag });
       return acc;
     }, []);
 
     return {
-      isFavorite: assignedTagIds.includes(CARD_TAG_FAVORITE_ID),
+      isFavorite: favorites[canonicalCode] === true,
       selectedItems,
-      tagOptions: Object.values(tags)
-        .sort((a, b) => collator.compare(a.name, b.name))
+      tagOptions: tags
+        .toSorted((a, b) => collator.compare(a, b))
         .map<TagItem>((tag) => ({
-          code: tag.id,
+          code: tag,
           tag,
         })),
     };

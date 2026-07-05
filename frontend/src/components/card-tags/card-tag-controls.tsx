@@ -1,6 +1,6 @@
 import { CARD_TAG_NAME_MAX_LENGTH, type CardTag } from "@arkham-build/shared";
 import { HeartIcon, PlusIcon, Settings2Icon } from "lucide-react";
-import { useMemo } from "react";
+import { useId, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
@@ -73,7 +73,7 @@ export function CardTagControls({
             locale={i18n.language}
             onValueChange={onTagsChange}
             placeholder={t("card_tags.placeholder")}
-            renderItem={(item) => item.tag.name}
+            renderItem={(item) => item.tag}
             renderResult={renderTagResult}
             selectedItems={selectedItems}
           />
@@ -119,12 +119,13 @@ function CardTagManager({
   onRename,
   tags,
 }: {
-  onDelete: (id: string) => Promise<void>;
+  onDelete: (name: string) => Promise<void>;
   onError: (err: unknown) => void;
-  onRename: (id: string, name: string) => Promise<void>;
+  onRename: (name: string, nextName: string) => Promise<void>;
   tags: CardTag[];
 }) {
   const { t } = useTranslation();
+  const formId = useId();
 
   return (
     <Dialog>
@@ -147,46 +148,49 @@ function CardTagManager({
             <ModalActions />
             <DefaultModalContent title={t("card_tags.manage.title")}>
               <div className={css["manager-list"]}>
-                {tags.map((tag) => (
-                  <form
-                    className={css["manager-row"]}
-                    key={`${tag.id}:${tag.name}`}
-                    onSubmit={(evt) => {
-                      evt.preventDefault();
-                      const name = new FormData(evt.currentTarget).get("name");
-                      if (typeof name !== "string") return;
-                      void onRename(tag.id, name).catch(onError);
-                    }}
-                  >
-                    <Field className={css["manager-field"]} full>
-                      <FieldLabel
-                        className="sr-only"
-                        htmlFor={`card-tag-${tag.id}`}
-                      >
-                        {t("card_tags.manage.name")}
-                      </FieldLabel>
-                      <input
-                        defaultValue={tag.name}
-                        id={`card-tag-${tag.id}`}
-                        maxLength={CARD_TAG_NAME_MAX_LENGTH}
-                        name="name"
-                        required
-                      />
-                    </Field>
-                    <Button type="submit" variant="secondary">
-                      {t("card_tags.manage.save")}
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        void onDelete(tag.id).catch(onError);
+                {tags.map((tag, index) => {
+                  const fieldId = `${formId}-${index}`;
+
+                  return (
+                    <form
+                      className={css["manager-row"]}
+                      key={tag}
+                      onSubmit={(evt) => {
+                        evt.preventDefault();
+                        const name = new FormData(evt.currentTarget).get(
+                          "name",
+                        );
+                        if (typeof name !== "string") return;
+                        void onRename(tag, name).catch(onError);
                       }}
-                      type="button"
-                      variant="danger"
                     >
-                      {t("card_tags.manage.delete")}
-                    </Button>
-                  </form>
-                ))}
+                      <Field className={css["manager-field"]} full>
+                        <FieldLabel className="sr-only" htmlFor={fieldId}>
+                          {t("card_tags.manage.name")}
+                        </FieldLabel>
+                        <input
+                          defaultValue={tag}
+                          id={fieldId}
+                          maxLength={CARD_TAG_NAME_MAX_LENGTH}
+                          name="name"
+                          required
+                        />
+                      </Field>
+                      <Button type="submit" variant="secondary">
+                        {t("card_tags.manage.save")}
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          void onDelete(tag).catch(onError);
+                        }}
+                        type="button"
+                        variant="danger"
+                      >
+                        {t("card_tags.manage.delete")}
+                      </Button>
+                    </form>
+                  );
+                })}
               </div>
             </DefaultModalContent>
           </ModalInner>
@@ -198,18 +202,18 @@ function CardTagManager({
 }
 
 function tagItemToString(item: TagItem) {
-  return item.tag.name;
+  return item.tag;
 }
 
 function renderTagResult(item: TagItem, onRemove: (() => void) | undefined) {
   return (
     <ResultTag
       className={css["tag-result"]}
-      data-testid={`combobox-result-${item.tag.id}`}
+      data-testid={`combobox-result-${item.code}`}
       onRemove={onRemove}
       size="sm"
     >
-      {item.tag.name}
+      {item.tag}
     </ResultTag>
   );
 }

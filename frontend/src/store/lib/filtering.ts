@@ -1,5 +1,6 @@
 import {
   type AttributeFilter,
+  CARD_TAG_FAVORITE_ID,
   type Card,
   type CardTagsState,
   type Collection,
@@ -43,7 +44,10 @@ import type { Metadata } from "../slices/metadata.types";
 import type { Interpreter } from "./buildql/interpreter";
 import { parse } from "./buildql/parser";
 import { type CardOwnershipOptions, ownedCardCount } from "./card-ownership";
-import { resolveCardTagCardCode } from "./card-tags";
+import {
+  getCardTagNameFromFilterCode,
+  resolveCardTagCardCode,
+} from "./card-tags";
 import type { LookupTables } from "./lookup-tables.types";
 import type { ResolvedDeck, Selections } from "./types";
 import { isOptionSelect } from "./types";
@@ -211,18 +215,29 @@ export function filterAttribute(attributeFilter: AttributeFilter) {
 
 export function filterCardTags(
   value: MultiselectFilter,
-  cardTags: CardTagsState["cardTags"],
+  cardTags: CardTagsState,
   metadata: Metadata,
   fronts: LookupTables["relations"]["fronts"],
 ) {
   if (!value.length) return undefined;
 
-  const tagIds = new Set(value);
+  const tagNames = new Set<string>();
+  const includeFavorites = value.includes(CARD_TAG_FAVORITE_ID);
+
+  for (const code of value) {
+    const tagName = getCardTagNameFromFilterCode(code);
+    if (tagName) tagNames.add(tagName);
+  }
 
   return (card: Card) => {
     const canonicalCode = resolveCardTagCardCode(metadata, fronts, card.code);
-    const assignedTagIds = cardTags[canonicalCode];
-    return assignedTagIds?.some((tagId) => tagIds.has(tagId)) ?? false;
+
+    if (includeFavorites && cardTags.favorites[canonicalCode]) {
+      return true;
+    }
+
+    const assignedTagNames = cardTags.cardTags[canonicalCode];
+    return assignedTagNames?.some((tagName) => tagNames.has(tagName)) ?? false;
   };
 }
 

@@ -20,6 +20,7 @@ import type {
   SkillIconsFilter,
 } from "../slices/lists.types";
 import { applyTaboo } from "./card-edits";
+import { getCardTagFilterCode } from "./card-tags";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {
   filterActions,
@@ -1012,14 +1013,13 @@ describe("filter: card tags", () => {
     store = await getMockStore();
     store.setState({
       cardTags: {
-        tags: {
-          favorites: { id: "favorites", name: "Favorites" },
-          upgrade: { id: "upgrade", name: "Upgrade" },
-        },
+        tags: ["Favorites", "Upgrade"],
         cardTags: {
-          "01001": [CARD_TAG_FAVORITE_ID],
-          "01016": ["upgrade"],
-          "07211a": ["favorites"],
+          "01016": ["Upgrade"],
+          "07211a": ["Favorites"],
+        },
+        favorites: {
+          "01001": true,
         },
       },
     });
@@ -1028,7 +1028,7 @@ describe("filter: card tags", () => {
   function applyFilter(state: StoreState, code: string, value: string[]) {
     return filterCardTags(
       value,
-      state.cardTags.cardTags,
+      state.cardTags,
       state.metadata,
       selectLookupTables(state).relations.fronts,
     )?.(state.metadata.cards[code]);
@@ -1039,7 +1039,7 @@ describe("filter: card tags", () => {
     expect(
       filterCardTags(
         [],
-        state.cardTags.cardTags,
+        state.cardTags,
         state.metadata,
         selectLookupTables(state).relations.fronts,
       ),
@@ -1048,8 +1048,9 @@ describe("filter: card tags", () => {
 
   it("matches cards assigned to a selected tag", () => {
     const state = store.getState();
-    expect(applyFilter(state, "01016", ["upgrade"])).toBeTruthy();
-    expect(applyFilter(state, "01017", ["upgrade"])).toBeFalsy();
+    const upgrade = getCardTagFilterCode("Upgrade");
+    expect(applyFilter(state, "01016", [upgrade])).toBeTruthy();
+    expect(applyFilter(state, "01017", [upgrade])).toBeFalsy();
   });
 
   it("matches favorite assignments", () => {
@@ -1060,8 +1061,12 @@ describe("filter: card tags", () => {
 
   it("matches duplicate and back cards by canonical card identity", () => {
     const state = store.getState();
-    expect(applyFilter(state, "01516", ["upgrade"])).toBeTruthy();
-    expect(applyFilter(state, "07211b", ["favorites"])).toBeTruthy();
+    expect(
+      applyFilter(state, "01516", [getCardTagFilterCode("Upgrade")]),
+    ).toBeTruthy();
+    expect(
+      applyFilter(state, "07211b", [getCardTagFilterCode("Favorites")]),
+    ).toBeTruthy();
   });
 
   it("does not match alternate cards as the same card identity", () => {

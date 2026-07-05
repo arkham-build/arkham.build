@@ -27,8 +27,8 @@ export function CardTagRow({ cardCode, className }: Props) {
           </Tag>
         )}
         {selectedItems.map((item) => (
-          <Tag as="li" key={item.tag.id} size="sm">
-            {item.tag.name}
+          <Tag as="li" key={item.tag} size="sm">
+            {item.tag}
           </Tag>
         ))}
       </ul>

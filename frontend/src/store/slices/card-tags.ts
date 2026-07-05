@@ -1,11 +1,10 @@
-import { CARD_TAG_FAVORITE_ID, CardTagSchema } from "@arkham-build/shared";
+import { CardTagSchema } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
-import { randomId } from "@/utils/crypto";
 import {
   canonicalizeCardTagsState,
   getEmptyCardTagsState,
-  isKnownCardTagId,
+  isKnownCardTagName,
   normalizeCardTagName,
   resolveCardTagCardCode,
 } from "../lib/card-tags";
@@ -42,69 +41,47 @@ export const createCardTagsSlice: StateCreator<
 
   async createCardTagForCard(cardCode, name) {
     const state = get();
-    const tag = createCardTag(state.cardTags.tags, name);
+    const tagName = createCardTagName(state.cardTags.tags, name);
     const canonicalCode = getCardTagCardCode(state, cardCode);
 
     set((state) => ({
-      cardTags: setCardTagIdsForCanonicalCode(
+      cardTags: setCardTagNamesForCanonicalCode(
         {
-          tags: {
-            ...state.cardTags.tags,
-            [tag.id]: tag,
-          },
-          cardTags: state.cardTags.cardTags,
+          ...state.cardTags,
+          tags: [...state.cardTags.tags, tagName],
         },
         canonicalCode,
-        [...(state.cardTags.cardTags[canonicalCode] ?? []), tag.id],
+        [...(state.cardTags.cardTags[canonicalCode] ?? []), tagName],
       ),
     }));
 
     await dehydrate(get(), "app");
-    return tag.id;
+    return tagName;
   },
 
-  async renameCardTag(id, name) {
-    assertCustomTagExists(get().cardTags.tags, id);
+  async renameCardTag(name, nextName) {
+    assertCustomTagExists(get().cardTags.tags, name);
 
-    const tag = CardTagSchema.parse({ id, name });
-    assertUniqueTagName(get().cardTags.tags, tag.name, id);
-
-    set((state) => ({
-      cardTags: {
-        ...state.cardTags,
-        tags: {
-          ...state.cardTags.tags,
-          [id]: tag,
-        },
-      },
-    }));
-
-    await dehydrate(get(), "app");
-  },
-
-  async deleteCardTag(id) {
-    assert(id !== CARD_TAG_FAVORITE_ID, "Favorite tag cannot be deleted.");
+    const tagName = CardTagSchema.parse(nextName);
+    assertUniqueTagName(get().cardTags.tags, tagName, name);
 
     set((state) => {
-      if (!state.cardTags.tags[id]) return {};
-
-      const tags = { ...state.cardTags.tags };
-      delete tags[id];
-
       const cardTags: StoreState["cardTags"]["cardTags"] = {};
 
-      for (const [cardCode, tagIds] of Object.entries(
+      for (const [cardCode, tagNames] of Object.entries(
         state.cardTags.cardTags,
       )) {
-        const filteredTagIds = tagIds.filter((tagId) => tagId !== id);
-        if (filteredTagIds.length) {
-          cardTags[cardCode] = filteredTagIds;
-        }
+        cardTags[cardCode] = tagNames.map((currentName) =>
+          currentName === name ? tagName : currentName,
+        );
       }
 
       return {
         cardTags: {
-          tags,
+          ...state.cardTags,
+          tags: state.cardTags.tags.map((currentName) =>
+            currentName === name ? tagName : currentName,
+          ),
           cardTags,
         },
       };
@@ -113,20 +90,47 @@ export const createCardTagsSlice: StateCreator<
     await dehydrate(get(), "app");
   },
 
-  async setCardTagsForCard(cardCode, tagIds) {
+  async deleteCardTag(name) {
+    assertCustomTagExists(get().cardTags.tags, name);
+
+    set((state) => {
+      const cardTags: StoreState["cardTags"]["cardTags"] = {};
+
+      for (const [cardCode, tagNames] of Object.entries(
+        state.cardTags.cardTags,
+      )) {
+        const filteredTagNames = tagNames.filter((tagName) => tagName !== name);
+        if (filteredTagNames.length) {
+          cardTags[cardCode] = filteredTagNames;
+        }
+      }
+
+      return {
+        cardTags: {
+          ...state.cardTags,
+          tags: state.cardTags.tags.filter((tagName) => tagName !== name),
+          cardTags,
+        },
+      };
+    });
+
+    await dehydrate(get(), "app");
+  },
+
+  async setCardTagsForCard(cardCode, tagNames) {
     const state = get();
 
-    for (const tagId of tagIds) {
-      assertKnownTagId(state.cardTags.tags, tagId);
+    for (const tagName of tagNames) {
+      assertKnownTagName(state.cardTags.tags, tagName);
     }
 
     const canonicalCode = getCardTagCardCode(state, cardCode);
 
     set((state) => ({
-      cardTags: setCardTagIdsForCanonicalCode(
+      cardTags: setCardTagNamesForCanonicalCode(
         state.cardTags,
         canonicalCode,
-        tagIds,
+        tagNames,
       ),
     }));
 
@@ -136,43 +140,44 @@ export const createCardTagsSlice: StateCreator<
   async toggleFavorite(cardCode) {
     const state = get();
     const canonicalCode = getCardTagCardCode(state, cardCode);
-    const current = state.cardTags.cardTags[canonicalCode] ?? [];
-    const tagIds = current.includes(CARD_TAG_FAVORITE_ID)
-      ? current.filter((tagId) => tagId !== CARD_TAG_FAVORITE_ID)
-      : [...current, CARD_TAG_FAVORITE_ID];
 
-    set((state) => ({
-      cardTags: setCardTagIdsForCanonicalCode(
-        state.cardTags,
-        canonicalCode,
-        tagIds,
-      ),
-    }));
+    set((state) => {
+      const favorites = { ...state.cardTags.favorites };
+
+      if (favorites[canonicalCode]) {
+        delete favorites[canonicalCode];
+      } else {
+        favorites[canonicalCode] = true;
+      }
+
+      return {
+        cardTags: {
+          ...state.cardTags,
+          favorites,
+        },
+      };
+    });
 
     await dehydrate(get(), "app");
   },
 });
 
-function createCardTag(tags: StoreState["cardTags"]["tags"], name: string) {
-  const tag = CardTagSchema.parse({
-    id: randomId(),
-    name,
-  });
-
-  assertUniqueTagName(tags, tag.name);
-  return tag;
+function createCardTagName(tags: StoreState["cardTags"]["tags"], name: string) {
+  const tagName = CardTagSchema.parse(name);
+  assertUniqueTagName(tags, tagName);
+  return tagName;
 }
 
-function setCardTagIdsForCanonicalCode(
+function setCardTagNamesForCanonicalCode(
   state: StoreState["cardTags"],
   canonicalCode: string,
-  tagIds: string[],
+  tagNames: string[],
 ): StoreState["cardTags"] {
-  const nextTagIds = Array.from(new Set(tagIds));
+  const nextTagNames = Array.from(new Set(tagNames));
   const cardTags = { ...state.cardTags };
 
-  if (nextTagIds.length) {
-    cardTags[canonicalCode] = nextTagIds;
+  if (nextTagNames.length) {
+    cardTags[canonicalCode] = nextTagNames;
   } else {
     delete cardTags[canonicalCode];
   }
@@ -193,28 +198,30 @@ function getCardTagCardCode(state: StoreState, cardCode: string) {
 
 function assertCustomTagExists(
   tags: StoreState["cardTags"]["tags"],
-  id: string,
+  name: string,
 ) {
-  assert(id !== CARD_TAG_FAVORITE_ID, "Favorite tag cannot be modified.");
-  assertKnownTagId(tags, id);
+  assertKnownTagName(tags, name);
 }
 
-function assertKnownTagId(tags: StoreState["cardTags"]["tags"], id: string) {
-  assert(isKnownCardTagId(tags, id), `Card tag ${id} does not exist.`);
+function assertKnownTagName(
+  tags: StoreState["cardTags"]["tags"],
+  name: string,
+) {
+  assert(isKnownCardTagName(tags, name), `Card tag ${name} does not exist.`);
 }
 
 function assertUniqueTagName(
   tags: StoreState["cardTags"]["tags"],
   name: string,
-  ignoreId?: string,
+  ignoreName?: string,
 ) {
   const normalizedName = normalizeCardTagName(name);
 
-  for (const tag of Object.values(tags)) {
-    if (tag.id === ignoreId) continue;
+  for (const tagName of tags) {
+    if (tagName === ignoreName) continue;
 
     assert(
-      normalizeCardTagName(tag.name) !== normalizedName,
+      normalizeCardTagName(tagName) !== normalizedName,
       "Card tag name must be unique.",
     );
   }

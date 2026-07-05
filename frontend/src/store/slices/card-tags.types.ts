@@ -7,8 +7,8 @@ export type CardTagsSliceState = {
 export type CardTagsSlice = CardTagsSliceState & {
   applyCardTagsState(state: CardTagsState): Promise<void>;
   createCardTagForCard(cardCode: string, name: string): Promise<string>;
-  deleteCardTag(id: string): Promise<void>;
-  renameCardTag(id: string, name: string): Promise<void>;
-  setCardTagsForCard(cardCode: string, tagIds: string[]): Promise<void>;
+  deleteCardTag(name: string): Promise<void>;
+  renameCardTag(name: string, nextName: string): Promise<void>;
+  setCardTagsForCard(cardCode: string, tagNames: string[]): Promise<void>;
   toggleFavorite(cardCode: string): Promise<void>;
 };

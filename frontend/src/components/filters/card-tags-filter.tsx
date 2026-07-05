@@ -49,7 +49,7 @@ export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     (option) => option.code !== CARD_TAG_FAVORITE_ID,
   );
   const customValue = filter.value
-    .filter((tagId) => tagId !== CARD_TAG_FAVORITE_ID)
+    .filter((code) => code !== CARD_TAG_FAVORITE_ID)
     .map(tagMapper);
 
   const showFavoriteShortcut =

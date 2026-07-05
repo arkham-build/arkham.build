@@ -32,7 +32,11 @@ import { isEmpty } from "@/utils/is-empty";
 import { time, timeEnd } from "@/utils/time";
 import type { Interpreter } from "../lib/buildql/interpreter";
 import { applyCardChanges } from "../lib/card-edits";
-import { resolveCardTagCardCode } from "../lib/card-tags";
+import {
+  getCardTagFilterCode,
+  getCardTagNameFromFilterCode,
+  resolveCardTagCardCode,
+} from "../lib/card-tags";
 import { getAdditionalDeckOptions } from "../lib/deck-validation";
 import {
   containsCard,
@@ -125,13 +129,17 @@ export type ListState = {
 
 export type TargetDeck = "slots" | "extraSlots" | "both";
 
-const EMPTY_CARD_TAG_ASSIGNMENTS: CardTagsState["cardTags"] = {};
+const EMPTY_CARD_TAG_STATE: CardTagsState = {
+  tags: [],
+  cardTags: {},
+  favorites: {},
+};
 
-const selectActiveCardTagAssignments = createSelector(
+const selectActiveCardTagState = createSelector(
   selectActiveList,
-  (state: StoreState) => state.cardTags.cardTags,
+  (state: StoreState) => state.cardTags,
   (activeList, cardTags) =>
-    listUsesCardTagFilter(activeList) ? cardTags : EMPTY_CARD_TAG_ASSIGNMENTS,
+    listUsesCardTagFilter(activeList) ? cardTags : EMPTY_CARD_TAG_STATE,
 );
 
 function listUsesCardTagFilter(list: List | undefined) {
@@ -150,7 +158,7 @@ function listUsesCardTagFilter(list: List | undefined) {
 function makeUserFilter(
   metadata: Metadata,
   lookupTables: LookupTables,
-  cardTags: CardTagsState["cardTags"],
+  cardTags: CardTagsState,
   list: List,
   resolvedDeck: ResolvedDeck | undefined,
   targetDeck: TargetDeck | undefined,
@@ -775,7 +783,7 @@ export const selectListCards = createSelector(
   selectLocaleSortingCollator,
   selectBuildQlInterpreter,
   selectSearchTextCache,
-  selectActiveCardTagAssignments,
+  selectActiveCardTagState,
   (_: StoreState, resolvedDeck: ResolvedDeck | undefined) => resolvedDeck,
   (
     _: StoreState,
@@ -1102,9 +1110,8 @@ type CardTagFilterOption = {
 };
 
 export const selectCardTagMapper = createSelector(
-  (state: StoreState) => state.cardTags.tags,
   selectLocaleSortingCollator,
-  (tags, _) => {
+  (_) => {
     return (code: string): CardTagFilterOption => {
       if (code === CARD_TAG_FAVORITE_ID) {
         return { code, name: i18n.t("card_tags.favorite") };
@@ -1112,7 +1119,7 @@ export const selectCardTagMapper = createSelector(
 
       return {
         code,
-        name: tags[code]?.name ?? code,
+        name: getCardTagNameFromFilterCode(code) ?? code,
       };
     };
   },
@@ -1126,7 +1133,8 @@ export const selectCardTagOptions = createSelector(
   selectLocaleSortingCollator,
   selectCardTagMapper,
   (metadata, lookupTables, baseFilterResult, cardTags, collator, mapper) => {
-    const tagIds = new Set<string>();
+    const tagNames = new Set<string>();
+    let hasFavorite = false;
 
     for (const card of baseFilterResult?.filteredCards ?? []) {
       const canonicalCode = resolveCardTagCardCode(
@@ -1134,21 +1142,29 @@ export const selectCardTagOptions = createSelector(
         lookupTables.relations.fronts,
         card.code,
       );
-      const assignedTagIds = cardTags.cardTags[canonicalCode];
-      if (!assignedTagIds) continue;
 
-      for (const tagId of assignedTagIds) {
-        tagIds.add(tagId);
+      if (cardTags.favorites[canonicalCode]) {
+        hasFavorite = true;
+      }
+
+      const assignedTagNames = cardTags.cardTags[canonicalCode];
+      if (!assignedTagNames) continue;
+
+      for (const tagName of assignedTagNames) {
+        tagNames.add(tagName);
       }
     }
 
-    return Array.from(tagIds)
+    const options = Array.from(tagNames)
+      .map((tagName) => getCardTagFilterCode(tagName))
       .map(mapper)
-      .sort((a, b) => {
-        if (a.code === CARD_TAG_FAVORITE_ID) return -1;
-        if (b.code === CARD_TAG_FAVORITE_ID) return 1;
-        return collator.compare(a.name, b.name);
-      });
+      .sort((a, b) => collator.compare(a.name, b.name));
+
+    if (hasFavorite) {
+      options.unshift(mapper(CARD_TAG_FAVORITE_ID));
+    }
+
+    return options;
   },
 );
 
