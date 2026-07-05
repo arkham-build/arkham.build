@@ -37,6 +37,18 @@ export {
   VerifyEmailRequestSchema,
 } from "./dtos/auth.schema.ts";
 export {
+  CARD_TAG_FAVORITE_ID,
+  CARD_TAG_NAME_MAX_LENGTH,
+  type CardTag,
+  CardTagSchema,
+  type CardTagsState,
+  CardTagsStateSchema,
+  type CardTagsSyncRequest,
+  CardTagsSyncRequestSchema,
+  type CardTagsSyncResponse,
+  CardTagsSyncResponseSchema,
+} from "./dtos/card-tags.schema.ts";
+export {
   type DateRange,
   DateRangeSchema,
 } from "./dtos/date-range.schema.ts";
