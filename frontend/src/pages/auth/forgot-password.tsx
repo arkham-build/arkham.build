@@ -28,7 +28,7 @@ function ForgotPassword() {
           <>
             <div>{t("auth.forgot_password.success")}</div>
             <Link href="/auth/login" asChild>
-              <Button as="a" variant="primary" size="full">
+              <Button as="a" variant="primary" full>
                 {t("auth.login.title")}
               </Button>
             </Link>
@@ -79,7 +79,7 @@ function ForgotPassword() {
           disabled={forgotPasswordMutation.isPending}
           type="submit"
           variant="primary"
-          size="full"
+          full
         >
           {t("auth.forgot_password.submit")}
         </Button>

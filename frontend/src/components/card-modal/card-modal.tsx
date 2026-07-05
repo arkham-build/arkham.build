@@ -318,10 +318,6 @@ export function CardModal(props: Props) {
                   </Link>
                 </div>
               )}
-            <CardTagControls
-              cardCode={cardWithRelations.card.code}
-              showTags={useSidebarLayout}
-            />
             {showQuantities && (
               <CardModalQuantities
                 canEdit={canEdit}
@@ -337,6 +333,10 @@ export function CardModal(props: Props) {
                 resolvedDeck={ctx.resolvedDeck}
               />
             )}
+            <CardTagControls
+              cardCode={cardWithRelations.card.code}
+              showTags={useSidebarLayout}
+            />
           </div>
         </div>
       </ModalInner>

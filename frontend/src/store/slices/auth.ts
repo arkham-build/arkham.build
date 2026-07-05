@@ -1,8 +1,13 @@
 import type { CompleteProfileResponse } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
+import {
+  canonicalizeCardTagsState,
+  getEmptyCardTagsState,
+} from "../lib/card-tags.ts";
 import { updateDeckSyncSuccess } from "../lib/sync.ts";
 import { rebuildDeckHistory } from "../lib/sync-reconciliation.ts";
 import { dehydrate } from "../persist/index.ts";
+import { selectLookupTables } from "../selectors/shared.ts";
 import {
   deleteAccount as deleteAccountRequest,
   fetchSession,
@@ -34,6 +39,7 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
       const accountId = state.auth.session?.account.id;
       if (!accountId) return state;
 
+      let cardTags = state.cardTags;
       let data = state.data;
       let deckEdits = state.deckEdits;
       let sync = state.sync;
@@ -97,6 +103,26 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
         };
       }
 
+      if (uploads.cardTags) {
+        cardTags = canonicalizeCardTagsState(
+          uploads.cardTags.state ?? getEmptyCardTagsState(),
+          state.metadata,
+          selectLookupTables(state).relations.fronts,
+        );
+
+        sync = {
+          ...sync,
+          cardTags: {
+            accountId,
+            revision: uploads.cardTags.revision,
+            lastSyncedAt: Date.now(),
+            status: "synced",
+            error: null,
+            conflict: null,
+          },
+        };
+      }
+
       if (uploads.settings) {
         sync = {
           ...sync,
@@ -111,7 +137,7 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
         };
       }
 
-      return { data, deckEdits, sync };
+      return { cardTags, data, deckEdits, sync };
     });
   },
 
@@ -128,15 +154,19 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
   async handleUnauthorized() {
     const state = get();
 
-    const shouldReset =
-      state.auth.session != null ||
-      state.auth.status !== "unauthenticated" ||
-      state.sync.settings.accountId != null ||
-      state.sync.decks.accountId != null ||
-      state.sync.folders.accountId != null ||
-      state.sync.cardTags.accountId != null;
+    if (!hasAccountState(state)) {
+      if (state.auth.status === "unauthenticated") {
+        return;
+      }
 
-    if (!shouldReset) {
+      set({
+        auth: {
+          session: null,
+          status: "unauthenticated",
+        },
+      });
+      setSessionInitialized(set, true);
+      await dehydrate(get(), "app");
       return;
     }
 
@@ -222,6 +252,16 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
     await refreshSession(set, get, client);
   },
 });
+
+function hasAccountState(state: StoreState) {
+  return (
+    state.auth.session != null ||
+    state.sync.settings.accountId != null ||
+    state.sync.decks.accountId != null ||
+    state.sync.folders.accountId != null ||
+    state.sync.cardTags.accountId != null
+  );
+}
 
 function setSessionInitialized(
   set: Parameters<StateCreator<StoreState, [], [], AuthSlice>>[0],

@@ -31,7 +31,7 @@ export function CollapseSidebarButton(props: Props) {
             data-testid="sidebar-collapse-button"
             onClick={onClick}
             iconOnly
-            round
+            rounded="full"
             tabIndex={-1}
             size="sm"
             className={css["button"]}

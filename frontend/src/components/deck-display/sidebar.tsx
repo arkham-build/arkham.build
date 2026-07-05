@@ -290,7 +290,7 @@ function SidebarActions(props: {
                   data-testid="view-edit"
                   disabled={isReadOnly || hasSyncConflict}
                   as="a"
-                  size="full"
+                  full
                   tooltip={
                     hasSyncConflict
                       ? t("deck_sync.conflict.edit_locked")
@@ -313,7 +313,7 @@ function SidebarActions(props: {
                   <Button
                     data-testid="view-upgrade"
                     disabled={hasSyncConflict || isReadOnly}
-                    size="full"
+                    full
                     tooltip={
                       hasSyncConflict
                         ? t("deck_sync.conflict.edit_locked")
@@ -335,7 +335,7 @@ function SidebarActions(props: {
             keybind="cmd+i"
             description={t("deck_view.actions.import")}
           >
-            <Button size="full" onClick={onImport} data-testid="share-import">
+            <Button full onClick={onImport} data-testid="share-import">
               <ImportIcon /> {t("deck_view.actions.import")}
             </Button>
           </HotkeyTooltip>

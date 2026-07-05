@@ -45,6 +45,13 @@ export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const favoriteOnly =
     filter.value.length === 1 && filter.value[0] === CARD_TAG_FAVORITE_ID;
 
+  const customOptions = options.filter(
+    (option) => option.code !== CARD_TAG_FAVORITE_ID,
+  );
+  const customValue = filter.value
+    .filter((tagId) => tagId !== CARD_TAG_FAVORITE_ID)
+    .map(tagMapper);
+
   const showFavoriteShortcut =
     favoriteOnly ||
     options.some((option) => option.code === CARD_TAG_FAVORITE_ID);
@@ -63,10 +70,10 @@ export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       itemToString={nameRenderer}
       nameRenderer={nameRenderer}
       open={filter.open}
-      options={options}
+      options={customOptions}
       placeholder={t("filters.card_tags.placeholder")}
       title={t("filters.card_tags.title")}
-      value={filter.value.map(tagMapper)}
+      value={customValue}
     >
       {showFavoriteShortcut && (
         <ToggleGroup

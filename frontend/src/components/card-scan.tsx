@@ -163,7 +163,7 @@ export function CardScanControlled(props: Props) {
               className={css["scan-flip-trigger"]}
               onClick={onToggleFlip}
               iconOnly
-              round
+              rounded="full"
             >
               <RotateCcwIcon />
             </Button>

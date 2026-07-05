@@ -92,11 +92,7 @@ function CardView() {
             <SidebarSection title={t("card_view.section_actions")}>
               {isBuildableInvestigator && (
                 <Link asChild href={deckCreateLink(cardWithRelations.card)}>
-                  <Button
-                    as="a"
-                    data-testid="card-modal-create-deck"
-                    size="full"
-                  >
+                  <Button as="a" data-testid="card-modal-create-deck" full>
                     <i className="icon-deck" /> {t("deck.actions.create")}
                   </Button>
                 </Link>
@@ -105,16 +101,12 @@ function CardView() {
                 cardCode={cardWithRelations.card.code}
                 showTags={false}
               />
-              <CardArkhamDBLink card={cardWithRelations.card} size="full">
+              <CardArkhamDBLink card={cardWithRelations.card} full>
                 <GlobeIcon /> {t("card_view.actions.open_on_arkhamdb")}
               </CardArkhamDBLink>
-              <CardReviewsLink card={cardWithRelations.card} size="full" />
+              <CardReviewsLink card={cardWithRelations.card} full />
               {devModeEnabled && (
-                <Button
-                  data-testid="card-view-export"
-                  onClick={onExport}
-                  size="full"
-                >
+                <Button data-testid="card-view-export" onClick={onExport} full>
                   <DownloadIcon />
                   {t("lists.nav.export")}
                 </Button>
@@ -129,7 +121,7 @@ function CardView() {
                       asChild
                       href={`/card/${cardWithRelations.card.code}/usable_cards`}
                     >
-                      <Button size="full" data-testid="usable-cards" as="a">
+                      <Button full data-testid="usable-cards" as="a">
                         <i className="icon-cards" />
                         {t("card_view.actions.usable_by", {
                           prefix: "",
@@ -145,11 +137,7 @@ function CardView() {
                         asChild
                         href={`/card/${parallel.code}/usable_cards`}
                       >
-                        <Button
-                          size="full"
-                          data-testid="usable-cards-parallel"
-                          as="a"
-                        >
+                        <Button full data-testid="usable-cards-parallel" as="a">
                           <i className="icon-cards" />
                           {t("card_view.actions.usable_by", {
                             prefix: `${t("common.parallel")} `,

@@ -37,7 +37,7 @@ export function Details(props: Props) {
         data-testid="details-toggle"
         as="summary"
         onClick={() => setOpen((p) => !p)}
-        size="full"
+        full
       >
         {open ? <ChevronUpIcon /> : iconClosed} {title}
       </Button>

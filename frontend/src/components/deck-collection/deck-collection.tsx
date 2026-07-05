@@ -143,7 +143,7 @@ export function DeckCollection() {
                     id="collection-import"
                     multiple
                     onChange={onAddFiles}
-                    size="full"
+                    full
                     variant="bare"
                   >
                     <UploadIcon /> {t("deck_collection.import_json")}
@@ -152,7 +152,7 @@ export function DeckCollection() {
                 <DropdownButton
                   data-testid="collection-delete-all"
                   onClick={onDeleteAll}
-                  size="full"
+                  full
                   variant="bare"
                 >
                   <Trash2Icon /> {t("deck_collection.delete_all")}

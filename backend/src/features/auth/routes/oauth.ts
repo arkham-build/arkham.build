@@ -8,6 +8,7 @@ import {
 } from "@arkham-build/shared";
 import { type Context, Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import type { Database } from "../../../db/db.ts";
 import { arkhamdbOAuthProvider } from "../../../lib/arkhamdb/oauth-provider.ts";
 import { getAccountIdentityByProviderUserId } from "../../../lib/auth/account-identities.ts";
 import { accountNameExists } from "../../../lib/auth/accounts.ts";
@@ -180,7 +181,7 @@ async function handleArkhamDbOAuthCallback(c: Context<HonoEnv>) {
 }
 
 async function applyCompleteProfileUploads(
-  db: HonoEnv["Variables"]["db"],
+  db: Database,
   accountId: string,
   uploads: CompleteProfileRequest["uploads"],
 ) {
@@ -194,8 +195,10 @@ async function applyCompleteProfileUploads(
     deckUpload.deckIdMap,
   );
   const settings = await uploadSettings(db, accountId, uploads.settings);
+  const cardTags = await uploadCardTags(db, accountId, uploads.cardTags);
 
   return {
+    cardTags,
     deckIdMap: deckUpload.deckIdMap,
     decks: deckUpload.decks,
     folders,
@@ -204,7 +207,7 @@ async function applyCompleteProfileUploads(
 }
 
 async function uploadAccountDecks(
-  db: HonoEnv["Variables"]["db"],
+  db: Database,
   accountId: string,
   decks: Deck[] | undefined,
 ) {
@@ -250,7 +253,7 @@ async function uploadAccountDecks(
 }
 
 async function uploadFolders(
-  db: HonoEnv["Variables"]["db"],
+  db: Database,
   accountId: string,
   folders: CompleteProfileUploads["folders"],
   deckIdMap: Record<string, string> | undefined,
@@ -278,7 +281,7 @@ async function uploadFolders(
   };
 }
 
-async function createDeckIdMap(db: HonoEnv["Variables"]["db"], decks: Deck[]) {
+async function createDeckIdMap(db: Database, decks: Deck[]) {
   const deckIds = decks.map((deck) => String(deck.id));
   const existingDecks = await db
     .selectFrom("deck")
@@ -299,10 +302,7 @@ async function createDeckIdMap(db: HonoEnv["Variables"]["db"], decks: Deck[]) {
   return deckIdMap;
 }
 
-async function createUniqueDeckId(
-  db: HonoEnv["Variables"]["db"],
-  reservedIds: Set<string>,
-) {
+async function createUniqueDeckId(db: Database, reservedIds: Set<string>) {
   let id = randomUUID();
 
   while (reservedIds.has(id) || (await deckIdExists(db, id))) {
@@ -313,7 +313,7 @@ async function createUniqueDeckId(
   return id;
 }
 
-async function deckIdExists(db: HonoEnv["Variables"]["db"], id: string) {
+async function deckIdExists(db: Database, id: string) {
   return !!(await db
     .selectFrom("deck")
     .select(["id"])
@@ -397,7 +397,7 @@ function remapFolderState(
 }
 
 async function uploadSettings(
-  db: HonoEnv["Variables"]["db"],
+  db: Database,
   accountId: string,
   settings: CompleteProfileUploads["settings"],
 ) {
@@ -426,10 +426,43 @@ async function uploadSettings(
   };
 }
 
-async function findExistingAccountFolderState(
-  db: HonoEnv["Variables"]["db"],
+async function uploadCardTags(
+  db: Database,
   accountId: string,
+  cardTags: CompleteProfileUploads["cardTags"],
 ) {
+  if (!cardTags) return undefined;
+
+  const row = await upsertRevisionedAccountState(db, {
+    accountId,
+    expectedRevision: null,
+    revision: randomUUID(),
+    state: cardTags,
+    table: "account_card_tag",
+  });
+  const accountCardTags =
+    row ?? (await findExistingAccountCardTags(db, accountId));
+
+  assert(
+    accountCardTags,
+    "Card tags should exist after new account onboarding.",
+  );
+
+  return {
+    revision: accountCardTags.revision,
+    state: accountCardTags.state,
+  };
+}
+
+async function findExistingAccountCardTags(db: Database, accountId: string) {
+  return await db
+    .selectFrom("account_card_tag")
+    .select(["revision", "state"])
+    .where("account_id", "=", accountId)
+    .executeTakeFirst();
+}
+
+async function findExistingAccountFolderState(db: Database, accountId: string) {
   return await db
     .selectFrom("account_folder")
     .select(["revision", "state"])
@@ -437,10 +470,7 @@ async function findExistingAccountFolderState(
     .executeTakeFirst();
 }
 
-async function findExistingAccountSettings(
-  db: HonoEnv["Variables"]["db"],
-  accountId: string,
-) {
+async function findExistingAccountSettings(db: Database, accountId: string) {
   return await db
     .selectFrom("account_settings")
     .select(["collection", "revision", "settings"])

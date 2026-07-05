@@ -4,14 +4,17 @@ import { DefaultTooltip } from "./tooltip";
 
 export type ButtonType = "a" | "button" | "summary" | "label";
 
+type ButtonRounding = "full" | "lg" | "xl";
+
 export type Props<T extends ButtonType> = React.ComponentProps<T> & {
   as?: T;
   children: React.ReactNode;
   className?: string;
   disabled?: boolean;
+  full?: boolean;
   iconOnly?: boolean;
-  round?: boolean;
-  size?: "xxs" | "xs" | "sm" | "lg" | "xl" | "full" | "none";
+  rounded?: ButtonRounding;
+  size?: "xxs" | "xs" | "sm" | "lg" | "xl" | "none";
   tooltip?: React.ReactNode;
   variant?: "primary" | "secondary" | "danger" | "bare" | "link";
 };
@@ -23,9 +26,10 @@ export function Button<T extends "a" | "button" | "summary" | "label">(
     as,
     children,
     disabled,
+    full,
     iconOnly,
     ref,
-    round,
+    rounded,
     size,
     tooltip,
     variant = "secondary",
@@ -42,8 +46,9 @@ export function Button<T extends "a" | "button" | "summary" | "label">(
           css["button"],
           variant && css[variant],
           size && css[size],
+          full && css["full"],
           iconOnly && css["icon-only"],
-          round && css["round"],
+          rounded && css[`rounded-${rounded}`],
           rest.className,
         )}
         type={

@@ -94,7 +94,7 @@ function Login() {
           disabled={loginMutation.isPending}
           type="submit"
           variant="primary"
-          size="full"
+          full
         >
           {t("auth.login.action")}
         </Button>
@@ -107,7 +107,7 @@ function Login() {
           as="a"
           href={`${import.meta.env.VITE_API_URL}/auth/arkhamdb/login`}
           variant="secondary"
-          size="full"
+          full
         >
           <i className="icon-elder_sign" />
           {t("auth.login.with_arkhamdb")}

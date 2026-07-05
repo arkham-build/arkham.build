@@ -17,6 +17,7 @@ import {
 } from "@/queries/mutations/auth";
 import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
+import { selectAccountSyncStatus } from "@/store/selectors/sync";
 import type { SyncStatus } from "@/store/slices/sync.types";
 import { cx } from "@/utils/cx";
 import { useMedia } from "@/utils/use-media";
@@ -398,15 +399,7 @@ function isMastheadPathActive(
 }
 
 function useAccountSyncStatus(): SyncStatus {
-  const settings = useStore((state) => state.sync.settings.status);
-  const decks = useStore((state) => state.sync.decks.status);
-  const folders = useStore((state) => state.sync.folders.status);
-
-  return [settings, decks, folders].reduce((current, next) =>
-    ACCOUNT_SYNC_STATUS_PRIORITY[next] > ACCOUNT_SYNC_STATUS_PRIORITY[current]
-      ? next
-      : current,
-  );
+  return useStore(selectAccountSyncStatus);
 }
 
 function isProblemSyncStatus(status: SyncStatus) {
@@ -430,16 +423,6 @@ function syncStatusToBubbleVariant(
       return "success";
   }
 }
-
-const ACCOUNT_SYNC_STATUS_PRIORITY: Record<SyncStatus, number> = {
-  idle: 0,
-  synced: 0,
-  loading: 1,
-  saving: 1,
-  partial: 2,
-  error: 3,
-  conflict: 4,
-};
 
 function isPendingSyncStatus(status: SyncStatus) {
   return status === "loading" || status === "saving";

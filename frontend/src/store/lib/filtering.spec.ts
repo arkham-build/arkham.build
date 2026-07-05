@@ -1,6 +1,10 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: test code */
 
-import type { Card, Collection } from "@arkham-build/shared";
+import {
+  CARD_TAG_FAVORITE_ID,
+  type Card,
+  type Collection,
+} from "@arkham-build/shared";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import { getMockStore } from "@/test/get-mock-store";
@@ -20,6 +24,7 @@ import type { InvestigatorAccessConfig } from "./filtering";
 import {
   filterActions,
   filterAssets,
+  filterCardTags,
   filterCost,
   filterFactions,
   filterInvestigatorAccess,
@@ -997,6 +1002,71 @@ describe("filter: skills", () => {
     expect(applyFilter(store.getState(), "50001", config)).toBeTruthy();
     expect(applyFilter(store.getState(), "08070", config)).toBeFalsy();
     expect(applyFilter(store.getState(), "01089", config)).toBeFalsy();
+  });
+});
+
+describe("filter: card tags", () => {
+  let store: StoreApi<StoreState>;
+
+  beforeAll(async () => {
+    store = await getMockStore();
+    store.setState({
+      cardTags: {
+        tags: {
+          favorites: { id: "favorites", name: "Favorites" },
+          upgrade: { id: "upgrade", name: "Upgrade" },
+        },
+        cardTags: {
+          "01001": [CARD_TAG_FAVORITE_ID],
+          "01016": ["upgrade"],
+          "07211a": ["favorites"],
+        },
+      },
+    });
+  });
+
+  function applyFilter(state: StoreState, code: string, value: string[]) {
+    return filterCardTags(
+      value,
+      state.cardTags.cardTags,
+      state.metadata,
+      selectLookupTables(state).relations.fronts,
+    )?.(state.metadata.cards[code]);
+  }
+
+  it("returns no filter when no tags are selected", () => {
+    const state = store.getState();
+    expect(
+      filterCardTags(
+        [],
+        state.cardTags.cardTags,
+        state.metadata,
+        selectLookupTables(state).relations.fronts,
+      ),
+    ).toBeUndefined();
+  });
+
+  it("matches cards assigned to a selected tag", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "01016", ["upgrade"])).toBeTruthy();
+    expect(applyFilter(state, "01017", ["upgrade"])).toBeFalsy();
+  });
+
+  it("matches favorite assignments", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "01001", [CARD_TAG_FAVORITE_ID])).toBeTruthy();
+    expect(applyFilter(state, "01002", [CARD_TAG_FAVORITE_ID])).toBeFalsy();
+  });
+
+  it("matches duplicate and back cards by canonical card identity", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "01516", ["upgrade"])).toBeTruthy();
+    expect(applyFilter(state, "07211b", ["favorites"])).toBeTruthy();
+  });
+
+  it("does not match alternate cards as the same card identity", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "90024", [CARD_TAG_FAVORITE_ID])).toBeFalsy();
   });
 });
 

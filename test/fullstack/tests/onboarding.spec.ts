@@ -1,7 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import type { CompleteProfileResponse } from "@arkham-build/shared";
+import type {
+  CardTagsState,
+  CompleteProfileResponse,
+} from "@arkham-build/shared";
 import { expect, type Page, test } from "@playwright/test";
 import { getDatabase } from "../../../backend/src/db/db.ts";
 import { importDeckFromFile, upgradeDeck } from "../../e2e/tests/actions.ts";
@@ -41,6 +44,7 @@ type PersistedAppState = {
         }
       >;
     };
+    cardTags?: Partial<CardTagsState>;
     settings?: {
       defaultEnvironment?: string;
     };
@@ -133,6 +137,25 @@ test.describe("signup onboarding", () => {
 
     const settings = await getAccountSettings(email);
     expect(settings).toMatchObject({ defaultEnvironment: "current" });
+  });
+
+  test("uploads card tags while completing signup", async ({ page }) => {
+    const email = testEmail();
+    const username = testUsername();
+    const tagName = "Onboarding Tag";
+
+    await page.goto("/card/01020");
+    await expect(page.getByRole("link", { name: "Log in" })).toBeVisible();
+    await createCardTag(page, tagName);
+    await signupAndOpenCompleteProfile(page, email);
+    await completeProfile(page, username);
+    const cardTagState = await getAccountCardTagState(email);
+    const tag = Object.values(cardTagState.tags).find(
+      (item) => item.name === tagName,
+    );
+
+    expect(tag).toBeDefined();
+    expect(cardTagState.cardTags["01020"]).toContain(tag?.id);
   });
 
   test("uploads archive folder state while completing signup", async ({
@@ -279,6 +302,15 @@ function expectUploadedChain(
   }
 }
 
+async function createCardTag(page: Page, tagName: string) {
+  const cardTags = page.getByTestId("card-tags-01020");
+  await cardTags.getByTestId("combobox-input").click();
+  await cardTags.getByTestId("combobox-input").fill(tagName);
+  await page.getByTestId(`combobox-menu-item-create:${tagName}`).click();
+  await expect(cardTags.getByText(tagName, { exact: true })).toBeVisible();
+  await waitForPersistedCardTag(page, tagName);
+}
+
 async function readDeckFixture(deckPath: string) {
   const filePath = path.join(
     import.meta.dirname,
@@ -352,6 +384,17 @@ async function readPersistedDeckChain(page: Page, deckName: string) {
   }
 
   return chain.length === decks.length ? chain : null;
+}
+
+async function waitForPersistedCardTag(page: Page, tagName: string) {
+  await expect
+    .poll(async () => {
+      const state = await readPersistedAppState(page);
+      return Object.values(state.state?.cardTags?.tags ?? {}).some(
+        (tag) => tag.name === tagName,
+      );
+    })
+    .toBe(true);
 }
 
 async function waitForPersistedDefaultEnvironment(
@@ -473,6 +516,27 @@ async function getAccountSettings(email: string) {
       .executeTakeFirstOrThrow();
 
     return row.settings;
+  } finally {
+    await db.destroy();
+  }
+}
+
+async function getAccountCardTagState(email: string) {
+  const db = getDatabase(databaseUrl);
+
+  try {
+    const row = await db
+      .selectFrom("account_card_tag")
+      .innerJoin(
+        "account_identity",
+        "account_identity.account_id",
+        "account_card_tag.account_id",
+      )
+      .select("account_card_tag.state")
+      .where("account_identity.email", "=", email)
+      .executeTakeFirstOrThrow();
+
+    return row.state as CardTagsState;
   } finally {
     await db.destroy();
   }

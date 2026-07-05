@@ -94,7 +94,7 @@ function ResetPassword() {
           disabled={resetPasswordMutation.isPending}
           type="submit"
           variant="primary"
-          size="full"
+          full
         >
           {t("auth.reset_password.title")}
         </Button>

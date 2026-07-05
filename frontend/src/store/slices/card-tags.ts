@@ -40,22 +40,23 @@ export const createCardTagsSlice: StateCreator<
     await dehydrate(get(), "app");
   },
 
-  async createCardTag(name) {
-    const tag = CardTagSchema.parse({
-      id: randomId(),
-      name,
-    });
-
-    assertUniqueTagName(get().cardTags.tags, tag.name);
+  async createCardTagForCard(cardCode, name) {
+    const state = get();
+    const tag = createCardTag(state.cardTags.tags, name);
+    const canonicalCode = getCardTagCardCode(state, cardCode);
 
     set((state) => ({
-      cardTags: {
-        ...state.cardTags,
-        tags: {
-          ...state.cardTags.tags,
-          [tag.id]: tag,
+      cardTags: setCardTagIdsForCanonicalCode(
+        {
+          tags: {
+            ...state.cardTags.tags,
+            [tag.id]: tag,
+          },
+          cardTags: state.cardTags.cardTags,
         },
-      },
+        canonicalCode,
+        [...(state.cardTags.cardTags[canonicalCode] ?? []), tag.id],
+      ),
     }));
 
     await dehydrate(get(), "app");
@@ -112,51 +113,22 @@ export const createCardTagsSlice: StateCreator<
     await dehydrate(get(), "app");
   },
 
-  async tagCard(cardCode, tagId) {
+  async setCardTagsForCard(cardCode, tagIds) {
     const state = get();
-    assertKnownTagId(state.cardTags.tags, tagId);
+
+    for (const tagId of tagIds) {
+      assertKnownTagId(state.cardTags.tags, tagId);
+    }
 
     const canonicalCode = getCardTagCardCode(state, cardCode);
 
-    set((state) => {
-      const current = state.cardTags.cardTags[canonicalCode] ?? [];
-      if (current.includes(tagId)) return {};
-
-      return {
-        cardTags: {
-          ...state.cardTags,
-          cardTags: {
-            ...state.cardTags.cardTags,
-            [canonicalCode]: [...current, tagId],
-          },
-        },
-      };
-    });
-
-    await dehydrate(get(), "app");
-  },
-
-  async untagCard(cardCode, tagId) {
-    const canonicalCode = getCardTagCardCode(get(), cardCode);
-
-    set((state) => {
-      const current = state.cardTags.cardTags[canonicalCode] ?? [];
-      const next = current.filter((id) => id !== tagId);
-      const cardTags = { ...state.cardTags.cardTags };
-
-      if (next.length) {
-        cardTags[canonicalCode] = next;
-      } else {
-        delete cardTags[canonicalCode];
-      }
-
-      return {
-        cardTags: {
-          ...state.cardTags,
-          cardTags,
-        },
-      };
-    });
+    set((state) => ({
+      cardTags: setCardTagIdsForCanonicalCode(
+        state.cardTags,
+        canonicalCode,
+        tagIds,
+      ),
+    }));
 
     await dehydrate(get(), "app");
   },
@@ -165,13 +137,51 @@ export const createCardTagsSlice: StateCreator<
     const state = get();
     const canonicalCode = getCardTagCardCode(state, cardCode);
     const current = state.cardTags.cardTags[canonicalCode] ?? [];
-    if (current.includes(CARD_TAG_FAVORITE_ID)) {
-      await get().untagCard(cardCode, CARD_TAG_FAVORITE_ID);
-    } else {
-      await get().tagCard(cardCode, CARD_TAG_FAVORITE_ID);
-    }
+    const tagIds = current.includes(CARD_TAG_FAVORITE_ID)
+      ? current.filter((tagId) => tagId !== CARD_TAG_FAVORITE_ID)
+      : [...current, CARD_TAG_FAVORITE_ID];
+
+    set((state) => ({
+      cardTags: setCardTagIdsForCanonicalCode(
+        state.cardTags,
+        canonicalCode,
+        tagIds,
+      ),
+    }));
+
+    await dehydrate(get(), "app");
   },
 });
+
+function createCardTag(tags: StoreState["cardTags"]["tags"], name: string) {
+  const tag = CardTagSchema.parse({
+    id: randomId(),
+    name,
+  });
+
+  assertUniqueTagName(tags, tag.name);
+  return tag;
+}
+
+function setCardTagIdsForCanonicalCode(
+  state: StoreState["cardTags"],
+  canonicalCode: string,
+  tagIds: string[],
+): StoreState["cardTags"] {
+  const nextTagIds = Array.from(new Set(tagIds));
+  const cardTags = { ...state.cardTags };
+
+  if (nextTagIds.length) {
+    cardTags[canonicalCode] = nextTagIds;
+  } else {
+    delete cardTags[canonicalCode];
+  }
+
+  return {
+    ...state,
+    cardTags,
+  };
+}
 
 function getCardTagCardCode(state: StoreState, cardCode: string) {
   return resolveCardTagCardCode(

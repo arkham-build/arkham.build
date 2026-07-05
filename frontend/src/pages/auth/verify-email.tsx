@@ -76,7 +76,7 @@ function VerifyEmail() {
           disabled={verifyEmailMutation.isPending || !token}
           type="submit"
           variant="primary"
-          size="full"
+          full
         >
           {t("auth.verify_email.action")}
         </Button>
@@ -148,7 +148,7 @@ function ResendVerificationDialog() {
                   disabled={resendVerificationMutation.isPending}
                   type="submit"
                   variant="primary"
-                  size="full"
+                  full
                 >
                   {t("auth.verify_email.resend_action")}
                 </Button>

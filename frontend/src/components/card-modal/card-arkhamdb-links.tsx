@@ -34,7 +34,7 @@ export function CardReviewsLink(props: Omit<Props, "children">) {
   return (
     <CardArkhamDBLink hash="reviews-header" {...props}>
       <MessagesSquareIcon />
-      {props.size === "full"
+      {props.full
         ? t("card_view.actions.reviews")
         : t("card_modal.actions.reviews")}
     </CardArkhamDBLink>

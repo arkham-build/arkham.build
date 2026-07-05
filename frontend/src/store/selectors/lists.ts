@@ -125,6 +125,28 @@ export type ListState = {
 
 export type TargetDeck = "slots" | "extraSlots" | "both";
 
+const EMPTY_CARD_TAG_ASSIGNMENTS: CardTagsState["cardTags"] = {};
+
+const selectActiveCardTagAssignments = createSelector(
+  selectActiveList,
+  (state: StoreState) => state.cardTags.cardTags,
+  (activeList, cardTags) =>
+    listUsesCardTagFilter(activeList) ? cardTags : EMPTY_CARD_TAG_ASSIGNMENTS,
+);
+
+function listUsesCardTagFilter(list: List | undefined) {
+  if (!list?.filtersEnabled) return false;
+
+  for (const [id] of list.filters.entries()) {
+    const filter = list.filterValues[id];
+    if (filter?.type !== "card_tags") continue;
+
+    return (filter.value as MultiselectFilter).length > 0;
+  }
+
+  return false;
+}
+
 function makeUserFilter(
   metadata: Metadata,
   lookupTables: LookupTables,
@@ -753,7 +775,7 @@ export const selectListCards = createSelector(
   selectLocaleSortingCollator,
   selectBuildQlInterpreter,
   selectSearchTextCache,
-  (state: StoreState) => state.cardTags.cardTags,
+  selectActiveCardTagAssignments,
   (_: StoreState, resolvedDeck: ResolvedDeck | undefined) => resolvedDeck,
   (
     _: StoreState,

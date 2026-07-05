@@ -38,7 +38,7 @@ export function DropdownButton<T extends ButtonType>(
       ref={ref}
       className={cx(css["dropdown-button"], className)}
       variant="bare"
-      size="full"
+      full
     >
       {childNodes}
     </Button>

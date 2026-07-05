@@ -131,7 +131,7 @@ function Signup() {
           }
           type="submit"
           variant="primary"
-          size="full"
+          full
         >
           {turnstileSiteKey && !captchaToken
             ? t("auth.signup.verifying")
@@ -146,7 +146,7 @@ function Signup() {
           as="a"
           href={`${import.meta.env.VITE_API_URL}/auth/arkhamdb/signup`}
           variant="secondary"
-          size="full"
+          full
         >
           <i className="icon-elder_sign" />
           {t("auth.signup.with_arkhamdb")}

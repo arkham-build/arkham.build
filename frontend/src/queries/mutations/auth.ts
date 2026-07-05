@@ -18,7 +18,10 @@ import {
   postSignup,
   postVerifyEmail,
 } from "@/store/services/requests/auth";
-import { getLocalFolderSyncState } from "@/store/slices/sync";
+import {
+  getLocalCardTagsSyncState,
+  getLocalFolderSyncState,
+} from "@/store/slices/sync";
 
 export function useLoginMutation() {
   const client = useHttpClient();
@@ -174,6 +177,7 @@ export function useCompleteProfileOnboardingMutation() {
 function getCompleteProfilePayload(payload: CompleteProfileOnboardingPayload) {
   const state = useStore.getState();
   const uploads = {
+    cardTags: getLocalCardTagsSyncState(state),
     decks: payload.uploadDecks ? getLocalDeckUploads() : undefined,
     folders: getLocalFolderSyncState(state.data),
     settings: payload.uploadSettings

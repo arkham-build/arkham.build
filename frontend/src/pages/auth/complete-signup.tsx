@@ -141,7 +141,7 @@ function SignupArkhamDB() {
           disabled={completeProfileOnboardingMutation.isPending}
           type="submit"
           variant="primary"
-          size="full"
+          full
         >
           {t("auth.signup.complete_profile.title")}
         </Button>

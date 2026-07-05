@@ -29,6 +29,7 @@ export function useSaveCardTagsMutation() {
 
   return useMutation({
     mutationKey: ["card-tags", "save"],
+    scope: { id: "card-tags-save" },
     mutationFn: (opts?: { expectedRevision?: string | null }) =>
       saveCardTags(client, opts),
   });

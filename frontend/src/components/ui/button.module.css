@@ -124,7 +124,15 @@
     padding: 0.5rem;
   }
 
-  .button.round {
+  .button.rounded-full {
     border-radius: 100%;
+  }
+
+  .button.rounded-lg {
+    border-radius: var(--rounded-lg);
+  }
+
+  .button.rounded-xl {
+    border-radius: var(--rounded-xl);
   }
 }

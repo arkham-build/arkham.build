@@ -138,11 +138,17 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       get().clearAccountState();
     }
 
-    await state.loadRemoteSettings(client);
+    await get().loadRemoteSettings(client);
+
+    const remoteStateTasks = [
+      get().loadRemoteFolders(client),
+      get().loadRemoteCardTags(client),
+    ];
 
     startBootstrapTask(get().syncDecks(client, opts));
-    startBootstrapTask(get().loadRemoteFolders(client));
-    startBootstrapTask(get().loadRemoteCardTags(client));
+
+    const results = await Promise.allSettled(remoteStateTasks);
+    throwRejectedSyncResults(results);
   },
 
   clearAccountState(auth?: AuthState) {
@@ -765,6 +771,20 @@ function startBootstrapTask(task: Promise<void>) {
   void task.catch(console.error);
 }
 
+function throwRejectedSyncResults(results: PromiseSettledResult<void>[]) {
+  const errors = results.flatMap((result) =>
+    result.status === "rejected" ? [result.reason] : [],
+  );
+
+  if (errors.length === 1) {
+    throw errors[0];
+  }
+
+  if (errors.length > 1) {
+    throw new Error(errors.map(getErrorMessage).join("; "));
+  }
+}
+
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Unknown error";
 }
@@ -792,7 +812,9 @@ function getEmptyFolderSyncState(): RemoteFolderSyncState {
   };
 }
 
-function getLocalCardTagsSyncState(state: StoreState): RemoteCardTagsState {
+export function getLocalCardTagsSyncState(
+  state: StoreState,
+): RemoteCardTagsState {
   return canonicalizeCardTagsState(
     state.cardTags,
     state.metadata,

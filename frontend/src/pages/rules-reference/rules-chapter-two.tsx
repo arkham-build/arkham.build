@@ -79,7 +79,7 @@ export function RulesChapterTwo() {
                 as="a"
                 href="https://ffgapp.com/qr/ahc100"
                 rel="noreferrer"
-                size="full"
+                full
                 target="_blank"
                 variant="primary"
               >

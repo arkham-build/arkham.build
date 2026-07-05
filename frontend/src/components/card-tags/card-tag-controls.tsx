@@ -1,20 +1,7 @@
-import {
-  CARD_TAG_FAVORITE_ID,
-  CARD_TAG_NAME_MAX_LENGTH,
-  type CardTag,
-} from "@arkham-build/shared";
+import { CARD_TAG_NAME_MAX_LENGTH, type CardTag } from "@arkham-build/shared";
 import { HeartIcon, PlusIcon, Settings2Icon } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { createSelector } from "reselect";
-import { useSaveCardTagsMutation } from "@/queries/mutations/card-tags";
-import { useStore } from "@/store";
-import { resolveCardTagCardCode } from "@/store/lib/card-tags";
-import {
-  selectLocaleSortingCollator,
-  selectLookupTables,
-} from "@/store/selectors/shared";
-import type { StoreState } from "@/store/slices";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { Button } from "../ui/button";
@@ -29,8 +16,8 @@ import {
   ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
-import { useToast } from "../ui/toast.hooks";
 import css from "./card-tag-controls.module.css";
+import { type TagItem, useCardTagControls } from "./use-card-tag-controls";
 
 type Props = {
   cardCode: string;
@@ -38,109 +25,25 @@ type Props = {
   showTags?: boolean;
 };
 
-type TagItem = {
-  code: string;
-  tag: CardTag;
-};
-
-const EMPTY_TAG_IDS: string[] = [];
-
 export function CardTagControls({
   cardCode,
   showFavorite = true,
   showTags = true,
 }: Props) {
   const { i18n, t } = useTranslation();
-  const saveCardTags = useSaveCardTagsMutation();
-  const toast = useToast();
-
-  const tagCard = useStore((state) => state.tagCard);
-  const untagCard = useStore((state) => state.untagCard);
-  const createCardTag = useStore((state) => state.createCardTag);
-  const deleteCardTag = useStore((state) => state.deleteCardTag);
-  const renameCardTag = useStore((state) => state.renameCardTag);
-  const toggleFavorite = useStore((state) => state.toggleFavorite);
-
   const {
-    authenticated,
     isFavorite,
+    onCreateTag,
+    onDeleteTag,
+    onError,
+    onRenameTag,
+    onTagsChange,
+    onToggleFavorite,
     selectedItems,
-    selectedTagIdSet,
     tagOptions,
-  } = useStore((state) => selectCardTagControlsState(state, cardCode));
+  } = useCardTagControls(cardCode);
 
-  const persist = useCallback(
-    async (action: () => Promise<void>) => {
-      await action();
-      if (authenticated) {
-        await saveCardTags.mutateAsync(undefined);
-      }
-    },
-    [authenticated, saveCardTags],
-  );
-
-  const onError = useCallback(
-    (err: unknown) => {
-      console.error(err);
-      toast.show({
-        children: t("card_tags.manage.error", {
-          error:
-            err instanceof Error
-              ? err.message
-              : t("card_tags.manage.unknown_error"),
-        }),
-        variant: "error",
-      });
-    },
-    [t, toast],
-  );
-
-  const onToggleFavorite = useCallback(() => {
-    void persist(() => toggleFavorite(cardCode)).catch(onError);
-  }, [cardCode, onError, persist, toggleFavorite]);
-
-  const onRenameTag = useCallback(
-    (id: string, name: string) => persist(() => renameCardTag(id, name)),
-    [persist, renameCardTag],
-  );
-
-  const onDeleteTag = useCallback(
-    (id: string) => persist(() => deleteCardTag(id)),
-    [deleteCardTag, persist],
-  );
-
-  const onTagsChange = useCallback(
-    (nextItems: TagItem[]) => {
-      const nextTagIds = new Set(nextItems.map((item) => item.tag.id));
-
-      void persist(async () => {
-        for (const tagId of selectedTagIdSet) {
-          if (!nextTagIds.has(tagId)) {
-            await untagCard(cardCode, tagId);
-          }
-        }
-
-        for (const tagId of nextTagIds) {
-          if (!selectedTagIdSet.has(tagId)) {
-            await tagCard(cardCode, tagId);
-          }
-        }
-      }).catch(onError);
-    },
-    [selectedTagIdSet, cardCode, onError, persist, tagCard, untagCard],
-  );
-
-  const onCreateTag = useCallback(
-    (name: string) => {
-      void persist(async () => {
-        const tagId = await createCardTag(name);
-        await tagCard(cardCode, tagId);
-      }).catch(onError);
-    },
-    [cardCode, createCardTag, onError, persist, tagCard],
-  );
-
-  const createable = useMemo(
+  const creatable = useMemo(
     () => ({
       label: (name: string) => (
         <>
@@ -162,7 +65,7 @@ export function CardTagControls({
         <div className={css["tags"]}>
           <Combobox
             className={css["combobox"]}
-            creatable={createable}
+            creatable={creatable}
             id={`card-tags-${cardCode}`}
             itemToString={tagItemToString}
             items={tagOptions}
@@ -199,9 +102,10 @@ function FavoriteButton({
 
   return (
     <Button
+      aria-pressed={isFavorite}
       className={cx(css["favorite"], isFavorite && css["active"])}
       onClick={onClick}
-      size="full"
+      full
     >
       <HeartIcon className={css["favorite-icon"]} />
       {t("card_tags.favorite")}
@@ -292,40 +196,6 @@ function CardTagManager({
     </Dialog>
   );
 }
-
-const selectCardTagControlsState = createSelector(
-  (state: StoreState) => state.cardTags.cardTags,
-  (state: StoreState) => state.cardTags.tags,
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => selectLookupTables(state).relations.fronts,
-  selectLocaleSortingCollator,
-  (state: StoreState) => state.auth.status === "authenticated",
-  (_: StoreState, cardCode: string) => cardCode,
-  (cardTags, tags, metadata, fronts, collator, authenticated, cardCode) => {
-    const canonicalCode = resolveCardTagCardCode(metadata, fronts, cardCode);
-    const assignedTagIds = cardTags[canonicalCode] ?? EMPTY_TAG_IDS;
-    const selectedItems = assignedTagIds.reduce<TagItem[]>((acc, tagId) => {
-      const tag = tags[tagId];
-      if (tag) {
-        acc.push({ code: tag.id, tag });
-      }
-      return acc;
-    }, []);
-
-    return {
-      authenticated,
-      isFavorite: assignedTagIds.includes(CARD_TAG_FAVORITE_ID),
-      selectedItems,
-      selectedTagIdSet: new Set(selectedItems.map((item) => item.tag.id)),
-      tagOptions: Object.values(tags)
-        .sort((a, b) => collator.compare(a.name, b.name))
-        .map<TagItem>((tag) => ({
-          code: tag.id,
-          tag,
-        })),
-    };
-  },
-);
 
 function tagItemToString(item: TagItem) {
   return item.tag.name;
