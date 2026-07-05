@@ -95,7 +95,7 @@ function CardView() {
                   </Button>
                 </Link>
               )}
-              <CardFavorite cardCode={cardWithRelations.card.code} />
+              <CardFavorite card={cardWithRelations.card} />
               <CardArkhamDBLink card={cardWithRelations.card} full>
                 <GlobeIcon /> {t("card_view.actions.open_on_arkhamdb")}
               </CardArkhamDBLink>

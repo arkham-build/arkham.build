@@ -241,7 +241,7 @@ export function CardDisplaySettings(props: SettingProps) {
                 omitThumbnail={!resolve("cardShowThumbnail")}
                 renderCardAfter={
                   (resolve("cardShowTags") ?? true) && tags.length
-                    ? () => <CardTagList items={tags} />
+                    ? () => <CardTagList card={card} items={tags} />
                     : undefined
                 }
                 size={resolve("cardSize")}

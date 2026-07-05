@@ -1,7 +1,7 @@
 .favorite-icon {
-  stroke: var(--survivor);
+  stroke: var(--accent-color, var(--nord-9));
 }
 
 .favorite.active .favorite-icon {
-  fill: var(--survivor);
+  fill: var(--accent-color, var(--nord-9));
 }

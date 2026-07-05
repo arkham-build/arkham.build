@@ -218,7 +218,7 @@ function DecklistCard({
         visibleTags.length || renderCardAfter
           ? (card, quantity) => (
               <CardAfterRow>
-                <CardTagList items={visibleTags} />
+                <CardTagList card={card} items={visibleTags} />
                 {renderCardAfter?.(card, quantity)}
               </CardAfterRow>
             )

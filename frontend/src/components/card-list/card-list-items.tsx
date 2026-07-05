@@ -4,6 +4,7 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { selectResolvedCardById } from "@/store/selectors/lists";
 import type { ViewMode } from "@/store/slices/lists.types";
 import { cx } from "@/utils/cx";
+import { useAccentColor } from "@/utils/use-accent-color";
 import { Card as CardComponent } from "../card/card";
 import { CardTagList } from "../card-tags/card-tag-list";
 import { useCardTagDisplay } from "../card-tags/use-card-tags";
@@ -32,7 +33,7 @@ export function CardListItemCompact(props: Props) {
     viewMode,
   } = props;
 
-  const { className, renderCardAfter, ...restListCardProps } =
+  const { className, renderCardAfter, style, ...restListCardProps } =
     listCardProps ?? {};
   const showCardTags = useStore((state) => state.settings.cardShowTags ?? true);
   const { isFavorite, selectedItems } = useCardTagDisplay(
@@ -40,6 +41,7 @@ export function CardListItemCompact(props: Props) {
     resolvedDeck,
   );
   const visibleTags = showCardTags ? selectedItems : [];
+  const accentColor = useAccentColor(card);
 
   return (
     <ListCard
@@ -56,13 +58,18 @@ export function CardListItemCompact(props: Props) {
         visibleTags.length || renderCardAfter
           ? (card, quantity) => (
               <CardAfterRow>
-                <CardTagList items={visibleTags} />
+                <CardTagList
+                  card={card}
+                  favorite={isFavorite}
+                  items={visibleTags}
+                />
                 {renderCardAfter?.(card, quantity)}
               </CardAfterRow>
             )
           : undefined
       }
       showCardText={viewMode === "card-text"}
+      style={isFavorite ? { ...style, ...accentColor } : style}
     />
   );
 }

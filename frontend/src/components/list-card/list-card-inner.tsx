@@ -74,6 +74,7 @@ export type Props = {
   renderCardExtra?: RenderCallback;
   size?: "xs" | "sm" | "investigator" | "standard";
   showCardText?: boolean;
+  style?: React.CSSProperties;
   showInvestigatorIcons?: boolean;
   titleOpens?: "card-modal" | "dialog";
 };
@@ -114,6 +115,7 @@ export function ListCardInner(props: Props) {
     showCardText,
     showInvestigatorIcons,
     size,
+    style,
     titleOpens = "card-modal",
   } = props;
 
@@ -167,6 +169,7 @@ export function ListCardInner(props: Props) {
       )}
       data-testid={`listcard-${card.code}`}
       lang={dataLanguage()}
+      style={style}
     >
       <div className={css["listcard-action"]}>
         {!!renderCardAction && renderCardAction(card, quantity)}

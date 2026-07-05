@@ -31,7 +31,7 @@ import { PopularDecks } from "../arkhamdb-decklists/popular-decks";
 import { Card } from "../card/card";
 import { CardScenarios } from "../card-scenarios/card-scenarios";
 import { CardFavorite } from "../card-tags/card-favorite";
-import { CardTags } from "../card-tags/card-tags";
+import { CardTagManager, CardTags } from "../card-tags/card-tags";
 import { CardSet } from "../cardset";
 import { Customizations } from "../customizations/customizations";
 import { CustomizationsEditor } from "../customizations/customizations-editor";
@@ -235,6 +235,17 @@ export function CardModal(props: Props) {
           <SpecialistInvestigators card={cardWithRelations.card} />
         </div>
       )}
+      <TitledContainer
+        className={cx(css["related"], css["shadow"])}
+        titleNode={
+          <>
+            {t("card_tags.title")}
+            <CardTagManager cardCode={cardWithRelations.card.code} />
+          </>
+        }
+      >
+        <CardTags cardCode={cardWithRelations.card.code} />
+      </TitledContainer>
       {!cardWithRelations.card.preview &&
         !ctx.resolvedDeck &&
         settings.showCardModalPopularDecks &&
@@ -280,12 +291,6 @@ export function CardModal(props: Props) {
           <div className={css["card"]}>
             {cardNode}
             {relationsNode}
-            <TitledContainer
-              className={cx(css["related"], css["shadow"])}
-              titleNode={t("card_tags.title")}
-            >
-              <CardTags cardCode={cardWithRelations.card.code} />
-            </TitledContainer>
           </div>
           <div
             className={css["quantities"]}
@@ -313,7 +318,7 @@ export function CardModal(props: Props) {
                   </Link>
                 </div>
               )}
-            <CardFavorite cardCode={cardWithRelations.card.code} />
+            <CardFavorite card={cardWithRelations.card} />
             {showQuantities && (
               <CardModalQuantities
                 canEdit={canEdit}

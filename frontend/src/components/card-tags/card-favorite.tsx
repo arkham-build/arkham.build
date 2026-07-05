@@ -1,17 +1,20 @@
+import type { Card } from "@arkham-build/shared";
 import { HeartIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cx } from "@/utils/cx";
+import { useAccentColor } from "@/utils/use-accent-color";
 import { Button } from "../ui/button";
 import css from "./card-favorite.module.css";
 import { useCardFavorite } from "./use-card-tags";
 
 type Props = {
-  cardCode: string;
+  card: Card;
 };
 
-export function CardFavorite({ cardCode }: Props) {
+export function CardFavorite({ card }: Props) {
   const { t } = useTranslation();
-  const { isFavorite, onToggleFavorite } = useCardFavorite(cardCode);
+  const { isFavorite, onToggleFavorite } = useCardFavorite(card.code);
+  const accentColor = useAccentColor(card);
 
   return (
     <Button
@@ -19,6 +22,7 @@ export function CardFavorite({ cardCode }: Props) {
       className={cx(css["favorite"], isFavorite && css["active"])}
       onClick={onToggleFavorite}
       full
+      style={accentColor}
     >
       <HeartIcon className={css["favorite-icon"]} />
       {t("card_tags.favorite")}

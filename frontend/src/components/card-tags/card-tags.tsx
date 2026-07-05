@@ -1,4 +1,4 @@
-import { CARD_TAG_NAME_MAX_LENGTH, type CardTag } from "@arkham-build/shared";
+import { CARD_TAG_NAME_MAX_LENGTH } from "@arkham-build/shared";
 import { PlusIcon, Settings2Icon } from "lucide-react";
 import { useId, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -38,7 +38,7 @@ export function CardTags({ cardCode }: Props) {
           readonly={!canEdit}
         />
       )}
-      <AccountCardTags cardCode={cardCode} showLabel />
+      <AccountCardTags cardCode={cardCode} showLabel={!!resolvedDeck} />
     </div>
   );
 }
@@ -51,35 +51,14 @@ function AccountCardTags({
   showLabel: boolean;
 }) {
   const { t } = useTranslation();
-  const {
-    onCreateTag,
-    onDeleteTag,
-    onError,
-    onRenameTag,
-    onTagsChange,
-    selectedItems,
-    tagOptions,
-  } = useCardTags(cardCode);
-
-  const labelNode = (
-    <div className={css["account-label"]}>
-      {showLabel ? t("card_tags.account_title") : t("card_tags.title")}
-      {!isEmpty(tagOptions) && (
-        <CardTagManager
-          onDelete={onDeleteTag}
-          onError={onError}
-          onRename={onRenameTag}
-          tags={tagOptions.map((item) => item.tag)}
-        />
-      )}
-    </div>
-  );
+  const { onCreateTag, onTagsChange, selectedItems, tagOptions } =
+    useCardTags(cardCode);
 
   return (
     <div className={css["tag-section"]}>
       <CardTagCombobox
         id={`card-tags-${cardCode}`}
-        label={labelNode}
+        label={t("card_tags.account_title")}
         onCreateTag={onCreateTag}
         onTagsChange={onTagsChange}
         placeholder={t("card_tags.placeholder")}
@@ -181,17 +160,10 @@ function CardTagCombobox({
   );
 }
 
-function CardTagManager({
-  onDelete,
-  onError,
-  onRename,
-  tags,
-}: {
-  onDelete: (name: string) => Promise<void>;
-  onError: (err: unknown) => void;
-  onRename: (name: string, nextName: string) => Promise<void>;
-  tags: CardTag[];
-}) {
+export function CardTagManager({ cardCode }: { cardCode: string }) {
+  const { onRenameTag, onDeleteTag, onError, tagOptions } =
+    useCardTags(cardCode);
+
   const { t } = useTranslation();
   const formId = useId();
 
@@ -216,7 +188,7 @@ function CardTagManager({
             <ModalActions />
             <DefaultModalContent title={t("card_tags.manage.title")}>
               <div className={css["manager-list"]}>
-                {tags.map((tag, index) => {
+                {tagOptions.map(({ tag }, index) => {
                   const fieldId = `${formId}-${index}`;
 
                   return (
@@ -229,7 +201,7 @@ function CardTagManager({
                           "name",
                         );
                         if (typeof name !== "string") return;
-                        void onRename(tag, name).catch(onError);
+                        void onRenameTag(tag, name).catch(onError);
                       }}
                     >
                       <Field className={css["manager-field"]} full>
@@ -249,7 +221,7 @@ function CardTagManager({
                       </Button>
                       <Button
                         onClick={() => {
-                          void onDelete(tag).catch(onError);
+                          void onDeleteTag(tag).catch(onError);
                         }}
                         type="button"
                         variant="danger"

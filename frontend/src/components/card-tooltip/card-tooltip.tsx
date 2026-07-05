@@ -25,7 +25,7 @@ export function CardTooltip(props: Props) {
     <div className={css["tooltip"]} data-testid="card-tooltip">
       <Card resolvedCard={resolvedCard} size="tooltip" />
       {annotation && <Annotation content={annotation} size="sm" />}
-      <CardTagRow cardCode={resolvedCard.card.code} />
+      <CardTagRow card={resolvedCard.card} />
     </div>
   );
 }

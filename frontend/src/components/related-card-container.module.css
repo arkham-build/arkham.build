@@ -23,6 +23,10 @@
   font-weight: 700;
   line-height: 1;
   width: 100%;
+  display: inline-flex;
+  flex-flow: row nowrap;
+  gap: 0.25rem;
+  align-items: center;
 }
 
 .title label {

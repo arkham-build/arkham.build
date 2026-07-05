@@ -9,8 +9,14 @@
 
 .tag {
   line-height: 1.25;
+  border: 1px solid transparent;
 
   &.local {
     border: 1px solid var(--palette-3);
   }
+}
+
+.favorite-icon {
+  fill: var(--accent-color, var(--nord-9));
+  stroke: var(--accent-color, var(--nord-9));
 }
