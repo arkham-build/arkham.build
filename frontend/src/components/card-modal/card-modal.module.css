@@ -92,6 +92,12 @@
   flex: 1 1 auto;
 }
 
+.tag-result {
+  justify-content: space-between;
+  min-width: 12rem;
+  padding-block: 0.5rem;
+}
+
 .sidebar-actions {
   flex: -1;
   flex: 0 0 auto;

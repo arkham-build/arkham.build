@@ -13,6 +13,7 @@ type Props<T extends Coded> = {
   activeIndex: number | undefined;
   items: T[];
   listRef: React.MutableRefObject<HTMLElement[]>;
+  noResultsLabel: React.ReactNode;
   omitItemPadding?: boolean;
   renderItem: (t: T) => React.ReactNode;
   selectedItems: (T | undefined)[];
@@ -25,6 +26,7 @@ export function ComboboxMenu<T extends Coded>(props: Props<T>) {
     activeIndex,
     items,
     listRef,
+    noResultsLabel,
     omitItemPadding,
     renderItem,
     selectedItems,
@@ -56,6 +58,10 @@ export function ComboboxMenu<T extends Coded>(props: Props<T>) {
     }),
     [items],
   );
+
+  if (items.length === 0) {
+    return <div className={css["menu-empty"]}>{noResultsLabel}</div>;
+  }
 
   return (
     <Scroller

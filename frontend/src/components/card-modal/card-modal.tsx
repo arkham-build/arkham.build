@@ -30,6 +30,7 @@ import { Annotation } from "../annotations/annotation";
 import { PopularDecks } from "../arkhamdb-decklists/popular-decks";
 import { Card } from "../card/card";
 import { CardScenarios } from "../card-scenarios/card-scenarios";
+import { CardTagControls } from "../card-tags/card-tag-controls";
 import { CardSet } from "../cardset";
 import { Customizations } from "../customizations/customizations";
 import { CustomizationsEditor } from "../customizations/customizations-editor";
@@ -37,6 +38,7 @@ import { AttachableCards } from "../deck-tools/attachable-cards";
 import { CardPoolExtension } from "../limited-card-pool/card-pool-extension";
 import { useResolvedDeck } from "../resolved-deck-context";
 import { Button } from "../ui/button";
+import { ResultTag } from "../ui/combobox/combobox-results";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { HotkeyTooltip } from "../ui/hotkey";
 import { Modal, ModalActions, ModalBackdrop, ModalInner } from "../ui/modal";
@@ -270,55 +272,65 @@ export function CardModal(props: Props) {
               </Button>
             )}
         </ModalActions>
-        {showQuantities || listOrder ? (
-          <div className={css["container"]}>
-            <div className={css["card"]}>{cardNode}</div>
-            <div
-              className={css["quantities"]}
-              onClick={onClickBackdrop}
-              ref={quantitiesRef}
-            >
-              {listOrder && (
-                <CardModalArrowNavigation
-                  code={props.code}
-                  listOrder={listOrder}
-                />
+        <div className={css["container"]}>
+          <div className={css["card"]}>{cardNode}</div>
+          <div
+            className={css["quantities"]}
+            onClick={onClickBackdrop}
+            ref={quantitiesRef}
+          >
+            {listOrder && (
+              <CardModalArrowNavigation
+                code={props.code}
+                listOrder={listOrder}
+              />
+            )}
+            {cardWithRelations.card.type_code === "investigator" &&
+              !isStaticInvestigator(cardWithRelations.card) &&
+              !isNonLocalFanMadeCard && (
+                <div className={css["sidebar-actions"]}>
+                  <Link
+                    asChild
+                    href={deckCreateLink(cardWithRelations.card)}
+                    onClick={onCloseModal}
+                  >
+                    <Button as="a" data-testid="card-modal-create-deck">
+                      <i className="icon-deck" /> {t("deck.actions.create")}
+                    </Button>
+                  </Link>
+                </div>
               )}
-              {cardWithRelations.card.type_code === "investigator" &&
-                !isStaticInvestigator(cardWithRelations.card) &&
-                !isNonLocalFanMadeCard && (
-                  <div className={css["sidebar-actions"]}>
-                    <Link
-                      asChild
-                      href={deckCreateLink(cardWithRelations.card)}
-                      onClick={onCloseModal}
-                    >
-                      <Button as="a" data-testid="card-modal-create-deck">
-                        <i className="icon-deck" /> {t("deck.actions.create")}
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              {showQuantities && (
-                <CardModalQuantities
-                  canEdit={canEdit}
-                  card={cardWithRelations.card}
-                  deck={ctx.resolvedDeck}
-                  onCloseModal={onCloseModal}
-                  showExtraQuantities={showExtraQuantities}
-                />
+            <CardTagControls
+              cardCode={cardWithRelations.card.code}
+              renderResult={(tag, onRemove) => (
+                <ResultTag
+                  className={css["tag-result"]}
+                  data-testid={`combobox-result-${tag.id}`}
+                  onRemove={onRemove}
+                  size="sm"
+                >
+                  {tag.name}
+                </ResultTag>
               )}
-              {!isEmpty(ctx.resolvedDeck?.availableAttachments) && (
-                <CardModalAttachmentQuantities
-                  card={cardWithRelations.card}
-                  resolvedDeck={ctx.resolvedDeck}
-                />
-              )}
-            </div>
+            />
+
+            {showQuantities && (
+              <CardModalQuantities
+                canEdit={canEdit}
+                card={cardWithRelations.card}
+                deck={ctx.resolvedDeck}
+                onCloseModal={onCloseModal}
+                showExtraQuantities={showExtraQuantities}
+              />
+            )}
+            {!isEmpty(ctx.resolvedDeck?.availableAttachments) && (
+              <CardModalAttachmentQuantities
+                card={cardWithRelations.card}
+                resolvedDeck={ctx.resolvedDeck}
+              />
+            )}
           </div>
-        ) : (
-          cardNode
-        )}
+        </div>
       </ModalInner>
     </Modal>
   );

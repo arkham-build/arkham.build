@@ -16,6 +16,7 @@ import { PackName } from "../pack-name";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { Combobox } from "../ui/combobox/combobox";
+import { ResultTag } from "../ui/combobox/combobox-results";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { Field } from "../ui/field";
 import {
@@ -41,6 +42,12 @@ type TabProps = Omit<Props, "investigator"> & {
 
 const packRenderer = (cycle: Cycle) => (
   <PackName pack={cycle} shortenNewFormat />
+);
+
+const packResultRenderer = (cycle: Cycle, onRemove?: () => void) => (
+  <ResultTag data-testid={`combobox-result-${cycle.code}`} onRemove={onRemove}>
+    {packRenderer(cycle)}
+  </ResultTag>
 );
 
 const packToString = (pack: Cycle) => displayPackName(pack).toLowerCase();
@@ -251,7 +258,7 @@ function LimitedTab(props: TabProps) {
           locale={locale}
           placeholder={t("deck_edit.config.card_pool.placeholder")}
           renderItem={packRenderer}
-          renderResult={packRenderer}
+          renderResult={packResultRenderer}
           itemToString={packToString}
           onValueChange={onSelectionChange}
           items={packs}
@@ -316,7 +323,7 @@ function CampaignPlayalongTab(props: TabProps) {
           locale={locale}
           placeholder={t("deck_edit.config.card_pool.choose_cycle_placeholder")}
           renderItem={packRenderer}
-          renderResult={packRenderer}
+          renderResult={packResultRenderer}
           itemToString={packToString}
           onValueChange={onSelectionChange}
           items={cycles}
@@ -395,7 +402,7 @@ function Limited25Tab(props: TabProps) {
           locale={locale}
           placeholder={t("deck_edit.config.card_pool.choose_cycle_placeholder")}
           renderItem={packRenderer}
-          renderResult={packRenderer}
+          renderResult={packResultRenderer}
           itemToString={packToString}
           onValueChange={onSelectionChange}
           items={cycles}

@@ -2,6 +2,7 @@ import { SKILL_KEYS } from "@arkham-build/shared";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Combobox } from "@/components/ui/combobox/combobox";
+import { ResultTag } from "@/components/ui/combobox/combobox-results";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
 import { selectSkillMapper } from "@/store/selectors/shared";
@@ -18,6 +19,15 @@ const itemRenderer = (item: Coded & { name: string }) => (
   <>
     <i className={`icon-${item.code}`} /> {item.name}
   </>
+);
+
+const resultRenderer = (
+  item: Coded & { name: string },
+  onRemove?: () => void,
+) => (
+  <ResultTag data-testid={`combobox-result-${item.code}`} onRemove={onRemove}>
+    {itemRenderer(item)}
+  </ResultTag>
 );
 
 export function CustomizationChooseSkill(props: Props) {
@@ -52,7 +62,7 @@ export function CustomizationChooseSkill(props: Props) {
       placeholder={t("deck_edit.customizable.skill_placeholder")}
       readonly={readonly}
       renderItem={itemRenderer}
-      renderResult={itemRenderer}
+      renderResult={resultRenderer}
       selectedItems={selections.map(skillMapper)}
     />
   );

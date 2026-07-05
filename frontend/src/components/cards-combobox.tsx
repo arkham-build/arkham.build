@@ -5,6 +5,7 @@ import { displayAttribute } from "@/utils/card-utils";
 import { ListCard } from "./list-card/list-card";
 import { ListCardInner } from "./list-card/list-card-inner";
 import { Combobox, type Props as ComboboxProps } from "./ui/combobox/combobox";
+import { ResultTag } from "./ui/combobox/combobox-results";
 
 type Props = Omit<
   ComboboxProps<Card>,
@@ -23,16 +24,21 @@ export function CardsCombobox(props: Props) {
     [],
   );
 
-  const resultRenderer = useCallback((item: Card) => {
+  const resultRenderer = useCallback((item: Card, onRemove?: () => void) => {
     return (
-      <ListCardInner
-        card={item}
-        cardLevelDisplay="icon-only"
-        cardShowCollectionNumber
-        omitBorders
-        omitThumbnail
-        size="xs"
-      />
+      <ResultTag
+        data-testid={`combobox-result-${item.code}`}
+        onRemove={onRemove}
+      >
+        <ListCardInner
+          card={item}
+          cardLevelDisplay="icon-only"
+          cardShowCollectionNumber
+          omitBorders
+          omitThumbnail
+          size="xs"
+        />
+      </ResultTag>
     );
   }, []);
 

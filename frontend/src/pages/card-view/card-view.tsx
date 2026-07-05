@@ -7,6 +7,7 @@ import {
   CardReviewsLink,
 } from "@/components/card-modal/card-arkhamdb-links";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
+import { CardTagControls } from "@/components/card-tags/card-tag-controls";
 import { Footer } from "@/components/footer";
 import { Masthead } from "@/components/masthead";
 import { Button } from "@/components/ui/button";
@@ -82,11 +83,13 @@ function CardView() {
             <SidebarSection title={t("card_view.section_printings")}>
               <Printings code={cardWithRelations.card.code} />
             </SidebarSection>
+            <SidebarSection title={t("card_tags.title")}>
+              <CardTagControls
+                cardCode={cardWithRelations.card.code}
+                showFavorite={false}
+              />
+            </SidebarSection>
             <SidebarSection title={t("card_view.section_actions")}>
-              <CardArkhamDBLink card={cardWithRelations.card} size="full">
-                <GlobeIcon /> {t("card_view.actions.open_on_arkhamdb")}
-              </CardArkhamDBLink>
-              <CardReviewsLink card={cardWithRelations.card} size="full" />
               {isBuildableInvestigator && (
                 <Link asChild href={deckCreateLink(cardWithRelations.card)}>
                   <Button
@@ -98,6 +101,14 @@ function CardView() {
                   </Button>
                 </Link>
               )}
+              <CardTagControls
+                cardCode={cardWithRelations.card.code}
+                showTags={false}
+              />
+              <CardArkhamDBLink card={cardWithRelations.card} size="full">
+                <GlobeIcon /> {t("card_view.actions.open_on_arkhamdb")}
+              </CardArkhamDBLink>
+              <CardReviewsLink card={cardWithRelations.card} size="full" />
               {devModeEnabled && (
                 <Button
                   data-testid="card-view-export"

@@ -12,6 +12,7 @@ import {
 } from "@floating-ui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { Coded } from "@/store/lib/types";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { cx } from "@/utils/cx";
@@ -19,7 +20,7 @@ import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";
 import { isEmpty } from "@/utils/is-empty";
 import css from "./combobox.module.css";
 import { ComboboxMenu } from "./combobox-menu";
-import { ComboboxResults } from "./combobox-results";
+import { ComboboxResults, type ResultRenderer } from "./combobox-results";
 
 function defaultItemToString<T extends Coded>(val: T) {
   return val.code.toLowerCase();
@@ -47,6 +48,7 @@ function fuzzy<T extends Coded>(
 export type Props<T extends Coded> = {
   autoFocus?: boolean;
   className?: string;
+  createItem?: (value: string, items: T[]) => T | undefined;
   defaultOpen?: boolean;
   disabled?: boolean;
   omitFloatingPortal?: boolean;
@@ -56,13 +58,14 @@ export type Props<T extends Coded> = {
   label: React.ReactNode;
   locale: string;
   limit?: number;
+  noResultsLabel?: React.ReactNode;
   omitItemPadding?: boolean;
   onValueChange?: (value: T[]) => void;
   onEscapeBlur?: () => void;
   placeholder?: string;
   readonly?: boolean;
   renderItem?: (item: T) => React.ReactNode;
-  renderResult?: (item: T) => React.ReactNode;
+  renderResult?: ResultRenderer<T>;
   showLabel?: boolean;
   selectedItems: (T | undefined)[];
 };
@@ -72,6 +75,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
   const {
     autoFocus,
     className,
+    createItem,
     defaultOpen,
     disabled,
     id,
@@ -79,17 +83,20 @@ export function Combobox<T extends Coded>(props: Props<T>) {
     itemToString = defaultItemToString,
     label,
     limit,
+    noResultsLabel,
     placeholder,
     omitItemPadding,
     onValueChange,
     onEscapeBlur,
     readonly,
     renderItem = defaultRenderer,
-    renderResult = defaultRenderer,
+    renderResult,
     selectedItems,
     showLabel,
     omitFloatingPortal,
   } = props;
+
+  const { t } = useTranslation();
 
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
   const [isOpen, setOpen] = useState(defaultOpen);
@@ -119,10 +126,11 @@ export function Combobox<T extends Coded>(props: Props<T>) {
 
   const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
 
-  const filteredItems = useMemo(
-    () => fuzzy(inputValue, items, itemToString),
-    [items, inputValue, itemToString],
-  );
+  const filteredItems = useMemo(() => {
+    const result = fuzzy(inputValue, items, itemToString);
+    const createdItem = createItem?.(inputValue, result);
+    return createdItem ? [...result, createdItem] : result;
+  }, [createItem, items, inputValue, itemToString]);
 
   const setSelectedItem = useCallback(
     (item: T) => {
@@ -220,6 +228,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                   } else if (evt.key === "ArrowDown") {
                     evt.preventDefault();
                     setActiveIndex((prev) => {
+                      if (filteredItems.length === 0) return undefined;
                       if (activeIndex == null || prev == null) return 0;
                       return prev < filteredItems.length - 1 ? prev + 1 : prev;
                     });
@@ -227,6 +236,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                   } else if (evt.key === "ArrowUp") {
                     evt.preventDefault();
                     setActiveIndex((prev) => {
+                      if (filteredItems.length === 0) return undefined;
                       if (prev == null) return 0;
                       return prev > 0 ? prev - 1 : prev;
                     });
@@ -277,6 +287,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                 activeIndex={activeIndex}
                 items={filteredItems}
                 listRef={listRef}
+                noResultsLabel={noResultsLabel ?? t("common.no_results")}
                 omitItemPadding={omitItemPadding}
                 renderItem={renderItem}
                 selectedItems={selectedItems}

@@ -11,6 +11,7 @@ import { isEmpty } from "@/utils/is-empty";
 import { PackName } from "../pack-name";
 import { Button } from "../ui/button";
 import { Combobox } from "../ui/combobox/combobox";
+import { ResultTag } from "../ui/combobox/combobox-results";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { Field } from "../ui/field";
 import { ConfigureEnvironmentModal } from "./configure-environment-modal";
@@ -46,6 +47,18 @@ export function LimitedCardPoolField(props: Props) {
   const packRenderer = useCallback(
     (pack: Pack) => <PackName pack={pack} shortenNewFormat />,
     [],
+  );
+
+  const packResultRenderer = useCallback(
+    (pack: Pack, onRemove?: () => void) => (
+      <ResultTag
+        data-testid={`combobox-result-${pack.code}`}
+        onRemove={onRemove}
+      >
+        {packRenderer(pack)}
+      </ResultTag>
+    ),
+    [packRenderer],
   );
 
   const packToString = useCallback(
@@ -90,7 +103,7 @@ export function LimitedCardPoolField(props: Props) {
           onValueChange={onChange}
           placeholder={t("deck_edit.config.card_pool.placeholder")}
           renderItem={packRenderer}
-          renderResult={packRenderer}
+          renderResult={packResultRenderer}
           showLabel
           selectedItems={selectedItems.map(packMapper)}
         />

@@ -166,6 +166,12 @@
       "title": "Scenarios using <em>{{name}}</em>",
       "tooltip": "{{name}} <em>({{campaignName}})</em>"
     },
+    "card_tags": {
+      "create_named": "Create \"{{name}}\"",
+      "favorite": "Favorite",
+      "placeholder": "Add or create tag...",
+      "title": "Tags"
+    },
     "card_view": {
       "actions": {
         "open_on_arkhamdb": "Open on ArkhamDB",
@@ -309,6 +315,7 @@
       "more_actions": "More actions",
       "myriad": "Myriad",
       "no_entries": "No entries",
+      "no_results": "No results",
       "non_collection_cards": "{{count}} non-collection cards",
       "none": "None",
       "ok": "OK",

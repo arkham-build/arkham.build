@@ -1,0 +1,17 @@
+.container {
+  display: grid;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.favorite-icon {
+  stroke: var(--survivor);
+}
+
+.favorite.active .favorite-icon {
+  fill: var(--survivor);
+}
+
+.combobox {
+  width: 100%;
+}
