@@ -1,30 +1,35 @@
-.cardset {
+.container {
   background: var(--palette-point-five);
   border: 1px solid var(--palette-1);
   border-radius: var(--rounded);
   padding: 0.5rem;
-
-  &.selected {
-    border-color: var(--accent-color-dark, var(--palette-2));
-  }
 }
 
-.cardset-header {
+.container.selected {
+  border-color: var(--accent-color-dark, var(--palette-2));
+}
+
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0.25rem;
+  padding: 0.375rem 0.25rem 0.5rem 0.25rem;
 }
 
-.cardset-title label {
-  width: 100%;
-}
-
-.cardset-title {
+.title {
   font-family: var(--font-family-ui);
   color: var(--text);
   font-size: var(--text-sm);
   font-weight: 700;
   line-height: 1;
   width: 100%;
+}
+
+.title label {
+  width: 100%;
+}
+
+.title h2 {
+  font: inherit;
+  margin: 0;
 }

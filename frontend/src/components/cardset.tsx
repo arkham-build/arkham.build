@@ -6,11 +6,9 @@ import {
   selectCanCheckOwnership,
   selectCardOwnedCount,
 } from "@/store/selectors/shared";
-import { cx } from "@/utils/cx";
-import css from "./cardset.module.css";
 import { ListCard } from "./list-card/list-card";
 import { OwnershipPartitionedCardList } from "./ownership-partitioned-card-list";
-import { Checkbox } from "./ui/checkbox";
+import { RelatedCardContainer } from "./related-card-container";
 import { DefaultTooltip } from "./ui/tooltip";
 
 type Props = {
@@ -26,25 +24,9 @@ export function CardSet(props: Props) {
   const cardOwnedCount = useStore(selectCardOwnedCount);
 
   return (
-    <article
-      data-testid={`cardset-${set.id}`}
-      className={cx(css["cardset"], set.selected && css["selected"], className)}
-    >
-      <header className={css["cardset-header"]}>
-        {onSelect ? (
-          <Checkbox
-            checked={set.selected}
-            className={css["cardset-title"]}
-            data-testid="cardset-select"
-            disabled={!onSelect || !set.canSelect}
-            id={`card-set-${set.id}`}
-            label={set.title}
-            onCheckedChange={() => onSelect?.(set.id)}
-          />
-        ) : (
-          <h2 className={css["cardset-title"]}>{set.title}</h2>
-        )}
-        {set.help && (
+    <RelatedCardContainer
+      actions={
+        set.help && (
           <DefaultTooltip
             tooltip={
               <div
@@ -56,9 +38,24 @@ export function CardSet(props: Props) {
           >
             <CircleHelpIcon />
           </DefaultTooltip>
-        )}
-      </header>
-      <ul className={css["cardset-cards"]}>
+        )
+      }
+      className={className}
+      selected={set.selected}
+      selection={
+        onSelect
+          ? {
+              checked: set.selected,
+              disabled: !onSelect || !set.canSelect,
+              id: `card-set-${set.id}`,
+              onChange: () => onSelect?.(set.id),
+            }
+          : undefined
+      }
+      testId={`cardset-${set.id}`}
+      title={set.title}
+    >
+      <ul>
         <OwnershipPartitionedCardList
           cards={set.cards}
           cardRenderer={({ card }) => (
@@ -76,6 +73,6 @@ export function CardSet(props: Props) {
           )}
         />
       </ul>
-    </article>
+    </RelatedCardContainer>
   );
 }

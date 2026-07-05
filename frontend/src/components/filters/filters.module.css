@@ -101,6 +101,18 @@
   font-size: var(--text-lg);
 }
 
+.favorite-toggle {
+  --active-color: var(--text);
+}
+
+.favorite-icon {
+  stroke: var(--survivor);
+}
+
+.favorite-toggle[data-state="on"] .favorite-icon {
+  fill: var(--survivor);
+}
+
 .investigator-filter-empty {
   min-height: 2.25rem;
   display: flex;

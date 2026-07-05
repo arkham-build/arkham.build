@@ -35,6 +35,7 @@ export function ResultTag(props: ResultTagProps) {
 export function ResultRemoveButton({ onClick }: { onClick: () => void }) {
   return (
     <Button
+      className={css["result-remove"]}
       data-testid="combobox-result-remove"
       iconOnly
       onClick={onClick}

@@ -79,6 +79,7 @@ type InvestigatorCardAccessFilter = string[] | undefined;
 export type FilterMapping = {
   action: MultiselectFilter;
   asset: AssetFilter;
+  card_tags: MultiselectFilter;
   card_type: CardTypeFilter;
   cost: CostFilter;
   cycle: MultiselectFilter;

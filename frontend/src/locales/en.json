@@ -169,6 +169,15 @@
     "card_tags": {
       "create_named": "Create \"{{name}}\"",
       "favorite": "Favorite",
+      "manage": {
+        "action": "Manage tags",
+        "delete": "Delete",
+        "error": "Failed to update card tags: {{error}}",
+        "name": "Tag name",
+        "save": "Update tag",
+        "title": "Manage tags",
+        "unknown_error": "Unknown error"
+      },
       "placeholder": "Add or create tag...",
       "title": "Tags"
     },
@@ -1343,6 +1352,11 @@
       "and": "and",
       "asset": {
         "title": "Asset"
+      },
+      "card_tags": {
+        "favorites": "Favorites",
+        "placeholder": "Select tags...",
+        "title": "Card tags"
       },
       "cost": {
         "even": "Even",

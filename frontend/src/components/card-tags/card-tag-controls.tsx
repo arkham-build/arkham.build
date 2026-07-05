@@ -1,5 +1,9 @@
-import { CARD_TAG_FAVORITE_ID, type CardTag } from "@arkham-build/shared";
-import { HeartIcon, PlusIcon } from "lucide-react";
+import {
+  CARD_TAG_FAVORITE_ID,
+  CARD_TAG_NAME_MAX_LENGTH,
+  type CardTag,
+} from "@arkham-build/shared";
+import { HeartIcon, PlusIcon, Settings2Icon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
@@ -12,14 +16,24 @@ import {
 } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { cx } from "@/utils/cx";
+import { isEmpty } from "@/utils/is-empty";
 import { Button } from "../ui/button";
 import { Combobox } from "../ui/combobox/combobox";
 import { ResultTag } from "../ui/combobox/combobox-results";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { Field, FieldLabel } from "../ui/field";
+import {
+  DefaultModalContent,
+  Modal,
+  ModalActions,
+  ModalBackdrop,
+  ModalInner,
+} from "../ui/modal";
+import { useToast } from "../ui/toast.hooks";
 import css from "./card-tag-controls.module.css";
 
 type Props = {
   cardCode: string;
-  renderResult?: (tag: CardTag, onRemove?: () => void) => React.ReactNode;
   showFavorite?: boolean;
   showTags?: boolean;
 };
@@ -42,16 +56,18 @@ const EMPTY_TAG_IDS: string[] = [];
 
 export function CardTagControls({
   cardCode,
-  renderResult,
   showFavorite = true,
   showTags = true,
 }: Props) {
   const { i18n, t } = useTranslation();
   const saveCardTags = useSaveCardTagsMutation();
+  const toast = useToast();
 
   const tagCard = useStore((state) => state.tagCard);
   const untagCard = useStore((state) => state.untagCard);
   const createCardTag = useStore((state) => state.createCardTag);
+  const deleteCardTag = useStore((state) => state.deleteCardTag);
+  const renameCardTag = useStore((state) => state.renameCardTag);
   const toggleFavorite = useStore((state) => state.toggleFavorite);
 
   const {
@@ -72,9 +88,35 @@ export function CardTagControls({
     [authenticated, saveCardTags],
   );
 
+  const onError = useCallback(
+    (err: unknown) => {
+      console.error(err);
+      toast.show({
+        children: t("card_tags.manage.error", {
+          error:
+            err instanceof Error
+              ? err.message
+              : t("card_tags.manage.unknown_error"),
+        }),
+        variant: "error",
+      });
+    },
+    [t, toast],
+  );
+
   const onToggleFavorite = useCallback(() => {
-    void persist(() => toggleFavorite(cardCode)).catch(console.error);
-  }, [cardCode, persist, toggleFavorite]);
+    void persist(() => toggleFavorite(cardCode)).catch(onError);
+  }, [cardCode, onError, persist, toggleFavorite]);
+
+  const onRenameTag = useCallback(
+    (id: string, name: string) => persist(() => renameCardTag(id, name)),
+    [persist, renameCardTag],
+  );
+
+  const onDeleteTag = useCallback(
+    (id: string) => persist(() => deleteCardTag(id)),
+    [deleteCardTag, persist],
+  );
 
   const onTagsChange = useCallback(
     (nextItems: TagOption[]) => {
@@ -84,7 +126,7 @@ export function CardTagControls({
         void persist(async () => {
           const tagId = await createCardTag(createItem.name);
           await tagCard(cardCode, tagId);
-        }).catch(console.error);
+        }).catch(onError);
         return;
       }
 
@@ -106,9 +148,17 @@ export function CardTagControls({
             await tagCard(cardCode, tagId);
           }
         }
-      }).catch(console.error);
+      }).catch(onError);
     },
-    [selectedTagIdSet, cardCode, createCardTag, persist, tagCard, untagCard],
+    [
+      selectedTagIdSet,
+      cardCode,
+      createCardTag,
+      onError,
+      persist,
+      tagCard,
+      untagCard,
+    ],
   );
 
   const createItem = useCallback(
@@ -139,31 +189,39 @@ export function CardTagControls({
         <FavoriteButton isFavorite={isFavorite} onClick={onToggleFavorite} />
       )}
       {showTags && (
-        <Combobox
-          className={css["combobox"]}
-          createItem={createItem}
-          id={`card-tags-${cardCode}`}
-          itemToString={tagOptionToString}
-          items={tagOptions}
-          label={t("card_tags.title")}
-          locale={i18n.language}
-          onValueChange={onTagsChange}
-          placeholder={t("card_tags.placeholder")}
-          renderItem={(item) =>
-            item.kind === "tag" ? (
-              item.tag.name
-            ) : (
-              <>
-                <PlusIcon />
-                {t("card_tags.create_named", { name: item.name })}
-              </>
-            )
-          }
-          renderResult={(item, onRemove) =>
-            renderTagResult(item, onRemove, renderResult)
-          }
-          selectedItems={selectedItems}
-        />
+        <div className={css["tags"]}>
+          <Combobox
+            className={css["combobox"]}
+            createItem={createItem}
+            id={`card-tags-${cardCode}`}
+            itemToString={tagOptionToString}
+            items={tagOptions}
+            label={t("card_tags.title")}
+            locale={i18n.language}
+            onValueChange={onTagsChange}
+            placeholder={t("card_tags.placeholder")}
+            renderItem={(item) =>
+              item.kind === "tag" ? (
+                item.tag.name
+              ) : (
+                <>
+                  <PlusIcon />
+                  {t("card_tags.create_named", { name: item.name })}
+                </>
+              )
+            }
+            renderResult={renderTagResult}
+            selectedItems={selectedItems}
+          />
+          {!isEmpty(tagOptions) && (
+            <CardTagManager
+              onDelete={onDeleteTag}
+              onError={onError}
+              onRename={onRenameTag}
+              tags={tagOptions.map((item) => item.tag)}
+            />
+          )}
+        </div>
       )}
     </div>
   );
@@ -187,6 +245,90 @@ function FavoriteButton({
       <HeartIcon className={css["favorite-icon"]} />
       {t("card_tags.favorite")}
     </Button>
+  );
+}
+
+function CardTagManager({
+  onDelete,
+  onError,
+  onRename,
+  tags,
+}: {
+  onDelete: (id: string) => Promise<void>;
+  onError: (err: unknown) => void;
+  onRename: (id: string, name: string) => Promise<void>;
+  tags: CardTag[];
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          aria-label={t("card_tags.manage.action")}
+          className={css["manager-trigger"]}
+          iconOnly
+          size="xs"
+          tooltip={t("card_tags.manage.action")}
+          type="button"
+          variant="bare"
+        >
+          <Settings2Icon />
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <Modal>
+          <ModalInner size="32rem">
+            <ModalActions />
+            <DefaultModalContent title={t("card_tags.manage.title")}>
+              <div className={css["manager-list"]}>
+                {tags.map((tag) => (
+                  <form
+                    className={css["manager-row"]}
+                    key={`${tag.id}:${tag.name}`}
+                    onSubmit={(evt) => {
+                      evt.preventDefault();
+                      const name = new FormData(evt.currentTarget).get("name");
+                      if (typeof name !== "string") return;
+                      void onRename(tag.id, name).catch(onError);
+                    }}
+                  >
+                    <Field className={css["manager-field"]} full>
+                      <FieldLabel
+                        className="sr-only"
+                        htmlFor={`card-tag-${tag.id}`}
+                      >
+                        {t("card_tags.manage.name")}
+                      </FieldLabel>
+                      <input
+                        defaultValue={tag.name}
+                        id={`card-tag-${tag.id}`}
+                        maxLength={CARD_TAG_NAME_MAX_LENGTH}
+                        name="name"
+                        required
+                      />
+                    </Field>
+                    <Button type="submit" variant="secondary">
+                      {t("card_tags.manage.save")}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        void onDelete(tag.id).catch(onError);
+                      }}
+                      type="button"
+                      variant="danger"
+                    >
+                      {t("card_tags.manage.delete")}
+                    </Button>
+                  </form>
+                ))}
+              </div>
+            </DefaultModalContent>
+          </ModalInner>
+        </Modal>
+        <ModalBackdrop />
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -216,7 +358,7 @@ const selectCardTagControlsState = createSelector(
       selectedTagIdSet: new Set(selectedItems.map((item) => item.tag.id)),
       tagOptions: Object.values(tags)
         .sort((a, b) => collator.compare(a.name, b.name))
-        .map<TagOption>((tag) => ({
+        .map<TagItem>((tag) => ({
           code: tag.id,
           kind: "tag",
           tag,
@@ -229,18 +371,14 @@ function tagOptionToString(item: TagOption) {
   return item.kind === "tag" ? item.tag.name : item.name;
 }
 
-function renderTagResult(
-  item: TagOption,
-  onRemove: (() => void) | undefined,
-  renderResult: Props["renderResult"],
-) {
+function renderTagResult(item: TagOption, onRemove: (() => void) | undefined) {
   if (item.kind === "tag") {
-    return renderResult ? (
-      renderResult(item.tag, onRemove)
-    ) : (
+    return (
       <ResultTag
+        className={css["tag-result"]}
         data-testid={`combobox-result-${item.tag.id}`}
         onRemove={onRemove}
+        size="sm"
       >
         {item.tag.name}
       </ResultTag>
@@ -248,7 +386,12 @@ function renderTagResult(
   }
 
   return (
-    <ResultTag data-testid={`combobox-result-${item.code}`} onRemove={onRemove}>
+    <ResultTag
+      className={css["tag-result"]}
+      data-testid={`combobox-result-${item.code}`}
+      onRemove={onRemove}
+      size="sm"
+    >
       {item.name}
     </ResultTag>
   );

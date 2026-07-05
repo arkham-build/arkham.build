@@ -207,6 +207,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       switch (filterValues[id].type) {
         case "illustrator":
         case "action":
+        case "card_tags":
         case "cycle":
         case "encounter_set":
         case "trait":
@@ -842,6 +843,7 @@ function makeFilterValue(
     case "illustrator":
     case "investigator_card_access":
     case "action":
+    case "card_tags":
     case "cycle":
     case "encounter_set":
     case "pack":
@@ -1013,6 +1015,7 @@ function investigatorFilters({
   }
 
   filters.push(
+    "card_tags",
     "fan_made_content",
     "pack",
     "investigator_card_access",
@@ -1043,7 +1046,7 @@ function cardsFilters({
     filters.push("ownership");
   }
 
-  filters.push("fan_made_content");
+  filters.push("card_tags", "fan_made_content");
 
   if (showInvestigatorsFilter) {
     filters.push("investigator");

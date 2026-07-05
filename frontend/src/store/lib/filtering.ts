@@ -1,6 +1,7 @@
 import {
   type AttributeFilter,
   type Card,
+  type CardTagsState,
   type Collection,
   cardLevel,
   type DeckOption,
@@ -42,6 +43,7 @@ import type { Metadata } from "../slices/metadata.types";
 import type { Interpreter } from "./buildql/interpreter";
 import { parse } from "./buildql/parser";
 import { type CardOwnershipOptions, ownedCardCount } from "./card-ownership";
+import { resolveCardTagCardCode } from "./card-tags";
 import type { LookupTables } from "./lookup-tables.types";
 import type { ResolvedDeck, Selections } from "./types";
 import { isOptionSelect } from "./types";
@@ -200,6 +202,27 @@ export function filterAttribute(attributeFilter: AttributeFilter) {
       default:
         return false;
     }
+  };
+}
+
+/**
+ * Card Tags
+ */
+
+export function filterCardTags(
+  value: MultiselectFilter,
+  cardTags: CardTagsState["cardTags"],
+  metadata: Metadata,
+  fronts: LookupTables["relations"]["fronts"],
+) {
+  if (!value.length) return undefined;
+
+  const tagIds = new Set(value);
+
+  return (card: Card) => {
+    const canonicalCode = resolveCardTagCardCode(metadata, fronts, card.code);
+    const assignedTagIds = cardTags[canonicalCode];
+    return assignedTagIds?.some((tagId) => tagIds.has(tagId)) ?? false;
   };
 }
 

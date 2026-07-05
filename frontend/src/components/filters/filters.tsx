@@ -18,6 +18,7 @@ import { HotkeyTooltip } from "../ui/hotkey";
 import { Scroller } from "../ui/scroller";
 import { ActionFilter } from "./action-filter";
 import { AssetFilter } from "./asset-filter";
+import { CardTagsFilter } from "./card-tags-filter";
 import { CardTypeFilter } from "./card-type-filter";
 import { CostFilter } from "./cost-filter";
 import { CycleFilter } from "./cycle-filter";
@@ -128,6 +129,7 @@ export function Filters(props: Props) {
               <Fragment key={id}>
                 {filter === "action" && <ActionFilter {...params} />}
                 {filter === "asset" && <AssetFilter {...params} />}
+                {filter === "card_tags" && <CardTagsFilter {...params} />}
                 {filter === "card_type" && (
                   <CardTypeFilter
                     className={css["card-type-filter"]}

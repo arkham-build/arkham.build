@@ -113,3 +113,7 @@
   list-style: none;
   padding: 0;
 }
+
+.result-remove {
+  flex: 0 0 auto;
+}

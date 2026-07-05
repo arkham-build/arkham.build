@@ -27,11 +27,15 @@
   align-items: flex-start;
   gap: 0.75rem;
   flex-flow: row wrap;
-  min-width: 12rem;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
 
   @media screen and (min-width: 38rem) {
     order: 2;
+    flex: 0 0 12rem;
     flex-flow: column nowrap;
+    width: 12rem;
   }
 }
 
@@ -90,12 +94,6 @@
 
 .neighbour-nav > * {
   flex: 1 1 auto;
-}
-
-.tag-result {
-  justify-content: space-between;
-  min-width: 12rem;
-  padding-block: 0.5rem;
 }
 
 .sidebar-actions {

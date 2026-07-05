@@ -36,9 +36,9 @@ import { Customizations } from "../customizations/customizations";
 import { CustomizationsEditor } from "../customizations/customizations-editor";
 import { AttachableCards } from "../deck-tools/attachable-cards";
 import { CardPoolExtension } from "../limited-card-pool/card-pool-extension";
+import { TitledContainer } from "../related-card-container";
 import { useResolvedDeck } from "../resolved-deck-context";
 import { Button } from "../ui/button";
-import { ResultTag } from "../ui/combobox/combobox-results";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { HotkeyTooltip } from "../ui/hotkey";
 import { Modal, ModalActions, ModalBackdrop, ModalInner } from "../ui/modal";
@@ -106,6 +106,7 @@ export function CardModal(props: Props) {
   }, [completeTask, ctx.resolvedDeck, cardWithRelations?.card, openCardModal]);
 
   const canRenderFull = useMedia("(min-width: 45rem)");
+  const useSidebarLayout = useMedia("(min-width: 38rem)");
 
   const handlePrintingSelect = useCallback(
     (card: CardT) => {
@@ -131,66 +132,69 @@ export function CardModal(props: Props) {
   const annotation = ctx.resolvedDeck?.annotations[cardWithRelations.card.code];
 
   const cardNode = (
-    <>
-      <Card
-        className={cx(css["card"], css["shadow"])}
-        resolvedCard={cardWithRelations}
-        onPrintingSelect={handlePrintingSelect}
-        size={canRenderFull ? "full" : "compact"}
-        titleLinks="card"
-        slotCardFooter={
-          <>
-            {ctx.resolvedDeck &&
-              canShowCardPoolExtension(cardWithRelations.card) && (
-                <div className={css["related"]}>
-                  <CardPoolExtension
-                    canEdit={canEdit}
-                    card={cardWithRelations.card}
-                    deck={ctx.resolvedDeck}
-                    showLabel
-                  />
-                </div>
-              )}
+    <Card
+      className={cx(css["card"], css["shadow"])}
+      resolvedCard={cardWithRelations}
+      onPrintingSelect={handlePrintingSelect}
+      size={canRenderFull ? "full" : "compact"}
+      titleLinks="card"
+      slotCardFooter={
+        <>
+          {ctx.resolvedDeck &&
+            canShowCardPoolExtension(cardWithRelations.card) && (
+              <div className={css["related"]}>
+                <CardPoolExtension
+                  canEdit={canEdit}
+                  card={cardWithRelations.card}
+                  deck={ctx.resolvedDeck}
+                  showLabel
+                />
+              </div>
+            )}
 
-            {!!ctx.resolvedDeck &&
-              (canEdit ? (
+          {!!ctx.resolvedDeck &&
+            (canEdit ? (
+              <div className={css["related"]}>
+                <AnnotationEdit
+                  cardCode={cardWithRelations.card.code}
+                  deckId={ctx.resolvedDeck.id}
+                  text={annotation}
+                />
+              </div>
+            ) : (
+              annotation && (
                 <div className={css["related"]}>
-                  <AnnotationEdit
-                    cardCode={cardWithRelations.card.code}
-                    deckId={ctx.resolvedDeck.id}
-                    text={annotation}
-                  />
+                  <Annotation content={annotation} />
                 </div>
-              ) : (
-                annotation && (
-                  <div className={css["related"]}>
-                    <Annotation content={annotation} />
-                  </div>
-                )
-              ))}
-          </>
-        }
-      >
-        {ctx.resolvedDeck && !!attachableDefinition && (
-          <AttachableCards
+              )
+            ))}
+        </>
+      }
+    >
+      {ctx.resolvedDeck && !!attachableDefinition && (
+        <AttachableCards
+          card={cardWithRelations.card}
+          definition={attachableDefinition}
+          readonly={!canEdit}
+          resolvedDeck={ctx.resolvedDeck}
+        />
+      )}
+      {cardWithRelations.card.customization_options ? (
+        ctx.resolvedDeck ? (
+          <CustomizationsEditor
+            canEdit={canEdit}
             card={cardWithRelations.card}
-            definition={attachableDefinition}
-            readonly={!canEdit}
-            resolvedDeck={ctx.resolvedDeck}
+            deck={ctx.resolvedDeck}
           />
-        )}
-        {cardWithRelations.card.customization_options ? (
-          ctx.resolvedDeck ? (
-            <CustomizationsEditor
-              canEdit={canEdit}
-              card={cardWithRelations.card}
-              deck={ctx.resolvedDeck}
-            />
-          ) : (
-            <Customizations card={cardWithRelations.card} />
-          )
-        ) : undefined}
-      </Card>
+        ) : (
+          <Customizations card={cardWithRelations.card} />
+        )
+      ) : undefined}
+    </Card>
+  );
+
+  const relationsNode = (
+    <>
       {cardWithRelations.card.encounter_code && (
         <div className={css["related"]}>
           <CardScenarios card={cardWithRelations.card} />
@@ -273,7 +277,21 @@ export function CardModal(props: Props) {
             )}
         </ModalActions>
         <div className={css["container"]}>
-          <div className={css["card"]}>{cardNode}</div>
+          <div className={css["card"]}>
+            {cardNode}
+            {!useSidebarLayout && (
+              <TitledContainer
+                className={cx(css["related"], css["shadow"])}
+                titleNode={<h2>{t("card_tags.title")}</h2>}
+              >
+                <CardTagControls
+                  cardCode={cardWithRelations.card.code}
+                  showFavorite={false}
+                />
+              </TitledContainer>
+            )}
+            {relationsNode}
+          </div>
           <div
             className={css["quantities"]}
             onClick={onClickBackdrop}
@@ -302,18 +320,8 @@ export function CardModal(props: Props) {
               )}
             <CardTagControls
               cardCode={cardWithRelations.card.code}
-              renderResult={(tag, onRemove) => (
-                <ResultTag
-                  className={css["tag-result"]}
-                  data-testid={`combobox-result-${tag.id}`}
-                  onRemove={onRemove}
-                  size="sm"
-                >
-                  {tag.name}
-                </ResultTag>
-              )}
+              showTags={useSidebarLayout}
             />
-
             {showQuantities && (
               <CardModalQuantities
                 canEdit={canEdit}

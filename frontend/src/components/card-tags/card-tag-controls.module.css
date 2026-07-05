@@ -12,6 +12,46 @@
   fill: var(--survivor);
 }
 
+.tags {
+  display: grid;
+  gap: 0.125rem;
+  width: 100%;
+}
+
 .combobox {
+  width: 100%;
+}
+
+.manager-trigger {
+  justify-self: end;
+}
+
+.tag-result {
+  box-sizing: border-box;
+  justify-content: space-between;
+  line-height: 1.45;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  padding: 0.5rem 0.75rem;
+  width: 12rem;
+}
+
+.manager-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.manager-row {
+  display: grid;
+  align-items: center;
+  gap: 0.375rem;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.manager-field {
+  min-width: 0;
+}
+
+.manager-field input {
   width: 100%;
 }
