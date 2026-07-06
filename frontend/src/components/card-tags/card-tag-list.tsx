@@ -1,12 +1,12 @@
 import type { Card } from "@arkham-build/shared";
 import { HeartIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import type { TagItem } from "@/store/selectors/card-tags";
 import { cx } from "@/utils/cx";
 import { useAccentColor } from "@/utils/use-accent-color";
 import { Tag } from "../ui/tag";
 import { CardTagLabel } from "./card-tag-label";
 import css from "./card-tag-list.module.css";
-import type { TagItem } from "./use-card-tags";
 
 type Props = {
   card: Card;

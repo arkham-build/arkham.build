@@ -3,6 +3,7 @@ import { PlusIcon, Settings2Icon } from "lucide-react";
 import { useId, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
+import type { TagItem } from "@/store/selectors/card-tags";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { useResolvedDeck } from "../resolved-deck-context";
@@ -20,7 +21,7 @@ import {
 } from "../ui/modal";
 import { CardTagLabel } from "./card-tag-label";
 import css from "./card-tags.module.css";
-import { type TagItem, useCardTags, useDeckCardTags } from "./use-card-tags";
+import { useCardTags, useDeckCardTags } from "./use-card-tags";
 
 type Props = {
   cardCode: string;
@@ -161,8 +162,7 @@ function CardTagCombobox({
 }
 
 export function CardTagManager({ cardCode }: { cardCode: string }) {
-  const { onRenameTag, onDeleteTag, onError, tagOptions } =
-    useCardTags(cardCode);
+  const { onRenameTag, onDeleteTag, tagOptions } = useCardTags(cardCode);
 
   const { t } = useTranslation();
   const formId = useId();
@@ -201,7 +201,7 @@ export function CardTagManager({ cardCode }: { cardCode: string }) {
                           "name",
                         );
                         if (typeof name !== "string") return;
-                        void onRenameTag(tag, name).catch(onError);
+                        onRenameTag(tag, name);
                       }}
                     >
                       <Field className={css["manager-field"]} full>
@@ -221,7 +221,7 @@ export function CardTagManager({ cardCode }: { cardCode: string }) {
                       </Button>
                       <Button
                         onClick={() => {
-                          void onDeleteTag(tag).catch(onError);
+                          onDeleteTag(tag);
                         }}
                         type="button"
                         variant="danger"

@@ -4,6 +4,7 @@ import {
   CARD_TAG_FAVORITE_ID,
   FACTION_ORDER,
   type FactionName,
+  normalizeCardTagName,
   SKILL_KEYS,
   type SkillKey,
   SPECIAL_CARD_CODES,
@@ -37,7 +38,6 @@ import {
   getCardTagFilterCode,
   getCardTagNameFromFilterCode,
   mergeCardTagNames,
-  normalizeCardTagName,
   resolveCardTagCardCode,
 } from "../lib/card-tags";
 import { getAdditionalDeckOptions } from "../lib/deck-validation";

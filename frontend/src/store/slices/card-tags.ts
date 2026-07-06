@@ -1,11 +1,10 @@
-import { CardTagSchema } from "@arkham-build/shared";
+import { CardTagSchema, normalizeCardTagName } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import {
   canonicalizeCardTagsState,
   getEmptyCardTagsState,
   isKnownCardTagName,
-  normalizeCardTagName,
   resolveCardTagCardCode,
 } from "../lib/card-tags";
 import { dehydrate } from "../persist";

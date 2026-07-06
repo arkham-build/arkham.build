@@ -6,6 +6,7 @@ import {
   type Collection,
   cardLevel,
   type DeckOption,
+  normalizeCardTagName,
   realCardLevel,
   type SealedDeckResponse,
   SKILL_KEYS,
@@ -46,7 +47,6 @@ import { parse } from "./buildql/parser";
 import { type CardOwnershipOptions, ownedCardCount } from "./card-ownership";
 import {
   getCardTagNameFromFilterCode,
-  normalizeCardTagName,
   resolveCardTagCardCode,
 } from "./card-tags";
 import type { LookupTables } from "./lookup-tables.types";

@@ -1,28 +1,16 @@
-import { type CardTag, normalizeCardTagName } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { createSelector } from "reselect";
 import { useSaveCardTagsMutation } from "@/queries/mutations/card-tags";
 import { useStore } from "@/store";
-import {
-  mergeCardTagNames,
-  resolveCardTagCardCode,
-} from "@/store/lib/card-tags";
 import type { ResolvedDeck } from "@/store/lib/types";
 import {
-  selectLocaleSortingCollator,
-  selectLookupTables,
-} from "@/store/selectors/shared";
-import type { StoreState } from "@/store/slices";
+  selectCardFavoriteState,
+  selectCardTagDisplayState,
+  selectCardTagsState,
+  selectDeckCardTagsState,
+  type TagItem,
+} from "@/store/selectors/card-tags";
 import { useToast } from "../ui/toast.hooks";
-
-export type TagItem = {
-  code: string;
-  global?: boolean;
-  tag: CardTag;
-};
-
-const EMPTY_TAG_NAMES: string[] = [];
 
 export function useCardTagDisplay(
   cardCode: string,
@@ -37,11 +25,11 @@ export function useCardFavorite(cardCode: string) {
   );
   const toggleFavorite = useStore((state) => state.toggleFavorite);
   const persist = usePersistCardTags();
-  const onError = useCardTagsError();
+  const run = useCardTagAction();
 
   const onToggleFavorite = useCallback(() => {
-    void persist(() => toggleFavorite(cardCode)).catch(onError);
-  }, [cardCode, onError, persist, toggleFavorite]);
+    run(() => persist(() => toggleFavorite(cardCode)));
+  }, [cardCode, persist, run, toggleFavorite]);
 
   return {
     isFavorite,
@@ -58,41 +46,38 @@ export function useCardTags(cardCode: string) {
     selectCardTagsState(state, cardCode),
   );
   const persist = usePersistCardTags();
-  const onError = useCardTagsError();
+  const run = useCardTagAction();
 
   const onRenameTag = useCallback(
     (name: string, nextName: string) =>
-      persist(() => renameCardTag(name, nextName)),
-    [persist, renameCardTag],
+      run(() => persist(() => renameCardTag(name, nextName))),
+    [persist, renameCardTag, run],
   );
 
   const onDeleteTag = useCallback(
-    (name: string) => persist(() => deleteCardTag(name)),
-    [deleteCardTag, persist],
+    (name: string) => run(() => persist(() => deleteCardTag(name))),
+    [deleteCardTag, persist, run],
   );
 
   const onTagsChange = useCallback(
     (nextItems: TagItem[]) => {
       const nextTagNames = nextItems.map((item) => item.tag);
 
-      void persist(() => setCardTagsForCard(cardCode, nextTagNames)).catch(
-        onError,
-      );
+      run(() => persist(() => setCardTagsForCard(cardCode, nextTagNames)));
     },
-    [cardCode, onError, persist, setCardTagsForCard],
+    [cardCode, persist, run, setCardTagsForCard],
   );
 
   const onCreateTag = useCallback(
     (name: string) => {
-      void persist(() => createCardTagForCard(cardCode, name)).catch(onError);
+      run(() => persist(() => createCardTagForCard(cardCode, name)));
     },
-    [cardCode, createCardTagForCard, onError, persist],
+    [cardCode, createCardTagForCard, persist, run],
   );
 
   return {
     onCreateTag,
     onDeleteTag,
-    onError,
     onRenameTag,
     onTagsChange,
     selectedItems,
@@ -105,35 +90,31 @@ export function useDeckCardTags(cardCode: string, deck: ResolvedDeck) {
   const { selectedItems, tagOptions } = useStore((state) =>
     selectDeckCardTagsState(state, cardCode, deck),
   );
-  const onError = useCardTagsError();
+  const run = useCardTagAction();
 
   const onTagsChange = useCallback(
     (nextItems: TagItem[]) => {
-      try {
+      run(() =>
         updateDeckCardTags(
           deck.id,
           cardCode,
           nextItems.map((item) => item.tag),
-        );
-      } catch (err) {
-        onError(err);
-      }
+        ),
+      );
     },
-    [cardCode, deck.id, onError, updateDeckCardTags],
+    [cardCode, deck.id, run, updateDeckCardTags],
   );
 
   const onCreateTag = useCallback(
     (name: string) => {
-      try {
+      run(() =>
         updateDeckCardTags(deck.id, cardCode, [
           ...selectedItems.map((item) => item.tag),
           name,
-        ]);
-      } catch (err) {
-        onError(err);
-      }
+        ]),
+      );
     },
-    [cardCode, deck.id, onError, selectedItems, updateDeckCardTags],
+    [cardCode, deck.id, run, selectedItems, updateDeckCardTags],
   );
 
   return {
@@ -142,6 +123,21 @@ export function useDeckCardTags(cardCode: string, deck: ResolvedDeck) {
     selectedItems,
     tagOptions,
   };
+}
+
+function useCardTagAction() {
+  const onError = useCardTagsError();
+
+  return useCallback(
+    (action: () => unknown) => {
+      try {
+        void Promise.resolve(action()).catch(onError);
+      } catch (err) {
+        onError(err);
+      }
+    },
+    [onError],
+  );
 }
 
 function usePersistCardTags() {
@@ -180,100 +176,4 @@ function useCardTagsError() {
     },
     [t, toast],
   );
-}
-
-const selectCanonicalCardTagCode = createSelector(
-  (state: StoreState) => state.metadata,
-  (state: StoreState) => selectLookupTables(state).relations.fronts,
-  (_: StoreState, cardCode: string) => cardCode,
-  resolveCardTagCardCode,
-);
-
-const selectCardFavoriteState = createSelector(
-  (state: StoreState) => state.cardTags.favorites,
-  selectCanonicalCardTagCode,
-  (favorites, canonicalCode) => favorites[canonicalCode] === true,
-);
-
-const selectAccountCardTagNamesForCard = createSelector(
-  (state: StoreState) => state.cardTags.cardTags,
-  selectCanonicalCardTagCode,
-  (cardTags, canonicalCode) => cardTags[canonicalCode] ?? EMPTY_TAG_NAMES,
-);
-
-const selectCardTagsState = createSelector(
-  selectAccountCardTagNamesForCard,
-  (state: StoreState) => state.cardTags.tags,
-  selectLocaleSortingCollator,
-  (assignedTagNames, tags, collator) => ({
-    selectedItems: assignedTagNames.map(tagNameToAccountItem),
-    tagOptions: tags
-      .toSorted((a, b) => collator.compare(a, b))
-      .map(tagNameToAccountItem),
-  }),
-);
-
-const selectDeckCardTagsForCard = createSelector(
-  selectCanonicalCardTagCode,
-  (_: StoreState, __: string, deck: ResolvedDeck | undefined) =>
-    deck?.deckCardTags,
-  (canonicalCode, deckCardTags) =>
-    deckCardTags?.[canonicalCode] ?? EMPTY_TAG_NAMES,
-);
-
-const selectDeckCardTagsState = createSelector(
-  (state: StoreState) => state.cardTags.tags,
-  (_: StoreState, __: string, deck: ResolvedDeck) => deck.deckCardTags,
-  selectDeckCardTagsForCard,
-  selectLocaleSortingCollator,
-  (accountTagNames, deckCardTags, assignedTagNames, collator) => {
-    const deckTagNames = Object.values(deckCardTags).flat();
-
-    return {
-      selectedItems: assignedTagNames.map(tagNameToDeckItem),
-      tagOptions: mergeTagItems({
-        accountTagNames,
-        deckTagNames,
-      }).toSorted((a, b) => collator.compare(a.tag, b.tag)),
-    };
-  },
-);
-
-const selectCardTagDisplayState = createSelector(
-  selectCardFavoriteState,
-  selectAccountCardTagNamesForCard,
-  selectDeckCardTagsForCard,
-  (isFavorite, accountTagNames, deckTagNames) => ({
-    isFavorite,
-    selectedItems: mergeTagItems({
-      accountTagNames,
-      deckTagNames,
-    }),
-  }),
-);
-
-function mergeTagItems({
-  accountTagNames,
-  deckTagNames,
-}: {
-  accountTagNames: CardTag[];
-  deckTagNames: CardTag[];
-}) {
-  const deckCodes = new Set(deckTagNames.map(normalizeCardTagName));
-
-  return mergeCardTagNames(deckTagNames, accountTagNames).map((tagName) => {
-    const code = normalizeCardTagName(tagName);
-
-    return deckCodes.has(code)
-      ? { code, tag: tagName }
-      : { code, global: true, tag: tagName };
-  });
-}
-
-function tagNameToAccountItem(tag: CardTag): TagItem {
-  return { code: tag, global: true, tag };
-}
-
-function tagNameToDeckItem(tag: CardTag): TagItem {
-  return { code: normalizeCardTagName(tag), tag };
 }
