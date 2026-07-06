@@ -1,11 +1,11 @@
-import type { CardTag } from "@arkham-build/shared";
+import { type CardTag, normalizeCardTagName } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useSaveCardTagsMutation } from "@/queries/mutations/card-tags";
 import { useStore } from "@/store";
 import {
-  normalizeCardTagName,
+  mergeCardTagNames,
   resolveCardTagCardCode,
 } from "@/store/lib/card-tags";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -259,26 +259,15 @@ function mergeTagItems({
   accountTagNames: CardTag[];
   deckTagNames: CardTag[];
 }) {
-  const result: TagItem[] = [];
-  const seen = new Set<string>();
+  const deckCodes = new Set(deckTagNames.map(normalizeCardTagName));
 
-  for (const tagName of deckTagNames) {
-    const normalizedName = normalizeCardTagName(tagName);
-    if (!normalizedName || seen.has(normalizedName)) continue;
+  return mergeCardTagNames(deckTagNames, accountTagNames).map((tagName) => {
+    const code = normalizeCardTagName(tagName);
 
-    seen.add(normalizedName);
-    result.push(tagNameToDeckItem(tagName));
-  }
-
-  for (const tagName of accountTagNames) {
-    const normalizedName = normalizeCardTagName(tagName);
-    if (!normalizedName || seen.has(normalizedName)) continue;
-
-    seen.add(normalizedName);
-    result.push({ code: normalizedName, global: true, tag: tagName });
-  }
-
-  return result;
+    return deckCodes.has(code)
+      ? { code, tag: tagName }
+      : { code, global: true, tag: tagName };
+  });
 }
 
 function tagNameToAccountItem(tag: CardTag): TagItem {

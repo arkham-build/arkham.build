@@ -47,6 +47,7 @@ export {
   CardTagsSyncRequestSchema,
   type CardTagsSyncResponse,
   CardTagsSyncResponseSchema,
+  normalizeCardTagName,
 } from "./dtos/card-tags.schema.ts";
 export {
   type DateRange,

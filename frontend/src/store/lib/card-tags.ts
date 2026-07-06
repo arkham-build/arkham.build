@@ -1,4 +1,8 @@
-import type { CardTagsState } from "@arkham-build/shared";
+import {
+  CardTagSchema,
+  type CardTagsState,
+  normalizeCardTagName,
+} from "@arkham-build/shared";
 import type { Metadata } from "../slices/metadata.types";
 import type { LookupTables } from "./lookup-tables.types";
 
@@ -96,8 +100,20 @@ export function isKnownCardTagName(
   return tags.includes(name);
 }
 
-export function normalizeCardTagName(name: string): string {
-  return name.trim().toLowerCase();
+export function parseCardTagNames(tagNames: string[]) {
+  const result: string[] = [];
+  const seen = new Set<string>();
+
+  for (const name of tagNames) {
+    const tagName = CardTagSchema.parse(name);
+    const normalizedName = normalizeCardTagName(tagName);
+    if (seen.has(normalizedName)) continue;
+
+    seen.add(normalizedName);
+    result.push(tagName);
+  }
+
+  return result;
 }
 
 export function mergeCardTagNames(

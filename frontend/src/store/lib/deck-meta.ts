@@ -10,7 +10,7 @@ import { z } from "zod";
 import type { AttachmentQuantities } from "@/store/slices/deck-edits.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { range } from "@/utils/range";
-import { normalizeCardTagName } from "./card-tags";
+import { parseCardTagNames } from "./card-tags";
 import type {
   Annotations,
   CardWithRelations,
@@ -328,27 +328,11 @@ function normalizeDeckCardTags(deckCardTags: Record<string, string[]>) {
 
   for (const [cardCode, tagNames] of Object.entries(deckCardTags)) {
     const parsedCardCode = z.string().min(1).max(255).parse(cardCode);
-    const parsedTagNames = parseDeckCardTagNames(tagNames);
+    const parsedTagNames = parseCardTagNames(tagNames);
 
     if (parsedTagNames.length) {
       result[parsedCardCode] = parsedTagNames;
     }
-  }
-
-  return result;
-}
-
-function parseDeckCardTagNames(tagNames: string[]) {
-  const result: string[] = [];
-  const seen = new Set<string>();
-
-  for (const name of tagNames) {
-    const tagName = CardTagSchema.parse(name);
-    const normalizedName = normalizeCardTagName(tagName);
-    if (seen.has(normalizedName)) continue;
-
-    seen.add(normalizedName);
-    result.push(tagName);
   }
 
   return result;

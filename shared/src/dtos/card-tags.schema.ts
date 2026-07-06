@@ -61,7 +61,7 @@ function validateCardTagsState(
   }
 }
 
-function normalizeCardTagName(name: string): string {
+export function normalizeCardTagName(name: string): string {
   return name.trim().toLowerCase();
 }
 
