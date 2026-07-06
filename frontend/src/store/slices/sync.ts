@@ -138,7 +138,14 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       get().clearAccountState();
     }
 
-    await get().loadRemoteSettings(client);
+    const settingsResults = await Promise.allSettled([
+      get().loadRemoteSettings(client),
+    ]);
+
+    if (!isCurrentAccount(get(), accountId)) {
+      throwRejectedSyncResults(settingsResults);
+      return;
+    }
 
     const remoteStateTasks = [
       get().loadRemoteFolders(client),
@@ -148,7 +155,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     startBootstrapTask(get().syncDecks(client, opts));
 
     const results = await Promise.allSettled(remoteStateTasks);
-    throwRejectedSyncResults(results);
+    throwRejectedSyncResults([...settingsResults, ...results]);
   },
 
   clearAccountState(auth?: AuthState) {
