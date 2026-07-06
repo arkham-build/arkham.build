@@ -38,6 +38,20 @@ export const createCardTagsSlice: StateCreator<
     await dehydrate(get(), "app");
   },
 
+  async createCardTag(name) {
+    const tagName = createCardTagName(get().cardTags.tags, name);
+
+    set((state) => ({
+      cardTags: {
+        ...state.cardTags,
+        tags: [...state.cardTags.tags, tagName],
+      },
+    }));
+
+    await dehydrate(get(), "app");
+    return tagName;
+  },
+
   async createCardTagForCard(cardCode, name) {
     const state = get();
     const tagName = createCardTagName(state.cardTags.tags, name);

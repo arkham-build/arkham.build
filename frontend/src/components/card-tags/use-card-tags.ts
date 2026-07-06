@@ -86,7 +86,9 @@ export function useCardTags(cardCode: string) {
 }
 
 export function useDeckCardTags(cardCode: string, deck: ResolvedDeck) {
+  const createCardTag = useStore((state) => state.createCardTag);
   const updateDeckCardTags = useStore((state) => state.updateDeckCardTags);
+  const persist = usePersistCardTags();
   const { selectedItems, tagOptions } = useStore((state) =>
     selectDeckCardTagsState(state, cardCode, deck),
   );
@@ -108,13 +110,24 @@ export function useDeckCardTags(cardCode: string, deck: ResolvedDeck) {
   const onCreateTag = useCallback(
     (name: string) => {
       run(() =>
-        updateDeckCardTags(deck.id, cardCode, [
-          ...selectedItems.map((item) => item.tag),
-          name,
-        ]),
+        persist(async () => {
+          const tagName = await createCardTag(name);
+          updateDeckCardTags(deck.id, cardCode, [
+            ...selectedItems.map((item) => item.tag),
+            tagName,
+          ]);
+        }),
       );
     },
-    [cardCode, deck.id, run, selectedItems, updateDeckCardTags],
+    [
+      cardCode,
+      createCardTag,
+      deck.id,
+      persist,
+      run,
+      selectedItems,
+      updateDeckCardTags,
+    ],
   );
 
   return {
