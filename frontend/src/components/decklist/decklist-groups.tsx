@@ -29,8 +29,7 @@ import { CardGridItem } from "../card-list/card-grid";
 import { GroupLabel } from "../card-list/grouphead";
 import type { FilteredListCardPropsGetter } from "../card-list/types";
 import { CardScan } from "../card-scan";
-import { CardTagList } from "../card-tags/card-tag-list";
-import { useCardTagDisplay } from "../card-tags/use-card-tags";
+import { useCardTagsAfterRow } from "../card-tags/use-card-tags-after-row";
 import { CustomizableSheet } from "../customizable-sheet";
 import { ListCard } from "../list-card/list-card";
 import css from "./decklist-groups.module.css";
@@ -195,10 +194,12 @@ function DecklistCard({
   ownedCount?: number;
   quantity: number;
 }) {
-  const showCardTags = useStore((state) => state.settings.cardShowTags ?? true);
-  const { selectedItems } = useCardTagDisplay(card.code, deck);
-  const visibleTags = showCardTags ? selectedItems : [];
   const { renderCardAfter, ...restListCardProps } = listCardProps ?? {};
+  const { renderCardAfter: renderTagsAfter } = useCardTagsAfterRow(
+    card,
+    deck,
+    renderCardAfter,
+  );
 
   return (
     <ListCard
@@ -214,22 +215,9 @@ function DecklistCard({
       onChangeCardQuantity={onChangeCardQuantity}
       ownedCount={ownedCount}
       quantity={quantity}
-      renderCardAfter={
-        visibleTags.length || renderCardAfter
-          ? (card, quantity) => (
-              <CardAfterRow>
-                <CardTagList card={card} items={visibleTags} />
-                {renderCardAfter?.(card, quantity)}
-              </CardAfterRow>
-            )
-          : undefined
-      }
+      renderCardAfter={renderTagsAfter}
     />
   );
-}
-
-function CardAfterRow({ children }: { children: React.ReactNode }) {
-  return <div className={css["card-after-row"]}>{children}</div>;
 }
 
 function Scans(props: {

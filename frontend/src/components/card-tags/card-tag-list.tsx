@@ -13,9 +13,18 @@ type Props = {
   className?: string;
   favorite?: boolean;
   items: TagItem[];
+  showLocal?: boolean;
+  size?: "xs" | "sm";
 };
 
-export function CardTagList({ card, className, favorite, items }: Props) {
+export function CardTagList({
+  card,
+  className,
+  favorite,
+  items,
+  showLocal = true,
+  size = "xs",
+}: Props) {
   const { t } = useTranslation();
   const accentColor = useAccentColor(card);
 
@@ -24,7 +33,7 @@ export function CardTagList({ card, className, favorite, items }: Props) {
   return (
     <ul className={cx(css["tag-row"], className)} style={accentColor}>
       {favorite && (
-        <Tag as="li" className={cx(css["tag"], css["favorite"])} size="xs">
+        <Tag as="li" className={css["tag"]} size={size}>
           <HeartIcon className={css["favorite-icon"]} />
           {t("card_tags.favorite")}
         </Tag>
@@ -32,9 +41,9 @@ export function CardTagList({ card, className, favorite, items }: Props) {
       {items.map((item) => (
         <Tag
           as="li"
-          className={cx(css["tag"], !item.global && css["local"])}
+          className={cx(css["tag"], showLocal && !item.global && css["local"])}
           key={item.code}
-          size="xs"
+          size={size}
         >
           <CardTagLabel>{item.tag}</CardTagLabel>
         </Tag>

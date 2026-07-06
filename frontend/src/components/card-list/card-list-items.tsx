@@ -6,8 +6,7 @@ import type { ViewMode } from "@/store/slices/lists.types";
 import { cx } from "@/utils/cx";
 import { useAccentColor } from "@/utils/use-accent-color";
 import { Card as CardComponent } from "../card/card";
-import { CardTagList } from "../card-tags/card-tag-list";
-import { useCardTagDisplay } from "../card-tags/use-card-tags";
+import { useCardTagsAfterRow } from "../card-tags/use-card-tags-after-row";
 import { ListCard } from "../list-card/list-card";
 import { CardActions } from "./card-actions";
 import css from "./card-list-items.module.css";
@@ -35,12 +34,11 @@ export function CardListItemCompact(props: Props) {
 
   const { className, renderCardAfter, style, ...restListCardProps } =
     listCardProps ?? {};
-  const showCardTags = useStore((state) => state.settings.cardShowTags ?? true);
-  const { isFavorite, selectedItems } = useCardTagDisplay(
-    card.code,
+  const { isFavorite, renderCardAfter: renderTagsAfter } = useCardTagsAfterRow(
+    card,
     resolvedDeck,
+    renderCardAfter,
   );
-  const visibleTags = showCardTags ? selectedItems : [];
   const accentColor = useAccentColor(card);
 
   return (
@@ -54,24 +52,11 @@ export function CardListItemCompact(props: Props) {
       isActive={index === currentTop}
       key={card.code}
       quantity={quantity}
-      renderCardAfter={
-        visibleTags.length || renderCardAfter
-          ? (card, quantity) => (
-              <CardAfterRow>
-                <CardTagList card={card} items={visibleTags} />
-                {renderCardAfter?.(card, quantity)}
-              </CardAfterRow>
-            )
-          : undefined
-      }
+      renderCardAfter={renderTagsAfter}
       showCardText={viewMode === "card-text"}
       style={isFavorite ? { ...style, ...accentColor } : style}
     />
   );
-}
-
-function CardAfterRow({ children }: { children: React.ReactNode }) {
-  return <div className={css["card-after-row"]}>{children}</div>;
 }
 
 export function CardListItemFull(props: Props) {

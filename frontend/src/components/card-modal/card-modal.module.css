@@ -75,6 +75,13 @@
   }
 }
 
+.related-title {
+  display: inline-flex;
+  gap: 0.375rem;
+  align-items: center;
+  font-size: var(--text-sm);
+}
+
 .annotation-edit {
   border-color: transparent;
   padding: 0;

@@ -45,11 +45,6 @@
   font-size: 0.625rem;
 }
 
-.card-after-row {
-  display: grid;
-  gap: 0.25rem;
-}
-
 .grid {
   --scan-spacing: 1rem;
 

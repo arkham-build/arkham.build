@@ -20,8 +20,3 @@
   padding: 0;
   list-style: none;
 }
-
-.favorite-icon {
-  fill: var(--accent-color, var(--nord-9));
-  stroke: var(--accent-color, var(--nord-9));
-}

@@ -1,3 +1,8 @@
+.after-row {
+  display: grid;
+  gap: 0.25rem;
+}
+
 .tag-row {
   display: flex;
   flex-wrap: wrap;

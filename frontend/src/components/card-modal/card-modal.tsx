@@ -37,7 +37,6 @@ import { Customizations } from "../customizations/customizations";
 import { CustomizationsEditor } from "../customizations/customizations-editor";
 import { AttachableCards } from "../deck-tools/attachable-cards";
 import { CardPoolExtension } from "../limited-card-pool/card-pool-extension";
-import { TitledContainer } from "../related-card-container";
 import { useResolvedDeck } from "../resolved-deck-context";
 import { Button } from "../ui/button";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
@@ -168,6 +167,13 @@ export function CardModal(props: Props) {
                 </div>
               )
             ))}
+          <div className={css["related"]}>
+            <h3 className={css["related-title"]}>
+              {t("card_tags.title")}
+              <CardTagManager cardCode={cardWithRelations.card.code} />
+            </h3>
+            <CardTags cardCode={cardWithRelations.card.code} />
+          </div>
         </>
       }
     >
@@ -235,17 +241,6 @@ export function CardModal(props: Props) {
           <SpecialistInvestigators card={cardWithRelations.card} />
         </div>
       )}
-      <TitledContainer
-        className={cx(css["related"], css["shadow"])}
-        titleNode={
-          <>
-            {t("card_tags.title")}
-            <CardTagManager cardCode={cardWithRelations.card.code} />
-          </>
-        }
-      >
-        <CardTags cardCode={cardWithRelations.card.code} />
-      </TitledContainer>
       {!cardWithRelations.card.preview &&
         !ctx.resolvedDeck &&
         settings.showCardModalPopularDecks &&

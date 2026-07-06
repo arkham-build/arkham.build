@@ -2,11 +2,6 @@
   padding-block: 0.5rem;
 }
 
-.card-after-row {
-  display: grid;
-  gap: 0.25rem;
-}
-
 .favorite {
   position: relative;
   &::before {
