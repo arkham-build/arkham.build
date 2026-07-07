@@ -55,6 +55,11 @@
         "reviews": "Recenzje"
       }
     },
+    "card_scenarios": {
+      "standalone": "Scenariusz",
+      "title": "Scenariusze zawierające <em>{{name}}</em>",
+      "tooltip": "{{name}} <em>({{campaignName}})</em>"
+    },
     "card_view": {
       "actions": {
         "faq": "Pokaż FAQ",
@@ -1365,9 +1370,14 @@
       },
       "sort_by": "Sortuj według"
     },
+    "masthead": {
+      "browse": "Przeglądaj",
+      "navigation": "Nawigacja",
+      "rules": "Zasady"
+    },
     "popular_decks": {
       "decklists_link": "Przeglądaj wszystkie przewodniki talii",
-      "error": "Popularne przewodniki talli nie mogły zostać załadowane: {{error}}",
+      "error": "Popularne przewodniki talii nie mogły zostać załadowane: {{error}}",
       "no_results": "Nie znaleziono przewodników talii",
       "title_card": "Popularne przewodniki talii zawierające <tooltip>{{name}}</tooltip>",
       "title_investigator": "Popularne przewodniki talii badacza <tooltip>{{name}}</tooltip>"
