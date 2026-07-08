@@ -1,4 +1,8 @@
-import type { Card, Settings } from "@arkham-build/shared";
+import {
+  type Card,
+  countExperience,
+  type Settings,
+} from "@arkham-build/shared";
 import { applyTaboo } from "@/store/lib/card-edits";
 import { cardUses, splitMultiValue } from "@/utils/card-utils";
 import {
@@ -204,7 +208,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
       const upgrade = {
         code: card.code,
         subname: card.real_subname,
-        xp: card.xp,
+        xp: countExperience(card, 1),
       };
 
       if (!upgrades[card.real_name]) {

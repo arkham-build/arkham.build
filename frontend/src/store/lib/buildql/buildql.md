@@ -72,7 +72,7 @@ Inversion: `!=`
 ### Exact equals (==)
 Works the same as `=` with the following differences:
 * `string`: Filters cards where attribute matches exactly.
-* `text`: Filters cards where attribute contains an exact substring match.
+* `text`: Filters cards where attribute contains an exact substring match. This is useful to match symbol tokens for example.
 ```
 bonded == true
 xp == 3
@@ -246,6 +246,7 @@ back:subname != null & back:subname != subname
   - aliases: `ia`
   - legacy alias: `do`
 - **in_deck** (number)
+- **in_side_deck** (number)
 - **is_upgrade** (boolean)
   - aliases: `iu`
 - **level** (number)
@@ -313,3 +314,7 @@ back:subname != null & back:subname != subname
   - legacy alias: `w`
 - **xp** (number)
   - actual cost after chain, unchain and exceptional factored in.
+
+## Additional resources
+
+- A list of all available symbol tokens in text can be [found here](https://github.com/Kamalisk/arkhamdb-json-data/#arkham-lcg-game-symbols).

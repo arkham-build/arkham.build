@@ -362,6 +362,8 @@ export function ListCardInner(props: Props) {
             text={displayAttribute(card, "text")}
             size="tooltip"
             typeCode={card.type_code}
+            vengeance={card.vengeance}
+            victory={card.victory}
           />
           {card.real_back_text && (
             <CardText

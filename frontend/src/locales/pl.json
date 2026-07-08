@@ -55,6 +55,11 @@
         "reviews": "Recenzje"
       }
     },
+    "card_scenarios": {
+      "standalone": "Scenariusz",
+      "title": "Scenariusze zawierające <em>{{name}}</em>",
+      "tooltip": "{{name}} <em>({{campaignName}})</em>"
+    },
     "card_view": {
       "actions": {
         "faq": "Pokaż FAQ",
@@ -133,7 +138,7 @@
         "Class Choice": "Wybrana klasa",
         "Cursed": "Przeklęta",
         "Deck Size": "Rozmiar Talii",
-        "Deck must have at least 10 skill cards.": "Talia musi mieć conajmniej 10 kart umiejętności.",
+        "Deck must have at least 10 skill cards.": "Talia musi mieć co najmniej 10 kart umiejętności.",
         "Fortune": "Los",
         "Gambit": "Gambit",
         "Improvised": "Improwizowany",
@@ -299,7 +304,7 @@
       "taboo_chained": "Kosztuje {{xp}} dodatkowego doświadczenia.",
       "taboo_mutated": "Zmutowana",
       "taboo_none": "żadna",
-      "taboo_original_text": "Originalny tekst karty",
+      "taboo_original_text": "Oryginalny tekst karty",
       "taboo_unchained": "Kosztuje {{xp}} doświadczenia mniej.",
       "total": "łącznie",
       "trait_few": "Cechy",
@@ -822,7 +827,7 @@
       "delete_all_loading": "Usuwanie lokalnych talii...",
       "import": "Zaimportuj",
       "import_arkhamdb": "Importuj z ArkhamDB",
-      "import_arkhamdb_help": "Wprowadź ID publicznej talii, jej URL lub URL przewodnika talii. Talia zostanie <strong>skopiowana</strong> bez jej historii i stanu ulepszenia. Jeśli zamierzasz zsynchornizować swoje talie z ArkhamDB z tą aplikacją, <settings_link>połącz swoje konto ArkhamDB.</settings_link>",
+      "import_arkhamdb_help": "Wprowadź ID publicznej talii, jej URL lub URL przewodnika talii. Talia zostanie <strong>skopiowana</strong> bez jej historii i stanu ulepszenia. Jeśli zamierzasz zsynchronizować swoje talie z ArkhamDB z tą aplikacją, <settings_link>połącz swoje konto ArkhamDB.</settings_link>",
       "import_json": "Importuj z plików JSON",
       "more_filters": "Więcej filtrów",
       "search_placeholder": "Szukaj talii...",
@@ -912,8 +917,8 @@
         "sides": {
           "investigator_back": "Rewers badacza",
           "investigator_front": "Awers badacza",
-          "original_back": "Originalny rewers",
-          "original_front": "Originalny awers",
+          "original_back": "Oryginalny rewers",
+          "original_front": "Oryginalny awers",
           "parallel_back": "Równoległy rewers",
           "parallel_front": "Równoległy awers"
         },
@@ -1003,7 +1008,7 @@
         "relative": "Względnie",
         "relative_help": "Pokazuje które karty {{name}} są częściej używane w porównaniu do innych badaczy, posortowane według percentyla.",
         "tooltip_absolute": "Karta {{name}} jest używana w {{decksPercentage}}% talii {{investigator}}. ({{decksMatched}}/{{decksAnalyzed}})",
-        "tooltip_relative": "{{investigator}} używa karty {{name}} częsciej niż {{percentile}}% wszystkich badaczy."
+        "tooltip_relative": "{{investigator}} używa karty {{name}} częściej niż {{percentile}}% wszystkich badaczy."
       },
       "save": "Zapisz talię",
       "save_error": "Nie udało się zapisać talii: {{error}}",
@@ -1365,9 +1370,14 @@
       },
       "sort_by": "Sortuj według"
     },
+    "masthead": {
+      "browse": "Przeglądaj",
+      "navigation": "Nawigacja",
+      "rules": "Zasady"
+    },
     "popular_decks": {
       "decklists_link": "Przeglądaj wszystkie przewodniki talii",
-      "error": "Popularne przewodniki talli nie mogły zostać załadowane: {{error}}",
+      "error": "Popularne przewodniki talii nie mogły zostać załadowane: {{error}}",
       "no_results": "Nie znaleziono przewodników talii",
       "title_card": "Popularne przewodniki talii zawierające <tooltip>{{name}}</tooltip>",
       "title_investigator": "Popularne przewodniki talii badacza <tooltip>{{name}}</tooltip>"
@@ -1421,7 +1431,7 @@
         "title": "Kolekcja"
       },
       "connections": {
-        "disconnected_all": "Wystąpił problem z jednym z twoich połączenych kont. Odśwież je proszę w Ustawieniach.",
+        "disconnected_all": "Wystąpił problem z jednym z twoich połączonych kont. Odśwież je proszę w Ustawieniach.",
         "items_synced": "Elementy zsynchronizowane",
         "last_modified": "Znacznik czasu danych",
         "lock": "Inna operacja związana z {{provider}} jest w trakcie, proszę czekać...",

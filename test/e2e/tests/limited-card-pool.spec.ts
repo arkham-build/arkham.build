@@ -268,6 +268,41 @@ test.describe("environments", () => {
     await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
   });
 
+  test("applies chapter environments", async ({ page }) => {
+    await page.goto("deck/create/01001");
+
+    await page.getByTestId("limited-card-pool-environments").click();
+    await page.getByTestId("limited-card-pool-environment-chapter_1").click();
+    await page
+      .getByTestId("limited-card-pool-environment-chapter_1-apply")
+      .click();
+
+    const cardPoolField = page.getByTestId("limited-card-pool-field");
+
+    await expect(
+      cardPoolField.getByTestId("combobox-result-rcore"),
+    ).toBeVisible();
+    await expect(
+      cardPoolField.getByTestId("combobox-result-core_2026"),
+    ).not.toBeVisible();
+
+    await page.getByTestId("limited-card-pool-environments").click();
+    await page.getByTestId("limited-card-pool-environment-chapter_2").click();
+    await page
+      .getByTestId("limited-card-pool-environment-chapter_2-apply")
+      .click();
+
+    await expect(
+      cardPoolField.getByTestId("combobox-result-core_2026"),
+    ).toBeVisible();
+    await expect(
+      cardPoolField.getByTestId("combobox-result-tom"),
+    ).toBeVisible();
+    await expect(
+      cardPoolField.getByTestId("combobox-result-rcore"),
+    ).not.toBeVisible();
+  });
+
   test("applies collection environment", async ({ page }) => {
     await page.goto("/settings?tab=collection");
     await page.getByText("Show all cards as owned").click();

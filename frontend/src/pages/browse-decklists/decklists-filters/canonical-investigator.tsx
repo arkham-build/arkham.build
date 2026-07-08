@@ -122,7 +122,7 @@ export function CanonicalInvestigator({
               const code = evt.target.value;
               setFormState((prev) => ({
                 ...prev,
-                canonicalInvestigatorCode: `${code}-${choices[1]}`,
+                canonical_investigator_code: `${code}-${choices[1]}`,
               }));
             }}
             options={parallelOptions.map((code, i) => ({
@@ -148,7 +148,7 @@ export function CanonicalInvestigator({
               const code = evt.target.value;
               setFormState((prev) => ({
                 ...prev,
-                canonicalInvestigatorCode: `${choices[0]}-${code}`,
+                canonical_investigator_code: `${choices[0]}-${code}`,
               }));
             }}
             required

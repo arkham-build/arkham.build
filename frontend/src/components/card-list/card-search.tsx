@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
+import { setSearchFlagParams } from "@/store/lib/search-url";
 import { selectActiveListSearch } from "@/store/selectors/lists";
 import { selectActiveList } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
@@ -47,6 +48,8 @@ export function CardSearch(props: Props) {
   const activeList = useStore(selectActiveList);
   assert(search, "Search bar requires an active list.");
 
+  const { includeBacks, includeFlavor, includeGameText, includeName } = search;
+
   const easterEggHandler = useAgathaEasterEggTrigger();
 
   const [inputValue, setInputValue] = useState(search.value ?? "");
@@ -65,8 +68,21 @@ export function CardSearch(props: Props) {
     const url = new URL("/search", window.location.origin);
     url.searchParams.set("q", inputValue);
     if (cardType) url.searchParams.set("card_type", cardType);
+    setSearchFlagParams(url.searchParams, {
+      includeBacks,
+      includeFlavor,
+      includeGameText,
+      includeName,
+    });
     return url.toString();
-  }, [cardType, inputValue]);
+  }, [
+    cardType,
+    includeBacks,
+    includeFlavor,
+    includeGameText,
+    includeName,
+    inputValue,
+  ]);
 
   useEffect(() => {
     const updateIconSlotSize = () => {

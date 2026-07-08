@@ -205,7 +205,12 @@ const fieldDefinitions: FieldDefinition[] = [
 
       return Object.keys(otherLevels).some((otherCode) => {
         const otherCard = metadata.cards[otherCode];
-        if (!otherCard || (otherCard.xp ?? 0) <= (card.xp ?? 0)) return false;
+        if (!otherCard) return false;
+
+        const cardXp = countExperience(card, 1);
+        const otherCardXp = countExperience(otherCard, 1);
+
+        if (!otherCard || otherCardXp <= cardXp) return false;
         return !deck || accessFilter?.(otherCard);
       });
     }),
@@ -293,6 +298,14 @@ const fieldDefinitions: FieldDefinition[] = [
       return ctx.deck.slots[card.code] ?? null;
     },
     name: "in_deck",
+    type: "number",
+  },
+  {
+    lookup: () => (card, ctx) => {
+      if (!ctx.deck) return null;
+      return ctx.deck.sideSlots?.[card.code] ?? null;
+    },
+    name: "in_side_deck",
     type: "number",
   },
   {

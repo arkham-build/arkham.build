@@ -7,11 +7,12 @@ type Props = {
   size: "full" | "compact" | "tooltip";
   text?: string;
   typeCode: string;
+  vengeance?: number | null;
   victory?: number | null;
 };
 
 export function CardText(props: Props) {
-  const { flavor, size, text, typeCode, victory } = props;
+  const { flavor, size, text, typeCode, vengeance, victory } = props;
   const { t } = useTranslation();
 
   const swapFlavor = ["agenda", "act", "story"].includes(typeCode);
@@ -30,6 +31,13 @@ export function CardText(props: Props) {
         <p>
           <b>
             {t("common.victory")} {victory}.
+          </b>
+        </p>
+      )}
+      {vengeance != null && (
+        <p>
+          <b>
+            {t("common.vengeance")} {vengeance}.
           </b>
         </p>
       )}

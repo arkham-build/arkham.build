@@ -74,6 +74,7 @@ function Signup() {
             id="email"
             required
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="randall@tillinghast-esoterica.com"
             type="email"
             value={email}
           />
@@ -88,6 +89,7 @@ function Signup() {
             onChange={(e) => setPassword(e.target.value)}
             pattern={PATTERN_VALID_PASSWORD}
             required
+            placeholder="••••••••"
             type="password"
             value={password}
           />
@@ -104,6 +106,7 @@ function Signup() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             pattern={createPasswordMatchPattern(password)}
             required
+            placeholder="••••••••"
             type="password"
             value={confirmPassword}
           />

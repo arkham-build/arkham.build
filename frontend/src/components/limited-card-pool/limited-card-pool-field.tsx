@@ -6,6 +6,7 @@ import {
   selectLimitedPoolPackOptions,
   selectPackMapper,
 } from "@/store/selectors/lists";
+import { isDeckbuildingPoolPack } from "@/utils/environments";
 import { displayPackName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { PackName } from "../pack-name";
@@ -33,16 +34,7 @@ export function LimitedCardPoolField(props: Props) {
 
   const locale = useStore((state) => state.settings.locale);
 
-  const items = useMemo(
-    () =>
-      packs.filter(
-        (pack) =>
-          pack.cycle_code !== "parallel" &&
-          pack.cycle_code !== "promotional" &&
-          pack.cycle_code !== "side_stories",
-      ),
-    [packs],
-  );
+  const items = useMemo(() => packs.filter(isDeckbuildingPoolPack), [packs]);
 
   const packRenderer = useCallback(
     (pack: Pack) => <PackName pack={pack} shortenNewFormat />,

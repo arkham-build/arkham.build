@@ -1,9 +1,15 @@
 import type { Card } from "@arkham-build/shared";
 import type { i18n, TFunction } from "i18next";
 import { beforeAll, describe, expect, test } from "vitest";
-import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
+} from "@/store/selectors/shared";
+import { makeTestDeck } from "@/test/factories";
 import { getMockStore } from "@/test/get-mock-store";
 import { SearchTextCache } from "@/utils/fuzzy";
+import { resolveDeck } from "../resolve-deck";
 import { fields } from "./fields";
 import { Interpreter } from "./interpreter";
 import type { InterpreterContext } from "./interpreter.types";
@@ -31,9 +37,14 @@ function compile(expr: ReturnType<typeof parse>, ctx: InterpreterContext) {
 
 describe("Interpreter", () => {
   let ctx: InterpreterContext;
+  let deckCtx: InterpreterContext;
 
   beforeAll(async () => {
     const mockStore = await getMockStore();
+    const state = mockStore.getState();
+    const metadata = selectMetadata(state);
+    const lookupTables = selectLookupTables(state);
+
     ctx = {
       fields,
       fieldLookupContext: {
@@ -48,10 +59,27 @@ describe("Interpreter", () => {
           language: "en",
           t: ((key: string) => key) as TFunction,
         } as i18n,
-        metadata: selectMetadata(mockStore.getState()),
-        lookupTables: selectLookupTables(mockStore.getState()),
+        metadata,
+        lookupTables,
       },
       searchTextCache: new SearchTextCache(),
+    };
+
+    const deck = resolveDeck(
+      { lookupTables, metadata },
+      selectLocaleSortingCollator(state),
+      makeTestDeck({
+        slots: { "01006": 1 },
+        sideSlots: { "01007": 2 },
+      }),
+    );
+
+    deckCtx = {
+      ...ctx,
+      fieldLookupContext: {
+        ...ctx.fieldLookupContext,
+        deck,
+      },
     };
   });
 
@@ -275,6 +303,24 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ code: "01516" }))).toBe(true);
       expect(filter(createMockCard({ code: "01017" }))).toBe(true);
       expect(filter(createMockCard({ code: "01018" }))).toBe(false);
+    });
+  });
+
+  describe("Deck fields", () => {
+    test("in_deck reads main deck quantities", () => {
+      const expr = parse("in_deck == 1");
+      const filter = compile(expr, deckCtx);
+
+      expect(filter(createMockCard({ code: "01006" }))).toBe(true);
+      expect(filter(createMockCard({ code: "01007" }))).toBe(false);
+    });
+
+    test("in_side_deck reads side deck quantities", () => {
+      const expr = parse("in_side_deck == 2");
+      const filter = compile(expr, deckCtx);
+
+      expect(filter(createMockCard({ code: "01007" }))).toBe(true);
+      expect(filter(createMockCard({ code: "01006" }))).toBe(false);
     });
   });
 

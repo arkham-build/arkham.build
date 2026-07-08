@@ -65,6 +65,7 @@ function Login() {
             disabled={loginMutation.isPending}
             id="email"
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="randall@tillinghast-esoterica.com"
             required
             type="email"
             value={email}
@@ -78,6 +79,7 @@ function Login() {
             disabled={loginMutation.isPending}
             id="password"
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
             required
             type="password"
             value={password}

@@ -86,6 +86,7 @@ export function CardFace(props: Props) {
           size={size}
           text={displayAttribute(card, "text")}
           typeCode={card.type_code}
+          vengeance={card.vengeance}
           victory={card.victory}
         />
         <CardTabooText card={card} showOriginalText={size !== "tooltip"}>

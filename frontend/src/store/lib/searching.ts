@@ -1,6 +1,7 @@
 import type { Card } from "@arkham-build/shared";
 import { displayAttribute } from "@/utils/card-utils";
 import { fuzzyMatch, prepareNeedle, type SearchTextCache } from "@/utils/fuzzy";
+import i18n from "@/utils/i18n";
 import type { Search } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
 
@@ -18,6 +19,12 @@ function prepareCardFace(card: Card, search: Search) {
     if (card.real_text) needle.push(displayAttribute(card, "text"));
     if (card.real_customization_text) {
       needle.push(displayAttribute(card, "customization_text"));
+    }
+    if (card.victory != null) {
+      needle.push(`${i18n.t("common.victory")} ${card.victory}.`);
+    }
+    if (card.vengeance != null) {
+      needle.push(`${i18n.t("common.vengeance")} ${card.vengeance}.`);
     }
   }
 

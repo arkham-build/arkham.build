@@ -254,7 +254,10 @@ export function canShowCardPoolExtension(card: Card) {
   return card.card_pool_extension && !card.card_pool_extension.selections;
 }
 
-export function doubleSidedBackCard(card: Card, t: TFunction) {
+export function doubleSidedBackCard(
+  card: Card,
+  t: TFunction,
+): Card | undefined {
   if (!card.double_sided) return undefined;
 
   const { clues: _, doom: __, shroud: ___, ...attributes } = card;

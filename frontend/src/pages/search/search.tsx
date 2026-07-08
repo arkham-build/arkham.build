@@ -5,6 +5,7 @@ import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
+import { parseSearchFlags } from "@/store/lib/search-url";
 import { selectListCards } from "@/store/selectors/lists";
 import { selectIsInitialized } from "@/store/selectors/shared";
 
@@ -15,6 +16,8 @@ function Search() {
   const query = searchParams.get("q") || "";
 
   const cardTypeParam = searchParams.get("card_type");
+  const { includeBacks, includeFlavor, includeGameText, includeName } =
+    parseSearchFlags(searchParams);
 
   const cardType =
     cardTypeParam === "player" || cardTypeParam === "encounter"
@@ -33,6 +36,7 @@ function Search() {
 
   const addList = useStore((state) => state.addList);
   const setActiveList = useStore((state) => state.setActiveList);
+  const setSearchFlag = useStore((state) => state.setSearchFlag);
   const setSearchValue = useStore((state) => state.setSearchValue);
   const removeList = useStore((state) => state.removeList);
   const mounted = useRef(false);
@@ -55,8 +59,25 @@ function Search() {
     }
 
     setActiveList(listKey);
+    // TODO: should be optimized into a single state update.
+    setSearchFlag("includeName", includeName);
+    setSearchFlag("includeGameText", includeGameText);
+    setSearchFlag("includeFlavor", includeFlavor);
+    setSearchFlag("includeBacks", includeBacks);
     setSearchValue(query);
-  }, [addList, cardType, hasActiveList, query, setActiveList, setSearchValue]);
+  }, [
+    addList,
+    cardType,
+    hasActiveList,
+    includeBacks,
+    includeFlavor,
+    includeGameText,
+    includeName,
+    query,
+    setActiveList,
+    setSearchFlag,
+    setSearchValue,
+  ]);
 
   useEffect(() => {
     return () => {

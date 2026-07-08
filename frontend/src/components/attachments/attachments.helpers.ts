@@ -8,14 +8,16 @@ import { cardLimit } from "@/utils/card-utils";
 import { useResolvedDeckChecked } from "../resolved-deck-context";
 
 export function canAttach(card: Card, definition: Attachments) {
-  return (
-    definition.code !== card.code &&
-    definition.traits?.some((t) => card.real_traits?.includes(t)) &&
-    (definition.filters?.every((attributeFilter) =>
+  const traitsMatch =
+    !definition.traits?.length ||
+    definition.traits.some((trait) => card.real_traits?.includes(trait));
+
+  const filtersMatch =
+    definition.filters?.every((attributeFilter) =>
       filterAttribute(attributeFilter)(card),
-    ) ??
-      true)
-  );
+    ) ?? true;
+
+  return definition.code !== card.code && traitsMatch && filtersMatch;
 }
 
 function attachmentLimit(card: Card, quantityInDeck: number) {

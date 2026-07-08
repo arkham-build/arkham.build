@@ -7,6 +7,7 @@ import { useStore } from "@/store";
 import {
   type CycleWithPacks,
   selectCampaignCycles,
+  selectCyclesAndPacks,
   selectLimitedPoolPackOptions,
 } from "@/store/selectors/lists";
 import { environments } from "@/utils/environments";
@@ -94,6 +95,8 @@ export function ConfigureEnvironmentModal(props: Props) {
                 </div>
                 <EnvironmentsTabTrigger value="campaign_playalong" />
                 <EnvironmentsTabTrigger value="collection" />
+                <EnvironmentsTabTrigger value="chapter_1" />
+                <EnvironmentsTabTrigger value="chapter_2" />
                 <div className={css["nav-section"]}>
                   <h4>FAQ 2.5</h4>
                 </div>
@@ -112,6 +115,12 @@ export function ConfigureEnvironmentModal(props: Props) {
                 </EnvironmentsTabContent>
                 <EnvironmentsTabContent value="campaign_playalong">
                   <CampaignPlayalongTab {...tabProps} />
+                </EnvironmentsTabContent>
+                <EnvironmentsTabContent value="chapter_1">
+                  <ChapterTab {...tabProps} chapter={1} />
+                </EnvironmentsTabContent>
+                <EnvironmentsTabContent value="chapter_2">
+                  <ChapterTab {...tabProps} chapter={2} />
                 </EnvironmentsTabContent>
                 <EnvironmentsTabContent
                   value="current_faq25"
@@ -421,6 +430,24 @@ function Limited25Tab(props: TabProps) {
         onClick={applyEnvironment}
       />
     </>
+  );
+}
+
+function ChapterTab(props: TabProps & { chapter: 1 | 2 }) {
+  const { chapter, dialogCtx, onValueChange } = props;
+
+  const cycles = useStore(selectCyclesAndPacks);
+
+  const applyEnvironment = () => {
+    onValueChange(environments.chapter(cycles, chapter));
+    dialogCtx.setOpen(false);
+  };
+
+  return (
+    <EnvironmentsTabConfirm
+      environment={`chapter_${chapter}`}
+      onClick={applyEnvironment}
+    />
   );
 }
 

@@ -46,7 +46,8 @@ const AttachmentsSchema = z
       description: "Number of cards that can be attached to this card.",
     }),
     traits: z.array(z.string()).nullish().register(z.globalRegistry, {
-      description: "List of traits that this attachment has.",
+      description:
+        "List of traits that this attachment has. Empty or null means only filters are used.",
     }),
   })
   .register(z.globalRegistry, {

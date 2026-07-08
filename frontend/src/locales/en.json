@@ -843,6 +843,7 @@
         "whistles": "Whistles",
         "wishes": "Wishes"
       },
+      "vengeance": "Vengeance",
       "victory": "Victory",
       "xp": "XP"
     },
@@ -1023,6 +1024,10 @@
           "apply_environment": "Apply {{environment}} environment",
           "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "The Campaign Play-Along is an ongoing event hosted on the Mythos Busters discord server. It is designed to play Arkham campaigns together, share stories and generally create a sense of community.",
+          "chapter_1": "Chapter 1",
+          "chapter_2": "Chapter 2",
+          "chapter_1_help": "Set the card pool to all packs in chapter 1.",
+          "chapter_2_help": "Set the card pool to all packs in chapter 2.",
           "choose_cycle_placeholder": "Select cycles...",
           "collection": "Collection",
           "collection_help": "Set your current <settings_link>collection</settings_link> as this deck's card pool. This can be useful to freeze the deck's card pool, or to share a \"build preset\" with people sharing a physical collection.",

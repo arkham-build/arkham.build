@@ -70,6 +70,7 @@ function ForgotPassword() {
             id="emailOrUsername"
             required
             onChange={(e) => setEmailOrUsername(e.target.value)}
+            placeholder="randall@tillinghast-esoterica.com"
             type="text"
             value={emailOrUsername}
           />

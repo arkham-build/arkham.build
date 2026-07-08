@@ -16,6 +16,7 @@ import {
   filterType,
 } from "../lib/filtering";
 import { SORTING_PRESETS, sortPresetId } from "../lib/list-display";
+import { DEFAULT_SEARCH_FLAGS } from "../lib/search-url";
 import type { ResolvedDeck } from "../lib/types";
 import { selectBuildQlInterpreter } from "../selectors/shared";
 import type { StoreState } from ".";
@@ -414,6 +415,8 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
     let list = state.lists[state.activeList];
     assert(list, `list ${state.activeList} not defined.`);
 
+    if (list.search[flag] === value) return;
+
     set((state) => ({
       lists: {
         ...state.lists,
@@ -642,10 +645,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         search: {
           value: opts.search ?? "",
           mode: "simple",
-          includeBacks: false,
-          includeFlavor: false,
-          includeGameText: false,
-          includeName: true,
+          ...DEFAULT_SEARCH_FLAGS,
         },
         lockedFilters: opts.lockedFilters ?? new Set<FilterKey>(),
       });
@@ -683,10 +683,7 @@ function makeSearch(): Search {
   return {
     value: "",
     mode: "simple",
-    includeBacks: false,
-    includeFlavor: false,
-    includeGameText: false,
-    includeName: true,
+    ...DEFAULT_SEARCH_FLAGS,
   };
 }
 

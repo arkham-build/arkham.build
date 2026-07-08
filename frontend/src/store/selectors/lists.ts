@@ -20,7 +20,10 @@ import {
   CYCLES_WITH_STANDALONE_PACKS,
   NO_SLOT_STRING,
 } from "@/utils/constants";
-import { resolveLimitedPoolPacks } from "@/utils/environments";
+import {
+  isDeckbuildingPoolPack,
+  resolveLimitedPoolPacks,
+} from "@/utils/environments";
 import {
   capitalize,
   displayPackName,
@@ -1600,9 +1603,7 @@ export const selectLimitedPoolPackOptions = createSelector(
 
       // Non-deckbuilding
       if (
-        cycle.code === "parallel" ||
-        cycle.code === "promotional" ||
-        cycle.code === "side_stories"
+        ![...cycle.packs, ...cycle.reprintPacks].some(isDeckbuildingPoolPack)
       ) {
         return [];
       }
