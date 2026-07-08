@@ -78,7 +78,7 @@ export function useDialog({
   const context = data.context;
 
   const click = useClick(context);
-  const dismiss = useDismiss(context, { outsidePressEvent: "mousedown" });
+  const dismiss = useDismiss(context);
   const role = useRole(context);
 
   const interactions = useInteractions([click, dismiss, role]);

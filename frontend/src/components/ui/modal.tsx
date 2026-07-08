@@ -74,7 +74,7 @@ export function Modal(props: Props) {
     <div
       {...rest}
       className={cx(css["modal"], className)}
-      onMouseDown={
+      onPointerDown={
         isMobile
           ? () => {
               window.history.back();
@@ -136,7 +136,7 @@ type ModalInnerProps = {
 export function ModalInner(props: ModalInnerProps) {
   const { className, children, size } = props;
 
-  const stopPropagation = useCallback((evt: React.MouseEvent) => {
+  const stopPropagation = useCallback((evt: React.PointerEvent) => {
     evt.stopPropagation();
   }, []);
 
@@ -151,7 +151,7 @@ export function ModalInner(props: ModalInnerProps) {
     <Scroller type="always" padded>
       <div
         className={cx(css["inner"], className)}
-        onMouseDown={stopPropagation}
+        onPointerDown={stopPropagation}
         style={cssVariables as React.CSSProperties}
       >
         {children}

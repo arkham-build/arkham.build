@@ -122,7 +122,13 @@ export function Combobox<T extends Coded>(props: Props<T>) {
       }),
       offset(5),
     ],
-    onOpenChange: setOpen,
+    onOpenChange(nextOpen, event, reason) {
+      if (!nextOpen && reason === "outside-press") {
+        event?.stopPropagation();
+      }
+
+      setOpen(nextOpen);
+    },
   });
 
   const listRef = useRef<HTMLElement[]>([]);

@@ -70,8 +70,8 @@ export function CardModal(props: Props) {
 
   const quantitiesRef = useRef<HTMLDivElement>(null);
 
-  const onClickBackdrop = useCallback(
-    (evt: React.MouseEvent) => {
+  const onPointerDownBackdrop = useCallback(
+    (evt: React.PointerEvent) => {
       if (evt.target === quantitiesRef.current) {
         onCloseModal();
       }
@@ -286,7 +286,8 @@ export function CardModal(props: Props) {
           </div>
           <div
             className={css["quantities"]}
-            onClick={onClickBackdrop}
+            data-testid="card-modal-sidebar"
+            onPointerDown={onPointerDownBackdrop}
             ref={quantitiesRef}
           >
             {listOrder && (
