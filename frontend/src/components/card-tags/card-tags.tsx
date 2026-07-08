@@ -1,5 +1,5 @@
 import { CARD_TAG_NAME_MAX_LENGTH } from "@arkham-build/shared";
-import { PlusIcon, Settings2Icon } from "lucide-react";
+import { GlobeIcon, PlusIcon, Settings2Icon } from "lucide-react";
 import { useId, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -25,13 +25,14 @@ import { useCardTags, useDeckCardTags } from "./use-card-tags";
 
 type Props = {
   cardCode: string;
+  stacked?: boolean;
 };
 
-export function CardTags({ cardCode }: Props) {
+export function CardTags({ cardCode, stacked }: Props) {
   const { canEdit, resolvedDeck } = useResolvedDeck();
 
   return (
-    <div className={css["tags"]}>
+    <div className={cx(css["tags"], stacked && css["stacked"])}>
       {resolvedDeck && (
         <DeckCardTags
           cardCode={cardCode}
@@ -59,7 +60,12 @@ function AccountCardTags({
     <div className={css["tag-section"]}>
       <CardTagCombobox
         id={`card-tags-${cardCode}`}
-        label={t("card_tags.account_title")}
+        label={
+          <div className={css["tag-section-title"]}>
+            <GlobeIcon />
+            {t("card_tags.account_title")}
+          </div>
+        }
         onCreateTag={onCreateTag}
         onTagsChange={onTagsChange}
         placeholder={t("card_tags.placeholder")}
@@ -92,7 +98,12 @@ function DeckCardTags({
     <div className={css["tag-section"]}>
       <CardTagCombobox
         id={`deck-card-tags-${cardCode}`}
-        label={t("card_tags.deck_title")}
+        label={
+          <div className={css["tag-section-title"]}>
+            <i className="icon-deck" />
+            {t("card_tags.deck_title")}
+          </div>
+        }
         onCreateTag={onCreateTag}
         onTagsChange={onTagsChange}
         placeholder={t("card_tags.deck_placeholder")}
@@ -187,51 +198,55 @@ export function CardTagManager({ cardCode }: { cardCode: string }) {
           <ModalInner size="32rem">
             <ModalActions />
             <DefaultModalContent title={t("card_tags.manage.title")}>
-              <div className={css["manager-list"]}>
-                {tagOptions.map(({ tag }, index) => {
-                  const fieldId = `${formId}-${index}`;
+              {tagOptions.length > 0 ? (
+                <div className={css["manager-list"]}>
+                  {tagOptions.map(({ tag }, index) => {
+                    const fieldId = `${formId}-${index}`;
 
-                  return (
-                    <form
-                      className={css["manager-row"]}
-                      key={tag}
-                      onSubmit={(evt) => {
-                        evt.preventDefault();
-                        const name = new FormData(evt.currentTarget).get(
-                          "name",
-                        );
-                        if (typeof name !== "string") return;
-                        onRenameTag(tag, name);
-                      }}
-                    >
-                      <Field className={css["manager-field"]} full>
-                        <FieldLabel className="sr-only" htmlFor={fieldId}>
-                          {t("card_tags.manage.name")}
-                        </FieldLabel>
-                        <input
-                          defaultValue={tag}
-                          id={fieldId}
-                          maxLength={CARD_TAG_NAME_MAX_LENGTH}
-                          name="name"
-                          required
-                        />
-                      </Field>
-                      <Button type="submit" variant="secondary">
-                        {t("card_tags.manage.save")}
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          onDeleteTag(tag);
+                    return (
+                      <form
+                        className={css["manager-row"]}
+                        key={tag}
+                        onSubmit={(evt) => {
+                          evt.preventDefault();
+                          const name = new FormData(evt.currentTarget).get(
+                            "name",
+                          );
+                          if (typeof name !== "string") return;
+                          onRenameTag(tag, name);
                         }}
-                        type="button"
-                        variant="danger"
                       >
-                        {t("card_tags.manage.delete")}
-                      </Button>
-                    </form>
-                  );
-                })}
-              </div>
+                        <Field className={css["manager-field"]} full>
+                          <FieldLabel className="sr-only" htmlFor={fieldId}>
+                            {t("card_tags.manage.name")}
+                          </FieldLabel>
+                          <input
+                            defaultValue={tag}
+                            id={fieldId}
+                            maxLength={CARD_TAG_NAME_MAX_LENGTH}
+                            name="name"
+                            required
+                          />
+                        </Field>
+                        <Button type="submit" variant="secondary">
+                          {t("card_tags.manage.save")}
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            onDeleteTag(tag);
+                          }}
+                          type="button"
+                          variant="danger"
+                        >
+                          {t("card_tags.manage.delete")}
+                        </Button>
+                      </form>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p>{t("common.no_entries")}</p>
+              )}
             </DefaultModalContent>
           </ModalInner>
         </Modal>

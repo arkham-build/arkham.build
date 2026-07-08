@@ -181,7 +181,7 @@
         "title": "Manage tags",
         "unknown_error": "Unknown error"
       },
-      "placeholder": "Add account-wide tag...",
+      "placeholder": "Add global tag...",
       "title": "Tags"
     },
     "card_view": {

@@ -17,7 +17,7 @@
   border: 1px solid transparent;
 
   &.local {
-    border: 1px solid var(--palette-3);
+    border: 1px solid var(--palette-three-point-five);
   }
 }
 

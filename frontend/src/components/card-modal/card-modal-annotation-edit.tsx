@@ -63,7 +63,7 @@ export function AnnotationEdit(props: Props) {
       className={cx(css["annotation-edit"], !!liveValue && css["active"])}
       actions={
         <Button
-          size="sm"
+          size="xs"
           onClick={onAnnotationClear}
           variant="bare"
           style={{ visibility: liveValue ? "visible" : "hidden" }}

@@ -1,4 +1,5 @@
 .combobox {
+  min-width: 0;
   position: relative;
 }
 
@@ -16,12 +17,15 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  min-width: 0;
   position: relative;
 }
 
 .control-input {
   flex: 1 1 100%;
+  min-width: 0;
   padding-right: 1.25rem;
+  width: 100%;
 }
 
 .control-indicator {
@@ -109,9 +113,17 @@
   align-items: center;
   gap: 0.25rem;
   flex-flow: row wrap;
+  min-width: 0;
   width: 100%;
   list-style: none;
   padding: 0;
+}
+
+.results > * {
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .result-remove {

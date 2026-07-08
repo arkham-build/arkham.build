@@ -106,6 +106,7 @@ export function CardModal(props: Props) {
   }, [completeTask, ctx.resolvedDeck, cardWithRelations?.card, openCardModal]);
 
   const canRenderFull = useMedia("(min-width: 45rem)");
+  const hasSidebar = useMedia("(min-width: 42rem)");
 
   const handlePrintingSelect = useCallback(
     (card: CardT) => {
@@ -167,13 +168,9 @@ export function CardModal(props: Props) {
                 </div>
               )
             ))}
-          <div className={css["related"]}>
-            <h3 className={css["related-title"]}>
-              {t("card_tags.title")}
-              <CardTagManager cardCode={cardWithRelations.card.code} />
-            </h3>
-            <CardTags cardCode={cardWithRelations.card.code} />
-          </div>
+          {!hasSidebar && (
+            <CardModalTags cardCode={cardWithRelations.card.code} />
+          )}
         </>
       }
     >
@@ -329,10 +326,32 @@ export function CardModal(props: Props) {
                 resolvedDeck={ctx.resolvedDeck}
               />
             )}
+            {hasSidebar && (
+              <CardModalTags cardCode={cardWithRelations.card.code} sidebar />
+            )}
           </div>
         </div>
       </ModalInner>
     </Modal>
+  );
+}
+
+function CardModalTags(props: { cardCode: string; sidebar?: boolean }) {
+  const { cardCode, sidebar } = props;
+  const { t } = useTranslation();
+
+  return (
+    <div
+      className={
+        sidebar ? cx(css["quantity"], css["tag-card"]) : css["tag-field"]
+      }
+    >
+      <h3 className={css["related-title"]}>
+        {t("card_tags.title")}
+        <CardTagManager cardCode={cardCode} />
+      </h3>
+      <CardTags cardCode={cardCode} stacked={sidebar} />
+    </div>
   );
 }
 

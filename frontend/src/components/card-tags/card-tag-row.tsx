@@ -29,7 +29,6 @@ export function CardTagRow({ card, className }: Props) {
         className={css["row"]}
         favorite={isFavorite}
         items={selectedItems}
-        showLocal={false}
         size="sm"
       />
     </section>

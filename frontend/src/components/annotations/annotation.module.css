@@ -20,6 +20,8 @@
   gap: 0.25rem;
   justify-content: space-between;
   align-items: center;
+  font-family: var(--font-family-ui);
+  font-size: var(--text-sm);
 }
 
 .row {
