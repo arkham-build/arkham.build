@@ -304,6 +304,31 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ code: "01017" }))).toBe(true);
       expect(filter(createMockCard({ code: "01018" }))).toBe(false);
     });
+
+    test("is_favorite matches favorited cards", () => {
+      const expr = parse("is_favorite = true");
+      const aliasExpr = parse("fav = true");
+      const favoriteCtx: InterpreterContext = {
+        ...ctx,
+        fieldLookupContext: {
+          ...ctx.fieldLookupContext,
+          cardTags: {
+            tags: [],
+            cardTags: {},
+            favorites: {
+              "01016": true,
+            },
+          },
+        },
+      };
+      const filter = compile(expr, favoriteCtx);
+      const aliasFilter = compile(aliasExpr, favoriteCtx);
+
+      expect(filter(createMockCard({ code: "01016" }))).toBe(true);
+      expect(filter(createMockCard({ code: "01516" }))).toBe(true);
+      expect(filter(createMockCard({ code: "01018" }))).toBe(false);
+      expect(aliasFilter(createMockCard({ code: "01016" }))).toBe(true);
+    });
   });
 
   describe("Deck fields", () => {

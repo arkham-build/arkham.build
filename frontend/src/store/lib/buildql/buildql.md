@@ -247,6 +247,9 @@ back:subname != null & back:subname != subname
   - legacy alias: `do`
 - **in_deck** (number)
 - **in_side_deck** (number)
+- **is_favorite** (boolean)
+  - aliases: `fav`
+  - matches cards marked as favorites
 - **is_upgrade** (boolean)
   - aliases: `iu`
 - **level** (number)

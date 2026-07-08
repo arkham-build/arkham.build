@@ -309,6 +309,22 @@ const fieldDefinitions: FieldDefinition[] = [
     type: "number",
   },
   {
+    aliases: ["fav"],
+    lookup:
+      () =>
+      (card, { cardTags, lookupTables, metadata }) => {
+        const canonicalCode = resolveCardTagCardCode(
+          metadata,
+          lookupTables.relations.fronts,
+          card.code,
+        );
+
+        return cardTags.favorites[canonicalCode] ?? false;
+      },
+    name: "is_favorite",
+    type: "boolean",
+  },
+  {
     aliases: ["iu"],
     lookup: backResolver((card, { deck, lookupTables, metadata }) => {
       const otherLevels = lookupTables.relations.level[card.code];
@@ -463,6 +479,7 @@ const fieldDefinitions: FieldDefinition[] = [
           lookupTables.relations.fronts,
           card.code,
         );
+
         const tagNames = mergeCardTagNames(
           deckCardTags?.[canonicalCode],
           cardTags.cardTags[canonicalCode],
