@@ -6,7 +6,7 @@ import type { ViewMode } from "@/store/slices/lists.types";
 import { cx } from "@/utils/cx";
 import { useAccentColor } from "@/utils/use-accent-color";
 import { Card as CardComponent } from "../card/card";
-import { useCardTagsAfterRow } from "../card-tags/use-card-tags-after-row";
+import { useCardTagsListCard } from "../card-tags/use-card-tags-list-card";
 import { ListCard } from "../list-card/list-card";
 import { CardActions } from "./card-actions";
 import css from "./card-list-items.module.css";
@@ -32,10 +32,17 @@ export function CardListItemCompact(props: Props) {
     viewMode,
   } = props;
 
-  const { className, renderCardAfter, style, ...restListCardProps } =
-    listCardProps ?? {};
-  const { highlightFavorite, renderCardAfter: renderTagsAfter } =
-    useCardTagsAfterRow(card, resolvedDeck, renderCardAfter);
+  const {
+    className,
+    renderCardAfter,
+    renderCardTags: renderCardTagsProp,
+    style,
+    ...restListCardProps
+  } = listCardProps ?? {};
+  const { isFavorite, renderCardTags } = useCardTagsListCard(
+    card,
+    resolvedDeck,
+  );
   const accentColor = useAccentColor(card);
 
   return (
@@ -43,15 +50,16 @@ export function CardListItemCompact(props: Props) {
       {...restListCardProps}
       annotation={resolvedDeck?.annotations[card.code]}
       card={card}
-      className={cx(className, highlightFavorite && css["favorite"])}
+      className={cx(className, isFavorite && css["favorite"])}
       disableKeyboard
       highlightQuantity
       isActive={index === currentTop}
       key={card.code}
       quantity={quantity}
-      renderCardAfter={renderTagsAfter}
+      renderCardAfter={renderCardAfter}
+      renderCardTags={renderCardTags ?? renderCardTagsProp}
       showCardText={viewMode === "card-text"}
-      style={highlightFavorite ? { ...style, ...accentColor } : style}
+      style={isFavorite ? { ...style, ...accentColor } : style}
     />
   );
 }

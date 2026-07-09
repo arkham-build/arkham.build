@@ -90,6 +90,17 @@
   position: relative;
   font-size: var(--text-sm);
   padding: 0 0 0 2rem;
+  white-space: normal;
+
+  &,
+  & > * {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  & > :where(svg, i) {
+    flex: 0 0 auto;
+  }
 
   &.active {
     background-color: var(--palette-1);

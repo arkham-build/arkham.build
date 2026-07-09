@@ -71,6 +71,7 @@ export type Props = {
   renderCardAfter?: RenderCallback;
   renderCardBefore?: RenderCallback;
   renderCardMetaExtra?: RenderCallback;
+  renderCardTags?: RenderCallback;
   renderCardExtra?: RenderCallback;
   size?: "xs" | "sm" | "investigator" | "standard";
   showCardText?: boolean;
@@ -112,6 +113,7 @@ export function ListCardInner(props: Props) {
     renderCardBefore,
     renderCardExtra,
     renderCardMetaExtra,
+    renderCardTags,
     showCardText,
     showInvestigatorIcons,
     size,
@@ -151,6 +153,8 @@ export function ListCardInner(props: Props) {
   );
 
   const limit = cardLimit(card, limitOverride);
+  const cardTags = renderCardTags?.(card, quantity);
+  const cardExtra = renderCardExtra?.(card, quantity);
 
   return (
     <Element
@@ -345,7 +349,8 @@ export function ListCardInner(props: Props) {
             </figcaption>
           </figure>
         </div>
-        {renderCardExtra?.(card, quantity)}
+        {cardTags && <div className={css["listcard-tags"]}>{cardTags}</div>}
+        {cardExtra && <div className={css["listcard-extra"]}>{cardExtra}</div>}
       </div>
       {!!renderCardAfter && (
         <div className={css["listcard-after"]}>

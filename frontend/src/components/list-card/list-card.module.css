@@ -16,6 +16,7 @@
     grid-template-rows: auto;
     grid-template-areas: "action card";
     list-style: none;
+    container-type: inline-size;
   }
 
   .listcard-wrapper.has-after {
@@ -69,7 +70,6 @@
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
-    justify-content: space-between;
     gap: var(--card-spacing-x);
     grid-area: card;
     min-width: 0;
@@ -82,6 +82,44 @@
     gap: var(--card-spacing-x);
     min-width: 0;
     flex: 1 1 0%;
+  }
+
+  .listcard-tags {
+    flex: 1 1 14rem;
+    max-width: min(30%, 28rem);
+    min-width: 0;
+
+    & > * {
+      justify-content: flex-end;
+    }
+  }
+
+  .listcard-extra {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    z-index: 2;
+  }
+
+  @container (max-width: 30rem) {
+    .listcard {
+      flex-wrap: wrap;
+    }
+
+    .listcard-extra {
+      order: 1;
+    }
+
+    .listcard-tags {
+      order: 2;
+      flex: 1 0 100%;
+      max-width: none;
+
+      & > * {
+        justify-content: flex-start;
+      }
+    }
   }
 
   .content {

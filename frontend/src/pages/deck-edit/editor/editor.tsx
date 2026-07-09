@@ -160,6 +160,7 @@ function EditorGroup(props: {
       ) : (
         <DecklistGroup
           getListCardProps={getListCardProps}
+          showCardTags={false}
           grouping={grouping}
           deck={deck}
           showXP={props.showXP}

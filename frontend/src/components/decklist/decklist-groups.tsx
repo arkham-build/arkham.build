@@ -29,7 +29,7 @@ import { CardGridItem } from "../card-list/card-grid";
 import { GroupLabel } from "../card-list/grouphead";
 import type { FilteredListCardPropsGetter } from "../card-list/types";
 import { CardScan } from "../card-scan";
-import { useCardTagsAfterRow } from "../card-tags/use-card-tags-after-row";
+import { useCardTagsListCard } from "../card-tags/use-card-tags-list-card";
 import { CustomizableSheet } from "../customizable-sheet";
 import { ListCard } from "../list-card/list-card";
 import css from "./decklist-groups.module.css";
@@ -40,10 +40,17 @@ type DecklistGroupsProps = {
   getListCardProps?: FilteredListCardPropsGetter;
   viewMode?: ViewMode;
   showXP?: boolean;
+  showCardTags?: boolean;
 };
 
 export function DecklistGroup(props: DecklistGroupsProps) {
-  const { deck, grouping, getListCardProps, viewMode } = props;
+  const {
+    deck,
+    grouping,
+    getListCardProps,
+    showCardTags = true,
+    viewMode,
+  } = props;
 
   const metadata = useStore(selectMetadata);
   const lookupTables = useStore(selectLookupTables);
@@ -158,6 +165,7 @@ export function DecklistGroup(props: DecklistGroupsProps) {
                       canCheckOwnership ? cardOwnedCount(card) : undefined
                     }
                     quantity={grouping.quantities?.[card.code] ?? 0}
+                    showCardTags={showCardTags}
                   />
                 );
               })
@@ -181,6 +189,7 @@ function DecklistCard({
   onChangeCardQuantity,
   ownedCount,
   quantity,
+  showCardTags,
 }: {
   card: Card;
   deck: ResolvedDeck;
@@ -193,14 +202,14 @@ function DecklistCard({
   onChangeCardQuantity?: ReturnType<FilteredListCardPropsGetter>["onChangeCardQuantity"];
   ownedCount?: number;
   quantity: number;
+  showCardTags: boolean;
 }) {
-  const { renderCardAfter, ...restListCardProps } = listCardProps ?? {};
-  const { renderCardAfter: renderTagsAfter } = useCardTagsAfterRow(
-    card,
-    deck,
-    renderCardAfter,
-    { respectCardTagSetting: false },
-  );
+  const { renderCardTags: renderCardTagsProp, ...restListCardProps } =
+    listCardProps ?? {};
+
+  const { renderCardTags } = useCardTagsListCard(card, deck, {
+    respectCardTagSetting: false,
+  });
 
   return (
     <ListCard
@@ -216,7 +225,9 @@ function DecklistCard({
       onChangeCardQuantity={onChangeCardQuantity}
       ownedCount={ownedCount}
       quantity={quantity}
-      renderCardAfter={renderTagsAfter}
+      renderCardTags={
+        showCardTags ? (renderCardTags ?? renderCardTagsProp) : undefined
+      }
     />
   );
 }

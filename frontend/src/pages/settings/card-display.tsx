@@ -256,7 +256,7 @@ export function CardDisplaySettings(props: SettingProps) {
                 omitDetails={!resolve("cardShowDetails")}
                 omitIcon={!resolve("cardShowIcon")}
                 omitThumbnail={!resolve("cardShowThumbnail")}
-                renderCardAfter={
+                renderCardTags={
                   (resolve("cardShowTags") ?? true) && tags.length
                     ? () => <CardTagList card={card} items={tags} />
                     : undefined
