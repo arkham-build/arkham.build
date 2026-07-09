@@ -9,6 +9,7 @@ type RenderCardAfter = (card: Card, quantity?: number) => React.ReactNode;
 
 type Options = {
   respectCardTagSetting?: boolean;
+  respectFavoriteHighlightSetting?: boolean;
 };
 
 export function useCardTagsAfterRow(
@@ -18,14 +19,21 @@ export function useCardTagsAfterRow(
   options?: Options,
 ) {
   const showCardTags = useStore((state) => state.settings.cardShowTags ?? true);
+  const showFavoriteHighlights = useStore(
+    (state) => state.settings.cardShowFavoriteHighlights ?? true,
+  );
   const { isFavorite, selectedItems } = useCardTagDisplay(card.code, deck);
   const visibleTags =
     showCardTags || options?.respectCardTagSetting === false
       ? selectedItems
       : [];
+  const highlightFavorite =
+    isFavorite &&
+    (showFavoriteHighlights ||
+      options?.respectFavoriteHighlightSetting === false);
 
   return {
-    isFavorite,
+    highlightFavorite,
     renderCardAfter:
       visibleTags.length || renderCardAfter
         ? (card: Card, quantity?: number) => (

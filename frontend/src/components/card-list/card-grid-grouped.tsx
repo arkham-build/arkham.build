@@ -11,6 +11,7 @@ import type { Metadata } from "@/store/slices/metadata.types";
 import { cx } from "@/utils/cx";
 import { preventLeftClick } from "@/utils/prevent-links";
 import { CardScan } from "../card-scan";
+import { CardFavoriteAction } from "../card-tags/card-favorite";
 import { Scroller } from "../ui/scroller";
 import { CardActions } from "./card-actions";
 import css from "./card-grid.module.css";
@@ -238,7 +239,11 @@ function CardGridItem(
         onKeyUp={onPressEnter}
         tabIndex={0}
       >
-        <CardScan card={card} lazy />
+        <CardScan
+          card={card}
+          lazy
+          leftActionSlot={<CardFavoriteAction card={card} />}
+        />
       </Link>
       <div className={css["group-item-actions"]}>
         <CardActions

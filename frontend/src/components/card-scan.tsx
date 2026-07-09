@@ -24,6 +24,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   hideFlipButton?: boolean;
   ignoreTaboo?: boolean;
   lazy?: boolean;
+  leftActionSlot?: React.ReactNode;
   onFlip?: (value: boolean, sideways: boolean) => void;
   preventFlip?: boolean;
   suffix?: string;
@@ -54,6 +55,7 @@ export function CardScanControlled(props: Props) {
     hideFlipButton,
     ignoreTaboo,
     lazy,
+    leftActionSlot,
     suffix,
     ...rest
   } = props;
@@ -170,12 +172,15 @@ export function CardScanControlled(props: Props) {
           )}
         </>
       )}
+      {leftActionSlot && (
+        <div className={css["scan-left-action-slot"]}>{leftActionSlot}</div>
+      )}
     </div>
   );
 }
 
 export function CardScanInner(
-  props: Omit<Props, "card" | "flipped"> & {
+  props: Omit<Props, "card" | "flipped" | "leftActionSlot"> & {
     alt: string;
     url: string;
     initialHidden?: boolean;

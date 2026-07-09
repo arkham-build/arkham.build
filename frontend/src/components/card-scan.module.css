@@ -3,7 +3,7 @@
     position: relative;
     perspective: 600px;
 
-    &:hover .scan-flip-trigger {
+    &:hover :where(.scan-flip-trigger, .scan-left-action-slot > *) {
       visibility: visible;
       opacity: 1;
       transition: opacity 0.125s ease-in;
@@ -29,10 +29,24 @@
     transform: rotateY(180deg);
   }
 
-  .scan-flip-trigger {
+  .scan-flip-trigger,
+  .scan-left-action-slot {
     position: absolute;
     top: 0.25rem;
+    z-index: 1;
+  }
+
+  .scan-flip-trigger {
     right: 0.25rem;
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .scan-left-action-slot {
+    left: 0.25rem;
+  }
+
+  .scan-left-action-slot > * {
     visibility: hidden;
     opacity: 0;
   }

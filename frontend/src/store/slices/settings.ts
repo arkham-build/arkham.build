@@ -103,6 +103,7 @@ export function getInitialSettings(): Settings {
     cardShowIcon: true,
     cardShowDetails: true,
     cardShowTags: true,
+    cardShowFavoriteHighlights: true,
     cardSize: "standard",
     cardShowThumbnail: true,
     collection: {},

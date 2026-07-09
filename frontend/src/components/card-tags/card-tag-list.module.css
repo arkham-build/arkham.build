@@ -22,6 +22,6 @@
 }
 
 .favorite-icon {
-  fill: var(--health);
-  stroke: var(--health);
+  fill: var(--survivor);
+  stroke: var(--survivor);
 }

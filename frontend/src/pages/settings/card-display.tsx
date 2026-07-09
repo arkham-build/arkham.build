@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/select";
 import { useStore } from "@/store";
 import type { TagItem } from "@/store/selectors/card-tags";
 import { selectMetadata } from "@/store/selectors/shared";
+import { getAccentColorsForFaction } from "@/utils/use-accent-color";
 import css from "./card-display.module.css";
 import type { SettingProps } from "./types";
 
@@ -105,17 +106,6 @@ export function CardDisplaySettings(props: SettingProps) {
           checked={resolve("cardShowCollectionNumber")}
           onCheckedChange={(value) => {
             setValue({ cardShowCollectionNumber: !!value });
-          }}
-        />
-      </Field>
-
-      <Field>
-        <Checkbox
-          id="show-tags"
-          label={t("settings.display.card_show_tags")}
-          checked={resolve("cardShowTags") ?? true}
-          onCheckedChange={(value) => {
-            setValue({ cardShowTags: !!value });
           }}
         />
       </Field>
@@ -219,12 +209,38 @@ export function CardDisplaySettings(props: SettingProps) {
         </div>
       </Field>
 
+      <Field>
+        <Checkbox
+          id="show-tags"
+          label={t("settings.display.card_show_tags")}
+          checked={resolve("cardShowTags") ?? true}
+          onCheckedChange={(value) => {
+            setValue({ cardShowTags: !!value });
+          }}
+        />
+      </Field>
+
+      <Field>
+        <Checkbox
+          id="show-favorite-highlights"
+          label={t("settings.display.card_show_favorite_highlights")}
+          checked={resolve("cardShowFavoriteHighlights") ?? true}
+          onCheckedChange={(value) => {
+            setValue({ cardShowFavoriteHighlights: !!value });
+          }}
+        />
+      </Field>
+
       <div className={css["preview"]}>
         <h4>{t("settings.preview")}</h4>
         <ol>
           {PREVIEW_CARDS.map((id) => {
             const card = metadata.cards[id];
             const tags = getPreviewCardTags(id);
+            const favorite = id === "01033";
+            const showFavoriteHighlight =
+              favorite && (resolve("cardShowFavoriteHighlights") ?? true);
+
             if (!card) return null;
             return (
               <ListCardInner
@@ -234,6 +250,7 @@ export function CardDisplaySettings(props: SettingProps) {
                 cardShowCollectionNumber={resolve("cardShowCollectionNumber")}
                 cardSkillIconsDisplay={resolve("cardSkillIconsDisplay")}
                 cardShowUniqueIcon={resolve("cardShowUniqueIcon")}
+                className={showFavoriteHighlight ? css["favorite"] : undefined}
                 key={id}
                 omitBorders
                 omitDetails={!resolve("cardShowDetails")}
@@ -245,6 +262,11 @@ export function CardDisplaySettings(props: SettingProps) {
                     : undefined
                 }
                 size={resolve("cardSize")}
+                style={
+                  showFavoriteHighlight
+                    ? getAccentColorsForFaction(card)
+                    : undefined
+                }
               />
             );
           })}

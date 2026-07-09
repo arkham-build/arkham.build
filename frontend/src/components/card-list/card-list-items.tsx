@@ -34,11 +34,8 @@ export function CardListItemCompact(props: Props) {
 
   const { className, renderCardAfter, style, ...restListCardProps } =
     listCardProps ?? {};
-  const { isFavorite, renderCardAfter: renderTagsAfter } = useCardTagsAfterRow(
-    card,
-    resolvedDeck,
-    renderCardAfter,
-  );
+  const { highlightFavorite, renderCardAfter: renderTagsAfter } =
+    useCardTagsAfterRow(card, resolvedDeck, renderCardAfter);
   const accentColor = useAccentColor(card);
 
   return (
@@ -46,7 +43,7 @@ export function CardListItemCompact(props: Props) {
       {...restListCardProps}
       annotation={resolvedDeck?.annotations[card.code]}
       card={card}
-      className={cx(className, isFavorite && css["favorite"])}
+      className={cx(className, highlightFavorite && css["favorite"])}
       disableKeyboard
       highlightQuantity
       isActive={index === currentTop}
@@ -54,7 +51,7 @@ export function CardListItemCompact(props: Props) {
       quantity={quantity}
       renderCardAfter={renderTagsAfter}
       showCardText={viewMode === "card-text"}
-      style={isFavorite ? { ...style, ...accentColor } : style}
+      style={highlightFavorite ? { ...style, ...accentColor } : style}
     />
   );
 }
