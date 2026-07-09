@@ -199,6 +199,7 @@ function DecklistCard({
     card,
     deck,
     renderCardAfter,
+    { respectCardTagSetting: false },
   );
 
   return (

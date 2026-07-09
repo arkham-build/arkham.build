@@ -7,14 +7,22 @@ import { useCardTagDisplay } from "./use-card-tags";
 
 type RenderCardAfter = (card: Card, quantity?: number) => React.ReactNode;
 
+type Options = {
+  respectCardTagSetting?: boolean;
+};
+
 export function useCardTagsAfterRow(
   card: Card,
   deck: ResolvedDeck | undefined,
   renderCardAfter: RenderCardAfter | undefined,
+  options?: Options,
 ) {
   const showCardTags = useStore((state) => state.settings.cardShowTags ?? true);
   const { isFavorite, selectedItems } = useCardTagDisplay(card.code, deck);
-  const visibleTags = showCardTags ? selectedItems : [];
+  const visibleTags =
+    showCardTags || options?.respectCardTagSetting === false
+      ? selectedItems
+      : [];
 
   return {
     isFavorite,
