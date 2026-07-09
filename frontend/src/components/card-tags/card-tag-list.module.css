@@ -22,6 +22,6 @@
 }
 
 .favorite-icon {
-  fill: var(--accent-color, var(--nord-9));
-  stroke: var(--accent-color, var(--nord-9));
+  fill: var(--health);
+  stroke: var(--health);
 }

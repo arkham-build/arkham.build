@@ -1,7 +1,7 @@
 .favorite-icon {
-  stroke: var(--accent-color, var(--nord-9));
+  stroke: var(--health);
 }
 
 .favorite.active .favorite-icon {
-  fill: var(--accent-color, var(--nord-9));
+  fill: var(--health);
 }
