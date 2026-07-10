@@ -11,7 +11,8 @@ export function encodeSearch(params: Record<string, unknown>): URLSearchParams {
             searchParams.append(key, v.toString());
           }
         });
-      } else if (typeof value === "string") {
+      } else {
+        // oxlint-disable-next-line typescript/no-base-to-string
         searchParams.append(key, String(value));
       }
     }

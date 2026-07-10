@@ -249,7 +249,8 @@ function encodeParams(data: Record<string, unknown>) {
       for (const item of value) {
         payload.append(key, item.toString());
       }
-    } else if (typeof value === "string") {
+    } else {
+      // oxlint-disable-next-line typescript/no-base-to-string
       payload.append(key, value.toString());
     }
   }

@@ -156,12 +156,13 @@ export function formatDeckAsText(state: StoreState, deck: ResolvedDeck) {
 
       let str = t("common.none");
       if (value) {
-        if (selection.type === "faction" && typeof value === "string") {
+        if (selection.type === "faction") {
+          // oxlint-disable-next-line typescript/no-base-to-string typescript/restrict-template-expressions
           str = t(`common.factions.${value}`);
         } else if (selection.type === "option") {
           str = formatDeckOptionString((value as OptionSelect).name);
-        } else if (typeof value === "string") {
-          str = value;
+        } else {
+          str = value as string;
         }
       }
 

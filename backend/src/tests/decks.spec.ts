@@ -1469,6 +1469,7 @@ describe("Deck routes", () => {
       });
 
       expect(res.status).toBe(200);
+      expect(fetch.mock.calls[1]?.[1]?.body).toBe("meta=%7B%7D&xp=3");
 
       const body = DeckSchema.parse(await res.json());
       expect(body).toMatchObject({

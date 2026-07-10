@@ -1,11 +1,6 @@
-import {
-  type Deck,
-  DeckSchema,
-  type Slots,
-  SlotsSchema,
-} from "@arkham-build/shared";
+import { type Deck, DeckSchema, SlotsSchema } from "@arkham-build/shared";
 import type { Insertable, Selectable } from "kysely";
-import type { Deck as DbDeck, Json } from "../db/schema.types.ts";
+import type { Deck as DbDeck, Json, JsonValue } from "../db/schema.types.ts";
 
 export const ACCOUNT_PROVIDER_TYPE = "account";
 
@@ -43,7 +38,7 @@ function stringifyJson(value: DeckRow["meta"]): string {
   return value == null ? "" : JSON.stringify(value);
 }
 
-function parseNullableSlots(value: Slots) {
+function parseNullableSlots(value: JsonValue) {
   if (value == null) return null;
   return SlotsSchema.parse(value);
 }
