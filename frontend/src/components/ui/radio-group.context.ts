@@ -39,7 +39,7 @@ export function useRadioGroupItem(value: string, itemDisabled?: boolean) {
 
   const handleChange = useCallback(() => {
     ctx.onValueChange?.(value);
-  }, [ctx.onValueChange, value]);
+  }, [ctx, value]);
 
   return { checked, disabled, handleChange, id, name: ctx.name };
 }

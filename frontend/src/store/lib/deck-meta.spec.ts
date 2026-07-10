@@ -23,9 +23,8 @@ describe("decodeCustomizations()", () => {
 
   it("should decode customizations", () => {
     const state = store.getState();
-    expect(
-      decodeCustomizations(sampleCustomizations, state.metadata),
-    ).toMatchInlineSnapshot(`
+    expect(decodeCustomizations(sampleCustomizations, state.metadata))
+      .toMatchInlineSnapshot(`
       {
         "09021": {
           "0": {

@@ -20,6 +20,7 @@ import type { SessionAuthHonoEnv } from "../../../hono-env.ts";
 import type { OAuthAccessToken } from "../../../oauth.ts";
 import { refreshAccessToken } from "../api-oauth.ts";
 import { ApiError } from "./errors.ts";
+import { mergeHeaders } from "./headers.ts";
 import { request, type WrappedResponse } from "./request.ts";
 
 type ArkhamDbRequest = <T, R = never>(
@@ -106,10 +107,9 @@ async function executeArkhamDbRequest<T, R = never>(
         `/api/oauth2${path}`,
         {
           ...options,
-          headers: {
-            ...options.headers,
+          headers: mergeHeaders(options.headers, {
             Authorization: `Bearer ${accessToken}`,
-          },
+          }),
         },
       ),
       schema,

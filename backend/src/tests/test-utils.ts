@@ -116,7 +116,7 @@ async function getDependencies() {
 export const test = base.extend<{
   dependencies: Awaited<ReturnType<typeof getDependencies>>;
 }>({
-  // biome-ignore lint/correctness/noEmptyPattern: vitest expects a destructure here
+  // oxlint-disable-next-line no-empty-pattern -- vitest expects a destructure here
   dependencies: async ({}, use) => {
     const dependencies = await getDependencies();
     await use(dependencies);

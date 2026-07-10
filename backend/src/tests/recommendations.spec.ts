@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: test code */
+/* oxlint-disable typescript/no-explicit-any -- test code */
 import { describe, expect } from "vitest";
 import { test } from "./test-utils.ts";
 
@@ -436,7 +436,7 @@ describe("GET /v2/public/recommendations", () => {
   });
 });
 
-function top(n = 10, body: any = undefined) {
+function top(n = 10, body: any = null) {
   return body.data.recommendations.recommendations
     .sort((a: any, b: any) => b.recommendation - a.recommendation)
     .slice(0, n);

@@ -191,7 +191,7 @@ function CardSetLink(props: {
       >
         {shift < 0 && <ChevronsLeftIcon />}
         <span
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
+          // oxlint-disable-next-line react/no-danger -- trusted origin.
           dangerouslySetInnerHTML={{
             __html: parseCardTitle(displayAttribute(targetCard, "name")),
           }}

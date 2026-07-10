@@ -156,12 +156,12 @@ export function formatDeckAsText(state: StoreState, deck: ResolvedDeck) {
 
       let str = t("common.none");
       if (value) {
-        if (selection.type === "faction") {
+        if (selection.type === "faction" && typeof value === "string") {
           str = t(`common.factions.${value}`);
         } else if (selection.type === "option") {
           str = formatDeckOptionString((value as OptionSelect).name);
-        } else {
-          str = value as string;
+        } else if (typeof value === "string") {
+          str = value;
         }
       }
 
@@ -285,7 +285,7 @@ function formatCardAsText(
       .split("\n")
       .map((n) => {
         const val = n.split(".")[0].trim();
-        return val.endsWith(":") ? `${val}` : `${val}.`;
+        return val.endsWith(":") ? val : `${val}.`;
       });
 
     const options = card.customization_options as CustomizationOption[];

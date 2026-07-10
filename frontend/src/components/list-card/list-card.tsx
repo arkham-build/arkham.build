@@ -4,8 +4,10 @@ import { useRestingTooltip } from "../ui/tooltip.hooks";
 import type { Props as ListCardInnerProps } from "./list-card-inner";
 import { ListCardInner } from "./list-card-inner";
 
-export interface Props
-  extends Omit<ListCardInnerProps, "figureRef" | "referenceProps"> {
+export interface Props extends Omit<
+  ListCardInnerProps,
+  "figureRef" | "referenceProps"
+> {
   tooltip?: React.ReactNode;
 }
 

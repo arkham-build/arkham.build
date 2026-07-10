@@ -130,7 +130,6 @@ export function CardList(props: CardListImplementationProps) {
     activeRange.current = range;
   }, []);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a search should reset scroll position.
   useEffect(() => {
     setCurrentTop(-1);
     activeGroup.current = undefined;
@@ -138,7 +137,7 @@ export function CardList(props: CardListImplementationProps) {
     virtuosoRef.current?.scrollToIndex(0);
   }, [search]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a change to card count should reset scroll position.
+  /* oxlint-disable react/exhaustive-deps -- a change to card count should reset scroll position. */
   useEffect(() => {
     if (activeGroup.current) {
       const offset = findGroupOffset(data, activeGroup.current);
@@ -147,6 +146,7 @@ export function CardList(props: CardListImplementationProps) {
       virtuosoRef.current?.scrollToIndex(0);
     }
   }, [data?.cards.length]);
+  /* oxlint-enable react/exhaustive-deps */
 
   const makeItemContent = (index: number, currentTop: number) => {
     const card = data.cards[index];

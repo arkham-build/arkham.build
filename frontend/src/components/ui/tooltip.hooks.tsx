@@ -101,7 +101,9 @@ export function useRestingTooltip(
 ) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [skipCloseTransition, setSkipCloseTransition] = useState(false);
-  const restTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const restTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const suppressUntilLeaveRef = useRef(false);
 
   useEffect(

@@ -188,7 +188,7 @@ export function filterAttribute(attributeFilter: AttributeFilter) {
 
   return (card: Card) => {
     const attr =
-      // biome-ignore lint/suspicious/noExplicitAny: need to access dynamic properties.
+      // oxlint-disable-next-line typescript/no-explicit-any -- need to access dynamic properties.
       (card as any)[`real_${attribute}`] ?? (card as any)[attribute];
 
     switch (op) {
@@ -219,7 +219,7 @@ export function filterCardTags(
   cardTags: CardTagsState,
   metadata: Metadata,
   fronts: LookupTables["relations"]["fronts"],
-  deck: Pick<ResolvedDeck, "deckCardTags"> | undefined = undefined,
+  deck?: Pick<ResolvedDeck, "deckCardTags">,
 ) {
   if (!value.length) return undefined;
 

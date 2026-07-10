@@ -40,13 +40,13 @@ export function CardFaq(props: Props) {
             <li key={item.id}>
               <div
                 className={css["question"]}
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is from trusted source.
+                // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
                 dangerouslySetInnerHTML={{
                   __html: parseCardTextHtml(parseMarkdown(item.question)),
                 }}
               />
               <div
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is from trusted source.
+                // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
                 dangerouslySetInnerHTML={{
                   __html: parseCardTextHtml(parseMarkdown(item.ruling)),
                 }}

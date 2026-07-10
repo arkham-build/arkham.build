@@ -19,7 +19,7 @@ function LegalNotice() {
         <h1>Legal Notice</h1>
         <div
           className={css["longform"]}
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: safe.
+          // oxlint-disable-next-line react/no-danger -- safe.
           dangerouslySetInnerHTML={{
             __html: legalNotice,
           }}

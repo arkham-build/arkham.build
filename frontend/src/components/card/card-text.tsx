@@ -21,7 +21,7 @@ export function CardText(props: Props) {
     <div className={css["text"]} data-testid="card-text">
       {text && (
         <p
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is from trusted source.
+          // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
           dangerouslySetInnerHTML={{
             __html: parseCardTextHtml(text, { bullets: true }),
           }}
@@ -47,7 +47,7 @@ export function CardText(props: Props) {
   const flavorNode = !!flavor && size !== "tooltip" && (
     <div className={css["flavor"]}>
       <p
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is from trusted source.
+        // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
         dangerouslySetInnerHTML={{
           __html: parseCardTextHtml(flavor, { bullets: false }),
         }}

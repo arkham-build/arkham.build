@@ -26,10 +26,11 @@ export function DeckCollectionImport() {
     async (evt: React.SubmitEvent<HTMLFormElement>) => {
       evt.preventDefault();
 
-      const input = new FormData(evt.currentTarget).get("deck-id")?.toString();
+      const value = new FormData(evt.currentTarget).get("deck-id");
+      const input = typeof value === "string" ? value : "";
 
       try {
-        await importDeck(input ?? "");
+        await importDeck(input);
         setOpen(false);
       } catch {
         return;

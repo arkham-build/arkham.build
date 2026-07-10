@@ -2,7 +2,6 @@ import type { SVGProps } from "react";
 
 export function Logo(props: SVGProps<SVGSVGElement>) {
   return (
-    // biome-ignore lint/a11y/noSvgWithoutTitle: not relevant.
     <svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"

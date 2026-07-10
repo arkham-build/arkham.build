@@ -1,0 +1,95 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "react",
+    "jsx-a11y",
+    "import",
+    "promise",
+    "vitest"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "options": {
+    "typeAware": true,
+    "maxWarnings": 10
+  },
+  "rules": {
+    "default-param-last": "error",
+    "eqeqeq": ["error", "smart"],
+    "jsx-a11y/anchor-has-content": "error",
+    "jsx-a11y/click-events-have-key-events": "error",
+    "jsx-a11y/control-has-associated-label": "off",
+    "jsx-a11y/no-autofocus": ["error", { "ignoreNonDOM": true }],
+    "jsx-a11y/no-static-element-interactions": "error",
+    "jsx-a11y/prefer-tag-over-role": "error",
+    "no-console": [
+      "error",
+      {
+        "allow": ["warn", "error", "time", "timeEnd", "debug", "info"]
+      }
+    ],
+    "no-else-return": "error",
+    "no-param-reassign": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "oxc/no-barrel-file": "error",
+    "react/exhaustive-deps": "error",
+    "react/no-array-index-key": "error",
+    "react/no-danger": "error",
+    "react/only-export-components": "error",
+    "react/self-closing-comp": "error",
+    "require-await": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-inferrable-types": "error",
+    "typescript/no-non-null-assertion": "error",
+    "typescript/unbound-method": "off",
+    "typescript/no-unnecessary-template-expression": "error",
+    "typescript/prefer-enum-initializers": "error",
+    "unicorn/prefer-number-properties": "error",
+    "vitest/no-conditional-expect": "off",
+    "vitest/require-mock-type-parameters": "off",
+    "vitest/no-standalone-expect": [
+      "error",
+      {
+        "additionalTestBlockFunctions": ["test", "test.for"]
+      }
+    ]
+  },
+  "env": {
+    "builtin": true
+  },
+  "overrides": [
+    {
+      "files": ["**/backend/**", "**/shared/**"],
+      "plugins": [
+        "typescript",
+        "unicorn",
+        "oxc",
+        "import",
+        "promise",
+        "vitest",
+        "node"
+      ]
+    }
+  ],
+  "ignorePatterns": [
+    "**/dist",
+    "**/coverage",
+    "**/playwright-report",
+    "**/test-results",
+    "**/.wrangler",
+    "test/fullstack/arkhamdb-docker"
+  ]
+}

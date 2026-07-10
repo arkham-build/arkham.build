@@ -58,11 +58,11 @@ export function CardErrata(props: Props) {
       </summary>
       {errata.data.map(({ ruling }, index) => (
         <p
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is from trusted source.
+          // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
           dangerouslySetInnerHTML={{
             __html: parseCardTextHtml(ruling, { bullets: true }),
           }}
-          // biome-ignore lint/suspicious/noArrayIndexKey: order is stable from the API.
+          // oxlint-disable-next-line react/no-array-index-key -- order is stable from the API.
           key={index}
         />
       ))}

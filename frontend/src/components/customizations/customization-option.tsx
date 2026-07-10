@@ -100,7 +100,7 @@ export function CustomizationOption(props: Props) {
       <div className={css["content"]}>
         {htmlText && (
           <p
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is from trusted source.
+            // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
             dangerouslySetInnerHTML={{
               __html: parseCustomizationTextHtml(htmlText),
             }}

@@ -164,7 +164,7 @@ function useAddFanMadeProject() {
         });
 
         console.error(err);
-        // biome-ignore lint/suspicious/noExplicitAny: debug
+        // oxlint-disable-next-line typescript/no-explicit-any -- debug
         console.info("error details:", (err as any)?.issues);
       }
     },
@@ -452,7 +452,7 @@ function Registry({ onAddProject, listingsQuery, filterFn }: RegistryProps) {
             const projectOwned = owned[meta.code];
 
             const addProject = () => {
-              onAddFromRegistry(listing);
+              void onAddFromRegistry(listing).catch(console.error);
             };
 
             return (
@@ -609,7 +609,7 @@ function ProjectCard(props: {
       <div className={cx(css["content"], "longform")}>
         {meta.description && (
           <div
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: escaped in markdown parser
+            // oxlint-disable-next-line react/no-danger -- escaped in markdown parser
             dangerouslySetInnerHTML={{
               __html: parseMarkdown(meta.description),
             }}
@@ -778,9 +778,10 @@ function useProjectRegistry(onAddProject: (payload: unknown) => Promise<void>) {
       evt.stopPropagation();
 
       const formData = new FormData(evt.currentTarget);
+      const value = formData.get("url");
+      if (typeof value !== "string" || !value) return;
 
-      const url = formData.get("url")?.toString();
-      if (!url) return;
+      const url = value;
 
       await onAddQuery(async () => {
         const res = await fetch(url);

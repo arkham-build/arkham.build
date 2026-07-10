@@ -40,7 +40,7 @@ export function AutoSizingTextarea(props: TextareaProps) {
         scrollParent.scrollTop = scrollPosition ?? 0;
       }
     },
-    [props.onChange],
+    [props],
   );
 
   return (

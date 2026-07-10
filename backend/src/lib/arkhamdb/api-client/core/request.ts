@@ -9,7 +9,7 @@ import {
   isArkhamDBApiError,
   isOAuthErrorResponse,
 } from "./errors.ts";
-import { baseHeaders } from "./headers.ts";
+import { baseHeaders, mergeHeaders } from "./headers.ts";
 
 export type WrappedResponse<T> = {
   data: T;
@@ -35,10 +35,7 @@ export async function request<T, E extends HonoEnv = HonoEnv>(
 
     res = await fetchWithTimeout(`${config.ARKHAMDB_BASE_URL}${path}`, {
       ...options,
-      headers: {
-        ...baseHeaders(method),
-        ...options.headers,
-      },
+      headers: mergeHeaders(baseHeaders(method), options.headers),
       signal,
       timeoutMs: ARKHAMDB_REQUEST_TIMEOUT_MS,
     });

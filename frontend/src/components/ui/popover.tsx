@@ -46,7 +46,7 @@ export function PopoverTrigger({
 
   // `asChild` allows the user to pass any element as the anchor
   if (asChild && isValidElement(children)) {
-    // biome-ignore lint/suspicious/noExplicitAny: safe.
+    // oxlint-disable-next-line typescript/no-explicit-any -- safe.
     const { ref: _, ...childProps } = (children as React.ReactElement<any>)
       .props;
     return cloneElement(

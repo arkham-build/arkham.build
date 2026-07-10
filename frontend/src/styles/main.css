@@ -1,6 +1,3 @@
-/** biome-ignore-all lint/a11y: icomoon icons. */
-/** biome-ignore-all lint/complexity/noImportantStyles: icomoon icons. */
-
 @layer base {
   :root {
     --font-family-ui:

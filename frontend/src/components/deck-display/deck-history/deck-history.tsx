@@ -59,7 +59,7 @@ export function DeckHistory(props: Props) {
             className={isCurrent ? css["current"] : undefined}
             data={stats}
             deck={deck}
-            // biome-ignore lint/suspicious/noArrayIndexKey: no natural key available.
+            // oxlint-disable-next-line react/no-array-index-key -- no natural key available.
             key={idx}
             showDates={origin === "local"}
             showDiscounts

@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/a11y: TODO */
+/* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-element-interactions -- TODO */
 import { ChevronLeftIcon, FilterIcon } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";

@@ -6,8 +6,10 @@ import {
 } from "./radio-group.context";
 import css from "./radio-group.module.css";
 
-export interface RadioGroupProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+export interface RadioGroupProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onChange"
+> {
   disabled?: boolean;
   onValueChange?(value: string): void;
   value?: string;
@@ -27,8 +29,10 @@ export function RadioGroup(props: RadioGroupProps) {
   );
 }
 
-export interface RadioGroupItemProps
-  extends Omit<React.HTMLAttributes<HTMLLabelElement>, "id" | "onChange"> {
+export interface RadioGroupItemProps extends Omit<
+  React.HTMLAttributes<HTMLLabelElement>,
+  "id" | "onChange"
+> {
   disabled?: boolean;
   value: string;
 }

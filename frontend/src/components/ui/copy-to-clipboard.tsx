@@ -16,7 +16,7 @@ export function CopyToClipboard(props: Props) {
   const { copyToClipboard, isCopied } = useCopyToClipboard();
 
   const onClick = useCallback(() => {
-    copyToClipboard(text);
+    void copyToClipboard(text).catch(console.error);
   }, [copyToClipboard, text]);
 
   return (

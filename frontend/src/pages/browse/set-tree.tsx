@@ -202,7 +202,7 @@ function SetTreeNode({
       {expanded && hasChildren && (
         <SetTreeChildren
           activeKey={activeKey}
-          // biome-ignore lint/style/noNonNullAssertion: checked implicitly
+          // oxlint-disable-next-line typescript/no-non-null-assertion -- checked implicitly
           items={item.children!}
           depth={depth + 1}
         />

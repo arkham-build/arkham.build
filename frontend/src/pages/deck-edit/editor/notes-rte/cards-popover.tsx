@@ -58,12 +58,12 @@ export function CardsPopover(props: Props) {
   const locale = useStore((state) => state.settings.locale);
 
   const onUpdateDefaults = useCallback(() => {
-    setSettings({
+    void setSettings({
       notesEditor: {
         defaultFormat: cardFormat,
         defaultOrigin: cardOrigin,
       },
-    });
+    }).catch(console.error);
   }, [setSettings, cardFormat, cardOrigin]);
 
   const cards = useStore(

@@ -353,12 +353,14 @@ function useUpdateDeckTitleAndTags(
 
       try {
         const values = new FormData(evt.currentTarget);
+        const name = values.get("name");
+        const tags = values.get("tags");
 
         await updateDeckPropertiesMutation.mutateAsync({
           deckId,
           properties: {
-            name: values.get("name")?.toString() || "",
-            tags: values.get("tags")?.toString() || "",
+            name: typeof name === "string" ? name : "",
+            tags: typeof tags === "string" ? tags : "",
           },
         });
 

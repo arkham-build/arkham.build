@@ -7,7 +7,7 @@ type Props = {
 export function CardTagLabel({ children }: Props) {
   return (
     <span
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: sanitized by parseCardTextHtml.
+      // oxlint-disable-next-line react/no-danger -- SAFETY: escaped
       dangerouslySetInnerHTML={{
         __html: parseCardTextHtml(children, { newLines: "skip" }),
       }}

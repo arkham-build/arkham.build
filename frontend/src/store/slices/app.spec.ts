@@ -44,7 +44,7 @@ describe("app deck write-through actions", () => {
 
     await expect(
       store.getState().uploadDeckToProvider(client, "local", "account"),
-    ).rejects.toThrow();
+    ).rejects.toThrow("boom");
 
     expect(store.getState().data.decks.local.source).toBeNull();
   });

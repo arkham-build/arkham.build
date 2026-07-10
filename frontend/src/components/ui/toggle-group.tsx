@@ -21,16 +21,20 @@ const ToggleGroupContext = createContext<ToggleGroupContextValue>({
   onItemClick: () => {},
 });
 
-interface ToggleGroupSingleProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+interface ToggleGroupSingleProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onChange"
+> {
   disabled?: boolean;
   type: "single";
   value?: string;
   onValueChange?(value: string): void;
 }
 
-interface ToggleGroupMultipleProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+interface ToggleGroupMultipleProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onChange"
+> {
   disabled?: boolean;
   type: "multiple";
   value?: string[];

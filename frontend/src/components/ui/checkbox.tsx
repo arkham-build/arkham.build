@@ -3,11 +3,10 @@ import { useCallback } from "react";
 import { cx } from "@/utils/cx";
 import css from "./checkbox.module.css";
 
-interface Props
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    "label" | "onChange"
-  > {
+interface Props extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "label" | "onChange"
+> {
   className?: string;
   "data-testid"?: string;
   hideLabel?: boolean;

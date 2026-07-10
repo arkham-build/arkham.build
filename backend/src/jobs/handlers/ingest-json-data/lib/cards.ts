@@ -24,16 +24,13 @@ type CardPackWithTranslations = {
 export function mergeTranslations(
   cardPacks: CardPackWithTranslations[],
 ): TranslationTable<JsonDataCard> {
-  return cardPacks.reduce(
-    (acc, pack) => {
-      for (const [locale, translations] of Object.entries(pack.translations)) {
-        acc[locale] = { ...acc[locale], ...translations };
-      }
+  return cardPacks.reduce((acc, pack) => {
+    for (const [locale, translations] of Object.entries(pack.translations)) {
+      acc[locale] = { ...acc[locale], ...translations };
+    }
 
-      return acc;
-    },
-    {} as TranslationTable<JsonDataCard>,
-  );
+    return acc;
+  }, {} as TranslationTable<JsonDataCard>);
 }
 
 export function resolveCards(

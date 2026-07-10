@@ -249,7 +249,7 @@ function encodeParams(data: Record<string, unknown>) {
       for (const item of value) {
         payload.append(key, item.toString());
       }
-    } else {
+    } else if (typeof value === "string") {
       payload.append(key, value.toString());
     }
   }

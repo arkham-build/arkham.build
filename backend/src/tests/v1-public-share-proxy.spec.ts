@@ -19,6 +19,7 @@ describe("legacy proxy", () => {
     dependencies,
   }) => {
     const fetchMock = vi.fn((input: string | URL | Request) => {
+      // oxlint-disable-next-line typescript/no-base-to-string
       expect(String(input)).toBe(
         "http://localhost:8787/v1/public/share/legacy-share",
       );
@@ -43,6 +44,7 @@ describe("legacy proxy", () => {
   }) => {
     const legacyDeck = createDeck("legacy-share");
     const fetchMock = vi.fn((input: string | URL | Request) => {
+      // oxlint-disable-next-line typescript/no-base-to-string
       expect(String(input)).toBe(
         "http://localhost:8787/v1/public/share_history/legacy-share",
       );

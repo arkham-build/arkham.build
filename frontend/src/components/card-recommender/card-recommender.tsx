@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: checked */
+/* oxlint-disable typescript/no-non-null-assertion -- checked */
 
 import type { Card } from "@arkham-build/shared";
 import {
@@ -165,7 +165,7 @@ function DeckCount(props: { decksAnalyzed?: number }) {
   const { decksAnalyzed } = props;
   const { t } = useTranslation();
 
-  if (!decksAnalyzed == null) return null;
+  if (decksAnalyzed == null) return null;
 
   return (
     <span className={css["toggle-decks-count"]}>
@@ -253,6 +253,7 @@ function CardRecommenderInner(
     key: "recommendations",
   };
 
+  /* oxlint-disable react/exhaustive-deps -- these lookup tables are rebuilt together on every render. */
   const listCardPropsWithRecommendations = useCallback(
     (card: Card) => ({
       ...getListCardProps?.(card),
@@ -275,6 +276,7 @@ function CardRecommenderInner(
       idMappings,
     ],
   );
+  /* oxlint-enable react/exhaustive-deps */
 
   if (sortedCards.length === 0) {
     return (

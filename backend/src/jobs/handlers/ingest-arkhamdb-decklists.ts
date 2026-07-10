@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: not relevant for script. */
+/* oxlint-disable typescript/no-explicit-any -- not relevant for script. */
 
 import assert from "node:assert";
 import { createReadStream, createWriteStream } from "node:fs";
@@ -144,7 +144,7 @@ async function ingest(config: Config, db: Database) {
           }
 
           if (decklistsByHash.has(hash)) {
-            // biome-ignore lint/style/noNonNullAssertion: checked above
+            // oxlint-disable-next-line typescript/no-non-null-assertion -- checked above
             decklistsByHash.get(hash)!.push(deckInfo);
           } else {
             decklistsByHash.set(hash, [deckInfo]);
@@ -220,7 +220,7 @@ async function ingest(config: Config, db: Database) {
           const original = sorted[0];
 
           for (const dupe of curr.slice(1)) {
-            // biome-ignore lint/style/noNonNullAssertion: length checked above
+            // oxlint-disable-next-line typescript/no-non-null-assertion -- length checked above
             acc.push({ duplicate_of: original!.id, id: dupe.id });
           }
 

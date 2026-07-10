@@ -57,7 +57,7 @@ export function CustomizationsEditor(props: Props) {
             choice={choices?.[i]}
             disabled={!canEdit}
             index={i}
-            // biome-ignore lint/suspicious/noArrayIndexKey: order is stable.
+            // oxlint-disable-next-line react/no-array-index-key -- order is stable.
             key={i}
             onChange={onChangeCustomization}
             option={option}

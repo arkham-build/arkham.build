@@ -48,7 +48,6 @@
     },
     "auth": {
       "email": "電子郵件",
-      "email_delivery_notice": "目前無法寄送電子郵件至 @icloud.com 與 @me.com 信箱，請暫時改用其他電子郵件地址。",
       "email_or_username": "電子郵件或使用者名稱",
       "errors": {
         "account_not_verified": "你的帳號尚未驗證。登入前請先<verifyLink>驗證</verifyLink>你的電子郵件。",

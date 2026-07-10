@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: test code */
+/* oxlint-disable typescript/no-explicit-any -- test code */
 
 import {
   CARD_TAG_FAVORITE_ID,

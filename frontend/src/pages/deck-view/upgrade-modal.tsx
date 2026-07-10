@@ -229,7 +229,7 @@ export function UpgradeModal(props: Props) {
                 {t("deck_view.upgrade_modal.xp_gained")}
               </FieldLabel>
               <input
-                // biome-ignore lint/a11y/noAutofocus: this is a modal.
+                // oxlint-disable-next-line jsx-a11y/no-autofocus -- this is a modal.
                 autoFocus
                 onChange={onXpChange}
                 min="0"

@@ -119,6 +119,7 @@ export function TabsList({
       onKeyDown={handleKeyDown}
       ref={ref}
       role="tablist"
+      tabIndex={-1}
     >
       {children}
     </div>

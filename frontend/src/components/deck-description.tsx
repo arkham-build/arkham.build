@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: not relevant. */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: catches onclick bubbles up from content. */
+/* oxlint-disable jsx-a11y/click-events-have-key-events -- not relevant. */
+/* oxlint-disable jsx-a11y/no-static-element-interactions -- catches onclick bubbles up from content. */
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useCardLinkTooltip } from "@/components/card-tooltip/use-card-link-tooltip";
@@ -78,7 +78,7 @@ function DeckDescription(props: Props) {
           className,
         )}
         data-testid="description-content"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: we sanitize html content.
+        // oxlint-disable-next-line react/no-danger -- we sanitize html content.
         dangerouslySetInnerHTML={descriptionMarkup}
         onClick={onLinkClick}
         {...referenceProps}

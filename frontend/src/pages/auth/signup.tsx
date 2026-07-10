@@ -59,8 +59,6 @@ function Signup() {
       }
     >
       <AuthForm onSubmit={onSubmit}>
-        <Notice variant="info">{t("auth.email_delivery_notice")}</Notice>
-
         {signupMutation.error && (
           <ErrorBox>
             {errorMapper(signupMutation.error, t, "auth.errors.signup_failed")}

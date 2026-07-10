@@ -6,9 +6,7 @@ import type {
 } from "@arkham-build/shared";
 import localCardData from "../../../../data/card-patches/index.ts";
 import localCycles from "../../../../data/cycles.json" with { type: "json" };
-import localEncounterSets from "../../../../data/encounter_sets.json" with {
-  type: "json",
-};
+import localEncounterSets from "../../../../data/encounter_sets.json" with { type: "json" };
 import localPacks from "../../../../data/packs.json" with { type: "json" };
 
 type LocalCard = JsonDataCard & {

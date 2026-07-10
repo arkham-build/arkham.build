@@ -34,7 +34,7 @@ export function CardTabooText(props: Props) {
             paused={!textTransformed}
             tooltip={
               <span
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
+                // oxlint-disable-next-line react/no-danger -- trusted origin.
                 dangerouslySetInnerHTML={{
                   __html: parseCardTextHtml(
                     displayAttribute(props.card, "taboo_text_change"),
@@ -53,7 +53,7 @@ export function CardTabooText(props: Props) {
               ) : (
                 <p className={css["taboo-change"]}>
                   <em
-                    // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
+                    // oxlint-disable-next-line react/no-danger -- trusted origin.
                     dangerouslySetInnerHTML={{
                       __html: parseCardTextHtml(
                         displayAttribute(card, "taboo_text_change"),
@@ -72,7 +72,7 @@ export function CardTabooText(props: Props) {
                 <summary>{t("common.taboo_original_text")}</summary>
                 <div className={cx(css["text"])}>
                   <div
-                    // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
+                    // oxlint-disable-next-line react/no-danger -- trusted origin.
                     dangerouslySetInnerHTML={{
                       __html: parseCardTextHtml(
                         displayAttribute(original as Card, "text"),
@@ -81,7 +81,7 @@ export function CardTabooText(props: Props) {
                   />
                   {card.real_back_text && (
                     <div
-                      // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
+                      // oxlint-disable-next-line react/no-danger -- trusted origin.
                       dangerouslySetInnerHTML={{
                         __html: parseCardTextHtml(
                           displayAttribute(original as Card, "back_text"),

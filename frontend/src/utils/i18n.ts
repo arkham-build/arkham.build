@@ -25,7 +25,7 @@ const importBackend = resourcesToBackend(
   },
 );
 
-i18n
+void i18n
   .use(localStorageDectector)
   .use(importBackend)
   .use(initReactI18next)
@@ -45,7 +45,8 @@ i18n
     interpolation: {
       escapeValue: false,
     },
-  });
+  })
+  .catch(console.error);
 
 i18n.on("languageChanged", (lng) => {
   if (document) document.documentElement.lang = lng;

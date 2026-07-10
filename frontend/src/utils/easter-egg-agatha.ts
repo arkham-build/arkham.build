@@ -50,7 +50,7 @@ export function useAgathaEasterEggHint() {
       ? "transform Agatha back into her original form"
       : "reveal Agatha's true form";
 
-    // biome-ignore lint/suspicious/noConsole: easter egg
+    // oxlint-disable-next-line no-console -- easter egg
     console.log(
       `%c🦹🏻‍♀️ If you want to ${action}, paste \`agathaallalong\` in the card search. 🦹🏻‍♀️`,
       "color: rebeccapurple; background-color: #eee",

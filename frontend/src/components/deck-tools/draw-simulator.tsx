@@ -50,7 +50,6 @@ export function DrawSimulator(props: Props) {
     dispatch({ type: "toggleMulligan" });
   }, []);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to reset on deck changes
   useEffect(() => {
     reset();
   }, [deck, reset]);
@@ -116,6 +115,7 @@ export function DrawSimulator(props: Props) {
             if (!deck.cards.slots[code]) return null;
             return (
               <DrawSimulatorCard
+                // oxlint-disable-next-line react/no-array-index-key -- duplicate cards need the draw position to distinguish them.
                 key={`${index}-${code}`}
                 card={deck.cards.slots[code].card}
                 index={index}
@@ -312,7 +312,7 @@ function drawReducer(state: State, action: Action): State {
 
       if (!state.mulliganMode) {
         for (const _ of range(0, codes.length)) {
-          // biome-ignore lint/style/noNonNullAssertion: we extend the bag for each draw, so this is safe.
+          // oxlint-disable-next-line typescript/no-non-null-assertion -- we extend the bag for each draw, so this is safe.
           drawn.push(bag.shift()!);
         }
 

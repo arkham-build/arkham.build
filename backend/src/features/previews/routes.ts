@@ -25,7 +25,7 @@ routes.get("/card/:id", async (c) => {
   if (card.xp) title += ` (${card.xp})`;
 
   let description = card.subname ? `${card.subname}. ` : "";
-  if (card.traits) description += `${card.traits}`;
+  if (card.traits) description += card.traits;
   if (card.text) description += `\n${card.text}`;
 
   return c.json({

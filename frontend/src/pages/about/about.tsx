@@ -27,7 +27,7 @@ function About() {
           values={{ date }}
           components={{
             ffg: (
-              // biome-ignore lint/a11y/useAnchorContent: not relevant here.
+              // oxlint-disable-next-line jsx-a11y/anchor-has-content -- not relevant here.
               <a
                 href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/"
                 rel="noreferrer"
@@ -35,11 +35,11 @@ function About() {
               />
             ),
             felix_url: (
-              // biome-ignore lint/a11y/useAnchorContent: not relevant here.
+              // oxlint-disable-next-line jsx-a11y/anchor-has-content -- not relevant here.
               <a href="https://spoettel.dev" rel="noreferrer" target="_blank" />
             ),
             contrib_url: (
-              // biome-ignore lint/a11y/useAnchorContent: not relevant here.
+              // oxlint-disable-next-line jsx-a11y/anchor-has-content -- not relevant here.
               <a
                 href="https://github.com/fspoettel/arkham.build/graphs/contributors"
                 rel="noreferrer"
@@ -47,7 +47,7 @@ function About() {
               />
             ),
             github_url: (
-              // biome-ignore lint/a11y/useAnchorContent: not relevant here.
+              // oxlint-disable-next-line jsx-a11y/anchor-has-content -- not relevant here.
               <a
                 href="https://github.com/fspoettel/arkham.build"
                 rel="noreferrer"

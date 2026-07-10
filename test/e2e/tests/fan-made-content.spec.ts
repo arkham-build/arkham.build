@@ -40,7 +40,7 @@ test.describe("fan-made content", () => {
     await page.goto("/settings?tab=fan-made-content");
     await importPackFromFile(page, "fan_made_investigator_project.json");
 
-    page
+    await page
       .getByTestId("collection")
       .getByTestId("collection-project-view-cards")
       .click();

@@ -10,14 +10,12 @@ function migrate(_state: unknown, version: number) {
       }
     }
 
-    state.data.history = {
-      ...Object.values(state.data.decks).reduce<{
-        [id: string | number]: (string | number)[];
-      }>((acc, curr) => {
-        acc[curr.id] = [];
-        return acc;
-      }, {}),
-    };
+    state.data.history = Object.values(state.data.decks).reduce<{
+      [id: string | number]: (string | number)[];
+    }>((acc, curr) => {
+      acc[curr.id] = [];
+      return acc;
+    }, {});
   }
 }
 

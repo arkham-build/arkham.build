@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { ApiCardSchema } from "../../shared/src/index";
 
-// biome-ignore lint/suspicious/noConsole: schema generation script
+// oxlint-disable-next-line no-console -- schema generation script
 console.log(
   JSON.stringify(
     z.toJSONSchema(ApiCardSchema, {

@@ -14,7 +14,7 @@ import {
 } from "./settings.schema.ts";
 
 // alphanumeric characters, underscore, and hyphen only
-export const PATTERN_VALID_USERNAME = "^[a-zA-Z0-9_\-]+$";
+export const PATTERN_VALID_USERNAME = "^[a-zA-Z0-9_-]+$";
 export const PASSWORD_MAX_LENGTH = 255;
 
 const CanonicalEmailSchema = z

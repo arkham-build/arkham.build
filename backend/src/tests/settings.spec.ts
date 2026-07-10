@@ -19,9 +19,8 @@ describe("Settings routes", () => {
         headers: { Cookie: sessionCookie },
       });
       expect(res.status).toBe(200);
-      expect(
-        SettingsResponseSchema.parse(await res.json()),
-      ).toMatchInlineSnapshot(`
+      expect(SettingsResponseSchema.parse(await res.json()))
+        .toMatchInlineSnapshot(`
         {
           "collection": null,
           "revision": null,

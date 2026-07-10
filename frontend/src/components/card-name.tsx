@@ -42,7 +42,7 @@ export function CardName(props: Props) {
       )}
       {children}
       <span
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: safe.
+        // oxlint-disable-next-line react/no-danger -- safe.
         dangerouslySetInnerHTML={{
           __html: parseCardTextHtml(displayAttribute(card, "name"), {
             bullets: false,

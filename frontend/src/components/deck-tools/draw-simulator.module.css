@@ -41,10 +41,7 @@
   justify-content: center;
   gap: var(--gap);
   max-width: calc(
-    var(--cols) *
-    var(--card-width) +
-    (var(--cols) - 1) *
-    var(--gap)
+    var(--cols) * var(--card-width) + (var(--cols) - 1) * var(--gap)
   );
 }
 

@@ -13,7 +13,9 @@ import { CardTooltip } from "./card-tooltip";
 
 export function useCardLinkTooltip() {
   const [cardTooltip, setCardTooltip] = useState<string>("");
-  const restTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const restTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const suppressUntilLeaveRef = useRef(false);
 
   useEffect(

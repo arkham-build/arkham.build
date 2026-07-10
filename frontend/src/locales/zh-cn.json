@@ -48,7 +48,6 @@
     },
     "auth": {
       "email": "邮箱",
-      "email_delivery_notice": "目前无法向 @icloud.com 和 @me.com 邮箱投递邮件，请暂时改用其他邮箱地址。",
       "email_or_username": "邮箱或用户名",
       "errors": {
         "account_not_verified": "你的账号尚未验证。登录前请先<verifyLink>验证</verifyLink>你的邮箱。",

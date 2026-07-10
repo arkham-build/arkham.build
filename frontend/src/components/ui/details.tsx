@@ -5,8 +5,10 @@ import { Button } from "./button";
 import css from "./details.module.css";
 import { Scroller } from "./scroller";
 
-interface Props
-  extends Omit<React.DetailsHTMLAttributes<HTMLDetailsElement>, "title"> {
+interface Props extends Omit<
+  React.DetailsHTMLAttributes<HTMLDetailsElement>,
+  "title"
+> {
   children: React.ReactNode;
   iconClosed: React.ReactNode;
   onOpenChange?: (open: boolean) => void;

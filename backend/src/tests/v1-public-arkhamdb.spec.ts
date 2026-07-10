@@ -12,8 +12,10 @@ describe("GET /v1/public/arkhamdb/:type/:id", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn((input: string | URL | Request) => {
-        const data = decks.get(String(input));
-        if (!data) throw new Error(`Unexpected request: ${String(input)}`);
+        // oxlint-disable-next-line typescript/no-base-to-string
+        const inputStr = String(input);
+        const data = decks.get(inputStr);
+        if (!data) throw new Error(`Unexpected request: ${inputStr}`);
         return Response.json(data);
       }),
     );
@@ -35,8 +37,10 @@ describe("GET /v1/public/arkhamdb/:type/:id", () => {
     ]);
 
     const fetchMock = vi.fn((input: string | URL | Request) => {
-      const data = decks.get(String(input));
-      if (!data) throw new Error(`Unexpected request: ${String(input)}`);
+      // oxlint-disable-next-line typescript/no-base-to-string
+      const inputStr = String(input);
+      const data = decks.get(inputStr);
+      if (!data) throw new Error(`Unexpected request: ${inputStr}`);
       return Response.json(data);
     });
 
@@ -52,6 +56,7 @@ describe("GET /v1/public/arkhamdb/:type/:id", () => {
 
   test("wraps non-deck responses in an array", async ({ dependencies }) => {
     const fetchMock = vi.fn((input: string | URL | Request) => {
+      // oxlint-disable-next-line typescript/no-base-to-string
       expect(String(input)).toBe(
         "https://arkhamdb.com/api/public/decklist/123",
       );

@@ -145,7 +145,7 @@ const makeDeckPropertiesFilter = (properties: DeckProperties) => {
           filters.push((deck: DeckSummary) =>
             Boolean(
               deck.investigatorFront.card.parallel ||
-                deck.investigatorBack.card.parallel,
+              deck.investigatorBack.card.parallel,
             ),
           );
         }

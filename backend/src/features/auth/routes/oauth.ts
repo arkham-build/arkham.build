@@ -356,7 +356,7 @@ function remapDeck(deck: Deck, deckIdMap: Record<string, string>): Deck {
 }
 
 function remapDeckReference(
-  id: Deck["next_deck"] | Deck["previous_deck"],
+  id: string | number | null | undefined,
   deckIdMap: Record<string, string>,
 ) {
   if (id == null) return null;

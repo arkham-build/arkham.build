@@ -45,7 +45,7 @@ export function DeckTags(props: { tags: string[] }) {
   const { tags } = props;
 
   return tags.map((s, i) => (
-    // biome-ignore lint/suspicious/noArrayIndexKey: order is stable.
+    // oxlint-disable-next-line react/no-array-index-key -- order is stable.
     <Tag as="li" key={i} size="xs">
       {capitalize(s.trim())}
     </Tag>

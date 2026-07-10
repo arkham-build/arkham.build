@@ -393,7 +393,7 @@ test.describe("sealed deck", () => {
         .getByTestId("quantity-value"),
     ).toContainText("1/1");
 
-    expect(
+    await expect(
       page
         .getByTestId("virtuoso-item-list")
         .getByTestId("listcard-02149")

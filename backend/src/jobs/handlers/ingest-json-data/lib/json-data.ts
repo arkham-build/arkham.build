@@ -83,21 +83,18 @@ export function withTranslations<T extends Coded>(
   table: TranslationTable<T>,
 ) {
   const translations = Object.entries(table).reduce((acc, [locale, data]) => {
-    // biome-ignore lint/suspicious/noExplicitAny: FIXME: hack.
+    // oxlint-disable-next-line typescript/no-explicit-any -- FIXME: hack.
     const duplicateId = (item as any)?.duplicate_of;
 
     const t = data[item.code] ?? (duplicateId ? data[duplicateId] : undefined);
     if (!t) return acc;
 
-    const entries = Object.entries(t).reduce(
-      (acc, [key, value]) => {
-        if (value) {
-          acc[key as keyof Translatable<T>] = value;
-        }
-        return acc;
-      },
-      {} as Translatable<T>,
-    );
+    const entries = Object.entries(t).reduce((acc, [key, value]) => {
+      if (value) {
+        acc[key as keyof Translatable<T>] = value;
+      }
+      return acc;
+    }, {} as Translatable<T>);
 
     if (Object.keys(entries).length > 0) {
       acc.push({

@@ -43,7 +43,6 @@ export function CardGrid(
     };
   }, [scrollParent, onScrollChange]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a search should reset scroll position.
   useEffect(() => {
     setCurrentTop(-1);
     virtuosoRef.current?.scrollToIndex(0);

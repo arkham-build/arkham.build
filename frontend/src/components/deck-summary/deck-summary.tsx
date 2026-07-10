@@ -173,7 +173,7 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
   const onDelete = useCallback(
     (evt: React.MouseEvent) => {
       cancelEvent(evt);
-      onDeleteDeck?.(deck.id);
+      void onDeleteDeck?.(deck.id)?.catch(console.error);
     },
     [deck.id, onDeleteDeck],
   );

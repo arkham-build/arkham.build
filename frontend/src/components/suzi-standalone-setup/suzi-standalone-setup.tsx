@@ -114,10 +114,10 @@ function SuziStandaloneSetupInner(props: Props) {
   }, [createEdit, navigate, deck, results]);
 
   const revealAll = useCallback(() => {
-    setRevealed((prev) => {
+    setRevealed(() => {
       const newRevealed: Record<number, boolean> = {};
       results.forEach((_, idx) => {
-        newRevealed[idx] = !prev[idx] || prev[idx];
+        newRevealed[idx] = true;
       });
       return newRevealed;
     });
@@ -145,7 +145,7 @@ function SuziStandaloneSetupInner(props: Props) {
             <Field full>
               <FieldLabel>{t("suzi_standalone_setup.xp")}</FieldLabel>
               <input
-                // biome-ignore lint/a11y/noAutofocus: expected here.
+                // oxlint-disable-next-line jsx-a11y/no-autofocus -- expected here.
                 autoFocus
                 type="number"
                 min={1}
@@ -213,7 +213,7 @@ function SuziStandaloneSetupInner(props: Props) {
                       onClick={() => {
                         setRevealed((prev) => ({
                           ...prev,
-                          [idx]: !prev[idx] || prev[idx],
+                          [idx]: true,
                         }));
                       }}
                       type="button"

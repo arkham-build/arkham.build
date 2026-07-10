@@ -1,6 +1,6 @@
 import type { Card } from "@arkham-build/shared";
 import { PlusIcon } from "lucide-react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
@@ -70,17 +70,15 @@ function ListcardExtra({
   cardResolver: (code: string) => CardWithRelations | undefined;
   code: string;
 }) {
-  const signaturesRef = useRef<HTMLUListElement | null>(null);
-
   const resolved = cardResolver(code);
   const signatures = resolved?.relations?.requiredCards;
 
   if (!signatures?.length) return null;
 
   return (
-    <ul className={css["signatures"]} ref={signaturesRef}>
+    <ul className={css["signatures"]}>
       {signatures.map(({ card }) => (
-        <SignatureLink card={card} key={card.code} ref={signaturesRef} />
+        <SignatureLink card={card} key={card.code} />
       ))}
     </ul>
   );

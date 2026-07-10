@@ -10,16 +10,12 @@ import css from "./choose-investigator.module.css";
 
 type Props = {
   card: Card;
-  ref?: React.RefObject<HTMLUListElement | null>;
 };
 
 export function SignatureLink(props: Props) {
-  const { card, ref } = props;
+  const { card } = props;
 
   const tooltip = useRestingTooltip({
-    elements: {
-      reference: ref?.current,
-    },
     middleware: [shift({ padding: 5 })],
     placement: "right",
   });
@@ -32,7 +28,11 @@ export function SignatureLink(props: Props) {
 
   return (
     <li className={css["signature"]} key={card.code}>
-      <button {...tooltip.referenceProps} onClick={openModal}>
+      <button
+        ref={tooltip.refs.setReference}
+        {...tooltip.referenceProps}
+        onClick={openModal}
+      >
         {displayAttribute(card, "name")}
       </button>
       {tooltip.isMounted && (

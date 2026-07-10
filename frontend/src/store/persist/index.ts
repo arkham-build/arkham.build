@@ -88,7 +88,7 @@ export async function dehydrate(
 
   // Only ask for persistence when saving app data
   if (types.includes("app")) {
-    tryEnablePersistence();
+    void tryEnablePersistence()?.catch(console.error);
   }
 
   try {

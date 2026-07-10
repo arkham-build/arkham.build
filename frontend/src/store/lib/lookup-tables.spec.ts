@@ -16,9 +16,8 @@ describe("lookup-tables", () => {
 
   it("handles kate signature edge case", () => {
     const lookupTables = selectLookupTables(store.getState());
-    expect(
-      lookupTables.relations.requiredCards["10004"],
-    ).toMatchInlineSnapshot(`
+    expect(lookupTables.relations.requiredCards["10004"])
+      .toMatchInlineSnapshot(`
       {
         "10005": 1,
         "10008": 1,

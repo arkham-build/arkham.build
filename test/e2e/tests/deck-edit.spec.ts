@@ -792,7 +792,7 @@ test.describe("deck edit", () => {
       .getByTestId("quantity-increment")
       .click();
 
-    assertEditorDeckQuantity(page, "11755a", 1);
+    await assertEditorDeckQuantity(page, "11755a", 1);
 
     await page
       .getByTestId("virtuoso-item-list")

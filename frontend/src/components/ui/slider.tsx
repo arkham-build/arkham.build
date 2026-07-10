@@ -10,11 +10,10 @@ type SliderStyle = React.CSSProperties & {
   "--slider-thumb-offset"?: string;
 };
 
-export interface Props
-  extends Omit<
-    React.ComponentPropsWithoutRef<"span">,
-    "defaultValue" | "dir" | "onChange" | "onLostPointerCapture" | "value"
-  > {
+export interface Props extends Omit<
+  React.ComponentPropsWithoutRef<"span">,
+  "defaultValue" | "dir" | "onChange" | "onLostPointerCapture" | "value"
+> {
   className?: string;
   disabled?: boolean;
   id?: string;
@@ -268,6 +267,7 @@ export function Slider(props: Props) {
             ref={(node) => {
               thumbRefs.current[index] = node;
             }}
+            // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- can't use input here
             role="slider"
             style={thumbStyle}
             tabIndex={disabled ? undefined : 0}

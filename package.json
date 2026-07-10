@@ -16,8 +16,8 @@
   },
   "scripts": {
     "dev:functions": "wrangler pages dev",
-    "fmt": "biome check --write",
-    "lint": "biome check",
+    "fmt": "oxlint --fix . && oxfmt --write .",
+    "lint": "oxlint --deny-warnings --report-unused-disable-directives . && oxfmt --check .",
     "prepare:e2e": "playwright install --with-deps",
     "test:e2e": "playwright test --config test/e2e/playwright.config.ts",
     "test:fullstack": "playwright test --config test/fullstack/playwright.config.ts",
@@ -31,11 +31,13 @@
     "zod": "4.2.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.4",
     "@playwright/test": "1.60.0",
     "@types/node": "24.10.15",
     "@vitest/coverage-v8": "4.1.3",
     "lefthook": "2.1.1",
+    "oxfmt": "0.58.0",
+    "oxlint": "1.73.0",
+    "oxlint-tsgolint": "0.24.0",
     "typescript": "5.9.3",
     "vitest": "4.1.3",
     "wrangler": "4.103.0"

@@ -318,7 +318,7 @@ export function ListCardInner(props: Props) {
                     <h5
                       className={css["subname"]}
                       title={displayAttribute(card, "subname")}
-                      // biome-ignore lint/security/noDangerouslySetInnerHtml: safe and necessary.
+                      // oxlint-disable-next-line react/no-danger -- safe and necessary.
                       dangerouslySetInnerHTML={{
                         __html: parseCardTextHtml(
                           displayAttribute(card, "subname"),

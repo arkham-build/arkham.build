@@ -214,7 +214,6 @@ function Option<T extends Item>({
         isActive && css["active"],
       )}
       ref={ref}
-      role="option"
       type="button"
     >
       {isSelected && <CheckIcon className={css["option-indicator"]} />}

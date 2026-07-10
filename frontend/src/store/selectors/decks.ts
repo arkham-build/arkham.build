@@ -75,7 +75,9 @@ export const selectLocalDeckSummaries = createSelector(
             console.warn(`Could not find deck ${id} in local storage.`);
           }
         } catch (err) {
-          console.error(`Error resolving deck summary ${id}: ${err}`);
+          console.error(
+            `Error resolving deck summary ${id}: ${(err as Error).toString()}`,
+          );
         }
 
         return acc;

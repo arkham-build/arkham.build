@@ -269,7 +269,6 @@ function RouteReset() {
     closeCardModal();
   }, [pathname, search, pushHistory, closeCardModal]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a change to pathname indicates a change to window.location.
   useEffect(() => {
     try {
       if (window.location.hash) {

@@ -11,7 +11,7 @@ export function encodeSearch(params: Record<string, unknown>): URLSearchParams {
             searchParams.append(key, v.toString());
           }
         });
-      } else {
+      } else if (typeof value === "string") {
         searchParams.append(key, String(value));
       }
     }

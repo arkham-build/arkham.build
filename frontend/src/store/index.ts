@@ -16,7 +16,7 @@ import { createSettingsSlice } from "./slices/settings";
 import { createSyncSlice } from "./slices/sync";
 import { createUISlice } from "./slices/ui";
 
-// biome-ignore lint/suspicious/noExplicitAny: safe.
+// oxlint-disable-next-line typescript/no-explicit-any -- safe.
 const stateCreator = (...args: [any, any, any]) => ({
   ...createAppSlice(...args),
   ...createAuthSlice(...args),

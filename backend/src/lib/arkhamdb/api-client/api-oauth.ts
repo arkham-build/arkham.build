@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { HonoEnv } from "../../hono-env.ts";
 import { ArkhamDbRemoteDecksSchema } from "./core/dtos.ts";
 import { ApiError } from "./core/errors.ts";
-import { baseHeaders } from "./core/headers.ts";
+import { baseHeaders, mergeHeaders } from "./core/headers.ts";
 import { request } from "./core/request.ts";
 
 export async function exchangeAuthCodeForToken<E extends HonoEnv = HonoEnv>(
@@ -114,9 +114,8 @@ function bearerTokenRequest<T, E extends HonoEnv = HonoEnv>(
 ) {
   return request<T, E>(context, `/api/oauth2${path}`, {
     ...options,
-    headers: {
-      ...options.headers,
+    headers: mergeHeaders(options.headers, {
       Authorization: `Bearer ${accessToken.access_token}`,
-    },
+    }),
   });
 }

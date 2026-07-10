@@ -350,7 +350,7 @@ function RestoreDeckChanges({ id }: { id: string }) {
   const discardEdits = useStore((state) => state.discardEdits);
   const changes = useStore((state) => state.deckEdits[id]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: should only fire on initial changes present.
+  /* oxlint-disable react/exhaustive-deps -- should only fire on initial changes present. */
   useEffect(() => {
     let toastId: string | null = null;
 
@@ -393,6 +393,7 @@ function RestoreDeckChanges({ id }: { id: string }) {
       }
     };
   }, [discardEdits, id, toast, t]);
+  /* oxlint-enable react/exhaustive-deps */
 
   return null;
 }

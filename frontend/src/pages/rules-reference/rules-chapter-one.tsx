@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/security/noDangerouslySetInnerHtml: trusted content. */
+/* oxlint-disable react/no-danger -- trusted content. */
 import html from "@/assets/rules.html?raw";
 import { parseCardTextHtml } from "@/utils/card-utils";
 import { RulesDocument } from "./rules-document";

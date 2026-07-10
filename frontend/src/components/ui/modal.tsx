@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: escape handler is defined higher up. */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: backdrop needs to be clickable. */
+/* oxlint-disable jsx-a11y/click-events-have-key-events -- escape handler is defined higher up. */
+/* oxlint-disable jsx-a11y/no-static-element-interactions -- backdrop needs to be clickable. */
 import { XIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { MQ_MOBILE } from "@/utils/constants";

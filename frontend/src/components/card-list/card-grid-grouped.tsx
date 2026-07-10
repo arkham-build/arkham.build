@@ -87,14 +87,13 @@ export function CardGridGrouped(
     [data],
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a search should reset scroll position.
   useEffect(() => {
     setCurrentTop(-1);
     activeGroup.current = undefined;
     virtuosoRef.current?.scrollToIndex(0);
   }, [search]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a change to card count should reset scroll position.
+  /* oxlint-disable react/exhaustive-deps -- a change to card count should reset scroll position. */
   useEffect(() => {
     if (activeGroup.current) {
       const idx = data.groups.findIndex((g) => g.key === activeGroup.current);
@@ -105,6 +104,7 @@ export function CardGridGrouped(
       }
     }
   }, [data?.cards.length]);
+  /* oxlint-enable react/exhaustive-deps */
 
   return (
     <Scroller

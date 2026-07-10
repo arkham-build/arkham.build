@@ -31,7 +31,7 @@ export function CardSet(props: Props) {
             tooltip={
               <div
                 className="longform"
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is produced by us.
+                // oxlint-disable-next-line react/no-danger -- HTML is produced by us.
                 dangerouslySetInnerHTML={{ __html: set.help }}
               />
             }

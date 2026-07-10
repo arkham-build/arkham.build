@@ -7,8 +7,10 @@ import {
 } from "./radio-group.context";
 import { DefaultTooltip } from "./tooltip";
 
-export interface RadioButtonGroupProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+export interface RadioButtonGroupProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onChange"
+> {
   disabled?: boolean;
   full?: boolean;
   icons?: boolean;
@@ -47,8 +49,10 @@ export function RadioButtonGroup(props: RadioButtonGroupProps) {
   );
 }
 
-export interface RadioButtonGroupItemProps
-  extends Omit<React.HTMLAttributes<HTMLLabelElement>, "onChange"> {
+export interface RadioButtonGroupItemProps extends Omit<
+  React.HTMLAttributes<HTMLLabelElement>,
+  "onChange"
+> {
   disabled?: boolean;
   size?: "small" | "default";
   tooltip?: React.ReactNode;

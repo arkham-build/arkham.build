@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: not relevant. */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: backdrop needs to be clickable. */
+/* oxlint-disable jsx-a11y/click-events-have-key-events -- not relevant. */
+/* oxlint-disable jsx-a11y/no-static-element-interactions -- backdrop needs to be clickable. */
 
 import type { Card as CardT } from "@arkham-build/shared";
 import { ArrowDownIcon, ArrowUpIcon, CheckCircleIcon } from "lucide-react";

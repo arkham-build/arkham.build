@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/security/noDangerouslySetInnerHtml: trusted content. */
+/* oxlint-disable react/no-danger -- trusted content. */
 import type { GrimoireEntry, GrimoireSection } from "@arkham-build/shared";
 import { ExternalLinkIcon, LoaderCircleIcon } from "lucide-react";
 import { Fragment, useEffect, useMemo } from "react";

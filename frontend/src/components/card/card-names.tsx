@@ -83,7 +83,7 @@ export function CardNames(props: Props) {
       {card.real_subname && (
         <h2
           className={css["sub"]}
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: safe and necessary.
+          // oxlint-disable-next-line react/no-danger -- safe and necessary.
           dangerouslySetInnerHTML={{
             __html: parseCardTitle(displayAttribute(card, "subname")),
           }}

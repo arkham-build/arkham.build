@@ -45,7 +45,7 @@ function Index() {
   );
 }
 
-// biome-ignore lint: unused
+// oxlint-disable-next-line no-unused-vars -- unused
 function PreviewBanner() {
   const seen = useStore(
     (state) => state.settings.flags?.["seen-core-2026-val-reveal"],

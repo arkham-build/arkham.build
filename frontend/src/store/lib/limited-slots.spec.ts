@@ -52,9 +52,8 @@ describe("limitedSlotOccupation()", () => {
   it("handles investigators with limit deckbuilding", () => {
     const state = store.getState();
 
-    expect(
-      snapshotResult(state, DeckSchema.parse(limitCarolyn)),
-    ).toMatchInlineSnapshot(`
+    expect(snapshotResult(state, DeckSchema.parse(limitCarolyn)))
+      .toMatchInlineSnapshot(`
       [
         {
           "entries": 15,
@@ -63,9 +62,8 @@ describe("limitedSlotOccupation()", () => {
       ]
     `);
 
-    expect(
-      snapshotResult(state, DeckSchema.parse(limitCarolynInvalid)),
-    ).toMatchInlineSnapshot(`
+    expect(snapshotResult(state, DeckSchema.parse(limitCarolynInvalid)))
+      .toMatchInlineSnapshot(`
       [
         {
           "entries": 16,
@@ -78,9 +76,8 @@ describe("limitedSlotOccupation()", () => {
   it("handles presence of dynamic limit deck building (versatile)", () => {
     const state = store.getState();
 
-    expect(
-      snapshotResult(state, DeckSchema.parse(limitCarolynVersatile)),
-    ).toMatchInlineSnapshot(`
+    expect(snapshotResult(state, DeckSchema.parse(limitCarolynVersatile)))
+      .toMatchInlineSnapshot(`
       [
         {
           "entries": 15,
@@ -112,9 +109,8 @@ describe("limitedSlotOccupation()", () => {
   it("handles customizable deckbuilding", () => {
     const state = store.getState();
 
-    expect(
-      snapshotResult(state, DeckSchema.parse(limitCustomizableLevel0)),
-    ).toMatchInlineSnapshot(`
+    expect(snapshotResult(state, DeckSchema.parse(limitCustomizableLevel0)))
+      .toMatchInlineSnapshot(`
       [
         {
           "entries": 7,
@@ -127,9 +123,8 @@ describe("limitedSlotOccupation()", () => {
 
     limitCustomizableLevel1.meta = '{"cus_09022":"0|1"}';
 
-    expect(
-      snapshotResult(state, DeckSchema.parse(limitCustomizableLevel1)),
-    ).toMatchInlineSnapshot(`
+    expect(snapshotResult(state, DeckSchema.parse(limitCustomizableLevel1)))
+      .toMatchInlineSnapshot(`
       [
         {
           "entries": 5,

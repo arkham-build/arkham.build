@@ -26,7 +26,7 @@ export function Customizations(props: Props) {
         <h3>{t("common.customizations")}</h3>
       </header>
       <div className={css["text"]}>
-        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is from trusted source. */}
+        {/* oxlint-disable-next-line react/no-danger -- HTML is from trusted source. */}
         <p dangerouslySetInnerHTML={{ __html: html }} />
       </div>
     </article>

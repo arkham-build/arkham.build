@@ -9,7 +9,7 @@ function migrate(_state: unknown, version: number) {
       delete (
         state.settings.lists[
           key as keyof StoreState["settings"]["lists"]
-          // biome-ignore lint/suspicious/noExplicitAny: safe.
+          // oxlint-disable-next-line typescript/no-explicit-any -- safe.
         ] as any
       ).showCardText;
 

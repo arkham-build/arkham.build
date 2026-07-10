@@ -1,24 +1,14 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: test code */
+/* oxlint-disable typescript/no-explicit-any -- test code */
 import type { Page } from "@playwright/test";
-import allCardsResponse from "../../fixtures/stubs/all_card.json" with {
-  type: "json",
-};
+import allCardsResponse from "../../fixtures/stubs/all_card.json" with { type: "json" };
 
-import versionsResponse from "../../fixtures/stubs/data_version.json" with {
-  type: "json",
-};
+import versionsResponse from "../../fixtures/stubs/data_version.json" with { type: "json" };
 
-import fanMadeInvestigatorProject from "../../fixtures/stubs/fan_made_investigator_project.json" with {
-  type: "json",
-};
+import fanMadeInvestigatorProject from "../../fixtures/stubs/fan_made_investigator_project.json" with { type: "json" };
 
-import deckResponse from "../../fixtures/stubs/get_deck.json" with {
-  type: "json",
-};
+import deckResponse from "../../fixtures/stubs/get_deck.json" with { type: "json" };
 
-import metadataResponse from "../../fixtures/stubs/metadata.json" with {
-  type: "json",
-};
+import metadataResponse from "../../fixtures/stubs/metadata.json" with { type: "json" };
 
 export async function mockApiCalls(page: Page) {
   const apiUrl = process.env.VITE_API_URL ?? "https://api.arkham.build";

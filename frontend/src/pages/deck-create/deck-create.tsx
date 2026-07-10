@@ -72,7 +72,9 @@ function DeckCreate() {
     }
 
     const sealedDeckId = params.get("sealed_deck_id")?.toString();
-    if (sealedDeckId) applySealedDeck(sealedDeckId);
+    if (sealedDeckId) {
+      void applySealedDeck(sealedDeckId).catch(console.error);
+    }
 
     return () => {
       if (toastId) toast.dismiss(toastId);

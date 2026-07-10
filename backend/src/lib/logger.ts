@@ -14,7 +14,7 @@ export const log: Logger = (
   message: string,
   details?: Record<string, unknown>,
 ) => {
-  // biome-ignore lint/suspicious/noConsole: logger utility
+  // oxlint-disable-next-line no-console -- logger utility
   console.log(
     JSON.stringify({
       level,

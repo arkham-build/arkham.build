@@ -148,7 +148,7 @@ export function ConfigureEnvironmentModal(props: Props) {
                   translationProps={{
                     components: {
                       settings_link: (
-                        // biome-ignore lint/a11y/useAnchorContent: interpolation
+                        // oxlint-disable-next-line jsx-a11y/anchor-has-content -- interpolation
                         <a
                           href="/settings?tab=collection"
                           target="_blank"

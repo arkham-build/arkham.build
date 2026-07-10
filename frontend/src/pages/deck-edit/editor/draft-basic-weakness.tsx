@@ -87,7 +87,7 @@ function DraftBasicWeaknessModal(props: Props) {
     })),
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: should only be computed once on mount
+  // oxlint-disable-next-line react/exhaustive-deps -- should only be computed once on mount
   const weaknesses = useMemo(() => selectDraftWeaknesses(deps, deck), []);
 
   const [selectedWeakness, setSelectedWeakness] = useState<

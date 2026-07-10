@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: test code */
+/* oxlint-disable typescript/no-explicit-any -- test code */
 import assert from "node:assert";
 import { CompleteProfileResponseSchema, type Deck } from "@arkham-build/shared";
 import type { Hono } from "hono";
@@ -15,36 +15,36 @@ describe("Auth routes", () => {
       { path: "/auth/arkhamdb/login", authenticated: false },
       { path: "/auth/arkhamdb/signup", authenticated: false },
       { path: "/auth/arkhamdb/connect", authenticated: true },
-    ])("GET $path redirects to arkhamdb oauth", async ({
-      path,
-      authenticated,
-    }, { dependencies }) => {
-      const { app, config, sessionCookie } = dependencies;
+    ])(
+      "GET $path redirects to arkhamdb oauth",
+      async ({ path, authenticated }, { dependencies }) => {
+        const { app, config, sessionCookie } = dependencies;
 
-      const res = await app.request(path, {
-        method: "GET",
-        headers: authenticated ? { Cookie: sessionCookie } : {},
-      });
+        const res = await app.request(path, {
+          method: "GET",
+          headers: authenticated ? { Cookie: sessionCookie } : {},
+        });
 
-      expect(res.status).toBe(302);
+        expect(res.status).toBe(302);
 
-      const location = res.headers.get("location");
-      assert(location, "Missing location header");
+        const location = res.headers.get("location");
+        assert(location, "Missing location header");
 
-      const url = new URL(location);
+        const url = new URL(location);
 
-      expect(url.origin + url.pathname).toBe(
-        `${config.ARKHAMDB_BASE_URL}/oauth/v2/auth`,
-      );
-      expect(url.searchParams.get("client_id")).toBe(
-        config.ARKHAMDB_OAUTH_CLIENT_ID,
-      );
-      expect(url.searchParams.get("redirect_uri")).toBe(
-        config.ARKHAMDB_OAUTH_REDIRECT_URI,
-      );
-      expect(url.searchParams.get("response_type")).toBe("code");
-      expect(url.searchParams.get("state")).toBeTruthy();
-    });
+        expect(url.origin + url.pathname).toBe(
+          `${config.ARKHAMDB_BASE_URL}/oauth/v2/auth`,
+        );
+        expect(url.searchParams.get("client_id")).toBe(
+          config.ARKHAMDB_OAUTH_CLIENT_ID,
+        );
+        expect(url.searchParams.get("redirect_uri")).toBe(
+          config.ARKHAMDB_OAUTH_REDIRECT_URI,
+        );
+        expect(url.searchParams.get("response_type")).toBe("code");
+        expect(url.searchParams.get("state")).toBeTruthy();
+      },
+    );
   });
 
   describe("GET /auth/arkhamdb/connect", () => {

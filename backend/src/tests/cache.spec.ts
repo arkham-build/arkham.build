@@ -27,7 +27,7 @@ describe("GET /v1/cache", () => {
 
     const res = await dependencies.app.request("/v1/cache/metadata", {
       headers: {
-        // biome-ignore lint/style/noNonNullAssertion: test code.
+        // oxlint-disable-next-line typescript/no-non-null-assertion -- test code.
         "If-None-Match": etag!,
       },
     });

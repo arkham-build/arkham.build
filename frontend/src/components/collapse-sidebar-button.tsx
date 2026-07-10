@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: not relevant. */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: not relevant. */
+/* oxlint-disable jsx-a11y/click-events-have-key-events -- not relevant. */
+/* oxlint-disable jsx-a11y/no-static-element-interactions -- not relevant. */
 import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
 import { cx } from "@/utils/cx";
 import css from "./collapse-sidebar-button.module.css";

@@ -17,9 +17,8 @@ describe("Folders routes", () => {
         headers: { Cookie: sessionCookie },
       });
       expect(res.status).toBe(200);
-      expect(
-        FolderSyncResponseSchema.parse(await res.json()),
-      ).toMatchInlineSnapshot(`
+      expect(FolderSyncResponseSchema.parse(await res.json()))
+        .toMatchInlineSnapshot(`
         {
           "revision": null,
           "state": null,

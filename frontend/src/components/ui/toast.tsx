@@ -95,7 +95,7 @@ function Toast(props: {
     if (!toast?.duration) return;
 
     timeoutRef.current = setTimeout(() => {
-      removeToast();
+      void removeToast().catch(console.error);
     }, toast.duration);
 
     return () => {
@@ -109,7 +109,7 @@ function Toast(props: {
       locationRef.current !== location &&
       !toast.persistent
     ) {
-      removeToast();
+      void removeToast().catch(console.error);
     }
   }, [location, removeToast, toast.duration, toast.persistent]);
 

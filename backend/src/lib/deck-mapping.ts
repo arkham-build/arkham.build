@@ -1,4 +1,9 @@
-import { type Deck, DeckSchema, SlotsSchema } from "@arkham-build/shared";
+import {
+  type Deck,
+  DeckSchema,
+  type Slots,
+  SlotsSchema,
+} from "@arkham-build/shared";
 import type { Insertable, Selectable } from "kysely";
 import type { Deck as DbDeck, Json } from "../db/schema.types.ts";
 
@@ -38,9 +43,7 @@ function stringifyJson(value: DeckRow["meta"]): string {
   return value == null ? "" : JSON.stringify(value);
 }
 
-function parseNullableSlots(
-  value: DeckRow["side_slots"] | DeckRow["ignore_deck_limit"],
-) {
+function parseNullableSlots(value: Slots) {
   if (value == null) return null;
   return SlotsSchema.parse(value);
 }
