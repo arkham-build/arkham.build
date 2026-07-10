@@ -1,4 +1,9 @@
-import { CardTagSchema, normalizeCardTagName } from "@arkham-build/shared";
+import {
+  CARD_TAG_ASSIGNMENTS_MAX_COUNT,
+  CARD_TAGS_MAX_COUNT,
+  CardTagSchema,
+  normalizeCardTagName,
+} from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import {
@@ -176,6 +181,11 @@ export const createCardTagsSlice: StateCreator<
 });
 
 function createCardTagName(tags: StoreState["cardTags"]["tags"], name: string) {
+  assert(
+    tags.length < CARD_TAGS_MAX_COUNT,
+    `Cannot create more than ${CARD_TAGS_MAX_COUNT} card tags.`,
+  );
+
   const tagName = CardTagSchema.parse(name);
   assertUniqueTagName(tags, tagName);
   return tagName;
@@ -187,6 +197,15 @@ function setCardTagNamesForCanonicalCode(
   tagNames: string[],
 ): StoreState["cardTags"] {
   const nextTagNames = Array.from(new Set(tagNames));
+  const assignmentCount = getCardTagAssignmentCount(state);
+  const existingAssignmentCount = state.cardTags[canonicalCode]?.length ?? 0;
+
+  assert(
+    assignmentCount - existingAssignmentCount + nextTagNames.length <=
+      CARD_TAG_ASSIGNMENTS_MAX_COUNT,
+    `Cannot assign more than ${CARD_TAG_ASSIGNMENTS_MAX_COUNT} card tags.`,
+  );
+
   const cardTags = { ...state.cardTags };
 
   if (nextTagNames.length) {
@@ -199,6 +218,13 @@ function setCardTagNamesForCanonicalCode(
     ...state,
     cardTags,
   };
+}
+
+function getCardTagAssignmentCount(state: StoreState["cardTags"]) {
+  return Object.values(state.cardTags).reduce(
+    (count, tagNames) => count + tagNames.length,
+    0,
+  );
 }
 
 function getCardTagCardCode(state: StoreState, cardCode: string) {

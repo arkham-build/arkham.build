@@ -37,8 +37,10 @@ export {
   VerifyEmailRequestSchema,
 } from "./dtos/auth.schema.ts";
 export {
+  CARD_TAG_ASSIGNMENTS_MAX_COUNT,
   CARD_TAG_FAVORITE_ID,
   CARD_TAG_NAME_MAX_LENGTH,
+  CARD_TAGS_MAX_COUNT,
   type CardTag,
   CardTagSchema,
   type CardTagsState,
