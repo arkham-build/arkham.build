@@ -19,9 +19,8 @@ describe("Card tags routes", () => {
         headers: { Cookie: sessionCookie },
       });
       expect(res.status).toBe(200);
-      expect(
-        CardTagsSyncResponseSchema.parse(await res.json()),
-      ).toMatchInlineSnapshot(`
+      expect(CardTagsSyncResponseSchema.parse(await res.json()))
+        .toMatchInlineSnapshot(`
         {
           "revision": null,
           "state": null,
