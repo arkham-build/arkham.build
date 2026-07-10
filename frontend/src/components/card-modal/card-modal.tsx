@@ -1,6 +1,3 @@
-/* oxlint-disable jsx-a11y/click-events-have-key-events -- not relevant. */
-/* oxlint-disable jsx-a11y/no-static-element-interactions -- backdrop needs to be clickable. */
-
 import type { Card as CardT } from "@arkham-build/shared";
 import { ArrowDownIcon, ArrowUpIcon, CheckCircleIcon } from "lucide-react";
 import { useCallback, useRef } from "react";
