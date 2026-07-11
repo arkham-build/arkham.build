@@ -7,6 +7,7 @@
         "card_design": "Za dostosowany do aplikacji projekt kart.",
         "code": "Za znaczący wkład w kod aplikacji.",
         "customization_api": "Za dostęp do API z arkuszami usprawnień.",
+        "metadata": "Za wsparcie przy metadanych kart.",
         "qa": "Za testowanie.",
         "testing": "Za cierpliwy feedback i testowanie podczas opracowywania wstępnej wersji oraz koncepcje projektowe.",
         "title": "Galeria Sław",
@@ -45,6 +46,105 @@
       "attached": "Dołączona do {{name}}",
       "eligible": "Dostępna dla {{name}}"
     },
+    "auth": {
+      "arkhamdb_login_banner": "Obecnie ArkhamDB API działa bardzo powolnie. Jeśli występują problemy, zaloguj się przy użyciu adresu email.",
+      "arkhamdb_signup_banner": "Obecnie ArkhamDB API działa bardzo powolnie. Jeśli występują problemy, zarejestruj się przy użyciu adresu email.",
+      "email": "Email",
+      "email_delivery_notice": "Wysyłanie emaili na @icloud.com oraz @me.com obecnie nie działa. Proszę użyj innego adresu email.",
+      "email_or_username": "Email lub nazwa użytkownika",
+      "errors": {
+        "account_not_verified": "Twoje konto nie zostało jeszcze zweryfikowane. Proszę <verifyLink>potwierdź</verifyLink> swój adres email przed logowaniem.",
+        "captcha_load_failed": "Błąd ładowania Turnstile captcha.",
+        "forgot_password_failed": "Nie udało rozpocząć się resetowania hasła: {{error}}",
+        "invalid_credentials": "Niepoprawny email lub hasło",
+        "login_failed": "Błąd logowania: {{error}}",
+        "password_reset_failed": "Nie udało się zresetować hasła: {{error}}",
+        "rate_limited": "Zbyt wiele prób. Proszę poczekaj {{interval}} zanim spróbujesz ponownie.",
+        "signup_failed": "Nie udało się zarejestrować: {{error}}",
+        "verify_email_failed": "Błąd weryfikacji email: {{error}}",
+        "verify_email_send_failed": "Nie udało się ponownie wysłać emaila do weryfikacji: {{error}}"
+      },
+      "forgot_password": {
+        "description": "Wprowadź Twój adres email lub nazwę użytkownika w celu wysłania instrukcji resetowania hasła.",
+        "submit": "Wyślij instrukcję resetowania hasła.",
+        "success": "Jeżeli konto istnieje, wkrótce otrzymasz link do resetowania.",
+        "title": "Zapomniane hasło"
+      },
+      "login": {
+        "forgot_password": "Zapomniałeś hasła?",
+        "no_account": "Nie masz konta?",
+        "title": "Logowanie",
+        "action": "Zaloguj się",
+        "with_arkhamdb": "Zaloguj się z ArkhamDB"
+      },
+      "logout": "Wyloguj się",
+      "menu": {
+        "logged_in_as": "Zalogowano jako {{name}}",
+        "sync_account": "Synchronizuj dane",
+        "sync_error": "Błąd synchronizacji danych: {{error}}",
+        "sync_status": {
+          "conflict": "Konflikt synchronizacji konta",
+          "error": "Błąd synchronizacji konta",
+          "idle": "Synchronizacja konta wstrzymana",
+          "loading": "Ładowanie synchronizacji konta",
+          "partial": "Synchronizacja konta częściowo nieudana",
+          "saving": "Zapisywanie synchronizacji konta",
+          "synced": "Synchronizacja konta zakończona"
+        },
+        "syncing": "Synchronizacja konta..."
+      },
+      "oauth_errors": {
+        "arkhamdb_invalid_response": "Logowanie z ArkhamDB nieudane. Proszę spróbuj ponownie.",
+        "arkhamdb_no_decks": "Na Twoim koncie ArkhamDB musi znajdować się przynajmniej jedna talia zanim będziesz mógł kontynuować.",
+        "identity_belongs_to_another_account": "To konto ArkhamDB jest już połączone z innym kontem.",
+        "invalid_state": "Logowanie z ArkhamDB wygasło. Proszę spróbuj ponownie.",
+        "oauth_failed": "Logowanie z ArkhamDB nieudane. Proszę spróbuj ponownie.",
+        "oauth_missing_code": "Logowanie z ArkhamDB zostało anulowane lub nieukończone. Proszę spróbuj ponownie."
+      },
+      "password": "Hasło",
+      "password_validation": "Minimalnie 8 znaków",
+      "reset_password": {
+        "confirm_password": "Potwierdź hasło",
+        "password": "Nowe hasło",
+        "success": "Reset hasła zakończony pomyślnie. Możesz się teraz zalogować.",
+        "title": "Resetowanie hasła"
+      },
+      "signup": {
+        "complete_profile": {
+          "description": "Wybierz nazwę użytkownika dla twojego konta. Będzie ona wyświetlana publicznie przy Twoich taliach i wpisach.",
+          "title": "Dokończ Twój profil",
+          "upload": {
+            "decks": {
+              "help": "Importuje Twoją lokalną kolekcję talii na Twoje konto.",
+              "label": "Prześlij talie lokalne"
+            },
+            "settings": {
+              "help": "Importuje Twoją kolekcję oraz preferencje wyświetlania.",
+              "label": "Ustawienia importu"
+            },
+            "title": "Przesyłanie danych lokalnych"
+          }
+        },
+        "has_account": "Posiadasz już konto?",
+        "legal_acceptance": "Tworząc konto, akceptujesz <terms>Regulamin</terms> i potwierdzasz zapoznanie się z <privacy>Polityką prywatności</privacy>.",
+        "success": "Rejestracja zakończona sukcesem! Proszę sprawdź Twój email w celu weryfikacji konta. Nazwę użytkownika wybierzesz po pierwszym logowaniu.",
+        "action": "Zarejestruj się",
+        "title": "Rejestracja",
+        "verifying": "Sprawdzanie...",
+        "with_arkhamdb": "Rejestracja z ArkhamDB"
+      },
+      "username": "Nazwa użytkownika",
+      "username_validation": "Tylko litery, cyfry, podkreślenia i myślniki.",
+      "verify_email": {
+        "action": "Potwierdz email",
+        "resend_action": "Ponownie wyślij email do weryfikacji",
+        "resend": "Ponownie wyślij email do weryfikacji",
+        "resend_success": "Email do weryfikacji wysłany pomyślnie. Proszę sprawdź swoją skrzynkę odbiorczą.",
+        "success": "Email potwierdzony! Możesz się teraz zalogować.",
+        "title": "Potwierdz adres email",
+        "token": "Token weryfikacyjny"
+      }
+    },
     "browse": {
       "title": "Przeglądaj karty"
     },
@@ -53,6 +153,12 @@
         "complete_task": "Complete task",
         "open_card_page": "Strona karty",
         "reviews": "Recenzje"
+      },
+      "custom_behavior": {
+        "investigator_traits": {
+          "help": "{{card}} dodaje nową cechę do cech Twojego badacza.",
+          "title": "Wybór cechy badacza"
+        }
       }
     },
     "card_scenarios": {
@@ -62,26 +168,27 @@
     },
     "card_view": {
       "actions": {
-        "faq": "Pokaż FAQ",
         "open_on_arkhamdb": "Otwórz na ArkhamDB",
         "reviews": "Otwórz recenzje",
+        "show_original_image": "Pokaż obrazek oryginalnej wersji karty",
+        "show_taboo_image": "Pokaż obrazek wersji tabu karty",
         "usable_by": "Pula kart: {{prefix}}{{name}}",
         "usable_by_interpolated": "Pula kart: <tooltip>{{name}}</tooltip>",
         "view_backside": "Rewers",
-        "who_can_take": "Kto może wziąć tę kartę?",
-        "show_original_image": "Pokaż obrazek oryginalnej wersji karty",
-        "show_taboo_image": "Pokaż obrazek wersji tabu karty"
+        "who_can_take": "Kto może wziąć tę kartę?"
       },
+      "errata_notice": "Errata ({{date}})",
       "faq": {
         "empty": "Brak dostępnych wpisów FAQ.",
         "error": "Nie udało się załadować wpisów FAQ.",
-        "loading": "Wczytywanie wpisów FAQ...",
         "title": "FAQ"
+      },
+      "ratings": {
+        "title": "Oceny kart"
       },
       "scan": "Skan {{code}}",
       "section_actions": "Akcje",
       "section_deckbuilding": "Budowa talii",
-      "section_faq": "FAQ",
       "section_printings": "Wydruki",
       "thumbnail": "Miniatura {{code}}"
     },
@@ -97,7 +204,6 @@
       "tooltip_count_player": "Ten {{type}}: Całkowita liczba kart badacza"
     },
     "common": {
-      "or": "or",
       "actions": {
         "draw": "Dobranie",
         "engage": "Wejście w zwarcie",
@@ -111,13 +217,9 @@
       "back": "Wstecz",
       "cancel": "Anuluj",
       "card_back": "{{name}} - rewers",
-      "card_few": "karty",
-      "card_many": "kart",
       "card_one": "karta",
       "card_other": "karty",
       "clear": "Wyczyść",
-      "clue_few": "Wskazówki",
-      "clue_many": "Wskazówek",
       "clue_one": "Wskazówka",
       "clue_other": "Wskazówki",
       "cost": {
@@ -127,12 +229,10 @@
       },
       "customizable": "Przystosowalna",
       "customizations": "Usprawnienia",
-      "cycle_few": "cykle",
-      "cycle_many": "cykli",
       "cycle_one": "cykl",
       "cycle_other": "cykle",
       "deck_options": {
-        "Atleast constraint violated.": "Ograniczenie \"przynajmniej\" naruszone.",
+        "Atleast constraint violated.": "Ograniczenie „przynajmniej” naruszone.",
         "Blessed": "Błogosławiona",
         "Blessed and Cursed": "Błogosławiona i przeklęta",
         "Class Choice": "Wybrana klasa",
@@ -166,6 +266,7 @@
         "You cannot have more than 5 level 0 Seeker cards": "Nie możesz mieć więcej niż 5 kart Poszukiwacza poziomu 0",
         "You cannot have more than 5 level 0 Survivor cards": "Nie możesz mieć więcej niż 5 kart Ocalałego poziomu 0",
         "You cannot have more than one Covenant in your deck.": "Nie możesz mieć więcej niż 1 kartę z cechą Przymierze.",
+        "You must have at least 6 cards from each faction.": "Musisz mieć co najmniej 6 kart z każdej klasy.",
         "You must have at least 7 cards from 3 different factions": "Musisz mieć co najmniej 7 kart z 3 różnych klas",
         "You must have at least 7 cards from each class": "Musisz mieć co najmniej 7 kart z każdej klasy"
       },
@@ -197,8 +298,6 @@
         "survivor": "Ocalały"
       },
       "fast": "Szybka",
-      "icon_few": "ikony umiejętności",
-      "icon_many": "ikon umiejętności",
       "icon_one": "ikona umiejętności",
       "icon_other": "ikony umiejętności",
       "level": {
@@ -210,11 +309,10 @@
       "more_actions": "Więcej akcji",
       "myriad": "Niezliczone",
       "no_entries": "Brak wpisów",
+      "non_collection_cards": "{{count}} kart spoza kolekcji",
       "none": "Brak",
-      "nonexceptional": "Nie-wyjątkowa",
       "ok": "OK",
-      "pack_few": "zestawy",
-      "pack_many": "zestawów",
+      "or": "or",
       "pack_one": "zestaw",
       "pack_other": "zestawy",
       "packs_new_format": {
@@ -240,11 +338,13 @@
         "replacement": "Karty osobiste (wersje Replacement)",
         "requiredCards": "Karty osobiste",
         "restrictedTo": "Ograniczone do",
+        "sideDeckRequiredCards": "Dodatkowe karty osobiste",
         "specialist": "Karty specjalistyczne",
         "specialist_investigators": "Badacze mogący użyć tej karty specjalistycznej"
       },
       "reset": "Resetuj",
       "seal": "Pieczęć",
+      "select": "Wybierz",
       "set_as_default": "Ustaw jako domyślne",
       "shroud": "Zasłona",
       "skill": {
@@ -270,6 +370,7 @@
       "sort_asc": "Sortuj rosnąco",
       "sort_desc": "Sortuj malejąco",
       "specialist": "Specjalistyczne",
+      "stage": "Faza",
       "subtype": {
         "basicweakness": "Podstawowe osłabienie",
         "none": "Brak podtypu",
@@ -307,8 +408,6 @@
       "taboo_original_text": "Oryginalny tekst karty",
       "taboo_unchained": "Kosztuje {{xp}} doświadczenia mniej.",
       "total": "łącznie",
-      "trait_few": "Cechy",
-      "trait_many": "Cech",
       "trait_one": "Cecha",
       "trait_other": "Cechy",
       "traits": {
@@ -319,13 +418,15 @@
         "Act 1": "Akt 1",
         "Act 2": "Akt 2",
         "Agency": "Agencja",
+        "Alchemy": "Alchemia",
         "Alexandria": "Aleksandria",
-        "Allied": "Allied",
+        "Allied": "Sprzymierzona",
         "Ally": "Sprzymierzeniec",
         "Altered": "Zmieniony",
         "Ancient": "Pradawny",
         "Ancient One": "Przedwieczny",
         "Apiary": "Apiary",
+        "Apparel": "Odzienie",
         "Arkham": "Arkham",
         "Arkham Asylum": "Przytułek Arkham",
         "Armor": "Pancerz",
@@ -357,6 +458,7 @@
         "Carnevale": "Karnawał",
         "Cart": "Cart",
         "Casino": "Kasyno",
+        "Castle": "Zamek",
         "Cave": "Jaskinia",
         "Central": "Centralna",
         "Charm": "Amulet",
@@ -376,6 +478,7 @@
         "Conspirator": "Konspirator",
         "Construct": "Konstrukt",
         "Corruption": "Zepsucie",
+        "Cosmos": "Kosmos",
         "Coterie": "Koteria",
         "Covenant": "Przymierze",
         "Creature": "Stworzenie",
@@ -396,6 +499,7 @@
         "Developed": "Rozwinięta",
         "Dhole": "Dhole",
         "Dilemma": "Dylemat",
+        "Dinosaur": "Dinozaur",
         "Distortion": "Wypaczenie",
         "Dormant": "Dormant",
         "Double": "Podwójny",
@@ -438,7 +542,7 @@
         "Gambit": "Gambit",
         "Game": "Gra",
         "Geist": "Echo duszy",
-        "Ghast": "Ghast",
+        "Ghast": "Gast",
         "Ghoul": "Ghoul",
         "Glacier": "Lodowiec",
         "Glyph": "Glif",
@@ -449,10 +553,11 @@
         "Guest": "Gość",
         "Gug": "Gug",
         "Hall": "Hol",
-        "Hardship": "Hardship",
+        "Hardship": "Nędza",
         "Haunted": "Nawiedzona",
         "Havana": "Hawana",
         "Hazard": "Niebezpieczeństwo",
+        "Headwear": "Nakrycie głowy",
         "Hemlock Vale": "Hemlock Vale",
         "Hex": "Urok",
         "Hideout": "Kryjówka",
@@ -482,20 +587,20 @@
         "Kingsport": "Kingsport",
         "Kuala Lumpur": "Kuala Lumpur",
         "Lair": "Leże",
-        "Lantern Club": "Lantern Club",
+        "Lantern Club": "Klub Latarni",
         "Lead": "Trop",
-        "Leader": "Leader",
+        "Leader": "Lider",
         "Leng": "Leng",
         "Lift": "Lift",
         "Lit": "Lit",
         "Locus Site": "Miejsce pieczęci",
         "Lodge": "Loża",
         "London": "Londyn",
-        "Machination": "Machination",
+        "Machination": "Machinacja",
         "Madness": "Szaleństwo",
         "Mainland": "Stały ląd",
         "Manifold": "Powielenie",
-        "Manor": "Manor",
+        "Manor": "Posiadłość",
         "Marrakesh": "Marrakesz",
         "Mask": "Maska",
         "Medic": "Lekarz",
@@ -504,7 +609,7 @@
         "Mi-Go": "Mi-Go",
         "Midtown": "Śródmieście",
         "Mirage": "Miraż",
-        "Misfortune": "Misfortune",
+        "Misfortune": "Niepowodzenie",
         "Miskatonic": "Miskatonic",
         "Mnar": "Mnar",
         "Monster": "Potwór",
@@ -535,7 +640,7 @@
         "Past": "Przeszłość",
         "Patron": "Opiekun",
         "Performer": "Artysta",
-        "Plot": "Plot",
+        "Plot": "Wątek",
         "Pnakotus": "Pnakotus",
         "Poison": "Trucizna",
         "Police": "Policja",
@@ -548,6 +653,8 @@
         "Present-Day": "Teraźniejszość",
         "Prison": "Więzienie",
         "Private": "Prywatna",
+        "Profession": "Profesja",
+        "Prop": "Rekwizyt",
         "Providence": "Providence",
         "Public": "Publiczna",
         "R'lyeh": "R'lyeh",
@@ -559,11 +666,11 @@
         "Resident": "Mieszkaniec",
         "Resolute": "Niezachwiany",
         "Restricted": "Zastrzeżona",
-        "Return": "Return",
+        "Return": "Powrót",
         "Risen": "Wskrzeszony",
         "Ritual": "Rytuał",
         "Ritual Site": "Miejsce rytuału",
-        "Rival": "Rival",
+        "Rival": "Rywal",
         "River": "Rzeka",
         "Riverside": "Riverside",
         "Road": "Droga",
@@ -575,11 +682,13 @@
         "Ruins": "Ruiny",
         "Salem": "Salem",
         "Sanctum": "Sanktuarium",
+        "Satellite": "Satelita",
+        "Saturnite": "Saturnita",
         "Scheme": "Zamiar",
         "Scholar": "Uczony",
         "Science": "Nauka",
         "Scientist": "Naukowiec",
-        "Scion": "Scion",
+        "Scion": "Potomek",
         "Script": "Rękopis",
         "Seafloor": "Seafloor",
         "Second Floor": "Drugie piętro",
@@ -587,6 +696,7 @@
         "Serpent": "Wąż",
         "Service": "Służba",
         "Servitor": "Posłuszny",
+        "Set": "Scenografia",
         "Shantak": "Szantak",
         "Shattered": "Zniszczona",
         "Ship": "Statek",
@@ -622,7 +732,7 @@
         "Temple": "Świątynia",
         "Tenochtitlán": "Tenochtitlán",
         "Tentacle": "Macka",
-        "Terror": "Terror",
+        "Terror": "Koszmar",
         "Third Floor": "Trzecie piętro",
         "Tindalos": "Tindalos",
         "Tome": "Tom",
@@ -654,6 +764,7 @@
         "Witch": "Wiedźma",
         "Witch House": "Dom wiedźmy",
         "Woods": "Puszcza",
+        "Worker": "Pracownik",
         "Y'ha-nthlei": "Y'ha-nthlei",
         "Yithian": "Yithian",
         "Yoth": "Yoth",
@@ -683,6 +794,7 @@
       "uses": {
         "aether": "Eter",
         "ammo": "Amunicja",
+        "arrow": "Strzała",
         "bounties": "Nagrody",
         "brilliance": "Brilliance",
         "chances": "Chances",
@@ -697,8 +809,11 @@
         "obsessions": "Obsessions",
         "offerings": "Ofiary",
         "portents": "Portents",
+        "renown": "Rozgłosy",
         "resources": "Zasoby",
+        "rumors": "Plotki",
         "secrets": "Sekrety",
+        "shards": "Odłamki",
         "shell": "Łuska",
         "signs": "Signs",
         "supplies": "Ekwipunek",
@@ -709,13 +824,9 @@
         "whistles": "Gwizdki",
         "wishes": "Wishes"
       },
+      "vengeance": "Zemsta",
       "victory": "Zwycięstwo",
       "xp": "XP"
-    },
-    "connect": {
-      "error": "Nie udało się połączyć z {{provider}}: {{error}}",
-      "syncing": "Synchronizuję {{provider}}...",
-      "title": "Łącze z {{provider}}..."
     },
     "deck": {
       "actions": {
@@ -748,20 +859,20 @@
       "id": "ID talii",
       "latest_upgrade": {
         "add_to_deck": "Dodaj do aktualnej talii",
+        "decrement_xp": "Zmniejsz liczbę dostępnych XP dla tego ulepszenia",
+        "increment_xp": "Zwiększ liczbę dostępnych XP dla tego ulepszenia",
         "no_changes": "Brak zmian.",
         "summary": "Wydano {{xpSpent}} z {{xp}} XP",
-        "title": "Ostatnie ulepszenie",
-        "xp_spent": "Wydane XP"
+        "title": "Ostatnie ulepszenie"
       },
       "limited_decks": {
+        "Collector": "Collector",
         "Secondary Class": "Drugorzędna klasa",
         "Versatile": "Wszechstronny"
       },
       "limited_slots": "Limitowane sloty",
       "stats": {
         "deck_size": "Rozmiar talii",
-        "ignored_few": "{{count}} kopie nie wliczają się do rozmiaru talii.",
-        "ignored_many": "{{count}} kopii nie wlicza się do rozmiaru talii.",
         "ignored_one": "{{count}} kopia nie wlicza się do rozmiaru talii.",
         "ignored_other": "{{count}} kopie nie wliczają się do rozmiaru talii.",
         "unowned": "Unavailable: {{count}} of {{total}} cards",
@@ -771,7 +882,7 @@
         "xp_required_help": "Liczba XP wymagana do zbudowania tej talii od podstaw."
       },
       "tags": {
-        "limited_pool": "Ograniczona pula",
+        "account": "arkham.build",
         "private": "Prywatna",
         "sealed": "Zapieczętowana",
         "shared": "Udostępniona"
@@ -789,19 +900,21 @@
         "upload_loading": "Wysyłanie talii do {{provider}}..."
       },
       "tools": {
+        "average_cost": "Średni koszt: {{cost}}",
         "cards": "Karty",
         "count": "Liczba",
         "factions": "Klasy",
         "factions_tooltip": "{{faction}} - {{count}} {{cards}}",
         "loading": "Wczytywanie narzędzia talii...",
+        "median_cost": "Mediana kosztu: {{cost}}",
         "resource_cost": "Koszt zasobów",
         "resource_cost_tooltip": "{{count}} {{cards}} o koszcie {{cost}}",
         "resource_costs": "Koszty zasobów",
         "skill_icons": "Ikony umiejętności",
-        "skill_icons_tooltip": "{{skill}} - {{count}} {{icons}}",
-        "title": "Narzędzia talii"
+        "skill_icons_tooltip": "{{skill}} - {{count}} {{icons}}"
       },
       "validation": {
+        "card_not_in_limited_pool": "Poniższe karty nie są częścią dozwolonej puli kart dla tej talii:",
         "forbidden_cards": "Talia zawiera zakazane karty (karty niedozwolone przez badacza):",
         "invalid": "Talia jest nieprawidłowa.",
         "invalid_card_count": "Talia zawiera nieprawidłową liczbę kopii następujących kart:",
@@ -813,13 +926,11 @@
     },
     "deck_collection": {
       "archive": "Archiwum",
+      "arkhamdb_response_time_banner": "Obecnie ArkhamDB API działa bardzo powolnie. Jeśli występują problemy, załaduj talie bezpośrednio na arkham.build.",
       "collection_empty": "Kolekcja talii pusta",
       "connect_arkhamdb": "Połącz z ArkhamDB",
       "count": "{{count}} talie",
-      "count_one": "{{count}} talia",
-      "count_few": "{{count}} talie",
       "count_hidden": " ({{count}} ukryte)",
-      "count_many": "{{count}} talii",
       "deck_url_or_id": "URL lub ID talii",
       "delete_all": "Usuń wszystkie talie lokalne",
       "delete_all_confirm": "Czy jesteś pewien, że chcesz usunąć wszystkie talie lokalne ze swojej kolekcji?",
@@ -828,7 +939,9 @@
       "import": "Zaimportuj",
       "import_arkhamdb": "Importuj z ArkhamDB",
       "import_arkhamdb_help": "Wprowadź ID publicznej talii, jej URL lub URL przewodnika talii. Talia zostanie <strong>skopiowana</strong> bez jej historii i stanu ulepszenia. Jeśli zamierzasz zsynchronizować swoje talie z ArkhamDB z tą aplikacją, <settings_link>połącz swoje konto ArkhamDB.</settings_link>",
+      "import_error": "Błąd importowania talii: {{error}}",
       "import_json": "Importuj z plików JSON",
+      "import_loading": "Importowanie talii...",
       "more_filters": "Więcej filtrów",
       "search_placeholder": "Szukaj talii...",
       "sorting": {
@@ -862,7 +975,8 @@
       "sealed_deck": {
         "error": "Nie udało się zaimportować zapieczętowanej talii: {{error}}",
         "loading": "Wgrywanie zapieczętowanej talii..."
-      }
+      },
+      "title": "Stwórz talię {{name}}"
     },
     "deck_edit": {
       "actions": {
@@ -881,31 +995,41 @@
         "move_to_side_deck": "Przenieś do talii pobocznej",
         "quick_discard": "Odrzuć zmiany (i pozostań na stronie)",
         "quick_save_deck": "Zapisz talię (i pozostań na stronie)",
-        "quick_upgrade": "Ulepsz {{name}}",
         "set_quantity": "Ustaw ilość w talii",
         "set_side_quantity": "Ustaw ilość w talii pobocznej"
       },
       "changes_restored": "Przywrócono niezapisane zmiany.",
       "config": {
+        "buildql_deck_option": "Nadpisz deckbuilding używając BuildQL",
         "card_pool": {
           "apply_environment": "Zastosuj środowisko {{environment}}",
           "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "„Campaign Play-Along” jest powracającym wydarzeniem organizowanym na serwerze Discord Mythos Busters. Jest ono zaprojektowane do wspólnego grania w kampanie Arkham, dzielenia się historiami i ogólnie tworzenia poczucia wspólnoty.",
+          "chapter_1": "Chapter 1",
+          "chapter_2": "Chapter 2",
+          "chapter_1_help": "Stwórz pulę kart ze wszystkich zestawów z Chapteru 1.",
+          "chapter_2_help": "Stwórz pulę kart ze wszystkich zestawów z Chapteru 2.",
           "choose_cycle_placeholder": "Wybierz cykle...",
           "collection": "Kolekcja",
           "collection_help": "Ustaw swoją aktualną <settings_link>Kolekcję</settings_link> kart jako pula tej talii. Może to być przydatne w celu zamrożenia puli kart talii lub udostępnienia „ustawień wstępnych” dla osób dzielących tę samą fizyczną kolekcję kart.",
           "configure_environment": "Skonfiguruj środowisko gry",
           "current": "Aktualne",
-          "current_faq25_help": "Podczas budowania talii w środowisku Aktualnym gracze mogą budować talię wyłącznie przy użyciu kart z zestawu podstawowego, pięciu talii początkowych badaczy i trzech najnowszych rozszerzeń badacza.",
+          "current_faq25": "Aktualne (FAQ 2.5)",
+          "current_faq25_help": "Podczas budowania talii w środowisku Aktualnym gracze mogą budować talię wyłącznie przy użyciu kart z zestawu podstawowego, pięciu talii początkowych badaczy i trzech najnowszych rozszerzeń badaczy.",
+          "current_help": "Podczas budowania talii w środowisku Aktualnym gracze mogą budować talię wyłącznie przy użyciu kart z Zestawu Podstawowego 2026, pięciu talii badaczy, dwóch najnowszych rozszerzeń deckbuildingowych oraz dwóch najnowszych rozszerzeń badaczy wydanych po Zestawie Podstawowym 2026.",
           "custom": "Własna pula",
           "help": "Ten wybór nie ma wpływu na badaczy, ich wymagane karty i atuty fabularne.",
-          "placeholder": "Wybierz zestawy...",
+          "help_chapter_1": "To jest środowisko chapteru 1.",
           "legacy": "Legacy",
           "legacy_help": "Podczas budowania talii w środowisku Legacy gracze mogą budować swoje talie i korzystać z badaczy, kart badacza i osłabień z dowolnego produktu Horroru w Arkham: Gry karcianej™. Bez żadnych ograniczeń.",
           "limited": "Ograniczone",
-          "limited_faq25_help": "Podczas budowania talii w środowisku Ograniczonym gracze mogą budować swoje talie wyłącznie przy użyciu kart z zestawu podstawowego, pięciu talii początkowych badaczy i trzech wybranych przez siebie rozszerzeń badacza.",
+          "limited_faq25": "Ograniczone (FAQ 2.5)",
+          "limited_faq25_help": "Podczas budowania talii w środowisku Ograniczonym gracze mogą budować swoje talie wyłącznie przy użyciu kart z Zestawu Podstawowego, pięciu talii początkowych badaczy i trzech wybranych przez siebie rozszerzeń badaczy.",
+          "limited_help": "Podczas budowania talii w środowisku Ograniczonym gracze mogą budować swoje talie wyłącznie przy użyciu kart z Zestawu Podstawowego  2026, pięciu talii badaczy i trzech wybranych przez siebie rozszerzeń badaczy.",
+          "placeholder": "Wybierz zestawy...",
           "section_title": "Ustawienia puli kart",
           "selected_cards": "Wybrane karty",
+          "substitute_chapter_2_with_chapter_1": "Zastąp karty z zestawu podstawowego oraz talii badaczy z chapteru 2 odpowiednikami z chapteru 1.",
           "title": "Ograniczona pula kart"
         },
         "name": "Nazwa talii",
@@ -923,6 +1047,8 @@
           "parallel_front": "Równoległy awers"
         },
         "storage_provider": {
+          "account": "arkham.build",
+          "arkhamdb": "ArkhamDB",
           "local": "Lokalne",
           "shared": "Współdzielone",
           "title": "Miejsce przechowywania talii"
@@ -940,8 +1066,6 @@
       "create_local_copy_help": "Utwórz lokalną kopię tej talii. Zastosuje to wszystkie zaległe edycje i umożliwi ich zapisanie. Ulepszenia i historia talii nie zostaną przeniesione.",
       "customizable": {
         "skill_placeholder": "Wybierz umiejętność...",
-        "traits_placeholder_few": "Wybierz cechy...",
-        "traits_placeholder_many": "Wybierz cechy...",
         "traits_placeholder_one": "Wybierz cechę...",
         "traits_placeholder_other": "Wybierz cechy..."
       },
@@ -1026,6 +1150,19 @@
         "title": "Wersje"
       }
     },
+    "deck_sync": {
+      "conflict": {
+        "action_error": "Nie udało się rozwiązać konfliktu talii: {{error}}",
+        "collection_badge": "Konflikt talii wymaga uwagi",
+        "description": "Ta talia została zmieniona przed zapisaniem Twoich zmian. Odśwież, aby załadować aktualny stan.",
+        "description_remote_missing": "Ta talia została usunięta przed ukończeniem Twoich zmian. Odrzuć talię lokalną, aby dopasować ją do aktualnego stanu.",
+        "discard_local": "Odrzuć talię lokalną",
+        "edit_locked": "Rozwiąż konflikt talii przed jej edytowaniem.",
+        "refresh": "Odśwież",
+        "remote_version": "Wersja zdalna: {{version}}",
+        "title": "Konflikt synchronizacji talii"
+      }
+    },
     "deck_view": {
       "actions": {
         "display_as_list": "Wyświetl jako lista",
@@ -1035,11 +1172,8 @@
         "save_upgrade_close": "Zapisz ulepszenie i zamknij",
         "save_upgrade_close_short": "Zapisz i zamknij",
         "save_upgrade_short": "Ulepsz",
-        "upload": "Wyślij na {{provider}}"
-      },
-      "connections": {
-        "description": "Ta talia jest zsynchronizowana z {{provider}}.",
-        "view": "Zobacz na {{provider}}"
+        "upload": "Wyślij na {{provider}}",
+        "upload_account": "Wyślij"
       },
       "discounts": {
         "adaptable": "Elastyczny",
@@ -1049,12 +1183,14 @@
       },
       "history": {
         "added": "Dodano",
+        "created": "Utworzono",
         "current_upgrade": "Aktualne ulepszenie",
         "discounts": "Zniżki",
         "initial_deck": "Początkowa talia",
         "no_changes": "Brak zmian",
         "removed": "Usunięto",
         "slot_changes": "{{slot}} - zmiany",
+        "updated": "Zaktualizowano",
         "upgrade": "Ulepszenie #{{index}}",
         "upgrade_xp": "Dostępne XP: {{xp}}{{adjustment}} (wydano: {{spent}})"
       },
@@ -1065,14 +1201,13 @@
       "newer_version": "Dostępna jest <a>nowa wersja</a> tej talii. Ta talia jest tylko do odczytu.",
       "scans": "Skany",
       "sharing": {
-        "create": "Udostępnij",
-        "create_tooltip": "Udostępniając tworzysz publicznie dostępny link (tylko do odczytu). Każdy z dostępem do tego linku może przeglądać talię, ale nie może jej edytować.<br/>W każdym momencie możesz przestać udostępniać tą talię - nie ma to wpływu na talię.",
-        "delete": "Przestań udostępniać",
-        "description": "Talia jest przechowywana lokalnie.",
-        "description_present": "Talia jest udostępniona publicznie; może być przeglądana przy użyciu <a>tego linku</a>.",
-        "title": "Publiczne udostępnienie",
-        "update": "Uaktualnij udostępnienie"
+        "api_link": "Json API",
+        "description": "Talia jest zapisana lokalnie na tym urządzeniu.",
+        "description_present": "Talia jest zapisana na {{provider}}. Wyświetl przy użyciu <a>this link</a>.",
+        "title": "Dostęp",
+        "view_on_arkhamdb": "Przeglądaj na ArkhamDB"
       },
+      "show_deck_list": "Wyświetl listę talii",
       "tab_deck_list": "Talia",
       "tab_history": "Historia",
       "tab_notes": "Notatki",
@@ -1092,10 +1227,7 @@
       "browse": {
         "loading": "Ładowanie przewodników talii...",
         "no_results": "Brak wyników",
-        "results_count_few": "{{count}} wyniki",
-        "results_count_many": "{{count}} wyników",
-        "results_count_one": "{{count}} wynik",
-        "results_count_other": "{{count}} wyników",
+        "results_count": "Wynik: {{count}}",
         "title": "Przewodniki talii"
       },
       "filters": {
@@ -1111,7 +1243,8 @@
         "name_placeholder": "Wprowadź nazwę (np. Przewodnik talii...)...",
         "required_cards": "Wymagane karty",
         "submit": "Zastosuj",
-        "title": "Kryteria filtrowania"
+        "title": "Kryteria filtrowania",
+        "xp_range": "Wymagane XP"
       },
       "sorting": {
         "date": "Najnowsze",
@@ -1123,6 +1256,7 @@
     "draw_simulator": {
       "draw_tooltip": "Wylosuj {{count}} {{cards}}.",
       "mulligan_mode": "Tryb pierwszej ręki",
+      "mulligan_mode_help": "When enabled, non-Tarot weaknesses and cards that start in play are redrawn automatically. After mulligan mode is disabled, the deck is shuffled once.",
       "redraw": "Wylosuj wybrane ponownie",
       "redraw_tooltip": "Wybrane karty zostaną przesunięte na koniec talii, a następnie zastąpione nowymi kartami.",
       "reset": "Resetuj",
@@ -1140,6 +1274,11 @@
       "preview_publish": "Talia zawiera karty nieobsługiwane przez {{provider}}: {{names}}. Usuń je proszę przed wysłaniem.",
       "report": "Zgłoś błąd"
     },
+    "external_embed": {
+      "load": "Wczytaj zawartość zewnętrzną",
+      "notice": "Ta zewnętrzna zawartość jest zablokowana do momentu, gdy zdecydujesz się ją wczytać. Może umożliwić przetwarzanie Twoich danych oraz zapisywanie plików cookies.",
+      "title": "Zawartość zewnętrzna"
+    },
     "fan_made_content": {
       "actions": {
         "import_file": "Importuj z pliku",
@@ -1154,6 +1293,7 @@
       "content_types": "Rodzaj dodatku",
       "content_version": "Wersja dodatku",
       "empty": "Brak zainstalowanej zawartości",
+      "filter_fan_made_content": "Wyszukaj zawartość...",
       "import_url": {
         "label": "URL zawartości",
         "placeholder": "Wpisz URL...",
@@ -1164,13 +1304,15 @@
         "available_content_loading": "Wczytywanie dostępnej zawartości...",
         "content_loading": "Ładowanie zawartości...",
         "fetch_failed": "Nie udało się załadować zawartości: {{error}}",
+        "no_match": "Brak zawartości spełniającej filtry",
         "parse_failed": "Nie udało się dodać zawartości: {{error}}",
         "registry_failed": "Nie udało się załadować dostępnej zawartości z rejestru: {{error}}"
       },
       "settings": {
         "card_lists": "Lista kart",
-        "card_lists_help": "To ustawienie kontroluje domyślną wartość filtra \"Zawartość fanowska\" listy kart."
+        "card_lists_help": "To ustawienie kontroluje domyślną wartość filtra „Zawartość fanowska” listy kart."
       },
+      "short_title": "Fanowska",
       "status": {
         "alpha": "Alfa",
         "beta": "Beta",
@@ -1206,12 +1348,13 @@
         "odd": "Nieparzysty",
         "title": "Koszt"
       },
+      "cycle": {
+        "placeholder": "Wybierz cykle...",
+        "title": "Cykl"
+      },
       "encounter_set": {
         "placeholder": "Wybierz zestawy spotkań...",
         "title": "Zestaw spotkań"
-      },
-      "environment": {
-        "title": "Środowisko"
       },
       "fan_made_content": {
         "all": "Pokaż wszystko",
@@ -1289,10 +1432,18 @@
         "title": "Zużywalny"
       }
     },
+    "footer": {
+      "arkham_title": "Horror w Arkham: Gra karciana™",
+      "disclaimer": "<arkham>Horror w Arkham: Gra karciana™</arkham> oraz cała powiązana zawartość © <ffg>Fantasy Flight Games (FFG)</ffg>. Ta aplikacja nie jest tworzona, popierana, wspierana ani powiązana z Fantasy Flight Games.",
+      "ffg": "Fantasy Flight Games (FFG)",
+      "legal": "Prawne",
+      "legal_notice": "Nota prawna",
+      "privacy": "Polityka prywatności",
+      "terms": "Regulamin"
+    },
     "help": {
       "about": "O tej stronie",
       "changelog": "Dziennik zmian",
-      "collection_stats": "Statystyki kolekcji",
       "shortcuts": {
         "group_card_list": "Lista kart",
         "group_card_list_search": "Lista kart (w skupieniu na wyszukiwaniu)",
@@ -1345,18 +1496,19 @@
       },
       "group_by": "Grupuj według",
       "nav": {
-        "card_count_few": "{{count}} karty",
         "card_count_hidden": "({{count}} ukrytych przez filtry)",
-        "card_count_many": "{{count}} kart",
         "card_count_one": "{{count}} karta",
+        "card_count_other": "{{count}} kart",
         "display": "Wyświetlanie listy",
         "display_as_detailed": "Szczegółowy podgląd karty",
         "display_as_list": "Tylko nazwa karty",
         "display_as_list_text": "Nazwa z tekstem karty",
         "display_as_scans": "Skan karty",
         "display_as_scans_grouped": "Skan karty (zgrupowany)",
+        "export": "Eksportuj",
         "jump_to": "Przeskocz do...",
         "list_settings": "Ustawienia listy",
+        "max_columns": "Maks. liczba skanów w kolumnie",
         "sort": "Sortowanie",
         "sort_default": "Domyślne użytkownika"
       },
@@ -1366,7 +1518,9 @@
         "include_flavor": "Smaczki",
         "include_game_text": "Tekst karty",
         "include_name": "Nazwa",
-        "placeholder": "Szukaj kart..."
+        "placeholder": "Szukaj kart...",
+        "share": "Skopiuj zapytanie",
+        "title": "Wyszukaj"
       },
       "sort_by": "Sortuj według"
     },
@@ -1391,22 +1545,89 @@
       "title": "Sezon zapowiedzi trwa!"
     },
     "rules": {
-      "title": "Zasady gry"
+      "back_to_top": "Wróć na początek",
+      "grimoire": {
+        "empty": "Nie znaleziono treści w Grymuarze.",
+        "error": "Błąd ładowania Grymuaru.",
+        "intro_description": "Grymaur Arkham to kompleksowy zbiór zasad obejmujący wszystkie znane sytuacje w grze. Jako żywy dokument jest on utrzymywany online i aktualizowany w miarę wprowadzania nowych kart, zasad lub odkrywania nowych interakcji. Dokument ten zawiera informacje dotyczące złożonych tematów, takich jak interpretacja tekstu kart, rozstrzyganie konfliktów czasowych, najczęściej zadawane pytania oraz lista wszystkich słów kluczowych i innych tekstów zasad.",
+        "intro_title": "Grymaur Arkham",
+        "loading": "Ładowanie Grymuaru...",
+        "open_link": "Przejdź do Grymuaru",
+        "references": "Odniesienia"
+      },
+      "search_placeholder": "Szukaj słów kluczowych...",
+      "title": "Zasady",
+      "toc": "Spis treści"
     },
     "search": {
       "title": "Wyniki wyszukiwania"
     },
     "settings": {
-      "support": {
-        "confirm": "Jesteś pewien, że chcesz przywrócić tą kopię zapasową? Wszelkie istniejące dane zostaną nadpisane.",
-        "create": "Stwórz kopię zapasową",
-        "help": "Stwórz kopię zapasową swoich ustawień, talii oraz kolekcji kart jako plik JSON. Możesz użyć tego pliku, by przywrócić swoje dane na tym, bądź innym urządzeniu.",
-        "help_warning": "Jeśli przywrócisz kopię zapasową, <strong>wszelkie istniejące dane zostaną nadpisane.</strong>",
-        "no_file_selected": "Żaden plik nie został wybrany",
-        "restore": "Przywróć kopię zapasową",
-        "restore_error": "Nie udało się przywrócić kopii zapasowej: {{error}}",
-        "restore_success": "Kopia zapasowa została pomyślnie przywrócona.",
-        "title": "Kopia zapasowa"
+      "account": {
+        "danger_zone": "Strefa zagrożenia",
+        "delete": {
+          "confirm_help": "Wpisz {{username}}, aby potwierdzić usunięcie konta.",
+          "confirm_label": "Potwierdzenie",
+          "deleting": "Usuwanie konta...",
+          "help": "Trwałe usunięcie konta arkham.build i powiązanych z nim danych. Spowoduje to usunięcie danych uwierzytelniających po stronie serwera, sesji, talii zsynchronizowanych z kontem, ustawień oraz połączeń OAuth. Talie powiązane z kontem zostaną usunięte z tego urządzenia. Talie zapisane wyłącznie na urządzeniu, ustawienia i inne dane przeglądarki nie zostaną usunięte. Zawartość zsynchronizowana z ArkhamDB nie zostanie usunięta ze strony ArkhamDB.",
+          "submit": "Usuń konto",
+          "title": "Usuń konto"
+        },
+        "email": {
+          "add": "Dodaj email",
+          "add_help": "Dodaj adres email i hasło jako dodatkowy sposób logowania.",
+          "cancel_pending": "Anuluj weryfikację email",
+          "canceling_pending": "Anulowanie weryfikacji email...",
+          "current_password": "Obecne hasło",
+          "new_email": "Nowy email",
+          "new_email_help": "Pozostaw puste, aby zachować Twój obecny email.",
+          "new_password": "Nowe hasło",
+          "new_password_help": "Pozostaw puste, aby zachować Twoje obecne hasło.",
+          "pending": "Oczekiwanie na email",
+          "pending_help": "Sprawdź {{email}}, aby <verifyLink>go zweryfikować</verifyLink>.",
+          "save": "Zaktualizuj dane",
+          "saving": "Zapisywanie danych logowania...",
+          "status": "Status",
+          "status_pending": "Oczekuje na weryfikację",
+          "status_verified": "Zweryfikowany",
+          "title": "Dane logowania"
+        },
+        "oauth": {
+          "connect": "Połącz",
+          "connect_help": "Połącz swoje konto {{provider}}, aby synchronizować talię i logować się za jego pomocą.",
+          "connected": "Połączone",
+          "details": "Szczegóły",
+          "disconnect": "Rozłącz",
+          "disconnect_error": "Nie udało się rozłączyć {{provider}}: {{error}}",
+          "disconnected": "Wystąpił problem podczas łączenia, proszę połączyć się ponownie.",
+          "disconnecting": "Rozłączanie {{provider}}...",
+          "last_error": "Ostatni błąd",
+          "last_synced_at": "Ostatnia synchronizacja",
+          "none": "None",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "ArkhamDB",
+          "status": {
+            "healthy": "Udana",
+            "unhealthy": "Nieudana"
+          },
+          "sync_status": "Status synchronizacji",
+          "title": "Połączenia",
+          "user_id": "ID użytkownika"
+        },
+        "privacy_rights": {
+          "body": "Możesz wyeksportować swoje dane w zakładce Pomoc oraz usunąć swoje konto używając opcji poniżej. W przypadku zapytań związanych z RODO, które nie są samoobsługowe, takich jak żądanie ograniczenia przetwarzania lub wyrażenie sprzeciwu, skontaktuj się z <privacyEmail />.",
+          "title": "Prywatność i prawa do ochrony danych."
+        },
+        "profile": {
+          "save": "Zapisz profil",
+          "saving": "Zapisywanie profilu...",
+          "title": "Profil",
+          "username": "Nazwa użytkownika",
+          "username_help": "Tylko litery, cyfry, podkreślenia i myślniki."
+        },
+        "title": "Konto"
       },
       "card_data": {
         "card_count": "Liczba kart",
@@ -1415,13 +1636,13 @@
         "loading": "Wczytywanie najnowszych danych kart...",
         "locale": "Język",
         "sync": "Synchronizuj dane kart",
-        "title": "Dane kart",
         "up_to_date": "Używasz najnowszych danych kart.",
         "update_available": "Nowe dane kart są dostępne."
       },
       "collection": {
         "card_collection": "Kolekcja kart",
         "card_count": "Liczba kart",
+        "chapter": "Chapter {{number}}",
         "new_format": "Nowy format",
         "old_format": "Stary format",
         "show_all_cards_owned": "Zaznacz wszystkie karty jako posiadane",
@@ -1430,20 +1651,15 @@
         "show_previews_help": "Jeśli ta opcja jest zaznaczona, nieopublikowane karty będą wyświetlane w aplikacji i będzie je można dodać do talii.",
         "title": "Kolekcja"
       },
-      "connections": {
-        "disconnected_all": "Wystąpił problem z jednym z twoich połączonych kont. Odśwież je proszę w Ustawieniach.",
-        "items_synced": "Elementy zsynchronizowane",
-        "last_modified": "Znacznik czasu danych",
-        "lock": "Inna operacja związana z {{provider}} jest w trakcie, proszę czekać...",
-        "no_errors": "Brak błędów",
-        "provider_error": "Synchronizacja {{provider}} nie udała się: {{error}}",
-        "provider_syncing": "Synchronizacja {{provider}}...",
-        "sync": "Synchronizuj",
-        "sync_all": "Synchronizuj talie {{collectionLabels}}",
-        "sync_errors": "Błędy synchronizacji",
-        "sync_status": "Status synchronizacji",
-        "syncing": "Synchronizacja w trakcie",
-        "username": "Nazwa użytkownika"
+      "conflict": {
+        "description": "Ustawienia Twojego konta zostały zmienione w innym miejscu. Odśwież, aby załadować aktualną wersję lub nadpisz je używając obecnych, lokalnych zmian.",
+        "overwrite": "Nadpisz",
+        "refresh": "Odśwież stronę",
+        "remote_revision": "Wersja zdalna: {{revision}}"
+      },
+      "developer": {
+        "dev_mode_enabled": "Włącz tryb developerski",
+        "title": "Tryb developerski"
       },
       "display": {
         "card_display": "Opcje wyświetlania kart",
@@ -1464,8 +1680,6 @@
         "card_skill_icons_simple": "Uproszczone",
         "font_size": "Rozmiar czcionki",
         "font_size_preview": "Nie ma zatem takiego człowieka, który kocha cierpienie samo w sobie, kto by do niego dążył lub chciał go doświadczyć, tylko dlatego, że jest to cierpienie, a dlatego, że czasami zdarzają się takie okoliczności, w których to cierpienie może doprowadzić go do jakiejś wielkiej przyjemności. Dając przykład banalny: któż z nas kiedyś nie podejmował się trudnego wysiłku fizycznego mając na względzie uzyskanie z tego korzyści?",
-        "hide_weaknesses": "Ukryj osłabienia w liście kart gracza",
-        "hide_weaknesses_help": "Jeśli ta opcja jest zaznaczona, osłabienia są domyślnie ukryte w liście kart gracza. Aby je wyświetlić, należy użyć filtra <strong>Podtyp</strong>.",
         "show_card_modal_popular_decks": "Pokazuj popularne talie w oknie karty",
         "show_card_modal_popular_decks_help": "Jeśli ta opcja jest zaznaczona, popularne talie zawierające wyświetloną kartę będą pokazywane w jej oknie.",
         "show_move_to_side_deck": "Pokazuj przycisk \"Przenieś do talii pobocznej\"",
@@ -1492,6 +1706,7 @@
         "deck_view_scans": "Widok talii (skany)",
         "title": "Listy"
       },
+      "load_error": "Błąd ładowania ustawień konta. Użyto ustawień lokalnych: {{error}}",
       "locale": {
         "help": "To ustawienie zmienia język aplikacji, zarówno kart jak i metadanych.",
         "title": "Język"
@@ -1499,28 +1714,14 @@
       "preview": "Podgląd",
       "save": "Zapisz ustawienia",
       "saving": "Zapisywanie ustawień...",
-      "title": "Ustawienia",
-      "account": {
-        "oauth": {
-          "connect": "Połącz",
-          "connect_help": "Połącz swoje konto {{provider}}, aby synchronizować talie i logować się za jego pomocą.",
-          "connected": "Połączone",
-          "created_at": "Połączone od",
-          "details": "Szczegóły",
-          "disconnect": "Rozłącz",
-          "disconnect_error": "Nie udało się rozłączyć {{provider}}: {{error}}",
-          "disconnecting": "Rozłączanie {{provider}}...",
-          "last_synced_at": "Ostatnia synchronizacja",
-          "not_connected": "Niepołączone",
-          "providers": {
-            "arkhamdb": "ArkhamDB"
-          },
-          "reconnect": "Odśwież",
-          "title": "Połączenia",
-          "user_id": "ID użytkownika",
-          "disconnected": "Wystąpił problem z połączeniem, spróbuj ponownie."
-        }
-      }
+        "support": {
+        "create": "Stwórz kopię zapasową",
+        "data_export_title": "Eksport danych",
+        "help": "Stwórz kopię zapasową swoich ustawień, talii oraz kolekcji kart jako plik JSON.",
+        "metadata_title": "Dane aplikacji",
+        "title": "Pomoc"
+      },
+      "title": "Ustawienia"
     },
     "suzi_standalone_setup": {
       "description": "FAQ 2.4 określa w jaki sposób można zbudować talię Suzi dla trybu samodzielnej rozgrywki. Losowa ilość kart o poziomie 1-5 z twojej kolekcji jest dobierana do czasu osiągnięcia docelowej liczby XP. Następnie należy usunąć z talii identyczną liczbę kart.",
@@ -1536,8 +1737,6 @@
     },
     "ui": {
       "cards_combobox": {
-        "placeholder_few": "Wybierz karty...",
-        "placeholder_many": "Wybierz karty...",
         "placeholder_one": "Wybierz kartę...",
         "placeholder_other": "Wybierz karty..."
       },
