@@ -1,0 +1,32 @@
+   #!/usr/bin/env bash
+
+   set -euo pipefail
+
+   if [[ $# -lt 2 ]]; then
+     echo "Usage: bin/tofu <bootstrap|cloudflare|github> <command> [arguments...]" >&2
+     exit 2
+   fi
+
+   stack="$1"
+   shift
+
+   case "$stack" in
+     bootstrap | cloudflare | github) ;;
+     *)
+       echo "Unknown OpenTofu stack: $stack" >&2
+       exit 2
+       ;;
+   esac
+
+   script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+   repository_root="$(cd "${script_dir}/.." && pwd)"
+   stack_directory="${repository_root}/opentofu/${stack}"
+   environment_file="${stack_directory}/.env.op"
+
+   if [[ ! -f "$environment_file" ]]; then
+     echo "Missing 1Password environment file: $environment_file" >&2
+     exit 1
+   fi
+
+   exec op run --env-file="$environment_file" -- \
+     tofu -chdir="$stack_directory" "$@"

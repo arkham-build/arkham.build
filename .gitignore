@@ -20,3 +20,27 @@ dist
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# OpenTofu working data and state
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+.terraform.tfstate.lock.info
+crash.log
+crash.*.log
+
+# OpenTofu local inputs and credentials
+*.tfvars
+*.tfvars.json
+opentofu/**/.env.op
+
+# Local OpenTofu overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Local CLI configuration
+.terraformrc
+terraform.rc
