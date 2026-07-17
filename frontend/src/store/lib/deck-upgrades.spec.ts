@@ -1,3 +1,4 @@
+import { SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import { getMockStore } from "@/test/get-mock-store";
@@ -26,7 +27,7 @@ const tests = [
   // Arcane Research
   ["Arcane Research: Apply one discount", "arcane_research"],
   ["Arcane Research: Apply two discounts", "arcane_research_second_copy"],
-  // Failing test: ["Arcane Research:  Swap & Add", "arcane_research_swap"],
+  ["Arcane Research: Swap & Add", "arcane_research_swap"],
   // Down the Rabbit Hole
   ["Down the Rabbit Hole: Apply discounts", "dtrh"],
   [
@@ -132,26 +133,130 @@ describe("getChangeStats", () => {
     store = await getMockStore();
   });
 
-  it.for(tests)("[Deck Upgrades] %s", async ([, name]) => {
+  async function resolveFixture(fileName: string) {
     const state = store.getState();
     const lookupTables = selectLookupTables(state);
     const collator = selectLocaleSortingCollator(state);
+    const deck = await import(`@test/fixtures/decks/upgrades/${fileName}.json`);
 
-    const resolveFixture = async (fileName: string) => {
-      const deck = await import(
-        `@test/fixtures/decks/upgrades/${fileName}.json`
-      );
-      return resolveDeck(
-        { metadata: state.metadata, lookupTables },
-        collator,
-        deck,
-      );
-    };
+    return resolveDeck(
+      { metadata: state.metadata, lookupTables },
+      collator,
+      deck,
+    );
+  }
 
+  it.for(tests)("[Deck Upgrades] %s", async ([, name]) => {
     const [prev, next] = await Promise.all([
       resolveFixture(`${name}_1`),
       resolveFixture(`${name}_2`),
     ]);
     expect(getChangeStats(prev, next).xpSpent).toEqual(next.xp);
+  });
+
+  it("[Deck Upgrades] Arcane Research: Upgrade and re-add a level 1 spell", async () => {
+    const [prev, next] = await Promise.all([
+      resolveFixture("arcane_research_readd_1"),
+      resolveFixture("arcane_research_readd_2"),
+    ]);
+
+    const stats = getChangeStats(prev, next);
+
+    expect(stats).toMatchObject({
+      changes: {
+        slots: {
+          "08103": 1,
+          "10092": -1,
+        },
+      },
+      modifierStats: {
+        arcaneResearch: {
+          available: 2,
+          used: 2,
+        },
+      },
+      xpSpent: 2,
+    });
+    expect(stats.changes.slots).not.toHaveProperty("08101");
+  });
+
+  it("[Deck Upgrades] Down the Rabbit Hole: Upgrade and re-add a retained card", async () => {
+    const [prev, next] = await Promise.all([
+      resolveFixture("arcane_research_swap_1"),
+      resolveFixture("arcane_research_swap_2"),
+    ]);
+
+    prev.slots = {
+      ...prev.slots,
+      [SPECIAL_CARD_CODES.ARCANE_RESEARCH]: 0,
+      [SPECIAL_CARD_CODES.DOWN_THE_RABBIT_HOLE]: 1,
+    };
+    next.slots = {
+      ...next.slots,
+      [SPECIAL_CARD_CODES.ARCANE_RESEARCH]: 0,
+      [SPECIAL_CARD_CODES.DOWN_THE_RABBIT_HOLE]: 1,
+    };
+
+    expect(getChangeStats(prev, next)).toMatchObject({
+      modifierStats: {
+        downTheRabbitHole: {
+          available: 2,
+          used: 1,
+        },
+      },
+      xpSpent: 3,
+    });
+  });
+
+  it("[Deck Upgrades] Arcane Research: Upgrade, re-add, and purchase another copy", async () => {
+    const [prev, next] = await Promise.all([
+      resolveFixture("arcane_research_swap_1"),
+      resolveFixture("arcane_research_swap_2"),
+    ]);
+
+    next.slots = {
+      ...next.slots,
+      "60426": 2,
+    };
+
+    expect(getChangeStats(prev, next)).toMatchObject({
+      modifierStats: {
+        arcaneResearch: {
+          available: 2,
+          used: 2,
+        },
+      },
+      xpSpent: 5,
+    });
+  });
+
+  it("[Deck Upgrades] Down the Rabbit Hole: Upgrade one copy and purchase another", async () => {
+    const [prev, next] = await Promise.all([
+      resolveFixture("arcane_research_swap_1"),
+      resolveFixture("arcane_research_swap_2"),
+    ]);
+
+    prev.slots = {
+      ...prev.slots,
+      [SPECIAL_CARD_CODES.ARCANE_RESEARCH]: 0,
+      [SPECIAL_CARD_CODES.DOWN_THE_RABBIT_HOLE]: 1,
+    };
+    next.slots = {
+      ...next.slots,
+      "60408": 0,
+      "60426": 2,
+      [SPECIAL_CARD_CODES.ARCANE_RESEARCH]: 0,
+      [SPECIAL_CARD_CODES.DOWN_THE_RABBIT_HOLE]: 1,
+    };
+
+    expect(getChangeStats(prev, next)).toMatchObject({
+      modifierStats: {
+        downTheRabbitHole: {
+          available: 2,
+          used: 1,
+        },
+      },
+      xpSpent: 6,
+    });
   });
 });
