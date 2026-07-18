@@ -68,7 +68,6 @@ export function createStackEnv(overrides: Record<string, string> = {}) {
     SMTP_PORT: "1025",
     SMTP_SECURE: "false",
     SMTP_USER: "",
-    VITE_API_LEGACY_URL: apiUrl,
     VITE_API_URL: apiUrl,
     VITE_ADMIN_EMAIL: "info@example.com",
     VITE_LEGAL_NOTICE: "Example legal notice\\nEmail: info@example.com",

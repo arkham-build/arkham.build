@@ -1,5 +1,5 @@
 export interface Env {
-  VITE_API_LEGACY_URL: string;
+  VITE_API_URL: string;
 }
 
 type Context = EventContext<Env, string, unknown>;

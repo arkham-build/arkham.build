@@ -5,8 +5,6 @@ dev.port = 3000
 
 [vars]
 NODE_VERSION = "24"
-VITE_API_LEGACY_URL = "https://api.arkham.build"
-# VITE_API_LEGACY_URL = "http://localhost:8787"
 VITE_ARKHAMDB_BASE_URL = "https://arkhamdb.com"
 # VITE_ARKHAMDB_BASE_URL = "http://localhost:8000"
 VITE_CARD_IMAGE_URL = "https://cdn.arkham.build"
@@ -18,7 +16,6 @@ VITE_LEGAL_NOTICE="Example legal notice\nEmail: info@example.com"
 
 [env.production.vars]
 NODE_VERSION = "24"
-VITE_API_LEGACY_URL = "https://api.arkham.build"
 VITE_ARKHAMDB_BASE_URL = "https://arkhamdb.com"
 VITE_CARD_IMAGE_URL = "https://cdn.arkham.build"
 VITE_PAGE_NAME = "arkham.build"
