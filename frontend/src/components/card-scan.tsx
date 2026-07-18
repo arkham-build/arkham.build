@@ -15,6 +15,8 @@ import { useAgathaEasterEggTransform } from "@/utils/easter-egg-agatha";
 import css from "./card-scan.module.css";
 import { Button } from "./ui/button";
 
+export type CardScanActionSlot = (scanId: string) => React.ReactNode;
+
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   card: Card;
   className?: string;
@@ -24,7 +26,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   hideFlipButton?: boolean;
   ignoreTaboo?: boolean;
   lazy?: boolean;
-  leftActionSlot?: React.ReactNode;
+  leftActionSlot?: CardScanActionSlot;
   onFlip?: (value: boolean, sideways: boolean) => void;
   preventFlip?: boolean;
   suffix?: string;
@@ -87,6 +89,7 @@ export function CardScanControlled(props: Props) {
     tabooSetId ? `${backCode}-${tabooSetId}` : backCode,
   );
 
+  const visibleScanId = flipped ? reverseImageCode : imageCode;
   const isSideways = sideways(card);
 
   const reverseSideways = backCard
@@ -173,7 +176,9 @@ export function CardScanControlled(props: Props) {
         </>
       )}
       {leftActionSlot && (
-        <div className={css["scan-left-action-slot"]}>{leftActionSlot}</div>
+        <div className={css["scan-left-action-slot"]}>
+          {leftActionSlot(visibleScanId)}
+        </div>
       )}
     </div>
   );

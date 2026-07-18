@@ -1,5 +1,10 @@
-import type { Card as CardT } from "@arkham-build/shared";
-import { ArrowDownIcon, ArrowUpIcon, CheckCircleIcon } from "lucide-react";
+import { ACCOUNT_PERMISSIONS, type Card as CardT } from "@arkham-build/shared";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  CheckCircleIcon,
+  DownloadIcon,
+} from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
@@ -9,6 +14,7 @@ import {
   getRelatedCards,
 } from "@/store/lib/resolve-card";
 import type { ResolvedDeck } from "@/store/lib/types";
+import { selectSession } from "@/store/selectors/auth";
 import { selectCardWithRelations } from "@/store/selectors/card-view";
 import { selectShowFanMadeRelations } from "@/store/selectors/shared";
 import type { CardModalConfig } from "@/store/slices/ui.types";
@@ -86,6 +92,7 @@ export function CardModal(props: Props) {
     );
   });
 
+  const session = useStore(selectSession);
   const settings = useStore((state) => state.settings);
   const showAllFanMadeRelations = useStore(selectShowFanMadeRelations);
 
@@ -111,11 +118,30 @@ export function CardModal(props: Props) {
     [openCardModal],
   );
 
+  const renderScanDownloadAction = useCallback(
+    (scanId: string) => (
+      <Button
+        as="a"
+        href={`${import.meta.env.VITE_API_URL}/v2/account/scans/${encodeURIComponent(scanId)}/download`}
+        size="sm"
+      >
+        <DownloadIcon />
+        Download
+      </Button>
+    ),
+    [],
+  );
+
   if (!cardWithRelations) return null;
+
+  const canDownloadScan =
+    !!cardWithRelations.card.official &&
+    !!session?.account.permissions.includes(ACCOUNT_PERMISSIONS.SCANS_DOWNLOAD);
 
   const showQuantities =
     !!ctx.resolvedDeck && cardWithRelations?.card.type_code !== "investigator";
   const showExtraQuantities = ctx.resolvedDeck?.hasExtraDeck;
+
   const related = getRelatedCards(cardWithRelations, {
     showAllFanMadeRelations,
     showPreviews: settings.showPreviews,
@@ -133,6 +159,9 @@ export function CardModal(props: Props) {
       resolvedCard={cardWithRelations}
       onPrintingSelect={handlePrintingSelect}
       size={canRenderFull ? "full" : "compact"}
+      slotScanActions={
+        canRenderFull && canDownloadScan ? renderScanDownloadAction : undefined
+      }
       titleLinks="card"
       slotCardFooter={
         <>

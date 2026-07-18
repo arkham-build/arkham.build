@@ -48,7 +48,6 @@
   }
 
   .scan-left-action-slot > * {
-    visibility: hidden;
     opacity: 0;
   }
 

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
 import { displayAttribute, sideways } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
-import { CardScan } from "../card-scan";
+import { CardScan, type CardScanActionSlot } from "../card-scan";
 import { CardThumbnail } from "../card-thumbnail";
 import { Button } from "../ui/button";
 import css from "./card.module.css";
@@ -27,6 +27,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   setIgnoreTaboo?: React.Dispatch<React.SetStateAction<boolean>>;
   size: "compact" | "tooltip" | "full";
   slotHeaderActions?: React.ReactNode;
+  slotScanActions?: CardScanActionSlot;
   titleLinks?: "card" | "card-modal" | "dialog";
 }
 
@@ -41,6 +42,7 @@ export function CardFace(props: Props) {
     setIgnoreTaboo,
     size,
     slotHeaderActions,
+    slotScanActions,
     titleLinks,
     ...rest
   } = props;
@@ -118,7 +120,12 @@ export function CardFace(props: Props) {
       {showImage &&
         (size === "full" ? (
           <div className={css["image"]}>
-            <CardScan card={card} onFlip={onFlip} ignoreTaboo={ignoreTaboo} />
+            <CardScan
+              card={card}
+              ignoreTaboo={ignoreTaboo}
+              leftActionSlot={slotScanActions}
+              onFlip={onFlip}
+            />
           </div>
         ) : (
           <div className={css["image"]}>

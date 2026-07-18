@@ -37,6 +37,10 @@ export const configSchema = z.object({
   SESSION_COOKIE_NAME: z.string().default("arkham-build-session"),
   SESSION_EXPIRY_HOURS: z.coerce.number().int().positive().default(720),
   SESSION_SECRET: z.string().min(32),
+  SCANS_ACCESS_KEY_ID: z.string().trim().min(1),
+  SCANS_BUCKET: z.string().trim().min(1),
+  SCANS_ENDPOINT: z.url(),
+  SCANS_SECRET_ACCESS_KEY: z.string().trim().min(1),
   VERIFICATION_TOKEN_EXPIRY_HOURS: z.coerce
     .number()
     .int()

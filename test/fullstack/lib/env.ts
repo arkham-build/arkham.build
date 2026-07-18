@@ -30,6 +30,14 @@ export const arkhamDbTestApiKey =
 export const sessionCookieName =
   process.env.E2E_SESSION_COOKIE_NAME ?? "arkham-build-session";
 
+const scansAccessKeyId =
+  process.env.E2E_SCANS_ACCESS_KEY_ID ?? "test-scans-access-key-id";
+const scansBucket = process.env.E2E_SCANS_BUCKET ?? "test-scans";
+const scansEndpoint =
+  process.env.E2E_SCANS_ENDPOINT ?? "https://example.r2.cloudflarestorage.com";
+const scansSecretAccessKey =
+  process.env.E2E_SCANS_SECRET_ACCESS_KEY ?? "test-scans-secret-access-key";
+
 export function applyFullstackEnv() {
   Object.assign(process.env, createFullstackEnv());
 }
@@ -63,6 +71,10 @@ export function createStackEnv(overrides: Record<string, string> = {}) {
     POSTGRES_PORT: postgresPort,
     POSTGRES_USER: postgresUser,
     SESSION_SECRET: "test-session-secret-at-least-32-characters-long",
+    SCANS_ACCESS_KEY_ID: scansAccessKeyId,
+    SCANS_BUCKET: scansBucket,
+    SCANS_ENDPOINT: scansEndpoint,
+    SCANS_SECRET_ACCESS_KEY: scansSecretAccessKey,
     SMTP_HOST: new URL(mailcrabUrl).hostname,
     SMTP_PASS: "",
     SMTP_PORT: "1025",

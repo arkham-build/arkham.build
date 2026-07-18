@@ -478,7 +478,9 @@ CREATE TABLE public.account (
     name character varying(64) NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     profile_completed_at timestamp without time zone DEFAULT now(),
-    last_activity_at timestamp without time zone DEFAULT now() NOT NULL
+    last_activity_at timestamp without time zone DEFAULT now() NOT NULL,
+    permissions jsonb DEFAULT '[]'::jsonb NOT NULL,
+    CONSTRAINT chk_account_permissions_array CHECK ((jsonb_typeof(permissions) = 'array'::text))
 );
 
 
@@ -2738,4 +2740,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260418123000'),
     ('20260505120000'),
     ('20260508231500'),
-    ('20260705120000');
+    ('20260705120000'),
+    ('20260718074916');

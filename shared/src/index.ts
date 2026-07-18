@@ -168,6 +168,13 @@ export {
 } from "./lib/oauth-flow-errors.ts";
 export { decodeSearch, encodeSearch } from "./lib/search-params.ts";
 export {
+  ACCOUNT_PERMISSIONS,
+  type AccountPermission,
+  AccountPermissionSchema,
+  type AccountPermissions,
+  AccountPermissionsSchema,
+} from "./schemas/account-permissions.schema.ts";
+export {
   type JsonDataFaction,
   JsonDataFactionSchema,
   type JsonDataSubtype,

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { AccountPermissionsSchema } from "../schemas/account-permissions.schema.ts";
 import { DeckSchema } from "../schemas/deck.schema.ts";
 import {
   CardTagsStateSchema,
@@ -123,6 +124,7 @@ export const SessionResponseSchema = z.object({
   account: z.object({
     id: z.uuid(),
     name: z.string().max(64),
+    permissions: AccountPermissionsSchema,
     profileComplete: z.boolean(),
   }),
   identities: z.array(IdentitySchema),

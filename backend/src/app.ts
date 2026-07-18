@@ -23,6 +23,11 @@ import {
 import previewsRouter from "./features/previews/routes.ts";
 import profileRouter from "./features/profile/routes.ts";
 import recommendationsRouter from "./features/recommendations/routes.ts";
+import { createScansRoutes } from "./features/scans/routes.ts";
+import {
+  createScansStorage,
+  type ScansStorage,
+} from "./features/scans/storage.ts";
 import sealedDeckRouter from "./features/sealed-decks/routes.ts";
 import settingsRouter from "./features/settings/routes.ts";
 import v1PublicRouter from "./features/v1-public/routes.ts";
@@ -37,12 +42,18 @@ import { errorHandler } from "./lib/errors.ts";
 import type { HonoEnv } from "./lib/hono-env.ts";
 import { logger, requestLogger } from "./lib/logger.ts";
 
+type AppFactoryOptions = {
+  scansStorage?: ScansStorage;
+};
+
 export function appFactory(
   config: Config,
   database: Database,
   dispatcher: JobDispatcher,
+  options: AppFactoryOptions = {},
 ) {
   const app = new Hono<HonoEnv>();
+  const scansStorage = options.scansStorage ?? createScansStorage(config);
 
   app.use(secureHeaders());
 
@@ -91,6 +102,7 @@ export function appFactory(
   v2Account.route("/decks", decksRouter);
   v2Account.route("/folders", foldersRouter);
   v2Account.route("/profile", profileRouter);
+  v2Account.route("/scans", createScansRoutes(scansStorage));
   v2Account.route("/settings", settingsRouter);
   app.route("/v2/account", v2Account);
 

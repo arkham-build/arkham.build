@@ -41,6 +41,7 @@ export interface Account {
   id: Generated<string>;
   last_activity_at: Generated<Timestamp>;
   name: string;
+  permissions: Generated<Json>;
   profile_completed_at: Generated<Timestamp | null>;
   updated_at: Generated<Timestamp>;
 }

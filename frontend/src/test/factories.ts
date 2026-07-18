@@ -72,6 +72,7 @@ export function makeAuthenticatedAuth({
       account: {
         id: "account-id",
         name: "User",
+        permissions: [],
         profileComplete: true,
         ...account,
       },

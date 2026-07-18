@@ -3,6 +3,7 @@ import {
   type ArkhamDBIdentity,
   type ArkhamDbIdentityState,
   ArkhamDbIdentityStateSchema,
+  AccountPermissionsSchema,
   SessionResponseSchema,
 } from "@arkham-build/shared";
 import type { Selectable } from "kysely";
@@ -21,7 +22,7 @@ type AccountIdentitySummary = Pick<
 
 type SessionAccount = Pick<
   Selectable<Account>,
-  "id" | "name" | "profile_completed_at"
+  "id" | "name" | "permissions" | "profile_completed_at"
 >;
 
 export function mapAccountSessionToResponse(
@@ -33,6 +34,7 @@ export function mapAccountSessionToResponse(
     account: {
       id: account.id,
       name: account.name,
+      permissions: AccountPermissionsSchema.parse(account.permissions),
       profileComplete: account.profile_completed_at != null,
     },
     identities: identities.map((identity) => {

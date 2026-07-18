@@ -227,6 +227,11 @@ export function CardGridItem(
     [openModal],
   );
 
+  const leftActionSlot = useCallback(
+    () => <CardFavoriteAction card={card} />,
+    [card],
+  );
+
   const quantity = quantities?.[card.code] ?? 0;
 
   return (
@@ -245,11 +250,7 @@ export function CardGridItem(
         onKeyUp={onPressEnter}
         tabIndex={0}
       >
-        <CardScan
-          card={card}
-          lazy
-          leftActionSlot={<CardFavoriteAction card={card} />}
-        />
+        <CardScan card={card} lazy leftActionSlot={leftActionSlot} />
       </Link>
       <div className={css["group-item-actions"]}>
         <CardActions

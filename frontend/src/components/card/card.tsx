@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
 import { reversed } from "@/utils/card-utils";
 import { dataLanguage } from "@/utils/formatting";
+import type { CardScanActionSlot } from "../card-scan";
 import { Button } from "../ui/button";
 import css from "./card.module.css";
 import { CardBack } from "./card-back";
@@ -20,6 +21,7 @@ type Props = {
   resolvedCard: ResolvedCard | CardWithRelations;
   slotCardFooter?: React.ReactNode;
   slotHeaderActions?: React.ReactNode;
+  slotScanActions?: CardScanActionSlot;
   titleLinks?: "card" | "card-modal" | "dialog";
   size?: "compact" | "tooltip" | "full";
 };
@@ -41,6 +43,7 @@ export function Card(props: Props) {
     size = "full",
     slotCardFooter,
     slotHeaderActions,
+    slotScanActions,
     titleLinks,
   } = props;
 
@@ -62,6 +65,7 @@ export function Card(props: Props) {
       ignoreTaboo={ignoreTaboo}
       setIgnoreTaboo={setIgnoreTaboo}
       slotHeaderActions={slotHeaderActions}
+      slotScanActions={slotScanActions}
       titleLinks={titleLinks}
     >
       {slotCardFooter}
@@ -76,6 +80,7 @@ export function Card(props: Props) {
         card={card}
         ignoreTaboo={ignoreTaboo}
         size={size}
+        slotScanActions={slotScanActions}
         titleLinks={titleLinks}
       />
     );
@@ -85,6 +90,7 @@ export function Card(props: Props) {
         ignoreTaboo={ignoreTaboo}
         resolvedCard={back}
         size={size}
+        slotScanActions={slotScanActions}
         titleLinks={titleLinks}
       />
     );
