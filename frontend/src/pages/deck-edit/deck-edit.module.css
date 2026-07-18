@@ -21,7 +21,9 @@
 
 .tabs-list {
   flex: 0 0 auto;
-  margin-inline: 0.625rem;
+  @media screen and (min-width: 45rem) {
+    margin-inline: 0.625rem;
+  }
 }
 
 .tab {
