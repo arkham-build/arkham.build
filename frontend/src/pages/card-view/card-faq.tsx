@@ -1,4 +1,5 @@
 import { LoaderCircleIcon } from "lucide-react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useCardLinkTooltip } from "@/components/card-tooltip/use-card-link-tooltip";
 import { PlaneContainer } from "@/components/ui/plane-container";
@@ -18,6 +19,19 @@ export function CardFaq(props: Props) {
   const { t } = useTranslation();
   const faq = useCardFaqQuery(code);
   const { cardLinkTooltip, referenceProps } = useCardLinkTooltip();
+  const faqMarkup = useMemo(
+    () =>
+      faq.data?.map((item) => ({
+        ...item,
+        questionMarkup: {
+          __html: getCardFaqHtml(item.question, true),
+        },
+        rulingMarkup: {
+          __html: getCardFaqHtml(item.ruling),
+        },
+      })),
+    [faq.data],
+  );
 
   return (
     <PlaneContainer as="section" title={t("card_view.faq.title")}>
@@ -35,22 +49,18 @@ export function CardFaq(props: Props) {
         <output className={css["status"]}>{t("card_view.faq.empty")}</output>
       )}
 
-      {!!faq.data?.length && (
+      {!!faqMarkup?.length && (
         <ul className={css["list"]} {...referenceProps}>
-          {faq.data.map((item) => (
+          {faqMarkup.map((item) => (
             <li key={item.id}>
               <div
                 className={css["question"]}
                 // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
-                dangerouslySetInnerHTML={{
-                  __html: getCardFaqHtml(item.question, true),
-                }}
+                dangerouslySetInnerHTML={item.questionMarkup}
               />
               <div
                 // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
-                dangerouslySetInnerHTML={{
-                  __html: getCardFaqHtml(item.ruling),
-                }}
+                dangerouslySetInnerHTML={item.rulingMarkup}
               />
               <p>
                 <Tag className={css["tag"]} size="sm">
