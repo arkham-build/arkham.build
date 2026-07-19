@@ -24,7 +24,19 @@ export function rewriteGrimoireImageSources(html: string) {
     image.setAttribute("loading", "lazy");
   }
 
+  resolveGrimoireIconClasses(doc);
+
   return doc.body.innerHTML;
+}
+
+function resolveGrimoireIconClasses(doc: Document) {
+  for (const iconElement of doc.querySelectorAll("i[data-icon]")) {
+    const icon = iconElement.getAttribute("data-icon")?.trim();
+
+    if (!icon || !/^[a-z0-9_-]+$/i.test(icon)) continue;
+
+    iconElement.classList.add(`encounters-${icon}`);
+  }
 }
 
 function resolveGrimoireImageSource(src: string) {
