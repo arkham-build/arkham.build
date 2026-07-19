@@ -10,7 +10,7 @@ import { Tag } from "@/components/ui/tag";
 import { useGrimoireQuery } from "@/queries/grimoire";
 import { useStore } from "@/store";
 import { selectMetadata } from "@/store/selectors/shared";
-import { displayAttribute, parseCardTextHtml } from "@/utils/card-utils";
+import { parseCardTextHtml } from "@/utils/card-utils";
 import { getGrimoireMarkdownHtml } from "./grimoire-markdown";
 import type {
   FilteredGrimoire,
@@ -19,6 +19,7 @@ import type {
 import {
   buildGrimoireMaps,
   filterGrimoire,
+  getGrimoireCardTitle,
   getLatestGrimoireVersion,
 } from "./rules-chapter-two.helpers";
 import { RulesDocument } from "./rules-document";
@@ -68,10 +69,7 @@ export function RulesChapterTwo() {
       .filter((item) => item.citation.startsWith("grimoire-"))
       .map((item) => {
         const cards = (item.card_codes ?? [])
-          .map((code) => {
-            const name = displayAttribute(metadata.cards[code], "name");
-            return `[${name || code}](/card/${encodeURIComponent(code)})`;
-          })
+          .map((code) => getGrimoireCardTitle(code, metadata))
           .join(", ");
 
         return [cards && `#### ${cards}`, item.ruling]
@@ -100,7 +98,7 @@ export function RulesChapterTwo() {
         text: [entry.text, ...additions].filter(Boolean).join("\n\n"),
       };
     });
-  }, [grimoire.data, metadata.cards]);
+  }, [grimoire.data, metadata]);
 
   const sections = useMemo(
     () => grimoire.data?.sections ?? [],

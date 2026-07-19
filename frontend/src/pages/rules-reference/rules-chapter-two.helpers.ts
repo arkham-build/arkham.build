@@ -3,7 +3,10 @@ import type {
   GrimoireResponse,
   GrimoireSection,
 } from "@arkham-build/shared";
+import { getPackIcon } from "@/components/icons/pack-icon.helpers";
+import { cycleOrPack, displayAttribute } from "@/utils/card-utils";
 import { prepareNeedle, prepareSearchText } from "@/utils/fuzzy";
+import { Metadata } from "@/store/slices/metadata.types";
 
 const GRIMOIRE_CITATION_PREFIX = "grimoire-";
 
@@ -17,6 +20,25 @@ export type FilteredGrimoire = {
   entryIds: Set<string>;
   sectionIds: Set<string>;
 };
+
+export function getGrimoireCardTitle(code: string, metadata: Metadata) {
+  const card = metadata.cards[code];
+  const name = displayAttribute(card, "name") || code;
+  const link = `[${name}](/card/${encodeURIComponent(code)})`;
+
+  if (!card) return link;
+
+  const pack = metadata.packs[card.pack_code];
+  const cycle = pack ? metadata.cycles[pack.cycle_code] : undefined;
+
+  if (!pack || !cycle) return link;
+
+  const icon = getPackIcon(cycleOrPack(cycle, pack).code);
+
+  if (!icon) return link;
+
+  return `${link} <small>(<i data-icon="${icon}"></i> ${card.position})</small>`;
+}
 
 export function getLatestGrimoireVersion(
   grimoire: GrimoireResponse | undefined,
