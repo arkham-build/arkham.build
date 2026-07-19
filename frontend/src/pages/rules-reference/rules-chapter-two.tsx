@@ -136,7 +136,7 @@ export function RulesChapterTwo() {
               <p>{t("rules.grimoire.intro_description")}</p>
               <Button
                 as="a"
-                href="https://images-cdn.fantasyflightgames.com/filer_public/4e/da/4eda7782-c983-47cc-8d9f-ae372a44d87b/arkham_grimoire_v11.pdf"
+                href="https://images-cdn.fantasyflightgames.com/filer_public/5c/c7/5cc79eb6-3d9c-4345-a5f1-27051251a6e4/arkham_grimoire_v11_web.pdf"
                 rel="noreferrer"
                 full
                 target="_blank"
