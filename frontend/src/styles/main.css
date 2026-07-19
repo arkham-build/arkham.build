@@ -364,7 +364,7 @@
 
   small,
   .small {
-    font-size: var(--text-xs);
+    font-size: 0.75em;
   }
 
   i,
@@ -1096,6 +1096,10 @@
   .icon-lightning:before,
   .icon-lighting:before {
     content: "\76";
+  }
+
+  .encounters-arkham_sewers:before {
+    content: "\e913";
   }
 
   /**

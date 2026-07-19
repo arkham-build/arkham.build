@@ -6,13 +6,23 @@
 }
 
 .list {
-  padding-left: 1.25rem;
+  font-family: var(--font-family-content);
+  padding-left: 1rem;
 }
 
 .list > * + * {
   margin-top: 0.75rem;
 }
 
+.list a {
+  text-decoration: none;
+}
+
 .question {
-  font-weight: 700;
+  font-style: italic;
+  margin-bottom: 0.375rem;
+}
+
+.tag {
+  font-family: var(--font-family-ui);
 }

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useCardLinkTooltip } from "@/components/card-tooltip/use-card-link-tooltip";
 import { PlaneContainer } from "@/components/ui/plane-container";
 import { Tag } from "@/components/ui/tag";
+import { resolveGrimoireHtmlReferences } from "@/pages/rules-reference/grimoire-markdown";
 import { useCardFaqQuery } from "@/queries/grimoire";
 import { parseCardTextHtml } from "@/utils/card-utils";
 import { parseMarkdown } from "@/utils/markdown";
@@ -42,17 +43,19 @@ export function CardFaq(props: Props) {
                 className={css["question"]}
                 // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
                 dangerouslySetInnerHTML={{
-                  __html: parseCardTextHtml(parseMarkdown(item.question)),
+                  __html: getCardFaqHtml(item.question, true),
                 }}
               />
               <div
                 // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
                 dangerouslySetInnerHTML={{
-                  __html: parseCardTextHtml(parseMarkdown(item.ruling)),
+                  __html: getCardFaqHtml(item.ruling),
                 }}
               />
               <p>
-                <Tag size="sm">{item.citation}</Tag>
+                <Tag className={css["tag"]} size="sm">
+                  {item.citation}
+                </Tag>
               </p>
             </li>
           ))}
@@ -61,5 +64,13 @@ export function CardFaq(props: Props) {
 
       {cardLinkTooltip}
     </PlaneContainer>
+  );
+}
+
+function getCardFaqHtml(markdown: string, omitNewLines?: boolean) {
+  return resolveGrimoireHtmlReferences(
+    parseCardTextHtml(parseMarkdown(markdown), {
+      newLines: omitNewLines ? "skip" : undefined,
+    }),
   );
 }

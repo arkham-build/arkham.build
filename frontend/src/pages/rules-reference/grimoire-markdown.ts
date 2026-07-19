@@ -4,12 +4,12 @@ import { parseMarkdown } from "@/utils/markdown";
 const GRIMOIRE_ASSET_BASE_PATH = "/assets/grimoire";
 
 export function getGrimoireMarkdownHtml(markdown: string) {
-  return rewriteGrimoireImageSources(
+  return resolveGrimoireHtmlReferences(
     parseCardTextHtml(parseMarkdown(markdown), { newLines: "skip" }),
   );
 }
 
-export function rewriteGrimoireImageSources(html: string) {
+export function resolveGrimoireHtmlReferences(html: string) {
   const doc = new DOMParser().parseFromString(html, "text/html");
 
   for (const image of doc.querySelectorAll("img")) {

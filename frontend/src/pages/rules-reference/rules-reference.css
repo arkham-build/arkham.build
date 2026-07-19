@@ -218,8 +218,8 @@ html[data-theme="light"] .toc a {
   font-family: var(--font-family-content);
 }
 
-.grimoire i[data-icon] {
-  font-size: 0.75em;
+:where(.grimoire-text, .grimoire-references) a {
+  text-decoration: none;
 }
 
 .grimoire-text img {
