@@ -73,6 +73,25 @@ resource "cloudflare_ruleset" "cache" {
     },
     {
       action      = "set_cache_settings"
+      expression  = "(http.host eq \"api.arkham.build\" and http.request.uri.path eq \"/v2/public/grimoire\")"
+      description = "[API] Grimoire cache"
+      enabled     = true
+      ref         = "752cd2903c373216ed81c802fd7170a5"
+
+      action_parameters = {
+        cache = true
+        browser_ttl = {
+          mode = "respect_origin"
+        }
+        edge_ttl = {
+          mode            = "bypass_by_default"
+          status_code_ttl = local.cache_non_success_status_ttl
+        }
+        respect_strong_etags = true
+      }
+    },
+    {
+      action      = "set_cache_settings"
       expression  = "(http.host eq \"api.arkham.build\" and starts_with(http.request.uri.path, \"/v2/public/customization-sheet\"))"
       description = "[API] Customizable sheets"
       enabled     = true

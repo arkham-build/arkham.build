@@ -10,8 +10,12 @@ import type { HttpClient } from "../http-client";
 
 export async function queryGrimoire(
   client: HttpClient,
+  revision?: string,
 ): Promise<GrimoireResponse> {
-  const res = await client.request("/v2/public/grimoire");
+  const params = new URLSearchParams({
+    revision: revision ?? "conditional-cache-v1",
+  });
+  const res = await client.request(`/v2/public/grimoire?${params}`);
   const data = await res.json();
   return GrimoireResponseSchema.parse(data);
 }

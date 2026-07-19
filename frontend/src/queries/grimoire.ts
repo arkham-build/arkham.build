@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { useDataVersionQuery } from "@/queries/cache";
 import { grimoireKeys } from "@/queries/keys";
+import { useStore } from "@/store";
 import { useHttpClient } from "@/store/services/http-client.context";
 import {
   queryCardErrata,
@@ -9,11 +11,17 @@ import {
 
 export function useGrimoireQuery(enabled = true) {
   const client = useHttpClient();
+  const locale = useStore((state) => state.settings.locale);
+  const localRevision = useStore(
+    (state) => state.metadata.dataVersion?.cards_updated_at,
+  );
+  const dataVersion = useDataVersionQuery(locale, enabled);
+  const revision = dataVersion.data?.cards_updated_at ?? localRevision;
 
   return useQuery({
-    queryKey: grimoireKeys.grimoire(),
-    queryFn: () => queryGrimoire(client),
-    enabled,
+    queryKey: grimoireKeys.grimoire(revision),
+    queryFn: () => queryGrimoire(client, revision),
+    enabled: enabled && dataVersion.isFetched,
   });
 }
 

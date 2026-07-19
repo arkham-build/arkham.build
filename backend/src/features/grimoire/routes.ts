@@ -12,8 +12,13 @@ import {
   getErrataForCard,
   getFaqForCard,
 } from "../../db/queries/grimoire.ts";
-import { publicCache } from "../../lib/cache-headers.ts";
+import {
+  applyCacheHeaders,
+  publicCache,
+  requestHasMatchingEtag,
+} from "../../lib/cache-headers.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
+import { getDataVersionByLocale } from "../cache/queries.ts";
 
 export const faqRoutes = new Hono<HonoEnv>();
 faqRoutes.use("*", publicCache());
@@ -32,13 +37,22 @@ errataRoutes.get("/card/:code", async (c) => {
 });
 
 export const grimoireRoutes = new Hono<HonoEnv>();
-grimoireRoutes.use("*", publicCache());
 grimoireRoutes.get("/", async (c) => {
+  const db = c.get("db");
+  const dataVersion = await getDataVersionByLocale(db, "en");
+  const etag = `grimoire:${dataVersion.cards_updated_at.valueOf()}`;
+
+  applyCacheHeaders(c, { etag, resource: "grimoire" });
+
+  if (requestHasMatchingEtag(c, etag)) {
+    return c.body(null, 304);
+  }
+
   const [entries, errata, faq, sections] = await Promise.all([
-    getAllGrimoireEntries(c.get("db")),
-    getAllErrata(c.get("db")),
-    getAllFaq(c.get("db")),
-    getAllGrimoireSections(c.get("db")),
+    getAllGrimoireEntries(db),
+    getAllErrata(db),
+    getAllFaq(db),
+    getAllGrimoireSections(db),
   ]);
 
   const data = GrimoireResponseSchema.parse({

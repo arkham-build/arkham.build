@@ -37,6 +37,18 @@ describe("GET /v1/cache", () => {
     expect(await res.text()).toBe("");
   });
 
+  test("keeps the version edge cache short", async ({ dependencies }) => {
+    const res = await dependencies.app.request("/v1/cache/version/en");
+
+    expect(res.headers.get("Cache-Control")).toBe(
+      "public, max-age=0, must-revalidate",
+    );
+    expect(res.headers.get("Cloudflare-CDN-Cache-Control")).toBe(
+      "public, s-maxage=300, stale-while-revalidate=0",
+    );
+    expect(res.headers.get("Cache-Tag")).toBe("cache,version");
+  });
+
   test("caches responses until the data version changes", async ({
     dependencies,
   }) => {

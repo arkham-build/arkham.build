@@ -194,10 +194,15 @@ html[data-theme="light"] .toc a {
   gap: 1rem;
 }
 
+.grimoire-text a,
 .grimoire-entry-title a {
   color: currentColor;
   text-decoration: none;
   text-wrap: balance;
+}
+
+.grimoire-text a {
+  text-decoration: underline;
 }
 
 .grimoire-references {

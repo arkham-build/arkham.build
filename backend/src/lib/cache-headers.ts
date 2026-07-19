@@ -3,6 +3,7 @@ import type { HonoEnv } from "./hono-env.ts";
 
 export type CacheResource =
   | "cards"
+  | "grimoire"
   | "metadata"
   | "taboo_sets_with_cards"
   | "version";
@@ -21,7 +22,7 @@ export function applyCacheHeaders(
     "Cloudflare-CDN-Cache-Control",
     cloudflareCacheControlHeader(options.resource),
   );
-  c.header("Cache-Tag", "cache");
+  c.header("Cache-Tag", `cache,${options.resource}`);
   c.header("ETag", formatWeakEtag(options.etag));
 }
 
@@ -63,8 +64,12 @@ function browserCacheControlHeader(_resource: CacheResource) {
   return ["public", "max-age=0", "must-revalidate"].join(", ");
 }
 
-function cloudflareCacheControlHeader(_resource: CacheResource) {
-  return ["public", "s-maxage=86400", "stale-while-revalidate=0"].join(", ");
+function cloudflareCacheControlHeader(resource: CacheResource) {
+  const maxAge =
+    resource === "grimoire" || resource === "version" ? 300 : 86400;
+  return ["public", `s-maxage=${maxAge}`, "stale-while-revalidate=0"].join(
+    ", ",
+  );
 }
 
 function formatWeakEtag(etag: string) {

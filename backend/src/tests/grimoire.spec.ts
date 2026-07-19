@@ -309,6 +309,45 @@ describe("GET /v2/public/grimoire", () => {
       sections: [],
     });
   });
+
+  test("revalidates the cached response when the data version changes", async ({
+    dependencies,
+  }) => {
+    const initialRes = await dependencies.app.request("/v2/public/grimoire");
+    const initialEtag = initialRes.headers.get("ETag");
+
+    expect(initialEtag).toMatch(/^W\/"grimoire:/);
+    expect(initialRes.headers.get("Cache-Control")).toBe(
+      "public, max-age=0, must-revalidate",
+    );
+    expect(initialRes.headers.get("Cloudflare-CDN-Cache-Control")).toBe(
+      "public, s-maxage=300, stale-while-revalidate=0",
+    );
+    expect(initialRes.headers.get("Cache-Tag")).toBe("cache,grimoire");
+
+    if (!initialEtag) throw new Error("Expected grimoire ETag");
+
+    const cachedRes = await dependencies.app.request("/v2/public/grimoire", {
+      headers: { "If-None-Match": initialEtag },
+    });
+
+    expect(cachedRes.status).toBe(304);
+    expect(cachedRes.headers.get("ETag")).toBe(initialEtag);
+    expect(await cachedRes.text()).toBe("");
+
+    await dependencies.db
+      .updateTable("data_version")
+      .set({ cards_updated_at: new Date("2028-01-01T00:00:00.000Z") })
+      .where("locale", "=", "en")
+      .execute();
+
+    const refreshedRes = await dependencies.app.request("/v2/public/grimoire", {
+      headers: { "If-None-Match": initialEtag },
+    });
+
+    expect(refreshedRes.status).toBe(200);
+    expect(refreshedRes.headers.get("ETag")).not.toBe(initialEtag);
+  });
 });
 
 describe("GET /v2/public/faq/card", () => {
