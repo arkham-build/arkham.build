@@ -181,6 +181,13 @@ html[data-theme="light"] .toc a {
   margin-top: 1rem;
 }
 
+.grimoire-title {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .grimoire-list {
   display: flex;
   flex-flow: column nowrap;

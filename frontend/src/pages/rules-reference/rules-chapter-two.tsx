@@ -16,7 +16,11 @@ import type {
   FilteredGrimoire,
   GrimoireMaps,
 } from "./rules-chapter-two.helpers";
-import { buildGrimoireMaps, filterGrimoire } from "./rules-chapter-two.helpers";
+import {
+  buildGrimoireMaps,
+  filterGrimoire,
+  getLatestGrimoireVersion,
+} from "./rules-chapter-two.helpers";
 import { RulesDocument } from "./rules-document";
 
 const CARD_ERRATA_ENTRY_ID = "10.003";
@@ -37,6 +41,10 @@ export function RulesChapterTwo() {
   const metadata = useStore(selectMetadata);
 
   const { cardLinkTooltip, referenceProps } = useCardLinkTooltip();
+  const grimoireVersion = useMemo(
+    () => getLatestGrimoireVersion(grimoire.data),
+    [grimoire.data],
+  );
 
   useEffect(() => {
     if (grimoire.isPending || grimoire.error || !window.location.hash) return;
@@ -121,7 +129,10 @@ export function RulesChapterTwo() {
         return (
           <div className="grimoire longform" {...referenceProps}>
             <div className="grimoire-header">
-              <h1>{t("rules.grimoire.intro_title")}</h1>
+              <h1 className="grimoire-title">
+                <span>{t("rules.grimoire.intro_title")}</span>
+                {grimoireVersion && <Tag size="sm">v{grimoireVersion}</Tag>}
+              </h1>
               <p>{t("rules.grimoire.intro_description")}</p>
               <Button
                 as="a"

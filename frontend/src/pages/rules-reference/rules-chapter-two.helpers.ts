@@ -1,5 +1,11 @@
-import type { GrimoireEntry, GrimoireSection } from "@arkham-build/shared";
+import type {
+  GrimoireEntry,
+  GrimoireResponse,
+  GrimoireSection,
+} from "@arkham-build/shared";
 import { prepareNeedle, prepareSearchText } from "@/utils/fuzzy";
+
+const GRIMOIRE_CITATION_PREFIX = "grimoire-";
 
 export type GrimoireMaps = {
   entriesBySectionId: Map<string, GrimoireEntry[]>;
@@ -11,6 +17,35 @@ export type FilteredGrimoire = {
   entryIds: Set<string>;
   sectionIds: Set<string>;
 };
+
+export function getLatestGrimoireVersion(
+  grimoire: GrimoireResponse | undefined,
+) {
+  if (!grimoire) return undefined;
+
+  let latest: string | undefined;
+  const citedItems = [
+    ...grimoire.entries,
+    ...grimoire.errata,
+    ...grimoire.faq,
+    ...grimoire.sections,
+  ];
+
+  for (const item of citedItems) {
+    if (!item.citation?.startsWith(GRIMOIRE_CITATION_PREFIX)) continue;
+
+    const version = item.citation.slice(GRIMOIRE_CITATION_PREFIX.length);
+
+    if (
+      !latest ||
+      version.localeCompare(latest, undefined, { numeric: true }) > 0
+    ) {
+      latest = version;
+    }
+  }
+
+  return latest;
+}
 
 export function buildGrimoireMaps(
   entries: GrimoireEntry[],
