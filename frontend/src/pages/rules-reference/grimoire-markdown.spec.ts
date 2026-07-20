@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { rewriteGrimoireImageSources } from "./grimoire-markdown";
+import { resolveGrimoireHtmlReferences } from "./grimoire-markdown";
 
 describe("rewriteGrimoireImageSources", () => {
   it("rewrites relative grimoire image sources to the public asset path", () => {
-    const html = rewriteGrimoireImageSources(
+    const html = resolveGrimoireHtmlReferences(
       '<p><img alt="Map" src="map of dunwich.png"></p>',
     );
 
@@ -13,7 +13,7 @@ describe("rewriteGrimoireImageSources", () => {
   });
 
   it("leaves absolute and external image sources unchanged", () => {
-    const html = rewriteGrimoireImageSources(
+    const html = resolveGrimoireHtmlReferences(
       '<p><img alt="A" src="/assets/rules/chart.png"><img alt="B" src="https://example.com/chart.png"></p>',
     );
 
