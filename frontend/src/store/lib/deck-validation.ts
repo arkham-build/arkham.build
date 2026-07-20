@@ -12,10 +12,14 @@ import {
   isStaticInvestigator,
   splitMultiValue,
 } from "@/utils/card-utils";
-import { range } from "@/utils/range";
 import { time, timeEnd } from "@/utils/time";
 import type { Metadata } from "../slices/metadata.types";
 import type { Interpreter } from "./buildql/interpreter";
+import {
+  getAdditionalDeckOptions,
+  insertAdditionalDeckOptions,
+  mapCardsToDeckOptions,
+} from "./deck-options";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {
   filterCardPool,
@@ -25,7 +29,6 @@ import {
 } from "./filtering";
 import type { LookupTables } from "./lookup-tables.types";
 import type { ResolvedDeck } from "./types";
-import { isEmpty } from "@/utils/is-empty";
 
 export type DeckValidationResult = {
   valid: boolean;
@@ -168,33 +171,8 @@ export type DeckValidationError =
   | TooFewCardsError
   | DeckRequirementsNotMetError;
 
-function findIndexReversed<T>(
-  array: T[],
-  predicate: (item: T, index: number) => boolean,
-): number {
-  for (let i = array.length - 1; i >= 0; i -= 1) {
-    if (predicate(array[i], i)) return i;
-  }
-
-  return -1;
-}
-
 function formatReturnValue(errors: DeckValidationError[]) {
   return { valid: errors.length === 0, errors };
-}
-
-export function getAdditionalDeckOptions(deck: ResolvedDeck) {
-  return Object.values(deck.cards.slots).reduce((acc, { card }) => {
-    if (card.type_code !== "investigator" && card.deck_options) {
-      const quantity = deck.slots[card.code] ?? 0;
-
-      for (const _ of range(0, quantity)) {
-        acc.push(...card.deck_options);
-      }
-    }
-
-    return acc;
-  }, [] as DeckOption[]);
 }
 
 export function validateDeck(
@@ -811,7 +789,7 @@ class DeckOptionsValidator implements SlotValidator {
     config: InvestigatorAccessConfig;
     deckOptions: DeckOption[];
   } {
-    const deckOptions: DeckOption[] =
+    const options: DeckOption[] =
       mode === "slots"
         ? [
             {
@@ -820,32 +798,16 @@ class DeckOptionsValidator implements SlotValidator {
               virtual: true,
               error: "You cannot have more than one Covenant in your deck.",
             },
+            ...(deck.investigatorBack.card.deck_options ?? []),
           ]
-        : [];
-
-    const options =
-      mode === "slots"
-        ? [...(deck.investigatorBack.card.deck_options || [])]
-        : [...(deck.investigatorBack.card.side_deck_options || [])];
-
-    deckOptions.push(...options);
+        : [...(deck.investigatorBack.card.side_deck_options ?? [])];
 
     const additionalDeckOptions =
       mode === "slots" ? getAdditionalDeckOptions(deck) : [];
-
-    if (!isEmpty(additionalDeckOptions)) {
-      const unlimitedOptionIndex = deckOptions.findLastIndex((x) => !x.limit);
-
-      for (const option of additionalDeckOptions) {
-        const untargeted = hasOnlyUntargetedKeys(option);
-
-        if (unlimitedOptionIndex !== -1 && !untargeted) {
-          deckOptions.splice(unlimitedOptionIndex + 1, 0, option);
-        } else {
-          deckOptions.push(option);
-        }
-      }
-    }
+    const deckOptions = insertAdditionalDeckOptions(
+      options,
+      additionalDeckOptions,
+    );
 
     return {
       config: {
@@ -1045,124 +1007,29 @@ class DeckOptionsValidator implements SlotValidator {
 
   validateLimit(options: DeckOption[]): DeckValidationError[] {
     const errors: DeckValidationError[] = [];
-
-    /**
-     * Tracks which card copies have been matched by a deck option.
-     * This allows us to keep track of whether any cards remain unmatched,
-     * which means that they violate the deck_building restrictions.
-     * Invariants:
-     *  - `option.atleast` are ignored.
-     *  - `option.virtual` (used for covenants) etc. are validated in `validateVirtualLimit`.
-     *  - deck_options are sorted from "unlimited > limited".
-     */
-    const optionMatched = new Map<string, number>();
-    const optionFilters = options.map((option) =>
-      option.virtual
-        ? undefined
-        : makeOptionFilter(option, this.buildQlInterpreter, this.config),
+    const { overflowByOption } = mapCardsToDeckOptions(
+      this.cards,
+      this.quantities,
+      options,
+      this.buildQlInterpreter,
+      this.config,
     );
 
-    /**
-     * Once a card matches a `not` deck option, no further options can match it.
-     * This is relevant when a limit option precedes a `not` option and a later filter would match it as well.
-     * This does not occur in official content, but it does occur in fan-made content.
-     */
-    const exclusions = new Map<string, number>();
+    for (let optionIndex = 0; optionIndex < options.length; optionIndex += 1) {
+      const option = options[optionIndex];
+      const overflow = overflowByOption.get(optionIndex);
+      if (option?.limit == null || !overflow) continue;
 
-    for (let i = 0; i < options.length; i += 1) {
-      const option = options[i];
-      if (option.virtual) continue;
-
-      const filter = optionFilters[i];
-      let matchCount = 0;
-      const limit = option.not ? undefined : (option.limit ?? undefined);
-
-      if (filter) {
-        for (const card of this.cards) {
-          if (exclusions.has(card.code)) continue;
-
-          const quantity = this.quantities[card.code];
-
-          // all copies of the card fulfill a previous deck option.
-          if (quantity === optionMatched.get(card.code)) continue;
-
-          const matches = filter(card);
-          // card access not given by deck_option.
-          if (!matches) continue;
-
-          if (option.not) {
-            exclusions.set(card.code, i);
-            continue;
-          }
-
-          for (let j = 0; j < quantity; j++) {
-            const matchedQuantity = optionMatched.get(card.code) ?? 0;
-
-            // if the current match count exceeds the limit,
-            // no more cards can be covered by this option.
-            if (
-              matchedQuantity === quantity ||
-              (limit != null && matchCount >= limit)
-            ) {
-              break;
-            }
-
-            matchCount += 1;
-            optionMatched.set(card.code, matchedQuantity + 1);
-          }
-
-          // if the current match count exceeds the limit,
-          // no more cards can be covered by this option.
-          if (limit != null && matchCount >= limit) {
-            break;
-          }
-        }
-      }
-    }
-
-    // Additional deck options are appended after investigator options. Attribute
-    // each excess card to the last limited option that could actually include it.
-    const unmatchedByOption = new Map<number, number>();
-
-    for (const card of this.cards) {
-      const unmatchedCount =
-        this.quantities[card.code] - (optionMatched.get(card.code) ?? 0);
-      if (unmatchedCount <= 0) continue;
-
-      const exclusionIndex = exclusions.get(card.code);
-      const optionIndex = findIndexReversed(options, (option, index) => {
-        if (
-          option.limit == null ||
-          option.not ||
-          option.virtual ||
-          option.atleast ||
-          (exclusionIndex != null && index >= exclusionIndex)
-        ) {
-          return false;
-        }
-
-        return optionFilters[index]?.(card) ?? false;
-      });
-      if (optionIndex === -1) continue;
-
-      unmatchedByOption.set(
-        optionIndex,
-        (unmatchedByOption.get(optionIndex) ?? 0) + unmatchedCount,
+      const overflowCount = Array.from(overflow.values()).reduce(
+        (total, quantity) => total + quantity,
+        0,
       );
-    }
-
-    for (let i = 0; i < options.length; i += 1) {
-      const unmatchedCount = unmatchedByOption.get(i);
-      if (!unmatchedCount) continue;
-
-      const option = options[i];
-      if (option?.limit == null) continue;
 
       errors.push({
         type: "INVALID_DECK_OPTION",
         details: {
           error: option.error ?? "Too many off-class cards.",
-          count: `(${option.limit + unmatchedCount} / ${option.limit})`,
+          count: `(${option.limit + overflowCount} / ${option.limit})`,
         },
       });
     }
@@ -1212,10 +1079,4 @@ class SideDeckLimitsValidator implements SlotValidator {
 
     return errors;
   }
-}
-
-const UNTARGETED_KEYS = new Set(["name", "error", "id", "level", "limit"]);
-
-function hasOnlyUntargetedKeys(option: DeckOption) {
-  return Object.keys(option).every((k) => UNTARGETED_KEYS.has(k));
 }

@@ -43,7 +43,7 @@ import {
   mergeCardTagNames,
   resolveCardTagCardCode,
 } from "../lib/card-tags";
-import { getAdditionalDeckOptions } from "../lib/deck-validation";
+import { getAdditionalDeckOptions } from "../lib/deck-options";
 import {
   containsCard,
   filterActions,
