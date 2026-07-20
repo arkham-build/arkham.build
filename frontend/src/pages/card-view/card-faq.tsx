@@ -63,9 +63,7 @@ export function CardFaq(props: Props) {
                 dangerouslySetInnerHTML={item.rulingMarkup}
               />
               <p>
-                <Tag className={css["tag"]} size="sm">
-                  {item.citation}
-                </Tag>
+                <Tag size="sm">{item.citation}</Tag>
               </p>
             </li>
           ))}

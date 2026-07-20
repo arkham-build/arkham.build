@@ -62,10 +62,6 @@ const tests = [
     "invalid: off-class access with faction selection",
     "faction_select_invalid",
   ],
-  [
-    "invalid: Collector does not claim excess cards from another limited option",
-    "collector_with_other_limited_access_invalid",
-  ],
   ["valid: tag-based off-class access", "tag_based_access"],
   [
     "valid: tag-based access and versatile overlap",
@@ -145,6 +141,13 @@ const tests = [
   // Versatile
   ["valid: Versatile with added off-class card", "versatile"],
   ["invalid: Versatile with too many off-class cards", "versatile_invalid"],
+  // collector
+  [
+    "invalid: Collector does not claim excess cards from another limited option",
+    "collector_with_other_limited_access_invalid",
+  ],
+  ["invalid: Collector + Dunwich Splash", "collector_splash_invalid"],
+  ["valid: Collector + Dunwich Splash", "collector_splash_valid"],
   // || Jenny
   ["valid: || Jenny Barnes with 10 off-class Talents", "parallel_jenny"],
   [

@@ -156,19 +156,31 @@ exports[`Deck Validation > invalid: Ancestral Knowledge with less than 10 skill 
 ]
 `;
 
+exports[`Deck Validation > invalid: Collector + Dunwich Splash 1`] = `
+[
+  {
+    "details": {
+      "count": "(6 / 5)",
+      "error": "You cannot have more than 5 cards that are not Seeker or Neutral",
+    },
+    "type": "INVALID_DECK_OPTION",
+  },
+]
+`;
+
 exports[`Deck Validation > invalid: Collector does not claim excess cards from another limited option 1`] = `
 [
   {
     "details": {
-      "count": "(11 / 10)",
-      "error": "Too many off-class cards.",
+      "count": "(2 / 1)",
+      "error": "Too many off-class cards for Collector.",
     },
     "type": "INVALID_DECK_OPTION",
   },
   {
     "details": {
-      "count": "(2 / 1)",
-      "error": "Too many off-class cards for Collector.",
+      "count": "(11 / 10)",
+      "error": "Too many off-class cards.",
     },
     "type": "INVALID_DECK_OPTION",
   },

@@ -25,6 +25,7 @@ import {
 } from "./filtering";
 import type { LookupTables } from "./lookup-tables.types";
 import type { ResolvedDeck } from "./types";
+import { isEmpty } from "@/utils/is-empty";
 
 export type DeckValidationResult = {
   valid: boolean;
@@ -832,7 +833,19 @@ class DeckOptionsValidator implements SlotValidator {
     const additionalDeckOptions =
       mode === "slots" ? getAdditionalDeckOptions(deck) : [];
 
-    deckOptions.push(...additionalDeckOptions);
+    if (!isEmpty(additionalDeckOptions)) {
+      const unlimitedOptionIndex = deckOptions.findLastIndex((x) => !x.limit);
+
+      for (const option of additionalDeckOptions) {
+        const untargeted = hasOnlyUntargetedKeys(option);
+
+        if (unlimitedOptionIndex !== -1 && !untargeted) {
+          deckOptions.splice(unlimitedOptionIndex + 1, 0, option);
+        } else {
+          deckOptions.push(option);
+        }
+      }
+    }
 
     return {
       config: {
@@ -1199,4 +1212,10 @@ class SideDeckLimitsValidator implements SlotValidator {
 
     return errors;
   }
+}
+
+const UNTARGETED_KEYS = new Set(["name", "error", "id", "level", "limit"]);
+
+function hasOnlyUntargetedKeys(option: DeckOption) {
+  return Object.keys(option).every((k) => UNTARGETED_KEYS.has(k));
 }
