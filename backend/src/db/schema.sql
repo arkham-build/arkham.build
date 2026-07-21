@@ -70,6 +70,36 @@ CREATE TYPE public.moderation_action_type AS ENUM (
 
 
 --
+-- Name: oauth_authorization_decision; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.oauth_authorization_decision AS ENUM (
+    'approved',
+    'denied'
+);
+
+
+--
+-- Name: oauth_scope; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.oauth_scope AS ENUM (
+    'profile:read',
+    'decks:read',
+    'decks:write',
+    'decks:delete'
+);
+
+
+--
+-- Name: oauth_scopes; Type: DOMAIN; Schema: public; Owner: -
+--
+
+CREATE DOMAIN public.oauth_scopes AS text[]
+	CONSTRAINT oauth_scopes_check CHECK (((VALUE @> ARRAY['profile:read'::text]) AND (VALUE <@ (enum_range(NULL::public.oauth_scope))::text[])));
+
+
+--
 -- Name: create_queue(text, jsonb); Type: FUNCTION; Schema: pgboss; Owner: -
 --
 
@@ -1053,6 +1083,126 @@ CREATE TABLE public.grimoire_section (
 
 
 --
+-- Name: oauth_access_token; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth_access_token (
+    id uuid DEFAULT uuidv7() NOT NULL,
+    oauth_grant_id uuid NOT NULL,
+    oauth_refresh_token_id uuid NOT NULL,
+    token_hash text NOT NULL,
+    scopes public.oauth_scopes NOT NULL,
+    expires_at timestamp without time zone NOT NULL,
+    revoked_at timestamp without time zone,
+    last_used_at timestamp without time zone,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: oauth_authorization_code; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth_authorization_code (
+    id uuid DEFAULT uuidv7() NOT NULL,
+    oauth_grant_id uuid NOT NULL,
+    code_hash text NOT NULL,
+    redirect_uri text NOT NULL,
+    scopes public.oauth_scopes NOT NULL,
+    expires_at timestamp without time zone NOT NULL,
+    used_at timestamp without time zone,
+    revoked_at timestamp without time zone,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT chk_oauth_authorization_code_redirect_uri CHECK (((octet_length(redirect_uri) >= 1) AND (octet_length(redirect_uri) <= 2048)))
+);
+
+
+--
+-- Name: oauth_authorization_request; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth_authorization_request (
+    id uuid DEFAULT uuidv7() NOT NULL,
+    request_token_hash text NOT NULL,
+    oauth_client_id uuid NOT NULL,
+    account_id uuid,
+    redirect_uri text NOT NULL,
+    scopes public.oauth_scopes NOT NULL,
+    state text NOT NULL,
+    expires_at timestamp without time zone NOT NULL,
+    claimed_at timestamp without time zone,
+    consumed_at timestamp without time zone,
+    decision public.oauth_authorization_decision,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT chk_oauth_authorization_request_claim CHECK (((account_id IS NULL) = (claimed_at IS NULL))),
+    CONSTRAINT chk_oauth_authorization_request_decision_consumed CHECK (((decision IS NULL) OR (consumed_at IS NOT NULL))),
+    CONSTRAINT chk_oauth_authorization_request_redirect_uri CHECK (((octet_length(redirect_uri) >= 1) AND (octet_length(redirect_uri) <= 2048))),
+    CONSTRAINT chk_oauth_authorization_request_state CHECK (((octet_length(state) >= 1) AND (octet_length(state) <= 1024)))
+);
+
+
+--
+-- Name: oauth_client; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth_client (
+    id uuid DEFAULT uuidv7() NOT NULL,
+    name character varying(128) NOT NULL,
+    secret_hash text NOT NULL,
+    disabled_at timestamp without time zone,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT chk_oauth_client_secret_hash CHECK (((octet_length(secret_hash) >= 1) AND (octet_length(secret_hash) <= 1024)))
+);
+
+
+--
+-- Name: oauth_client_redirect_uri; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth_client_redirect_uri (
+    oauth_client_id uuid NOT NULL,
+    redirect_uri text NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT chk_oauth_client_redirect_uri_length CHECK (((octet_length(redirect_uri) >= 1) AND (octet_length(redirect_uri) <= 2048)))
+);
+
+
+--
+-- Name: oauth_grant; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth_grant (
+    id uuid DEFAULT uuidv7() NOT NULL,
+    oauth_client_id uuid NOT NULL,
+    account_id uuid NOT NULL,
+    scopes public.oauth_scopes NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: oauth_refresh_token; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth_refresh_token (
+    id uuid DEFAULT uuidv7() NOT NULL,
+    oauth_grant_id uuid NOT NULL,
+    token_hash text NOT NULL,
+    scopes public.oauth_scopes NOT NULL,
+    expires_at timestamp without time zone NOT NULL,
+    revoked_at timestamp without time zone,
+    last_used_at timestamp without time zone,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: oauth_token; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1595,6 +1745,110 @@ ALTER TABLE ONLY public.grimoire_section
 
 
 --
+-- Name: oauth_access_token oauth_access_token_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_token
+    ADD CONSTRAINT oauth_access_token_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_access_token oauth_access_token_token_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_token
+    ADD CONSTRAINT oauth_access_token_token_hash_key UNIQUE (token_hash);
+
+
+--
+-- Name: oauth_authorization_code oauth_authorization_code_code_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_authorization_code
+    ADD CONSTRAINT oauth_authorization_code_code_hash_key UNIQUE (code_hash);
+
+
+--
+-- Name: oauth_authorization_code oauth_authorization_code_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_authorization_code
+    ADD CONSTRAINT oauth_authorization_code_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_authorization_request oauth_authorization_request_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_authorization_request
+    ADD CONSTRAINT oauth_authorization_request_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_authorization_request oauth_authorization_request_request_token_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_authorization_request
+    ADD CONSTRAINT oauth_authorization_request_request_token_hash_key UNIQUE (request_token_hash);
+
+
+--
+-- Name: oauth_client oauth_client_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_client
+    ADD CONSTRAINT oauth_client_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_client_redirect_uri oauth_client_redirect_uri_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_client_redirect_uri
+    ADD CONSTRAINT oauth_client_redirect_uri_pkey PRIMARY KEY (oauth_client_id, redirect_uri);
+
+
+--
+-- Name: oauth_grant oauth_grant_oauth_client_id_account_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_grant
+    ADD CONSTRAINT oauth_grant_oauth_client_id_account_id_key UNIQUE (oauth_client_id, account_id);
+
+
+--
+-- Name: oauth_grant oauth_grant_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_grant
+    ADD CONSTRAINT oauth_grant_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_refresh_token oauth_refresh_token_id_oauth_grant_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_refresh_token
+    ADD CONSTRAINT oauth_refresh_token_id_oauth_grant_id_key UNIQUE (id, oauth_grant_id);
+
+
+--
+-- Name: oauth_refresh_token oauth_refresh_token_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_refresh_token
+    ADD CONSTRAINT oauth_refresh_token_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_refresh_token oauth_refresh_token_token_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_refresh_token
+    ADD CONSTRAINT oauth_refresh_token_token_hash_key UNIQUE (token_hash);
+
+
+--
 -- Name: oauth_token oauth_token_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2128,6 +2382,104 @@ CREATE INDEX idx_grimoire_entry_section ON public.grimoire_entry USING btree (se
 
 
 --
+-- Name: idx_oauth_access_token_expiry_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_access_token_expiry_active ON public.oauth_access_token USING btree (expires_at) WHERE (revoked_at IS NULL);
+
+
+--
+-- Name: idx_oauth_access_token_grant_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_access_token_grant_id ON public.oauth_access_token USING btree (oauth_grant_id);
+
+
+--
+-- Name: idx_oauth_access_token_refresh_token_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_access_token_refresh_token_id ON public.oauth_access_token USING btree (oauth_refresh_token_id);
+
+
+--
+-- Name: idx_oauth_authorization_code_expiry_pending; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_authorization_code_expiry_pending ON public.oauth_authorization_code USING btree (expires_at) WHERE ((used_at IS NULL) AND (revoked_at IS NULL));
+
+
+--
+-- Name: idx_oauth_authorization_code_grant_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_authorization_code_grant_id ON public.oauth_authorization_code USING btree (oauth_grant_id);
+
+
+--
+-- Name: idx_oauth_authorization_code_grant_redirect_pending; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_authorization_code_grant_redirect_pending ON public.oauth_authorization_code USING btree (oauth_grant_id, redirect_uri) WHERE ((used_at IS NULL) AND (revoked_at IS NULL));
+
+
+--
+-- Name: idx_oauth_authorization_request_account_client_pending; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_authorization_request_account_client_pending ON public.oauth_authorization_request USING btree (account_id, oauth_client_id) WHERE ((account_id IS NOT NULL) AND (consumed_at IS NULL));
+
+
+--
+-- Name: idx_oauth_authorization_request_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_authorization_request_account_id ON public.oauth_authorization_request USING btree (account_id);
+
+
+--
+-- Name: idx_oauth_authorization_request_client_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_authorization_request_client_id ON public.oauth_authorization_request USING btree (oauth_client_id);
+
+
+--
+-- Name: idx_oauth_authorization_request_client_redirect_pending; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_authorization_request_client_redirect_pending ON public.oauth_authorization_request USING btree (oauth_client_id, redirect_uri) WHERE (consumed_at IS NULL);
+
+
+--
+-- Name: idx_oauth_authorization_request_expiry_pending; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_authorization_request_expiry_pending ON public.oauth_authorization_request USING btree (expires_at) WHERE (consumed_at IS NULL);
+
+
+--
+-- Name: idx_oauth_grant_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_grant_account_id ON public.oauth_grant USING btree (account_id);
+
+
+--
+-- Name: idx_oauth_refresh_token_expiry_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_refresh_token_expiry_active ON public.oauth_refresh_token USING btree (expires_at) WHERE (revoked_at IS NULL);
+
+
+--
+-- Name: idx_oauth_refresh_token_grant_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_oauth_refresh_token_grant_id ON public.oauth_refresh_token USING btree (oauth_grant_id);
+
+
+--
 -- Name: idx_oauth_tokens_account_identity; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2637,6 +2989,78 @@ ALTER TABLE ONLY public.grimoire_section
 
 
 --
+-- Name: oauth_access_token oauth_access_token_oauth_grant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_token
+    ADD CONSTRAINT oauth_access_token_oauth_grant_id_fkey FOREIGN KEY (oauth_grant_id) REFERENCES public.oauth_grant(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_access_token oauth_access_token_oauth_refresh_token_id_oauth_grant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_token
+    ADD CONSTRAINT oauth_access_token_oauth_refresh_token_id_oauth_grant_id_fkey FOREIGN KEY (oauth_refresh_token_id, oauth_grant_id) REFERENCES public.oauth_refresh_token(id, oauth_grant_id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_authorization_code oauth_authorization_code_oauth_grant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_authorization_code
+    ADD CONSTRAINT oauth_authorization_code_oauth_grant_id_fkey FOREIGN KEY (oauth_grant_id) REFERENCES public.oauth_grant(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_authorization_request oauth_authorization_request_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_authorization_request
+    ADD CONSTRAINT oauth_authorization_request_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_authorization_request oauth_authorization_request_oauth_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_authorization_request
+    ADD CONSTRAINT oauth_authorization_request_oauth_client_id_fkey FOREIGN KEY (oauth_client_id) REFERENCES public.oauth_client(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_client_redirect_uri oauth_client_redirect_uri_oauth_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_client_redirect_uri
+    ADD CONSTRAINT oauth_client_redirect_uri_oauth_client_id_fkey FOREIGN KEY (oauth_client_id) REFERENCES public.oauth_client(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_grant oauth_grant_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_grant
+    ADD CONSTRAINT oauth_grant_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_grant oauth_grant_oauth_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_grant
+    ADD CONSTRAINT oauth_grant_oauth_client_id_fkey FOREIGN KEY (oauth_client_id) REFERENCES public.oauth_client(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_refresh_token oauth_refresh_token_oauth_grant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_refresh_token
+    ADD CONSTRAINT oauth_refresh_token_oauth_grant_id_fkey FOREIGN KEY (oauth_grant_id) REFERENCES public.oauth_grant(id) ON DELETE CASCADE;
+
+
+--
 -- Name: oauth_token oauth_token_account_identity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2741,4 +3165,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260505120000'),
     ('20260508231500'),
     ('20260705120000'),
-    ('20260718074916');
+    ('20260718074916'),
+    ('20260721191533');

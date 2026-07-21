@@ -26,6 +26,8 @@ export type ModerationActionScope = "account";
 
 export type ModerationActionType = "ban" | "warning";
 
+export type OauthAuthorizationDecision = "approved" | "denied";
+
 export type PgbossJobState =
   | "active"
   | "cancelled"
@@ -395,6 +397,84 @@ export interface GrimoireSection {
   translations: { locale: string; title?: string; text?: string }[];
 }
 
+export interface OauthAccessToken {
+  created_at: Generated<Timestamp>;
+  expires_at: Timestamp;
+  id: Generated<string>;
+  last_used_at: Timestamp | null;
+  oauth_grant_id: string;
+  oauth_refresh_token_id: string;
+  revoked_at: Timestamp | null;
+  scopes: string[];
+  token_hash: string;
+  updated_at: Generated<Timestamp>;
+}
+
+export interface OauthAuthorizationCode {
+  code_hash: string;
+  created_at: Generated<Timestamp>;
+  expires_at: Timestamp;
+  id: Generated<string>;
+  oauth_grant_id: string;
+  redirect_uri: string;
+  revoked_at: Timestamp | null;
+  scopes: string[];
+  updated_at: Generated<Timestamp>;
+  used_at: Timestamp | null;
+}
+
+export interface OauthAuthorizationRequest {
+  account_id: string | null;
+  claimed_at: Timestamp | null;
+  consumed_at: Timestamp | null;
+  created_at: Generated<Timestamp>;
+  decision: OauthAuthorizationDecision | null;
+  expires_at: Timestamp;
+  id: Generated<string>;
+  oauth_client_id: string;
+  redirect_uri: string;
+  request_token_hash: string;
+  scopes: string[];
+  state: string;
+  updated_at: Generated<Timestamp>;
+}
+
+export interface OauthClient {
+  created_at: Generated<Timestamp>;
+  disabled_at: Timestamp | null;
+  id: Generated<string>;
+  name: string;
+  secret_hash: string;
+  updated_at: Generated<Timestamp>;
+}
+
+export interface OauthClientRedirectUri {
+  created_at: Generated<Timestamp>;
+  oauth_client_id: string;
+  redirect_uri: string;
+}
+
+export interface OauthGrant {
+  account_id: string;
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  oauth_client_id: string;
+  scopes: string[];
+  updated_at: Generated<Timestamp>;
+}
+
+export interface OauthRefreshToken {
+  created_at: Generated<Timestamp>;
+  expires_at: Timestamp;
+  id: Generated<string>;
+  last_used_at: Timestamp | null;
+  oauth_grant_id: string;
+  revoked_at: Timestamp | null;
+  scopes: string[];
+  token_hash: string;
+  updated_at: Generated<Timestamp>;
+}
+
 export interface OauthToken {
   access_token: string;
   account_identity_id: string;
@@ -624,6 +704,13 @@ export interface DB {
   grimoire_entry: GrimoireEntry;
   grimoire_entry_reference: GrimoireEntryReference;
   grimoire_section: GrimoireSection;
+  oauth_access_token: OauthAccessToken;
+  oauth_authorization_code: OauthAuthorizationCode;
+  oauth_authorization_request: OauthAuthorizationRequest;
+  oauth_client: OauthClient;
+  oauth_client_redirect_uri: OauthClientRedirectUri;
+  oauth_grant: OauthGrant;
+  oauth_refresh_token: OauthRefreshToken;
   oauth_token: OauthToken;
   pack: Pack;
   pack_type: PackType;
