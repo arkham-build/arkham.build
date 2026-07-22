@@ -118,7 +118,7 @@ function generateAuthorizationRequestToken() {
   ).toString("base64url")}`;
 }
 
-function hashAuthorizationRequestToken(token: string) {
+export function hashAuthorizationRequestToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 

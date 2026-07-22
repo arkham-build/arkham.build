@@ -16,6 +16,7 @@ import customizationSheetRouter from "./features/customization_sheet/routes.ts";
 import decksRouter from "./features/decks/routes.ts";
 import fanMadeProjectInfoRouter from "./features/fan-made-content/routes.ts";
 import foldersRouter from "./features/folders/routes.ts";
+import oauthAccountRoutes from "./features/oauth/account-routes.ts";
 import oauthRoutes from "./features/oauth/routes.ts";
 import {
   errataRoutes,
@@ -107,6 +108,7 @@ export function appFactory(
   v2Account.route("/card-tags", cardTagsRouter);
   v2Account.route("/decks", decksRouter);
   v2Account.route("/folders", foldersRouter);
+  v2Account.route("/oauth", oauthAccountRoutes);
   v2Account.route("/profile", profileRouter);
   v2Account.route("/scans", createScansRoutes(scansStorage));
   v2Account.route("/settings", settingsRouter);

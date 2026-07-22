@@ -49,6 +49,19 @@ export function resolveOAuthScopes(
   };
 }
 
+export function canonicalizeOAuthScopes(
+  scopes: readonly string[],
+): OAuthScope[] {
+  for (const scope of scopes) {
+    if (!isOAuthScope(scope)) {
+      throw new Error("Stored OAuth grant contains an unsupported scope");
+    }
+  }
+
+  const scopeSet = new Set(scopes);
+  return OAUTH_SCOPES.filter((scope) => scopeSet.has(scope));
+}
+
 function isOAuthScope(scope: string): scope is OAuthScope {
   return OAUTH_SCOPE_SET.has(scope);
 }

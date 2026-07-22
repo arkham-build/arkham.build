@@ -51,21 +51,29 @@ export function requestLogger() {
 
     // don't log successful health checks
     if (c.req.path !== "/version" || c.res.status !== 200) {
+      const safePath = redactSensitivePath(c.req.path);
       const details: Record<string, unknown> = {
         level: "info",
         duration_ms: Date.now() - begin,
         method: c.req.method,
         status: c.res.status,
-        url: new URL(c.req.url).pathname,
+        url: safePath,
       };
 
       if (isPublicShareRequest(c)) {
         details["client_ip"] = clientIp(c);
       }
 
-      c.get("logger")("info", `${c.req.method} ${c.req.path}`, details);
+      c.get("logger")("info", `${c.req.method} ${safePath}`, details);
     }
   };
+}
+
+export function redactSensitivePath(path: string) {
+  return path.replace(
+    /^(\/v2\/account\/oauth\/authorization-requests\/)[^/]+/,
+    "$1:token",
+  );
 }
 
 function isPublicShareRequest(c: Context<HonoEnv>) {
