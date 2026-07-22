@@ -1,0 +1,41 @@
+type: http_request
+model: http_request
+id: rq_DisableOAuthClient
+createdAt: 2026-07-21T22:35:05.000000
+updatedAt: 2026-07-21T22:35:05.000000
+workspaceId: wk_bBoraEVHnK
+folderId: fl_OAuthClients
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: Disabling is idempotent and does not revoke grants or tokens.
+headers:
+- enabled: true
+  name: Authorization
+  value: Bearer ${[ admin_api_key ]}
+  id: OAuthDisableAuth
+method: POST
+name: Disable OAuth client
+sortPriority: 4000.0
+url: ${[ base_url ]}/admin/oauth/clients/:clientId/disable
+urlParameters:
+- enabled: true
+  name: :clientId
+  value: ${[ oauth_client_id ]}
+  id: OAuthDisableClientId
+settingSendCookies:
+  enabled: false
+  value: true
+settingStoreCookies:
+  enabled: false
+  value: true
+settingValidateCertificates:
+  enabled: false
+  value: true
+settingFollowRedirects:
+  enabled: false
+  value: true
+settingRequestTimeout:
+  enabled: false
+  value: 0

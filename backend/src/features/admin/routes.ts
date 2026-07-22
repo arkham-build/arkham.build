@@ -4,10 +4,10 @@ import {
   DeckSchema,
   FanMadeProjectInfoSchema,
 } from "@arkham-build/shared";
-import { type Context, Hono } from "hono";
-import { bearerAuth } from "hono/bearer-auth";
+import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
+import oauthClientAdminRoutes from "../oauth-clients/admin-routes.ts";
 import { findAccountByUsername } from "../../lib/auth/accounts.ts";
 import { isExclusionViolation } from "../../lib/db-errors.ts";
 import {
@@ -16,6 +16,7 @@ import {
 } from "../../lib/deck-mapping.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
+import { adminKeyMiddleware } from "./admin-key.ts";
 import {
   createAccountModerationAction,
   endAccountModerationAction,
@@ -28,11 +29,6 @@ import {
 
 const routes = new Hono<HonoEnv>();
 
-const adminKeyMiddleware = bearerAuth({
-  verifyToken: (token, c: Context<HonoEnv>) =>
-    token === c.get("config").ADMIN_API_KEY,
-});
-
 routes.get("/up", (c) => c.text("ok"));
 
 routes.get("/version", async (c) => {
@@ -40,6 +36,8 @@ routes.get("/version", async (c) => {
   if (!dataVersions) throw new Error("could not infer data versions");
   return c.json(dataVersions);
 });
+
+routes.route("/oauth", oauthClientAdminRoutes);
 
 routes.post(
   "/fan_made_project_info",
