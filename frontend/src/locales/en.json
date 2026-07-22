@@ -167,7 +167,6 @@
     },
     "card_tags": {
       "account_title": "Global tags",
-      "create_named": "Create \"{{name}}\"",
       "deck_placeholder": "Add deck tag...",
       "deck_title": "Deck tags",
       "favorite": "Favorite",
@@ -244,6 +243,7 @@
         "value": "Cost {{cost}}",
         "x": "Cost X"
       },
+      "create_named": "Create \"{{name}}\"",
       "customizable": "Customizable",
       "customizations": "Customizations",
       "cycle_one": "cycle",

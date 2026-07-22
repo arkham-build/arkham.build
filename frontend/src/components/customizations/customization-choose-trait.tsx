@@ -1,4 +1,5 @@
-import { useCallback } from "react";
+import { PlusIcon } from "lucide-react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { Combobox } from "@/components/ui/combobox/combobox";
@@ -67,8 +68,22 @@ export function CustomizationChooseTraits(props: Props) {
     [onChange],
   );
 
+  const creatable = useMemo(
+    () => ({
+      label: (name: string) => (
+        <>
+          <PlusIcon />
+          {t("common.create_named", { name })}
+        </>
+      ),
+      onCreate: (name: string) => onChange([...selections, name]),
+    }),
+    [onChange, selections, t],
+  );
+
   return (
     <Combobox
+      creatable={creatable}
       disabled={disabled}
       id={`${id}-choose-trait`}
       items={traits}
