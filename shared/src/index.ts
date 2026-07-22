@@ -115,6 +115,15 @@ export {
   GrimoireResponseSchema,
 } from "./dtos/grimoire-response.schema.ts";
 export {
+  type OAuthAuthorizationRequestToken,
+  OAuthAuthorizationRequestTokenSchema,
+  type OAuthConsentDetailsResponse,
+  OAuthConsentDetailsResponseSchema,
+  type OAuthScope,
+  OAuthScopeSchema,
+  OAUTH_SCOPES,
+} from "./dtos/oauth.schema.ts";
+export {
   type UpdateProfileRequest,
   UpdateProfileRequestSchema,
 } from "./dtos/profile.schema.ts";

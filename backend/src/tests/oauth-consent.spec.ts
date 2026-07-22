@@ -1,8 +1,8 @@
 import { createHash, randomUUID } from "node:crypto";
+import { OAuthConsentDetailsResponseSchema } from "@arkham-build/shared";
 import { describe, expect, vi } from "vitest";
 import type { appFactory } from "../app.ts";
 import type { Database } from "../db/db.ts";
-import { OAuthConsentDetailsResponseSchema } from "../features/oauth/account-routes.ts";
 import { OAUTH_AUTHORIZATION_CODE_LIFETIME_MS } from "../features/oauth/consent.ts";
 import { createSession } from "../lib/auth/sessions.ts";
 import type { Config } from "../lib/config.ts";

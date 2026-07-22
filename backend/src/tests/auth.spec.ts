@@ -426,6 +426,78 @@ describe("Auth routes", () => {
       );
     });
 
+    test("returns an existing OAuth account to a validated frontend path", async ({
+      dependencies,
+    }) => {
+      const { app, config, db } = dependencies;
+      const returnTo = "/oauth/consent?request=ab_ar_test-request";
+      const account = await db
+        .selectFrom("account")
+        .select("id")
+        .where("name", "=", "test-account")
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "23456",
+          verified_at: new Date(),
+        })
+        .execute();
+
+      const oauth = await startOAuthFlow(
+        app,
+        `/auth/arkhamdb/login?returnTo=${encodeURIComponent(returnTo)}`,
+      );
+      mockArkhamDbOAuth(23456);
+
+      const response = await app.request(
+        `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
+        { headers: { Cookie: oauth.cookie } },
+      );
+
+      expect(response.status).toBe(302);
+      expect(response.headers.get("location")).toBe(
+        `${config.FRONTEND_URL}${returnTo}`,
+      );
+    });
+
+    test("preserves a frontend return path through OAuth profile completion", async ({
+      dependencies,
+    }) => {
+      const { app, config } = dependencies;
+      const returnTo = "/oauth/consent?request=ab_ar_new-account";
+      const oauth = await startOAuthFlow(
+        app,
+        `/auth/arkhamdb/login?returnTo=${encodeURIComponent(returnTo)}`,
+      );
+      mockArkhamDbOAuth(34567);
+
+      const response = await app.request(
+        `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
+        { headers: { Cookie: oauth.cookie } },
+      );
+      const completionQuery = new URLSearchParams({ redirect: returnTo });
+
+      expect(response.status).toBe(302);
+      expect(response.headers.get("location")).toBe(
+        `${config.FRONTEND_URL}/auth/signup/complete?${completionQuery.toString()}`,
+      );
+    });
+
+    test("rejects external OAuth login return paths", async ({
+      dependencies,
+    }) => {
+      const response = await dependencies.app.request(
+        "/auth/arkhamdb/login?returnTo=https%3A%2F%2Fevil.example",
+      );
+
+      expect(response.status).toBe(400);
+      expect(await response.text()).toContain("Invalid returnTo");
+    });
+
     test("connects an OAuth identity for the authenticated account", async ({
       dependencies,
     }) => {

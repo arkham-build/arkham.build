@@ -9,6 +9,7 @@ export const OAuthContextSchema = z.object({
   accountId: z.string().optional(),
   intent: OAuthIntentSchema,
   returnTo: z.string(),
+  successReturnTo: z.string().optional(),
 });
 
 const OAuthStateCookieSchema = OAuthContextSchema.extend({
@@ -56,16 +57,7 @@ export async function getOAuthContext(
       return null;
     }
 
-    return oauthState.accountId
-      ? {
-          accountId: oauthState.accountId,
-          intent: oauthState.intent,
-          returnTo: oauthState.returnTo,
-        }
-      : {
-          intent: oauthState.intent,
-          returnTo: oauthState.returnTo,
-        };
+    return OAuthContextSchema.parse(oauthState);
   } catch {
     return null;
   }
@@ -77,7 +69,9 @@ export async function validateOAuthState(
   state: string | undefined,
 ): Promise<OAuthContext> {
   const oauthState = await getOAuthStateCookie(c);
-  deleteOAuthStateCookie(c, provider);
+  deleteCookie(c, OAUTH_STATE_COOKIE_NAME, {
+    path: provider.getCallbackPath(c),
+  });
 
   if (!state || !oauthState) {
     throw new OAuthFlowError("invalid_state");
@@ -87,16 +81,7 @@ export async function validateOAuthState(
     throw new OAuthFlowError("invalid_state");
   }
 
-  return oauthState.accountId
-    ? {
-        accountId: oauthState.accountId,
-        intent: oauthState.intent,
-        returnTo: oauthState.returnTo,
-      }
-    : {
-        intent: oauthState.intent,
-        returnTo: oauthState.returnTo,
-      };
+  return OAuthContextSchema.parse(oauthState);
 }
 
 async function getOAuthStateCookie(
@@ -121,10 +106,4 @@ function parseOAuthStateCookie(signedState: string): OAuthStateCookie {
   } catch {
     throw new OAuthFlowError("invalid_state");
   }
-}
-
-function deleteOAuthStateCookie(c: Context, provider: OAuthProvider) {
-  deleteCookie(c, OAUTH_STATE_COOKIE_NAME, {
-    path: provider.getCallbackPath(c),
-  });
 }

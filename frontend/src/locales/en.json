@@ -1553,6 +1553,36 @@
       "navigation": "Primary navigation",
       "rules": "Rules"
     },
+    "oauth_consent": {
+      "allow": "Allow",
+      "authorize": "Authorize {{clientName}}",
+      "deny": "Deny",
+      "description": "{{clientName}} is requesting access to your arkham.build account.",
+      "error": "The authorization request could not be loaded. Return to the application and try again.",
+      "expired": "This authorization request is invalid or has expired. Return to the application and start again.",
+      "loading": "Loading authorization request...",
+      "permissions": "Requested permissions",
+      "redirecting_to_login": "Redirecting you to log in...",
+      "scopes": {
+        "decks_delete": {
+          "description": "Delete your decks.",
+          "title": "Delete decks"
+        },
+        "decks_read": {
+          "description": "View your decks.",
+          "title": "Read decks"
+        },
+        "decks_write": {
+          "description": "Create and update your decks.",
+          "title": "Write decks"
+        },
+        "profile_read": {
+          "description": "View your account ID and username.",
+          "title": "Read profile"
+        }
+      },
+      "title": "Application authorization"
+    },
     "popular_decks": {
       "decklists_link": "Browse all deck guides",
       "error": "Popular deck guides could not be loaded: {{error}}",

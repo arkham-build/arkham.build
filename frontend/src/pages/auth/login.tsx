@@ -12,6 +12,7 @@ import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
 import { errorMapper } from "./helpers";
 import css from "./login.module.css";
+import { createAuthRedirectPath, getLocalReturnPath } from "./return-to";
 import { OAuthSeparator } from "./oauth-separator";
 
 function Login() {
@@ -21,6 +22,9 @@ function Login() {
   const { t } = useTranslation();
 
   const loginMutation = useLoginMutation();
+  const returnTo = getLocalReturnPath(
+    new URLSearchParams(search).get("redirect"),
+  );
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,9 +32,7 @@ function Login() {
   const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();
     await loginMutation.mutateAsync({ email, password });
-    const params = new URLSearchParams(search);
-    const redirect = params.get("redirect") || "/";
-    navigate(redirect);
+    navigate(returnTo);
   };
 
   return (
@@ -39,7 +41,9 @@ function Login() {
       footer={
         <>
           {t("auth.login.no_account")}{" "}
-          <Link href="/auth/signup">{t("auth.signup.action")}</Link>
+          <Link href={createAuthRedirectPath("/auth/signup", returnTo)}>
+            {t("auth.signup.action")}
+          </Link>
         </>
       }
     >
@@ -107,7 +111,7 @@ function Login() {
         )}
         <Button
           as="a"
-          href={`${import.meta.env.VITE_API_URL}/auth/arkhamdb/login`}
+          href={getArkhamDbLoginHref(returnTo)}
           variant="secondary"
           full
         >
@@ -117,6 +121,12 @@ function Login() {
       </AuthForm>
     </AuthLayout>
   );
+}
+
+function getArkhamDbLoginHref(returnTo: string) {
+  const url = new URL("/auth/arkhamdb/login", import.meta.env.VITE_API_URL);
+  url.searchParams.set("returnTo", returnTo);
+  return url.toString();
 }
 
 export default Login;

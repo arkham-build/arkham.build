@@ -1,6 +1,9 @@
+import {
+  OAuthAuthorizationRequestTokenSchema,
+  OAuthConsentDetailsResponseSchema,
+} from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { z } from "zod";
 import { sessionAuth } from "../../lib/auth/session-auth-middleware.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
 import {
@@ -9,24 +12,6 @@ import {
   denyOAuthAuthorizationRequest,
   OAuthConsentError,
 } from "./consent.ts";
-import { OAUTH_SCOPES } from "./scopes.ts";
-
-const AuthorizationRequestTokenSchema = z
-  .string()
-  .regex(/^ab_ar_[A-Za-z0-9_-]{43}$/);
-
-export const OAuthConsentDetailsResponseSchema = z
-  .object({
-    client: z
-      .object({
-        id: z.uuid(),
-        name: z.string(),
-      })
-      .strict(),
-    scopes: z.array(z.enum(OAUTH_SCOPES)),
-    expiresAt: z.iso.datetime(),
-  })
-  .strict();
 
 const routes = new Hono<HonoEnv>();
 
@@ -85,7 +70,7 @@ routes.post("/authorization-requests/:token/deny", sessionAuth(), async (c) => {
 });
 
 function requestToken(c: { req: { param(name: string): string } }) {
-  const result = AuthorizationRequestTokenSchema.safeParse(
+  const result = OAuthAuthorizationRequestTokenSchema.safeParse(
     c.req.param("token"),
   );
   if (!result.success) {

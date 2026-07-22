@@ -35,12 +35,10 @@ export async function claimOAuthAuthorizationRequest(
   accountId: string,
 ) {
   return await db.transaction().execute(async (tx) => {
-    const now = new Date();
-    const request = await lockOAuthAuthorizationRequest(
+    const { now, request } = await lockOAuthAuthorizationRequest(
       tx,
       requestToken,
       accountId,
-      now,
       "claim",
     );
 
@@ -73,12 +71,10 @@ export async function approveOAuthAuthorizationRequest(
   accountId: string,
 ) {
   return await db.transaction().execute(async (tx) => {
-    const now = new Date();
-    const request = await lockOAuthAuthorizationRequest(
+    const { now, request } = await lockOAuthAuthorizationRequest(
       tx,
       requestToken,
       accountId,
-      now,
       "decision",
     );
 
@@ -121,12 +117,10 @@ export async function denyOAuthAuthorizationRequest(
   accountId: string,
 ) {
   return await db.transaction().execute(async (tx) => {
-    const now = new Date();
-    const request = await lockOAuthAuthorizationRequest(
+    const { now, request } = await lockOAuthAuthorizationRequest(
       tx,
       requestToken,
       accountId,
-      now,
       "decision",
     );
 
@@ -142,7 +136,6 @@ async function lockOAuthAuthorizationRequest(
   tx: Transaction<DB>,
   requestToken: string,
   accountId: string,
-  now: Date,
   operation: "claim" | "decision",
 ) {
   const requestTokenHash = hashAuthorizationRequestToken(requestToken);
@@ -156,7 +149,7 @@ async function lockOAuthAuthorizationRequest(
     throw new OAuthConsentError("request_unavailable");
   }
 
-  await lockAndValidateAccount(tx, accountId, now);
+  const account = await lockOAuthAccount(tx, accountId);
 
   const client = await tx
     .selectFrom("oauth_client")
@@ -185,6 +178,9 @@ async function lockOAuthAuthorizationRequest(
     .where("request_token_hash", "=", requestTokenHash)
     .forUpdate()
     .executeTakeFirst();
+  const now = new Date();
+
+  await validateOAuthAccount(tx, account, now);
 
   if (!request || request.consumed_at != null || request.expires_at <= now) {
     throw new OAuthConsentError("request_unavailable");
@@ -209,14 +205,10 @@ async function lockOAuthAuthorizationRequest(
     throw new OAuthConsentError("client_unavailable");
   }
 
-  return { ...request, client_name: client.name };
+  return { now, request: { ...request, client_name: client.name } };
 }
 
-async function lockAndValidateAccount(
-  tx: Transaction<DB>,
-  accountId: string,
-  now: Date,
-) {
+async function lockOAuthAccount(tx: Transaction<DB>, accountId: string) {
   const account = await tx
     .selectFrom("account")
     .select(["id", "profile_completed_at"])
@@ -228,10 +220,18 @@ async function lockAndValidateAccount(
     throw new OAuthConsentError("account_not_found");
   }
 
+  return account;
+}
+
+async function validateOAuthAccount(
+  tx: Transaction<DB>,
+  account: { id: string; profile_completed_at: Date | null },
+  now: Date,
+) {
   const activeBan = await tx
     .selectFrom("account_moderation_action")
     .select("id")
-    .where("account_id", "=", accountId)
+    .where("account_id", "=", account.id)
     .where("scope", "=", "account")
     .where("type", "=", "ban")
     .where("created_at", "<=", now)

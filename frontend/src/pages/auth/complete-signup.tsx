@@ -4,7 +4,7 @@ import {
 } from "@arkham-build/shared";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "wouter";
+import { Redirect, useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -18,10 +18,19 @@ import { AuthLayout } from "./auth-layout";
 import css from "./complete-signup.module.css";
 import { ErrorBox } from "./error-box";
 import { errorMapper } from "./helpers";
+import {
+  createAuthRedirectPath,
+  getCurrentLocalPath,
+  getLocalReturnPath,
+} from "./return-to";
 
 function SignupArkhamDB() {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
+  const search = useSearch();
+  const returnTo = getLocalReturnPath(
+    new URLSearchParams(search).get("redirect"),
+  );
 
   const { data: session, isLoading } = useAuthSessionQuery();
   const hasLocalDecks = useStore(selectHasLocalDecks);
@@ -40,7 +49,7 @@ function SignupArkhamDB() {
       uploadDecks: hasLocalDecks && uploadDecks,
       uploadSettings,
     });
-    navigate("/");
+    navigate(returnTo);
   };
 
   if (isLoading) {
@@ -48,13 +57,15 @@ function SignupArkhamDB() {
   }
 
   if (!session) {
-    navigate("~/auth/login");
-    return null;
+    return (
+      <Redirect
+        to={createAuthRedirectPath("/auth/login", getCurrentLocalPath())}
+      />
+    );
   }
 
   if (session.account.profileComplete) {
-    navigate("~/");
-    return null;
+    return <Redirect to={returnTo} />;
   }
 
   const shouldShowArkhamDBConnection = session.identities.some(

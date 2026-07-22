@@ -1,11 +1,4 @@
-export const OAUTH_SCOPES = [
-  "profile:read",
-  "decks:read",
-  "decks:write",
-  "decks:delete",
-] as const;
-
-export type OAuthScope = (typeof OAUTH_SCOPES)[number];
+import { OAUTH_SCOPES, type OAuthScope } from "@arkham-build/shared";
 
 const OAUTH_SCOPE_SET = new Set<string>(OAUTH_SCOPES);
 
