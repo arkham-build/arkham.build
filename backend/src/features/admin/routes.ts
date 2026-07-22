@@ -7,7 +7,7 @@ import {
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
-import oauthClientAdminRoutes from "../oauth-clients/admin-routes.ts";
+import oauthClientAdminRoutes from "./oauth-clients/routes.ts";
 import { findAccountByUsername } from "../../lib/auth/accounts.ts";
 import { isExclusionViolation } from "../../lib/db-errors.ts";
 import {

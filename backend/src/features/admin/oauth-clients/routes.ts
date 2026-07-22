@@ -1,7 +1,7 @@
 import { type Context, Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
-import { adminKeyMiddleware } from "../admin/admin-key.ts";
+import { adminKeyMiddleware } from "../admin-key.ts";
 import {
   generateOAuthClientId,
   generateOAuthClientSecret,
@@ -17,8 +17,8 @@ import {
   updateOAuthClient,
 } from "./persistence.ts";
 import { isValidOAuthRedirectUri } from "./redirect-uri.ts";
-import type { HonoEnv } from "../../lib/hono-env.ts";
-import { zodValidator } from "../../lib/validation.ts";
+import type { HonoEnv } from "../../../lib/hono-env.ts";
+import { zodValidator } from "../../../lib/validation.ts";
 
 const routes = new Hono<HonoEnv>();
 routes.use("*", adminKeyMiddleware);

@@ -1,13 +1,13 @@
 import { randomUUID } from "node:crypto";
-import { describe, expect, vi } from "vitest";
+import { describe, expect } from "vitest";
 import { z } from "zod";
 import type { appFactory } from "../app.ts";
 import type { Database } from "../db/db.ts";
 import {
   ClientResponseSchema,
   CreatedClientResponseSchema,
-} from "../features/oauth-clients/admin-routes.ts";
-import { verifyOAuthClientSecret } from "../features/oauth-clients/crypto.ts";
+} from "../features/admin/oauth-clients/routes.ts";
+import { verifyOAuthClientSecret } from "../features/admin/oauth-clients/crypto.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
 
 type App = ReturnType<typeof appFactory>;
@@ -404,7 +404,6 @@ describe("OAuth client admin routes", () => {
     dependencies,
   }) => {
     const { app, config, db } = dependencies;
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     const { body: created } = await createClient(app, config.ADMIN_API_KEY);
     const originalStored = await db
       .selectFrom("oauth_client")
@@ -441,7 +440,6 @@ describe("OAuth client admin routes", () => {
       headers: adminHeaders(config.ADMIN_API_KEY),
     });
     const listText = await listResponse.text();
-    const logs = logSpy.mock.calls.flat().join("\n");
 
     expect(errorResponse.status).toBe(400);
     assertSecretAbsent(

@@ -1,0 +1,57 @@
+type: http_request
+model: http_request
+id: rq_OAuthAuthorizationNativeCallback
+createdAt: 2026-07-22T00:00:05
+updatedAt: 2026-07-22T07:46:28.154512
+workspaceId: wk_bBoraEVHnK
+folderId: fl_OAuth
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: Builds an invalid_scope redirect for a registered native custom scheme.
+headers: []
+method: GET
+name: Authorization error - native callback
+sortPriority: 333.3333333333333
+url: ${[ base_url ]}/v2/oauth/authorize
+urlParameters:
+- enabled: true
+  name: response_type
+  value: code
+  id: OAuthNativeResponseType
+- enabled: true
+  name: client_id
+  value: ${[ oauth_client_id ]}
+  id: OAuthNativeClientId
+- enabled: true
+  name: redirect_uri
+  value: com.example.app:/oauth/callback
+  id: OAuthNativeRedirectUri
+- enabled: true
+  name: scope
+  value: profile:read unknown:scope
+  id: OAuthNativeScope
+- enabled: true
+  name: state
+  value: yaak-native-state
+  id: OAuthNativeState
+- enabled: true
+  name: ''
+  value: ''
+  id: hynhxBHbTt
+settingSendCookies:
+  enabled: false
+  value: true
+settingStoreCookies:
+  enabled: false
+  value: true
+settingValidateCertificates:
+  enabled: false
+  value: true
+settingFollowRedirects:
+  enabled: true
+  value: false
+settingRequestTimeout:
+  enabled: false
+  value: 0

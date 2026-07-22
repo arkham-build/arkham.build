@@ -285,7 +285,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                   } else if (evt.key === "ArrowDown") {
                     evt.preventDefault();
                     setActiveIndex((prev) => {
-                      if (menuItems.length === 0) return undefined;
+                      if (isEmpty(menuItems)) return undefined;
                       if (activeIndex == null || prev == null) return 0;
                       return prev < menuItems.length - 1 ? prev + 1 : prev;
                     });
@@ -293,7 +293,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                   } else if (evt.key === "ArrowUp") {
                     evt.preventDefault();
                     setActiveIndex((prev) => {
-                      if (menuItems.length === 0) return undefined;
+                      if (isEmpty(menuItems)) return undefined;
                       if (prev == null) return 0;
                       return prev > 0 ? prev - 1 : prev;
                     });

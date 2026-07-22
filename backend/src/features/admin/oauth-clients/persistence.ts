@@ -1,6 +1,7 @@
 import type { Selectable, Transaction } from "kysely";
-import type { Database } from "../../db/db.ts";
-import type { DB, OauthClient } from "../../db/schema.types.ts";
+import type { Database } from "../../../db/db.ts";
+import type { DB, OauthClient } from "../../../db/schema.types.ts";
+import { isEmpty } from "../../../lib/is-empty.ts";
 
 const SAFE_CLIENT_COLUMNS = [
   "id",
@@ -66,7 +67,7 @@ export async function listOAuthClients(db: Database) {
     .orderBy("id")
     .execute();
 
-  if (clients.length === 0) return [];
+  if (isEmpty(clients)) return [];
 
   const redirectUris = await db
     .selectFrom("oauth_client_redirect_uri")
@@ -131,7 +132,7 @@ export async function updateOAuthClient(
     const updatedClient = await tx
       .updateTable("oauth_client")
       .set(
-        patch.name === undefined
+        !patch.name
           ? { updated_at: now }
           : { name: patch.name, updated_at: now },
       )
@@ -139,7 +140,7 @@ export async function updateOAuthClient(
       .returning(SAFE_CLIENT_COLUMNS)
       .executeTakeFirstOrThrow();
 
-    if (patch.redirectUris === undefined) {
+    if (!patch.redirectUris) {
       return withRedirectUris(updatedClient, currentRedirectUris);
     }
 
@@ -282,7 +283,7 @@ async function invalidateRemovedRedirectUris(
   removedRedirectUris: readonly string[],
   now: Date,
 ) {
-  if (removedRedirectUris.length === 0) return;
+  if (isEmpty(removedRedirectUris)) return;
 
   await tx
     .updateTable("oauth_authorization_request")

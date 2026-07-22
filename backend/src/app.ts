@@ -1,3 +1,4 @@
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { Hono } from "hono";
 import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
@@ -15,6 +16,7 @@ import customizationSheetRouter from "./features/customization_sheet/routes.ts";
 import decksRouter from "./features/decks/routes.ts";
 import fanMadeProjectInfoRouter from "./features/fan-made-content/routes.ts";
 import foldersRouter from "./features/folders/routes.ts";
+import oauthRoutes from "./features/oauth/routes.ts";
 import {
   errataRoutes,
   faqRoutes,
@@ -52,7 +54,7 @@ export function appFactory(
   dispatcher: JobDispatcher,
   options: AppFactoryOptions = {},
 ) {
-  const app = new Hono<HonoEnv>();
+  const app = new OpenAPIHono<HonoEnv>();
   const scansStorage = options.scansStorage ?? createScansStorage(config);
 
   app.use(secureHeaders());
@@ -93,6 +95,10 @@ export function appFactory(
   v2Public.route("/recommendations", recommendationsRouter);
   v2Public.route("/sealed-deck", sealedDeckRouter);
   app.route("/v2/public", v2Public);
+
+  app.use("/v2/oauth/*", publicCors);
+  app.use("/v2/oauth/*", bodyLimit);
+  app.route("/v2/oauth", oauthRoutes);
 
   const v2Account = new Hono<HonoEnv>();
   v2Account.use("*", authenticatedCors);

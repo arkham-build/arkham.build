@@ -1,4 +1,4 @@
-const MAX_REDIRECT_URI_BYTES = 2048;
+import { isWellFormedRedirectUri } from "../../../lib/oauth/redirect-uri.ts";
 
 const URI_SCHEME_PATTERN = /^([A-Za-z][A-Za-z0-9+.-]*):/;
 const DANGEROUS_SCHEMES = new Set([
@@ -11,12 +11,7 @@ const DANGEROUS_SCHEMES = new Set([
 ]);
 
 export function isValidOAuthRedirectUri(value: string) {
-  if (
-    !value.length ||
-    value !== value.trim() ||
-    Buffer.byteLength(value, "utf8") > MAX_REDIRECT_URI_BYTES ||
-    value.includes("#")
-  ) {
+  if (!isWellFormedRedirectUri(value)) {
     return false;
   }
 
