@@ -1,13 +1,14 @@
-import { createHash, randomBytes } from "node:crypto";
 import type { Database } from "../../db/db.ts";
+import {
+  generateOAuthAuthorizationRequestToken,
+  hashOAuthCredential,
+} from "../../lib/oauth/crypto.ts";
 import { OAuthAuthorizationError } from "./errors.ts";
 import { resolveOAuthScopes } from "./scopes.ts";
 
 export const OAUTH_AUTHORIZATION_REQUEST_LIFETIME_MS = 15 * 60 * 1000;
 
 const MAX_STATE_BYTES = 1024;
-const AUTHORIZATION_REQUEST_PREFIX = "ab_ar_";
-const AUTHORIZATION_REQUEST_RANDOM_BYTES = 32;
 
 type OAuthAuthorizationInput = {
   clientId: string;
@@ -86,7 +87,7 @@ export async function createOAuthAuthorizationRequest(
       );
     }
 
-    const requestToken = generateAuthorizationRequestToken();
+    const requestToken = generateOAuthAuthorizationRequestToken();
     const now = new Date();
 
     const expiresAt = new Date(
@@ -98,7 +99,7 @@ export async function createOAuthAuthorizationRequest(
         expires_at: expiresAt,
         oauth_client_id: client.id,
         redirect_uri: registeredRedirectUri.redirect_uri,
-        request_token_hash: hashAuthorizationRequestToken(requestToken),
+        request_token_hash: hashOAuthCredential(requestToken),
         scopes: scopeResult.scopes,
         state,
       })
@@ -110,16 +111,6 @@ export async function createOAuthAuthorizationRequest(
       requestToken,
     };
   });
-}
-
-function generateAuthorizationRequestToken() {
-  return `${AUTHORIZATION_REQUEST_PREFIX}${randomBytes(
-    AUTHORIZATION_REQUEST_RANDOM_BYTES,
-  ).toString("base64url")}`;
-}
-
-export function hashAuthorizationRequestToken(token: string) {
-  return createHash("sha256").update(token).digest("hex");
 }
 
 function validateState(state: string | undefined, redirectUri: string) {

@@ -6,7 +6,7 @@ import {
   generateOAuthClientId,
   generateOAuthClientSecret,
   hashOAuthClientSecret,
-} from "./crypto.ts";
+} from "../../../lib/oauth/crypto.ts";
 import {
   createOAuthClient,
   findOAuthClientById,

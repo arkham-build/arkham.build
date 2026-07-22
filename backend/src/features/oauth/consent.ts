@@ -1,14 +1,13 @@
-import { createHash, randomBytes } from "node:crypto";
 import type { Transaction } from "kysely";
 import type { Database } from "../../db/db.ts";
 import type { DB } from "../../db/schema.types.ts";
-import { hashAuthorizationRequestToken } from "./authorization.ts";
+import {
+  generateOAuthAuthorizationCode,
+  hashOAuthCredential,
+} from "../../lib/oauth/crypto.ts";
 import { canonicalizeOAuthScopes } from "./scopes.ts";
 
 export const OAUTH_AUTHORIZATION_CODE_LIFETIME_MS = 5 * 60 * 1000;
-
-const AUTHORIZATION_CODE_PREFIX = "ab_code_";
-const AUTHORIZATION_CODE_RANDOM_BYTES = 32;
 
 export type OAuthConsentErrorCode =
   | "account_banned"
@@ -93,7 +92,7 @@ export async function approveOAuthAuthorizationRequest(
     await tx
       .insertInto("oauth_authorization_code")
       .values({
-        code_hash: hashOAuthAuthorizationCode(authorizationCode),
+        code_hash: hashOAuthCredential(authorizationCode),
         expires_at: expiresAt,
         oauth_grant_id: grantId,
         redirect_uri: request.redirect_uri,
@@ -138,7 +137,7 @@ async function lockOAuthAuthorizationRequest(
   accountId: string,
   operation: "claim" | "decision",
 ) {
-  const requestTokenHash = hashAuthorizationRequestToken(requestToken);
+  const requestTokenHash = hashOAuthCredential(requestToken);
   const requestReference = await tx
     .selectFrom("oauth_authorization_request")
     .select(["id", "oauth_client_id"])
@@ -301,16 +300,6 @@ async function upsertOAuthGrant(
     .where("id", "=", existingGrant.id)
     .executeTakeFirstOrThrow();
   return existingGrant.id;
-}
-
-function generateOAuthAuthorizationCode() {
-  return `${AUTHORIZATION_CODE_PREFIX}${randomBytes(
-    AUTHORIZATION_CODE_RANDOM_BYTES,
-  ).toString("base64url")}`;
-}
-
-function hashOAuthAuthorizationCode(code: string) {
-  return createHash("sha256").update(code).digest("hex");
 }
 
 function createApprovalRedirectUrl(

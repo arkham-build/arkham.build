@@ -1,5 +1,6 @@
 import {
   type BinaryLike,
+  createHash,
   randomBytes,
   randomUUID,
   scrypt,
@@ -7,8 +8,8 @@ import {
 } from "node:crypto";
 import { promisify } from "node:util";
 
+const OAUTH_CREDENTIAL_RANDOM_BYTES = 32;
 const CLIENT_SECRET_PREFIX = "ab_cs_";
-const CLIENT_SECRET_RANDOM_BYTES = 32;
 const CLIENT_SECRET_SALT_BYTES = 16;
 const CLIENT_SECRET_KEY_BYTES = 64;
 const CLIENT_SECRET_MAX_BYTES = 256;
@@ -21,9 +22,27 @@ export function generateOAuthClientId() {
 }
 
 export function generateOAuthClientSecret() {
-  return `${CLIENT_SECRET_PREFIX}${randomBytes(
-    CLIENT_SECRET_RANDOM_BYTES,
-  ).toString("base64url")}`;
+  return generateOpaqueOAuthCredential(CLIENT_SECRET_PREFIX);
+}
+
+export function generateOAuthAuthorizationRequestToken() {
+  return generateOpaqueOAuthCredential("ab_ar_");
+}
+
+export function generateOAuthAuthorizationCode() {
+  return generateOpaqueOAuthCredential("ab_code_");
+}
+
+export function generateOAuthRefreshToken() {
+  return generateOpaqueOAuthCredential("ab_rt_");
+}
+
+export function generateOAuthAccessToken() {
+  return generateOpaqueOAuthCredential("ab_at_");
+}
+
+export function hashOAuthCredential(credential: string) {
+  return createHash("sha256").update(credential).digest("hex");
 }
 
 export async function hashOAuthClientSecret(secret: string) {
@@ -67,4 +86,10 @@ export async function verifyOAuthClientSecret(
 
   const actualKey = await scryptAsync(secret, salt, CLIENT_SECRET_KEY_BYTES);
   return timingSafeEqual(expectedKey, actualKey);
+}
+
+function generateOpaqueOAuthCredential(prefix: string) {
+  return `${prefix}${randomBytes(OAUTH_CREDENTIAL_RANDOM_BYTES).toString(
+    "base64url",
+  )}`;
 }

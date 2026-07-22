@@ -470,6 +470,7 @@ export interface OauthRefreshToken {
   last_used_at: Timestamp | null;
   oauth_grant_id: string;
   revoked_at: Timestamp | null;
+  rotated_at: Timestamp | null;
   scopes: string[];
   token_hash: string;
   updated_at: Generated<Timestamp>;

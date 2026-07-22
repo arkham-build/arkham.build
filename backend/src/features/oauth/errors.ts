@@ -1,15 +1,25 @@
 import { z } from "@hono/zod-openapi";
 
-export const OAuthAuthorizationErrorCodeSchema = z.enum([
+export const OAuthErrorCodeSchema = z.enum([
   "invalid_request",
+  "invalid_client",
+  "invalid_grant",
+  "invalid_scope",
+  "unauthorized_client",
+  "unsupported_grant_type",
+  "unsupported_response_type",
+]);
+
+const OAuthAuthorizationErrorCodeSchema = z.enum([
+  "invalid_request",
+  "invalid_scope",
   "unauthorized_client",
   "unsupported_response_type",
-  "invalid_scope",
 ]);
 
 export const OAuthErrorResponseSchema = z
   .object({
-    error: OAuthAuthorizationErrorCodeSchema,
+    error: OAuthErrorCodeSchema,
     error_description: z.string(),
   })
   .strict()
@@ -17,6 +27,13 @@ export const OAuthErrorResponseSchema = z
 
 type OAuthAuthorizationErrorCode = z.infer<
   typeof OAuthAuthorizationErrorCodeSchema
+>;
+
+type OAuthErrorCode = z.infer<typeof OAuthErrorCodeSchema>;
+
+export type OAuthTokenErrorCode = Exclude<
+  OAuthErrorCode,
+  "unsupported_response_type"
 >;
 
 type OAuthErrorRedirect = {
@@ -42,7 +59,27 @@ export class OAuthAuthorizationError extends Error {
   }
 }
 
-export function encodeOAuthError(error: OAuthAuthorizationError) {
+export class OAuthTokenError extends Error {
+  readonly code: OAuthTokenErrorCode;
+  readonly description: string;
+  readonly status: 400 | 401;
+
+  constructor(
+    code: OAuthTokenErrorCode,
+    description: string,
+    status: 400 | 401 = 400,
+  ) {
+    super(code);
+    this.name = "OAuthTokenError";
+    this.code = code;
+    this.description = description;
+    this.status = status;
+  }
+}
+
+export function encodeOAuthError(
+  error: OAuthAuthorizationError | OAuthTokenError,
+) {
   return OAuthErrorResponseSchema.parse({
     error: error.code,
     error_description: error.description,

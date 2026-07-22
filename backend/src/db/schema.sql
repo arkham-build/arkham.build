@@ -1198,7 +1198,8 @@ CREATE TABLE public.oauth_refresh_token (
     revoked_at timestamp without time zone,
     last_used_at timestamp without time zone,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    rotated_at timestamp without time zone
 );
 
 
@@ -3166,4 +3167,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260508231500'),
     ('20260705120000'),
     ('20260718074916'),
-    ('20260721191533');
+    ('20260721191533'),
+    ('20260722150000');

@@ -7,7 +7,7 @@ import {
   ClientResponseSchema,
   CreatedClientResponseSchema,
 } from "../features/admin/oauth-clients/routes.ts";
-import { verifyOAuthClientSecret } from "../features/admin/oauth-clients/crypto.ts";
+import { verifyOAuthClientSecret } from "../lib/oauth/crypto.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
 
 type App = ReturnType<typeof appFactory>;
