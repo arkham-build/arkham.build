@@ -84,10 +84,11 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     }
 
     time("query_data");
-    const [metadataResponse, dataVersionResponse, cards] = await Promise.all([
-      queryMetadata(locale),
-      queryDataVersion(locale),
-      queryCards(locale),
+    const dataVersionResponse = await queryDataVersion(locale);
+    const revision = cacheRevision(dataVersionResponse);
+    const [metadataResponse, cards] = await Promise.all([
+      queryMetadata(locale, revision),
+      queryCards(locale, revision),
     ]);
     timeEnd("query_data");
 
@@ -467,6 +468,14 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
     await dehydrate(get(), "app", "edits");
   },
 });
+
+function cacheRevision(dataVersion: NonNullable<Metadata["dataVersion"]>) {
+  return [
+    dataVersion.cards_updated_at,
+    dataVersion.translation_updated_at,
+    dataVersion.metadata_version,
+  ].join(":");
+}
 
 function hasFolderAssignmentsForDelete(
   state: StoreState,
