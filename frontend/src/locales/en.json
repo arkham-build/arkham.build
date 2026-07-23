@@ -70,10 +70,10 @@
         "title": "Forgot password"
       },
       "login": {
+        "action": "Log in",
         "forgot_password": "Forgot password?",
         "no_account": "Don't have an account?",
         "title": "Log in",
-        "action": "Log in",
         "with_arkhamdb": "Log in with ArkhamDB"
       },
       "logout": "Logout",
@@ -109,6 +109,7 @@
         "title": "Reset password"
       },
       "signup": {
+        "action": "Sign up",
         "complete_profile": {
           "description": "Choose a username for your account. This will be displayed publicly on your decks and contributions.",
           "title": "Complete your profile",
@@ -127,7 +128,6 @@
         "has_account": "Already have an account?",
         "legal_acceptance": "By creating an account, you agree to the <terms>Terms of Service</terms> and acknowledge the <privacy>Privacy Policy</privacy>.",
         "success": "Signed up successfully! Please check your email to verify your account. You'll choose a username after your first login.",
-        "action": "Sign up",
         "title": "Sign up",
         "verifying": "Verifying...",
         "with_arkhamdb": "Sign up with ArkhamDB"
@@ -136,8 +136,8 @@
       "username_validation": "Letters, numbers, underscores, and hyphens only",
       "verify_email": {
         "action": "Verify email",
-        "resend_action": "Resend verification email",
         "resend": "Resend verification email",
+        "resend_action": "Resend verification email",
         "resend_success": "Verification email sent successfully. Please check your inbox.",
         "success": "Email verified! You can now log in.",
         "title": "Verify email",
@@ -1025,8 +1025,8 @@
           "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "The Campaign Play-Along is an ongoing event hosted on the Mythos Busters discord server. It is designed to play Arkham campaigns together, share stories and generally create a sense of community.",
           "chapter_1": "Chapter 1",
-          "chapter_2": "Chapter 2",
           "chapter_1_help": "Set the card pool to all packs in chapter 1.",
+          "chapter_2": "Chapter 2",
           "chapter_2_help": "Set the card pool to all packs in chapter 2.",
           "choose_cycle_placeholder": "Select cycles...",
           "collection": "Collection",
@@ -1184,6 +1184,7 @@
     },
     "deck_view": {
       "actions": {
+        "check_card": "Mark {{card}} as collected",
         "display_as_list": "Display as list",
         "display_as_scans": "Display as scans",
         "import": "Import deck to collection",
@@ -1194,6 +1195,7 @@
         "upload": "Upload to {{provider}}",
         "upload_account": "Upload"
       },
+      "checklist": "Checklist",
       "discounts": {
         "adaptable": "Adaptable",
         "arcaneResearch": "Arcane Research",

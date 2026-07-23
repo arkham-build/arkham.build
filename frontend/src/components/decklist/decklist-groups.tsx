@@ -23,6 +23,7 @@ import {
   selectMetadata,
 } from "@/store/selectors/shared";
 import type { ViewMode } from "@/store/slices/lists.types";
+import { displayAttribute } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";
 import { CardGridItem } from "../card-list/card-grid";
@@ -32,12 +33,15 @@ import { CardScan } from "../card-scan";
 import { useCardTagsListCard } from "../card-tags/use-card-tags-list-card";
 import { CustomizableSheet } from "../customizable-sheet";
 import { ListCard } from "../list-card/list-card";
+import { Checkbox } from "../ui/checkbox";
 import css from "./decklist-groups.module.css";
 
 type DecklistGroupsProps = {
+  checkedCardQuantities?: ReadonlyMap<string, number>;
   deck: ResolvedDeck;
   grouping: DeckGrouping;
   getListCardProps?: FilteredListCardPropsGetter;
+  onCardCheckedQuantityChange?(cardKey: string, quantity: number): void;
   viewMode?: ViewMode;
   showXP?: boolean;
   showCardTags?: boolean;
@@ -45,9 +49,11 @@ type DecklistGroupsProps = {
 
 export function DecklistGroup(props: DecklistGroupsProps) {
   const {
+    checkedCardQuantities,
     deck,
     grouping,
     getListCardProps,
+    onCardCheckedQuantityChange,
     showCardTags = true,
     viewMode,
   } = props;
@@ -120,18 +126,30 @@ export function DecklistGroup(props: DecklistGroupsProps) {
             )}
             {viewMode === "scans" ? (
               <Scans
+                checkedCardQuantities={checkedCardQuantities}
                 deck={deck}
                 grouping={grouping}
                 group={group}
                 getListCardProps={getListCardProps}
+                onCardCheckedQuantityChange={onCardCheckedQuantityChange}
               />
             ) : (
               group.cards.map((card: Card) => {
                 const listCardProps = getListCardProps?.(card);
+                const cardKey = getChecklistCardKey(grouping, card);
+                const checklist = checkedCardQuantities
+                  ? {
+                      checkedQuantity: checkedCardQuantities.get(cardKey) ?? 0,
+                      onCheckedQuantityChange: (quantity: number) =>
+                        onCardCheckedQuantityChange?.(cardKey, quantity),
+                    }
+                  : undefined;
+
                 return (
                   <DecklistCard
                     card={card}
                     deck={deck}
+                    checklist={checklist}
                     isCardNotInLimitedPool={
                       cardsNotInLimitedPool.find(
                         (x) =>
@@ -179,6 +197,7 @@ export function DecklistGroup(props: DecklistGroupsProps) {
 
 function DecklistCard({
   card,
+  checklist,
   deck,
   isCardNotInLimitedPool,
   isForbidden,
@@ -192,6 +211,7 @@ function DecklistCard({
   showCardTags,
 }: {
   card: Card;
+  checklist?: ChecklistState;
   deck: ResolvedDeck;
   isCardNotInLimitedPool: boolean;
   isForbidden: boolean;
@@ -204,8 +224,11 @@ function DecklistCard({
   quantity: number;
   showCardTags: boolean;
 }) {
-  const { renderCardTags: renderCardTagsProp, ...restListCardProps } =
-    listCardProps ?? {};
+  const {
+    renderCardExtra: renderCardExtraProp,
+    renderCardTags: renderCardTagsProp,
+    ...restListCardProps
+  } = listCardProps ?? {};
 
   const { renderCardTags } = useCardTagsListCard(card, deck, {
     respectCardTagSetting: false,
@@ -217,6 +240,7 @@ function DecklistCard({
       annotation={deck.annotations?.[card.code]}
       card={card}
       isCardNotInLimitedPool={isCardNotInLimitedPool}
+      isFaded={quantity > 0 && checklist?.checkedQuantity === quantity}
       isForbidden={isForbidden}
       isIgnored={isIgnored}
       isRemoved={isRemoved}
@@ -225,6 +249,18 @@ function DecklistCard({
       onChangeCardQuantity={onChangeCardQuantity}
       ownedCount={ownedCount}
       quantity={quantity}
+      renderCardExtra={
+        checklist
+          ? () => (
+              <ChecklistCheckboxGroup
+                card={card}
+                checkedQuantity={checklist.checkedQuantity}
+                onCheckedQuantityChange={checklist.onCheckedQuantityChange}
+                quantity={quantity}
+              />
+            )
+          : renderCardExtraProp
+      }
       renderCardTags={
         showCardTags ? (renderCardTags ?? renderCardTagsProp) : undefined
       }
@@ -233,12 +269,21 @@ function DecklistCard({
 }
 
 function Scans(props: {
+  checkedCardQuantities?: ReadonlyMap<string, number>;
   deck: ResolvedDeck;
   grouping: DeckGrouping;
   group: GroupingResult;
   getListCardProps?: FilteredListCardPropsGetter;
+  onCardCheckedQuantityChange?(cardKey: string, quantity: number): void;
 }) {
-  const { deck, getListCardProps, group, grouping } = props;
+  const {
+    checkedCardQuantities,
+    deck,
+    getListCardProps,
+    group,
+    grouping,
+    onCardCheckedQuantityChange,
+  } = props;
 
   const styles = useMemo(
     () =>
@@ -252,48 +297,79 @@ function Scans(props: {
 
   return (
     <ol className={css["grid"]} style={styles}>
-      {group.cards.map((card) => (
-        <Fragment key={card.code}>
-          <li>
-            <Scan
-              card={card}
-              quantities={grouping.quantities}
-              getListCardProps={getListCardProps}
-            />
-          </li>
-          {!!card.customization_options && card.official && (
+      {group.cards.map((card) => {
+        const cardKey = getChecklistCardKey(grouping, card);
+        const checklist = checkedCardQuantities
+          ? {
+              checkedQuantity: checkedCardQuantities.get(cardKey) ?? 0,
+              onCheckedQuantityChange: (quantity: number) =>
+                onCardCheckedQuantityChange?.(cardKey, quantity),
+            }
+          : undefined;
+
+        return (
+          <Fragment key={card.code}>
             <li>
-              <figure className={css["scan"]}>
-                <div className={css["scan-images"]}>
-                  <CustomizableSheet card={card} deck={deck} />
-                </div>
-              </figure>
+              <Scan
+                card={card}
+                checklist={checklist}
+                quantities={grouping.quantities}
+                getListCardProps={getListCardProps}
+              />
             </li>
-          )}
-        </Fragment>
-      ))}
+            {!!card.customization_options && card.official && (
+              <li>
+                <figure className={css["scan"]}>
+                  <div className={css["scan-images"]}>
+                    <CustomizableSheet card={card} deck={deck} />
+                  </div>
+                </figure>
+              </li>
+            )}
+          </Fragment>
+        );
+      })}
     </ol>
   );
 }
 
 function Scan(props: {
   card: Card;
+  checklist?: ChecklistState;
   quantities: Slots;
   getListCardProps?: FilteredListCardPropsGetter;
 }) {
-  const { card, getListCardProps, quantities } = props;
+  const { card, checklist, getListCardProps, quantities } = props;
 
   const quantity = quantities[card.code] ?? 0;
+  const isComplete = checklist?.checkedQuantity === quantity;
 
   return (
     <figure className={css["scan"]}>
-      <div className={css["scan-images"]}>
+      <div
+        className={cx(
+          css["scan-images"],
+          isComplete && css["scan-group-collected"],
+        )}
+      >
         {range(0, quantity).map((i) => {
+          const isCollected =
+            checklist && !isComplete
+              ? isScanCopyCollected(i, quantity, checklist.checkedQuantity)
+              : false;
+
+          const copyClassName = cx(
+            css["scan-copy"],
+            isCollected && css["scan-copy-collected"],
+          );
+
           if (i === 0) {
             return (
               <CardGridItem
-                key={i}
                 card={card}
+                className={copyClassName}
+                key={i}
+                omitFavorite
                 quantities={quantities}
                 getListCardProps={getListCardProps}
               />
@@ -302,8 +378,9 @@ function Scan(props: {
 
           return (
             <CardScan
-              key={i}
               card={card}
+              className={copyClassName}
+              key={i}
               preventFlip
               style={
                 {
@@ -314,9 +391,85 @@ function Scan(props: {
           );
         })}
       </div>
+      {checklist && (
+        <ScanChecklistToggle
+          card={card}
+          checkedQuantity={checklist.checkedQuantity}
+          onCheckedQuantityChange={checklist.onCheckedQuantityChange}
+          quantity={quantity}
+        />
+      )}
     </figure>
   );
 }
+
+function ScanChecklistToggle(props: {
+  card: Card;
+  checkedQuantity: number;
+  onCheckedQuantityChange(quantity: number): void;
+  quantity: number;
+}) {
+  const { card, checkedQuantity, onCheckedQuantityChange, quantity } = props;
+  const { t } = useTranslation();
+
+  return (
+    <button
+      aria-label={t("deck_view.actions.check_card", {
+        card: displayAttribute(card, "name"),
+      })}
+      aria-pressed={checkedQuantity === quantity}
+      className={css["scan-checklist-toggle"]}
+      onClick={() =>
+        onCheckedQuantityChange((checkedQuantity + 1) % (quantity + 1))
+      }
+      type="button"
+    />
+  );
+}
+
+function ChecklistCheckboxGroup(props: {
+  card: Card;
+  checkedQuantity: number;
+  onCheckedQuantityChange(quantity: number): void;
+  quantity: number;
+}) {
+  const { card, checkedQuantity, onCheckedQuantityChange, quantity } = props;
+  const { t } = useTranslation();
+
+  return range(0, quantity).map((i) => (
+    <Checkbox
+      checked={i < checkedQuantity}
+      className={css["list-checkbox"]}
+      hideLabel
+      key={i}
+      label={t("deck_view.actions.check_card", {
+        card: `${displayAttribute(card, "name")} (${i + 1}/${quantity})`,
+      })}
+      onCheckedChange={(checked) =>
+        onCheckedQuantityChange(checked ? i + 1 : i)
+      }
+    />
+  ));
+}
+
+function isScanCopyCollected(
+  copyIndex: number,
+  quantity: number,
+  checkedQuantity: number,
+) {
+  const collectionOrder = copyIndex === 0 ? quantity : quantity - copyIndex;
+  return checkedQuantity >= collectionOrder;
+}
+
+type ChecklistState = {
+  checkedQuantity: number;
+  onCheckedQuantityChange(quantity: number): void;
+};
+
+function getChecklistCardKey(grouping: DeckGrouping, card: Card) {
+  return `${grouping.id}:${card.code}`;
+}
+
 function GroupQuantity(props: { quantity: number }) {
   return <span className={css["group-quantity"]}>{props.quantity}</span>;
 }

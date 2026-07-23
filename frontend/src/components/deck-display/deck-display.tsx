@@ -235,7 +235,7 @@ export function DeckDisplay(props: DeckDisplayProps) {
                   defaultOpen={validation.errors.length < 3}
                   validation={validation}
                 />
-                <Decklist deck={deck} />
+                <Decklist deck={deck} enableChecklistMode />
               </div>
             </TabsContent>
             <TabsContent className={css["tab"]} value="tools">

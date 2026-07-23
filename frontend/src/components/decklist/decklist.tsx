@@ -1,6 +1,11 @@
 import type { DecklistConfig } from "@arkham-build/shared";
 import { type Card, countExperience } from "@arkham-build/shared";
-import { LayoutGridIcon, LayoutListIcon, SortDescIcon } from "lucide-react";
+import {
+  LayoutGridIcon,
+  LayoutListIcon,
+  ListChecksIcon,
+  SortDescIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
@@ -33,10 +38,11 @@ import { DecklistSection } from "./decklist-section";
 type Props = {
   className?: string;
   deck: ResolvedDeck;
+  enableChecklistMode?: boolean;
 };
 
 export function Decklist(props: Props) {
-  const { className, deck } = props;
+  const { className, deck, enableChecklistMode } = props;
   const { t } = useTranslation();
 
   const settings = useStore((state) => state.settings);
@@ -47,6 +53,10 @@ export function Decklist(props: Props) {
   );
 
   const [displayConfigId, setDisplayConfigId] = useState(DEFAULT_LIST_SORT_ID);
+  const [checklistMode, setChecklistMode] = useState(false);
+  const [checkedCardQuantities, setCheckedCardQuantities] = useState<
+    ReadonlyMap<string, number>
+  >(() => new Map());
 
   const [displayConfig, setDisplayConfig] = useState<DecklistConfig>(
     viewMode === "scans" ? settings.lists.deckScans : settings.lists.deck,
@@ -134,6 +144,31 @@ export function Decklist(props: Props) {
     [settings.lists.deck, settings.lists.deckScans, viewMode],
   );
 
+  const onChecklistModeChange = useCallback((value: string) => {
+    setChecklistMode(value === "checklist");
+  }, []);
+
+  const onChecklistClear = useCallback(() => {
+    setCheckedCardQuantities(new Map());
+  }, []);
+
+  const onCardCheckedQuantityChange = useCallback(
+    (cardKey: string, quantity: number) => {
+      setCheckedCardQuantities((current) => {
+        const next = new Map(current);
+
+        if (quantity > 0) {
+          next.set(cardKey, quantity);
+        } else {
+          next.delete(cardKey);
+        }
+
+        return next;
+      });
+    },
+    [],
+  );
+
   const labels = useMemo(
     () => ({
       slots: t("common.decks.slots"),
@@ -172,6 +207,27 @@ export function Decklist(props: Props) {
             </ToggleGroupItem>
           </HotkeyTooltip>
         </ToggleGroup>
+        {enableChecklistMode && (
+          <>
+            <ToggleGroup
+              type="single"
+              value={checklistMode ? "checklist" : ""}
+              onValueChange={onChecklistModeChange}
+            >
+              <ToggleGroupItem
+                className={css["checklist-toggle"]}
+                value="checklist"
+              >
+                <ListChecksIcon /> {t("deck_view.checklist")}
+              </ToggleGroupItem>
+            </ToggleGroup>
+            {checklistMode && checkedCardQuantities.size > 0 && (
+              <Button onClick={onChecklistClear} size="sm" variant="bare">
+                {t("common.clear")}
+              </Button>
+            )}
+          </>
+        )}
         <Popover placement="bottom-start">
           <PopoverTrigger asChild>
             <Button iconOnly size="sm" variant="bare">
@@ -197,9 +253,13 @@ export function Decklist(props: Props) {
             columns={getColumnMode(viewMode as ViewMode, groups.slots)}
           >
             <DecklistGroup
+              checkedCardQuantities={
+                checklistMode ? checkedCardQuantities : undefined
+              }
               deck={deck}
               grouping={groups.slots}
               getListCardProps={getListCardProps}
+              onCardCheckedQuantityChange={onCardCheckedQuantityChange}
               viewMode={viewMode as ViewMode}
             />
           </DecklistSection>
@@ -215,9 +275,13 @@ export function Decklist(props: Props) {
                 extraInfos={`${computeXPSum(deck, "sideSlots")} ${t("common.xp")}`}
               >
                 <DecklistGroup
+                  checkedCardQuantities={
+                    checklistMode ? checkedCardQuantities : undefined
+                  }
                   deck={deck}
                   grouping={groups.sideSlots}
                   getListCardProps={getListCardProps}
+                  onCardCheckedQuantityChange={onCardCheckedQuantityChange}
                   viewMode={viewMode as ViewMode}
                   showXP
                 />
@@ -248,9 +312,13 @@ export function Decklist(props: Props) {
                 showTitle
               >
                 <DecklistGroup
+                  checkedCardQuantities={
+                    checklistMode ? checkedCardQuantities : undefined
+                  }
                   deck={deck}
                   grouping={groups.extraSlots}
                   getListCardProps={getListCardProps}
+                  onCardCheckedQuantityChange={onCardCheckedQuantityChange}
                   viewMode={viewMode as ViewMode}
                 />
               </DecklistSection>
