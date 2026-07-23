@@ -29,9 +29,9 @@ export function useRefreshMetadataMutation() {
     mutationKey: ["cache", "refresh-metadata", locale],
     mutationFn: async () => {
       await init(
-        (nextLocale) => queryMetadata(client, nextLocale),
+        (nextLocale, revision) => queryMetadata(client, nextLocale, revision),
         (nextLocale) => queryDataVersion(client, nextLocale),
-        (nextLocale) => queryCards(client, nextLocale),
+        (nextLocale, revision) => queryCards(client, nextLocale, revision),
         {
           refresh: true,
           locale,

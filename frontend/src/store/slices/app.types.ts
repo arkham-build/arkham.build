@@ -25,9 +25,15 @@ export type AppSlice = {
   app: AppState;
 
   init(
-    queryMetadata: (locale?: string) => Promise<MetadataResponse>,
+    queryMetadata: (
+      locale?: string,
+      revision?: string,
+    ) => Promise<MetadataResponse>,
     queryDataVersion: (locale?: string) => Promise<DataVersionResponse>,
-    queryCards: (locale?: string) => Promise<AllCardResponse>,
+    queryCards: (
+      locale?: string,
+      revision?: string,
+    ) => Promise<AllCardResponse>,
     opts?: {
       locale?: string;
       overrides?: Partial<StoreState>;

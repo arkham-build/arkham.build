@@ -144,9 +144,9 @@ export const createSettingsSlice: StateCreator<
       await changeLanguage(settings.locale);
 
       await get().init(
-        (locale) => queryMetadata(client, locale),
+        (locale, revision) => queryMetadata(client, locale, revision),
         (locale) => queryDataVersion(client, locale),
-        (locale) => queryCards(client, locale),
+        (locale, revision) => queryCards(client, locale, revision),
         {
           refresh: true,
           locale: settings.locale,
