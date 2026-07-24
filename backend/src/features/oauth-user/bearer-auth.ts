@@ -1,6 +1,6 @@
 import type { OAuthScope } from "@arkham-build/shared";
-import { z } from "@hono/zod-openapi";
 import type { MiddlewareHandler } from "hono";
+import { z } from "zod";
 import { findAccountForAuth } from "../../lib/auth/accounts.ts";
 import type {
   HonoEnv,
@@ -9,14 +9,7 @@ import type {
 } from "../../lib/hono-env.ts";
 import { hashOAuthCredential } from "../../lib/oauth/crypto.ts";
 import { canonicalizeOAuthScopes } from "../oauth/lib/scopes.ts";
-
-export const OAuthUserErrorSchema = z
-  .object({
-    error: z.enum(["invalid_token", "insufficient_scope", "account_banned"]),
-    message: z.string(),
-  })
-  .strict()
-  .openapi("OAuthUserError");
+import { OAuthUserErrorSchema } from "./dtos.ts";
 
 type OAuthBearerErrorCode = z.infer<typeof OAuthUserErrorSchema>["error"];
 

@@ -1,14 +1,5 @@
-import { z } from "@hono/zod-openapi";
-
-export const OAuthErrorCodeSchema = z.enum([
-  "invalid_request",
-  "invalid_client",
-  "invalid_grant",
-  "invalid_scope",
-  "unauthorized_client",
-  "unsupported_grant_type",
-  "unsupported_response_type",
-]);
+import { z } from "zod";
+import { OAuthErrorCodeSchema, OAuthErrorResponseSchema } from "../dtos.ts";
 
 const OAuthAuthorizationErrorCodeSchema = z.enum([
   "invalid_request",
@@ -16,14 +7,6 @@ const OAuthAuthorizationErrorCodeSchema = z.enum([
   "unauthorized_client",
   "unsupported_response_type",
 ]);
-
-export const OAuthErrorResponseSchema = z
-  .object({
-    error: OAuthErrorCodeSchema,
-    error_description: z.string(),
-  })
-  .strict()
-  .openapi("OAuthError");
 
 type OAuthAuthorizationErrorCode = z.infer<
   typeof OAuthAuthorizationErrorCodeSchema
@@ -75,18 +58,6 @@ export class OAuthTokenError extends Error {
     this.description = description;
     this.status = status;
   }
-}
-
-export function oauthErrorResponse<TSchema extends z.ZodType>(
-  schema: TSchema,
-  description: string,
-) {
-  return {
-    content: {
-      "application/json": { schema },
-    },
-    description,
-  };
 }
 
 export function encodeOAuthError(

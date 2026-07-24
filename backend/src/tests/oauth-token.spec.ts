@@ -7,7 +7,7 @@ import {
   generateOAuthClientSecret,
   hashOAuthClientSecret,
 } from "../lib/oauth/crypto.ts";
-import { OAuthErrorResponseSchema } from "../features/oauth/lib/errors.ts";
+import { OAuthErrorResponseSchema } from "../features/oauth/dtos.ts";
 import {
   OAUTH_ACCESS_TOKEN_EXPIRES_IN_SECONDS,
   OAUTH_REFRESH_TOKEN_LIFETIME_MS,
@@ -548,29 +548,6 @@ describe("POST /v2/oauth/token", () => {
       rawRefreshToken,
     );
     await expectOAuthError(deletedAccountResponse, 400, "invalid_grant");
-  });
-
-  test("registers the token endpoint through OpenAPIHono", ({
-    dependencies,
-  }) => {
-    const document = dependencies.app.getOpenAPI31Document({
-      openapi: "3.1.0",
-      info: { title: "OAuth test", version: "1" },
-    });
-
-    expect(document.paths?.["/v2/oauth/token"]?.post).toMatchObject({
-      operationId: "exchangeOAuthToken",
-      requestBody: {
-        content: {
-          "application/x-www-form-urlencoded": expect.any(Object),
-        },
-      },
-      responses: {
-        "200": expect.any(Object),
-        "400": expect.any(Object),
-        "401": expect.any(Object),
-      },
-    });
   });
 });
 

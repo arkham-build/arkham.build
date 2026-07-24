@@ -3,7 +3,7 @@ import { describe, expect, vi } from "vitest";
 import type { appFactory } from "../app.ts";
 import type { Database } from "../db/db.ts";
 import { OAUTH_AUTHORIZATION_REQUEST_LIFETIME_MS } from "../features/oauth/lib/authorization.ts";
-import { OAuthErrorResponseSchema } from "../features/oauth/lib/errors.ts";
+import { OAuthErrorResponseSchema } from "../features/oauth/dtos.ts";
 import { resolveOAuthScopes } from "../features/oauth/lib/scopes.ts";
 import { test } from "./test-utils.ts";
 
@@ -280,23 +280,6 @@ describe("GET /v2/oauth/authorize", () => {
     expect(callbackUrl.searchParams.get("existing")).toBe("1");
     expect(callbackUrl.searchParams.get("error")).toBe("invalid_scope");
     expect(callbackUrl.searchParams.get("state")).toBe("native-state");
-  });
-
-  test("registers the authorization endpoint through OpenAPIHono", ({
-    dependencies,
-  }) => {
-    const document = dependencies.app.getOpenAPI31Document({
-      openapi: "3.1.0",
-      info: { title: "OAuth test", version: "1" },
-    });
-
-    expect(document.paths?.["/v2/oauth/authorize"]?.get).toMatchObject({
-      operationId: "authorizeOAuthClient",
-      responses: {
-        "302": expect.any(Object),
-        "400": expect.any(Object),
-      },
-    });
   });
 });
 

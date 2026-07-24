@@ -1,14 +1,19 @@
-import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import type { MiddlewareHandler } from "hono";
+import { Hono, type MiddlewareHandler } from "hono";
+import { z, ZodType } from "zod";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { isWellFormedRedirectUri } from "../../../lib/oauth/redirect-uri.ts";
+import {
+  OAuthAuthorizationQuerySchema,
+  OAuthErrorResponseSchema,
+  OAuthRevocationFormSchema,
+  OAuthTokenFormSchema,
+  OAuthTokenResponseSchema,
+} from "../dtos.ts";
 import { createOAuthAuthorizationRequest } from "../lib/authorization.ts";
 import {
   createOAuthErrorRedirectUrl,
   encodeOAuthError,
   OAuthAuthorizationError,
-  oauthErrorResponse,
-  OAuthErrorResponseSchema,
   OAuthTokenError,
 } from "../lib/errors.ts";
 import { revokeOAuthToken } from "../lib/revocation.ts";
@@ -16,138 +21,66 @@ import {
   exchangeOAuthAuthorizationCode,
   exchangeOAuthRefreshToken,
 } from "../lib/token-exchange.ts";
+import { validator } from "hono/validator";
 
-const routes = new OpenAPIHono<HonoEnv>({
-  defaultHook: (result, c) => {
-    if (result.success) return;
+const routes = new Hono<HonoEnv>();
 
-    return c.json(
-      OAuthErrorResponseSchema.parse({
-        error: "invalid_request",
-        error_description: malformedOAuthRequestDescription(c.req.path),
-      }),
-      400,
-    );
-  },
-});
+routes.get(
+  "/authorize",
+  oauthQueryValidator(
+    OAuthAuthorizationQuerySchema,
+    "Authorization request is malformed",
+  ),
+  async (c) => {
+    try {
+      const query = c.req.valid("query");
+      const clientId = z.uuid().safeParse(query.client_id);
+      if (!clientId.success) {
+        throw new OAuthAuthorizationError(
+          "invalid_request",
+          "Client is invalid",
+        );
+      }
 
-/**
- * GET /authorize
- */
+      if (!isWellFormedRedirectUri(query.redirect_uri)) {
+        throw new OAuthAuthorizationError(
+          "invalid_request",
+          "Redirect URI is invalid",
+        );
+      }
 
-const AuthorizationQuerySchema = z
-  .object({
-    response_type: z.string().optional().openapi({ example: "code" }),
-    client_id: z.string().optional().openapi({
-      example: "019c1234-5678-7000-8000-000000000000",
-    }),
-    redirect_uri: z.string().optional().openapi({
-      example: "https://example.com/oauth/callback",
-    }),
-    scope: z.string().optional().openapi({
-      example: "profile:read decks:read",
-    }),
-    state: z.string().optional().openapi({ example: "opaque-client-state" }),
-  })
-  .openapi("OAuthAuthorizationQuery");
-
-const AuthorizeRoute = createRoute({
-  method: "get",
-  path: "/authorize",
-  operationId: "authorizeOAuthClient",
-  tags: ["OAuth"],
-  summary: "Start an OAuth authorization request",
-  request: {
-    query: AuthorizationQuerySchema,
-  },
-  responses: {
-    302: {
-      description: "Redirect to consent or the registered client callback",
-    },
-    400: oauthErrorResponse(
-      OAuthErrorResponseSchema,
-      "OAuth request cannot be safely redirected",
-    ),
-  },
-});
-
-routes.openapi(AuthorizeRoute, async (c) => {
-  try {
-    const query = c.req.valid("query");
-    const clientId = z.uuid().safeParse(query.client_id);
-    if (!clientId.success) {
-      throw new OAuthAuthorizationError("invalid_request", "Client is invalid");
-    }
-
-    if (!isWellFormedRedirectUri(query.redirect_uri)) {
-      throw new OAuthAuthorizationError(
-        "invalid_request",
-        "Redirect URI is invalid",
+      const authorizationRequest = await createOAuthAuthorizationRequest(
+        c.get("db"),
+        {
+          clientId: clientId.data,
+          redirectUri: query.redirect_uri,
+          responseType: query.response_type,
+          scope: query.scope,
+          state: query.state,
+        },
       );
-    }
 
-    const authorizationRequest = await createOAuthAuthorizationRequest(
-      c.get("db"),
-      {
-        clientId: clientId.data,
-        redirectUri: query.redirect_uri,
-        responseType: query.response_type,
-        scope: query.scope,
-        state: query.state,
-      },
-    );
-
-    const consentUrl = new URL("/oauth/consent", c.get("config").FRONTEND_URL);
-    consentUrl.searchParams.set("request", authorizationRequest.requestToken);
-
-    return c.redirect(consentUrl.toString(), 302);
-  } catch (error) {
-    if (!(error instanceof OAuthAuthorizationError)) throw error;
-
-    if (error.redirect) {
-      return c.redirect(
-        createOAuthErrorRedirectUrl(error.redirect, error),
-        302,
+      const consentUrl = new URL(
+        "/oauth/consent",
+        c.get("config").FRONTEND_URL,
       );
+      consentUrl.searchParams.set("request", authorizationRequest.requestToken);
+
+      return c.redirect(consentUrl.toString(), 302);
+    } catch (error) {
+      if (!(error instanceof OAuthAuthorizationError)) throw error;
+
+      if (error.redirect) {
+        return c.redirect(
+          createOAuthErrorRedirectUrl(error.redirect, error),
+          302,
+        );
+      }
+
+      return c.json(encodeOAuthError(error), 400);
     }
-
-    return c.json(encodeOAuthError(error), 400);
-  }
-});
-
-/**
- * POST /token
- */
-
-const OAuthTokenFormSchema = z
-  .object({
-    grant_type: z.string().optional().openapi({
-      example: "authorization_code",
-    }),
-    client_id: z.string().optional().openapi({
-      example: "019c1234-5678-7000-8000-000000000000",
-    }),
-    client_secret: z.string().optional().openapi({ example: "ab_cs_..." }),
-    code: z.string().optional().openapi({ example: "ab_code_..." }),
-    redirect_uri: z.string().optional().openapi({
-      example: "https://example.com/oauth/callback",
-    }),
-    refresh_token: z.string().optional().openapi({ example: "ab_rt_..." }),
-    scope: z.string().optional(),
-  })
-  .strict()
-  .openapi("OAuthTokenForm");
-
-const OAuthTokenResponseSchema = z
-  .object({
-    token_type: z.literal("Bearer"),
-    access_token: z.string().startsWith("ab_at_"),
-    expires_in: z.literal(3600),
-    refresh_token: z.string().startsWith("ab_rt_"),
-    scope: z.string(),
-  })
-  .strict()
-  .openapi("OAuthTokenResponse");
+  },
+);
 
 const OAuthGrantTypeSchema = z.enum(["authorization_code", "refresh_token"]);
 
@@ -185,88 +118,38 @@ const OAuthRefreshTokenExchangeFormSchema = OAuthClientCredentialsSchema.extend(
     refreshToken: input.refresh_token,
   }));
 
-const TokenRoute = createRoute({
-  method: "post",
-  path: "/token",
-  operationId: "exchangeOAuthToken",
-  middleware: [oauthFormRequestMiddleware(malformedTokenRequest)] as const,
-  tags: ["OAuth"],
-  summary: "Exchange an authorization code or refresh token",
-  request: {
-    body: {
-      required: true,
-      content: {
-        "application/x-www-form-urlencoded": {
-          schema: OAuthTokenFormSchema,
-        },
-      },
-    },
+routes.post(
+  "/token",
+  oauthFormRequestMiddleware(malformedTokenRequest),
+  oauthFormValidator(OAuthTokenFormSchema, "Token request is malformed"),
+  async (c) => {
+    try {
+      const input = parseOAuthTokenForm(c.req.valid("form"));
+
+      const token =
+        input.grantType === "authorization_code"
+          ? await exchangeOAuthAuthorizationCode(c.get("db"), input)
+          : await exchangeOAuthRefreshToken(c.get("db"), input);
+
+      c.header("Cache-Control", "no-store");
+      c.header("Pragma", "no-cache");
+
+      return c.json(
+        OAuthTokenResponseSchema.parse({
+          token_type: "Bearer",
+          access_token: token.accessToken,
+          expires_in: token.expiresIn,
+          refresh_token: token.refreshToken,
+          scope: token.scopes.join(" "),
+        }),
+        200,
+      );
+    } catch (error) {
+      if (!(error instanceof OAuthTokenError)) throw error;
+      return c.json(encodeOAuthError(error), error.status);
+    }
   },
-  responses: {
-    200: {
-      content: {
-        "application/json": {
-          schema: OAuthTokenResponseSchema,
-        },
-      },
-      description: "OAuth token response",
-    },
-    400: oauthErrorResponse(
-      OAuthErrorResponseSchema,
-      "Invalid OAuth token request or grant",
-    ),
-    401: oauthErrorResponse(
-      OAuthErrorResponseSchema,
-      "Client authentication failed",
-    ),
-  },
-});
-
-routes.openapi(TokenRoute, async (c) => {
-  try {
-    const input = parseOAuthTokenForm(c.req.valid("form"));
-
-    const token =
-      input.grantType === "authorization_code"
-        ? await exchangeOAuthAuthorizationCode(c.get("db"), input)
-        : await exchangeOAuthRefreshToken(c.get("db"), input);
-
-    c.header("Cache-Control", "no-store");
-    c.header("Pragma", "no-cache");
-
-    return c.json(
-      OAuthTokenResponseSchema.parse({
-        token_type: "Bearer",
-        access_token: token.accessToken,
-        expires_in: token.expiresIn,
-        refresh_token: token.refreshToken,
-        scope: token.scopes.join(" "),
-      }),
-      200,
-    );
-  } catch (error) {
-    if (!(error instanceof OAuthTokenError)) throw error;
-    return c.json(encodeOAuthError(error), error.status);
-  }
-});
-
-/**
- * POST /revoke
- */
-
-const OAuthRevocationFormSchema = z
-  .object({
-    client_id: z.string().optional().openapi({
-      example: "019c1234-5678-7000-8000-000000000000",
-    }),
-    client_secret: z.string().optional().openapi({ example: "ab_cs_..." }),
-    token: z.string().optional().openapi({ example: "ab_rt_..." }),
-    token_type_hint: z.string().optional().openapi({
-      example: "refresh_token",
-    }),
-  })
-  .strict()
-  .openapi("OAuthRevocationForm");
+);
 
 const OAuthRevocationInputSchema = OAuthClientCredentialsSchema.extend({
   token: z.string().min(1),
@@ -279,54 +162,30 @@ const OAuthRevocationInputSchema = OAuthClientCredentialsSchema.extend({
     token: input.token,
   }));
 
-const RevokeRoute = createRoute({
-  method: "post",
-  path: "/revoke",
-  operationId: "revokeOAuthToken",
-  middleware: [oauthFormRequestMiddleware(malformedRevocationRequest)] as const,
-  tags: ["OAuth"],
-  summary: "Revoke an OAuth access or refresh token",
-  request: {
-    body: {
-      required: true,
-      content: {
-        "application/x-www-form-urlencoded": {
-          schema: OAuthRevocationFormSchema,
-        },
-      },
-    },
-  },
-  responses: {
-    200: {
-      description: "Token is revoked or was not recognized",
-    },
-    400: oauthErrorResponse(
-      OAuthErrorResponseSchema,
-      "Invalid OAuth revocation request",
-    ),
-    401: oauthErrorResponse(
-      OAuthErrorResponseSchema,
-      "Client authentication failed",
-    ),
-  },
-});
-
 routes.use("/revoke", async (c, next) => {
   c.header("Cache-Control", "no-store");
   c.header("Pragma", "no-cache");
   await next();
 });
 
-routes.openapi(RevokeRoute, async (c) => {
-  try {
-    const input = parseOAuthRevocationForm(c.req.valid("form"));
-    await revokeOAuthToken(c.get("db"), input);
-    return c.body(null, 200);
-  } catch (error) {
-    if (!(error instanceof OAuthTokenError)) throw error;
-    return c.json(encodeOAuthError(error), error.status);
-  }
-});
+routes.post(
+  "/revoke",
+  oauthFormRequestMiddleware(malformedRevocationRequest),
+  oauthFormValidator(
+    OAuthRevocationFormSchema,
+    "Revocation request is malformed",
+  ),
+  async (c) => {
+    try {
+      const input = parseOAuthRevocationForm(c.req.valid("form"));
+      await revokeOAuthToken(c.get("db"), input);
+      return c.body(null, 200);
+    } catch (error) {
+      if (!(error instanceof OAuthTokenError)) throw error;
+      return c.json(encodeOAuthError(error), error.status);
+    }
+  },
+);
 
 function parseOAuthTokenForm(input: z.infer<typeof OAuthTokenFormSchema>) {
   const grantType = z.string().min(1).safeParse(input.grant_type);
@@ -413,10 +272,37 @@ function oauthFormRequestMiddleware(
   };
 }
 
-function malformedOAuthRequestDescription(path: string) {
-  if (path.endsWith("/token")) return "Token request is malformed";
-  if (path.endsWith("/revoke")) return "Revocation request is malformed";
-  return "Authorization request is malformed";
+export function oauthQueryValidator<T>(
+  schema: ZodType<T>,
+  errorDescription: string,
+) {
+  return validator("query", (value, c) => {
+    const result = schema.safeParse(value);
+    if (result.success) return result.data;
+
+    return c.json(
+      OAuthErrorResponseSchema.parse({
+        error: "invalid_request",
+        error_description: errorDescription,
+      }),
+      400,
+    );
+  });
+}
+
+function oauthFormValidator<T>(schema: ZodType<T>, errorDescription: string) {
+  return validator("form", (value, c) => {
+    const result = schema.safeParse(value);
+    if (result.success) return result.data;
+
+    return c.json(
+      OAuthErrorResponseSchema.parse({
+        error: "invalid_request",
+        error_description: errorDescription,
+      }),
+      400,
+    );
+  });
 }
 
 function isFormUrlEncoded(contentType: string | undefined) {

@@ -4,12 +4,12 @@ import { describe, expect, vi } from "vitest";
 import { z } from "zod";
 import type { appFactory } from "../app.ts";
 import type { Database } from "../db/db.ts";
+import { oauthBearerAuth } from "../features/oauth-user/bearer-auth.ts";
 import {
-  oauthBearerAuth,
+  OAuthProfileResponseSchema,
   OAuthUserErrorSchema,
-} from "../features/oauth-user/bearer-auth.ts";
-import { OAuthProfileResponseSchema } from "../features/oauth-user/routes.ts";
-import { OAuthErrorResponseSchema } from "../features/oauth/lib/errors.ts";
+} from "../features/oauth-user/dtos.ts";
+import { OAuthErrorResponseSchema } from "../features/oauth/dtos.ts";
 import {
   generateOAuthAccessToken,
   generateOAuthClientSecret,

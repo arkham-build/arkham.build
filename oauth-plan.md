@@ -10,7 +10,7 @@
 - Session cookies remain `SameSite=Strict`.
 - Native apps are supported only when a confidential backend holds the client secret and exchanges the authorization code. Direct token exchange from an installed app is unsupported in v1.
 - No public clients, PKCE, introspection, or explicit rate limits are included in v1.
-- External OAuth and user routes use `@hono/zod-openapi`.
+- External OAuth and user routes use plain Hono with feature-owned Zod schemas and OAuth-specific boundary validation. OpenAPI 3.1 is generated offline from those schemas and detached endpoint metadata; OpenAPI tooling is not part of runtime request handling.
 - Opaque authorization requests, codes, and tokens are stored as SHA-256 hashes only.
 - Refresh exchanges rotate the submitted token with a new 90-day lifetime. Just-rotated tokens have a non-extending one-minute retry grace period.
 - Client secrets are shown only on creation or rotation and stored using scrypt-based secret hashing.
@@ -21,6 +21,8 @@
 Implement the gateway as vertical, testable increments. Do not create a separate phase for speculative shared OAuth modules. Add feature-owned helpers for cryptography, scope handling, persistence, validation, and errors in the first phase that uses them; extract shared APIs only when a later phase has a concrete reuse case.
 
 Each phase below ends with a user-visible behavior or a verifiable repository artifact. Complete its listed integration or browser tests before starting the next dependent phase. Never log raw client secrets, authorization-request handles, authorization codes, access tokens, or refresh tokens.
+
+External request and response schemas live in feature-owned DTO modules and are reused by runtime validation, response serialization, tests, and offline documentation generation. The OpenAPI generator imports DTOs, not route handlers. Convert only representable boundary schemas with Zod's JSON Schema support; runtime-only transforms remain outside the generated contract.
 
 ## Phase 1 — Install the OAuth persistence model - DONE
 
@@ -208,7 +210,7 @@ Add admin API integration tests for creation, list, get, redirect validation, cu
 
 ### Implementation
 
-Add `@hono/zod-openapi` as a pinned backend dependency. Establish the external OAuth route composition with `OpenAPIHono` and `createRoute` when adding:
+Establish the external OAuth route composition with plain Hono and feature-specific Zod boundary validation when adding:
 
 ```txt
 GET /v2/oauth/authorize
@@ -388,7 +390,7 @@ Do not emulate Cloudflare response headers in Vite or the local full-stack suite
 
 ### Implementation
 
-Add the OpenAPI-defined endpoint:
+Add the external endpoint:
 
 ```txt
 POST /v2/oauth/token
@@ -476,7 +478,7 @@ Add integration tests for form-only credentials, bad client authentication, code
 
 ### Implementation
 
-Add the OpenAPI-defined revoke endpoint:
+Add the external revoke endpoint:
 
 ```txt
 POST /v2/oauth/revoke
@@ -524,7 +526,7 @@ Use `401` for missing, malformed, unknown, expired, or otherwise unusable tokens
 }
 ```
 
-Add the first OpenAPI-defined bearer route:
+Add the first external bearer route:
 
 ```txt
 GET /v2/user/me
@@ -547,13 +549,35 @@ Add integration tests for access-token revocation, refresh-family revocation, id
 
 **Deliverable:** an OAuth client can complete authorization, call `/v2/user/me`, refresh access, revoke either token type, and observe revoked credentials being rejected.
 
+## Phase 7A — Detach OpenAPI generation from runtime routing - DONE
+
+### Implementation
+
+Move external OAuth and user request and response schemas into feature-owned DTO modules. Replace `OpenAPIHono`, `createRoute`, and `@hono/zod-openapi` schema imports with plain Hono routes, standard Zod schemas, and route-boundary validators that preserve the existing OAuth and user error DTOs.
+
+Add a detached OpenAPI 3.1 document builder for the external routes delivered so far. It must:
+
+- import feature DTOs without importing route handlers
+- convert representable public Zod schemas with `z.toJSONSchema()`
+- keep endpoint metadata, security requirements, form bodies, statuses, and descriptions outside runtime routing
+- exclude runtime-only transformed schemas from JSON Schema conversion
+- produce deterministic output
+
+Replace route-registry OpenAPI tests with direct document-builder tests. Remove `@hono/zod-openapi` after no runtime or test imports remain. The checked-in complete document and integration guide remain Phase 11 deliverables.
+
+### Completion checks
+
+Run the existing authorization, token, revocation, and bearer-profile integration tests unchanged. Add tests that generate the detached document twice with identical results and verify all currently implemented `/v2/oauth/*` and `/v2/user/*` routes, form content types, security schemes, response statuses, and DTO schemas.
+
+**Deliverable:** runtime OAuth and user requests use plain Hono and Zod, while a deterministic offline OpenAPI builder describes the implemented external contract without participating in request handling.
+
 ## Phase 8 — Deliver external deck reads
 
 ### Implementation
 
 Define dedicated external deck request and response schemas without changing existing first-party deck contracts. Refactor the current deck route implementation into shared account and ArkhamDB service operations instead of duplicating it. Generalize the ArkhamDB user-service context so it accepts either first-party session authentication or OAuth bearer authentication without pretending an OAuth request has a session.
 
-Add these OpenAPI-defined bearer routes.
+Add these external bearer routes and register them in the detached external API contract.
 
 ### Manifest
 
@@ -632,7 +656,7 @@ Add integration tests for bearer scope enforcement, dedicated external DTOs, acc
 
 ### Implementation
 
-Add these OpenAPI-defined bearer routes:
+Add these external bearer routes and register them in the detached external API contract:
 
 ```txt
 POST   /v2/user/decks/:source
@@ -729,7 +753,7 @@ Add account API integration tests for listing, account isolation, disabled-clien
 
 ### Implementation
 
-Ensure every `/v2/oauth/*` and `/v2/user/*` route is defined with `OpenAPIHono` and `createRoute`. Document:
+Keep every `/v2/oauth/*` and `/v2/user/*` runtime route on plain Hono with feature-owned Zod DTO schemas. Extend the detached OpenAPI 3.1 builder so it describes every external route without importing route handlers or participating in request handling. Document:
 
 - form request bodies and OAuth errors
 - redirect responses, including native custom-scheme redirects
@@ -739,7 +763,7 @@ Ensure every `/v2/oauth/*` and `/v2/user/*` route is defined with `OpenAPIHono` 
 - source-specific deck IDs
 - every request and response schema and status
 
-Add a deterministic generation script and checked-in output:
+Add a deterministic generation script around the detached document builder and checked-in output:
 
 ```txt
 docs/openapi/oauth-user-api.json
@@ -763,7 +787,7 @@ Add stable handwritten documentation covering:
 
 ### Completion checks
 
-Add a test that generates the OpenAPI document twice with identical output and verifies that it contains every external route, security scheme, form body, response status, and external DTO. Run every documented cURL request against the test server or validate it through an equivalent automated documentation test.
+Add a test that generates the OpenAPI document twice with identical output and verifies that it contains every external route, security scheme, form body, response status, and external DTO. Verify that documentation generation imports feature DTOs rather than route handlers. Run every documented cURL request against the test server or validate it through an equivalent automated documentation test.
 
 **Deliverable:** a checked-in, reproducible OpenAPI document and a complete confidential-client integration guide that match the implemented API.
 
