@@ -563,15 +563,15 @@ Add a detached OpenAPI 3.1 document builder for the external routes delivered so
 - exclude runtime-only transformed schemas from JSON Schema conversion
 - produce deterministic output
 
-Replace route-registry OpenAPI tests with direct document-builder tests. Remove `@hono/zod-openapi` after no runtime or test imports remain. The checked-in complete document and integration guide remain Phase 11 deliverables.
+Remove route-registry OpenAPI tests and `@hono/zod-openapi` after no runtime or test imports remain. The checked-in complete document, deterministic-generation tests, and integration guide remain Phase 11 deliverables.
 
 ### Completion checks
 
-Run the existing authorization, token, revocation, and bearer-profile integration tests unchanged. Add tests that generate the detached document twice with identical results and verify all currently implemented `/v2/oauth/*` and `/v2/user/*` routes, form content types, security schemes, response statuses, and DTO schemas.
+Run the existing authorization, token, revocation, and bearer-profile integration tests unchanged. Verify the detached builder describes all currently implemented `/v2/oauth/*` and `/v2/user/*` routes, form content types, security schemes, response statuses, and DTO schemas.
 
 **Deliverable:** runtime OAuth and user requests use plain Hono and Zod, while a deterministic offline OpenAPI builder describes the implemented external contract without participating in request handling.
 
-## Phase 8 — Deliver external deck reads
+## Phase 8 — Deliver external deck reads - FUNCTIONALITY DONE
 
 ### Implementation
 
@@ -642,9 +642,9 @@ Fail the entire request if any target is missing or unavailable.
 GET /v2/user/decks/:source/:id
 ```
 
-Require `decks:read`. Validate account IDs as bounded strings and ArkhamDB IDs as positive integers.
+Require `decks:read`. Pass route identifiers unchanged to the selected account query or ArkhamDB provider instead of duplicating identifier validation at the route boundary.
 
-For all read routes, use `400` for an invalid source, filter, identifier, or input; `404` for a missing deck; and `503` for an unavailable required ArkhamDB connection or upstream.
+For all read routes, use `400` for an invalid source, filter, or input; `404` when the selected query or provider does not find the deck; and `503` for an unavailable required ArkhamDB connection or upstream.
 
 ### Completion checks
 
@@ -652,7 +652,7 @@ Add integration tests for bearer scope enforcement, dedicated external DTOs, acc
 
 **Deliverable:** an authorized external client can discover and read account and ArkhamDB decks through stable, source-aware APIs without changing first-party contracts.
 
-## Phase 9 — Deliver external deck writes and history operations
+## Phase 9 — Deliver external deck writes and history operations - FUNCTIONALITY DONE
 
 ### Implementation
 
@@ -695,7 +695,7 @@ For ArkhamDB:
 - retain the current mapping, hidden-slot, metadata, snapshot, and XP behavior
 - take returned IDs, timestamps, versions, and links from ArkhamDB
 
-Use `201` for create and upgrade, `200` for reads and update, and `204` for delete. Use `400` for invalid source, identifier, or input; `404` for a missing deck; `409` for invalid history transitions; and `503` for an unavailable ArkhamDB connection or upstream.
+Use `201` for create and upgrade, `200` for reads and update, and `204` for delete. Use `400` for an invalid source or input; `404` when the selected query or provider does not find the deck; `409` for invalid history transitions; and `503` for an unavailable ArkhamDB connection or upstream.
 
 ### Completion checks
 
@@ -794,6 +794,35 @@ Add a test that generates the OpenAPI document twice with identical output and v
 ## Phase 12 — Produce and verify the release candidate
 
 ### Implementation and verification
+
+#### Complete shared deck service extraction
+
+Phases 8 and 9 have delivered and tested the external behavior, but their original shared-service requirement is only partially complete. External routes reuse account queries, row mapping, account deck locking and history traversal, and the existing ArkhamDB user service. The internal deck router still owns substantial `localCrud` and `arkhamdbCrud` orchestration, while the external deck service separately implements some account mutations and ArkhamDB upgrade policy.
+
+Make both internal and external routes thin adapters over feature-owned deck services without changing either API contract.
+
+Add policy-neutral account deck operations for:
+
+- inserting an account deck with caller-supplied server fields
+- locking and loading an owned account deck
+- fully replacing mutable deck content while preserving server fields and history links
+- atomically linking a parent and child upgrade
+- deleting one deck or its previous history chain
+
+Keep API-specific policy at each route boundary:
+
+- the internal API retains client-supplied IDs and versions, `expectedVersion`, and its existing conflict DTOs
+- the external API retains server-generated UUIDs, server-managed versions, route-owned providers, and its external error DTOs
+
+Do not build a shared CRUD object controlled by flags such as `generateId`, `incrementVersion`, or `requireExpectedVersion`. Route adapters should resolve those policies before calling explicit domain operations.
+
+Move ArkhamDB mutation orchestration out of the internal router. Extract the carryover-XP upgrade calculation and any genuinely shared ArkhamDB availability classification so both APIs call the same provider service. Keep first-party snapshot, hidden-slot, metadata, mapping, and optimistic-conflict behavior unchanged.
+
+Run the complete existing internal and external deck integration suites unchanged. Add focused service tests only for policy-neutral operations that cannot be observed reliably through those API suites. Verify transaction rollback for account upgrades and history deletion, identical ArkhamDB carryover-XP behavior through both APIs, and that internal and external route files no longer contain provider CRUD implementations.
+
+The extraction is complete when internal and external deck routes contain authentication, validation, API-specific policy, and response serialization only; shared account and ArkhamDB services own persistence and provider mutation orchestration without conflating the two API contracts.
+
+#### Verify the release candidate
 
 Close any coverage gaps left by the phase-specific tests. The backend integration suite must demonstrate:
 

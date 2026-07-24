@@ -18,11 +18,9 @@ import {
   type Deck as SharedDeck,
   type SyncedDeckProvider,
 } from "@arkham-build/shared";
-import { Hono } from "hono";
+import { type Context, Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import type { Transaction } from "kysely";
 import type { Database } from "../../db/db.ts";
-import type { DB } from "../../db/schema.types.ts";
 import { ApiError } from "../../lib/arkhamdb/api-client/core/errors.ts";
 import { ARKHAMDB_PROVIDER_TYPE } from "../../lib/arkhamdb/api-client/mapping.ts";
 import {
@@ -41,12 +39,14 @@ import {
   mapDeckRowToDto,
   mapDeckWriteDtoToInsert,
 } from "../../lib/deck-mapping.ts";
-import type { HonoEnv } from "../../lib/hono-env.ts";
+import type { HonoEnv, SessionAuthHonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
 import {
+  collectAccountDeckHistoryIds,
   findAccountDeckById,
   listAccountDecksByIds,
   listAccountDecksForManifest,
+  lockAccountDeckById,
 } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
@@ -249,7 +249,7 @@ routes.post(
 
 export default routes;
 
-type DeckContext = Parameters<typeof fetchArkhamDbDeck>[0];
+type DeckContext = Context<SessionAuthHonoEnv>;
 
 function getDeckTargetKey(target: DeckSyncTarget) {
   return `${target.provider}:${String(target.id)}`;
@@ -385,14 +385,7 @@ const localCrud = {
     const accountId = c.get("account").id;
 
     await db.transaction().execute(async (tx) => {
-      const lockedCurrent = await tx
-        .selectFrom("deck")
-        .selectAll()
-        .where("account_id", "=", accountId)
-        .where("id", "=", deckId)
-        .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
-        .forUpdate()
-        .executeTakeFirst();
+      const lockedCurrent = await lockAccountDeckById(tx, accountId, deckId);
 
       if (!lockedCurrent) {
         throwDeckConflict(null, null);
@@ -406,7 +399,7 @@ const localCrud = {
       );
 
       const deleteIds = payload.all
-        ? await collectLocalDeckHistoryIds(tx, accountId, lockedCurrent)
+        ? await collectAccountDeckHistoryIds(tx, accountId, lockedCurrent)
         : [lockedCurrent.id];
 
       await tx
@@ -428,14 +421,11 @@ const localCrud = {
     const { deck, expectedVersion } = payload;
 
     const nextDeck = await db.transaction().execute(async (tx) => {
-      const lockedCurrent = await tx
-        .selectFrom("deck")
-        .selectAll()
-        .where("account_id", "=", accountId)
-        .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
-        .where("id", "=", previousDeckId)
-        .forUpdate()
-        .executeTakeFirst();
+      const lockedCurrent = await lockAccountDeckById(
+        tx,
+        accountId,
+        previousDeckId,
+      );
 
       if (!lockedCurrent) {
         throwDeckConflict(null, null);
@@ -566,37 +556,6 @@ async function fetchMatchingArkhamDbDeck(
 
   assertExpectedDeckVersion(current, expectedVersion);
   return current;
-}
-
-async function collectLocalDeckHistoryIds(
-  tx: Transaction<DB>,
-  accountId: string,
-  deck: { id: string; prev_deck: string | null },
-) {
-  const ids = [deck.id];
-  const seen = new Set(ids);
-  let previousId = deck.prev_deck;
-
-  while (previousId) {
-    const previous = await tx
-      .selectFrom("deck")
-      .select(["id", "prev_deck"])
-      .where("account_id", "=", accountId)
-      .where("id", "=", previousId)
-      .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
-      .forUpdate()
-      .executeTakeFirst();
-
-    if (!previous) break;
-
-    assert(!seen.has(previous.id), "Deck history contains a cycle.");
-
-    ids.push(previous.id);
-    seen.add(previous.id);
-    previousId = previous.prev_deck;
-  }
-
-  return ids;
 }
 
 function assertExpectedDeckVersion(

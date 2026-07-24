@@ -12,11 +12,12 @@ import {
   getAccountIdentityByAccountIdAndProvider,
   updateAccountIdentityState,
 } from "../../../auth/account-identities.ts";
+import { authenticatedAccountId } from "../../../auth/authenticated-account.ts";
 import {
   findArkhamDbIdentityWithTokenByAccountId,
   upsertOAuthToken,
 } from "../../../auth/oauth-tokens.ts";
-import type { SessionAuthHonoEnv } from "../../../hono-env.ts";
+import type { HonoEnv } from "../../../hono-env.ts";
 import type { OAuthAccessToken } from "../../../oauth.ts";
 import { refreshAccessToken } from "../api-oauth.ts";
 import { ApiError } from "./errors.ts";
@@ -30,23 +31,23 @@ type ArkhamDbRequest = <T, R = never>(
   handleApiError?: (error: ApiError) => WrappedResponse<R> | undefined,
 ) => Promise<WrappedResponse<T | R>>;
 
-export type ArkhamDbExecutor = {
+export type ArkhamDbExecutor<E extends HonoEnv = HonoEnv> = {
   connection: NonNullable<
     Awaited<ReturnType<typeof findArkhamDbIdentityWithTokenByAccountId>>
   >;
-  context: Context<SessionAuthHonoEnv>;
+  context: Context<E>;
   db: Database;
   patchIdentityFailure(error: unknown): Promise<void>;
   patchIdentityState(patch: Partial<ArkhamDbIdentityState>): Promise<void>;
   request: ArkhamDbRequest;
 };
 
-export async function withArkhamDbExecutor<T>(
-  c: Context<SessionAuthHonoEnv>,
-  run: (executor: ArkhamDbExecutor) => Promise<T>,
+export async function withArkhamDbExecutor<T, E extends HonoEnv>(
+  c: Context<E>,
+  run: (executor: ArkhamDbExecutor<E>) => Promise<T>,
 ): Promise<T> {
   const db = c.get("db");
-  const accountId = c.get("account").id;
+  const accountId = authenticatedAccountId(c);
   const initialConnection = await findArkhamDbIdentityWithTokenByAccountId(
     db,
     accountId,
@@ -66,7 +67,7 @@ export async function withArkhamDbExecutor<T>(
       throw await markArkhamDbConnectionMissing(db, accountId);
     }
 
-    const executor: ArkhamDbExecutor = {
+    const executor: ArkhamDbExecutor<E> = {
       connection,
       context: c,
       db,
@@ -93,8 +94,12 @@ export async function withArkhamDbExecutor<T>(
 
 const arkhamDbUserLocks = new Map<string, Mutex>();
 
-async function executeArkhamDbRequest<T, R = never>(
-  executor: ArkhamDbExecutor,
+async function executeArkhamDbRequest<
+  T,
+  R = never,
+  E extends HonoEnv = HonoEnv,
+>(
+  executor: ArkhamDbExecutor<E>,
   path: string,
   schema: z.ZodType<T>,
   options: RequestInit = {},
@@ -102,16 +107,12 @@ async function executeArkhamDbRequest<T, R = never>(
 ): Promise<WrappedResponse<T | R>> {
   const executeRequest = async (accessToken: string) =>
     parseWrappedResponse(
-      await request<unknown, SessionAuthHonoEnv>(
-        executor.context,
-        `/api/oauth2${path}`,
-        {
-          ...options,
-          headers: mergeHeaders(options.headers, {
-            Authorization: `Bearer ${accessToken}`,
-          }),
-        },
-      ),
+      await request<unknown, E>(executor.context, `/api/oauth2${path}`, {
+        ...options,
+        headers: mergeHeaders(options.headers, {
+          Authorization: `Bearer ${accessToken}`,
+        }),
+      }),
       schema,
     );
 
@@ -150,8 +151,8 @@ async function executeArkhamDbRequest<T, R = never>(
   }
 }
 
-async function refreshArkhamDbAccessTokenForConnection(
-  executor: ArkhamDbExecutor,
+async function refreshArkhamDbAccessTokenForConnection<E extends HonoEnv>(
+  executor: ArkhamDbExecutor<E>,
 ): Promise<OAuthAccessToken> {
   const refreshToken = executor.connection.token.refresh_token;
 
@@ -178,8 +179,8 @@ async function refreshArkhamDbAccessTokenForConnection(
   }
 }
 
-async function patchArkhamDbIdentityState(
-  executor: ArkhamDbExecutor,
+async function patchArkhamDbIdentityState<E extends HonoEnv>(
+  executor: ArkhamDbExecutor<E>,
   patch: Partial<ArkhamDbIdentityState>,
 ) {
   await updateAccountIdentityState(
@@ -192,8 +193,8 @@ async function patchArkhamDbIdentityState(
   );
 }
 
-async function patchArkhamDbIdentityFailure(
-  executor: ArkhamDbExecutor,
+async function patchArkhamDbIdentityFailure<E extends HonoEnv>(
+  executor: ArkhamDbExecutor<E>,
   error: unknown,
 ) {
   await patchArkhamDbIdentityState(executor, {

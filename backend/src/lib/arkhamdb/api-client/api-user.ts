@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { type DeckWritePayload, SlotsSchema } from "@arkham-build/shared";
 import type { Context } from "hono";
-import type { SessionAuthHonoEnv } from "../../hono-env.ts";
+import type { HonoEnv } from "../../hono-env.ts";
 import {
   mergeAdditionalMeta,
   storeAdditionalMetadata,
@@ -20,12 +20,15 @@ import {
   withArkhamDbExecutor,
 } from "./core/execute-with-lock.ts";
 
-export function fetchDeck(c: Context<SessionAuthHonoEnv>, id: string | number) {
+export function fetchDeck<E extends HonoEnv>(
+  c: Context<E>,
+  id: string | number,
+) {
   return withArkhamDbExecutor(c, (executor) => loadDeck(executor, id));
 }
 
-export function syncDecks(
-  c: Context<SessionAuthHonoEnv>,
+export function syncDecks<E extends HonoEnv>(
+  c: Context<E>,
   syncedAt = new Date(),
   ifModifiedSince?: string | null,
 ) {
@@ -76,8 +79,8 @@ export function syncDecks(
   });
 }
 
-export async function saveDeck(
-  executor: ArkhamDbExecutor,
+export async function saveDeck<E extends HonoEnv>(
+  executor: ArkhamDbExecutor<E>,
   id: string | number,
   deck: DeckWritePayload,
 ) {
@@ -109,8 +112,8 @@ export async function saveDeck(
   return await loadDeck(executor, operation.msg);
 }
 
-export async function createDeck(
-  executor: ArkhamDbExecutor,
+export async function createDeck<E extends HonoEnv>(
+  executor: ArkhamDbExecutor<E>,
   _deck: DeckWritePayload,
 ) {
   const deck = { ..._deck };
@@ -164,8 +167,8 @@ export async function createDeck(
   return await loadDeck(executor, saveOperation.msg);
 }
 
-export async function upgradeDeck(
-  executor: ArkhamDbExecutor,
+export async function upgradeDeck<E extends HonoEnv>(
+  executor: ArkhamDbExecutor<E>,
   id: string | number,
   _deck: DeckWritePayload,
 ) {
@@ -189,8 +192,8 @@ export async function upgradeDeck(
   return await loadDeck(executor, operation.msg);
 }
 
-export async function deleteDeck(
-  executor: ArkhamDbExecutor,
+export async function deleteDeck<E extends HonoEnv>(
+  executor: ArkhamDbExecutor<E>,
   deckId: string | number,
   all?: boolean,
 ) {
@@ -206,7 +209,10 @@ export async function deleteDeck(
   assertSuccessfulOperation(operation);
 }
 
-async function loadDeck(executor: ArkhamDbExecutor, id: string | number) {
+async function loadDeck<E extends HonoEnv>(
+  executor: ArkhamDbExecutor<E>,
+  id: string | number,
+) {
   const response = await executor.request(
     `/deck/load/${id}`,
     ArkhamDbRemoteDeckSchema,
@@ -220,8 +226,8 @@ async function loadDeck(executor: ArkhamDbExecutor, id: string | number) {
   };
 }
 
-async function mergeAdditionalMetadataForDecks(
-  executor: ArkhamDbExecutor,
+async function mergeAdditionalMetadataForDecks<E extends HonoEnv>(
+  executor: ArkhamDbExecutor<E>,
   decks: ArkhamDbRemoteDeck[],
 ) {
   const legacyApiBaseUrl = executor.context.get("config").LEGACY_API_BASE_URL;

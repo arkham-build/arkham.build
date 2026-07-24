@@ -9,7 +9,8 @@ import {
 import type { Context } from "hono";
 import { z } from "zod";
 import { getAccountIdentityByAccountIdAndProvider } from "../../auth/account-identities.ts";
-import type { SessionAuthHonoEnv } from "../../hono-env.ts";
+import { authenticatedAccountId } from "../../auth/authenticated-account.ts";
+import type { HonoEnv } from "../../hono-env.ts";
 import { log } from "../../logger.ts";
 import { mergeAdditionalMeta } from "../additional-metadata.ts";
 import {
@@ -38,23 +39,23 @@ import {
 } from "./deck-snapshots.ts";
 import { mapArkhamDbDeckToDto } from "./mapping.ts";
 
-export async function fetchArkhamDbDeck(
-  c: Context<SessionAuthHonoEnv>,
+export async function fetchArkhamDbDeck<E extends HonoEnv>(
+  c: Context<E>,
   id: string | number,
 ) {
   const response = await fetchDeck(c, id);
   return mapArkhamDbDeckToDto(response.data);
 }
 
-export async function fetchArkhamDbDeckBatch(
-  c: Context<SessionAuthHonoEnv>,
+export async function fetchArkhamDbDeckBatch<E extends HonoEnv>(
+  c: Context<E>,
   ids: DeckId[],
   arkhamdbSyncToken?: string,
 ) {
   const snapshot = arkhamdbSyncToken
     ? await findArkhamDbDeckSnapshotByAccountIdAndId(
         c.get("db"),
-        c.get("account").id,
+        authenticatedAccountId(c),
         arkhamdbSyncToken,
       )
     : undefined;
@@ -96,12 +97,12 @@ export async function fetchArkhamDbDeckBatch(
   return decks;
 }
 
-export async function fetchArkhamDbDeckManifest(
-  c: Context<SessionAuthHonoEnv>,
+export async function fetchArkhamDbDeckManifest<E extends HonoEnv>(
+  c: Context<E>,
   opts: { force?: boolean } = {},
 ): Promise<{ arkhamdbSyncToken: string; decks: DeckManifestItem[] }> {
   const db = c.get("db");
-  const accountId = c.get("account").id;
+  const accountId = authenticatedAccountId(c);
 
   const identity = await getAccountIdentityByAccountIdAndProvider(
     db,
@@ -158,8 +159,8 @@ export async function fetchArkhamDbDeckManifest(
   return getArkhamDbManifestFromSnapshot(snapshot);
 }
 
-export async function saveArkhamDbDeck(
-  c: Context<SessionAuthHonoEnv>,
+export async function saveArkhamDbDeck<E extends HonoEnv>(
+  c: Context<E>,
   id: string | number,
   deck: DeckWritePayload,
 ): Promise<Deck> {
@@ -173,8 +174,8 @@ export async function saveArkhamDbDeck(
   });
 }
 
-export async function createArkhamDbDeck(
-  c: Context<SessionAuthHonoEnv>,
+export async function createArkhamDbDeck<E extends HonoEnv>(
+  c: Context<E>,
   deck: DeckWritePayload,
 ): Promise<Deck> {
   return await withArkhamDbExecutor(c, async (executor) => {
@@ -187,8 +188,8 @@ export async function createArkhamDbDeck(
   });
 }
 
-export async function upgradeArkhamDbDeck(
-  c: Context<SessionAuthHonoEnv>,
+export async function upgradeArkhamDbDeck<E extends HonoEnv>(
+  c: Context<E>,
   id: string | number,
   deck: DeckWritePayload,
 ): Promise<Deck> {
@@ -202,8 +203,8 @@ export async function upgradeArkhamDbDeck(
   });
 }
 
-export async function deleteArkhamDbDeck(
-  c: Context<SessionAuthHonoEnv>,
+export async function deleteArkhamDbDeck<E extends HonoEnv>(
+  c: Context<E>,
   deckId: string | number,
   all?: boolean,
 ) {
@@ -283,11 +284,11 @@ function toArkhamDbDeckTimestamp(
   primary: string | null | undefined,
   fallback: string | null | undefined,
 ) {
-  return primary ?? fallback ?? new Date().toISOString();
+  return primary ?? fallback ?? new Date(0).toISOString();
 }
 
-async function upsertArkhamDbSnapshotDeck(
-  executor: ArkhamDbExecutor,
+async function upsertArkhamDbSnapshotDeck<E extends HonoEnv>(
+  executor: ArkhamDbExecutor<E>,
   deck: ArkhamDbRemoteDeck,
 ) {
   await upsertArkhamDbDeckInSnapshots(
@@ -297,8 +298,8 @@ async function upsertArkhamDbSnapshotDeck(
   );
 }
 
-async function deleteArkhamDbSnapshotDeck(
-  executor: ArkhamDbExecutor,
+async function deleteArkhamDbSnapshotDeck<E extends HonoEnv>(
+  executor: ArkhamDbExecutor<E>,
   deckId: string | number,
   all: boolean,
 ) {
