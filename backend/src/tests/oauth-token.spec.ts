@@ -7,12 +7,12 @@ import {
   generateOAuthClientSecret,
   hashOAuthClientSecret,
 } from "../lib/oauth/crypto.ts";
-import { OAuthErrorResponseSchema } from "../features/oauth/errors.ts";
+import { OAuthErrorResponseSchema } from "../features/oauth/lib/errors.ts";
 import {
   OAUTH_ACCESS_TOKEN_EXPIRES_IN_SECONDS,
   OAUTH_REFRESH_TOKEN_LIFETIME_MS,
   OAUTH_REFRESH_TOKEN_ROTATION_GRACE_MS,
-} from "../features/oauth/token-exchange.ts";
+} from "../features/oauth/lib/token-exchange.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
 
 const REDIRECT_URI = "https://example.com/oauth/callback";

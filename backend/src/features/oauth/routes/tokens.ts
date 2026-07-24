@@ -1,18 +1,21 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import type { HonoEnv } from "../../lib/hono-env.ts";
-import { isWellFormedRedirectUri } from "../../lib/oauth/redirect-uri.ts";
-import { createOAuthAuthorizationRequest } from "./authorization.ts";
+import type { MiddlewareHandler } from "hono";
+import type { HonoEnv } from "../../../lib/hono-env.ts";
+import { isWellFormedRedirectUri } from "../../../lib/oauth/redirect-uri.ts";
+import { createOAuthAuthorizationRequest } from "../lib/authorization.ts";
 import {
   createOAuthErrorRedirectUrl,
   encodeOAuthError,
   OAuthAuthorizationError,
+  oauthErrorResponse,
   OAuthErrorResponseSchema,
   OAuthTokenError,
-} from "./errors.ts";
+} from "../lib/errors.ts";
+import { revokeOAuthToken } from "../lib/revocation.ts";
 import {
   exchangeOAuthAuthorizationCode,
   exchangeOAuthRefreshToken,
-} from "./token-exchange.ts";
+} from "../lib/token-exchange.ts";
 
 const routes = new OpenAPIHono<HonoEnv>({
   defaultHook: (result, c) => {
@@ -21,9 +24,7 @@ const routes = new OpenAPIHono<HonoEnv>({
     return c.json(
       OAuthErrorResponseSchema.parse({
         error: "invalid_request",
-        error_description: c.req.path.endsWith("/token")
-          ? "Token request is malformed"
-          : "Authorization request is malformed",
+        error_description: malformedOAuthRequestDescription(c.req.path),
       }),
       400,
     );
@@ -63,14 +64,10 @@ const AuthorizeRoute = createRoute({
     302: {
       description: "Redirect to consent or the registered client callback",
     },
-    400: {
-      content: {
-        "application/json": {
-          schema: OAuthErrorResponseSchema,
-        },
-      },
-      description: "OAuth request cannot be safely redirected",
-    },
+    400: oauthErrorResponse(
+      OAuthErrorResponseSchema,
+      "OAuth request cannot be safely redirected",
+    ),
   },
 });
 
@@ -192,6 +189,7 @@ const TokenRoute = createRoute({
   method: "post",
   path: "/token",
   operationId: "exchangeOAuthToken",
+  middleware: [oauthFormRequestMiddleware(malformedTokenRequest)] as const,
   tags: ["OAuth"],
   summary: "Exchange an authorization code or refresh token",
   request: {
@@ -213,39 +211,19 @@ const TokenRoute = createRoute({
       },
       description: "OAuth token response",
     },
-    400: {
-      content: {
-        "application/json": {
-          schema: OAuthErrorResponseSchema,
-        },
-      },
-      description: "Invalid OAuth token request or grant",
-    },
-    401: {
-      content: {
-        "application/json": {
-          schema: OAuthErrorResponseSchema,
-        },
-      },
-      description: "Client authentication failed",
-    },
+    400: oauthErrorResponse(
+      OAuthErrorResponseSchema,
+      "Invalid OAuth token request or grant",
+    ),
+    401: oauthErrorResponse(
+      OAuthErrorResponseSchema,
+      "Client authentication failed",
+    ),
   },
 });
 
 routes.openapi(TokenRoute, async (c) => {
   try {
-    if (!isFormUrlEncoded(c.req.header("Content-Type"))) {
-      throw malformedTokenRequest();
-    }
-
-    if (c.req.header("Authorization") !== undefined) {
-      throw new OAuthTokenError(
-        "invalid_client",
-        "Client credentials must be sent in the request body",
-        401,
-      );
-    }
-
     const input = parseOAuthTokenForm(c.req.valid("form"));
 
     const token =
@@ -266,6 +244,84 @@ routes.openapi(TokenRoute, async (c) => {
       }),
       200,
     );
+  } catch (error) {
+    if (!(error instanceof OAuthTokenError)) throw error;
+    return c.json(encodeOAuthError(error), error.status);
+  }
+});
+
+/**
+ * POST /revoke
+ */
+
+const OAuthRevocationFormSchema = z
+  .object({
+    client_id: z.string().optional().openapi({
+      example: "019c1234-5678-7000-8000-000000000000",
+    }),
+    client_secret: z.string().optional().openapi({ example: "ab_cs_..." }),
+    token: z.string().optional().openapi({ example: "ab_rt_..." }),
+    token_type_hint: z.string().optional().openapi({
+      example: "refresh_token",
+    }),
+  })
+  .strict()
+  .openapi("OAuthRevocationForm");
+
+const OAuthRevocationInputSchema = OAuthClientCredentialsSchema.extend({
+  token: z.string().min(1),
+  token_type_hint: z.string().min(1).max(64).optional(),
+})
+  .strict()
+  .transform((input) => ({
+    clientId: input.client_id,
+    clientSecret: input.client_secret,
+    token: input.token,
+  }));
+
+const RevokeRoute = createRoute({
+  method: "post",
+  path: "/revoke",
+  operationId: "revokeOAuthToken",
+  middleware: [oauthFormRequestMiddleware(malformedRevocationRequest)] as const,
+  tags: ["OAuth"],
+  summary: "Revoke an OAuth access or refresh token",
+  request: {
+    body: {
+      required: true,
+      content: {
+        "application/x-www-form-urlencoded": {
+          schema: OAuthRevocationFormSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Token is revoked or was not recognized",
+    },
+    400: oauthErrorResponse(
+      OAuthErrorResponseSchema,
+      "Invalid OAuth revocation request",
+    ),
+    401: oauthErrorResponse(
+      OAuthErrorResponseSchema,
+      "Client authentication failed",
+    ),
+  },
+});
+
+routes.use("/revoke", async (c, next) => {
+  c.header("Cache-Control", "no-store");
+  c.header("Pragma", "no-cache");
+  await next();
+});
+
+routes.openapi(RevokeRoute, async (c) => {
+  try {
+    const input = parseOAuthRevocationForm(c.req.valid("form"));
+    await revokeOAuthToken(c.get("db"), input);
+    return c.body(null, 200);
   } catch (error) {
     if (!(error instanceof OAuthTokenError)) throw error;
     return c.json(encodeOAuthError(error), error.status);
@@ -308,8 +364,59 @@ function parseOAuthTokenForm(input: z.infer<typeof OAuthTokenFormSchema>) {
   return result.data;
 }
 
+function parseOAuthRevocationForm(
+  input: z.infer<typeof OAuthRevocationFormSchema>,
+) {
+  if (!OAuthClientCredentialsSchema.safeParse(input).success) {
+    throw new OAuthTokenError(
+      "invalid_client",
+      "Client authentication failed",
+      401,
+    );
+  }
+
+  const result = OAuthRevocationInputSchema.safeParse(input);
+  if (!result.success) throw malformedRevocationRequest();
+  return result.data;
+}
+
 function malformedTokenRequest() {
   return new OAuthTokenError("invalid_request", "Token request is malformed");
+}
+
+function malformedRevocationRequest() {
+  return new OAuthTokenError(
+    "invalid_request",
+    "Revocation request is malformed",
+  );
+}
+
+function oauthFormRequestMiddleware(
+  malformedRequest: () => OAuthTokenError,
+): MiddlewareHandler<HonoEnv> {
+  return async (c, next) => {
+    if (!isFormUrlEncoded(c.req.header("Content-Type"))) {
+      const error = malformedRequest();
+      return c.json(encodeOAuthError(error), error.status);
+    }
+
+    if (c.req.header("Authorization") !== undefined) {
+      const error = new OAuthTokenError(
+        "invalid_client",
+        "Client credentials must be sent in the request body",
+        401,
+      );
+      return c.json(encodeOAuthError(error), error.status);
+    }
+
+    return await next();
+  };
+}
+
+function malformedOAuthRequestDescription(path: string) {
+  if (path.endsWith("/token")) return "Token request is malformed";
+  if (path.endsWith("/revoke")) return "Revocation request is malformed";
+  return "Authorization request is malformed";
 }
 
 function isFormUrlEncoded(contentType: string | undefined) {

@@ -1,8 +1,8 @@
-import type { Database } from "../../db/db.ts";
+import type { Database } from "../../../db/db.ts";
 import {
   generateOAuthAuthorizationRequestToken,
   hashOAuthCredential,
-} from "../../lib/oauth/crypto.ts";
+} from "../../../lib/oauth/crypto.ts";
 import { OAuthAuthorizationError } from "./errors.ts";
 import { resolveOAuthScopes } from "./scopes.ts";
 

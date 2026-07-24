@@ -1,12 +1,13 @@
-import type { Transaction } from "kysely";
-import type { Database } from "../../db/db.ts";
-import type { DB } from "../../db/schema.types.ts";
+import type { Database } from "../../../db/db.ts";
 import {
   generateOAuthAccessToken,
   generateOAuthRefreshToken,
   hashOAuthCredential,
-  verifyOAuthClientSecret,
-} from "../../lib/oauth/crypto.ts";
+} from "../../../lib/oauth/crypto.ts";
+import {
+  lockActiveOAuthClient,
+  verifyOAuthClientCredentials,
+} from "./client-authentication.ts";
 import { OAuthTokenError } from "./errors.ts";
 import { canonicalizeOAuthScopes } from "./scopes.ts";
 
@@ -41,7 +42,7 @@ export async function exchangeOAuthAuthorizationCode(
   db: Database,
   input: AuthorizationCodeExchangeInput,
 ): Promise<OAuthTokenResult> {
-  const verifiedSecretHash = await verifyClientCredentials(db, input);
+  const verifiedSecretHash = await verifyOAuthClientCredentials(db, input);
 
   return await db.transaction().execute(async (tx) => {
     await lockActiveOAuthClient(tx, input.clientId, verifiedSecretHash);
@@ -139,7 +140,7 @@ export async function exchangeOAuthRefreshToken(
   db: Database,
   input: RefreshTokenExchangeInput,
 ): Promise<OAuthTokenResult> {
-  const verifiedSecretHash = await verifyClientCredentials(db, input);
+  const verifiedSecretHash = await verifyOAuthClientCredentials(db, input);
 
   return await db.transaction().execute(async (tx) => {
     await lockActiveOAuthClient(tx, input.clientId, verifiedSecretHash);
@@ -243,55 +244,6 @@ export async function exchangeOAuthRefreshToken(
       scopes,
     };
   });
-}
-
-async function verifyClientCredentials(
-  db: Database,
-  input: { clientId: string; clientSecret: string },
-) {
-  const client = await db
-    .selectFrom("oauth_client")
-    .select("secret_hash")
-    .where("id", "=", input.clientId)
-    .executeTakeFirst();
-
-  if (
-    !client ||
-    !(await verifyOAuthClientSecret(input.clientSecret, client.secret_hash))
-  ) {
-    throw invalidClient();
-  }
-
-  return client.secret_hash;
-}
-
-async function lockActiveOAuthClient(
-  tx: Transaction<DB>,
-  clientId: string,
-  verifiedSecretHash: string,
-) {
-  const client = await tx
-    .selectFrom("oauth_client")
-    .select(["disabled_at", "secret_hash"])
-    .where("id", "=", clientId)
-    .forUpdate()
-    .executeTakeFirst();
-
-  if (!client || client.secret_hash !== verifiedSecretHash) {
-    throw invalidClient();
-  }
-
-  if (client.disabled_at != null) {
-    throw new OAuthTokenError("unauthorized_client", "Client is disabled");
-  }
-}
-
-function invalidClient() {
-  return new OAuthTokenError(
-    "invalid_client",
-    "Client authentication failed",
-    401,
-  );
 }
 
 function invalidAuthorizationCode() {

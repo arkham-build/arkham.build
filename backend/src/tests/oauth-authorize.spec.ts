@@ -2,9 +2,9 @@ import { createHash, randomUUID } from "node:crypto";
 import { describe, expect, vi } from "vitest";
 import type { appFactory } from "../app.ts";
 import type { Database } from "../db/db.ts";
-import { OAUTH_AUTHORIZATION_REQUEST_LIFETIME_MS } from "../features/oauth/authorization.ts";
-import { OAuthErrorResponseSchema } from "../features/oauth/errors.ts";
-import { resolveOAuthScopes } from "../features/oauth/scopes.ts";
+import { OAUTH_AUTHORIZATION_REQUEST_LIFETIME_MS } from "../features/oauth/lib/authorization.ts";
+import { OAuthErrorResponseSchema } from "../features/oauth/lib/errors.ts";
+import { resolveOAuthScopes } from "../features/oauth/lib/scopes.ts";
 import { test } from "./test-utils.ts";
 
 const WEB_REDIRECT_URI = "https://example.com/oauth/callback";

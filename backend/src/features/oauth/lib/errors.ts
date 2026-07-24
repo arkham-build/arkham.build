@@ -77,6 +77,18 @@ export class OAuthTokenError extends Error {
   }
 }
 
+export function oauthErrorResponse<TSchema extends z.ZodType>(
+  schema: TSchema,
+  description: string,
+) {
+  return {
+    content: {
+      "application/json": { schema },
+    },
+    description,
+  };
+}
+
 export function encodeOAuthError(
   error: OAuthAuthorizationError | OAuthTokenError,
 ) {

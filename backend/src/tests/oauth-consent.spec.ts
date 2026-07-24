@@ -3,7 +3,7 @@ import { OAuthConsentDetailsResponseSchema } from "@arkham-build/shared";
 import { describe, expect, vi } from "vitest";
 import type { appFactory } from "../app.ts";
 import type { Database } from "../db/db.ts";
-import { OAUTH_AUTHORIZATION_CODE_LIFETIME_MS } from "../features/oauth/consent.ts";
+import { OAUTH_AUTHORIZATION_CODE_LIFETIME_MS } from "../features/oauth/lib/consent.ts";
 import { createSession } from "../lib/auth/sessions.ts";
 import type { Config } from "../lib/config.ts";
 import { redactSensitivePath } from "../lib/logger.ts";

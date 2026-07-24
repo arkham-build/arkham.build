@@ -1,10 +1,10 @@
 import type { Transaction } from "kysely";
-import type { Database } from "../../db/db.ts";
-import type { DB } from "../../db/schema.types.ts";
+import type { Database } from "../../../db/db.ts";
+import type { DB } from "../../../db/schema.types.ts";
 import {
   generateOAuthAuthorizationCode,
   hashOAuthCredential,
-} from "../../lib/oauth/crypto.ts";
+} from "../../../lib/oauth/crypto.ts";
 import { canonicalizeOAuthScopes } from "./scopes.ts";
 
 export const OAUTH_AUTHORIZATION_CODE_LIFETIME_MS = 5 * 60 * 1000;

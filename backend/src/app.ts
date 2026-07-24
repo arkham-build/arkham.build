@@ -16,8 +16,9 @@ import customizationSheetRouter from "./features/customization_sheet/routes.ts";
 import decksRouter from "./features/decks/routes.ts";
 import fanMadeProjectInfoRouter from "./features/fan-made-content/routes.ts";
 import foldersRouter from "./features/folders/routes.ts";
-import oauthAccountRoutes from "./features/oauth/account-routes.ts";
-import oauthRoutes from "./features/oauth/routes.ts";
+import oauthRoutes from "./features/oauth/routes/tokens.ts";
+import oauthAccountRoutes from "./features/oauth/routes/account.ts";
+import oauthUserRoutes from "./features/oauth-user/routes.ts";
 import {
   errataRoutes,
   faqRoutes,
@@ -100,6 +101,10 @@ export function appFactory(
   app.use("/v2/oauth/*", publicCors);
   app.use("/v2/oauth/*", bodyLimit);
   app.route("/v2/oauth", oauthRoutes);
+
+  app.use("/v2/user/*", publicCors);
+  app.use("/v2/user/*", bodyLimit);
+  app.route("/v2/user", oauthUserRoutes);
 
   const v2Account = new Hono<HonoEnv>();
   v2Account.use("*", authenticatedCors);

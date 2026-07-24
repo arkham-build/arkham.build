@@ -4,14 +4,14 @@ import {
 } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { sessionAuth } from "../../lib/auth/session-auth-middleware.ts";
-import type { HonoEnv } from "../../lib/hono-env.ts";
+import { sessionAuth } from "../../../lib/auth/session-auth-middleware.ts";
+import type { HonoEnv } from "../../../lib/hono-env.ts";
 import {
   approveOAuthAuthorizationRequest,
   claimOAuthAuthorizationRequest,
   denyOAuthAuthorizationRequest,
   OAuthConsentError,
-} from "./consent.ts";
+} from "../lib/consent.ts";
 
 const routes = new Hono<HonoEnv>();
 
