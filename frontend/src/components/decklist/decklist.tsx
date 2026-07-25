@@ -207,27 +207,6 @@ export function Decklist(props: Props) {
             </ToggleGroupItem>
           </HotkeyTooltip>
         </ToggleGroup>
-        {enableChecklistMode && (
-          <>
-            <ToggleGroup
-              type="single"
-              value={checklistMode ? "checklist" : ""}
-              onValueChange={onChecklistModeChange}
-            >
-              <ToggleGroupItem
-                className={css["checklist-toggle"]}
-                value="checklist"
-              >
-                <ListChecksIcon /> {t("deck_view.checklist")}
-              </ToggleGroupItem>
-            </ToggleGroup>
-            {checklistMode && checkedCardQuantities.size > 0 && (
-              <Button onClick={onChecklistClear} size="sm" variant="bare">
-                {t("common.clear")}
-              </Button>
-            )}
-          </>
-        )}
         <Popover placement="bottom-start">
           <PopoverTrigger asChild>
             <Button iconOnly size="sm" variant="bare">
@@ -243,6 +222,27 @@ export function Decklist(props: Props) {
             </DropdownMenu>
           </PopoverContent>
         </Popover>
+        {enableChecklistMode && (
+          <>
+            <ToggleGroup
+              type="single"
+              value={checklistMode ? "checklist" : ""}
+              onValueChange={onChecklistModeChange}
+            >
+              <ToggleGroupItem
+                className={css["checklist-toggle"]}
+                value="checklist"
+              >
+                <ListChecksIcon /> {t("deck_view.checklist")}
+              </ToggleGroupItem>
+            </ToggleGroup>
+            {checklistMode && checkedCardQuantities.size > 0 && (
+              <Button onClick={onChecklistClear} size="xs" variant="bare">
+                {t("common.clear")}
+              </Button>
+            )}
+          </>
+        )}
       </nav>
 
       <div className={css["decklist"]} data-testid="view-decklist">

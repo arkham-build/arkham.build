@@ -75,6 +75,61 @@ test.describe("deck view", () => {
     await expect(page.getByTestId("deck-investigator-front")).toBeVisible();
   });
 
+  test("checklist (list mode)", async ({ page }) => {
+    await importStandardDeck(page);
+
+    const checklistToggle = page.getByRole("button", {
+      name: "Checklist",
+      exact: true,
+    });
+    await checklistToggle.click();
+
+    const firstCopy = page.getByRole("checkbox", {
+      name: "Mark Gabriel Carillo (1/2) as collected",
+      exact: true,
+    });
+    const secondCopy = page.getByRole("checkbox", {
+      name: "Mark Gabriel Carillo (2/2) as collected",
+      exact: true,
+    });
+
+    await expect(firstCopy).not.toBeChecked();
+    await expect(secondCopy).not.toBeChecked();
+
+    await page.locator("label").filter({ has: secondCopy }).click();
+
+    await expect(firstCopy).toBeChecked();
+    await expect(secondCopy).toBeChecked();
+
+    await page.getByRole("button", { name: "Clear", exact: true }).click();
+
+    await expect(firstCopy).not.toBeChecked();
+    await expect(secondCopy).not.toBeChecked();
+  });
+
+  test("checklist (scans mode)", async ({ page }) => {
+    await importStandardDeck(page);
+
+    await page.getByRole("button", { name: "Scans", exact: true }).click();
+    await page.getByRole("button", { name: "Checklist", exact: true }).click();
+
+    const cardToggle = page.getByRole("button", {
+      name: "Mark Gabriel Carillo as collected",
+      exact: true,
+    });
+
+    await expect(cardToggle).toHaveAttribute("aria-pressed", "false");
+
+    await cardToggle.click();
+    await expect(cardToggle).toHaveAttribute("aria-pressed", "false");
+
+    await cardToggle.click();
+    await expect(cardToggle).toHaveAttribute("aria-pressed", "true");
+
+    await page.getByRole("button", { name: "Clear", exact: true }).click();
+    await expect(cardToggle).toHaveAttribute("aria-pressed", "false");
+  });
+
   test("render bonded cards in relations", async ({ page }) => {
     await importDeckFromFile(page, "bonded.json", {
       navigate: "view",
