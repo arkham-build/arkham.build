@@ -10,7 +10,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
-import { countGroupRows, type DeckGrouping } from "@/store/lib/deck-grouping";
 import { sortPresetId } from "@/store/lib/list-display";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckGroups } from "@/store/selectors/decks";
@@ -250,7 +249,7 @@ export function Decklist(props: Props) {
           <DecklistSection
             size={Object.keys(deck.slots).length}
             title={labels["slots"]}
-            columns={getColumnMode(viewMode as ViewMode, groups.slots)}
+            columns={getColumnMode(viewMode as ViewMode)}
           >
             <DecklistGroup
               checkedCardQuantities={
@@ -269,7 +268,7 @@ export function Decklist(props: Props) {
           <div className={css["decklist-additional"]}>
             {groups.sideSlots && (
               <DecklistSection
-                columns={getColumnMode(viewMode as ViewMode, groups.sideSlots)}
+                columns={getColumnMode(viewMode as ViewMode)}
                 showTitle
                 title={labels["sideSlots"]}
                 extraInfos={`${computeXPSum(deck, "sideSlots")} ${t("common.xp")}`}
@@ -289,10 +288,7 @@ export function Decklist(props: Props) {
             )}
             {groups.bondedSlots && (
               <DecklistSection
-                columns={getColumnMode(
-                  viewMode as ViewMode,
-                  groups.bondedSlots,
-                )}
+                columns={getColumnMode(viewMode as ViewMode)}
                 title={labels["bondedSlots"]}
                 showTitle
               >
@@ -311,7 +307,7 @@ export function Decklist(props: Props) {
 
             {groups.extraSlots && (
               <DecklistSection
-                columns={getColumnMode(viewMode as ViewMode, groups.extraSlots)}
+                columns={getColumnMode(viewMode as ViewMode)}
                 title={labels["extraSlots"]}
                 showTitle
               >
@@ -339,9 +335,9 @@ export function Decklist(props: Props) {
   );
 }
 
-function getColumnMode(viewMode: ViewMode, group: DeckGrouping) {
+function getColumnMode(viewMode: ViewMode) {
   if (viewMode === "scans") return "scans";
-  return countGroupRows(group) < 5 ? "single" : "auto";
+  return "auto";
 }
 
 function computeXPSum(deck: ResolvedDeck, slotKey: "sideSlots" | "slots") {
