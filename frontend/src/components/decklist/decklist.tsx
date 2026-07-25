@@ -297,9 +297,13 @@ export function Decklist(props: Props) {
                 showTitle
               >
                 <DecklistGroup
+                  checkedCardQuantities={
+                    checklistMode ? checkedCardQuantities : undefined
+                  }
                   deck={deck}
                   grouping={groups.bondedSlots}
                   getListCardProps={getListCardProps}
+                  onCardCheckedQuantityChange={onCardCheckedQuantityChange}
                   viewMode={viewMode as ViewMode}
                 />
               </DecklistSection>

@@ -130,6 +130,28 @@ test.describe("deck view", () => {
     await expect(cardToggle).toHaveAttribute("aria-pressed", "false");
   });
 
+  test("checklist includes bonded cards", async ({ page }) => {
+    await importDeckFromFile(page, "bonded.json", {
+      navigate: "view",
+    });
+
+    await page.getByRole("button", { name: "Checklist", exact: true }).click();
+
+    const firstCopy = page.getByRole("checkbox", {
+      name: "Mark Soothing Melody (1/3) as collected",
+      exact: true,
+    });
+    const thirdCopy = page.getByRole("checkbox", {
+      name: "Mark Soothing Melody (3/3) as collected",
+      exact: true,
+    });
+
+    await expect(firstCopy).not.toBeChecked();
+    await page.locator("label").filter({ has: thirdCopy }).click();
+    await expect(firstCopy).toBeChecked();
+    await expect(thirdCopy).toBeChecked();
+  });
+
   test("render bonded cards in relations", async ({ page }) => {
     await importDeckFromFile(page, "bonded.json", {
       navigate: "view",
