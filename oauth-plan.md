@@ -749,7 +749,7 @@ Add account API integration tests for listing, account isolation, disabled-clien
 
 **Deliverable:** users can inspect and revoke an application's accumulated account access from account settings without seeing individual credentials.
 
-## Phase 11 — Deliver the external API contract and integration guide
+## Phase 11 — Deliver the external API contract and integration guide - DONE
 
 ### Implementation
 

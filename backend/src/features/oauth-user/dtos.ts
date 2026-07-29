@@ -22,15 +22,21 @@ export const OAuthUserErrorSchema = z
 
 export const OAuthProfileResponseSchema = z
   .object({
-    id: z.uuid(),
+    id: z.uuid().meta({ description: "Stable arkham.build account ID" }),
     username: z.string(),
   })
   .strict();
 
-export const OAuthDeckSourceSchema = z.enum(["account", "arkhamdb"]);
+export const OAuthDeckSourceSchema = z.enum(["account", "arkhamdb"]).meta({
+  description:
+    "Deck provider. Account IDs are strings; ArkhamDB IDs are positive integers in JSON request bodies.",
+});
 export type OAuthDeckSource = z.infer<typeof OAuthDeckSourceSchema>;
 
-export const OAuthDeckSchema = DeckSchema.strict();
+export const OAuthDeckSchema = DeckSchema.strict().meta({
+  description:
+    "Full external deck representation. Write operations ignore server-owned identity, provider, timestamp, version, and history-link fields.",
+});
 export type OAuthDeck = z.infer<typeof OAuthDeckSchema>;
 
 const OAuthAccountDeckTargetSchema = z
@@ -47,7 +53,11 @@ const OAuthArkhamDbDeckTargetSchema = z
   })
   .strict();
 
-export const OAuthDeckRouteIdSchema = z.string();
+export const OAuthDeckRouteIdSchema = z.string().meta({
+  description:
+    "Provider-specific deck ID encoded as a path segment: an account string ID or an ArkhamDB positive integer.",
+  examples: ["a148f775-4eeb-4c13-9340-60f6b8527512", "12345"],
+});
 
 export const OAuthDeckTargetSchema = z.discriminatedUnion("source", [
   OAuthAccountDeckTargetSchema,
@@ -89,7 +99,10 @@ export const OAuthDeckManifestResponseSchema = z
 
 export const OAuthDeckBatchRequestSchema = z
   .object({
-    decks: z.array(OAuthDeckTargetSchema).max(DECK_BATCH_TARGET_LIMIT),
+    decks: z
+      .array(OAuthDeckTargetSchema)
+      .max(DECK_BATCH_TARGET_LIMIT)
+      .meta({ description: "At most 250 source-and-ID targets" }),
   })
   .strict();
 
@@ -98,5 +111,10 @@ export const OAuthDeckBatchResponseSchema = z
   .strict();
 
 export const OAuthDeckDeleteQuerySchema = z
-  .object({ all: z.enum(["true", "false"]).optional() })
+  .object({
+    all: z.enum(["true", "false"]).optional().meta({
+      description:
+        "When true, delete the selected deck and its previous history chain",
+    }),
+  })
   .strict();

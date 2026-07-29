@@ -3,9 +3,12 @@ import { z, ZodType } from "zod";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { isWellFormedRedirectUri } from "../../../lib/oauth/redirect-uri.ts";
 import {
+  OAuthAuthorizationCodeTokenRequestSchema,
   OAuthAuthorizationQuerySchema,
   OAuthErrorResponseSchema,
+  OAuthRefreshTokenRequestSchema,
   OAuthRevocationFormSchema,
+  OAuthRevocationRequestSchema,
   OAuthTokenFormSchema,
   OAuthTokenResponseSchema,
 } from "../dtos.ts";
@@ -90,28 +93,16 @@ const OAuthClientCredentialsSchema = z.object({
 });
 
 const OAuthAuthorizationCodeExchangeFormSchema =
-  OAuthClientCredentialsSchema.extend({
-    grant_type: z.literal("authorization_code"),
-    code: z.string().min(1),
-    redirect_uri: z.string().min(1),
-  })
-    .strict()
-    .transform((input) => ({
-      grantType: input.grant_type,
-      clientId: input.client_id,
-      clientSecret: input.client_secret,
-      code: input.code,
-      redirectUri: input.redirect_uri,
-    }));
+  OAuthAuthorizationCodeTokenRequestSchema.transform((input) => ({
+    grantType: input.grant_type,
+    clientId: input.client_id,
+    clientSecret: input.client_secret,
+    code: input.code,
+    redirectUri: input.redirect_uri,
+  }));
 
-const OAuthRefreshTokenExchangeFormSchema = OAuthClientCredentialsSchema.extend(
-  {
-    grant_type: z.literal("refresh_token"),
-    refresh_token: z.string().min(1),
-  },
-)
-  .strict()
-  .transform((input) => ({
+const OAuthRefreshTokenExchangeFormSchema =
+  OAuthRefreshTokenRequestSchema.transform((input) => ({
     grantType: input.grant_type,
     clientId: input.client_id,
     clientSecret: input.client_secret,
@@ -151,16 +142,13 @@ routes.post(
   },
 );
 
-const OAuthRevocationInputSchema = OAuthClientCredentialsSchema.extend({
-  token: z.string().min(1),
-  token_type_hint: z.string().min(1).max(64).optional(),
-})
-  .strict()
-  .transform((input) => ({
+const OAuthRevocationInputSchema = OAuthRevocationRequestSchema.transform(
+  (input) => ({
     clientId: input.client_id,
     clientSecret: input.client_secret,
     token: input.token,
-  }));
+  }),
+);
 
 routes.use("/revoke", async (c, next) => {
   c.header("Cache-Control", "no-store");
