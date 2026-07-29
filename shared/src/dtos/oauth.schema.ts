@@ -32,3 +32,28 @@ export const OAuthConsentDetailsResponseSchema = z
 export type OAuthConsentDetailsResponse = z.infer<
   typeof OAuthConsentDetailsResponseSchema
 >;
+
+export const OAuthGrantSchema = z
+  .object({
+    client: z
+      .object({
+        id: z.uuid(),
+        name: z.string(),
+        status: z.enum(["active", "disabled"]),
+      })
+      .strict(),
+    scopes: z.array(OAuthScopeSchema),
+    grantedAt: z.iso.datetime(),
+    lastAuthorizedAt: z.iso.datetime(),
+  })
+  .strict();
+export type OAuthGrant = z.infer<typeof OAuthGrantSchema>;
+
+export const OAuthGrantListResponseSchema = z
+  .object({
+    grants: z.array(OAuthGrantSchema),
+  })
+  .strict();
+export type OAuthGrantListResponse = z.infer<
+  typeof OAuthGrantListResponseSchema
+>;

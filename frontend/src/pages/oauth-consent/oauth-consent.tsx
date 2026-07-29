@@ -1,7 +1,6 @@
 import {
   OAuthAuthorizationRequestTokenSchema,
   type OAuthConsentDetailsResponse,
-  type OAuthScope,
 } from "@arkham-build/shared";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -14,32 +13,11 @@ import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
 import { useHttpClient } from "@/store/services/http-client.context";
 import { ApiError } from "@/store/services/requests/shared";
+import { OAUTH_SCOPE_TRANSLATION_KEYS } from "@/utils/oauth-scopes";
 import { AuthLayout } from "../auth/auth-layout";
 import { createAuthRedirectPath, getCurrentLocalPath } from "../auth/return-to";
 import css from "./oauth-consent.module.css";
 import { claimOAuthAuthorizationRequest } from "./requests";
-
-const SCOPE_TRANSLATION_KEYS: Record<
-  OAuthScope,
-  { description: string; title: string }
-> = {
-  "profile:read": {
-    title: "oauth_consent.scopes.profile_read.title",
-    description: "oauth_consent.scopes.profile_read.description",
-  },
-  "decks:read": {
-    title: "oauth_consent.scopes.decks_read.title",
-    description: "oauth_consent.scopes.decks_read.description",
-  },
-  "decks:write": {
-    title: "oauth_consent.scopes.decks_write.title",
-    description: "oauth_consent.scopes.decks_write.description",
-  },
-  "decks:delete": {
-    title: "oauth_consent.scopes.decks_delete.title",
-    description: "oauth_consent.scopes.decks_delete.description",
-  },
-};
 
 type OAuthConsentDecision = "approve" | "deny";
 
@@ -108,7 +86,7 @@ export function OAuthConsentView(props: OAuthConsentViewProps) {
         </h2>
         <ul className={css["permissions"]}>
           {details.scopes.map((scope) => {
-            const keys = SCOPE_TRANSLATION_KEYS[scope];
+            const keys = OAUTH_SCOPE_TRANSLATION_KEYS[scope];
             return (
               <li key={scope}>
                 <strong>{t(keys.title)}</strong>

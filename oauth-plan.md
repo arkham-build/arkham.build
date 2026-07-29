@@ -703,7 +703,7 @@ Add integration tests for both providers covering create, full replacement, serv
 
 **Deliverable:** a scoped external client can create, replace, upgrade, and delete account or ArkhamDB decks while preserving each provider's existing history semantics.
 
-## Phase 10 — Deliver connected-app management
+## Phase 10 — Deliver connected-app management - DONE
 
 ### Implementation
 

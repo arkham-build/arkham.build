@@ -1619,6 +1619,20 @@
     "settings": {
       "account": {
         "danger_zone": "Danger zone",
+        "connected_apps": {
+          "error": "Connected applications could not be loaded.",
+          "granted_at": "Access granted",
+          "last_authorized_at": "Last authorized",
+          "loading": "Loading connected applications...",
+          "permissions": "Permissions",
+          "revoke_confirm": "Revoke {{clientName}}'s access to your account?",
+          "revoke_error": "Failed to revoke {{clientName}}: {{error}}",
+          "revoking_app": "Revoking access for {{clientName}}...",
+          "status": {
+            "active": "Connected",
+            "disabled": "Disabled"
+          }
+        },
         "delete": {
           "confirm_help": "Type {{username}} to confirm account deletion.",
           "confirm_label": "Confirmation",
@@ -1647,6 +1661,7 @@
           "title": "Credentials"
         },
         "oauth": {
+          "arkhamcards_help": "The ArkhamCards app can be connected from its settings.",
           "connect": "Connect",
           "connect_help": "Connect your {{provider}} account to sync your decks and login with it.",
           "connected": "Connected",
@@ -1659,6 +1674,7 @@
           "last_synced_at": "Last sync",
           "none": "None",
           "providers": {
+            "arkhamcards": "Arkham Cards",
             "arkhamdb": "ArkhamDB"
           },
           "reconnect": "Refresh",

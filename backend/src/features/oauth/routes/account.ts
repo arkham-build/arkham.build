@@ -1,9 +1,11 @@
 import {
   OAuthAuthorizationRequestTokenSchema,
   OAuthConsentDetailsResponseSchema,
+  OAuthGrantListResponseSchema,
 } from "@arkham-build/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { z } from "zod";
 import { sessionAuth } from "../../../lib/auth/session-auth-middleware.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import {
@@ -12,8 +14,20 @@ import {
   denyOAuthAuthorizationRequest,
   OAuthConsentError,
 } from "../lib/consent.ts";
+import { listOAuthGrants, revokeOAuthGrant } from "../lib/grants.ts";
 
 const routes = new Hono<HonoEnv>();
+const OAuthClientIdSchema = z.uuid();
+
+routes.get("/grants", sessionAuth(), async (c) => {
+  const response = await listOAuthGrants(c.get("db"), c.get("account").id);
+  return c.json(OAuthGrantListResponseSchema.parse(response));
+});
+
+routes.delete("/grants/:clientId", sessionAuth(), async (c) => {
+  await revokeOAuthGrant(c.get("db"), c.get("account").id, oauthClientId(c));
+  return c.body(null, 204);
+});
 
 routes.post(
   "/authorization-requests/:token/claim",
@@ -68,6 +82,15 @@ routes.post("/authorization-requests/:token/deny", sessionAuth(), async (c) => {
     throw mapConsentError(error);
   }
 });
+
+function oauthClientId(c: { req: { param(name: string): string } }) {
+  const result = OAuthClientIdSchema.safeParse(c.req.param("clientId"));
+  if (!result.success) {
+    throw new HTTPException(400, { message: "OAuth client ID is invalid" });
+  }
+
+  return result.data;
+}
 
 function requestToken(c: { req: { param(name: string): string } }) {
   const result = OAuthAuthorizationRequestTokenSchema.safeParse(
