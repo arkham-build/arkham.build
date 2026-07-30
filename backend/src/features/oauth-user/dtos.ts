@@ -59,6 +59,8 @@ export const OAuthDeckRouteIdSchema = z.string().meta({
   examples: ["a148f775-4eeb-4c13-9340-60f6b8527512", "12345"],
 });
 
+export const OAuthArkhamDbDeckRouteIdSchema = z.string().regex(/^[1-9][0-9]*$/);
+
 export const OAuthDeckTargetSchema = z.discriminatedUnion("source", [
   OAuthAccountDeckTargetSchema,
   OAuthArkhamDbDeckTargetSchema,
@@ -84,9 +86,15 @@ const OAuthDeckProviderStateSchema = z
   .object({ available: z.boolean() })
   .strict();
 
+const OAuthArkhamDbSyncTokenSchema = z.uuid().nullable().meta({
+  description:
+    "Opaque token selecting the exact ArkhamDB snapshot returned by the manifest, or null when ArkhamDB was not included or available",
+});
+
 export const OAuthDeckManifestResponseSchema = z
   .object({
     version: z.string(),
+    arkhamdbSyncToken: OAuthArkhamDbSyncTokenSchema,
     providers: z
       .object({
         account: OAuthDeckProviderStateSchema,
@@ -99,12 +107,25 @@ export const OAuthDeckManifestResponseSchema = z
 
 export const OAuthDeckBatchRequestSchema = z
   .object({
+    arkhamdbSyncToken: OAuthArkhamDbSyncTokenSchema.optional(),
     decks: z
       .array(OAuthDeckTargetSchema)
       .max(DECK_BATCH_TARGET_LIMIT)
       .meta({ description: "At most 250 source-and-ID targets" }),
   })
-  .strict();
+  .strict()
+  .superRefine((input, context) => {
+    if (
+      input.arkhamdbSyncToken == null &&
+      input.decks.some((deck) => deck.source === "arkhamdb")
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "ArkhamDB batch targets require a manifest sync token",
+        path: ["arkhamdbSyncToken"],
+      });
+    }
+  });
 
 export const OAuthDeckBatchResponseSchema = z
   .object({ decks: z.array(OAuthDeckSchema) })

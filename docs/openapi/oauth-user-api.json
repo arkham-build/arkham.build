@@ -354,7 +354,7 @@
         "operationId": "getOAuthDeckManifest",
         "tags": ["User decks"],
         "summary": "Get the user's deck manifest",
-        "description": "Requires decks:read. Without a source filter, ArkhamDB failure produces a partial 200 response with account decks and providers.arkhamdb.available=false.",
+        "description": "Requires decks:read. Manifests that include ArkhamDB perform an upstream conditional sync and return an opaque snapshot token for consistent batch reads. ArkhamDB failure produces a partial 200 response with account decks and providers.arkhamdb.available=false.",
         "security": [
           {
             "OAuthBearer": ["decks:read"]
@@ -440,7 +440,7 @@
         "operationId": "getOAuthDeckBatch",
         "tags": ["User decks"],
         "summary": "Get a batch of decks",
-        "description": "Requires decks:read. Accepts at most 250 provider-specific targets, preserves request order, and fails the whole request if any target is missing or unavailable.",
+        "description": "Requires decks:read. Accepts at most 250 provider-specific targets and preserves request order. ArkhamDB targets require the snapshot token returned by the manifest endpoint. The whole request fails if any target or the selected snapshot is unavailable.",
         "security": [
           {
             "OAuthBearer": ["decks:read"]
@@ -519,6 +519,16 @@
           },
           "404": {
             "description": "A deck was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The selected ArkhamDB snapshot is no longer available",
             "content": {
               "application/json": {
                 "schema": {
@@ -1408,7 +1418,9 @@
             ]
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 8,
+            "pattern": "^\\d+\\.\\d+$"
           },
           "xp_adjustment": {
             "anyOf": [
@@ -1459,6 +1471,19 @@
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
+          "arkhamdbSyncToken": {
+            "description": "Opaque token selecting the exact ArkhamDB snapshot returned by the manifest, or null when ArkhamDB was not included or available",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "decks": {
             "description": "At most 250 source-and-ID targets",
             "maxItems": 250,
@@ -1701,7 +1726,9 @@
                   ]
                 },
                 "version": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 8,
+                  "pattern": "^\\d+\\.\\d+$"
                 },
                 "xp_adjustment": {
                   "anyOf": [
@@ -1833,6 +1860,19 @@
           "version": {
             "type": "string"
           },
+          "arkhamdbSyncToken": {
+            "description": "Opaque token selecting the exact ArkhamDB snapshot returned by the manifest, or null when ArkhamDB was not included or available",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "providers": {
             "type": "object",
             "properties": {
@@ -1912,7 +1952,7 @@
             }
           }
         },
-        "required": ["version", "providers", "decks"],
+        "required": ["version", "arkhamdbSyncToken", "providers", "decks"],
         "additionalProperties": false
       },
       "OAuthDeckRouteId": {

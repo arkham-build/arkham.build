@@ -11,6 +11,13 @@ export const DECK_EXILE_STRING_MAX_BYTES = 4 * 1024;
 export const DECK_ID_MAX_LENGTH = 255;
 export const DECK_PROBLEM_MAX_LENGTH = 255;
 export const DECK_TAGS_MAX_BYTES = 1024;
+export const DECK_VERSION_MAX_LENGTH = 8;
+
+export const DeckVersionSchema = z
+  .string()
+  .max(DECK_VERSION_MAX_LENGTH)
+  .regex(/^\d+\.\d+$/);
+export type DeckVersion = z.infer<typeof DeckVersionSchema>;
 
 export const DeckStringIdSchema = z.string().max(DECK_ID_MAX_LENGTH);
 export const DeckIdSchema = z.union([z.number(), DeckStringIdSchema]);
@@ -57,7 +64,7 @@ export const DeckSchema = z.object({
   taboo_id: z.number().nullish(),
   tags: maxUtf8Bytes(DECK_TAGS_MAX_BYTES),
   user_id: z.number().nullish(),
-  version: z.string(),
+  version: DeckVersionSchema,
   xp_adjustment: z.number().nullish(),
   xp_spent: z.number().nullish(),
   xp: z.number().nullish(),

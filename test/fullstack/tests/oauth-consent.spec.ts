@@ -47,8 +47,11 @@ test.describe("OAuth consent", () => {
     expect(denialCallback.searchParams.get("error")).toBe("access_denied");
   });
 
-  test("preserves consent through profile completion", async ({ page }) => {
+  test("preserves consent through profile completion and ArkhamDB connection", async ({
+    page,
+  }) => {
     const account = await createIncompleteEmailAccount();
+    const arkhamDbUser = await createArkhamDbUser({ createDeck: false });
     const clientId = await createOAuthClient("Profile completion OAuth client");
 
     await startAuthorization(page, clientId, "profile-state");
@@ -57,6 +60,12 @@ test.describe("OAuth consent", () => {
     await page.getByRole("button", { name: "Log in" }).click();
 
     await expect(page).toHaveURL(/\/auth\/signup\/complete\?redirect=/);
+    const profileCompletionUrl = page.url();
+
+    await page.getByRole("link", { name: "Connect", exact: true }).click();
+    await authorizeArkhamDbOAuth(page, arkhamDbUser);
+    await expect(page).toHaveURL(profileCompletionUrl);
+
     await page.locator("#username").fill(`oauth-profile-${randomUUID()}`);
     await page.getByRole("button", { name: "Complete your profile" }).click();
 

@@ -2383,10 +2383,10 @@ CREATE INDEX idx_grimoire_entry_section ON public.grimoire_entry USING btree (se
 
 
 --
--- Name: idx_oauth_access_token_expiry_active; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_oauth_access_token_expiry; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_oauth_access_token_expiry_active ON public.oauth_access_token USING btree (expires_at) WHERE (revoked_at IS NULL);
+CREATE INDEX idx_oauth_access_token_expiry ON public.oauth_access_token USING btree (expires_at, id);
 
 
 --
@@ -2404,10 +2404,10 @@ CREATE INDEX idx_oauth_access_token_refresh_token_id ON public.oauth_access_toke
 
 
 --
--- Name: idx_oauth_authorization_code_expiry_pending; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_oauth_authorization_code_expiry; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_oauth_authorization_code_expiry_pending ON public.oauth_authorization_code USING btree (expires_at) WHERE ((used_at IS NULL) AND (revoked_at IS NULL));
+CREATE INDEX idx_oauth_authorization_code_expiry ON public.oauth_authorization_code USING btree (expires_at, id);
 
 
 --
@@ -2453,10 +2453,10 @@ CREATE INDEX idx_oauth_authorization_request_client_redirect_pending ON public.o
 
 
 --
--- Name: idx_oauth_authorization_request_expiry_pending; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_oauth_authorization_request_expiry; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_oauth_authorization_request_expiry_pending ON public.oauth_authorization_request USING btree (expires_at) WHERE (consumed_at IS NULL);
+CREATE INDEX idx_oauth_authorization_request_expiry ON public.oauth_authorization_request USING btree (expires_at, id);
 
 
 --
@@ -2467,10 +2467,10 @@ CREATE INDEX idx_oauth_grant_account_id ON public.oauth_grant USING btree (accou
 
 
 --
--- Name: idx_oauth_refresh_token_expiry_active; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_oauth_refresh_token_expiry; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_oauth_refresh_token_expiry_active ON public.oauth_refresh_token USING btree (expires_at) WHERE (revoked_at IS NULL);
+CREATE INDEX idx_oauth_refresh_token_expiry ON public.oauth_refresh_token USING btree (expires_at, id);
 
 
 --
@@ -3167,5 +3167,4 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260508231500'),
     ('20260705120000'),
     ('20260718074916'),
-    ('20260721191533'),
-    ('20260722150000');
+    ('20260721191533');

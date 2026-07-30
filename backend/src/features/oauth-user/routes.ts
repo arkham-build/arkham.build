@@ -14,6 +14,7 @@ import {
   upgradeOAuthDeck,
 } from "./deck-service.ts";
 import {
+  OAuthArkhamDbDeckRouteIdSchema,
   OAuthDeckBatchRequestSchema,
   OAuthDeckBatchResponseSchema,
   OAuthDeckDeleteQuerySchema,
@@ -73,10 +74,10 @@ routes.post(
   oauthBearerAuth(["decks:read"]),
   zodValidator("json", OAuthDeckBatchRequestSchema),
   async (c) => {
-    const { decks } = c.req.valid("json");
+    const { arkhamdbSyncToken, decks } = c.req.valid("json");
     return c.json(
       OAuthDeckBatchResponseSchema.parse({
-        decks: await getOAuthDeckBatch(c, decks),
+        decks: await getOAuthDeckBatch(c, decks, arkhamdbSyncToken),
       }),
       200,
     );
@@ -85,7 +86,7 @@ routes.post(
 
 routes.get("/decks/:source/:id", oauthBearerAuth(["decks:read"]), async (c) => {
   const source = deckSource(c.req.param("source"));
-  const id = c.req.param("id");
+  const id = deckId(source, c.req.param("id"));
   return c.json(OAuthDeckSchema.parse(await getOAuthDeck(c, source, id)), 200);
 });
 
@@ -110,7 +111,7 @@ routes.put(
   zodValidator("json", OAuthDeckSchema),
   async (c) => {
     const source = deckSource(c.req.param("source"));
-    const id = c.req.param("id");
+    const id = deckId(source, c.req.param("id"));
     return c.json(
       OAuthDeckSchema.parse(
         await updateOAuthDeck(c, source, id, c.req.valid("json")),
@@ -126,7 +127,7 @@ routes.delete(
   zodValidator("query", OAuthDeckDeleteQuerySchema),
   async (c) => {
     const source = deckSource(c.req.param("source"));
-    const id = c.req.param("id");
+    const id = deckId(source, c.req.param("id"));
     await deleteOAuthDeck(c, source, id, c.req.valid("query").all === "true");
     return c.body(null, 204);
   },
@@ -138,7 +139,7 @@ routes.post(
   zodValidator("json", OAuthDeckSchema),
   async (c) => {
     const source = deckSource(c.req.param("source"));
-    const id = c.req.param("id");
+    const id = deckId(source, c.req.param("id"));
     return c.json(
       OAuthDeckSchema.parse(
         await upgradeOAuthDeck(c, source, id, c.req.valid("json")),
@@ -150,6 +151,14 @@ routes.post(
 
 function deckSource(value: string): OAuthDeckSource {
   const result = OAuthDeckSourceSchema.safeParse(value);
+  if (!result.success) throw invalidDeckRoute();
+  return result.data;
+}
+
+function deckId(source: OAuthDeckSource, value: string) {
+  if (source === "account") return value;
+
+  const result = OAuthArkhamDbDeckRouteIdSchema.safeParse(value);
   if (!result.success) throw invalidDeckRoute();
   return result.data;
 }

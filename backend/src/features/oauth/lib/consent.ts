@@ -148,8 +148,6 @@ async function lockOAuthAuthorizationRequest(
     throw new OAuthConsentError("request_unavailable");
   }
 
-  const account = await lockOAuthAccount(tx, accountId);
-
   const client = await tx
     .selectFrom("oauth_client")
     .select(["disabled_at", "name"])
@@ -161,6 +159,7 @@ async function lockOAuthAuthorizationRequest(
     throw new OAuthConsentError("client_unavailable");
   }
 
+  const account = await lockOAuthAccount(tx, accountId);
   const request = await tx
     .selectFrom("oauth_authorization_request")
     .select([

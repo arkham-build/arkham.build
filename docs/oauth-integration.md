@@ -23,7 +23,7 @@ or a native custom scheme:
 
 ```text
 https://example.com/oauth/callback
-http://127.0.0.1:4567/oauth/callback
+http://localhost:4567/oauth/callback
 com.example.app:/oauth/callback
 ```
 
@@ -205,13 +205,6 @@ repeated requests all return `200` with an empty body.
 
 A user can revoke the entire client grant from arkham.build account settings.
 
-## Native apps
-
-A native app may receive a code through a loopback or custom-scheme redirect,
-but it must not hold the client secret. It forwards the code to its own
-authenticated backend, and that backend performs the token exchange. Direct
-exchange from an installed app is not supported.
-
 ## Deck API
 
 Deck endpoints use two providers:
@@ -225,26 +218,47 @@ unchanged.
 
 Account storage is always available. ArkhamDB requires a linked identity and a
 reachable upstream. If ArkhamDB is unavailable, a manifest still returns
-account decks with `providers.arkhamdb.available=false`. An ArkhamDB batch,
-single-deck read, or mutation returns `503`.
+account decks with `providers.arkhamdb.available=false` and an
+`arkhamdbSyncToken` of `null`. A single-deck read or mutation that requires an
+unavailable ArkhamDB connection returns `503`.
 
 ### Manifest
 
 `GET /v2/user/decks/manifest` requires `decks:read`. Use `source=account` or
-`source=arkhamdb` to select one provider. The manifest version changes whenever
-a deck's source, ID, version, or update time changes.
+`source=arkhamdb` to select one provider. A manifest that includes ArkhamDB
+performs a conditional upstream synchronization. The manifest version changes
+whenever a deck's source, ID, version, or update time changes.
+
+A successful ArkhamDB manifest includes an opaque `arkhamdbSyncToken`. Use this
+token for every ArkhamDB batch belonging to that manifest. Batches read the
+exact stored snapshot and do not contact ArkhamDB again.
 
 <!-- curl:deck-manifest -->
 ```bash
-curl --request GET "$API_BASE/v2/user/decks/manifest?source=account" \
+curl --request GET "$API_BASE/v2/user/decks/manifest?source=arkhamdb" \
   --header "Authorization: Bearer $ACCESS_TOKEN"
+```
+
+```json
+{
+  "version": "...",
+  "arkhamdbSyncToken": "019c1234-5678-7000-8000-000000000000",
+  "providers": {
+    "account": { "available": true },
+    "arkhamdb": { "available": true }
+  },
+  "decks": []
+}
 ```
 
 ### Batch read
 
 `POST /v2/user/decks/batch` requires `decks:read` and accepts at most 250
-targets. Results follow request order. If any target is missing or unavailable,
-the whole request fails.
+targets. Results follow request order. `arkhamdbSyncToken` may be omitted or
+set to `null` for an account-only batch. ArkhamDB targets require the non-null
+token returned by the manifest. If the snapshot is no longer retained, the
+endpoint returns `409`; request a new manifest and retry. If any target is
+missing, the whole request fails.
 
 <!-- curl:deck-batch -->
 ```bash
@@ -252,6 +266,7 @@ curl --request POST "$API_BASE/v2/user/decks/batch" \
   --header "Authorization: Bearer $ACCESS_TOKEN" \
   --header "Content-Type: application/json" \
   --data '{
+    "arkhamdbSyncToken": "019c1234-5678-7000-8000-000000000000",
     "decks": [
       { "source": "account", "id": "a148f775-4eeb-4c13-9340-60f6b8527512" },
       { "source": "arkhamdb", "id": 12345 }

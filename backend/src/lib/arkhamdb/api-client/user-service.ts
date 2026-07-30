@@ -26,6 +26,7 @@ import {
   ArkhamDbRemoteDeckSchema,
   ArkhamDbRemoteDecksSchema,
 } from "./core/dtos.ts";
+import { ApiError } from "./core/errors.ts";
 import {
   type ArkhamDbExecutor,
   withArkhamDbExecutor,
@@ -38,6 +39,13 @@ import {
   upsertArkhamDbDeckInSnapshots,
 } from "./deck-snapshots.ts";
 import { mapArkhamDbDeckToDto } from "./mapping.ts";
+
+export class ArkhamDbDeckSnapshotUnavailableError extends ApiError {
+  constructor() {
+    super("ArkhamDB deck snapshot is unavailable; request a new manifest", 409);
+    this.name = "ArkhamDbDeckSnapshotUnavailableError";
+  }
+}
 
 export async function fetchArkhamDbDeck<E extends HonoEnv>(
   c: Context<E>,
@@ -52,46 +60,50 @@ export async function fetchArkhamDbDeckBatch<E extends HonoEnv>(
   ids: DeckId[],
   arkhamdbSyncToken?: string,
 ) {
-  const snapshot = arkhamdbSyncToken
-    ? await findArkhamDbDeckSnapshotByAccountIdAndId(
-        c.get("db"),
-        authenticatedAccountId(c),
-        arkhamdbSyncToken,
-      )
-    : undefined;
+  if (!ids.length) return [];
 
-  if (!arkhamdbSyncToken) {
-    const decks: Deck[] = [];
-
-    for (const id of ids) {
-      decks.push(await fetchArkhamDbDeck(c, id));
-    }
-
-    return decks;
+  const syncToken = arkhamdbSyncToken
+    ? arkhamdbSyncToken
+    : (await fetchArkhamDbDeckManifest(c, { force: true })).arkhamdbSyncToken;
+  const snapshot = await findArkhamDbDeckSnapshotByAccountIdAndId(
+    c.get("db"),
+    authenticatedAccountId(c),
+    syncToken,
+  );
+  if (!snapshot) {
+    throw new ArkhamDbDeckSnapshotUnavailableError();
   }
 
-  const snapshotDecks = ArkhamDbRemoteDecksSchema.parse(snapshot?.decks ?? []);
+  const snapshotDecks = ArkhamDbRemoteDecksSchema.parse(snapshot.decks);
 
   const snapshotDecksById = new Map(
     snapshotDecks.map((deck) => [String(deck.id), deck]),
   );
 
   const decks: Deck[] = [];
+  const mappedDecksById = new Map<string, Deck>();
 
   for (const id of ids) {
-    const snapshotDeck = snapshotDecksById.get(String(id));
+    const key = String(id);
+    const mappedDeck = mappedDecksById.get(key);
 
-    if (!snapshotDeck) {
-      throw new Error(`Deck ${id} not found in snapshot.`);
+    if (mappedDeck) {
+      decks.push(mappedDeck);
+      continue;
     }
 
-    decks.push(
-      mapArkhamDbDeckToDto(
-        await mergeAdditionalMeta(c.get("db"), snapshotDeck, {
-          legacyApiBaseUrl: c.get("config").LEGACY_API_BASE_URL,
-        }),
-      ),
+    const snapshotDeck = snapshotDecksById.get(key);
+    if (!snapshotDeck) {
+      throw new ApiError(`Deck ${id} not found in snapshot.`, 404);
+    }
+
+    const deck = mapArkhamDbDeckToDto(
+      await mergeAdditionalMeta(c.get("db"), snapshotDeck, {
+        legacyApiBaseUrl: c.get("config").LEGACY_API_BASE_URL,
+      }),
     );
+    mappedDecksById.set(key, deck);
+    decks.push(deck);
   }
 
   return decks;
@@ -110,7 +122,12 @@ export async function fetchArkhamDbDeckManifest<E extends HonoEnv>(
     "arkhamdb",
   );
 
-  assert(identity, "Missing ArkhamDB identity for account.");
+  if (!identity) {
+    throw new ApiError(
+      "Missing ArkhamDB identity or OAuth token for account.",
+      503,
+    );
+  }
 
   const snapshot = await findLatestArkhamDbDeckSnapshotByAccountIdentityId(
     db,

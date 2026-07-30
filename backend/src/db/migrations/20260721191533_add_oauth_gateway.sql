@@ -78,9 +78,8 @@ create index idx_oauth_authorization_request_account_client_pending
   on oauth_authorization_request (account_id, oauth_client_id)
   where account_id is not null and consumed_at is null;
 
-create index idx_oauth_authorization_request_expiry_pending
-  on oauth_authorization_request (expires_at)
-  where consumed_at is null;
+create index idx_oauth_authorization_request_expiry
+  on oauth_authorization_request (expires_at, id);
 
 create table oauth_grant (
   id uuid primary key default uuidv7(),
@@ -117,9 +116,8 @@ create index idx_oauth_authorization_code_grant_redirect_pending
   on oauth_authorization_code (oauth_grant_id, redirect_uri)
   where used_at is null and revoked_at is null;
 
-create index idx_oauth_authorization_code_expiry_pending
-  on oauth_authorization_code (expires_at)
-  where used_at is null and revoked_at is null;
+create index idx_oauth_authorization_code_expiry
+  on oauth_authorization_code (expires_at, id);
 
 create table oauth_refresh_token (
   id uuid primary key default uuidv7(),
@@ -131,15 +129,15 @@ create table oauth_refresh_token (
   last_used_at timestamp,
   created_at timestamp not null default now(),
   updated_at timestamp not null default now(),
+  rotated_at timestamp,
   unique (id, oauth_grant_id)
 );
 
 create index idx_oauth_refresh_token_grant_id
   on oauth_refresh_token (oauth_grant_id);
 
-create index idx_oauth_refresh_token_expiry_active
-  on oauth_refresh_token (expires_at)
-  where revoked_at is null;
+create index idx_oauth_refresh_token_expiry
+  on oauth_refresh_token (expires_at, id);
 
 create table oauth_access_token (
   id uuid primary key default uuidv7(),
@@ -162,9 +160,8 @@ create index idx_oauth_access_token_grant_id
 create index idx_oauth_access_token_refresh_token_id
   on oauth_access_token (oauth_refresh_token_id);
 
-create index idx_oauth_access_token_expiry_active
-  on oauth_access_token (expires_at)
-  where revoked_at is null;
+create index idx_oauth_access_token_expiry
+  on oauth_access_token (expires_at, id);
 
 -- migrate:down
 

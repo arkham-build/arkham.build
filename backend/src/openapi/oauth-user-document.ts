@@ -161,8 +161,10 @@ export function createOAuthUserOpenApiDocument() {
           tags: ["User decks"],
           summary: "Get the user's deck manifest",
           description:
-            "Requires decks:read. Without a source filter, ArkhamDB failure " +
-            "produces a partial 200 response with account decks and " +
+            "Requires decks:read. Manifests that include ArkhamDB perform an " +
+            "upstream conditional sync and return an opaque snapshot token " +
+            "for consistent batch reads. ArkhamDB failure produces a partial " +
+            "200 response with account decks and " +
             "providers.arkhamdb.available=false.",
           security: oauthSecurity("decks:read"),
           parameters: [
@@ -190,8 +192,9 @@ export function createOAuthUserOpenApiDocument() {
           summary: "Get a batch of decks",
           description:
             "Requires decks:read. Accepts at most 250 provider-specific " +
-            "targets, preserves request order, and fails the whole request if " +
-            "any target is missing or unavailable.",
+            "targets and preserves request order. ArkhamDB targets require " +
+            "the snapshot token returned by the manifest endpoint. The whole " +
+            "request fails if any target or the selected snapshot is unavailable.",
           security: oauthSecurity("decks:read"),
           requestBody: jsonRequestBody("OAuthDeckBatchRequest"),
           responses: {
@@ -200,6 +203,10 @@ export function createOAuthUserOpenApiDocument() {
             401: bearerErrorResponse("Bearer token is unusable"),
             403: bearerForbiddenResponse("Token lacks decks:read"),
             404: jsonResponse("OAuthUserError", "A deck was not found"),
+            409: jsonResponse(
+              "OAuthUserError",
+              "The selected ArkhamDB snapshot is no longer available",
+            ),
             503: jsonResponse("OAuthUserError", "ArkhamDB is unavailable"),
           },
         },

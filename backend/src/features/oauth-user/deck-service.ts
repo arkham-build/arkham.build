@@ -7,6 +7,7 @@ import type { Transaction } from "kysely";
 import { ZodError } from "zod";
 import type { DB } from "../../db/schema.types.ts";
 import {
+  ArkhamDbDeckSnapshotUnavailableError,
   createArkhamDbDeck,
   deleteArkhamDbDeck,
   fetchArkhamDbDeck,
@@ -69,10 +70,12 @@ export async function getOAuthDeckManifest<E extends HonoEnv>(
     "arkhamdb",
   );
   let arkhamDbAvailable = false;
+  let arkhamDbSyncToken: string | null = null;
 
   if (includeArkhamDb && arkhamDbIdentity) {
     try {
-      const manifest = await fetchArkhamDbDeckManifest(c);
+      const manifest = await fetchArkhamDbDeckManifest(c, { force: true });
+      arkhamDbSyncToken = manifest.arkhamdbSyncToken;
       decks.push(
         ...manifest.decks.map((deck) => ({
           source: "arkhamdb" as const,
@@ -98,6 +101,7 @@ export async function getOAuthDeckManifest<E extends HonoEnv>(
   const orderedDecks = orderManifestItems(decks);
   return {
     version: createManifestVersion(orderedDecks),
+    arkhamdbSyncToken: arkhamDbSyncToken,
     providers: {
       account: { available: true },
       arkhamdb: { available: arkhamDbAvailable },
@@ -109,13 +113,22 @@ export async function getOAuthDeckManifest<E extends HonoEnv>(
 export async function getOAuthDeckBatch<E extends HonoEnv>(
   c: DeckContext<E>,
   targets: OAuthDeckTarget[],
+  arkhamDbSyncToken: string | null | undefined,
 ) {
-  const accountIds = targets
-    .filter((target) => target.source === "account")
-    .map((target) => target.id);
-  const arkhamDbIds = targets
-    .filter((target) => target.source === "arkhamdb")
-    .map((target) => target.id);
+  const accountIds = [
+    ...new Set(
+      targets
+        .filter((target) => target.source === "account")
+        .map((target) => target.id),
+    ),
+  ];
+  const arkhamDbIds = [
+    ...new Set(
+      targets
+        .filter((target) => target.source === "arkhamdb")
+        .map((target) => target.id),
+    ),
+  ];
 
   const accountDecks = await listAccountDecksByIds(
     c.get("db"),
@@ -130,8 +143,12 @@ export async function getOAuthDeckBatch<E extends HonoEnv>(
   );
 
   if (arkhamDbIds.length) {
+    assert(
+      arkhamDbSyncToken,
+      "ArkhamDB batch targets require a manifest sync token.",
+    );
     const arkhamDbDecks = await requireArkhamDb(() =>
-      fetchArkhamDbDeckBatch(c, arkhamDbIds),
+      fetchArkhamDbDeckBatch(c, arkhamDbIds, arkhamDbSyncToken),
     );
     for (const deck of arkhamDbDecks) {
       decksByTarget.set(targetKey("arkhamdb", deck.id), deck);
@@ -402,6 +419,9 @@ async function requireArkhamDb<T>(operation: () => Promise<T>) {
   try {
     return await operation();
   } catch (error) {
+    if (error instanceof ArkhamDbDeckSnapshotUnavailableError) {
+      throw new HTTPException(409, { message: error.message });
+    }
     if (error instanceof ApiError && error.status === 404) {
       throw deckNotFound();
     }

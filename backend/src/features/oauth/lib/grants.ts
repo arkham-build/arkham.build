@@ -43,6 +43,13 @@ export async function revokeOAuthGrant(
 ) {
   await db.transaction().execute(async (tx) => {
     await tx
+      .selectFrom("oauth_client")
+      .select("id")
+      .where("id", "=", clientId)
+      .forUpdate()
+      .executeTakeFirst();
+
+    await tx
       .deleteFrom("oauth_authorization_request")
       .where("account_id", "=", accountId)
       .where("oauth_client_id", "=", clientId)

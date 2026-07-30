@@ -31,6 +31,10 @@ function SignupArkhamDB() {
   const returnTo = getLocalReturnPath(
     new URLSearchParams(search).get("redirect"),
   );
+  const profileCompletionReturnTo = createAuthRedirectPath(
+    "/auth/signup/complete",
+    returnTo,
+  );
 
   const { data: session, isLoading } = useAuthSessionQuery();
   const hasLocalDecks = useStore(selectHasLocalDecks);
@@ -143,7 +147,7 @@ function SignupArkhamDB() {
             <OAuthConnectionCard
               connection={connection}
               key={connection.provider}
-              returnTo="/auth/signup/complete"
+              returnTo={profileCompletionReturnTo}
               variant="onboarding"
             />
           ))}

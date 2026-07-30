@@ -698,12 +698,12 @@ describe("Deck routes", () => {
       await insertTestDeck(db, {
         name: "First",
         id: "deck-1",
-        version: "11111111",
+        version: "1.1",
       });
       await insertTestDeck(db, {
         name: "Second",
         id: "deck-2",
-        version: "22222222",
+        version: "2.2",
       });
 
       const res = await postBatch(app, sessionCookie, [
@@ -787,21 +787,45 @@ describe("Deck routes", () => {
       ]);
     });
 
-    test("fetches arkhamdb decks directly without a snapshot token", async ({
+    test("syncs arkhamdb decks in bulk without a snapshot token", async ({
       dependencies,
     }) => {
       const { app, db, sessionCookie } = dependencies;
-      await insertArkhamDbConnection(db);
+      const identity = await insertArkhamDbConnection(db);
+      const lastModified = "Thu, 04 Jun 2026 12:00:00 GMT";
 
-      const fetch = vi.fn().mockResolvedValue(
-        jsonResponse(
-          buildArkhamDbApiDeck({
-            id: 123,
-            name: "Live deck",
-            version: "1.2",
-          }),
-        ),
-      );
+      await db
+        .insertInto("arkhamdb_deck_snapshot")
+        .values({
+          account_identity_id: identity.id,
+          decks: JSON.stringify([
+            buildArkhamDbApiDeck({
+              id: 123,
+              name: "Cached deck",
+              version: "1.1",
+            }),
+          ]),
+          last_modified: lastModified,
+        })
+        .executeTakeFirstOrThrow();
+
+      const fetch = vi.fn<typeof globalThis.fetch>((input, init) => {
+        const url = input instanceof Request ? input.url : input.toString();
+        expect(url).toMatch(/\/api\/oauth2\/decks$/);
+        expect(new Headers(init?.headers).get("If-Modified-Since")).toBe(
+          lastModified,
+        );
+
+        return Promise.resolve(
+          jsonResponse([
+            buildArkhamDbApiDeck({
+              id: 123,
+              name: "Live deck",
+              version: "1.2",
+            }),
+          ]),
+        );
+      });
       vi.stubGlobal("fetch", fetch);
 
       const res = await postBatch(app, sessionCookie, [
@@ -838,7 +862,7 @@ describe("Deck routes", () => {
             id: "batch-upgrade",
             previous_deck: "batch-root",
             source: "account",
-            version: "00000002",
+            version: "0.2",
             taboo_id: 9,
           }),
         ],
@@ -901,7 +925,7 @@ describe("Deck routes", () => {
       const res = await createDeck(
         app,
         sessionCookie,
-        baseDeckPayload({ id: "client-deck-create", version: "vcrt0001" }),
+        baseDeckPayload({ id: "client-deck-create", version: "1.0" }),
       );
 
       expect(res.status).toBe(200);
@@ -911,7 +935,7 @@ describe("Deck routes", () => {
         id: "client-deck-create",
         name: "Test deck",
         investigator_code: "01001",
-        version: "vcrt0001",
+        version: "1.0",
       });
     });
 
@@ -961,14 +985,14 @@ describe("Deck routes", () => {
       const seeded = await insertTestDeck(db, {
         name: "Original",
         id: "deck-update",
-        version: "aaaa1111",
+        version: "1.0",
       });
 
       const res = await updateDeck(app, sessionCookie, "deck-update", {
         ...baseDeckPayload({
           id: "deck-update",
           name: "Updated",
-          version: "aaaa1112",
+          version: "1.1",
         }),
         expectedVersion: seeded.version,
       });
@@ -977,7 +1001,7 @@ describe("Deck routes", () => {
 
       const body = DeckSchema.parse(await res.json());
       expect(body.name).toBe("Updated");
-      expect(body.version).toBe("aaaa1112");
+      expect(body.version).toBe("1.1");
     });
 
     test("returns 409 on version conflict", async ({ dependencies }) => {
@@ -985,23 +1009,23 @@ describe("Deck routes", () => {
       await insertTestDeck(db, {
         name: "Conflict",
         id: "deck-conflict",
-        version: "bbbb2222",
+        version: "2.0",
       });
 
       const res = await updateDeck(app, sessionCookie, "deck-conflict", {
         ...baseDeckPayload({
           id: "deck-conflict",
           name: "Updated",
-          version: "bbbb2223",
+          version: "2.1",
         }),
-        expectedVersion: "stale000",
+        expectedVersion: "1.9",
       });
 
       expect(res.status).toBe(409);
 
       const body = (await res.json()) as { cause: unknown };
       const conflict = DeckConflictResponseSchema.parse(body.cause);
-      expect(conflict.remoteVersion).toBe("bbbb2222");
+      expect(conflict.remoteVersion).toBe("2.0");
       expect(conflict.remoteDeck?.id).toBe("deck-conflict");
     });
 
@@ -1014,9 +1038,9 @@ describe("Deck routes", () => {
         ...baseDeckPayload({
           id: "deck-missing",
           name: "Updated",
-          version: "bbbb2223",
+          version: "2.1",
         }),
-        expectedVersion: "stale000",
+        expectedVersion: "1.9",
       });
 
       expect(res.status).toBe(409);
@@ -1035,16 +1059,16 @@ describe("Deck routes", () => {
       const { app, db, sessionCookie } = dependencies;
       await insertTestDeck(db, {
         id: "deck-upgrade-base",
-        version: "base0001",
+        version: "3.0",
       });
 
       const res = await upgradeDeck(app, sessionCookie, "deck-upgrade-base", {
         deck: baseDeckPayload({
           id: "deck-upgrade-created",
           name: "Upgraded",
-          version: "upg00001",
+          version: "1.0",
         }),
-        expectedVersion: "base0001",
+        expectedVersion: "3.0",
       });
 
       expect(res.status).toBe(200);
@@ -1055,7 +1079,7 @@ describe("Deck routes", () => {
         name: "Upgraded",
         next_deck: null,
         previous_deck: "deck-upgrade-base",
-        version: "upg00001",
+        version: "1.0",
       });
 
       const previous = await db
@@ -1073,11 +1097,11 @@ describe("Deck routes", () => {
       const { app, db, sessionCookie } = dependencies;
       const previous = await insertTestDeck(db, {
         id: "deck-already-upgraded",
-        version: "base0001",
+        version: "3.0",
       });
       await insertTestDeck(db, {
         id: "existing-upgrade",
-        version: "upg00001",
+        version: "1.0",
       });
       await db
         .updateTable("deck")
@@ -1091,7 +1115,7 @@ describe("Deck routes", () => {
         "deck-already-upgraded",
         {
           deck: baseDeckPayload({ id: "deck-new-upgrade" }),
-          expectedVersion: "base0001",
+          expectedVersion: "3.0",
         },
       );
 
@@ -1105,7 +1129,7 @@ describe("Deck routes", () => {
 
       const res = await upgradeDeck(app, sessionCookie, "deck-missing", {
         deck: baseDeckPayload({ id: "deck-new-upgrade" }),
-        expectedVersion: "base0001",
+        expectedVersion: "3.0",
       });
 
       expect(res.status).toBe(409);
@@ -1122,15 +1146,10 @@ describe("Deck routes", () => {
       const { app, db, sessionCookie } = dependencies;
       await insertTestDeck(db, {
         id: "deck-delete",
-        version: "cccc3333",
+        version: "4.0",
       });
 
-      const res = await deleteDeck(
-        app,
-        sessionCookie,
-        "deck-delete",
-        "cccc3333",
-      );
+      const res = await deleteDeck(app, sessionCookie, "deck-delete", "4.0");
       expect(res.status).toBe(204);
 
       const manifestRes = await getManifest(app, sessionCookie);
@@ -1146,12 +1165,12 @@ describe("Deck routes", () => {
       const { app, db, sessionCookie } = dependencies;
       await insertTestDeck(db, {
         id: "deck-delete-previous",
-        version: "prev0001",
+        version: "5.0",
       });
       await insertTestDeck(db, {
         id: "deck-delete-current",
         previousDeck: "deck-delete-previous",
-        version: "curr0001",
+        version: "5.1",
       });
       await db
         .updateTable("deck")
@@ -1163,7 +1182,7 @@ describe("Deck routes", () => {
         app,
         sessionCookie,
         "deck-delete-current",
-        "curr0001",
+        "5.1",
         "account",
         true,
       );
@@ -1182,20 +1201,20 @@ describe("Deck routes", () => {
       const { app, db, sessionCookie } = dependencies;
       await insertTestDeck(db, {
         id: "deck-delete-conflict",
-        version: "dddd4444",
+        version: "6.0",
       });
 
       const res = await deleteDeck(
         app,
         sessionCookie,
         "deck-delete-conflict",
-        "stale000",
+        "9.9",
       );
       expect(res.status).toBe(409);
 
       const body = (await res.json()) as { cause: unknown };
       const conflict = DeckConflictResponseSchema.parse(body.cause);
-      expect(conflict.remoteVersion).toBe("dddd4444");
+      expect(conflict.remoteVersion).toBe("6.0");
       expect(conflict.remoteDeck?.id).toBe("deck-delete-conflict");
     });
 
@@ -1208,7 +1227,7 @@ describe("Deck routes", () => {
         app,
         sessionCookie,
         "deck-delete-missing",
-        "stale000",
+        "9.9",
       );
       expect(res.status).toBe(409);
 
@@ -1597,7 +1616,7 @@ function baseDeckPayload(overrides: Partial<Record<string, unknown>> = {}) {
     source: "account",
     tags: "",
     user_id: null,
-    version: "vtest001",
+    version: "0.1",
     xp_adjustment: null,
     xp_spent: 0,
     xp: 0,

@@ -41,6 +41,7 @@ describe("OAuth user deck routes", () => {
       account: { available: true },
       arkhamdb: { available: false },
     });
+    expect(firstManifest.arkhamdbSyncToken).toBeNull();
     expect(
       firstManifest.decks.map(({ id, source }) => ({ id, source })),
     ).toEqual([
@@ -246,7 +247,10 @@ describe("OAuth user deck routes", () => {
       "/v2/user/decks/batch",
       {
         method: "POST",
-        body: JSON.stringify({ decks: tooManyTargets }),
+        body: JSON.stringify({
+          arkhamdbSyncToken: null,
+          decks: tooManyTargets,
+        }),
       },
     );
     await expectDeckError(limitResponse, 400, "invalid_request");
@@ -259,6 +263,7 @@ describe("OAuth user deck routes", () => {
       {
         method: "POST",
         body: JSON.stringify({
+          arkhamdbSyncToken: null,
           decks: [
             { source: "account", id: "existing-deck" },
             { source: "account", id: "missing-deck" },
@@ -267,6 +272,20 @@ describe("OAuth user deck routes", () => {
       },
     );
     await expectDeckError(missingResponse, 404, "not_found");
+
+    const missingSyncTokenResponse = await bearerRequest(
+      app,
+      readToken,
+      "/v2/user/decks/batch",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          arkhamdbSyncToken: null,
+          decks: [{ source: "arkhamdb", id: 1 }],
+        }),
+      },
+    );
+    await expectDeckError(missingSyncTokenResponse, 400, "invalid_request");
 
     const unavailableResponse = await bearerRequest(
       app,
@@ -285,6 +304,117 @@ describe("OAuth user deck routes", () => {
       { method: "POST", body: JSON.stringify(deckPayload()) },
     );
     expect(writeResponse.status).toBe(403);
+  });
+
+  test("revalidates a manifest and reuses its snapshot across batches", async ({
+    dependencies,
+  }) => {
+    const { app, db } = dependencies;
+    const accessToken = await seedBearerToken(db, [
+      "profile:read",
+      "decks:read",
+    ]);
+    const identity = await insertArkhamDbConnection(db);
+    const lastModified = "Thu, 30 Jul 2026 12:00:00 GMT";
+    const snapshot = await db
+      .insertInto("arkhamdb_deck_snapshot")
+      .values({
+        account_identity_id: identity.id,
+        decks: JSON.stringify([
+          arkhamDbDeck({ id: 123 }),
+          arkhamDbDeck({ id: 456 }),
+        ]),
+        last_modified: lastModified,
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow();
+    const fetch = vi.fn<typeof globalThis.fetch>((_input, init) => {
+      expect(new Headers(init?.headers).get("If-Modified-Since")).toBe(
+        lastModified,
+      );
+      return Promise.resolve(new Response(null, { status: 304 }));
+    });
+    vi.stubGlobal("fetch", fetch);
+
+    const manifestResponse = await bearerRequest(
+      app,
+      accessToken,
+      "/v2/user/decks/manifest?source=arkhamdb",
+    );
+    expect(manifestResponse.status).toBe(200);
+    const manifest = OAuthDeckManifestResponseSchema.parse(
+      await manifestResponse.json(),
+    );
+    expect(manifest.arkhamdbSyncToken).toBe(snapshot.id);
+
+    const targets = Array.from({ length: 250 }, () => ({
+      source: "arkhamdb" as const,
+      id: 123,
+    }));
+    const firstBatchResponse = await bearerRequest(
+      app,
+      accessToken,
+      "/v2/user/decks/batch",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          arkhamdbSyncToken: manifest.arkhamdbSyncToken,
+          decks: targets,
+        }),
+      },
+    );
+    expect(firstBatchResponse.status).toBe(200);
+    const firstBatch = OAuthDeckBatchResponseSchema.parse(
+      await firstBatchResponse.json(),
+    );
+    expect(firstBatch.decks).toHaveLength(250);
+    expect(firstBatch.decks.every((deck) => deck.id === 123)).toBe(true);
+
+    const secondBatchResponse = await bearerRequest(
+      app,
+      accessToken,
+      "/v2/user/decks/batch",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          arkhamdbSyncToken: manifest.arkhamdbSyncToken,
+          decks: [{ source: "arkhamdb", id: 456 }],
+        }),
+      },
+    );
+    expect(secondBatchResponse.status).toBe(200);
+    const secondBatch = OAuthDeckBatchResponseSchema.parse(
+      await secondBatchResponse.json(),
+    );
+    expect(secondBatch.decks).toEqual([expect.objectContaining({ id: 456 })]);
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  test("rejects an unavailable ArkhamDB snapshot", async ({ dependencies }) => {
+    const { app, db } = dependencies;
+    const accessToken = await seedBearerToken(db, [
+      "profile:read",
+      "decks:read",
+    ]);
+    await insertArkhamDbConnection(db);
+    const fetch = vi.fn<typeof globalThis.fetch>();
+    vi.stubGlobal("fetch", fetch);
+
+    const response = await bearerRequest(
+      app,
+      accessToken,
+      "/v2/user/decks/batch",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          arkhamdbSyncToken: randomUUID(),
+          decks: [{ source: "arkhamdb", id: 123 }],
+        }),
+      },
+    );
+
+    await expectDeckError(response, 409, "conflict");
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   test("returns partial manifests when ArkhamDB is unavailable", async ({
@@ -317,9 +447,54 @@ describe("OAuth user deck routes", () => {
       await response.json(),
     );
     expect(manifest.providers.arkhamdb.available).toBe(false);
+    expect(manifest.arkhamdbSyncToken).toBeNull();
     expect(manifest.decks).toEqual([
       expect.objectContaining({ id: "local-deck", source: "account" }),
     ]);
+  });
+
+  test("rejects non-decimal ArkhamDB IDs before forwarding requests", async ({
+    dependencies,
+  }) => {
+    const { app, db } = dependencies;
+    const accessToken = await seedBearerToken(db, [
+      "profile:read",
+      "decks:read",
+      "decks:write",
+      "decks:delete",
+    ]);
+    await insertArkhamDbConnection(db);
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const requests = [
+      { method: "GET", path: "/v2/user/decks/arkhamdb/not-a-number" },
+      {
+        method: "PUT",
+        path: "/v2/user/decks/arkhamdb/..%2Fpublish%2F123",
+        body: JSON.stringify(deckPayload()),
+      },
+      {
+        method: "DELETE",
+        path: "/v2/user/decks/arkhamdb/123%3Ffoo=bar",
+      },
+      {
+        method: "POST",
+        path: "/v2/user/decks/arkhamdb/0/upgrade",
+        body: JSON.stringify(deckPayload()),
+      },
+    ];
+
+    for (const request of requests) {
+      const response = await bearerRequest(
+        app,
+        accessToken,
+        request.path,
+        request,
+      );
+      await expectDeckError(response, 400, "invalid_request");
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   test("reads and mutates ArkhamDB decks through the existing user service", async ({
@@ -397,10 +572,13 @@ describe("OAuth user deck routes", () => {
       "/v2/user/decks/manifest?source=arkhamdb",
     );
     expect(manifestResponse.status).toBe(200);
-    expect(
-      OAuthDeckManifestResponseSchema.parse(await manifestResponse.json())
-        .decks,
-    ).toEqual([expect.objectContaining({ id: 123, source: "arkhamdb" })]);
+    const manifest = OAuthDeckManifestResponseSchema.parse(
+      await manifestResponse.json(),
+    );
+    expect(manifest.arkhamdbSyncToken).toEqual(expect.any(String));
+    expect(manifest.decks).toEqual([
+      expect.objectContaining({ id: 123, source: "arkhamdb" }),
+    ]);
 
     const readResponse = await bearerRequest(
       app,
@@ -559,6 +737,8 @@ async function insertArkhamDbConnection(db: Database) {
       token_expires_at: new Date(Date.now() + 60 * 60 * 1000),
     })
     .execute();
+
+  return identity;
 }
 
 function deckPayload(overrides: Partial<Deck> = {}): Deck {
@@ -582,7 +762,7 @@ function deckPayload(overrides: Partial<Deck> = {}): Deck {
     taboo_id: null,
     tags: "",
     user_id: null,
-    version: "client-version",
+    version: "9.9",
     xp_adjustment: 0,
     xp_spent: 0,
     xp: 0,
