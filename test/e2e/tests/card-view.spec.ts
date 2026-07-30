@@ -82,7 +82,10 @@ test.describe("card view: display", () => {
   test("renders investigators", async ({ page }) => {
     await page.goto("/card/02005");
     await expect(page.getByTestId("main")).toHaveScreenshot({
-      mask: defaultScreenshotMask(page),
+      mask: [
+        ...defaultScreenshotMask(page),
+        page.getByText("Errata (23 Apr 2019)", { exact: true }),
+      ],
     });
   });
 
