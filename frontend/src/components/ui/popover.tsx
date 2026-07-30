@@ -6,6 +6,7 @@ import {
 } from "@floating-ui/react";
 import { cloneElement, isValidElement } from "react";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
+import { cx } from "@/utils/cx";
 import type { PopoverOptions } from "./popover.hooks";
 import {
   PopoverContext,
@@ -55,6 +56,7 @@ export function PopoverTrigger({
         ref,
         ...props,
         ...childProps,
+        className: cx(props.className, childProps.className),
         "data-state": context.open ? "open" : "closed",
       } as React.HTMLProps<Element>),
     );
