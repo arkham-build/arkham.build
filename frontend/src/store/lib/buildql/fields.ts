@@ -4,6 +4,7 @@ import {
   resolveCardTagCardCode,
 } from "@/store/lib/card-tags";
 import {
+  filterCardPool,
   filterInvestigatorAccess,
   filterInvestigatorWeaknessAccess,
   filterTag,
@@ -202,6 +203,11 @@ const fieldDefinitions: FieldDefinition[] = [
             selections: deck.selections,
           })
         : undefined;
+      const cardPoolFilter = filterCardPool(
+        deck?.cardPool,
+        metadata,
+        lookupTables,
+      );
 
       return Object.keys(otherLevels).some((otherCode) => {
         const otherCard = metadata.cards[otherCode];
@@ -210,8 +216,9 @@ const fieldDefinitions: FieldDefinition[] = [
         const cardXp = countExperience(card, 1);
         const otherCardXp = countExperience(otherCard, 1);
 
-        if (!otherCard || otherCardXp <= cardXp) return false;
-        return !deck || accessFilter?.(otherCard);
+        if (otherCardXp <= cardXp) return false;
+        if (deck && !accessFilter?.(otherCard)) return false;
+        return !cardPoolFilter || cardPoolFilter(otherCard);
       });
     }),
     name: "has_upgrade",
