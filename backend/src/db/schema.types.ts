@@ -401,7 +401,6 @@ export interface OauthAccessToken {
   created_at: Generated<Timestamp>;
   expires_at: Timestamp;
   id: Generated<string>;
-  last_used_at: Timestamp | null;
   oauth_grant_id: string;
   oauth_refresh_token_id: string;
   revoked_at: Timestamp | null;
