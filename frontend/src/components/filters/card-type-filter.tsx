@@ -44,13 +44,12 @@ export function CardTypeFilter(props: FilterProps & { className?: string }) {
   return (
     <ToggleGroup
       className={className}
-      defaultValue=""
       data-testid="toggle-card-type"
       disabled={locked}
       full
-      onValueChange={onChange}
+      onValueChange={onToggle}
       type="single"
-      value={filter.value}
+      value={filter.value || undefined}
     >
       <HotkeyTooltip keybind="alt+p" description={t("common.player_cards")}>
         <ToggleGroupItem data-testid="card-type-player" value="player">

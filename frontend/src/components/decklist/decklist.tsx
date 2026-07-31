@@ -53,6 +53,7 @@ export function Decklist(props: Props) {
 
   const [displayConfigId, setDisplayConfigId] = useState(DEFAULT_LIST_SORT_ID);
   const [checklistMode, setChecklistMode] = useState(false);
+  const checklistValue = checklistMode ? "checklist" : undefined;
   const [checkedCardQuantities, setCheckedCardQuantities] = useState<
     ReadonlyMap<string, number>
   >(() => new Map());
@@ -143,9 +144,12 @@ export function Decklist(props: Props) {
     [settings.lists.deck, settings.lists.deckScans, viewMode],
   );
 
-  const onChecklistModeChange = useCallback((value: string) => {
-    setChecklistMode(value === "checklist");
-  }, []);
+  const onChecklistModeChange = useCallback(
+    (value: string) => {
+      setChecklistMode(value === "checklist" && value !== checklistValue);
+    },
+    [checklistValue],
+  );
 
   const onChecklistClear = useCallback(() => {
     setCheckedCardQuantities(new Map());
@@ -225,7 +229,7 @@ export function Decklist(props: Props) {
           <>
             <ToggleGroup
               type="single"
-              value={checklistMode ? "checklist" : ""}
+              value={checklistValue}
               onValueChange={onChecklistModeChange}
             >
               <ToggleGroupItem

@@ -55,12 +55,13 @@ export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const showFavoriteShortcut =
     favoriteOnly ||
     options.some((option) => option.code === CARD_TAG_FAVORITE_ID);
+  const favoriteToggleValue = favoriteOnly ? CARD_TAG_FAVORITE_ID : undefined;
 
   const onToggleFavoriteOnly = useCallback(
     (value: string) => {
-      onChange(value === CARD_TAG_FAVORITE_ID ? [CARD_TAG_FAVORITE_ID] : []);
+      onChange(value === favoriteToggleValue ? [] : [CARD_TAG_FAVORITE_ID]);
     },
-    [onChange],
+    [favoriteToggleValue, onChange],
   );
 
   return (
@@ -80,7 +81,7 @@ export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
           full
           onValueChange={onToggleFavoriteOnly}
           type="single"
-          value={favoriteOnly ? CARD_TAG_FAVORITE_ID : ""}
+          value={favoriteToggleValue}
         >
           <ToggleGroupItem
             className={css["favorite-toggle"]}

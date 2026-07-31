@@ -42,6 +42,7 @@ export function FilterContainer(props: Props) {
   const onFilterReset = useCallback(
     (evt: React.MouseEvent) => {
       evt.preventDefault();
+      evt.stopPropagation();
       if (onReset) onReset();
     },
     [onReset],

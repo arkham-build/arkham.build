@@ -23,22 +23,23 @@ const ToggleGroupContext = createContext<ToggleGroupContextValue>({
 
 interface ToggleGroupSingleProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
-  "onChange"
+  "defaultValue" | "onChange"
 > {
   disabled?: boolean;
   type: "single";
-  value?: string;
-  onValueChange?(value: string): void;
+  value: string | undefined;
+  /** Called with the clicked item value, including when it is selected. */
+  onValueChange(value: string): void;
 }
 
 interface ToggleGroupMultipleProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
-  "onChange"
+  "defaultValue" | "onChange"
 > {
   disabled?: boolean;
   type: "multiple";
-  value?: string[];
-  onValueChange?(value: string[]): void;
+  value: string[];
+  onValueChange(value: string[]): void;
 }
 
 export type ToggleGroupProps = (
@@ -49,17 +50,18 @@ export type ToggleGroupProps = (
   icons?: boolean;
 };
 
-export function ToggleGroup({
-  className,
-  disabled,
-  full,
-  icons,
-  onValueChange,
-  type,
-  value,
-  children,
-  ...rest
-}: ToggleGroupProps) {
+export function ToggleGroup(props: ToggleGroupProps) {
+  const {
+    className,
+    disabled,
+    full,
+    icons,
+    onValueChange,
+    type,
+    value,
+    children,
+    ...rest
+  } = props;
   const shiftKeyPressed = useRef(false);
 
   useEffect(() => {
@@ -81,29 +83,28 @@ export function ToggleGroup({
   }, []);
 
   const isSelected = useCallback(
-    (v: string) => {
-      if (type === "single") return value === v;
-      return (value as string[] | undefined)?.includes(v) ?? false;
+    (itemValue: string) => {
+      if (type === "single") return value === itemValue;
+      return value.includes(itemValue);
     },
     [type, value],
   );
 
   const onItemClick = useCallback(
-    (v: string) => {
+    (itemValue: string) => {
       if (type === "single") {
-        (onValueChange as ToggleGroupSingleProps["onValueChange"])?.(
-          value === v ? "" : v,
-        );
-      } else {
-        const current = (value as string[] | undefined) ?? [];
-        let next = current.includes(v)
-          ? current.filter((x) => x !== v)
-          : [...current, v];
-        if (shiftKeyPressed.current) {
-          next = next.filter((x) => !current.includes(x));
-        }
-        (onValueChange as ToggleGroupMultipleProps["onValueChange"])?.(next);
+        onValueChange(itemValue);
+        return;
       }
+
+      const current = value;
+      let next = current.includes(itemValue)
+        ? current.filter((value) => value !== itemValue)
+        : [...current, itemValue];
+      if (shiftKeyPressed.current) {
+        next = next.filter((value) => !current.includes(value));
+      }
+      onValueChange(next);
     },
     [type, value, onValueChange],
   );

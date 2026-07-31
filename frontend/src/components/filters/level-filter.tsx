@@ -15,11 +15,15 @@ import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
 import { useFilter } from "./primitives/filter-hooks";
 
-function getToggleValue(value: [number, number] | undefined) {
-  if (!value) return "";
+type LevelShortcut = "0" | "1-5";
+
+function getToggleValue(
+  value: [number, number] | undefined,
+): LevelShortcut | undefined {
+  if (!value) return undefined;
   if (value[0] === 0 && value[1] === 0) return "0";
   if (value[0] === 1 && value[1] === 5) return "1-5";
-  return "";
+  return undefined;
 }
 
 export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
@@ -61,23 +65,22 @@ export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     [onChangeRange, filter.value.range, onOpenChange],
   );
 
+  const levelShortcut = getToggleValue(filter.value.range);
+
   const onApplyLevelShortcut = useCallback(
-    (value: string) => {
-      if (value === "0") {
-        onChange({
-          range: [0, 0],
-        });
-      } else if (value === "1-5") {
-        onChange({
-          range: [1, 5],
-        });
-      } else {
+    (value: LevelShortcut) => {
+      if (value === levelShortcut) {
         onChange({
           range: undefined,
         });
+        return;
       }
+
+      onChange({
+        range: value === "0" ? [0, 0] : [1, 5],
+      });
     },
-    [onChange],
+    [levelShortcut, onChange],
   );
 
   return (
@@ -94,7 +97,7 @@ export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
             full
             onValueChange={onApplyLevelShortcut}
             type="single"
-            value={getToggleValue(filter.value.range)}
+            value={levelShortcut}
           >
             <ToggleGroupItem value="0">
               {t("common.level.value", { level: "0" })}
