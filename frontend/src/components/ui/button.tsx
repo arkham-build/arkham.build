@@ -38,29 +38,31 @@ export function Button<T extends "a" | "button" | "summary" | "label">(
   // oxlint-disable-next-line typescript/no-explicit-any -- safe.
   const Element: any = disabled ? "button" : (as ?? "button");
 
-  return (
-    <DefaultTooltip tooltip={tooltip}>
-      <Element
-        {...rest}
-        className={cx(
-          css["button"],
-          variant && css[variant],
-          size && css[size],
-          full && css["full"],
-          iconOnly && css["icon-only"],
-          rounded && css[`rounded-${rounded}`],
-          rest.className,
-        )}
-        type={
-          Element === "button"
-            ? ((rest as React.ComponentProps<"button">).type ?? "button")
-            : undefined
-        }
-        disabled={disabled}
-        ref={ref}
-      >
-        {children}
-      </Element>
-    </DefaultTooltip>
+  const button = (
+    <Element
+      {...rest}
+      className={cx(
+        css["button"],
+        variant && css[variant],
+        size && css[size],
+        full && css["full"],
+        iconOnly && css["icon-only"],
+        rounded && css[`rounded-${rounded}`],
+        rest.className,
+      )}
+      type={
+        Element === "button"
+          ? ((rest as React.ComponentProps<"button">).type ?? "button")
+          : undefined
+      }
+      disabled={disabled}
+      ref={ref}
+    >
+      {children}
+    </Element>
   );
+
+  if (!tooltip) return button;
+
+  return <DefaultTooltip tooltip={tooltip}>{button}</DefaultTooltip>;
 }
