@@ -123,7 +123,7 @@ export type Search = {
   value: string;
 };
 
-export type SearchFlag = keyof Pick<
+type SearchFlag = keyof Pick<
   Search,
   "includeBacks" | "includeFlavor" | "includeGameText" | "includeName"
 >;

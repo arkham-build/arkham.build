@@ -3,9 +3,9 @@ import { deleteCookie, getSignedCookie, setSignedCookie } from "hono/cookie";
 import { z } from "zod";
 import { OAuthFlowError, type OAuthProvider } from "../../../../lib/oauth.ts";
 
-export const OAuthIntentSchema = z.enum(["login", "signup", "connect"]);
+const OAuthIntentSchema = z.enum(["login", "signup", "connect"]);
 
-export const OAuthContextSchema = z.object({
+const OAuthContextSchema = z.object({
   accountId: z.string().optional(),
   intent: OAuthIntentSchema,
   returnTo: z.string(),
@@ -16,7 +16,6 @@ const OAuthStateCookieSchema = OAuthContextSchema.extend({
   state: z.string(),
 });
 
-export type OAuthIntent = z.infer<typeof OAuthIntentSchema>;
 export type OAuthContext = z.infer<typeof OAuthContextSchema>;
 type OAuthStateCookie = z.infer<typeof OAuthStateCookieSchema>;
 

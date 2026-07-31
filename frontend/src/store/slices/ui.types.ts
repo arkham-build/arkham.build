@@ -8,14 +8,12 @@ export type CardModalConfig = {
   listOrder?: string[];
 };
 
-export type CardModalState = {
-  code: string | undefined;
-  config: CardModalConfig | undefined;
-};
-
 export type UIState = {
   ui: {
-    cardModal: CardModalState;
+    cardModal: {
+      code: string | undefined;
+      config: CardModalConfig | undefined;
+    };
     fanMadeContentCache: Partial<DeckFanMadeContent>;
     initialized: boolean;
     keyboardShortcutsOpen: boolean;

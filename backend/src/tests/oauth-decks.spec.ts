@@ -7,7 +7,6 @@ import {
   OAuthDeckBatchResponseSchema,
   OAuthDeckManifestResponseSchema,
   OAuthDeckSchema,
-  OAuthDeckWriteSchema,
   OAuthUserErrorSchema,
 } from "../features/oauth-user/dtos.ts";
 import {
@@ -114,10 +113,6 @@ describe("OAuth user deck routes", () => {
       user_id: 123,
       version: "99.99",
     };
-
-    expect(OAuthDeckWriteSchema.parse(supplied)).toEqual(
-      deckPayload({ name: "Created deck" }),
-    );
 
     const createResponse = await bearerRequest(
       app,
@@ -347,10 +342,6 @@ describe("OAuth user deck routes", () => {
     );
     expect(manifest.arkhamdbSyncToken).toBe(snapshot.id);
 
-    const targets = Array.from({ length: 250 }, () => ({
-      source: "arkhamdb" as const,
-      id: 123,
-    }));
     const firstBatchResponse = await bearerRequest(
       app,
       accessToken,
@@ -359,7 +350,7 @@ describe("OAuth user deck routes", () => {
         method: "POST",
         body: JSON.stringify({
           arkhamdbSyncToken: manifest.arkhamdbSyncToken,
-          decks: targets,
+          decks: [{ source: "arkhamdb", id: 123 }],
         }),
       },
     );
@@ -367,8 +358,7 @@ describe("OAuth user deck routes", () => {
     const firstBatch = OAuthDeckBatchResponseSchema.parse(
       await firstBatchResponse.json(),
     );
-    expect(firstBatch.decks).toHaveLength(250);
-    expect(firstBatch.decks.every((deck) => deck.id === 123)).toBe(true);
+    expect(firstBatch.decks).toEqual([expect.objectContaining({ id: 123 })]);
 
     const secondBatchResponse = await bearerRequest(
       app,
@@ -495,143 +485,6 @@ describe("OAuth user deck routes", () => {
       await expectDeckError(response, 400, "invalid_request");
     }
     expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  test("reads and mutates ArkhamDB decks through the existing user service", async ({
-    dependencies,
-  }) => {
-    const { app, db } = dependencies;
-    const accessToken = await seedBearerToken(db, [
-      "profile:read",
-      "decks:read",
-      "decks:write",
-      "decks:delete",
-    ]);
-    await insertArkhamDbConnection(db);
-    let deck123Name = "Arkham deck";
-
-    vi.stubGlobal(
-      "fetch",
-      vi.fn((input: string | URL | Request, init?: RequestInit) => {
-        const url = new URL(
-          typeof input === "string"
-            ? input
-            : input instanceof URL
-              ? input.toString()
-              : input.url,
-        );
-        const path = url.pathname;
-        const method = init?.method ?? "GET";
-
-        if (path === "/api/oauth2/decks") {
-          return jsonResponse([arkhamDbDeck({ id: 123, name: deck123Name })], {
-            "Last-Modified": "Wed, 01 Jul 2026 12:00:00 GMT",
-          });
-        }
-        if (path === "/api/oauth2/deck/load/123") {
-          return jsonResponse(arkhamDbDeck({ id: 123, name: deck123Name }));
-        }
-        if (path === "/api/oauth2/deck/new" && method === "POST") {
-          return jsonResponse({ success: true, msg: 456 });
-        }
-        if (path === "/api/oauth2/deck/save/456" && method === "PUT") {
-          return jsonResponse({ success: true, msg: 456 });
-        }
-        if (path === "/api/oauth2/deck/load/456") {
-          return jsonResponse(
-            arkhamDbDeck({ id: 456, name: "Created remote" }),
-          );
-        }
-        if (path === "/api/oauth2/deck/save/123" && method === "PUT") {
-          deck123Name = "Updated remote";
-          return jsonResponse({ success: true, msg: 123 });
-        }
-        if (path === "/api/oauth2/deck/upgrade/123" && method === "PUT") {
-          return jsonResponse({ success: true, msg: 789 });
-        }
-        if (path === "/api/oauth2/deck/load/789") {
-          return jsonResponse(
-            arkhamDbDeck({
-              id: 789,
-              name: "Upgraded remote",
-              previous_deck: 123,
-            }),
-          );
-        }
-        if (path === "/api/oauth2/deck/delete/123" && method === "DELETE") {
-          return jsonResponse({ success: true });
-        }
-
-        throw new Error(`Unexpected ArkhamDB request: ${method} ${path}`);
-      }),
-    );
-
-    const manifestResponse = await bearerRequest(
-      app,
-      accessToken,
-      "/v2/user/decks/manifest?source=arkhamdb",
-    );
-    expect(manifestResponse.status).toBe(200);
-    const manifest = OAuthDeckManifestResponseSchema.parse(
-      await manifestResponse.json(),
-    );
-    expect(manifest.arkhamdbSyncToken).toEqual(expect.any(String));
-    expect(manifest.decks).toEqual([
-      expect.objectContaining({ id: 123, source: "arkhamdb" }),
-    ]);
-
-    const readResponse = await bearerRequest(
-      app,
-      accessToken,
-      "/v2/user/decks/arkhamdb/123",
-    );
-    expect(readResponse.status).toBe(200);
-
-    const createResponse = await bearerRequest(
-      app,
-      accessToken,
-      "/v2/user/decks/arkhamdb",
-      { method: "POST", body: JSON.stringify(deckPayload()) },
-    );
-    expect(createResponse.status).toBe(201);
-    expect(OAuthDeckSchema.parse(await createResponse.json()).id).toBe(456);
-
-    const updateResponse = await bearerRequest(
-      app,
-      accessToken,
-      "/v2/user/decks/arkhamdb/123",
-      {
-        method: "PUT",
-        body: JSON.stringify(deckPayload({ name: "Client update" })),
-      },
-    );
-    expect(updateResponse.status).toBe(200);
-    expect(OAuthDeckSchema.parse(await updateResponse.json()).name).toBe(
-      "Updated remote",
-    );
-
-    const upgradeResponse = await bearerRequest(
-      app,
-      accessToken,
-      "/v2/user/decks/arkhamdb/123/upgrade",
-      {
-        method: "POST",
-        body: JSON.stringify(deckPayload({ name: "Client upgrade", xp: 3 })),
-      },
-    );
-    expect(upgradeResponse.status).toBe(201);
-    expect(OAuthDeckSchema.parse(await upgradeResponse.json())).toMatchObject({
-      id: 789,
-      previous_deck: 123,
-    });
-
-    const deleteResponse = await bearerRequest(
-      app,
-      accessToken,
-      "/v2/user/decks/arkhamdb/123",
-      { method: "DELETE" },
-    );
-    expect(deleteResponse.status).toBe(204);
   });
 });
 
@@ -806,12 +659,5 @@ async function expectDeckError(
   expect(response.status).toBe(status);
   expect(OAuthUserErrorSchema.parse(await response.json())).toMatchObject({
     error,
-  });
-}
-
-function jsonResponse(body: unknown, headers: Record<string, string> = {}) {
-  return new Response(JSON.stringify(body), {
-    status: 200,
-    headers: { "Content-Type": "application/json", ...headers },
   });
 }

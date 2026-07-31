@@ -19,7 +19,7 @@ export const DeckVersionSchema = z
   .regex(/^\d+\.\d+$/);
 export type DeckVersion = z.infer<typeof DeckVersionSchema>;
 
-export const DeckStringIdSchema = z.string().max(DECK_ID_MAX_LENGTH);
+const DeckStringIdSchema = z.string().max(DECK_ID_MAX_LENGTH);
 export const DeckIdSchema = z.union([z.number(), DeckStringIdSchema]);
 export type DeckId = z.infer<typeof DeckIdSchema>;
 export type Id = DeckId;

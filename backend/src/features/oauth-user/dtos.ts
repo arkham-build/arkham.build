@@ -37,7 +37,6 @@ export type OAuthDeckSource = z.infer<typeof OAuthDeckSourceSchema>;
 export const OAuthDeckSchema = DeckSchema.strict().meta({
   description: "Full external deck representation.",
 });
-export type OAuthDeck = z.infer<typeof OAuthDeckSchema>;
 
 export const OAuthDeckWriteSchema = DeckMutablePayloadSchema.meta({
   description:

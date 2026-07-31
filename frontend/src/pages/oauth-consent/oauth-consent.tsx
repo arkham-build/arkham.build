@@ -21,7 +21,7 @@ import { claimOAuthAuthorizationRequest } from "./requests";
 
 type OAuthConsentDecision = "approve" | "deny";
 
-export type OAuthConsentViewProps =
+type OAuthConsentViewProps =
   | { state: "error" }
   | { state: "expired" }
   | { state: "loading" }
@@ -33,7 +33,7 @@ export type OAuthConsentViewProps =
       state: "ready";
     };
 
-export function OAuthConsentView(props: OAuthConsentViewProps) {
+function OAuthConsentView(props: OAuthConsentViewProps) {
   const { t } = useTranslation();
 
   if (props.state === "loading" || props.state === "unauthenticated") {

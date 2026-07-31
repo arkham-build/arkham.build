@@ -1656,7 +1656,7 @@ async function insertTestDeck(
       provider_type: overrides.providerType ?? "account",
       slots: { "01006": 1 },
       tags: null,
-      version: overrides.version ?? "seed0001",
+      version: overrides.version ?? "0.1",
       xp: 0,
       xp_adjustment: 0,
       xp_spent: 0,

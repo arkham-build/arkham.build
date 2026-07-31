@@ -32,7 +32,7 @@ export function ResultTag(props: ResultTagProps) {
   );
 }
 
-export function ResultRemoveButton({ onClick }: { onClick: () => void }) {
+function ResultRemoveButton({ onClick }: { onClick: () => void }) {
   return (
     <Button
       className={css["result-remove"]}

@@ -45,7 +45,7 @@ routes.onError((error, c) => {
 });
 
 routes.get("/me", oauthBearerAuth(["profile:read"]), (c) => {
-  const { account } = c.get("oauthBearer");
+  const account = c.get("account");
   return c.json(
     OAuthProfileResponseSchema.parse({
       id: account.id,

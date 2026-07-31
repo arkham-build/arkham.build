@@ -180,8 +180,10 @@ Exchange a refresh token to get a new refresh token with the same scopes. The
 new refresh token is valid for 90 days. The response also contains a new access
 token that is valid for one hour.
 
-Store the new refresh token before you send another refresh request for the
-same session. The token endpoint does not accept scope changes.
+Each refresh token can be exchanged only once. Store the replacement before
+you send another refresh request for the same session. Reusing a rotated token
+causes an `invalid_grant` error. The token endpoint does not accept scope
+changes.
 
 <!-- curl:token-refresh -->
 ```bash
@@ -192,13 +194,6 @@ curl --request POST "$API_BASE/v2/oauth/token" \
   --data-urlencode "client_secret=$CLIENT_SECRET" \
   --data-urlencode "refresh_token=$REFRESH_TOKEN"
 ```
-
-If you do not receive a response, you can use the old refresh token again for
-one minute. Each retry returns a new replacement token. A retry does not restart
-or extend this grace period.
-
-After the grace period, the old token causes an `invalid_grant` error. Existing
-access tokens and newer refresh tokens stay valid.
 
 ## Revoke tokens
 

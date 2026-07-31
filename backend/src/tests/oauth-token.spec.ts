@@ -7,24 +7,17 @@ import {
   generateOAuthClientSecret,
   hashOAuthClientSecret,
 } from "../lib/oauth/crypto.ts";
-import { OAuthErrorResponseSchema } from "../features/oauth/dtos.ts";
+import {
+  OAuthErrorResponseSchema,
+  OAuthTokenResponseSchema,
+} from "../features/oauth/dtos.ts";
 import {
   OAUTH_ACCESS_TOKEN_EXPIRES_IN_SECONDS,
   OAUTH_REFRESH_TOKEN_LIFETIME_MS,
-  OAUTH_REFRESH_TOKEN_ROTATION_GRACE_MS,
 } from "../features/oauth/lib/token-exchange.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
 
 const REDIRECT_URI = "https://example.com/oauth/callback";
-const TokenResponseSchema = z
-  .object({
-    token_type: z.literal("Bearer"),
-    access_token: z.string().startsWith("ab_at_"),
-    expires_in: z.literal(3600),
-    refresh_token: z.string().startsWith("ab_rt_"),
-    scope: z.string(),
-  })
-  .strict();
 
 describe("POST /v2/oauth/token", () => {
   test("exchanges a code once with exact scopes and hashed fixed-lifetime tokens", async ({
@@ -61,7 +54,7 @@ describe("POST /v2/oauth/token", () => {
       code,
       redirect_uri: REDIRECT_URI,
     });
-    const body = TokenResponseSchema.parse(await response.json());
+    const body = OAuthTokenResponseSchema.parse(await response.json());
 
     expect(response.status).toBe(200);
     expectNoStoreHeaders(response);
@@ -361,9 +354,7 @@ describe("POST /v2/oauth/token", () => {
     ).toHaveLength(1);
   });
 
-  test("rotates refresh tokens with a one-minute retry grace period", async ({
-    dependencies,
-  }) => {
+  test("rotates each refresh token once", async ({ dependencies }) => {
     const { app, db, sessionCookie } = dependencies;
     const issuedAt = new Date("2026-07-22T13:00:00.000Z");
     vi.useFakeTimers();
@@ -376,7 +367,9 @@ describe("POST /v2/oauth/token", () => {
       "decks:delete profile:read",
     );
     const codeResponse = await exchangeCode(app, client, code, REDIRECT_URI);
-    const initialTokens = TokenResponseSchema.parse(await codeResponse.json());
+    const initialTokens = OAuthTokenResponseSchema.parse(
+      await codeResponse.json(),
+    );
     const originalRefreshExpiry = new Date(
       issuedAt.getTime() + OAUTH_REFRESH_TOKEN_LIFETIME_MS,
     );
@@ -388,7 +381,7 @@ describe("POST /v2/oauth/token", () => {
       client,
       initialTokens.refresh_token,
     );
-    const refreshedTokens = TokenResponseSchema.parse(
+    const refreshedTokens = OAuthTokenResponseSchema.parse(
       await refreshResponse.json(),
     );
 
@@ -432,37 +425,18 @@ describe("POST /v2/oauth/token", () => {
     });
     await expectOAuthError(scopeResponse, 400, "invalid_scope");
 
-    const retriedAt = new Date(
-      refreshedAt.getTime() + OAUTH_REFRESH_TOKEN_ROTATION_GRACE_MS / 2,
-    );
-    vi.setSystemTime(retriedAt);
-    const retryResponse = await refresh(
+    const repeatedResponse = await refresh(
       app,
       client,
       initialTokens.refresh_token,
     );
-    const retryTokens = TokenResponseSchema.parse(await retryResponse.json());
-    expect(retryResponse.status).toBe(200);
-    expect(retryTokens.refresh_token).not.toBe(initialTokens.refresh_token);
-    expect(retryTokens.refresh_token).not.toBe(refreshedTokens.refresh_token);
+    await expectOAuthError(repeatedResponse, 400, "invalid_grant");
     expect(
-      await db
-        .selectFrom("oauth_refresh_token")
-        .select(["last_used_at", "rotated_at"])
-        .where("id", "=", originalRefreshToken.id)
-        .executeTakeFirstOrThrow(),
-    ).toEqual({ last_used_at: retriedAt, rotated_at: refreshedAt });
-
-    const graceExpiredAt = new Date(
-      refreshedAt.getTime() + OAUTH_REFRESH_TOKEN_ROTATION_GRACE_MS,
-    );
-    vi.setSystemTime(graceExpiredAt);
-    const staleResponse = await refresh(
-      app,
-      client,
-      initialTokens.refresh_token,
-    );
-    await expectOAuthError(staleResponse, 400, "invalid_grant");
+      await db.selectFrom("oauth_refresh_token").select("id").execute(),
+    ).toHaveLength(2);
+    expect(
+      await db.selectFrom("oauth_access_token").select("id").execute(),
+    ).toHaveLength(2);
 
     const descendantResponse = await refresh(
       app,
@@ -470,20 +444,6 @@ describe("POST /v2/oauth/token", () => {
       refreshedTokens.refresh_token,
     );
     expect(descendantResponse.status).toBe(200);
-
-    const storedRefreshTokens = await db
-      .selectFrom("oauth_refresh_token")
-      .selectAll()
-      .execute();
-    const storedAccessTokens = await db
-      .selectFrom("oauth_access_token")
-      .selectAll()
-      .execute();
-    expect(storedRefreshTokens).toHaveLength(4);
-    expect(storedAccessTokens).toHaveLength(4);
-    expect(storedAccessTokens.every((token) => token.revoked_at == null)).toBe(
-      true,
-    );
   });
 
   test("rejects unusable or cross-client refresh tokens", async ({

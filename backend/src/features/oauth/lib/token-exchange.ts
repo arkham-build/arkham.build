@@ -13,7 +13,6 @@ import { canonicalizeOAuthScopes } from "./scopes.ts";
 
 export const OAUTH_ACCESS_TOKEN_EXPIRES_IN_SECONDS = 60 * 60;
 export const OAUTH_REFRESH_TOKEN_LIFETIME_MS = 90 * 24 * 60 * 60 * 1000;
-export const OAUTH_REFRESH_TOKEN_ROTATION_GRACE_MS = 60 * 1000;
 
 const OAUTH_ACCESS_TOKEN_LIFETIME_MS =
   OAUTH_ACCESS_TOKEN_EXPIRES_IN_SECONDS * 1000;
@@ -159,16 +158,12 @@ export async function exchangeOAuthRefreshToken(
       .forUpdate()
       .executeTakeFirst();
     const now = new Date();
-    const rotationGraceStartedBefore = new Date(
-      now.getTime() - OAUTH_REFRESH_TOKEN_ROTATION_GRACE_MS,
-    );
 
     if (
       !refreshToken ||
       refreshToken.revoked_at != null ||
-      refreshToken.expires_at <= now ||
-      (refreshToken.rotated_at != null &&
-        refreshToken.rotated_at <= rotationGraceStartedBefore)
+      refreshToken.rotated_at != null ||
+      refreshToken.expires_at <= now
     ) {
       throw invalidRefreshToken();
     }
@@ -198,7 +193,7 @@ export async function exchangeOAuthRefreshToken(
       .updateTable("oauth_refresh_token")
       .set({
         last_used_at: now,
-        rotated_at: refreshToken.rotated_at ?? now,
+        rotated_at: now,
         updated_at: now,
       })
       .where("id", "=", refreshToken.id)

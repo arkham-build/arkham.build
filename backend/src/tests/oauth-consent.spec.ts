@@ -79,9 +79,11 @@ describe("OAuth account consent routes", () => {
     expect(firstStoredRequest.claimed_at).toEqual(now);
     expect(secondStoredRequest.claimed_at).toEqual(now);
 
-    const otherAccount = await createAccountSession(db, config, {
-      name: "other-consent-account",
-    });
+    const otherAccount = await createAccountSession(
+      db,
+      config,
+      "other-consent-account",
+    );
     const crossAccountResponse = await postConsentAction(
       app,
       requestToken,
@@ -348,75 +350,6 @@ describe("OAuth account consent routes", () => {
     }
   });
 
-  test("rechecks account existence, ban status, and profile completion", async ({
-    dependencies,
-  }) => {
-    const { app, config, db } = dependencies;
-    const clientId = await seedOAuthClient(db);
-
-    const incomplete = await createAccountSession(db, config, {
-      name: "incomplete-consent-account",
-      profileCompletedAt: null,
-    });
-    const incompleteToken = await startAuthorization(app, clientId, {
-      state: "incomplete-account",
-    });
-    const incompleteResponse = await postConsentAction(
-      app,
-      incompleteToken,
-      "claim",
-      incomplete.cookie,
-    );
-    expect(incompleteResponse.status).toBe(403);
-    expect(await incompleteResponse.json()).toMatchObject({
-      message: "Profile completion required",
-    });
-
-    const banned = await createAccountSession(db, config, {
-      name: "banned-consent-account",
-    });
-    await db
-      .insertInto("account_moderation_action")
-      .values({
-        account_id: banned.accountId,
-        reason: "OAuth consent test ban",
-        scope: "account",
-        type: "ban",
-      })
-      .execute();
-    const bannedToken = await startAuthorization(app, clientId, {
-      state: "banned-account",
-    });
-    const bannedResponse = await postConsentAction(
-      app,
-      bannedToken,
-      "claim",
-      banned.cookie,
-    );
-    expect(bannedResponse.status).toBe(403);
-    expect(await bannedResponse.json()).toMatchObject({
-      message: "Account is banned",
-    });
-
-    const deleted = await createAccountSession(db, config, {
-      name: "deleted-consent-account",
-    });
-    const deletedToken = await startAuthorization(app, clientId, {
-      state: "deleted-account",
-    });
-    await db
-      .deleteFrom("account")
-      .where("id", "=", deleted.accountId)
-      .execute();
-    const deletedResponse = await postConsentAction(
-      app,
-      deletedToken,
-      "claim",
-      deleted.cookie,
-    );
-    expect(deletedResponse.status).toBe(401);
-  });
-
   test("allows only one concurrent approval or denial decision", async ({
     dependencies,
   }) => {
@@ -530,14 +463,11 @@ async function seedRequestScenario(app: App, db: Database, name: string) {
 async function createAccountSession(
   db: Database,
   config: Config,
-  input: { name: string; profileCompletedAt?: Date | null },
+  name: string,
 ) {
   const account = await db
     .insertInto("account")
-    .values({
-      name: input.name,
-      profile_completed_at: input.profileCompletedAt,
-    })
+    .values({ name })
     .returning("id")
     .executeTakeFirstOrThrow();
   const session = await createSession(

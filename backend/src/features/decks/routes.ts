@@ -93,7 +93,7 @@ routes.get("/manifest", sessionAuth(), async (c) => {
     provider: ACCOUNT_PROVIDER_TYPE,
     id: deck.id,
     updatedAt: deck.updated_at.toISOString(),
-    version: deck.version ?? "",
+    version: deck.version,
   }));
 
   const decks = [...accountDeckManifest, ...arkhamdbDeckManifest];
@@ -367,11 +367,7 @@ const localCrud = {
       .where("account_id", "=", accountId)
       .where("id", "=", deckId)
       .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
-      .where((eb) =>
-        payload.expectedVersion === ""
-          ? eb.or([eb("version", "is", null), eb("version", "=", "")])
-          : eb("version", "=", payload.expectedVersion),
-      )
+      .where("version", "=", payload.expectedVersion)
       .returningAll()
       .executeTakeFirst();
 
@@ -394,11 +390,7 @@ const localCrud = {
       }
 
       const current = mapDeckRowToDto(lockedCurrent);
-      assertExpectedDeckVersion(
-        current,
-        payload.expectedVersion,
-        lockedCurrent.version ?? null,
-      );
+      assertExpectedDeckVersion(current, payload.expectedVersion);
 
       const deleteIds = payload.all
         ? await collectAccountDeckHistoryIds(tx, accountId, lockedCurrent)
@@ -434,9 +426,8 @@ const localCrud = {
       }
 
       const current = mapDeckRowToDto(lockedCurrent);
-      const currentVersion = lockedCurrent.version ?? null;
-      assertExpectedDeckVersion(current, expectedVersion, currentVersion);
-      assertDeckHasNoUpgrade(current, currentVersion);
+      assertExpectedDeckVersion(current, expectedVersion);
+      assertDeckHasNoUpgrade(current);
 
       const { id, source: _, version, ...deckPayload } = deck;
       const createdDeckId = String(id);
@@ -560,22 +551,15 @@ async function fetchMatchingArkhamDbDeck(
   return current;
 }
 
-function assertExpectedDeckVersion(
-  deck: SharedDeck,
-  expectedVersion: string,
-  remoteVersion: string | null = deck.version,
-) {
+function assertExpectedDeckVersion(deck: SharedDeck, expectedVersion: string) {
   if (deck.version !== expectedVersion) {
-    throwDeckConflict(deck, remoteVersion);
+    throwDeckConflict(deck, deck.version);
   }
 }
 
-function assertDeckHasNoUpgrade(
-  deck: SharedDeck,
-  remoteVersion: string | null = deck.version,
-) {
+function assertDeckHasNoUpgrade(deck: SharedDeck) {
   if (deck.next_deck) {
-    throwDeckConflict(deck, remoteVersion, "Deck already has an upgrade");
+    throwDeckConflict(deck, deck.version, "Deck already has an upgrade");
   }
 }
 

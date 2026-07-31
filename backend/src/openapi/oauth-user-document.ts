@@ -29,7 +29,7 @@ const FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
 const INTEGRATION_GUIDE_URL =
   "https://github.com/arkham-build/arkham.build/blob/main/docs/oauth-integration.md";
 
-export function createOAuthUserOpenApiDocument() {
+function createOAuthUserOpenApiDocument() {
   return {
     openapi: "3.1.0",
     info: {

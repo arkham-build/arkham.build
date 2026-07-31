@@ -2,11 +2,7 @@ import type { OAuthScope } from "@arkham-build/shared";
 import type { MiddlewareHandler } from "hono";
 import { z } from "zod";
 import { findAccountForAuth } from "../../lib/auth/accounts.ts";
-import type {
-  HonoEnv,
-  OAuthBearerContext,
-  OAuthBearerHonoEnv,
-} from "../../lib/hono-env.ts";
+import type { HonoEnv, OAuthBearerHonoEnv } from "../../lib/hono-env.ts";
 import { hashOAuthCredential } from "../../lib/oauth/crypto.ts";
 import { canonicalizeOAuthScopes } from "../oauth/lib/scopes.ts";
 import { OAuthUserErrorSchema } from "./dtos.ts";
@@ -40,7 +36,7 @@ export function oauthBearerAuth(
       const rawToken = parseBearerToken(c.req.header("Authorization"));
 
       c.set(
-        "oauthBearer",
+        "account",
         await authenticateBearerToken(c.get("db"), rawToken, requiredScopes),
       );
       return await next();
@@ -76,19 +72,12 @@ async function authenticateBearerToken(
   db: HonoEnv["Variables"]["db"],
   rawToken: string,
   requiredScopes: readonly OAuthScope[],
-): Promise<OAuthBearerContext> {
+) {
   const now = new Date();
 
   const token = await db
     .selectFrom("oauth_access_token")
-    .select([
-      "expires_at",
-      "id",
-      "oauth_grant_id",
-      "oauth_refresh_token_id",
-      "revoked_at",
-      "scopes",
-    ])
+    .select(["expires_at", "oauth_grant_id", "revoked_at", "scopes"])
     .where("token_hash", "=", hashOAuthCredential(rawToken))
     .executeTakeFirst();
 
@@ -105,7 +94,7 @@ async function authenticateBearerToken(
 
   const client = await db
     .selectFrom("oauth_client")
-    .select(["disabled_at", "id", "name"])
+    .select("disabled_at")
     .where("id", "=", grant.oauth_client_id)
     .executeTakeFirst();
   if (!client || client.disabled_at != null) throw invalidToken();
@@ -130,16 +119,7 @@ async function authenticateBearerToken(
     );
   }
 
-  return {
-    account,
-    client: { id: client.id, name: client.name },
-    token: {
-      id: token.id,
-      oauth_grant_id: token.oauth_grant_id,
-      oauth_refresh_token_id: token.oauth_refresh_token_id,
-    },
-    scopes,
-  };
+  return account;
 }
 
 function invalidToken() {

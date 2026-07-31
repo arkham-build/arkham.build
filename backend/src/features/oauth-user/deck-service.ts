@@ -50,7 +50,7 @@ export async function getOAuthDeckManifest(
   source: OAuthDeckSource | undefined,
 ) {
   const db = c.get("db");
-  const accountId = c.get("oauthBearer").account.id;
+  const accountId = c.get("account").id;
   const includeAccount = source == null || source === "account";
   const includeArkhamDb = source == null || source === "arkhamdb";
   const decks: ManifestItem[] = [];
@@ -62,7 +62,7 @@ export async function getOAuthDeckManifest(
         source: "account" as const,
         id: deck.id,
         updatedAt: deck.updated_at.toISOString(),
-        version: deck.version ?? "",
+        version: deck.version,
       })),
     );
   }
@@ -120,7 +120,7 @@ export async function getOAuthDeckBatch(
   targets: OAuthDeckTarget[],
   arkhamDbSyncToken: string | null | undefined,
 ) {
-  const accountId = c.get("oauthBearer").account.id;
+  const accountId = c.get("account").id;
   const accountIds = [
     ...new Set(
       targets
@@ -173,7 +173,7 @@ export async function getOAuthDeck(
   source: OAuthDeckSource,
   id: string | number,
 ) {
-  const accountId = c.get("oauthBearer").account.id;
+  const accountId = c.get("account").id;
   if (source === "arkhamdb") {
     return await requireArkhamDb(() => fetchArkhamDbDeck(c, accountId, id));
   }
@@ -188,7 +188,7 @@ export async function createOAuthDeck(
   source: OAuthDeckSource,
   payload: OAuthDeckWrite,
 ) {
-  const accountId = c.get("oauthBearer").account.id;
+  const accountId = c.get("account").id;
   if (source === "arkhamdb") {
     return await requireArkhamDb(() =>
       createArkhamDbDeck(c, accountId, payload),
@@ -219,7 +219,7 @@ export async function updateOAuthDeck(
   id: string | number,
   payload: OAuthDeckWrite,
 ) {
-  const accountId = c.get("oauthBearer").account.id;
+  const accountId = c.get("account").id;
   if (source === "arkhamdb") {
     return await requireArkhamDb(() =>
       saveArkhamDbDeck(c, accountId, id, payload),
@@ -254,7 +254,7 @@ export async function upgradeOAuthDeck(
   id: string | number,
   payload: OAuthDeckWrite,
 ) {
-  const accountId = c.get("oauthBearer").account.id;
+  const accountId = c.get("account").id;
   if (source === "arkhamdb") {
     return await upgradeOAuthArkhamDbDeck(c, accountId, id, payload);
   }
@@ -308,7 +308,7 @@ export async function deleteOAuthDeck(
   id: string | number,
   all: boolean,
 ) {
-  const accountId = c.get("oauthBearer").account.id;
+  const accountId = c.get("account").id;
   if (source === "arkhamdb") {
     await requireArkhamDb(() => deleteArkhamDbDeck(c, accountId, id, all));
     return;
@@ -371,17 +371,12 @@ async function upgradeOAuthArkhamDbDeck(
   );
 }
 
-function incrementDeckVersion(version: string | null) {
-  const match = /^(\d+)\.(\d+)$/.exec(version ?? "");
-  if (!match) {
-    throw new HTTPException(409, {
-      message: "Deck version cannot be incremented",
-    });
-  }
+function incrementDeckVersion(version: string) {
+  const match = /^(\d+)\.(\d+)$/.exec(version);
+  assert(match, "Stored deck version must match <major>.<minor>.");
 
   const major = Number(match[1]);
   const minor = Number(match[2]);
-  assert(Number.isSafeInteger(major) && Number.isSafeInteger(minor));
   return `${major}.${minor + 1}`;
 }
 

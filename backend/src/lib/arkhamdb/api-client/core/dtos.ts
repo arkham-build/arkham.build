@@ -50,11 +50,3 @@ export const ArkhamDbSuccessResponseSchema = z.object({
   msg: z.union([z.string(), z.number()]).nullish(),
   success: z.boolean(),
 });
-
-export type ArkhamDbOperationResponse = z.infer<
-  typeof ArkhamDbOperationResponseSchema
->;
-
-export type ArkhamDbSuccessResponse = z.infer<
-  typeof ArkhamDbSuccessResponseSchema
->;

@@ -109,14 +109,6 @@ function mapConsentError(error: unknown) {
   if (!(error instanceof OAuthConsentError)) return error;
 
   switch (error.code) {
-    case "account_not_found":
-      return new HTTPException(401, { message: "Account not found" });
-    case "account_banned":
-      return new HTTPException(403, { message: "Account is banned" });
-    case "profile_incomplete":
-      return new HTTPException(403, {
-        message: "Profile completion required",
-      });
     case "request_owned_by_another_account":
       return new HTTPException(403, {
         message: "Authorization request belongs to another account",

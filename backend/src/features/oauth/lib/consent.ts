@@ -10,10 +10,7 @@ import { canonicalizeOAuthScopes } from "./scopes.ts";
 export const OAUTH_AUTHORIZATION_CODE_LIFETIME_MS = 5 * 60 * 1000;
 
 export type OAuthConsentErrorCode =
-  | "account_banned"
-  | "account_not_found"
   | "client_unavailable"
-  | "profile_incomplete"
   | "request_not_claimed"
   | "request_owned_by_another_account"
   | "request_unavailable";
@@ -159,7 +156,7 @@ async function lockOAuthAuthorizationRequest(
     throw new OAuthConsentError("client_unavailable");
   }
 
-  const account = await lockOAuthAccount(tx, accountId);
+  await lockOAuthAccount(tx, accountId);
   const request = await tx
     .selectFrom("oauth_authorization_request")
     .select([
@@ -177,8 +174,6 @@ async function lockOAuthAuthorizationRequest(
     .forUpdate()
     .executeTakeFirst();
   const now = new Date();
-
-  await validateOAuthAccount(tx, account, now);
 
   if (!request || request.consumed_at != null || request.expires_at <= now) {
     throw new OAuthConsentError("request_unavailable");
@@ -207,42 +202,13 @@ async function lockOAuthAuthorizationRequest(
 }
 
 async function lockOAuthAccount(tx: Transaction<DB>, accountId: string) {
-  const account = await tx
+  // Serialize consent transitions to prevent concurrent grant updates.
+  await tx
     .selectFrom("account")
-    .select(["id", "profile_completed_at"])
+    .select("id")
     .where("id", "=", accountId)
     .forUpdate()
-    .executeTakeFirst();
-
-  if (!account) {
-    throw new OAuthConsentError("account_not_found");
-  }
-
-  return account;
-}
-
-async function validateOAuthAccount(
-  tx: Transaction<DB>,
-  account: { id: string; profile_completed_at: Date | null },
-  now: Date,
-) {
-  const activeBan = await tx
-    .selectFrom("account_moderation_action")
-    .select("id")
-    .where("account_id", "=", account.id)
-    .where("scope", "=", "account")
-    .where("type", "=", "ban")
-    .where("created_at", "<=", now)
-    .where((eb) => eb.or([eb("ends_at", "is", null), eb("ends_at", ">", now)]))
-    .executeTakeFirst();
-
-  if (activeBan) {
-    throw new OAuthConsentError("account_banned");
-  }
-
-  if (account.profile_completed_at == null) {
-    throw new OAuthConsentError("profile_incomplete");
-  }
+    .executeTakeFirstOrThrow();
 }
 
 async function consumeAuthorizationRequest(

@@ -2,19 +2,19 @@ import { randomUUID } from "node:crypto";
 
 export const runId = process.env.E2E_RUN_ID ?? randomUUID().replaceAll("-", "");
 
-export const frontendPort = process.env.E2E_FRONTEND_PORT ?? "3100";
+const frontendPort = process.env.E2E_FRONTEND_PORT ?? "3100";
 export const frontendUrl =
   process.env.E2E_FRONTEND_URL ?? `http://localhost:${frontendPort}`;
 
-export const apiPort = process.env.E2E_API_PORT ?? "8788";
+const apiPort = process.env.E2E_API_PORT ?? "8788";
 export const apiUrl = process.env.E2E_API_URL ?? `http://localhost:${apiPort}`;
 
-export const dbName = process.env.E2E_DB_NAME ?? `arkham_build_e2e_${runId}`;
-export const postgresHost = process.env.E2E_POSTGRES_HOST ?? "localhost";
-export const postgresPort = process.env.E2E_POSTGRES_PORT ?? "5432";
-export const postgresUser = process.env.E2E_POSTGRES_USER ?? "postgres";
-export const postgresPassword = process.env.E2E_POSTGRES_PASSWORD ?? "postgres";
-export const postgresAdminDb = process.env.E2E_POSTGRES_ADMIN_DB ?? "postgres";
+const dbName = process.env.E2E_DB_NAME ?? `arkham_build_e2e_${runId}`;
+const postgresHost = process.env.E2E_POSTGRES_HOST ?? "localhost";
+const postgresPort = process.env.E2E_POSTGRES_PORT ?? "5432";
+const postgresUser = process.env.E2E_POSTGRES_USER ?? "postgres";
+const postgresPassword = process.env.E2E_POSTGRES_PASSWORD ?? "postgres";
+const postgresAdminDb = process.env.E2E_POSTGRES_ADMIN_DB ?? "postgres";
 export const databaseUrl =
   process.env.E2E_DATABASE_URL ??
   `postgres://${postgresUser}:${postgresPassword}@${postgresHost}:${postgresPort}/${dbName}?sslmode=disable`;

@@ -260,10 +260,7 @@ function oauthFormRequestMiddleware(
   };
 }
 
-export function oauthQueryValidator<T>(
-  schema: ZodType<T>,
-  errorDescription: string,
-) {
+function oauthQueryValidator<T>(schema: ZodType<T>, errorDescription: string) {
   return validator("query", (value, c) => {
     const result = schema.safeParse(value);
     if (result.success) return result.data;

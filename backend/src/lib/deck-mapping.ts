@@ -27,7 +27,7 @@ export function mapDeckRowToDto(deck: DeckRow): Deck {
     taboo_id: deck.taboo_set_id,
     tags: deck.tags ?? "",
     user_id: null,
-    version: deck.version ?? "",
+    version: deck.version,
     xp_adjustment: deck.xp_adjustment,
     xp_spent: deck.xp_spent,
     xp: deck.xp,

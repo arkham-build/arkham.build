@@ -68,7 +68,7 @@ export function mapAccountSessionToResponse(
   });
 }
 
-export function mapArkhamDbAccountIdentityToIdentity(
+function mapArkhamDbAccountIdentityToIdentity(
   identity: AccountIdentitySummary,
   canDisconnect: boolean,
 ): ArkhamDBIdentity | null {
@@ -96,7 +96,7 @@ export function mapArkhamDbAccountIdentityToIdentity(
   };
 }
 
-export function parseArkhamDbIdentityState(
+function parseArkhamDbIdentityState(
   state: AccountIdentity["state"],
 ): ArkhamDbIdentityState {
   const parsed = ArkhamDbIdentityStateSchema.safeParse(state);

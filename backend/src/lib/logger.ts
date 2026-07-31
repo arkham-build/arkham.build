@@ -69,7 +69,7 @@ export function requestLogger() {
   };
 }
 
-export function redactSensitivePath(path: string) {
+function redactSensitivePath(path: string) {
   return path.replace(
     /^(\/v2\/account\/oauth\/authorization-requests\/)[^/]+/,
     "$1:token",

@@ -25,7 +25,7 @@ export type FieldLookupContext = {
   metadata: Metadata;
 };
 
-export type ComparisonContext = {
+type ComparisonContext = {
   operator?: string;
   otherValue?: FieldValue | RegExp | (FieldValue | RegExp)[];
 };
