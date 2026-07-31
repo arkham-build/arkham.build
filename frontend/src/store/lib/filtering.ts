@@ -1349,6 +1349,7 @@ export function filterSealed(
   lookupTables: LookupTables,
 ) {
   return (c: Card) => {
+    if (c.xp == null) return true;
     if (sealedDeck[c.code]) return true;
 
     const duplicates = lookupTables.relations.duplicates[c.code];
