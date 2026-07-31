@@ -518,6 +518,25 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
     });
   },
 
+  toggleListDefaultFlipped() {
+    set((state) => {
+      assert(state.activeList, "no active list is defined.");
+
+      const list = state.lists[state.activeList];
+      assert(list, `list ${state.activeList} not defined.`);
+
+      return {
+        lists: {
+          ...state.lists,
+          [state.activeList]: {
+            ...list,
+            defaultFlipped: !list.defaultFlipped,
+          },
+        },
+      };
+    });
+  },
+
   setListViewMode(viewMode) {
     set((state) => {
       assert(state.activeList, "no active list is defined.");
@@ -979,6 +998,7 @@ function makeList({
   lockedFilters = new Set<FilterKey>(),
 }: MakeListOptions): List {
   const list = {
+    defaultFlipped: false,
     fanMadeCycleCodes,
     filters,
     filterValues: filters.reduce<List["filterValues"]>((acc, curr, i) => {

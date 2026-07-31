@@ -7,6 +7,7 @@ import {
 } from "@/store/selectors/lists";
 import { selectActiveList, selectMetadata } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
+import { useHotkey } from "@/utils/use-hotkey";
 import { Footer } from "../footer";
 import { useResolvedDeck } from "../resolved-deck-context";
 import { CardGrid } from "./card-grid";
@@ -60,6 +61,11 @@ export function CardListContainer(props: Props) {
   const list = useStore(selectActiveList);
   assert(list, "No active list found");
   const listDisplay = list.display;
+
+  const toggleListDefaultFlipped = useStore(
+    (state) => state.toggleListDefaultFlipped,
+  );
+  useHotkey("f", toggleListDefaultFlipped);
 
   const [scanMaxColumns, setScanMaxColumns] = useState(
     getInitialScanMaxColumns,
@@ -135,6 +141,7 @@ export function CardListContainer(props: Props) {
               <CardGrid
                 {...rest}
                 data={data}
+                defaultFlipped={list.defaultFlipped}
                 listDisplay={listDisplay}
                 metadata={metadata}
                 resolvedDeck={ctx.resolvedDeck}
@@ -146,6 +153,7 @@ export function CardListContainer(props: Props) {
               <CardGridGrouped
                 {...rest}
                 data={data}
+                defaultFlipped={list.defaultFlipped}
                 listDisplay={listDisplay}
                 metadata={metadata}
                 resolvedDeck={ctx.resolvedDeck}

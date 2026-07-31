@@ -63,6 +63,7 @@ export function KeyboardShortcutsModal() {
           t("help.shortcuts.group_card_list"),
           [
             { keybind: "/", description: t("lists.actions.focus_search") },
+            { keybind: "f", description: t("lists.actions.flip_all_scans") },
             {
               keybind: "alt+f",
               description: t("lists.actions.toggle_filters"),

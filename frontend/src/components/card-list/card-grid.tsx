@@ -16,9 +16,12 @@ import type { CardListImplementationProps } from "./types";
 const SCAN_GRID_GAP = 16;
 
 export function CardGrid(
-  props: CardListImplementationProps & { scanMaxColumns: number },
+  props: CardListImplementationProps & {
+    defaultFlipped: boolean;
+    scanMaxColumns: number;
+  },
 ) {
-  const { data, scanMaxColumns, search, ...rest } = props;
+  const { data, defaultFlipped, scanMaxColumns, search, ...rest } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
@@ -178,6 +181,7 @@ export function CardGrid(
                 <CardGridItem
                   {...rest}
                   card={card}
+                  defaultFlipped={defaultFlipped}
                   key={card.id}
                   highlighted={
                     highlighted !== null &&
@@ -197,6 +201,7 @@ export function CardGridItem(
   props: {
     card: Card;
     className?: string;
+    defaultFlipped?: boolean;
     highlighted?: boolean;
     omitFavorite?: boolean;
   } & Pick<
@@ -207,6 +212,7 @@ export function CardGridItem(
   const {
     card,
     className,
+    defaultFlipped = false,
     highlighted,
     omitFavorite,
     getListCardProps,
@@ -261,6 +267,7 @@ export function CardGridItem(
       >
         <CardScan
           card={card}
+          defaultFlipped={defaultFlipped}
           lazy
           leftActionSlot={omitFavorite ? undefined : leftActionSlot}
         />

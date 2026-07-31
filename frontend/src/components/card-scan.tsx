@@ -20,7 +20,6 @@ export type CardScanActionSlot = (scanId: string) => React.ReactNode;
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   card: Card;
   className?: string;
-  defaultFlipped?: boolean;
   draggable?: boolean;
   flipped: boolean;
   hideFlipButton?: boolean;
@@ -32,18 +31,30 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   suffix?: string;
 }
 
-export function CardScan(props: Omit<Props, "flipped">) {
-  const [flipped, setFlipped] = useState(false);
+type CardScanProps = Omit<Props, "flipped"> & {
+  defaultFlipped?: boolean;
+};
+
+export function CardScan(props: CardScanProps) {
+  const { defaultFlipped = false, onFlip: onFlipProp, ...rest } = props;
+  const [flipped, setFlipped] = useState(defaultFlipped);
+  const [previousDefaultFlipped, setPreviousDefaultFlipped] =
+    useState(defaultFlipped);
+
+  if (defaultFlipped !== previousDefaultFlipped) {
+    setPreviousDefaultFlipped(defaultFlipped);
+    setFlipped(defaultFlipped);
+  }
 
   const onFlip = useCallback(
     (value: boolean, sideways: boolean) => {
       setFlipped(value);
-      props.onFlip?.(value, sideways);
+      onFlipProp?.(value, sideways);
     },
-    [props],
+    [onFlipProp],
   );
 
-  return <CardScanControlled {...props} flipped={flipped} onFlip={onFlip} />;
+  return <CardScanControlled {...rest} flipped={flipped} onFlip={onFlip} />;
 }
 
 export function CardScanControlled(props: Props) {

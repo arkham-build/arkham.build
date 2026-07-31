@@ -19,9 +19,13 @@ import { Grouphead } from "./grouphead";
 import type { CardListImplementationProps } from "./types";
 
 export function CardGridGrouped(
-  props: CardListImplementationProps & { scanMaxColumns: number },
+  props: CardListImplementationProps & {
+    defaultFlipped: boolean;
+    scanMaxColumns: number;
+  },
 ) {
-  const { data, metadata, scanMaxColumns, search, ...rest } = props;
+  const { data, defaultFlipped, metadata, scanMaxColumns, search, ...rest } =
+    props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
@@ -126,6 +130,7 @@ export function CardGridGrouped(
               {...rest}
               group={group}
               data={data}
+              defaultFlipped={defaultFlipped}
               index={index}
               metadata={metadata}
               scanMaxColumns={scanMaxColumns}
@@ -141,12 +146,21 @@ function CardGridGroup(
   props: {
     group: CardGroupType;
     data: ListState;
+    defaultFlipped: boolean;
     index: number;
     metadata: Metadata;
     scanMaxColumns: number;
   } & CardListImplementationProps,
 ) {
-  const { group, data, index, metadata, scanMaxColumns, ...rest } = props;
+  const {
+    group,
+    data,
+    defaultFlipped,
+    index,
+    metadata,
+    scanMaxColumns,
+    ...rest
+  } = props;
   const { cards, groupCounts } = data;
 
   const counts = groupCounts[index];
@@ -184,7 +198,12 @@ function CardGridGroup(
         style={cssVariables as React.CSSProperties}
       >
         {groupCards.map((card) => (
-          <CardGridItem {...rest} card={card} key={card.code} />
+          <CardGridItem
+            {...rest}
+            card={card}
+            defaultFlipped={defaultFlipped}
+            key={card.code}
+          />
         ))}
       </div>
     </div>
@@ -194,12 +213,13 @@ function CardGridGroup(
 function CardGridItem(
   props: {
     card: Card;
+    defaultFlipped: boolean;
   } & Pick<
     CardListImplementationProps,
     "getListCardProps" | "quantities" | "resolvedDeck"
   >,
 ) {
-  const { card, getListCardProps, quantities } = props;
+  const { card, defaultFlipped, getListCardProps, quantities } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
@@ -244,7 +264,12 @@ function CardGridItem(
         onKeyUp={onPressEnter}
         tabIndex={0}
       >
-        <CardScan card={card} lazy leftActionSlot={leftActionSlot} />
+        <CardScan
+          card={card}
+          defaultFlipped={defaultFlipped}
+          lazy
+          leftActionSlot={leftActionSlot}
+        />
       </Link>
       <div className={css["group-item-actions"]}>
         <CardActions
