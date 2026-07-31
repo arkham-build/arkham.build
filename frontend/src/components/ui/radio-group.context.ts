@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useId, useMemo } from "react";
+import { assert } from "@/utils/assert";
 
 interface RadioGroupContextValue {
   disabled?: boolean;
@@ -7,9 +8,9 @@ interface RadioGroupContextValue {
   value?: string;
 }
 
-export const RadioGroupContext = createContext<RadioGroupContextValue>({
-  name: "",
-});
+export const RadioGroupContext = createContext<RadioGroupContextValue | null>(
+  null,
+);
 
 interface RadioGroupProviderOptions {
   disabled?: boolean;
@@ -33,6 +34,8 @@ export function useRadioGroupProvider(options: RadioGroupProviderOptions) {
 
 export function useRadioGroupItem(value: string, itemDisabled?: boolean) {
   const ctx = useContext(RadioGroupContext);
+  assert(ctx, "Radio group items must be used within a radio group");
+
   const id = `${ctx.name}${value}`;
   const checked = ctx.value === value;
   const disabled = ctx.disabled || itemDisabled;

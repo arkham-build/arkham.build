@@ -144,7 +144,7 @@ function CardTagCombobox({
       label: (name: string) => (
         <>
           <PlusIcon />
-          {t("card_tags.create_named", { name })}
+          {t("common.create_named", { name })}
         </>
       ),
       onCreate: onCreateTag,

@@ -167,7 +167,6 @@
     },
     "card_tags": {
       "account_title": "Tagi globalne",
-      "create_named": "Stwórz \"{{name}}\"",
       "deck_placeholder": "Dodaj tag talii...",
       "deck_title": "Tagi talii",
       "favorite": "Ulubiona",
@@ -244,6 +243,7 @@
         "value": "Koszt: {{cost}}",
         "x": "Koszt X"
       },
+      "create_named": "Stwórz \"{{name}}\"",
       "customizable": "Przystosowalna",
       "customizations": "Usprawnienia",
       "cycle_one": "cykl",

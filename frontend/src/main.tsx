@@ -50,9 +50,9 @@ async function init() {
   const store = useStore.getState();
 
   await store.init(
-    (locale) => queryMetadata(httpClient, locale),
+    (locale, revision) => queryMetadata(httpClient, locale, revision),
     (locale) => queryDataVersion(httpClient, locale),
-    (locale) => queryCards(httpClient, locale),
+    (locale, revision) => queryCards(httpClient, locale, revision),
     {
       refresh: false,
     },

@@ -66,10 +66,6 @@ export function groupDeckCards(
   }, {});
 }
 
-export function countGroupRows(grouping: DeckGrouping) {
-  return grouping.data.reduce((acc, group) => acc + group.cards.length, 0);
-}
-
 function countGroup(cards: Card[], quantities?: Record<string, number>) {
   return cards.reduce((acc, card) => acc + (quantities?.[card.code] ?? 0), 0);
 }

@@ -37,6 +37,31 @@
     }
   }
 
+  .listcard-wrapper.faded {
+    &
+      :is(
+        .listcard-action,
+        .listcard-main,
+        .listcard-tags,
+        .listcard-after,
+        .listcard-text
+      ) {
+      opacity: 0.33;
+      transition: opacity 0.2s;
+    }
+
+    &:hover
+      :is(
+        .listcard-action,
+        .listcard-main,
+        .listcard-tags,
+        .listcard-after,
+        .listcard-text
+      ) {
+      opacity: 0.5;
+    }
+  }
+
   .listcard-after {
     grid-area: after;
   }

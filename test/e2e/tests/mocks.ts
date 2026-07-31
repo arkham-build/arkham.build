@@ -16,7 +16,7 @@ export async function mockApiCalls(page: Page) {
   const baseUrl = `${apiUrl}/v1`;
 
   await Promise.all([
-    page.route(`${baseUrl}/cache/cards/en`, async (route) => {
+    page.route(`${baseUrl}/cache/cards/en*`, async (route) => {
       const json: any = structuredClone(allCardsResponse);
       json.data.all_card.push({
         code: "99999",
@@ -32,7 +32,7 @@ export async function mockApiCalls(page: Page) {
       });
       await route.fulfill({ json });
     }),
-    page.route(`${baseUrl}/cache/metadata/en`, async (route) => {
+    page.route(`${baseUrl}/cache/metadata/en*`, async (route) => {
       const json = metadataResponse;
       await route.fulfill({ json });
     }),

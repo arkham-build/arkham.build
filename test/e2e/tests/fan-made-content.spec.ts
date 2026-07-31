@@ -40,20 +40,23 @@ test.describe("fan-made content", () => {
     await page.goto("/settings?tab=fan-made-content");
     await importPackFromFile(page, "fan_made_investigator_project.json");
 
-    await page
-      .getByTestId("collection")
-      .getByTestId("collection-project-view-cards")
-      .click();
-
-    const page1 = await page.waitForEvent("popup");
+    const [previewPage] = await Promise.all([
+      page.waitForEvent("popup"),
+      page
+        .getByTestId("collection")
+        .getByTestId("collection-project-view-cards")
+        .click(),
+    ]);
 
     await expect(
-      page1.getByRole("main").getByText("Ordinary Citizens", { exact: true }),
+      previewPage
+        .getByRole("main")
+        .getByText("Ordinary Citizens", { exact: true }),
     ).toBeVisible();
-    await page1.getByTestId("search-input").click();
-    await page1.getByTestId("search-input").fill("Lucia");
+    await previewPage.getByTestId("search-input").click();
+    await previewPage.getByTestId("search-input").fill("Lucia");
     await expect(
-      page1.getByRole("link", { name: "Scan of a33f6beb-915c-428c-" }),
+      previewPage.getByRole("link", { name: "Scan of a33f6beb-915c-428c-" }),
     ).toBeVisible();
   });
 

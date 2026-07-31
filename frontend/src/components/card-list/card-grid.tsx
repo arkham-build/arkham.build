@@ -196,13 +196,22 @@ export function CardGrid(
 export function CardGridItem(
   props: {
     card: Card;
+    className?: string;
     highlighted?: boolean;
+    omitFavorite?: boolean;
   } & Pick<
     CardListImplementationProps,
     "getListCardProps" | "quantities" | "resolvedDeck"
   >,
 ) {
-  const { card, highlighted, getListCardProps, quantities } = props;
+  const {
+    card,
+    className,
+    highlighted,
+    omitFavorite,
+    getListCardProps,
+    quantities,
+  } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
@@ -236,7 +245,7 @@ export function CardGridItem(
 
   return (
     <div
-      className={css["group-item"]}
+      className={cx(css["group-item"], className)}
       key={card.code}
       data-component="card-group-item"
     >
@@ -250,7 +259,11 @@ export function CardGridItem(
         onKeyUp={onPressEnter}
         tabIndex={0}
       >
-        <CardScan card={card} lazy leftActionSlot={leftActionSlot} />
+        <CardScan
+          card={card}
+          lazy
+          leftActionSlot={omitFavorite ? undefined : leftActionSlot}
+        />
       </Link>
       <div className={css["group-item-actions"]}>
         <CardActions

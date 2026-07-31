@@ -1,5 +1,6 @@
 .checkbox {
   --checkbox-size: 1rem;
+  --checkbox-icon-size: calc(var(--checkbox-size) * 0.75);
 
   display: flex;
   flex-flow: row nowrap;
@@ -37,8 +38,8 @@
   border: 1px solid var(--palette-3);
 
   & svg {
-    width: 0.75em;
-    height: 0.75em;
+    width: var(--checkbox-icon-size);
+    height: var(--checkbox-icon-size);
     visibility: hidden;
     color: var(--palette-5);
   }

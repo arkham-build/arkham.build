@@ -28,8 +28,9 @@ export type MetadataResponse = {
 export async function queryMetadata(
   client: HttpClient,
   locale = "en",
+  revision?: string,
 ): Promise<MetadataResponse> {
-  const res = await client.request(`/v1/cache/metadata/${locale}`);
+  const res = await client.request(cachePath("metadata", locale, revision));
   const { data }: MetadataApiResponse = await res.json();
 
   return {
@@ -67,8 +68,21 @@ export type AllCardResponse = ApiCard[];
 export async function queryCards(
   client: HttpClient,
   locale = "en",
+  revision?: string,
 ): Promise<ApiCard[]> {
-  const res = await client.request(`/v1/cache/cards/${locale}`);
+  const res = await client.request(cachePath("cards", locale, revision));
   const { data }: AllCardApiResponse = await res.json();
   return data.all_card;
+}
+
+function cachePath(
+  resource: "cards" | "metadata",
+  locale: string,
+  revision?: string,
+) {
+  const path = `/v1/cache/${resource}/${locale}`;
+  if (!revision) return path;
+
+  const params = new URLSearchParams({ revision });
+  return `${path}?${params}`;
 }

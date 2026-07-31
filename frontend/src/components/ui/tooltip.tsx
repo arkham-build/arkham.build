@@ -45,6 +45,7 @@ export function TooltipTrigger({
         ref,
         ...props,
         ...childProps,
+        className: cx(props.className, childProps.className),
         "data-tooltip-state": context.open ? "open" : "closed",
       } as React.HTMLProps<Element>),
     );

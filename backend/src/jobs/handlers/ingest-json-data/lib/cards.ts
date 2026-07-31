@@ -82,8 +82,9 @@ export function resolveCards(
         ...source,
         ...card,
         id,
-        translations: card.translations,
       } as Out;
+
+      expanded.translations = mergeReprintTranslations(source, expanded);
 
       cards.push(expanded);
       cardMapping.set(id, expanded);
@@ -126,6 +127,49 @@ export function resolveCards(
   }
 
   return { cards, cardResolutions };
+}
+
+function mergeReprintTranslations(source: In, reprint: Out) {
+  const sourceValues = new Map(Object.entries(source));
+  const reprintValues = new Map(Object.entries(reprint));
+  const locales = new Set([
+    ...source.translations.map((translation) => translation.locale),
+    ...reprint.translations.map((translation) => translation.locale),
+  ]);
+
+  return Array.from(locales).flatMap((locale) => {
+    const sourceTranslation = source.translations.find(
+      (translation) => translation.locale === locale,
+    );
+    const reprintTranslation = reprint.translations.find(
+      (translation) => translation.locale === locale,
+    );
+
+    if (!sourceTranslation) {
+      return reprintTranslation ? [reprintTranslation] : [];
+    }
+
+    const inheritedTranslation = structuredClone(sourceTranslation);
+
+    for (const key of Object.keys(inheritedTranslation)) {
+      if (key === "locale") continue;
+
+      if (
+        !sourceValues.has(key) ||
+        sourceValues.get(key) !== reprintValues.get(key)
+      ) {
+        Reflect.deleteProperty(inheritedTranslation, key);
+      }
+    }
+
+    const translation = {
+      ...inheritedTranslation,
+      ...reprintTranslation,
+      locale,
+    };
+
+    return Object.keys(translation).length > 1 ? [translation] : [];
+  });
 }
 
 function applyTabooEntry(
