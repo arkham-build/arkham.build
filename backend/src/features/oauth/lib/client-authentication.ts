@@ -33,7 +33,7 @@ export async function lockActiveOAuthClient(
     .selectFrom("oauth_client")
     .select(["disabled_at", "secret_hash"])
     .where("id", "=", clientId)
-    .forUpdate()
+    .forShare()
     .executeTakeFirst();
 
   if (!client || client.secret_hash !== verifiedSecretHash) {

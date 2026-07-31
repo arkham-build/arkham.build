@@ -16,10 +16,7 @@ export async function registerTaskWorkers(boss: PgBoss) {
 
   await boss.work(TASK_CLEANUP_OAUTH_CREDENTIALS_QUEUE, async (jobs) => {
     for (const job of jobs) {
-      const result = await runCleanupOAuthCredentials(job.id);
-      if (result.continuationRequired) {
-        await dispatcher.enqueueCleanupOAuthCredentials();
-      }
+      await runCleanupOAuthCredentials(job.id);
     }
   });
 

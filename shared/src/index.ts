@@ -65,6 +65,8 @@ export {
   DeckManifestItemSchema,
   type DeckManifestResponse,
   DeckManifestResponseSchema,
+  type DeckMutablePayload,
+  DeckMutablePayloadSchema,
   type DeckSyncTarget,
   DeckSyncTargetSchema,
   type DeckUpdateRequest,

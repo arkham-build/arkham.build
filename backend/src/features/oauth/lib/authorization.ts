@@ -27,7 +27,7 @@ export async function createOAuthAuthorizationRequest(
       .selectFrom("oauth_client")
       .select(["id", "disabled_at"])
       .where("id", "=", input.clientId)
-      .forUpdate()
+      .forShare()
       .executeTakeFirst();
 
     if (!client) {

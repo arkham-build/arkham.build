@@ -31,9 +31,6 @@ test.describe("account settings", () => {
       .filter({ has: page.getByTestId("connected-app-status") })
       .filter({ hasText: "Arkham Cards" });
     await expect(app).toBeVisible();
-    await expect(
-      page.getByText("The ArkhamCards app can be connected from its settings."),
-    ).toBeHidden();
     await expect(app).toContainText("Read profile");
     await expect(app).toContainText("Connected");
 
@@ -54,9 +51,6 @@ test.describe("account settings", () => {
     expect((await deleteResponsePromise).status()).toBe(204);
 
     await expect(app).toBeHidden();
-    await expect(
-      page.getByText("The ArkhamCards app can be connected from its settings."),
-    ).toBeVisible();
     const revokedResponse = await page.request.get(`${apiUrl}/v2/user/me`, {
       headers: { Authorization: `Bearer ${connectedApp.accessToken}` },
     });

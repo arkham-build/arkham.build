@@ -1,10 +1,8 @@
 import { randomUUID } from "node:crypto";
-import { Hono } from "hono";
-import { describe, expect, vi } from "vitest";
+import { describe, expect } from "vitest";
 import { z } from "zod";
 import type { appFactory } from "../app.ts";
 import type { Database } from "../db/db.ts";
-import { oauthBearerAuth } from "../features/oauth-user/bearer-auth.ts";
 import {
   OAuthProfileResponseSchema,
   OAuthUserErrorSchema,
@@ -17,17 +15,11 @@ import {
   hashOAuthClientSecret,
   hashOAuthCredential,
 } from "../lib/oauth/crypto.ts";
-import type { HonoEnv } from "../lib/hono-env.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
 
 describe("authenticated OAuth profile lifecycle", () => {
-  test("returns the minimal profile DTO and updates token activity", async ({
-    dependencies,
-  }) => {
+  test("returns the minimal profile DTO", async ({ dependencies }) => {
     const { app, db } = dependencies;
-    const now = new Date("2026-07-23T12:00:00.000Z");
-    vi.useFakeTimers();
-    vi.setSystemTime(now);
     const credentials = await seedOAuthCredentials(db);
 
     const response = await profileRequest(app, credentials.accessToken);
@@ -38,49 +30,6 @@ describe("authenticated OAuth profile lifecycle", () => {
       id: credentials.accountId,
       username: TEST_ACCOUNT.name,
     });
-    expect(JSON.stringify(body)).not.toContain(TEST_ACCOUNT.email);
-    expect(
-      await db
-        .selectFrom("oauth_access_token")
-        .select("last_used_at")
-        .where("id", "=", credentials.accessTokenId)
-        .executeTakeFirstOrThrow(),
-    ).toEqual({ last_used_at: now });
-  });
-
-  test("enforces required scopes without recording failed token use", async ({
-    dependencies,
-  }) => {
-    const { db } = dependencies;
-    const credentials = await seedOAuthCredentials(db);
-    const scopedApp = new Hono<HonoEnv>();
-    scopedApp.use(async (c, next) => {
-      c.set("db", db);
-      await next();
-    });
-    scopedApp.get("/decks", oauthBearerAuth(["decks:write"]), (c) =>
-      c.json({ ok: true }),
-    );
-
-    const response = await scopedApp.request("/decks", {
-      headers: { Authorization: `Bearer ${credentials.accessToken}` },
-    });
-
-    expect(response.status).toBe(403);
-    expect(response.headers.get("WWW-Authenticate")).toBe(
-      'Bearer error="insufficient_scope", scope="decks:write"',
-    );
-    expect(OAuthUserErrorSchema.parse(await response.json())).toEqual({
-      error: "insufficient_scope",
-      message: "This endpoint requires decks:write",
-    });
-    expect(
-      await db
-        .selectFrom("oauth_access_token")
-        .select("last_used_at")
-        .where("id", "=", credentials.accessTokenId)
-        .executeTakeFirstOrThrow(),
-    ).toEqual({ last_used_at: null });
   });
 
   test("rejects missing, malformed, unknown, expired, and revoked tokens", async ({

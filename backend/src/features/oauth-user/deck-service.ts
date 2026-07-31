@@ -18,13 +18,12 @@ import {
 } from "../../lib/arkhamdb/api-client/user-service.ts";
 import { ApiError } from "../../lib/arkhamdb/api-client/core/errors.ts";
 import { getAccountIdentityByAccountIdAndProvider } from "../../lib/auth/account-identities.ts";
-import { authenticatedAccountId } from "../../lib/auth/authenticated-account.ts";
 import {
   ACCOUNT_PROVIDER_TYPE,
   mapDeckRowToDto,
   mapDeckWriteDtoToInsert,
 } from "../../lib/deck-mapping.ts";
-import type { HonoEnv } from "../../lib/hono-env.ts";
+import type { OAuthBearerHonoEnv } from "../../lib/hono-env.ts";
 import {
   collectAccountDeckHistoryIds,
   findAccountDeckById,
@@ -32,9 +31,13 @@ import {
   listAccountDecksForManifest,
   lockAccountDeckById,
 } from "../decks/queries.ts";
-import type { OAuthDeck, OAuthDeckSource, OAuthDeckTarget } from "./dtos.ts";
+import type {
+  OAuthDeckSource,
+  OAuthDeckTarget,
+  OAuthDeckWrite,
+} from "./dtos.ts";
 
-type DeckContext<E extends HonoEnv = HonoEnv> = Context<E>;
+type DeckContext = Context<OAuthBearerHonoEnv>;
 type ManifestItem = {
   source: OAuthDeckSource;
   id: string | number;
@@ -42,12 +45,12 @@ type ManifestItem = {
   version: string;
 };
 
-export async function getOAuthDeckManifest<E extends HonoEnv>(
-  c: DeckContext<E>,
+export async function getOAuthDeckManifest(
+  c: DeckContext,
   source: OAuthDeckSource | undefined,
 ) {
   const db = c.get("db");
-  const accountId = authenticatedAccountId(c);
+  const accountId = c.get("oauthBearer").account.id;
   const includeAccount = source == null || source === "account";
   const includeArkhamDb = source == null || source === "arkhamdb";
   const decks: ManifestItem[] = [];
@@ -74,7 +77,9 @@ export async function getOAuthDeckManifest<E extends HonoEnv>(
 
   if (includeArkhamDb && arkhamDbIdentity) {
     try {
-      const manifest = await fetchArkhamDbDeckManifest(c, { force: true });
+      const manifest = await fetchArkhamDbDeckManifest(c, accountId, {
+        force: true,
+      });
       arkhamDbSyncToken = manifest.arkhamdbSyncToken;
       decks.push(
         ...manifest.decks.map((deck) => ({
@@ -110,11 +115,12 @@ export async function getOAuthDeckManifest<E extends HonoEnv>(
   };
 }
 
-export async function getOAuthDeckBatch<E extends HonoEnv>(
-  c: DeckContext<E>,
+export async function getOAuthDeckBatch(
+  c: DeckContext,
   targets: OAuthDeckTarget[],
   arkhamDbSyncToken: string | null | undefined,
 ) {
+  const accountId = c.get("oauthBearer").account.id;
   const accountIds = [
     ...new Set(
       targets
@@ -132,7 +138,7 @@ export async function getOAuthDeckBatch<E extends HonoEnv>(
 
   const accountDecks = await listAccountDecksByIds(
     c.get("db"),
-    authenticatedAccountId(c),
+    accountId,
     accountIds,
   );
   const decksByTarget = new Map<string, Deck>(
@@ -148,7 +154,7 @@ export async function getOAuthDeckBatch<E extends HonoEnv>(
       "ArkhamDB batch targets require a manifest sync token.",
     );
     const arkhamDbDecks = await requireArkhamDb(() =>
-      fetchArkhamDbDeckBatch(c, arkhamDbIds, arkhamDbSyncToken),
+      fetchArkhamDbDeckBatch(c, accountId, arkhamDbIds, arkhamDbSyncToken),
     );
     for (const deck of arkhamDbDecks) {
       decksByTarget.set(targetKey("arkhamdb", deck.id), deck);
@@ -162,31 +168,31 @@ export async function getOAuthDeckBatch<E extends HonoEnv>(
   });
 }
 
-export async function getOAuthDeck<E extends HonoEnv>(
-  c: DeckContext<E>,
+export async function getOAuthDeck(
+  c: DeckContext,
   source: OAuthDeckSource,
   id: string | number,
 ) {
+  const accountId = c.get("oauthBearer").account.id;
   if (source === "arkhamdb") {
-    return await requireArkhamDb(() => fetchArkhamDbDeck(c, id));
+    return await requireArkhamDb(() => fetchArkhamDbDeck(c, accountId, id));
   }
 
-  const deck = await findAccountDeckById(
-    c.get("db"),
-    authenticatedAccountId(c),
-    String(id),
-  );
+  const deck = await findAccountDeckById(c.get("db"), accountId, String(id));
   if (!deck) throw deckNotFound();
   return mapDeckRowToDto(deck);
 }
 
-export async function createOAuthDeck<E extends HonoEnv>(
-  c: DeckContext<E>,
+export async function createOAuthDeck(
+  c: DeckContext,
   source: OAuthDeckSource,
-  payload: OAuthDeck,
+  payload: OAuthDeckWrite,
 ) {
+  const accountId = c.get("oauthBearer").account.id;
   if (source === "arkhamdb") {
-    return await requireArkhamDb(() => createArkhamDbDeck(c, payload));
+    return await requireArkhamDb(() =>
+      createArkhamDbDeck(c, accountId, payload),
+    );
   }
 
   const now = new Date();
@@ -195,7 +201,7 @@ export async function createOAuthDeck<E extends HonoEnv>(
     .insertInto("deck")
     .values({
       ...mutableDeckValues(payload, null, null),
-      account_id: authenticatedAccountId(c),
+      account_id: accountId,
       created_at: now,
       id: randomUUID(),
       provider_type: ACCOUNT_PROVIDER_TYPE,
@@ -207,17 +213,18 @@ export async function createOAuthDeck<E extends HonoEnv>(
   return mapDeckRowToDto(deck);
 }
 
-export async function updateOAuthDeck<E extends HonoEnv>(
-  c: DeckContext<E>,
+export async function updateOAuthDeck(
+  c: DeckContext,
   source: OAuthDeckSource,
   id: string | number,
-  payload: OAuthDeck,
+  payload: OAuthDeckWrite,
 ) {
+  const accountId = c.get("oauthBearer").account.id;
   if (source === "arkhamdb") {
-    return await requireArkhamDb(() => saveArkhamDbDeck(c, id, payload));
+    return await requireArkhamDb(() =>
+      saveArkhamDbDeck(c, accountId, id, payload),
+    );
   }
-
-  const accountId = authenticatedAccountId(c);
   return await c
     .get("db")
     .transaction()
@@ -241,17 +248,16 @@ export async function updateOAuthDeck<E extends HonoEnv>(
     });
 }
 
-export async function upgradeOAuthDeck<E extends HonoEnv>(
-  c: DeckContext<E>,
+export async function upgradeOAuthDeck(
+  c: DeckContext,
   source: OAuthDeckSource,
   id: string | number,
-  payload: OAuthDeck,
+  payload: OAuthDeckWrite,
 ) {
+  const accountId = c.get("oauthBearer").account.id;
   if (source === "arkhamdb") {
-    return await upgradeOAuthArkhamDbDeck(c, id, payload);
+    return await upgradeOAuthArkhamDbDeck(c, accountId, id, payload);
   }
-
-  const accountId = authenticatedAccountId(c);
   return await c
     .get("db")
     .transaction()
@@ -296,18 +302,17 @@ export async function upgradeOAuthDeck<E extends HonoEnv>(
     });
 }
 
-export async function deleteOAuthDeck<E extends HonoEnv>(
-  c: DeckContext<E>,
+export async function deleteOAuthDeck(
+  c: DeckContext,
   source: OAuthDeckSource,
   id: string | number,
   all: boolean,
 ) {
+  const accountId = c.get("oauthBearer").account.id;
   if (source === "arkhamdb") {
-    await requireArkhamDb(() => deleteArkhamDbDeck(c, id, all));
+    await requireArkhamDb(() => deleteArkhamDbDeck(c, accountId, id, all));
     return;
   }
-
-  const accountId = authenticatedAccountId(c);
   await c
     .get("db")
     .transaction()
@@ -328,37 +333,26 @@ export async function deleteOAuthDeck<E extends HonoEnv>(
 }
 
 function mutableDeckValues(
-  deck: OAuthDeck,
+  deck: OAuthDeckWrite,
   previousDeck: string | null,
   nextDeck: string | null,
 ) {
   return mapDeckWriteDtoToInsert({
-    description_md: deck.description_md,
-    exile_string: deck.exile_string,
-    ignoreDeckLimitSlots: deck.ignoreDeckLimitSlots,
-    investigator_code: deck.investigator_code,
-    investigator_name: deck.investigator_name,
-    meta: deck.meta,
-    name: deck.name,
+    ...deck,
     next_deck: nextDeck,
     previous_deck: previousDeck,
-    problem: deck.problem,
-    sideSlots: deck.sideSlots,
-    slots: deck.slots,
-    taboo_id: deck.taboo_id,
-    tags: deck.tags,
-    xp_adjustment: deck.xp_adjustment,
-    xp_spent: deck.xp_spent,
-    xp: deck.xp,
   });
 }
 
-async function upgradeOAuthArkhamDbDeck<E extends HonoEnv>(
-  c: DeckContext<E>,
+async function upgradeOAuthArkhamDbDeck(
+  c: DeckContext,
+  accountId: string,
   id: string | number,
-  payload: OAuthDeck,
+  payload: OAuthDeckWrite,
 ) {
-  const current = await requireArkhamDb(() => fetchArkhamDbDeck(c, id));
+  const current = await requireArkhamDb(() =>
+    fetchArkhamDbDeck(c, accountId, id),
+  );
   if (current.next_deck != null) {
     throw new HTTPException(409, { message: "Deck already has an upgrade" });
   }
@@ -368,7 +362,7 @@ async function upgradeOAuthArkhamDbDeck<E extends HonoEnv>(
   const upgradeXp = Math.max((payload.xp ?? 0) - carryoverXp, 0);
 
   return await requireArkhamDb(() =>
-    upgradeArkhamDbDeck(c, id, {
+    upgradeArkhamDbDeck(c, accountId, id, {
       ...payload,
       exile_string: payload.exile_string,
       meta: payload.meta,

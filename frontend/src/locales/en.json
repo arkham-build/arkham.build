@@ -1661,7 +1661,6 @@
           "title": "Credentials"
         },
         "oauth": {
-          "arkhamcards_help": "The ArkhamCards app can be connected from its settings.",
           "connect": "Connect",
           "connect_help": "Connect your {{provider}} account to sync your decks and login with it.",
           "connected": "Connected",
@@ -1674,7 +1673,6 @@
           "last_synced_at": "Last sync",
           "none": "None",
           "providers": {
-            "arkhamcards": "Arkham Cards",
             "arkhamdb": "ArkhamDB"
           },
           "reconnect": "Refresh",

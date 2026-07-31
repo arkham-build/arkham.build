@@ -1,6 +1,7 @@
 import {
   DECK_ID_MAX_LENGTH,
   DECK_BATCH_TARGET_LIMIT,
+  DeckMutablePayloadSchema,
   DeckSchema,
 } from "@arkham-build/shared";
 import { z } from "zod";
@@ -34,10 +35,15 @@ export const OAuthDeckSourceSchema = z.enum(["account", "arkhamdb"]).meta({
 export type OAuthDeckSource = z.infer<typeof OAuthDeckSourceSchema>;
 
 export const OAuthDeckSchema = DeckSchema.strict().meta({
-  description:
-    "Full external deck representation. Write operations ignore server-owned identity, provider, timestamp, version, and history-link fields.",
+  description: "Full external deck representation.",
 });
 export type OAuthDeck = z.infer<typeof OAuthDeckSchema>;
+
+export const OAuthDeckWriteSchema = DeckMutablePayloadSchema.meta({
+  description:
+    "Mutable deck content. Additional properties, including server-owned fields, are ignored.",
+});
+export type OAuthDeckWrite = z.infer<typeof OAuthDeckWriteSchema>;
 
 const OAuthAccountDeckTargetSchema = z
   .object({

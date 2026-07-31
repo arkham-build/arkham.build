@@ -193,7 +193,7 @@ describe("OAuth client admin routes", () => {
     assertSecretAbsent(updateText, created.clientSecret, stored.secret_hash);
   });
 
-  test("transactionally replaces redirects and invalidates removed URI work", async ({
+  test("replaces redirects and invalidates removed URI work", async ({
     dependencies,
   }) => {
     const { app, config, db } = dependencies;

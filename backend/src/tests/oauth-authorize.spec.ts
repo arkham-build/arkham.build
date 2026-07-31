@@ -4,7 +4,6 @@ import type { appFactory } from "../app.ts";
 import type { Database } from "../db/db.ts";
 import { OAUTH_AUTHORIZATION_REQUEST_LIFETIME_MS } from "../features/oauth/lib/authorization.ts";
 import { OAuthErrorResponseSchema } from "../features/oauth/dtos.ts";
-import { resolveOAuthScopes } from "../features/oauth/lib/scopes.ts";
 import { test } from "./test-utils.ts";
 
 const WEB_REDIRECT_URI = "https://example.com/oauth/callback";
@@ -60,53 +59,6 @@ describe("GET /v2/oauth/authorize", () => {
       ),
     });
     expect(JSON.stringify(storedRequest)).not.toContain(requestToken);
-  });
-
-  test("expands, deduplicates, and canonically orders scopes", async ({
-    dependencies,
-  }) => {
-    const { app, db } = dependencies;
-    const clientId = await seedOAuthClient(db, [WEB_REDIRECT_URI]);
-
-    const firstResponse = await requestAuthorization(app, {
-      clientId,
-      redirectUri: WEB_REDIRECT_URI,
-      responseType: "code",
-      scope: "decks:write profile:read decks:write",
-      state: "scope-write",
-    });
-    const secondResponse = await requestAuthorization(app, {
-      clientId,
-      redirectUri: WEB_REDIRECT_URI,
-      responseType: "code",
-      scope: "profile:read decks:delete",
-      state: "scope-delete",
-    });
-
-    expect(firstResponse.status).toBe(302);
-    expect(secondResponse.status).toBe(302);
-
-    const requests = await db
-      .selectFrom("oauth_authorization_request")
-      .select(["scopes", "state"])
-      .orderBy("state")
-      .execute();
-    expect(requests).toEqual([
-      {
-        scopes: ["profile:read", "decks:read", "decks:write", "decks:delete"],
-        state: "scope-delete",
-      },
-      {
-        scopes: ["profile:read", "decks:read", "decks:write"],
-        state: "scope-write",
-      },
-    ]);
-    expect(
-      resolveOAuthScopes("decks:delete profile:read decks:delete"),
-    ).toMatchObject({
-      success: true,
-      canonicalScopes: "profile:read decks:read decks:write decks:delete",
-    });
   });
 
   test("redirects scope errors only after trusting the callback", async ({

@@ -196,10 +196,9 @@ function OAuthConsent() {
 
   const onDecision = (decision: OAuthConsentDecision) => {
     setPendingDecision(decision);
-    const token = OAuthAuthorizationRequestTokenSchema.parse(requestToken);
 
     const action = new URL(
-      `/v2/account/oauth/authorization-requests/${token}/${decision}`,
+      `/v2/account/oauth/authorization-requests/${requestTokenResult.data}/${decision}`,
       import.meta.env.VITE_API_URL,
     );
 

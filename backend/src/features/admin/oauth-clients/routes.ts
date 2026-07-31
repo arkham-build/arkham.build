@@ -15,7 +15,7 @@ import {
   rotateOAuthClientSecret,
   setOAuthClientDisabled,
   updateOAuthClient,
-} from "./persistence.ts";
+} from "./queries.ts";
 import { isValidOAuthRedirectUri } from "./redirect-uri.ts";
 import type { HonoEnv } from "../../../lib/hono-env.ts";
 import { zodValidator } from "../../../lib/validation.ts";
@@ -76,26 +76,22 @@ routes.post(
       secretHash,
     });
 
-    setSecretResponseHeaders(c);
-    return c.json(
-      CreatedClientResponseSchema.parse({
-        ...toClientDto(client),
-        clientSecret,
-      }),
-      201,
-    );
+    c.header("Cache-Control", "no-store");
+    c.header("Pragma", "no-cache");
+
+    return c.json(formatClient(client, clientSecret), 201);
   },
 );
 
 routes.get("/clients", async (c) => {
   const clients = await listOAuthClients(c.get("db"));
-  return c.json(ClientResponseSchema.array().parse(clients.map(toClientDto)));
+  return c.json(clients.map((c) => formatClient(c)));
 });
 
 routes.get("/clients/:clientId", async (c) => {
   const client = await findOAuthClientById(c.get("db"), clientId(c));
   if (!client) throw clientNotFound();
-  return c.json(ClientResponseSchema.parse(toClientDto(client)));
+  return c.json(formatClient(client));
 });
 
 const UpdateClientRequestSchema = z
@@ -120,18 +116,18 @@ routes.patch(
     );
     if (!client) throw clientNotFound();
 
-    return c.json(ClientResponseSchema.parse(toClientDto(client)));
+    return c.json(formatClient(client));
   },
 );
 
 routes.post("/clients/:clientId/disable", async (c) => {
   const client = await setDisabledOrThrow(c, true);
-  return c.json(ClientResponseSchema.parse(toClientDto(client)));
+  return c.json(formatClient(client));
 });
 
 routes.post("/clients/:clientId/enable", async (c) => {
   const client = await setDisabledOrThrow(c, false);
-  return c.json(ClientResponseSchema.parse(toClientDto(client)));
+  return c.json(formatClient(client));
 });
 
 routes.post("/clients/:clientId/secret/rotate", async (c) => {
@@ -144,19 +140,11 @@ routes.post("/clients/:clientId/secret/rotate", async (c) => {
   );
   if (!client) throw clientNotFound();
 
-  setSecretResponseHeaders(c);
-  return c.json(
-    CreatedClientResponseSchema.parse({
-      ...toClientDto(client),
-      clientSecret,
-    }),
-  );
-});
-
-function setSecretResponseHeaders(c: Context<HonoEnv>) {
   c.header("Cache-Control", "no-store");
   c.header("Pragma", "no-cache");
-}
+
+  return c.json(formatClient(client, clientSecret));
+});
 
 async function setDisabledOrThrow(c: Context<HonoEnv>, disabled: boolean) {
   const client = await setOAuthClientDisabled(
@@ -182,8 +170,10 @@ function clientNotFound() {
   return new HTTPException(404, { message: "OAuth client not found" });
 }
 
-function toClientDto(client: OAuthClientDetails) {
-  return {
+function formatClient(client: OAuthClientDetails, clientSecret?: string) {
+  const dto = clientSecret ? CreatedClientResponseSchema : ClientResponseSchema;
+
+  const payload: Record<string, unknown> = {
     clientId: client.id,
     name: client.name,
     redirectUris: client.redirect_uris,
@@ -191,6 +181,9 @@ function toClientDto(client: OAuthClientDetails) {
     createdAt: client.created_at.toISOString(),
     updatedAt: client.updated_at.toISOString(),
   };
+  if (clientSecret) payload["clientSecret"] = clientSecret;
+
+  return dto.parse(payload);
 }
 
 export default routes;

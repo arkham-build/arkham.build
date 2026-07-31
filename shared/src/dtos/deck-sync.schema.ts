@@ -14,6 +14,18 @@ export const DeckSyncTargetSchema = z.object({
 });
 export type DeckSyncTarget = z.infer<typeof DeckSyncTargetSchema>;
 
+export const DeckMutablePayloadSchema = DeckSchema.omit({
+  date_creation: true,
+  date_update: true,
+  id: true,
+  next_deck: true,
+  previous_deck: true,
+  source: true,
+  user_id: true,
+  version: true,
+});
+export type DeckMutablePayload = z.infer<typeof DeckMutablePayloadSchema>;
+
 export const DeckWritePayloadSchema = DeckSchema.omit({
   date_creation: true,
   date_update: true,

@@ -74,7 +74,6 @@ class TestJobDispatcher implements JobDispatcher {
     return this.mailer.send(data.to, data.subject, data.text);
   }
 
-  async enqueueCleanupOAuthCredentials() {}
   async enqueueIngestArkhamDbDecklists() {}
   async enqueueIngestJsonData() {}
   async enqueuePurgeCloudflareCache() {}

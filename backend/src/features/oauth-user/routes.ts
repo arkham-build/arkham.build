@@ -22,6 +22,7 @@ import {
   OAuthDeckManifestResponseSchema,
   OAuthDeckSchema,
   OAuthDeckSourceSchema,
+  OAuthDeckWriteSchema,
   OAuthProfileResponseSchema,
   OAuthUserErrorSchema,
   type OAuthDeckSource,
@@ -93,7 +94,7 @@ routes.get("/decks/:source/:id", oauthBearerAuth(["decks:read"]), async (c) => {
 routes.post(
   "/decks/:source",
   oauthBearerAuth(["decks:write"]),
-  zodValidator("json", OAuthDeckSchema),
+  zodValidator("json", OAuthDeckWriteSchema),
   async (c) => {
     const source = deckSource(c.req.param("source"));
     return c.json(
@@ -108,7 +109,7 @@ routes.post(
 routes.put(
   "/decks/:source/:id",
   oauthBearerAuth(["decks:write"]),
-  zodValidator("json", OAuthDeckSchema),
+  zodValidator("json", OAuthDeckWriteSchema),
   async (c) => {
     const source = deckSource(c.req.param("source"));
     const id = deckId(source, c.req.param("id"));
@@ -136,7 +137,7 @@ routes.delete(
 routes.post(
   "/decks/:source/:id/upgrade",
   oauthBearerAuth(["decks:write"]),
-  zodValidator("json", OAuthDeckSchema),
+  zodValidator("json", OAuthDeckWriteSchema),
   async (c) => {
     const source = deckSource(c.req.param("source"));
     const id = deckId(source, c.req.param("id"));

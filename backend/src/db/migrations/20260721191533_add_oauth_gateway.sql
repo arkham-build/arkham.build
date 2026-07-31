@@ -147,7 +147,6 @@ create table oauth_access_token (
   scopes oauth_scopes not null,
   expires_at timestamp not null,
   revoked_at timestamp,
-  last_used_at timestamp,
   created_at timestamp not null default now(),
   updated_at timestamp not null default now(),
   foreign key (oauth_refresh_token_id, oauth_grant_id)

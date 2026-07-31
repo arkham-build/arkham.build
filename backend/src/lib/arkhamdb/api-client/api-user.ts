@@ -1,7 +1,5 @@
 import assert from "node:assert";
-import { type DeckWritePayload, SlotsSchema } from "@arkham-build/shared";
-import type { Context } from "hono";
-import type { HonoEnv } from "../../hono-env.ts";
+import { type DeckMutablePayload, SlotsSchema } from "@arkham-build/shared";
 import {
   mergeAdditionalMeta,
   storeAdditionalMetadata,
@@ -15,74 +13,66 @@ import {
   ArkhamDbSuccessResponseSchema,
 } from "./core/dtos.ts";
 import { ApiError } from "./core/errors.ts";
-import {
-  type ArkhamDbExecutor,
-  withArkhamDbExecutor,
-} from "./core/execute-with-lock.ts";
+import type { ArkhamDbExecutor } from "./core/execute-with-lock.ts";
 
-export function fetchDeck<E extends HonoEnv>(
-  c: Context<E>,
-  id: string | number,
-) {
-  return withArkhamDbExecutor(c, (executor) => loadDeck(executor, id));
+export function fetchDeck(executor: ArkhamDbExecutor, id: string | number) {
+  return loadDeck(executor, id);
 }
 
-export function syncDecks<E extends HonoEnv>(
-  c: Context<E>,
+export async function syncDecks(
+  executor: ArkhamDbExecutor,
   syncedAt = new Date(),
   ifModifiedSince?: string | null,
 ) {
-  return withArkhamDbExecutor(c, async (executor) => {
-    try {
-      const headers =
-        typeof ifModifiedSince === "string"
-          ? {
-              "If-Modified-Since": ifModifiedSince,
-            }
-          : {};
+  try {
+    const headers =
+      typeof ifModifiedSince === "string"
+        ? {
+            "If-Modified-Since": ifModifiedSince,
+          }
+        : {};
 
-      const response = await executor.request(
-        "/decks",
-        ArkhamDbRemoteDecksSchema,
-        { headers },
-        (error) => {
-          if (error.status !== 304) return;
+    const response = await executor.request(
+      "/decks",
+      ArkhamDbRemoteDecksSchema,
+      { headers },
+      (error) => {
+        if (error.status !== 304) return;
 
-          return {
-            data: undefined,
-            headers,
-            status: 304,
-          };
-        },
-      );
+        return {
+          data: undefined,
+          headers,
+          status: 304,
+        };
+      },
+    );
 
-      await executor.patchIdentityState({
-        lastError: null,
-        lastSyncedAt: syncedAt.toISOString(),
-        status: "healthy",
-      });
+    await executor.patchIdentityState({
+      lastError: null,
+      lastSyncedAt: syncedAt.toISOString(),
+      status: "healthy",
+    });
 
-      if (response.status !== 200) {
-        return response;
-      }
-
-      assert(response.data, "Missing deck data for successful sync.");
-
-      return {
-        ...response,
-        data: await mergeAdditionalMetadataForDecks(executor, response.data),
-      };
-    } catch (error) {
-      await executor.patchIdentityFailure(error);
-      throw error;
+    if (response.status !== 200) {
+      return response;
     }
-  });
+
+    assert(response.data, "Missing deck data for successful sync.");
+
+    return {
+      ...response,
+      data: await mergeAdditionalMetadataForDecks(executor, response.data),
+    };
+  } catch (error) {
+    await executor.patchIdentityFailure(error);
+    throw error;
+  }
 }
 
-export async function saveDeck<E extends HonoEnv>(
-  executor: ArkhamDbExecutor<E>,
+export async function saveDeck(
+  executor: ArkhamDbExecutor,
   id: string | number,
-  deck: DeckWritePayload,
+  deck: DeckMutablePayload,
 ) {
   const storedDeck = await storeAdditionalMetadata(executor.db, id, deck);
 
@@ -112,9 +102,9 @@ export async function saveDeck<E extends HonoEnv>(
   return await loadDeck(executor, operation.msg);
 }
 
-export async function createDeck<E extends HonoEnv>(
-  executor: ArkhamDbExecutor<E>,
-  _deck: DeckWritePayload,
+export async function createDeck(
+  executor: ArkhamDbExecutor,
+  _deck: DeckMutablePayload,
 ) {
   const deck = { ..._deck };
   extractHiddenSlots(deck);
@@ -167,10 +157,10 @@ export async function createDeck<E extends HonoEnv>(
   return await loadDeck(executor, saveOperation.msg);
 }
 
-export async function upgradeDeck<E extends HonoEnv>(
-  executor: ArkhamDbExecutor<E>,
+export async function upgradeDeck(
+  executor: ArkhamDbExecutor,
   id: string | number,
-  _deck: DeckWritePayload,
+  _deck: DeckMutablePayload,
 ) {
   const deck = { ..._deck };
   extractHiddenSlots(deck);
@@ -192,8 +182,8 @@ export async function upgradeDeck<E extends HonoEnv>(
   return await loadDeck(executor, operation.msg);
 }
 
-export async function deleteDeck<E extends HonoEnv>(
-  executor: ArkhamDbExecutor<E>,
+export async function deleteDeck(
+  executor: ArkhamDbExecutor,
   deckId: string | number,
   all?: boolean,
 ) {
@@ -209,10 +199,7 @@ export async function deleteDeck<E extends HonoEnv>(
   assertSuccessfulOperation(operation);
 }
 
-async function loadDeck<E extends HonoEnv>(
-  executor: ArkhamDbExecutor<E>,
-  id: string | number,
-) {
+async function loadDeck(executor: ArkhamDbExecutor, id: string | number) {
   const response = await executor.request(
     `/deck/load/${id}`,
     ArkhamDbRemoteDeckSchema,
@@ -221,16 +208,16 @@ async function loadDeck<E extends HonoEnv>(
   return {
     ...response,
     data: await mergeAdditionalMeta(executor.db, response.data, {
-      legacyApiBaseUrl: executor.context.get("config").LEGACY_API_BASE_URL,
+      legacyApiBaseUrl: executor.legacyApiBaseUrl,
     }),
   };
 }
 
-async function mergeAdditionalMetadataForDecks<E extends HonoEnv>(
-  executor: ArkhamDbExecutor<E>,
+async function mergeAdditionalMetadataForDecks(
+  executor: ArkhamDbExecutor,
   decks: ArkhamDbRemoteDeck[],
 ) {
-  const legacyApiBaseUrl = executor.context.get("config").LEGACY_API_BASE_URL;
+  const { legacyApiBaseUrl } = executor;
 
   return await Promise.all(
     decks.map((deck) =>

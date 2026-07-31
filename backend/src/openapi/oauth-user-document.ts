@@ -19,6 +19,7 @@ import {
   OAuthDeckSchema,
   OAuthDeckSourceSchema,
   OAuthDeckTargetSchema,
+  OAuthDeckWriteSchema,
   OAuthProfileResponseSchema,
   OAuthUserErrorSchema,
 } from "../features/oauth-user/dtos.ts";
@@ -217,11 +218,12 @@ export function createOAuthUserOpenApiDocument() {
           tags: ["User decks"],
           summary: "Create a deck",
           description:
-            "Requires decks:write. Server-owned deck fields in the request are " +
-            "ignored. Account creates generate a UUID; ArkhamDB chooses its ID.",
+            "Requires decks:write. Additional request properties, including " +
+            "server-owned deck fields, are ignored. Account creates generate " +
+            "a UUID; ArkhamDB chooses its ID.",
           security: oauthSecurity("decks:write"),
           parameters: [deckSourceParameter()],
-          requestBody: jsonRequestBody("OAuthDeck"),
+          requestBody: jsonRequestBody("OAuthDeckWrite"),
           responses: {
             201: jsonResponse("OAuthDeck", "Created deck"),
             400: jsonResponse("OAuthUserError", "Deck input is invalid"),
@@ -257,7 +259,7 @@ export function createOAuthUserOpenApiDocument() {
             "preserving server-owned fields and history links.",
           security: oauthSecurity("decks:write"),
           parameters: deckTargetParameters(),
-          requestBody: jsonRequestBody("OAuthDeck"),
+          requestBody: jsonRequestBody("OAuthDeckWrite"),
           responses: {
             200: jsonResponse("OAuthDeck", "Updated deck"),
             400: jsonResponse("OAuthUserError", "Deck input is invalid"),
@@ -304,7 +306,7 @@ export function createOAuthUserOpenApiDocument() {
             "selected parent using provider-specific history semantics.",
           security: oauthSecurity("decks:write"),
           parameters: deckTargetParameters(),
-          requestBody: jsonRequestBody("OAuthDeck"),
+          requestBody: jsonRequestBody("OAuthDeckWrite"),
           responses: {
             201: jsonResponse("OAuthDeck", "Created upgraded deck"),
             400: jsonResponse("OAuthUserError", "Deck input is invalid"),
@@ -327,6 +329,10 @@ export function createOAuthUserOpenApiDocument() {
         OAuthDeckBatchRequest: jsonSchema(OAuthDeckBatchRequestSchema),
         OAuthDeckBatchResponse: jsonSchema(OAuthDeckBatchResponseSchema),
         OAuthDeckDeleteQuery: jsonSchema(OAuthDeckDeleteQuerySchema),
+        OAuthDeckWrite: {
+          ...jsonSchema(OAuthDeckWriteSchema),
+          additionalProperties: true,
+        },
         OAuthDeckManifestItem: jsonSchema(OAuthDeckManifestItemSchema),
         OAuthDeckManifestQuery: jsonSchema(OAuthDeckManifestQuerySchema),
         OAuthDeckManifestResponse: jsonSchema(OAuthDeckManifestResponseSchema),
@@ -392,7 +398,7 @@ function authorizationQueryParameters() {
       in: "query",
       required: true,
       description:
-        "Exact registered HTTPS, loopback HTTP, or native custom-scheme redirect URI",
+        "Exact registered HTTPS, localhost HTTP, or native custom-scheme redirect URI",
       schema: { type: "string" },
     },
     {
@@ -424,7 +430,7 @@ function redirectResponse() {
       "redirect URI are trusted, to the registered callback with an OAuth " +
       "error and state. Approval and denial callbacks are issued by the " +
       "session-authenticated consent API. Callback locations may use HTTPS, " +
-      "loopback HTTP, or a registered native custom scheme.",
+      "localhost HTTP, or a registered native custom scheme.",
     headers: {
       Location: {
         description: "Consent URL or registered client callback URL",

@@ -175,23 +175,12 @@ export async function exchangeOAuthRefreshToken(
 
     const grant = await tx
       .selectFrom("oauth_grant")
-      .select(["account_id", "id", "oauth_client_id"])
+      .select(["id", "oauth_client_id"])
       .where("id", "=", refreshToken.oauth_grant_id)
       .forUpdate()
       .executeTakeFirst();
 
     if (!grant || grant.oauth_client_id !== input.clientId) {
-      throw invalidRefreshToken();
-    }
-
-    const account = await tx
-      .selectFrom("account")
-      .select("id")
-      .where("id", "=", grant.account_id)
-      .forUpdate()
-      .executeTakeFirst();
-
-    if (!account) {
       throw invalidRefreshToken();
     }
 

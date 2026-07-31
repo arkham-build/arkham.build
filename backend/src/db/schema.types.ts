@@ -293,7 +293,7 @@ export interface Deck {
   taboo_set_id: number | null;
   tags: string | null;
   updated_at: Generated<Timestamp>;
-  version: string | null;
+  version: string;
   xp: number | null;
   xp_adjustment: number | null;
   xp_spent: number | null;

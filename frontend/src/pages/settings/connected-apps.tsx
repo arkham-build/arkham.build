@@ -8,32 +8,9 @@ import { StatusPill } from "@/components/ui/status-pill";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useRevokeOAuthGrantMutation } from "@/queries/mutations/oauth-grants";
 import { useOAuthGrantsQuery } from "@/queries/oauth-grants";
-import { cx } from "@/utils/cx";
 import { formatDate } from "@/utils/formatting";
 import { OAUTH_SCOPE_TRANSLATION_KEYS } from "@/utils/oauth-scopes";
 import css from "./connections.module.css";
-
-const CONNECTED_APPS = [
-  {
-    id: "arkhamcards",
-    normalizedClientName: "arkhamcards",
-    nameKey: "settings.account.oauth.providers.arkhamcards",
-    placeholderKey: "settings.account.oauth.arkhamcards_help",
-  },
-] as const;
-
-type ConnectedAppItem =
-  | {
-      grant: OAuthGrant;
-      id: string;
-      status: "connected";
-    }
-  | {
-      id: string;
-      nameKey: string;
-      placeholderKey: string;
-      status: "placeholder";
-    };
 
 type ConnectedAppsViewProps =
   | { state: "loading" }
@@ -66,25 +43,18 @@ function ConnectedAppsView(props: ConnectedAppsViewProps) {
     );
   }
 
-  const connections = resolveConnectedApps(props.grants);
+  if (props.grants.length === 0) return null;
 
   return (
     <div className={css["apps"]} data-testid="connected-apps-ready">
-      {connections.map((connection) =>
-        connection.status === "connected" ? (
-          <ConnectedAppCard
-            grant={connection.grant}
-            key={connection.id}
-            onDisconnect={props.onDisconnect}
-            pendingClientId={props.pendingClientId}
-          />
-        ) : (
-          <ConnectedAppPlaceholder
-            connection={connection}
-            key={connection.id}
-          />
-        ),
-      )}
+      {props.grants.map((grant) => (
+        <ConnectedAppCard
+          grant={grant}
+          key={grant.client.id}
+          onDisconnect={props.onDisconnect}
+          pendingClientId={props.pendingClientId}
+        />
+      ))}
     </div>
   );
 }
@@ -157,25 +127,6 @@ function ConnectedAppCard({
   );
 }
 
-function ConnectedAppPlaceholder({
-  connection,
-}: {
-  connection: Extract<ConnectedAppItem, { status: "placeholder" }>;
-}) {
-  const { t } = useTranslation();
-
-  return (
-    <article className={cx(css["connection"], css["placeholder"])}>
-      <header className={css["header"]}>
-        <h3 className={css["title"]}>{t(connection.nameKey)}</h3>
-      </header>
-      <div className={css["content"]}>
-        <p>{t(connection.placeholderKey)}</p>
-      </div>
-    </article>
-  );
-}
-
 export function ConnectedApps() {
   const { t } = useTranslation();
   const toast = useToast();
@@ -233,50 +184,4 @@ export function ConnectedApps() {
       state="ready"
     />
   );
-}
-
-function resolveConnectedApps(grants: OAuthGrant[]): ConnectedAppItem[] {
-  const knownConnections: ConnectedAppItem[] = CONNECTED_APPS.map(
-    (connection) => {
-      const grant = grants.find(
-        (candidate) =>
-          normalizeClientName(candidate.client.name) ===
-          connection.normalizedClientName,
-      );
-
-      if (!grant) {
-        return {
-          id: connection.id,
-          nameKey: connection.nameKey,
-          placeholderKey: connection.placeholderKey,
-          status: "placeholder",
-        };
-      }
-
-      return {
-        grant,
-        id: connection.id,
-        status: "connected",
-      };
-    },
-  );
-  const matchedClientIds = new Set(
-    knownConnections.flatMap((connection) =>
-      connection.status === "connected" ? [connection.grant.client.id] : [],
-    ),
-  );
-
-  const otherConnections: ConnectedAppItem[] = grants
-    .filter((grant) => !matchedClientIds.has(grant.client.id))
-    .map((grant) => ({
-      grant,
-      id: grant.client.id,
-      status: "connected",
-    }));
-
-  return [...knownConnections, ...otherConnections];
-}
-
-function normalizeClientName(name: string) {
-  return name.toLowerCase().replaceAll(/[^a-z0-9]/g, "");
 }

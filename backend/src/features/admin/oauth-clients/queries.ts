@@ -81,29 +81,16 @@ export async function listOAuthClients(db: Database) {
     .execute();
   const redirectUrisByClientId = new Map<string, string[]>();
 
-  for (const client of clients) {
-    redirectUrisByClientId.set(client.id, []);
-  }
-
   for (const redirectUri of redirectUris) {
-    const clientRedirectUris = redirectUrisByClientId.get(
-      redirectUri.oauth_client_id,
-    );
-    if (!clientRedirectUris) {
-      throw new Error("OAuth redirect URI references an unloaded client");
-    }
-
+    const clientRedirectUris =
+      redirectUrisByClientId.get(redirectUri.oauth_client_id) ?? [];
     clientRedirectUris.push(redirectUri.redirect_uri);
+    redirectUrisByClientId.set(redirectUri.oauth_client_id, clientRedirectUris);
   }
 
-  return clients.map((client) => {
-    const clientRedirectUris = redirectUrisByClientId.get(client.id);
-    if (!clientRedirectUris) {
-      throw new Error("OAuth client redirect URIs were not loaded");
-    }
-
-    return withRedirectUris(client, clientRedirectUris);
-  });
+  return clients.map((client) =>
+    withRedirectUris(client, redirectUrisByClientId.get(client.id) ?? []),
+  );
 }
 
 export async function findOAuthClientById(db: Database, clientId: string) {

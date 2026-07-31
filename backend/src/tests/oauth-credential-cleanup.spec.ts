@@ -1,14 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect } from "vitest";
 import type { Database } from "../db/db.ts";
-import {
-  cleanupExpiredOAuthCredentials,
-  OAUTH_CREDENTIAL_AUDIT_RETENTION_MS,
-} from "../features/oauth/lib/credential-cleanup.ts";
+import { cleanupExpiredOAuthCredentials } from "../features/oauth/lib/credential-cleanup.ts";
 import { TEST_ACCOUNT, test } from "./test-utils.ts";
 
 const NOW = new Date("2026-07-30T12:00:00.000Z");
-const CUTOFF = new Date(NOW.getTime() - OAUTH_CREDENTIAL_AUDIT_RETENTION_MS);
+const CUTOFF = new Date("2026-06-30T12:00:00.000Z");
 const FUTURE_EXPIRY = new Date(NOW.getTime() + 24 * 60 * 60 * 1000);
 
 describe("OAuth credential retention cleanup", () => {
@@ -103,15 +100,9 @@ describe("OAuth credential retention cleanup", () => {
     );
     const activeRefreshId = await seedRefreshToken(db, grantId, FUTURE_EXPIRY);
 
-    const result = await cleanupExpiredOAuthCredentials(db, {
-      batchSize: 100,
-      maxBatches: 10,
-      now: NOW,
-    });
+    const result = await cleanupExpiredOAuthCredentials(db, NOW);
 
     expect(result).toEqual({
-      batches: 1,
-      continuationRequired: false,
       cutoff: CUTOFF,
       deleted: {
         accessTokens: 1,
@@ -164,81 +155,6 @@ describe("OAuth credential retention cleanup", () => {
     ).toEqual({ id: clientId });
   });
 
-  test("bounds each table and drains the oldest records over repeated runs", async ({
-    dependencies,
-  }) => {
-    const { db } = dependencies;
-    const { clientId, grantId } = await seedOAuthOwner(db);
-    const requestIds: string[] = [];
-    const codeIds: string[] = [];
-    const accessIds: string[] = [];
-    const refreshIds: string[] = [];
-
-    for (let index = 0; index < 5; index += 1) {
-      const expiresAt = new Date(CUTOFF.getTime() - (5 - index) * 60_000);
-      const accessParentId = await seedRefreshToken(db, grantId, FUTURE_EXPIRY);
-
-      requestIds.push(await seedAuthorizationRequest(db, clientId, expiresAt));
-      codeIds.push(await seedAuthorizationCode(db, grantId, expiresAt));
-      accessIds.push(
-        await seedAccessToken(db, grantId, accessParentId, expiresAt),
-      );
-      refreshIds.push(await seedRefreshToken(db, grantId, expiresAt));
-    }
-
-    const firstResult = await cleanupExpiredOAuthCredentials(db, {
-      batchSize: 2,
-      maxBatches: 2,
-      now: NOW,
-    });
-
-    expect(firstResult.batches).toBe(2);
-    expect(firstResult.continuationRequired).toBe(true);
-    expect(firstResult.deleted).toEqual({
-      accessTokens: 4,
-      authorizationCodes: 4,
-      authorizationRequests: 4,
-      refreshTokens: 4,
-    });
-    expect(
-      await remainingIds(db, "oauth_authorization_request", requestIds),
-    ).toEqual(new Set([requestIds[4]]));
-    expect(await remainingIds(db, "oauth_authorization_code", codeIds)).toEqual(
-      new Set([codeIds[4]]),
-    );
-    expect(await remainingIds(db, "oauth_access_token", accessIds)).toEqual(
-      new Set([accessIds[4]]),
-    );
-    expect(await remainingIds(db, "oauth_refresh_token", refreshIds)).toEqual(
-      new Set([refreshIds[4]]),
-    );
-
-    const secondResult = await cleanupExpiredOAuthCredentials(db, {
-      batchSize: 2,
-      maxBatches: 1,
-      now: NOW,
-    });
-    const thirdResult = await cleanupExpiredOAuthCredentials(db, {
-      batchSize: 2,
-      maxBatches: 1,
-      now: NOW,
-    });
-
-    expect(secondResult.continuationRequired).toBe(false);
-    expect(secondResult.deleted).toEqual({
-      accessTokens: 1,
-      authorizationCodes: 1,
-      authorizationRequests: 1,
-      refreshTokens: 1,
-    });
-    expect(thirdResult.deleted).toEqual({
-      accessTokens: 0,
-      authorizationCodes: 0,
-      authorizationRequests: 0,
-      refreshTokens: 0,
-    });
-  });
-
   test("does not cascade-delete a retained access token", async ({
     dependencies,
   }) => {
@@ -261,11 +177,7 @@ describe("OAuth credential retention cleanup", () => {
       expiredAt,
     );
 
-    const result = await cleanupExpiredOAuthCredentials(db, {
-      batchSize: 100,
-      maxBatches: 10,
-      now: NOW,
-    });
+    const result = await cleanupExpiredOAuthCredentials(db, NOW);
 
     expect(result.deleted).toEqual({
       accessTokens: 1,

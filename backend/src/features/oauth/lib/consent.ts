@@ -152,7 +152,7 @@ async function lockOAuthAuthorizationRequest(
     .selectFrom("oauth_client")
     .select(["disabled_at", "name"])
     .where("id", "=", requestReference.oauth_client_id)
-    .forUpdate()
+    .forShare()
     .executeTakeFirst();
 
   if (!client || client.disabled_at != null) {

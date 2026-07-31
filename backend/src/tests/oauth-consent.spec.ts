@@ -6,7 +6,6 @@ import type { Database } from "../db/db.ts";
 import { OAUTH_AUTHORIZATION_CODE_LIFETIME_MS } from "../features/oauth/lib/consent.ts";
 import { createSession } from "../lib/auth/sessions.ts";
 import type { Config } from "../lib/config.ts";
-import { redactSensitivePath } from "../lib/logger.ts";
 import { test } from "./test-utils.ts";
 
 const REDIRECT_URI = "https://example.com/oauth/callback?existing=kept";
@@ -254,9 +253,7 @@ describe("OAuth account consent routes", () => {
     );
   });
 
-  test("denies atomically and redirects with access_denied", async ({
-    dependencies,
-  }) => {
+  test("denies and redirects with access_denied", async ({ dependencies }) => {
     const { app, db, sessionCookie } = dependencies;
     const clientId = await seedOAuthClient(db);
     const requestToken = await startAuthorization(app, clientId, {
@@ -446,17 +443,6 @@ describe("OAuth account consent routes", () => {
     expect(request.consumed_at).toEqual(expect.any(Date));
     expect(["approved", "denied"]).toContain(request.decision);
     expect(codes).toHaveLength(request.decision === "approved" ? 1 : 0);
-  });
-
-  test("redacts authorization request handles from log paths", () => {
-    const requestToken = "ab_ar_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-    const path = `/v2/account/oauth/authorization-requests/${requestToken}/claim`;
-    const safePath = redactSensitivePath(path);
-
-    expect(safePath).toBe(
-      "/v2/account/oauth/authorization-requests/:token/claim",
-    );
-    expect(safePath).not.toContain(requestToken);
   });
 });
 

@@ -18,7 +18,7 @@ code, a native app, a repository, or logs.
 An arkham.build administrator registers your client and its redirect URIs, then
 issues a UUID `client_id` and a one-time `client_secret`.
 
-Redirect URIs are matched as exact strings. They may use HTTPS, loopback HTTP,
+Redirect URIs are matched as exact strings. They may use HTTPS, localhost HTTP,
 or a native custom scheme:
 
 ```text
@@ -286,8 +286,9 @@ curl --request GET "$API_BASE/v2/user/decks/$SOURCE/$DECK_ID" \
 
 ### Write decks
 
-Create, replace, and upgrade accept a full `OAuthDeck` object. See the OpenAPI
-schema for its fields. The server ignores these client-supplied fields:
+Create, replace, and upgrade accept an `OAuthDeckWrite` object containing only
+mutable deck content. Additional properties are silently ignored, including
+these server-owned fields:
 
 ```text
 id, source, user_id, date_creation, date_update, version,

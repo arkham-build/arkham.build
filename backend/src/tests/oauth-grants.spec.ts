@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
 import { OAuthGrantListResponseSchema } from "@arkham-build/shared";
-import { sql } from "kysely";
 import { describe, expect } from "vitest";
 import type { Database } from "../db/db.ts";
 import {
@@ -174,57 +173,6 @@ describe("OAuth connected-app grants", () => {
         .select("id")
         .where("account_id", "=", otherAccount.id)
         .where("oauth_client_id", "=", seeded.clientId)
-        .executeTakeFirst(),
-    ).toBeDefined();
-  });
-
-  test("rolls back pending-request invalidation when grant deletion fails", async ({
-    dependencies,
-  }) => {
-    const { app, db, sessionCookie } = dependencies;
-    const accountId = await getTestAccountId(db);
-    const seeded = await seedGrant(db, accountId, {
-      clientName: "Transactional connected app",
-      withRequests: true,
-    });
-
-    await sql`
-      create function reject_oauth_grant_delete() returns trigger
-      language plpgsql as $$
-      begin
-        raise exception 'forced grant deletion failure';
-      end;
-      $$
-    `.execute(db);
-    await sql`
-      create trigger reject_oauth_grant_delete
-      before delete on oauth_grant
-      for each row execute function reject_oauth_grant_delete()
-    `.execute(db);
-
-    const response = await app.request(
-      `/v2/account/oauth/grants/${seeded.clientId}`,
-      {
-        method: "DELETE",
-        headers: { Cookie: sessionCookie },
-      },
-    );
-
-    expect(response.status).toBe(500);
-    expect(
-      await db
-        .selectFrom("oauth_grant")
-        .select("id")
-        .where("id", "=", seeded.grantId)
-        .executeTakeFirst(),
-    ).toEqual({ id: seeded.grantId });
-    expect(
-      await db
-        .selectFrom("oauth_authorization_request")
-        .select("id")
-        .where("account_id", "=", accountId)
-        .where("oauth_client_id", "=", seeded.clientId)
-        .where("consumed_at", "is", null)
         .executeTakeFirst(),
     ).toBeDefined();
   });

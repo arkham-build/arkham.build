@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { Deck, OAuthScope } from "@arkham-build/shared";
+import type { DeckMutablePayload, OAuthScope } from "@arkham-build/shared";
 import { describe, expect, vi } from "vitest";
 import type { appFactory } from "../app.ts";
 import type { Database } from "../db/db.ts";
@@ -7,6 +7,7 @@ import {
   OAuthDeckBatchResponseSchema,
   OAuthDeckManifestResponseSchema,
   OAuthDeckSchema,
+  OAuthDeckWriteSchema,
   OAuthUserErrorSchema,
 } from "../features/oauth-user/dtos.ts";
 import {
@@ -102,14 +103,21 @@ describe("OAuth user deck routes", () => {
       "decks:write",
       "decks:delete",
     ]);
-    const supplied = deckPayload({
+    const supplied = {
+      ...deckPayload({ name: "Created deck" }),
+      date_creation: "1999-01-01T00:00:00.000Z",
+      date_update: "1999-01-01T00:00:00.000Z",
       id: "client-owned-id",
-      name: "Created deck",
       next_deck: "ignored-next",
       previous_deck: "ignored-previous",
       source: "arkhamdb",
+      user_id: 123,
       version: "99.99",
-    });
+    };
+
+    expect(OAuthDeckWriteSchema.parse(supplied)).toEqual(
+      deckPayload({ name: "Created deck" }),
+    );
 
     const createResponse = await bearerRequest(
       app,
@@ -137,12 +145,7 @@ describe("OAuth user deck routes", () => {
         method: "PUT",
         body: JSON.stringify(
           deckPayload({
-            id: "replacement-id-is-ignored",
             name: "Replaced deck",
-            next_deck: "replacement-next-is-ignored",
-            previous_deck: "replacement-previous-is-ignored",
-            source: "arkhamdb",
-            version: "77.77",
           }),
         ),
       },
@@ -166,10 +169,7 @@ describe("OAuth user deck routes", () => {
         method: "POST",
         body: JSON.stringify(
           deckPayload({
-            id: "upgrade-id-is-ignored",
             name: "Upgraded deck",
-            source: "arkhamdb",
-            version: "88.88",
           }),
         ),
       },
@@ -182,7 +182,7 @@ describe("OAuth user deck routes", () => {
       source: "account",
       version: "0.1",
     });
-    expect(upgraded.id).not.toBe("upgrade-id-is-ignored");
+    expect(upgraded.id).not.toBe(created.id);
 
     const parentResponse = await bearerRequest(
       app,
@@ -741,28 +741,22 @@ async function insertArkhamDbConnection(db: Database) {
   return identity;
 }
 
-function deckPayload(overrides: Partial<Deck> = {}): Deck {
+function deckPayload(
+  overrides: Partial<DeckMutablePayload> = {},
+): DeckMutablePayload {
   return {
-    date_creation: "2000-01-01T00:00:00.000Z",
-    date_update: "2000-01-01T00:00:00.000Z",
     description_md: "",
     exile_string: null,
-    id: "client-deck",
     ignoreDeckLimitSlots: null,
     investigator_code: "01001",
     investigator_name: "Roland Banks",
     meta: "{}",
     name: "OAuth deck",
-    next_deck: null,
-    previous_deck: null,
     problem: null,
     sideSlots: null,
     slots: { "01006": 1 },
-    source: "account",
     taboo_id: null,
     tags: "",
-    user_id: null,
-    version: "9.9",
     xp_adjustment: 0,
     xp_spent: 0,
     xp: 0,

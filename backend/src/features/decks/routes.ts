@@ -68,7 +68,7 @@ routes.get("/manifest", sessionAuth(), async (c) => {
 
   if (arkhamdbIdentity) {
     try {
-      const remoteManifest = await fetchArkhamDbDeckManifest(c, {
+      const remoteManifest = await fetchArkhamDbDeckManifest(c, accountId, {
         force: forceArkhamdbSync,
       });
       arkhamdbDeckManifest = remoteManifest.decks;
@@ -117,6 +117,7 @@ routes.post(
   zodValidator("json", DeckBatchRequestSchema),
   async (c) => {
     const { arkhamdbSyncToken, targets } = c.req.valid("json");
+    const accountId = c.get("account").id;
 
     const accountIds = targets
       .filter((target) => target.provider === ACCOUNT_PROVIDER_TYPE)
@@ -128,7 +129,7 @@ routes.post(
 
     const accountDecks = await listAccountDecksByIds(
       c.get("db"),
-      c.get("account").id,
+      accountId,
       accountIds,
     );
 
@@ -142,6 +143,7 @@ routes.post(
     if (arkhamdbIds.length) {
       const arkhamdbDecks = await fetchArkhamDbDeckBatch(
         c,
+        accountId,
         arkhamdbIds,
         arkhamdbSyncToken ?? undefined,
       );
@@ -470,17 +472,17 @@ const localCrud = {
 
 const arkhamdbCrud = {
   create(c: DeckContext, payload: SharedDeck) {
-    return createArkhamDbDeck(c, payload);
+    return createArkhamDbDeck(c, c.get("account").id, payload);
   },
 
   async update(c: DeckContext, deckId: string, payload: DeckUpdateRequest) {
     await fetchMatchingArkhamDbDeck(c, deckId, payload.expectedVersion);
-    return await saveArkhamDbDeck(c, deckId, payload);
+    return await saveArkhamDbDeck(c, c.get("account").id, deckId, payload);
   },
 
   async delete(c: DeckContext, deckId: string, payload: DeckDeleteRequest) {
     await fetchMatchingArkhamDbDeck(c, deckId, payload.expectedVersion);
-    await deleteArkhamDbDeck(c, deckId, payload.all);
+    await deleteArkhamDbDeck(c, c.get("account").id, deckId, payload.all);
   },
 
   async upgrade(
@@ -503,7 +505,7 @@ const arkhamdbCrud = {
 
     const upgradeXp = Math.max((payload.deck.xp ?? 0) - currentCarryoverXp, 0);
 
-    return await upgradeArkhamDbDeck(c, previousDeckId, {
+    return await upgradeArkhamDbDeck(c, c.get("account").id, previousDeckId, {
       ...payload.deck,
       exile_string: payload.deck.exile_string,
       meta: payload.deck.meta,
@@ -579,7 +581,7 @@ function assertDeckHasNoUpgrade(
 
 async function fetchArkhamDbDeckOrNull(c: DeckContext, id: string) {
   try {
-    return await fetchArkhamDbDeck(c, id);
+    return await fetchArkhamDbDeck(c, c.get("account").id, id);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       return null;

@@ -12,7 +12,6 @@ import {
   getAccountIdentityByAccountIdAndProvider,
   updateAccountIdentityState,
 } from "../../../auth/account-identities.ts";
-import { authenticatedAccountId } from "../../../auth/authenticated-account.ts";
 import {
   findArkhamDbIdentityWithTokenByAccountId,
   upsertOAuthToken,
@@ -31,12 +30,12 @@ type ArkhamDbRequest = <T, R = never>(
   handleApiError?: (error: ApiError) => WrappedResponse<R> | undefined,
 ) => Promise<WrappedResponse<T | R>>;
 
-export type ArkhamDbExecutor<E extends HonoEnv = HonoEnv> = {
+export type ArkhamDbExecutor = {
   connection: NonNullable<
     Awaited<ReturnType<typeof findArkhamDbIdentityWithTokenByAccountId>>
   >;
-  context: Context<E>;
   db: Database;
+  legacyApiBaseUrl: string;
   patchIdentityFailure(error: unknown): Promise<void>;
   patchIdentityState(patch: Partial<ArkhamDbIdentityState>): Promise<void>;
   request: ArkhamDbRequest;
@@ -44,10 +43,10 @@ export type ArkhamDbExecutor<E extends HonoEnv = HonoEnv> = {
 
 export async function withArkhamDbExecutor<T, E extends HonoEnv>(
   c: Context<E>,
-  run: (executor: ArkhamDbExecutor<E>) => Promise<T>,
+  accountId: string,
+  run: (executor: ArkhamDbExecutor) => Promise<T>,
 ): Promise<T> {
   const db = c.get("db");
-  const accountId = authenticatedAccountId(c);
   const initialConnection = await findArkhamDbIdentityWithTokenByAccountId(
     db,
     accountId,
@@ -67,10 +66,10 @@ export async function withArkhamDbExecutor<T, E extends HonoEnv>(
       throw await markArkhamDbConnectionMissing(db, accountId);
     }
 
-    const executor: ArkhamDbExecutor<E> = {
+    const executor: ArkhamDbExecutor = {
       connection,
-      context: c,
       db,
+      legacyApiBaseUrl: c.get("config").LEGACY_API_BASE_URL,
       patchIdentityFailure(error) {
         return patchArkhamDbIdentityFailure(executor, error);
       },
@@ -79,6 +78,7 @@ export async function withArkhamDbExecutor<T, E extends HonoEnv>(
       },
       request(path, schema, options, handleApiError) {
         return executeArkhamDbRequest(
+          c,
           executor,
           path,
           schema,
@@ -99,7 +99,8 @@ async function executeArkhamDbRequest<
   R = never,
   E extends HonoEnv = HonoEnv,
 >(
-  executor: ArkhamDbExecutor<E>,
+  c: Context<E>,
+  executor: ArkhamDbExecutor,
   path: string,
   schema: z.ZodType<T>,
   options: RequestInit = {},
@@ -107,7 +108,7 @@ async function executeArkhamDbRequest<
 ): Promise<WrappedResponse<T | R>> {
   const executeRequest = async (accessToken: string) =>
     parseWrappedResponse(
-      await request<unknown, E>(executor.context, `/api/oauth2${path}`, {
+      await request<unknown, E>(c, `/api/oauth2${path}`, {
         ...options,
         headers: mergeHeaders(options.headers, {
           Authorization: `Bearer ${accessToken}`,
@@ -133,7 +134,10 @@ async function executeArkhamDbRequest<
     }
   }
 
-  const accessToken = await refreshArkhamDbAccessTokenForConnection(executor);
+  const accessToken = await refreshArkhamDbAccessTokenForConnection(
+    c,
+    executor,
+  );
 
   try {
     return await executeRequest(accessToken.access_token);
@@ -152,14 +156,15 @@ async function executeArkhamDbRequest<
 }
 
 async function refreshArkhamDbAccessTokenForConnection<E extends HonoEnv>(
-  executor: ArkhamDbExecutor<E>,
+  c: Context<E>,
+  executor: ArkhamDbExecutor,
 ): Promise<OAuthAccessToken> {
   const refreshToken = executor.connection.token.refresh_token;
 
   assert(refreshToken, "Missing OAuth refresh token for ArkhamDB account.");
 
   try {
-    const token = await refreshAccessToken(executor.context, refreshToken);
+    const token = await refreshAccessToken(c, refreshToken);
     await upsertOAuthToken(executor.db, executor.connection.identity.id, token);
 
     executor.connection.token.access_token = token.access_token;
@@ -179,8 +184,8 @@ async function refreshArkhamDbAccessTokenForConnection<E extends HonoEnv>(
   }
 }
 
-async function patchArkhamDbIdentityState<E extends HonoEnv>(
-  executor: ArkhamDbExecutor<E>,
+async function patchArkhamDbIdentityState(
+  executor: ArkhamDbExecutor,
   patch: Partial<ArkhamDbIdentityState>,
 ) {
   await updateAccountIdentityState(
@@ -193,8 +198,8 @@ async function patchArkhamDbIdentityState<E extends HonoEnv>(
   );
 }
 
-async function patchArkhamDbIdentityFailure<E extends HonoEnv>(
-  executor: ArkhamDbExecutor<E>,
+async function patchArkhamDbIdentityFailure(
+  executor: ArkhamDbExecutor,
   error: unknown,
 ) {
   await patchArkhamDbIdentityState(executor, {

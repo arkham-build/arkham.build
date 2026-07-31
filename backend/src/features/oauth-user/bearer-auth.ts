@@ -77,78 +77,69 @@ async function authenticateBearerToken(
   rawToken: string,
   requiredScopes: readonly OAuthScope[],
 ): Promise<OAuthBearerContext> {
-  return await db.transaction().execute(async (tx) => {
-    const now = new Date();
+  const now = new Date();
 
-    const token = await tx
-      .selectFrom("oauth_access_token")
-      .select([
-        "expires_at",
-        "id",
-        "oauth_grant_id",
-        "oauth_refresh_token_id",
-        "revoked_at",
-        "scopes",
-      ])
-      .where("token_hash", "=", hashOAuthCredential(rawToken))
-      .forUpdate()
-      .executeTakeFirst();
+  const token = await db
+    .selectFrom("oauth_access_token")
+    .select([
+      "expires_at",
+      "id",
+      "oauth_grant_id",
+      "oauth_refresh_token_id",
+      "revoked_at",
+      "scopes",
+    ])
+    .where("token_hash", "=", hashOAuthCredential(rawToken))
+    .executeTakeFirst();
 
-    if (!token || token.revoked_at != null || token.expires_at <= now) {
-      throw invalidToken();
-    }
+  if (!token || token.revoked_at != null || token.expires_at <= now) {
+    throw invalidToken();
+  }
 
-    const grant = await tx
-      .selectFrom("oauth_grant")
-      .select(["account_id", "oauth_client_id"])
-      .where("id", "=", token.oauth_grant_id)
-      .executeTakeFirst();
-    if (!grant) throw invalidToken();
+  const grant = await db
+    .selectFrom("oauth_grant")
+    .select(["account_id", "oauth_client_id"])
+    .where("id", "=", token.oauth_grant_id)
+    .executeTakeFirst();
+  if (!grant) throw invalidToken();
 
-    const client = await tx
-      .selectFrom("oauth_client")
-      .select(["disabled_at", "id", "name"])
-      .where("id", "=", grant.oauth_client_id)
-      .executeTakeFirst();
-    if (!client || client.disabled_at != null) throw invalidToken();
+  const client = await db
+    .selectFrom("oauth_client")
+    .select(["disabled_at", "id", "name"])
+    .where("id", "=", grant.oauth_client_id)
+    .executeTakeFirst();
+  if (!client || client.disabled_at != null) throw invalidToken();
 
-    const account = await findAccountForAuth(tx, grant.account_id);
-    if (!account) throw invalidToken();
-    if (account.active_account_ban_id != null) {
-      throw new OAuthBearerError("account_banned", "Account is banned", 403);
-    }
+  const account = await findAccountForAuth(db, grant.account_id);
+  if (!account) throw invalidToken();
+  if (account.active_account_ban_id != null) {
+    throw new OAuthBearerError("account_banned", "Account is banned", 403);
+  }
 
-    const scopes = canonicalizeOAuthScopes(token.scopes);
-    const scopeSet = new Set<OAuthScope>(scopes);
-    const missingScope = requiredScopes.find(
-      (requiredScope) => !scopeSet.has(requiredScope),
+  const scopes = canonicalizeOAuthScopes(token.scopes);
+  const scopeSet = new Set<OAuthScope>(scopes);
+  const missingScope = requiredScopes.find(
+    (requiredScope) => !scopeSet.has(requiredScope),
+  );
+  if (missingScope) {
+    throw new OAuthBearerError(
+      "insufficient_scope",
+      `This endpoint requires ${missingScope}`,
+      403,
+      missingScope,
     );
-    if (missingScope) {
-      throw new OAuthBearerError(
-        "insufficient_scope",
-        `This endpoint requires ${missingScope}`,
-        403,
-        missingScope,
-      );
-    }
+  }
 
-    await tx
-      .updateTable("oauth_access_token")
-      .set({ last_used_at: now, updated_at: now })
-      .where("id", "=", token.id)
-      .executeTakeFirstOrThrow();
-
-    return {
-      account,
-      client: { id: client.id, name: client.name },
-      token: {
-        id: token.id,
-        oauth_grant_id: token.oauth_grant_id,
-        oauth_refresh_token_id: token.oauth_refresh_token_id,
-      },
-      scopes,
-    };
-  });
+  return {
+    account,
+    client: { id: client.id, name: client.name },
+    token: {
+      id: token.id,
+      oauth_grant_id: token.oauth_grant_id,
+      oauth_refresh_token_id: token.oauth_refresh_token_id,
+    },
+    scopes,
+  };
 }
 
 function invalidToken() {

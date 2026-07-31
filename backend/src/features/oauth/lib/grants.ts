@@ -46,7 +46,7 @@ export async function revokeOAuthGrant(
       .selectFrom("oauth_client")
       .select("id")
       .where("id", "=", clientId)
-      .forUpdate()
+      .forShare()
       .executeTakeFirst();
 
     await tx

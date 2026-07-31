@@ -60,7 +60,7 @@
             "name": "redirect_uri",
             "in": "query",
             "required": true,
-            "description": "Exact registered HTTPS, loopback HTTP, or native custom-scheme redirect URI",
+            "description": "Exact registered HTTPS, localhost HTTP, or native custom-scheme redirect URI",
             "schema": {
               "type": "string"
             }
@@ -89,7 +89,7 @@
         ],
         "responses": {
           "302": {
-            "description": "Redirect to the arkham.build consent UI, or after the client and redirect URI are trusted, to the registered callback with an OAuth error and state. Approval and denial callbacks are issued by the session-authenticated consent API. Callback locations may use HTTPS, loopback HTTP, or a registered native custom scheme.",
+            "description": "Redirect to the arkham.build consent UI, or after the client and redirect URI are trusted, to the registered callback with an OAuth error and state. Approval and denial callbacks are issued by the session-authenticated consent API. Callback locations may use HTTPS, localhost HTTP, or a registered native custom scheme.",
             "headers": {
               "Location": {
                 "description": "Consent URL or registered client callback URL",
@@ -555,7 +555,7 @@
         "operationId": "createOAuthDeck",
         "tags": ["User decks"],
         "summary": "Create a deck",
-        "description": "Requires decks:write. Server-owned deck fields in the request are ignored. Account creates generate a UUID; ArkhamDB chooses its ID.",
+        "description": "Requires decks:write. Additional request properties, including server-owned deck fields, are ignored. Account creates generate a UUID; ArkhamDB chooses its ID.",
         "security": [
           {
             "OAuthBearer": ["decks:write"]
@@ -577,7 +577,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OAuthDeck"
+                "$ref": "#/components/schemas/OAuthDeckWrite"
               }
             }
           }
@@ -805,7 +805,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OAuthDeck"
+                "$ref": "#/components/schemas/OAuthDeckWrite"
               }
             }
           }
@@ -1055,7 +1055,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OAuthDeck"
+                "$ref": "#/components/schemas/OAuthDeckWrite"
               }
             }
           }
@@ -1228,7 +1228,7 @@
       },
       "OAuthDeck": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "description": "Full external deck representation. Write operations ignore server-owned identity, provider, timestamp, version, and history-link fields.",
+        "description": "Full external deck representation.",
         "type": "object",
         "properties": {
           "date_creation": {
@@ -1536,7 +1536,7 @@
           "decks": {
             "type": "array",
             "items": {
-              "description": "Full external deck representation. Write operations ignore server-owned identity, provider, timestamp, version, and history-link fields.",
+              "description": "Full external deck representation.",
               "type": "object",
               "properties": {
                 "date_creation": {
@@ -1791,6 +1791,164 @@
           }
         },
         "additionalProperties": false
+      },
+      "OAuthDeckWrite": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "description": "Mutable deck content. Additional properties, including server-owned fields, are ignored.",
+        "type": "object",
+        "properties": {
+          "description_md": {
+            "type": "string"
+          },
+          "exile_string": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ignoreDeckLimitSlots": {
+            "anyOf": [
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "investigator_code": {
+            "type": "string"
+          },
+          "investigator_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "problem": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "too_few_cards",
+                      "too_many_cards",
+                      "too_many_copies",
+                      "invalid_cards",
+                      "deck_options_limit",
+                      "investigator"
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "maxLength": 255
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sideSlots": {
+            "anyOf": [
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "slots": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "taboo_id": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tags": {
+            "type": "string"
+          },
+          "xp_adjustment": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "xp_spent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "xp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "description_md",
+          "investigator_code",
+          "meta",
+          "name",
+          "slots",
+          "tags"
+        ],
+        "additionalProperties": true
       },
       "OAuthDeckManifestItem": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",

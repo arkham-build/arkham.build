@@ -1,80 +1,20 @@
-import assert from "node:assert/strict";
 import type { Transaction } from "kysely";
 import type { Database } from "../../../db/db.ts";
 import type { DB } from "../../../db/schema.types.ts";
 
-export const OAUTH_CREDENTIAL_AUDIT_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
-export const OAUTH_CREDENTIAL_CLEANUP_BATCH_SIZE = 1_000;
-export const OAUTH_CREDENTIAL_CLEANUP_MAX_BATCHES_PER_RUN = 10;
-
-export type OAuthCredentialCleanupResult = {
-  batches: number;
-  continuationRequired: boolean;
-  cutoff: Date;
-  deleted: {
-    accessTokens: number;
-    authorizationCodes: number;
-    authorizationRequests: number;
-    refreshTokens: number;
-  };
-};
-
-type OAuthCredentialCleanupInput = Readonly<{
-  batchSize: number;
-  maxBatches: number;
-  now: Date;
-}>;
-
-export async function cleanupExpiredOAuthCredentials(
-  db: Database,
-  input: OAuthCredentialCleanupInput,
-): Promise<OAuthCredentialCleanupResult> {
-  assertCleanupLimits(input);
-
-  const cutoff = new Date(
-    input.now.getTime() - OAUTH_CREDENTIAL_AUDIT_RETENTION_MS,
-  );
-  let batches = 0;
-  let continuationRequired = true;
-  let deleted = emptyDeletedCounts();
-
-  while (batches < input.maxBatches && continuationRequired) {
-    const batchDeleted = await cleanupExpiredOAuthCredentialBatch(
-      db,
-      cutoff,
-      input.batchSize,
-    );
-
-    batches += 1;
-    deleted = addDeletedCounts(deleted, batchDeleted);
-    continuationRequired = hasFullBatch(batchDeleted, input.batchSize);
-  }
-
-  return { batches, continuationRequired, cutoff, deleted };
-}
-
-async function cleanupExpiredOAuthCredentialBatch(
-  db: Database,
-  cutoff: Date,
-  batchSize: number,
-): Promise<OAuthCredentialDeletedCounts> {
-  return await db.transaction().execute(async (tx) => {
+export async function cleanupExpiredOAuthCredentials(db: Database, now: Date) {
+  const cutoff = new Date(now.getTime() - OAUTH_CREDENTIAL_AUDIT_RETENTION_MS);
+  const deleted = await db.transaction().execute(async (tx) => {
     const authorizationRequests = await deleteExpiredAuthorizationRequests(
       tx,
       cutoff,
-      batchSize,
     );
     const authorizationCodes = await deleteExpiredAuthorizationCodes(
       tx,
       cutoff,
-      batchSize,
     );
-    const accessTokens = await deleteExpiredAccessTokens(tx, cutoff, batchSize);
-    const refreshTokens = await deleteExpiredRefreshTokens(
-      tx,
-      cutoff,
-      batchSize,
-    );
+    const accessTokens = await deleteExpiredAccessTokens(tx, cutoff);
+    const refreshTokens = await deleteExpiredRefreshTokens(tx, cutoff);
 
     return {
       accessTokens,
@@ -83,58 +23,16 @@ async function cleanupExpiredOAuthCredentialBatch(
       refreshTokens,
     };
   });
+
+  return { cutoff, deleted };
 }
 
-type OAuthCredentialDeletedCounts = OAuthCredentialCleanupResult["deleted"];
-
-function assertCleanupLimits(input: OAuthCredentialCleanupInput) {
-  assert(
-    Number.isInteger(input.batchSize) &&
-      input.batchSize > 0 &&
-      input.batchSize <= OAUTH_CREDENTIAL_CLEANUP_BATCH_SIZE,
-    `OAuth credential cleanup batch size must be between 1 and ${OAUTH_CREDENTIAL_CLEANUP_BATCH_SIZE}`,
-  );
-  assert(
-    Number.isInteger(input.maxBatches) &&
-      input.maxBatches > 0 &&
-      input.maxBatches <= OAUTH_CREDENTIAL_CLEANUP_MAX_BATCHES_PER_RUN,
-    `OAuth credential cleanup batch count must be between 1 and ${OAUTH_CREDENTIAL_CLEANUP_MAX_BATCHES_PER_RUN}`,
-  );
-}
-
-function emptyDeletedCounts(): OAuthCredentialDeletedCounts {
-  return {
-    accessTokens: 0,
-    authorizationCodes: 0,
-    authorizationRequests: 0,
-    refreshTokens: 0,
-  };
-}
-
-function addDeletedCounts(
-  total: OAuthCredentialDeletedCounts,
-  batch: OAuthCredentialDeletedCounts,
-): OAuthCredentialDeletedCounts {
-  return {
-    accessTokens: total.accessTokens + batch.accessTokens,
-    authorizationCodes: total.authorizationCodes + batch.authorizationCodes,
-    authorizationRequests:
-      total.authorizationRequests + batch.authorizationRequests,
-    refreshTokens: total.refreshTokens + batch.refreshTokens,
-  };
-}
-
-function hasFullBatch(
-  deleted: OAuthCredentialDeletedCounts,
-  batchSize: number,
-) {
-  return Object.values(deleted).some((count) => count === batchSize);
-}
+const OAUTH_CREDENTIAL_AUDIT_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
+const OAUTH_CREDENTIAL_CLEANUP_BATCH_SIZE = 1_000;
 
 async function deleteExpiredAuthorizationRequests(
   tx: Transaction<DB>,
   cutoff: Date,
-  batchSize: number,
 ) {
   const candidates = await tx
     .selectFrom("oauth_authorization_request")
@@ -142,7 +40,7 @@ async function deleteExpiredAuthorizationRequests(
     .where("expires_at", "<=", cutoff)
     .orderBy("expires_at")
     .orderBy("id")
-    .limit(batchSize)
+    .limit(OAUTH_CREDENTIAL_CLEANUP_BATCH_SIZE)
     .forUpdate()
     .skipLocked()
     .execute();
@@ -165,7 +63,6 @@ async function deleteExpiredAuthorizationRequests(
 async function deleteExpiredAuthorizationCodes(
   tx: Transaction<DB>,
   cutoff: Date,
-  batchSize: number,
 ) {
   const candidates = await tx
     .selectFrom("oauth_authorization_code")
@@ -173,7 +70,7 @@ async function deleteExpiredAuthorizationCodes(
     .where("expires_at", "<=", cutoff)
     .orderBy("expires_at")
     .orderBy("id")
-    .limit(batchSize)
+    .limit(OAUTH_CREDENTIAL_CLEANUP_BATCH_SIZE)
     .forUpdate()
     .skipLocked()
     .execute();
@@ -193,18 +90,14 @@ async function deleteExpiredAuthorizationCodes(
   return deleted.length;
 }
 
-async function deleteExpiredAccessTokens(
-  tx: Transaction<DB>,
-  cutoff: Date,
-  batchSize: number,
-) {
+async function deleteExpiredAccessTokens(tx: Transaction<DB>, cutoff: Date) {
   const candidates = await tx
     .selectFrom("oauth_access_token")
     .select("id")
     .where("expires_at", "<=", cutoff)
     .orderBy("expires_at")
     .orderBy("id")
-    .limit(batchSize)
+    .limit(OAUTH_CREDENTIAL_CLEANUP_BATCH_SIZE)
     .forUpdate()
     .skipLocked()
     .execute();
@@ -224,11 +117,7 @@ async function deleteExpiredAccessTokens(
   return deleted.length;
 }
 
-async function deleteExpiredRefreshTokens(
-  tx: Transaction<DB>,
-  cutoff: Date,
-  batchSize: number,
-) {
+async function deleteExpiredRefreshTokens(tx: Transaction<DB>, cutoff: Date) {
   const candidates = await tx
     .selectFrom("oauth_refresh_token")
     .leftJoin(
@@ -241,7 +130,7 @@ async function deleteExpiredRefreshTokens(
     .where("oauth_access_token.id", "is", null)
     .orderBy("oauth_refresh_token.expires_at")
     .orderBy("oauth_refresh_token.id")
-    .limit(batchSize)
+    .limit(OAUTH_CREDENTIAL_CLEANUP_BATCH_SIZE)
     .forUpdate("oauth_refresh_token")
     .skipLocked()
     .execute();
