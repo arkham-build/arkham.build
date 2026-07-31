@@ -101,13 +101,14 @@ export function TabsList({
         evt.key,
         getEnabledTabs(evt.currentTarget),
         currentTab,
+        vertical,
       );
       if (nextIndex == null) return;
 
       evt.preventDefault();
       getEnabledTabs(evt.currentTarget)[nextIndex]?.focus();
     },
-    [onKeyDown],
+    [onKeyDown, vertical],
   );
 
   return (
@@ -310,26 +311,25 @@ function getNextTabIndex(
   key: string,
   tabs: HTMLElement[],
   currentTab: HTMLElement,
+  vertical?: boolean,
 ) {
   if (!tabs.length) return null;
 
   const index = tabs.indexOf(currentTab);
   if (index === -1) return null;
 
-  switch (key) {
-    case "ArrowLeft":
-    case "ArrowUp":
-      return (index - 1 + tabs.length) % tabs.length;
-    case "ArrowRight":
-    case "ArrowDown":
-      return (index + 1) % tabs.length;
-    case "Home":
-      return 0;
-    case "End":
-      return tabs.length - 1;
-    default:
-      return null;
+  if (vertical ? key === "ArrowUp" : key === "ArrowLeft") {
+    return (index - 1 + tabs.length) % tabs.length;
   }
+
+  if (vertical ? key === "ArrowDown" : key === "ArrowRight") {
+    return (index + 1 + tabs.length) % tabs.length;
+  }
+
+  if (key === "Home") return 0;
+  if (key === "End") return tabs.length - 1;
+
+  return null;
 }
 
 function renderAsChild(children: ReactNode, props: ContentElementProps) {

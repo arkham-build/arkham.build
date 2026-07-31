@@ -261,7 +261,6 @@ function LimitedTab(props: TabProps) {
     <>
       <Field full>
         <Combobox
-          autoFocus
           id="cycle-select-combobox"
           limit={3}
           locale={locale}
@@ -326,7 +325,6 @@ function CampaignPlayalongTab(props: TabProps) {
     <>
       <Field className={css["cpa"]} full>
         <Combobox
-          autoFocus
           id="cycle-select-combobox"
           limit={1}
           locale={locale}
@@ -405,7 +403,6 @@ function Limited25Tab(props: TabProps) {
     <>
       <Field full>
         <Combobox
-          autoFocus
           id="cycle-select-combobox"
           limit={3}
           locale={locale}
