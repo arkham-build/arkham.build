@@ -96,7 +96,7 @@ function mapArkhamDbAccountIdentityToIdentity(
   };
 }
 
-function parseArkhamDbIdentityState(
+export function parseArkhamDbIdentityState(
   state: AccountIdentity["state"],
 ): ArkhamDbIdentityState {
   const parsed = ArkhamDbIdentityStateSchema.safeParse(state);
