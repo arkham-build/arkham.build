@@ -94,7 +94,7 @@ test.describe("filters", () => {
     await page.getByTestId("search-input").blur();
 
     await page.getByTestId("collection-create-deck").hover();
-    await page.locator('[data-test-id="card-list-config"]').click();
+    await page.getByTestId("card-list-config").click();
     await page.getByText("List with card text").click();
 
     await expect(page.getByTestId("card-text").first()).toBeVisible();
@@ -104,6 +104,59 @@ test.describe("filters", () => {
 
     await expect(page.getByTestId("card-text").first()).not.toBeVisible();
     await expect(page.getByTestId("card-text").nth(1)).not.toBeVisible();
+  });
+
+  test("override the taboo set for a card list", async ({ page }) => {
+    await page.getByTestId("card-list-config").click();
+
+    const tabooSelect = page.getByTestId("card-list-taboo-set");
+    await expect(tabooSelect).toHaveValue("");
+    await tabooSelect.selectOption("6");
+
+    await page.locator("body").press("Escape");
+    await page
+      .getByRole("heading", { name: "Taboo list", exact: true })
+      .first()
+      .click();
+    await page.getByTestId("filter-Taboo list-input").selectOption("1");
+    await page.getByTestId("card-list-config").click();
+
+    await expect(page.getByTestId("card-list-taboo-set")).toBeDisabled();
+    await expect(page.getByTestId("card-list-taboo-set")).toHaveValue("6");
+    await expect(
+      page.getByText("Overriden by the taboo list filter"),
+    ).toBeVisible();
+
+    await fillSearch(page, "Rex Murphy");
+    await page
+      .getByTestId("listcard-02002")
+      .getByTestId("listcard-title")
+      .click();
+    await expect(page.getByTestId("card-taboo").first()).toBeVisible();
+    await expect(page.getByTestId("card-taboo").first()).not.toContainText(
+      "Mutated.",
+    );
+
+    await page.locator("body").press("Escape");
+    await page.getByTestId("filter-Taboo list-input").selectOption("");
+    await page.getByTestId("card-list-config").click();
+    await expect(page.getByTestId("card-list-taboo-set")).toBeEnabled();
+    await expect(page.getByTestId("card-list-taboo-set")).toHaveValue("6");
+    await page.getByTestId("card-list-taboo-set").selectOption("");
+
+    await page
+      .getByTestId("listcard-02002")
+      .getByTestId("listcard-title")
+      .click();
+    await expect(page.getByTestId("card-taboo")).toHaveCount(0);
+  });
+
+  test("omit the taboo override from the deck editor", async ({ page }) => {
+    await page.goto("/deck/create/01001");
+    await page.getByTestId("create-save").click();
+    await page.getByTestId("card-list-config").click();
+
+    await expect(page.getByTestId("card-list-taboo-set")).toHaveCount(0);
   });
 
   test("filter investigator stats shortcut", async ({ page }) => {

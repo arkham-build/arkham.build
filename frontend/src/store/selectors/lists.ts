@@ -432,16 +432,29 @@ export function selectCanonicalTabooSetId(
 ) {
   if (resolvedDeck) return resolvedDeck.taboo_id;
 
-  const filters = selectActiveListFilters(state);
-  const filterId = filters.indexOf("taboo_set");
+  const filterValue = selectActiveTabooSetFilterValue(state);
+  if (filterValue != null) return filterValue;
 
-  const filterValue = filterId
-    ? selectActiveListFilter(state, filterId)
-    : undefined;
+  return selectListTabooSetId(state);
+}
 
-  if (typeof filterValue?.value === "number") return filterValue.value;
+export function selectListTabooSetId(state: StoreState) {
+  const activeList = selectActiveList(state);
+
+  if (activeList?.tabooSetOverride !== undefined) {
+    return activeList.tabooSetOverride;
+  }
 
   return selectSettingsTabooId(state.settings, selectMetadata(state));
+}
+
+export function selectActiveTabooSetFilterValue(state: StoreState) {
+  const filters = selectActiveListFilters(state);
+  const filterId = filters.indexOf("taboo_set");
+  const filterValue =
+    filterId >= 0 ? selectActiveListFilter(state, filterId) : undefined;
+
+  return typeof filterValue?.value === "number" ? filterValue.value : undefined;
 }
 
 // Custom equality check for deck's card access.

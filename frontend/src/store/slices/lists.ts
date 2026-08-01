@@ -518,6 +518,25 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
     });
   },
 
+  setListTabooSetOverride(value) {
+    set((state) => {
+      assert(state.activeList, "no active list is defined.");
+
+      const list = state.lists[state.activeList];
+      assert(list, `list ${state.activeList} not defined.`);
+
+      return {
+        lists: {
+          ...state.lists,
+          [state.activeList]: {
+            ...list,
+            tabooSetOverride: value,
+          },
+        },
+      };
+    });
+  },
+
   toggleListDefaultFlipped() {
     set((state) => {
       assert(state.activeList, "no active list is defined.");
@@ -999,6 +1018,7 @@ function makeList({
 }: MakeListOptions): List {
   const list = {
     defaultFlipped: false,
+    tabooSetOverride: undefined,
     fanMadeCycleCodes,
     filters,
     filterValues: filters.reduce<List["filterValues"]>((acc, curr, i) => {

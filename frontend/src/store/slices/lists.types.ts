@@ -173,6 +173,7 @@ export type ListDisplaySettings = {
 
 export type List = {
   defaultFlipped: boolean;
+  tabooSetOverride?: number | null;
   // Unowned fan-made content (in cache) is filtered from lists by default.
   // For fan-made content preview pages, we need to cache and "whitelist" the fan-made data
   // for the displayed list, which is what this field can be used for.
@@ -220,6 +221,7 @@ export type ListsSlice = {
   removeList(key: string): void;
 
   setFiltersEnabled(value: boolean): void;
+  setListTabooSetOverride(value: number | null): void;
   setListViewMode(value: ViewMode): void;
   toggleListDefaultFlipped(): void;
   setListSort(value: DecklistConfig | undefined): void;

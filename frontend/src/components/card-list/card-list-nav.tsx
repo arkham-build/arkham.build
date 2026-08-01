@@ -5,7 +5,11 @@ import { CardlistCount } from "@/components/card-list/card-list-count";
 import { useStore } from "@/store";
 import { getGroupingKeyLabel, NONE } from "@/store/lib/grouping";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { ListState } from "@/store/selectors/lists";
+import {
+  selectActiveTabooSetFilterValue,
+  type ListState,
+  selectListTabooSetId,
+} from "@/store/selectors/lists";
 import { selectActiveList } from "@/store/selectors/shared";
 import type { ViewMode } from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";
@@ -19,6 +23,7 @@ import {
 } from "../deck-tags/deck-tags";
 import { useResolvedDeck } from "../resolved-deck-context";
 import { SortSelect } from "../sort-select";
+import { TabooSelect } from "../taboo-select";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -130,6 +135,7 @@ export function CardListNav(props: Props) {
         <DisplaySettings
           onScanMaxColumnsChange={props.onScanMaxColumnsChange}
           scanMaxColumns={props.scanMaxColumns}
+          showTabooSetOverride={!deck}
           viewMode={props.viewMode}
         />
       </div>
@@ -140,10 +146,12 @@ export function CardListNav(props: Props) {
 function DisplaySettings({
   onScanMaxColumnsChange,
   scanMaxColumns,
+  showTabooSetOverride,
   viewMode,
 }: {
   onScanMaxColumnsChange: (value: number) => void;
   scanMaxColumns: number;
+  showTabooSetOverride: boolean;
   viewMode: ViewMode;
 }) {
   const { t } = useTranslation();
@@ -155,6 +163,24 @@ function DisplaySettings({
   );
 
   const setListSort = useStore((state) => state.setListSort);
+
+  const tabooSetId = useStore(selectListTabooSetId);
+
+  const tabooSetFilterActive = useStore(
+    (state) => selectActiveTabooSetFilterValue(state) != null,
+  );
+
+  const setListTabooSetOverride = useStore(
+    (state) => state.setListTabooSetOverride,
+  );
+
+  const onTabooSetChange = useCallback(
+    (evt: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = evt.target.value;
+      setListTabooSetOverride(value ? Number.parseInt(value, 10) : null);
+    },
+    [setListTabooSetOverride],
+  );
 
   const onScanMaxColumnsCommit = useCallback(
     (value: number[]) => {
@@ -198,7 +224,7 @@ function DisplaySettings({
         <Button
           className={css["nav-config"]}
           aria-label={t("lists.nav.list_settings")}
-          data-test-id="card-list-config"
+          data-testid="card-list-config"
           variant="bare"
           iconOnly
           size="lg"
@@ -249,6 +275,26 @@ function DisplaySettings({
                       {scanMaxColumns}
                     </output>
                   </div>
+                </Field>
+              </DropdownMenuSection>
+            )}
+            {showTabooSetOverride && (
+              <DropdownMenuSection title={t("common.taboo")}>
+                <Field
+                  full
+                  helpText={
+                    tabooSetFilterActive
+                      ? t("lists.nav.taboo_filter_override")
+                      : undefined
+                  }
+                >
+                  <TabooSelect
+                    aria-label={t("common.taboo")}
+                    disabled={tabooSetFilterActive}
+                    id="card-list-taboo-set"
+                    onChange={onTabooSetChange}
+                    value={tabooSetId}
+                  />
                 </Field>
               </DropdownMenuSection>
             )}

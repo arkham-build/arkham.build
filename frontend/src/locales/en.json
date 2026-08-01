@@ -1537,7 +1537,8 @@
         "list_settings": "List settings",
         "max_columns": "Max. scans per columns",
         "sort": "Sort",
-        "sort_default": "User default"
+        "sort_default": "User default",
+        "taboo_filter_override": "Overriden by the \"Taboo list\" filter"
       },
       "reset": "Reset to default",
       "search": {
