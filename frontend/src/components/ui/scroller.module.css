@@ -12,7 +12,7 @@
   overflow-y: auto;
 }
 
-@supports selector(::-webkit-scrollbar) {
+@supports selector(::-webkit-scrollbar-thumb) {
   .viewport {
     padding-right: calc(var(--scrollbar-padding) - 6px);
   }
@@ -47,6 +47,7 @@
     scrollbar-width: thin;
     scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar);
     scrollbar-gutter: stable;
+    padding-right: 0;
   }
 
   .scroller.padded .viewport {
