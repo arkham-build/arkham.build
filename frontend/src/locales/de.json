@@ -1738,6 +1738,10 @@
       },
       "copy_to_clipboard": "In die Zwischenablage kopieren",
       "copy_to_clipboard_success": "Kopiert.",
+      "password_input": {
+        "hide_password": "Passwort ausblenden",
+        "show_password": "Passwort anzeigen"
+      },
       "pagination": {
         "next": "Weiter",
         "previous": "Zurück"

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { PasswordInput } from "@/components/ui/password-input";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useResetPasswordMutation } from "@/queries/mutations/auth";
 import { AuthForm } from "./auth-form";
@@ -62,14 +63,13 @@ function ResetPassword() {
           <FieldLabel htmlFor="password">
             {t("auth.reset_password.password")}
           </FieldLabel>
-          <input
+          <PasswordInput
             autoComplete="new-password"
             disabled={resetPasswordMutation.isPending}
             id="password"
             onChange={(e) => setPassword(e.target.value)}
             pattern={PATTERN_VALID_PASSWORD}
             required
-            type="password"
             value={password}
           />
         </Field>
@@ -78,14 +78,13 @@ function ResetPassword() {
           <FieldLabel htmlFor="confirm-password">
             {t("auth.reset_password.confirm_password")}
           </FieldLabel>
-          <input
+          <PasswordInput
             autoComplete="new-password"
             disabled={resetPasswordMutation.isPending}
             id="confirm-password"
             onChange={(e) => setConfirmPassword(e.target.value)}
             pattern={createPasswordMatchPattern(password)}
             required
-            type="password"
             value={confirmPassword}
           />
         </Field>

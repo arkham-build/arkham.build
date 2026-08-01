@@ -5,6 +5,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Notice } from "@/components/ui/notice";
+import { PasswordInput } from "@/components/ui/password-input";
 import { useSignupMutation } from "@/queries/mutations/auth";
 import { ARKHAMDB_WARNING_VISIBLE } from "@/utils/constants";
 import { AuthForm } from "./auth-form";
@@ -80,7 +81,7 @@ function Signup() {
 
         <Field full helpText={t("auth.password_validation")}>
           <FieldLabel htmlFor="password">{t("auth.password")}</FieldLabel>
-          <input
+          <PasswordInput
             autoComplete="new-password"
             disabled={signupMutation.isPending}
             id="password"
@@ -88,7 +89,6 @@ function Signup() {
             pattern={PATTERN_VALID_PASSWORD}
             required
             placeholder="••••••••"
-            type="password"
             value={password}
           />
         </Field>
@@ -97,7 +97,7 @@ function Signup() {
           <FieldLabel htmlFor="confirm-password">
             {t("auth.reset_password.confirm_password")}
           </FieldLabel>
-          <input
+          <PasswordInput
             autoComplete="new-password"
             disabled={signupMutation.isPending}
             id="confirm-password"
@@ -105,7 +105,6 @@ function Signup() {
             pattern={createPasswordMatchPattern(password)}
             required
             placeholder="••••••••"
-            type="password"
             value={confirmPassword}
           />
         </Field>

@@ -4,6 +4,7 @@ import { Link, useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Notice } from "@/components/ui/notice";
+import { PasswordInput } from "@/components/ui/password-input";
 import { useLoginMutation } from "@/queries/mutations/auth";
 import { ApiError } from "@/store/services/requests/shared";
 import { ARKHAMDB_WARNING_VISIBLE } from "@/utils/constants";
@@ -74,14 +75,13 @@ function Login() {
 
         <Field full>
           <FieldLabel htmlFor="password">{t("auth.password")}</FieldLabel>
-          <input
+          <PasswordInput
             autoComplete="current-password"
             disabled={loginMutation.isPending}
             id="password"
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             required
-            type="password"
             value={password}
           />
         </Field>
