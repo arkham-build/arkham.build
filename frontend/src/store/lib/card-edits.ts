@@ -210,6 +210,13 @@ export function applyTaboo(
         nextCard.original ??= {};
         nextCard.original[key as keyof ApiCard] = originalValue as never;
       }
+
+      // infer updated deck limit from exceptional taboo
+      if (key === "exceptional") {
+        nextCard.deck_limit = value ? 1 : 2;
+        nextCard.original ??= {};
+        nextCard.original["deck_limit"] = card.deck_limit;
+      }
     }
   }
 
