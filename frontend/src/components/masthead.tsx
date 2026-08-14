@@ -3,6 +3,7 @@ import {
   BookTextIcon,
   KeyboardIcon,
   LogOutIcon,
+  MapIcon,
   MenuIcon,
   RefreshCwIcon,
   SettingsIcon,
@@ -25,7 +26,12 @@ import { Logo } from "./icons/logo";
 import { LocaleQuickSwitch } from "./locale-quick-switch";
 import css from "./masthead.module.css";
 import { Button } from "./ui/button";
-import { DropdownButton, DropdownItem, DropdownMenu } from "./ui/dropdown-menu";
+import {
+  DropdownButton,
+  DropdownItem,
+  DropdownMenu,
+  DropdownMenuSection,
+} from "./ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { StatusBubble } from "./ui/status-bubble";
 import { Avatar } from "./user-account/avatar";
@@ -35,15 +41,19 @@ type Props = {
   children?: React.ReactNode;
   slotRight?: React.ReactNode;
   navSlot?: React.ReactNode;
-  hideLocaleSwitch?: boolean;
   invert?: boolean;
 };
 
-type MastheadSection = "browse" | "decklists" | "rules" | "settings";
+type MastheadSection =
+  | "browse"
+  | "campaigns"
+  | "cards"
+  | "decklists"
+  | "rules"
+  | "settings";
 
 export function Masthead(props: Props) {
-  const { children, className, hideLocaleSwitch, invert, navSlot, slotRight } =
-    props;
+  const { children, className, invert, navSlot, slotRight } = props;
 
   const { t } = useTranslation();
 
@@ -91,11 +101,7 @@ export function Masthead(props: Props) {
             >
               <SettingsIcon />
             </NavLink>
-            <AccountMenu
-              collapseNav={collapseNav}
-              hideLocaleSwitch={hideLocaleSwitch}
-              location={location}
-            />
+            <AccountMenu collapseNav={collapseNav} location={location} />
           </>
         )}
       </nav>
@@ -109,16 +115,7 @@ function MastheadNav(props: { location: string; navSlot?: React.ReactNode }) {
 
   return (
     <nav className={css["nav"]} aria-label={t("masthead.navigation")}>
-      <NavLink
-        className={css["nav-link"]}
-        href="~/browse"
-        location={location}
-        section="browse"
-        testId="masthead-browse"
-      >
-        <i className="icon-card-outline-bold" />
-        {t("masthead.browse")}
-      </NavLink>
+      <BrowseMenu location={location} />
       <NavLink
         className={css["nav-link"]}
         href="~/decklists"
@@ -141,6 +138,54 @@ function MastheadNav(props: { location: string; navSlot?: React.ReactNode }) {
       </NavLink>
       {navSlot}
     </nav>
+  );
+}
+
+function BrowseMenu(props: { location: string }) {
+  const { location } = props;
+  const { t } = useTranslation();
+  const active = isMastheadPathActive(location, "browse");
+
+  return (
+    <Popover placement="bottom-start">
+      <Link asChild href="~/browse">
+        <PopoverTrigger asChild>
+          <Button
+            as="a"
+            aria-current={active ? "page" : undefined}
+            className={cx(css["nav-link"], active && css["active"])}
+            data-testid="masthead-browse"
+            size="sm"
+            variant="bare"
+          >
+            <i className="icon-card-outline-bold" />
+            {t("masthead.browse")}
+          </Button>
+        </PopoverTrigger>
+      </Link>
+      <PopoverContent>
+        <DropdownMenu aria-label={t("masthead.browse")}>
+          <NavDropdownLink
+            href="~/browse"
+            location={location}
+            section="cards"
+            testId="masthead-browse-cards"
+          >
+            <i className="icon-card-outline-bold" />
+            {t("masthead.cards")}
+          </NavDropdownLink>
+          <NavDropdownLink
+            href="~/campaigns"
+            location={location}
+            section="campaigns"
+            testId="masthead-browse-campaigns"
+          >
+            <MapIcon />
+            {t("campaigns.title")}
+          </NavDropdownLink>
+        </DropdownMenu>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -208,12 +253,8 @@ function NavDropdownLink(props: {
   );
 }
 
-function AccountMenu(props: {
-  collapseNav: boolean;
-  hideLocaleSwitch?: boolean;
-  location: string;
-}) {
-  const { collapseNav, hideLocaleSwitch, location } = props;
+function AccountMenu(props: { collapseNav: boolean; location: string }) {
+  const { collapseNav, location } = props;
   const { t } = useTranslation();
   const session = useStore(selectSession);
   const toggleKeyboardShortcuts = useStore(
@@ -227,14 +268,12 @@ function AccountMenu(props: {
 
   const actionNodes = (
     <>
-      {!hideLocaleSwitch && (
-        <>
-          <DropdownItem>
-            <LocaleQuickSwitch fullWidth portal={false} />
-          </DropdownItem>
-          <hr />
-        </>
-      )}
+      <>
+        <DropdownItem>
+          <LocaleQuickSwitch fullWidth portal={false} />
+        </DropdownItem>
+        <hr />
+      </>
       {session && (
         <>
           <DropdownItem>
@@ -270,15 +309,27 @@ function AccountMenu(props: {
       )}
       {collapseNav && (
         <>
-          <NavDropdownLink
-            href="~/browse"
-            location={location}
-            section="browse"
-            testId="masthead-browse"
-          >
-            <i className="icon-card-outline-bold" />
-            {t("masthead.browse")}
-          </NavDropdownLink>
+          {!session && <hr />}
+          <DropdownMenuSection title={t("masthead.browse")}>
+            <NavDropdownLink
+              href="~/browse"
+              location={location}
+              section="cards"
+              testId="masthead-browse-cards"
+            >
+              <i className="icon-card-outline-bold" />
+              {t("masthead.cards")}
+            </NavDropdownLink>
+            <NavDropdownLink
+              href="~/campaigns"
+              location={location}
+              section="campaigns"
+              testId="masthead-browse-campaigns"
+            >
+              <MapIcon />
+              {t("campaigns.title")}
+            </NavDropdownLink>
+          </DropdownMenuSection>
           <NavDropdownLink
             href="~/decklists"
             location={location}
@@ -384,10 +435,17 @@ function AccountMenu(props: {
 
 function isMastheadPathActive(
   location: string,
-  section: "browse" | "decklists" | "rules" | "settings",
-) {
+  section: MastheadSection,
+): boolean {
   switch (section) {
     case "browse":
+      return (
+        isMastheadPathActive(location, "cards") ||
+        isMastheadPathActive(location, "campaigns")
+      );
+    case "campaigns":
+      return location.startsWith("/campaigns");
+    case "cards":
       return location.startsWith("/browse");
     case "decklists":
       return location.startsWith("/decklists");

@@ -147,6 +147,9 @@
     "browse": {
       "title": "Browse cards"
     },
+    "campaigns": {
+      "title": "Campaigns"
+    },
     "card_modal": {
       "actions": {
         "complete_task": "Complete task",
@@ -1554,6 +1557,7 @@
     },
     "masthead": {
       "browse": "Browse",
+      "cards": "Cards",
       "navigation": "Primary navigation",
       "rules": "Rules"
     },
