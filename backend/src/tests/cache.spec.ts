@@ -3,9 +3,18 @@ import { test } from "./test-utils.ts";
 
 type MetadataResponse = {
   data: {
+    campaign: {
+      code: string;
+      cycle_code: string;
+      variant_of_code: string | null;
+    }[];
     pack: {
       code: string;
       real_name: string;
+    }[];
+    scenario: {
+      code: string;
+      variant_of_code: string | null;
     }[];
   };
 };
