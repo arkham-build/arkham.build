@@ -121,10 +121,13 @@ test.describe("filters", () => {
     await page.getByTestId("filter-Taboo list-input").selectOption("1");
     await page.getByTestId("card-list-config").click();
 
+    const configDialog = page.getByRole("dialog");
     await expect(page.getByTestId("card-list-taboo-set")).toBeDisabled();
     await expect(page.getByTestId("card-list-taboo-set")).toHaveValue("6");
     await expect(
-      page.getByText("Overriden by the taboo list filter"),
+      configDialog.getByText('Overridden by the "Taboo list" filter', {
+        exact: true,
+      }),
     ).toBeVisible();
 
     await fillSearch(page, "Rex Murphy");
