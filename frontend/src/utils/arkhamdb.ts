@@ -1,4 +1,3 @@
-import type { ResolvedDeck } from "@/store/lib/types";
 import i18n from "./i18n";
 
 export function localizeArkhamDBBaseUrl() {
@@ -41,10 +40,6 @@ export function redirectArkhamDBLinks(evt: React.MouseEvent) {
       window.open(url, "_blank");
     }
   }
-}
-
-export function assertCanPublishDeck(_: ResolvedDeck) {
-  return true;
 }
 
 function parseVersion(str: string) {

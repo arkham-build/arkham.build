@@ -1,3 +1,162 @@
+.encounters-children_of_blood:before {
+  content: "\ea8f";
+}
+.encounters-afflicted:before {
+  content: "\ea90";
+}
+.encounters-blood_blight:before {
+  content: "\ea91";
+}
+.encounters-blood_money:before {
+  content: "\ea92";
+}
+.encounters-blood_moon:before {
+  content: "\ea93";
+}
+.encounters-bloodthirst:before {
+  content: "\eab0";
+}
+.encounters-friends_in_low_places:before {
+  content: "\eab1";
+}
+.encounters-hunted:before {
+  content: "\eab2";
+}
+.encounters-infected:before {
+  content: "\eab3";
+}
+.encounters-misinformation:before {
+  content: "\eab4";
+}
+.encounters-mongrels:before {
+  content: "\eab5";
+}
+.encounters-new_horizons:before {
+  content: "\eab6";
+}
+.encounters-preyed_upon:before {
+  content: "\eab7";
+}
+.encounters-river_of_blood:before {
+  content: "\eab8";
+}
+.encounters-sanguine_secrets:before {
+  content: "\eab9";
+}
+.encounters-stalked:before {
+  content: "\eaba";
+}
+.encounters-vermin:before {
+  content: "\eabb";
+}
+.encounters-cob:before {
+  content: "\eabc";
+}
+.encounters-agents_of_zburamoarte:before {
+  content: "\eabd";
+}
+.encounters-set:before {
+  content: "\49";
+}
+.encounters-extracurricular_activity:before {
+  content: "\ea6b";
+}
+.encounters-the_house_always_wins:before {
+  content: "\ea6c";
+}
+.encounters-armitages_fate:before {
+  content: "\ea6d";
+}
+.encounters-the_miskatonic_museum:before {
+  content: "\ea6e";
+}
+.encounters-the_essex_county_express:before {
+  content: "\ea6f";
+}
+.encounters-blood_on_the_altar:before {
+  content: "\ea70";
+}
+.encounters-undimensioned_and_unseen:before {
+  content: "\ea71";
+}
+.encounters-where_doom_awaits:before {
+  content: "\ea72";
+}
+.encounters-lost_in_time_and_space:before {
+  content: "\ea73";
+}
+.encounters-bad_luck:before {
+  content: "\ea74";
+}
+.encounters-beast_thralls:before {
+  content: "\ea75";
+}
+.encounters-bishops_thralls:before {
+  content: "\ea76";
+}
+.encounters-dunwich:before {
+  content: "\ea77";
+}
+.encounters-hideous_abominations:before {
+  content: "\ea78";
+}
+.encounters-naomis_crew:before {
+  content: "\ea79";
+}
+.encounters-sorcery:before {
+  content: "\ea7a";
+}
+.encounters-the_beyond:before {
+  content: "\ea7b";
+}
+.encounters-whippoorwills:before {
+  content: "\ea7c";
+}
+.encounters-return_to_the_dunwich_legacy:before {
+  content: "\4a";
+}
+.encounters-return_to_extracurricular_activities:before {
+  content: "\ea7d";
+}
+.encounters-return_to_the_house_always_wins:before {
+  content: "\ea7e";
+}
+.encounters-return_to_the_miskatonic_museum:before {
+  content: "\ea7f";
+}
+.encounters-return_to_the_essex_county_express:before {
+  content: "\ea80";
+}
+.encounters-return_to_blood_on_the_altar:before {
+  content: "\ea81";
+}
+.encounters-return_to_undimensioned_and_unseen:before {
+  content: "\ea82";
+}
+.encounters-return_to_where_doom_awaits:before {
+  content: "\ea83";
+}
+.encounters-return_to_lost_in_time_and_space:before {
+  content: "\ea84";
+}
+.encounters-resurgent_evils:before {
+  content: "\ea8d";
+}
+.encounters-erratic_fear:before {
+  content: "\ea94";
+}
+.encounters-creeping_cold:before {
+  content: "\ea95";
+}
+.encounters-secret_doors:before {
+  content: "\ea96";
+}
+.encounters-yog_sothoths_emissaries:before {
+  content: "\ea97";
+}
+.encounters-beyond_the_threshold:before {
+  content: "\ea98";
+}
 .encounters-tom:before {
   content: "\e918";
 }
@@ -1242,106 +1401,4 @@
 }
 .encounters-return_to_dim_carcosa:before {
   content: "\ea65";
-}
-.encounters-set:before {
-  content: "\49";
-}
-.encounters-extracurricular_activity:before {
-  content: "\ea6b";
-}
-.encounters-the_house_always_wins:before {
-  content: "\ea6c";
-}
-.encounters-armitages_fate:before {
-  content: "\ea6d";
-}
-.encounters-the_miskatonic_museum:before {
-  content: "\ea6e";
-}
-.encounters-the_essex_county_express:before {
-  content: "\ea6f";
-}
-.encounters-blood_on_the_altar:before {
-  content: "\ea70";
-}
-.encounters-undimensioned_and_unseen:before {
-  content: "\ea71";
-}
-.encounters-where_doom_awaits:before {
-  content: "\ea72";
-}
-.encounters-lost_in_time_and_space:before {
-  content: "\ea73";
-}
-.encounters-bad_luck:before {
-  content: "\ea74";
-}
-.encounters-beast_thralls:before {
-  content: "\ea75";
-}
-.encounters-bishops_thralls:before {
-  content: "\ea76";
-}
-.encounters-dunwich:before {
-  content: "\ea77";
-}
-.encounters-hideous_abominations:before {
-  content: "\ea78";
-}
-.encounters-naomis_crew:before {
-  content: "\ea79";
-}
-.encounters-sorcery:before {
-  content: "\ea7a";
-}
-.encounters-the_beyond:before {
-  content: "\ea7b";
-}
-.encounters-whippoorwills:before {
-  content: "\ea7c";
-}
-.encounters-return_to_the_dunwich_legacy:before {
-  content: "\4a";
-}
-.encounters-return_to_extracurricular_activities:before {
-  content: "\ea7d";
-}
-.encounters-return_to_the_house_always_wins:before {
-  content: "\ea7e";
-}
-.encounters-return_to_the_miskatonic_museum:before {
-  content: "\ea7f";
-}
-.encounters-return_to_the_essex_county_express:before {
-  content: "\ea80";
-}
-.encounters-return_to_blood_on_the_altar:before {
-  content: "\ea81";
-}
-.encounters-return_to_undimensioned_and_unseen:before {
-  content: "\ea82";
-}
-.encounters-return_to_where_doom_awaits:before {
-  content: "\ea83";
-}
-.encounters-return_to_lost_in_time_and_space:before {
-  content: "\ea84";
-}
-.encounters-resurgent_evils:before {
-  content: "\ea8d";
-}
-.encounters-erratic_fear:before {
-  content: "\ea94";
-}
-.encounters-creeping_cold:before {
-  content: "\ea95";
-}
-.encounters-secret_doors:before {
-  content: "\ea96";
-}
-.encounters-yog_sothoths_emissaries:before {
-  content: "\ea97";
-}
-.encounters-beyond_the_threshold:before {
-  content: "\ea98";
 }

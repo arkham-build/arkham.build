@@ -76,6 +76,7 @@ export const CYCLES_WITH_STANDALONE_PACKS = [
   "promotional",
   "parallel",
   "side_stories",
+  "small_campaign_expansions",
 ];
 
 export const ORIENTATION_CHANGED_CARDS = ["85037", "85038"];

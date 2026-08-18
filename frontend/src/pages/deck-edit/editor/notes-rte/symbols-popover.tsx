@@ -22,6 +22,7 @@ const availableSymbols = [
   "agility",
   "auto_fail",
   "bless",
+  "blood",
   "combat",
   "cultist",
   "curse",

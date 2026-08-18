@@ -271,6 +271,8 @@ export function getPackIcon(code?: string) {
       return "film_fatale";
     case "enc":
       return "enthralling_encore";
+    case "cob":
+      return "cob";
 
     default:
       return null;
