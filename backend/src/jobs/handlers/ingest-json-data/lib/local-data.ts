@@ -1,13 +1,13 @@
 import type {
   JsonDataCard,
   JsonDataCycle,
-  JsonDataEncounterSet,
   JsonDataPack,
 } from "@arkham-build/shared";
 import localCardData from "../../../../data/card-patches/index.ts";
 import localCycles from "../../../../data/cycles.json" with { type: "json" };
 import localEncounterSets from "../../../../data/encounter_sets.json" with { type: "json" };
 import localPacks from "../../../../data/packs.json" with { type: "json" };
+import type { IngestEncounterSet } from "./encounter-sets.ts";
 
 type LocalCard = JsonDataCard & {
   code: string;
@@ -17,7 +17,7 @@ type LocalCard = JsonDataCard & {
 type Input = {
   cards: JsonDataCard[];
   cycles: JsonDataCycle[];
-  encounterSets: JsonDataEncounterSet[];
+  encounterSets: IngestEncounterSet[];
   packs: JsonDataPack[];
 };
 
@@ -63,14 +63,15 @@ function applyLocalCycles(cycles: JsonDataCycle[]) {
   return Array.from(merged.values());
 }
 
-function applyLocalEncounterSets(encounterSets: JsonDataEncounterSet[]) {
-  const merged = new Map(encounterSets.map((set) => [set.code, set]));
+function applyLocalEncounterSets(encounterSets: IngestEncounterSet[]) {
+  const merged = new Map<string, IngestEncounterSet>();
+
+  for (const encounterSet of encounterSets) {
+    merged.set(encounterSet.code, encounterSet);
+  }
 
   for (const encounterSet of localEncounterSets) {
-    merged.set(
-      (encounterSet as JsonDataEncounterSet).code,
-      encounterSet as JsonDataEncounterSet,
-    );
+    merged.set(encounterSet.code, encounterSet);
   }
 
   return Array.from(merged.values());

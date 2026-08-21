@@ -1,34 +1,44 @@
 import type { JsonDataCard, JsonDataEncounterSet } from "@arkham-build/shared";
 
+export type IngestEncounterSet = JsonDataEncounterSet & {
+  pack_code?: string;
+};
+
 export function resolveEncounterSets(
-  encounterSets: JsonDataEncounterSet[],
-  cards: JsonDataCard[],
-) {
-  const encounterSetsMap = encounterSets.reduce(
-    (acc, curr) => {
-      acc[curr.code] ??= curr;
-      return acc;
-    },
-    {} as Record<string, JsonDataEncounterSet>,
-  );
+  encounterSets: readonly IngestEncounterSet[],
+  cards: readonly EncounterSetCard[],
+): EncounterSetRecord[] {
+  const encounterSetsByCode = new Map<string, IngestEncounterSet>();
 
-  const packCodeMapping = cards.reduce(
-    (acc, curr) => {
-      if (curr.encounter_code) {
-        acc[curr.encounter_code] = curr.pack_code;
-      }
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
+  for (const encounterSet of encounterSets) {
+    if (!encounterSetsByCode.has(encounterSet.code)) {
+      encounterSetsByCode.set(encounterSet.code, encounterSet);
+    }
+  }
 
-  return Object.values(encounterSetsMap).reduce(
-    (acc, set) => {
-      const pack_code = packCodeMapping[set.code];
-      if (!pack_code) return acc;
-      acc.push({ ...set, pack_code });
-      return acc;
-    },
-    [] as (JsonDataEncounterSet & { pack_code: string })[],
-  );
+  const packCodesByEncounterSet = new Map<string, string>();
+
+  for (const card of cards) {
+    if (card.encounter_code) {
+      packCodesByEncounterSet.set(card.encounter_code, card.pack_code);
+    }
+  }
+
+  const records: EncounterSetRecord[] = [];
+
+  for (const encounterSet of encounterSetsByCode.values()) {
+    const packCode =
+      encounterSet.pack_code ?? packCodesByEncounterSet.get(encounterSet.code);
+    if (!packCode) continue;
+
+    records.push({ ...encounterSet, pack_code: packCode });
+  }
+
+  return records;
 }
+
+type EncounterSetRecord = JsonDataEncounterSet & {
+  pack_code: string;
+};
+
+type EncounterSetCard = Pick<JsonDataCard, "encounter_code" | "pack_code">;
