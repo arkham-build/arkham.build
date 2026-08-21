@@ -1,0 +1,102 @@
+.main {
+  padding-top: 1.5rem;
+}
+
+.page-tabs {
+  margin-top: 1.5rem;
+}
+
+.campaign-list,
+.standalone-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.media-card-title,
+.media-card-name {
+  align-items: center;
+  display: flex;
+  gap: 0.375rem;
+  width: 100%;
+}
+
+.media-card-title {
+  justify-content: space-between;
+}
+
+.release-year {
+  flex: 0 0 auto;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.campaign-content > .scenario-list {
+  margin-top: 0;
+}
+
+.variant-tabs {
+  margin: -0.5rem -0.5rem 0;
+}
+
+.campaign-icon {
+  font-size: var(--icon-sm);
+}
+
+.scenario-list {
+  display: grid;
+  gap: 0.375rem;
+  list-style: none;
+  margin-top: 0.75rem;
+}
+
+.scenario {
+  align-items: center;
+  display: flex;
+  gap: 0.625rem;
+  min-height: 2.75rem;
+  padding: 0.375rem 0;
+}
+
+.scenario-icon {
+  display: inline-flex;
+  flex: 0 0 1.75rem;
+  font-size: var(--icon-lg);
+  justify-content: center;
+}
+
+.scenario-year-group + .scenario-year-group {
+  border-top: 1px solid var(--palette-1);
+  margin-top: 0.375rem;
+  padding-top: 0.375rem;
+}
+
+.scenario-year {
+  font-size: var(--text-sm);
+  color: var(--palette-4);
+}
+
+.scenario-year-group .scenario-list {
+  margin-top: 0.25rem;
+}
+
+.empty {
+  color: var(--palette-4);
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+@media screen and (min-width: 40rem) {
+  .campaign-list,
+  .standalone-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media screen and (min-width: 66rem) {
+  .campaign-list,
+  .standalone-list {
+    gap: 2rem;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}

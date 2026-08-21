@@ -36,7 +36,7 @@ const AccountMigration = lazy(
 
 const BrowseRoutes = lazy(() => import("./pages/browse/index"));
 
-const Campaigns = lazy(() => import("./pages/campaigns/campaigns"));
+const Content = lazy(() => import("./pages/content/content"));
 
 const DeckEdit = lazy(() => import("./pages/deck-edit/deck-edit"));
 
@@ -160,7 +160,7 @@ function AppInner() {
                     component={BrowseRoutes}
                     path={/^\/browse(?:\/.*)?$/}
                   />
-                  <Route component={Campaigns} path="/campaigns" />
+                  <Route component={Content} path="/content" />
                   <Route component={Search} path="/search" />
                   <Route component={CardView} path="/card/:code" />
                   <Route

@@ -46,8 +46,8 @@ type Props = {
 
 type MastheadSection =
   | "browse"
-  | "campaigns"
   | "cards"
+  | "content"
   | "decklists"
   | "rules"
   | "settings";
@@ -175,13 +175,13 @@ function BrowseMenu(props: { location: string }) {
             {t("masthead.cards")}
           </NavDropdownLink>
           <NavDropdownLink
-            href="~/campaigns"
+            href="~/content"
             location={location}
-            section="campaigns"
-            testId="masthead-browse-campaigns"
+            section="content"
+            testId="masthead-browse-content"
           >
             <MapIcon />
-            {t("campaigns.title")}
+            {t("content.title")}
           </NavDropdownLink>
         </DropdownMenu>
       </PopoverContent>
@@ -321,13 +321,13 @@ function AccountMenu(props: { collapseNav: boolean; location: string }) {
               {t("masthead.cards")}
             </NavDropdownLink>
             <NavDropdownLink
-              href="~/campaigns"
+              href="~/content"
               location={location}
-              section="campaigns"
-              testId="masthead-browse-campaigns"
+              section="content"
+              testId="masthead-browse-content"
             >
               <MapIcon />
-              {t("campaigns.title")}
+              {t("content.title")}
             </NavDropdownLink>
           </DropdownMenuSection>
           <NavDropdownLink
@@ -441,12 +441,12 @@ function isMastheadPathActive(
     case "browse":
       return (
         isMastheadPathActive(location, "cards") ||
-        isMastheadPathActive(location, "campaigns")
+        isMastheadPathActive(location, "content")
       );
-    case "campaigns":
-      return location.startsWith("/campaigns");
     case "cards":
       return location.startsWith("/browse");
+    case "content":
+      return location.startsWith("/content");
     case "decklists":
       return location.startsWith("/decklists");
     case "rules":
