@@ -236,8 +236,8 @@ function isProgressionTargetPack(
   switch (pack.type) {
     case "campaign_expansion":
     case "core_set":
-    case "parallel_investigator":
     case "return_to":
+    case "small_campaign_expansion":
     case "standalone_scenario":
       return true;
     case "deluxe_expansion":
