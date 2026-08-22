@@ -14,6 +14,40 @@ export function isDeckbuildingPoolPack(pack: Pick<Pack, "cycle_code">) {
   return !NON_DECKBUILDING_POOL_CYCLE_CODES.has(pack.cycle_code);
 }
 
+export type ProgressionTarget = {
+  code: string;
+  dateRelease: string;
+  name: string;
+};
+
+export function progressionTargets(
+  metadata: Metadata,
+  showPreviews: boolean,
+): ProgressionTarget[] {
+  const now = Date.now();
+  const packs = Object.values(metadata.packs);
+  const reprintedCampaignPacks = reprintedCampaignPackCodes(packs);
+  const targets: ProgressionTarget[] = [];
+
+  for (const pack of packs) {
+    if (!isProgressionTargetPack(pack, reprintedCampaignPacks)) continue;
+
+    const dateRelease = progressionPackReleaseDate(pack, metadata);
+    if (!showPreviews && Date.parse(dateRelease) > now) continue;
+
+    targets.push({
+      code: pack.code,
+      dateRelease,
+      name: progressionTargetName(pack, metadata),
+    });
+  }
+
+  return targets.sort((a, b) => {
+    const dateOrder = Date.parse(a.dateRelease) - Date.parse(b.dateRelease);
+    return dateOrder || a.name.localeCompare(b.name);
+  });
+}
+
 export const environments = {
   current() {
     return ["cycle:core_ch2", "cycle:investigator_decks_ch2"];
@@ -30,6 +64,59 @@ export const environments = {
       "cycle:core_ch2",
       "cycle:investigator_decks_ch2",
     ];
+  },
+  progression(metadata: Metadata, dateRelease: string) {
+    const cutoff = Date.parse(dateRelease);
+    if (Number.isNaN(cutoff)) {
+      throw new Error(`Invalid progression release date: ${dateRelease}`);
+    }
+
+    const packs = Object.values(metadata.packs);
+    const packCodes = new Set<string>();
+
+    for (const card of Object.values(metadata.cards)) {
+      if (card.encounter_code) continue;
+
+      const pack = metadata.packs[card.pack_code];
+
+      if (
+        pack &&
+        pack.official !== false &&
+        isDeckbuildingPoolPack(pack) &&
+        pack.date_release &&
+        Date.parse(pack.date_release) <= cutoff
+      ) {
+        packCodes.add(pack.code);
+      }
+    }
+
+    for (const pack of packs) {
+      if (
+        pack.reprint_type !== "player" ||
+        pack.official === false ||
+        !isDeckbuildingPoolPack(pack) ||
+        Date.parse(progressionPackReleaseDate(pack, metadata)) > cutoff
+      ) {
+        continue;
+      }
+
+      for (const reprintedPackCode of pack.reprint_packs ?? []) {
+        packCodes.delete(reprintedPackCode);
+      }
+
+      packCodes.add(pack.code);
+    }
+
+    return packs
+      .filter((pack) => packCodes.has(pack.code))
+      .sort((a, b) => {
+        const dateOrder =
+          Date.parse(progressionPackReleaseDate(a, metadata)) -
+          Date.parse(progressionPackReleaseDate(b, metadata));
+
+        return dateOrder || a.position - b.position;
+      })
+      .map((pack) => pack.code);
   },
   chapter(cycles: CycleWithPacks[], chapter: 2 | 1) {
     const packs = new Set<string>();
@@ -126,6 +213,72 @@ export const environments = {
     return packs;
   },
 };
+
+function reprintedCampaignPackCodes(packs: readonly Pack[]) {
+  const result = new Set<string>();
+
+  for (const pack of packs) {
+    if (pack.reprint_type !== "campaign") continue;
+    for (const code of pack.reprint_packs ?? []) result.add(code);
+  }
+
+  return result;
+}
+
+function isProgressionTargetPack(
+  pack: Pack,
+  reprintedCampaignPacks: ReadonlySet<string>,
+) {
+  if (pack.official === false || !pack.date_release) {
+    return false;
+  }
+
+  switch (pack.type) {
+    case "campaign_expansion":
+    case "core_set":
+    case "parallel_investigator":
+    case "return_to":
+    case "standalone_scenario":
+      return true;
+    case "deluxe_expansion":
+      return !reprintedCampaignPacks.has(pack.code);
+    default:
+      return pack.code === "core_2026";
+  }
+}
+
+function progressionTargetName(pack: Pack, metadata: Metadata) {
+  if (pack.type === "campaign_expansion") {
+    const cycle = metadata.cycles[pack.cycle_code];
+    if (cycle) return cycle.name ?? cycle.real_name;
+  }
+
+  return pack.name ?? pack.real_name;
+}
+
+function progressionPackReleaseDate(pack: Pack, metadata: Metadata) {
+  if (pack.reprint_type !== "player" && pack.reprint_type !== "campaign") {
+    if (!pack.date_release) {
+      throw new Error(`Pack has no release date: ${pack.code}`);
+    }
+
+    return pack.date_release;
+  }
+
+  let latest: string | undefined;
+
+  for (const code of pack.reprint_packs ?? []) {
+    const date = metadata.packs[code]?.date_release;
+    if (!date) {
+      throw new Error(`Reprint pack has incomplete metadata: ${pack.code}`);
+    }
+
+    if (!latest || Date.parse(date) > Date.parse(latest)) latest = date;
+  }
+
+  if (!latest) throw new Error(`Reprint pack has no originals: ${pack.code}`);
+  return latest;
+}
 
 export function resolveLimitedPoolPacks(
   metadata: Metadata,
