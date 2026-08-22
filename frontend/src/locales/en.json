@@ -249,6 +249,7 @@
       "cycle_one": "cycle",
       "cycle_other": "cycles",
       "deck_options": {
+        "A deck cannot include more than one reward card with the permanent keyword.": "Deck cannot include more than one reward card with the permanent keyword.",
         "Atleast constraint violated.": "Atleast constraint violated.",
         "Blessed": "Blessed",
         "Blessed and Cursed": "Blessed and Cursed",
