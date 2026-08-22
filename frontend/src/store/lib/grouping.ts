@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, cardLevel } from "@arkham-build/shared";
 import { inferChapterNumber } from "@/utils/chapters";
 import {
   displayPackName,
@@ -140,7 +140,7 @@ function groupBySlots(cards: Card[], collator: Intl.Collator) {
 function groupByLevel(cards: Card[]) {
   const results = cards.reduce<Grouping<number | string>>(
     (acc, card) => {
-      const level = card.xp ?? NONE;
+      const level = cardLevel(card) ?? NONE;
 
       if (!acc.data[level]) {
         acc.data[level] = [card];
@@ -166,7 +166,7 @@ function groupByLevel(cards: Card[]) {
 function groupByLevel0VsUpgrade(cards: Card[]) {
   const results = cards.reduce<Grouping>(
     (acc, card) => {
-      if (!card.xp) {
+      if (!cardLevel(card)) {
         acc.data[LEVEL_0].push(card);
       } else {
         acc.data[UPGRADE].push(card);

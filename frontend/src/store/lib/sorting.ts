@@ -1,6 +1,7 @@
 import {
   ASSET_SLOT_ORDER,
   type Card,
+  cardLevel,
   FACTION_ORDER,
   type FactionName,
   PLAYER_TYPE_ORDER,
@@ -39,11 +40,14 @@ export function sortByName(collator: Intl.Collator) {
 }
 
 function sortByLevel(a: Card, b: Card) {
-  if (a.xp === b.xp) {
+  const aLevel = cardLevel(a);
+  const bLevel = cardLevel(b);
+
+  if (aLevel === bLevel) {
     return +(a.parallel ?? false) - +(b.parallel ?? false);
   }
 
-  return (a.xp ?? 100) - (b.xp ?? 100);
+  return (aLevel ?? 100) - (bLevel ?? 100);
 }
 
 export function sortByPosition(a: Card, b: Card) {
