@@ -61,7 +61,8 @@ function applyCustomizations(
     const customization = cardCustomizations[i];
     if (!customization) return;
 
-    const xpSpent = customization.xp_spent ?? 0;
+    // clamp taboo xp to option max. to cover the edge case where deck is created with taboo (e.g. runic axe) and the taboo is removed before saving.
+    const xpSpent = Math.min(customization.xp_spent ?? 0, option.xp);
     nextCard.customization_xp += xpSpent;
 
     if (xpSpent >= option.xp) {
