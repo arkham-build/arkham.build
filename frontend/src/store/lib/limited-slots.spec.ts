@@ -1,4 +1,5 @@
 import { type Deck, DeckSchema } from "@arkham-build/shared";
+import collectorOverlappingAccess from "@test/fixtures/decks/validation/collector_with_overlapping_limited_access.json";
 import limitCustomizableLevel0 from "@test/fixtures/decks/validation/customizable_level_below.json";
 import limitCarolyn from "@test/fixtures/decks/validation/tag_based_access.json";
 import limitCarolynInvalid from "@test/fixtures/decks/validation/tag_based_access_invalid.json";
@@ -100,6 +101,24 @@ describe("limitedSlotOccupation()", () => {
         },
         {
           "entries": 2,
+          "index": 5,
+        },
+      ]
+    `);
+  });
+
+  it("allocates overlapping cards without wasting limited access", () => {
+    const state = store.getState();
+
+    expect(snapshotResult(state, DeckSchema.parse(collectorOverlappingAccess)))
+      .toMatchInlineSnapshot(`
+      [
+        {
+          "entries": 1,
+          "index": 4,
+        },
+        {
+          "entries": 15,
           "index": 5,
         },
       ]

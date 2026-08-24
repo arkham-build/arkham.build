@@ -141,7 +141,11 @@ const tests = [
   // Versatile
   ["valid: Versatile with added off-class card", "versatile"],
   ["invalid: Versatile with too many off-class cards", "versatile_invalid"],
-  // collector
+  // Collector
+  [
+    "valid: Collector preserves overlapping limited access for cards that need it",
+    "collector_with_overlapping_limited_access",
+  ],
   [
     "invalid: Collector does not claim excess cards from another limited option",
     "collector_with_other_limited_access_invalid",
