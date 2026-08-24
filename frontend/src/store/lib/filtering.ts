@@ -266,27 +266,23 @@ export function filterCardPool(
 
   const [cards, rest] = partition(value, (key) => key.startsWith("card:"));
 
+  const ors = [isRewardCard];
+
   const packFilter = filterPackCode(
     resolveLimitedPoolPacks(metadata, rest).map((p) => p.code),
     metadata,
     lookupTables,
   );
 
-  if (isEmpty(cards)) return packFilter;
+  if (packFilter) ors.push(packFilter);
 
-  const codes = cards.map((key) => key.replace("card:", ""));
-
-  const ors = [];
-
-  if (!isEmpty(codes)) {
+  if (!isEmpty(cards)) {
+    const codes = cards.map((key) => key.replace("card:", ""));
     ors.push((card: Card) => codes.includes(card.code));
+    return or(ors);
   }
 
-  if (packFilter) {
-    ors.push(packFilter);
-  }
-
-  return !isEmpty(ors) ? or(ors) : undefined;
+  return packFilter ? or(ors) : undefined;
 }
 
 function partition<T>(a: T[], predicate: (t: T) => boolean): [T[], T[]] {
