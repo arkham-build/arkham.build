@@ -214,7 +214,7 @@ export function applyTaboo(
 
       // infer updated deck limit from exceptional taboo
       if (key === "exceptional") {
-        nextCard.deck_limit = value ? 1 : 2;
+        nextCard.deck_limit = value ? 1 : card.deck_limit;
         nextCard.original ??= {};
         nextCard.original["deck_limit"] = card.deck_limit;
       }
