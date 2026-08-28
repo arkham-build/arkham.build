@@ -1,6 +1,7 @@
 import type { Campaign, Cycle, Pack, Scenario } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import { assert } from "@/utils/assert";
+import type { StoreState } from "../slices";
 import type { Metadata } from "../slices/metadata.types";
 import { selectLocaleSortingCollator, selectMetadata } from "./shared";
 
@@ -75,6 +76,15 @@ export const selectCampaigns = createSelector(
       });
   },
 );
+
+export function selectScenarioByCode(
+  state: StoreState,
+  code: string | undefined,
+): Scenario | undefined {
+  if (code == null) return undefined;
+
+  return selectMetadata(state).scenarios[code];
+}
 
 export const selectStandaloneScenarioGroups = createSelector(
   selectMetadata,

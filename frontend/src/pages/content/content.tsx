@@ -18,6 +18,7 @@ import {
 import { displayPackName } from "@/utils/formatting";
 import { shortenCampaignVariantName } from "./content.helpers";
 import css from "./content.module.css";
+import { Button } from "@/components/ui/button";
 
 function Content() {
   const { t } = useTranslation();
@@ -28,8 +29,6 @@ function Content() {
 
   return (
     <AppLayout title={title} mainClassName={css["main"]}>
-      <h1>{title}</h1>
-
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className={css["page-tabs"]}>
           <TabsTrigger value="campaigns">
@@ -181,11 +180,19 @@ function ScenarioList({ scenarios }: { scenarios: Scenario[] }) {
   return (
     <ol className={css["scenario-list"]}>
       {scenarios.map((scenario) => (
-        <li className={css["scenario"]} key={scenario.code}>
-          <span className={css["scenario-icon"]}>
-            <EncounterIcon code={scenario.code} />
-          </span>
-          <span>{displayPackName(scenario)}</span>
+        <li key={scenario.code}>
+          <Button
+            as="a"
+            className={css["scenario"]}
+            href={`/scenario/${scenario.code}`}
+            variant="bare"
+            full
+          >
+            <span className={css["scenario-icon"]}>
+              <EncounterIcon code={scenario.code} />
+            </span>
+            <span>{displayPackName(scenario)}</span>
+          </Button>
         </li>
       ))}
     </ol>

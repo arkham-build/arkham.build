@@ -1,11 +1,3 @@
-.main {
-  padding-top: 1.5rem;
-}
-
-.page-tabs {
-  margin-top: 1.5rem;
-}
-
 .campaign-list,
 .standalone-list {
   display: grid;
@@ -52,6 +44,7 @@
 
 .scenario {
   align-items: center;
+  justify-content: flex-start;
   display: flex;
   gap: 0.625rem;
   min-height: 2.75rem;
