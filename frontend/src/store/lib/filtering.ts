@@ -74,8 +74,12 @@ export function filterEncounterCards(card: Card) {
 }
 
 export function filterPlayerCards(card: Card) {
-  // Reward cards are encounter cards with level >= 0.
-  return !card.encounter_code || card.xp != null;
+  return !card.encounter_code || isRewardCard(card);
+}
+
+// Reward cards are encounter cards with level >= 0.
+export function isRewardCard(card: Card) {
+  return !!card.encounter_code && card.xp != null;
 }
 
 // needs to filter out some bad data that would otherwise end up in player cards (i.e. 04325).
@@ -262,27 +266,23 @@ export function filterCardPool(
 
   const [cards, rest] = partition(value, (key) => key.startsWith("card:"));
 
+  const ors = [isRewardCard];
+
   const packFilter = filterPackCode(
     resolveLimitedPoolPacks(metadata, rest).map((p) => p.code),
     metadata,
     lookupTables,
   );
 
-  if (isEmpty(cards)) return packFilter;
+  if (packFilter) ors.push(packFilter);
 
-  const codes = cards.map((key) => key.replace("card:", ""));
-
-  const ors = [];
-
-  if (!isEmpty(codes)) {
+  if (!isEmpty(cards)) {
+    const codes = cards.map((key) => key.replace("card:", ""));
     ors.push((card: Card) => codes.includes(card.code));
+    return or(ors);
   }
 
-  if (packFilter) {
-    ors.push(packFilter);
-  }
-
-  return !isEmpty(ors) ? or(ors) : undefined;
+  return packFilter ? or(ors) : undefined;
 }
 
 function partition<T>(a: T[], predicate: (t: T) => boolean): [T[], T[]] {

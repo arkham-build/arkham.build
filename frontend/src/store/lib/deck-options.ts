@@ -81,7 +81,23 @@ export function mapCardsToDeckOptions(
     let optionMatchCount = 0;
     const limit = option.not ? undefined : option.limit;
 
-    for (const card of cards) {
+    // TODO: This is a greedy heuristic, not maximum matching. Cards with the
+    // same number of later options can still require different assignments. For
+    // example: X matches A/C, Y matches A/B, and Z matches only B.
+    // Right now, no such case exists in official cards, so it can stay simple.
+    // A `maximum bipartite matching` algorithm could solve the general case.
+    const countMatchingOptions = (card: Card) =>
+      countLaterLimitedOptions(card, optionIndex, deckOptions, optionFilters);
+
+    const orderedCards =
+      limit != null
+        ? cards.toSorted(
+            (left, right) =>
+              countMatchingOptions(left) - countMatchingOptions(right),
+          )
+        : cards;
+
+    for (const card of orderedCards) {
       if (exclusions.has(card.code)) continue;
 
       const quantity = quantities[card.code] ?? 0;
@@ -136,6 +152,32 @@ export function mapCardsToDeckOptions(
   }
 
   return { cardsByOption, overflowByOption };
+}
+
+function countLaterLimitedOptions(
+  card: Card,
+  currentOptionIndex: number,
+  deckOptions: DeckOption[],
+  optionFilters: ReturnType<typeof makeOptionFilter>[],
+) {
+  let count = 0;
+
+  for (
+    let optionIndex = currentOptionIndex + 1;
+    optionIndex < deckOptions.length;
+    optionIndex += 1
+  ) {
+    const option = deckOptions[optionIndex];
+    const filter = optionFilters[optionIndex];
+    if (!filter || !filter(card)) continue;
+    if (option.not) break;
+
+    if (option.limit != null && !option.virtual && !option.atleast) {
+      count += 1;
+    }
+  }
+
+  return count;
 }
 
 function addCardQuantity(

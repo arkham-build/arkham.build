@@ -10,7 +10,7 @@ import {
   type ListState,
   selectListTabooSetId,
 } from "@/store/selectors/lists";
-import { selectActiveList } from "@/store/selectors/shared";
+import { selectActiveList, selectMetadata } from "@/store/selectors/shared";
 import type { ViewMode } from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
@@ -37,6 +37,7 @@ import { Scroller } from "../ui/scroller";
 import { Select } from "../ui/select";
 import { Slider } from "../ui/slider";
 import css from "./card-list-nav.module.css";
+import { Card } from "@arkham-build/shared";
 
 const SCAN_MAX_COLUMNS_MIN = 1;
 const SCAN_MAX_COLUMNS_MAX = 6;
@@ -61,8 +62,24 @@ export function CardListNav(props: Props) {
 
   const onExport = useCallback(() => {
     if (!data) return;
+
+    const metadata = selectMetadata(useStore.getState());
+
+    const exportCards = data.cards.reduce((acc, card) => {
+      acc.push(card);
+
+      if (card.back_link_id) {
+        const backCard = metadata.cards[card.back_link_id];
+        if (backCard) {
+          acc.push(backCard);
+        }
+      }
+
+      return acc;
+    }, [] as Card[]);
+
     download(
-      JSON.stringify(data.cards, null, 2),
+      JSON.stringify(exportCards, null, 2),
       "cards.json",
       "application/json",
     );

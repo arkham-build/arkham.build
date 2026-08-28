@@ -29,6 +29,10 @@ function inferPackType(pack: JsonDataPack) {
   if (cycleCode === "core") return "core_set";
   if (cycleCode === "return") return "return_to";
   if (cycleCode === "side_stories") return "standalone_scenario";
+  if (cycleCode === "investigator_decks_ch2") return "investigator_deck";
+  if (cycleCode === "small_campaign_expansions") {
+    return "small_campaign_expansion";
+  }
 
   const name = pack.name;
 

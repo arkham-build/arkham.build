@@ -13,6 +13,7 @@ import {
   cardFormatDefinition,
   cardToMarkdown,
 } from "@/pages/deck-edit/editor/notes-rte/cards-to-markdown";
+import { useSaveSettings } from "@/pages/settings/use-save-settings";
 import { useStore } from "@/store";
 import { filterEncounterCards, filterPlayerCards } from "@/store/lib/filtering";
 import { makeSortFunction } from "@/store/lib/sorting";
@@ -53,18 +54,23 @@ export function CardsPopover(props: Props) {
 
   const metadata = useStore(selectMetadata);
   const lookupTables = useStore(selectLookupTables);
-  const setSettings = useStore((state) => state.setSettings);
+  const settings = useStore((state) => state.settings);
 
-  const locale = useStore((state) => state.settings.locale);
+  const locale = settings.locale;
 
-  const onUpdateDefaults = useCallback(() => {
-    void setSettings({
+  const { isPending: isSavingSettings, saveSettings } = useSaveSettings({
+    settings: {
+      ...settings,
       notesEditor: {
         defaultFormat: cardFormat,
         defaultOrigin: cardOrigin,
       },
-    }).catch(console.error);
-  }, [setSettings, cardFormat, cardOrigin]);
+    },
+  });
+
+  const onUpdateDefaults = useCallback(() => {
+    void saveSettings();
+  }, [saveSettings]);
 
   const cards = useStore(
     useShallow((state) => selectCardOptions(state, cardOrigin, deck)),
@@ -111,7 +117,7 @@ export function CardsPopover(props: Props) {
       <div className={css["cards-popover-header"]}>
         <Button
           data-testid="notes-rte-update-defaults"
-          disabled={!settingsChanged}
+          disabled={!settingsChanged || isSavingSettings}
           onClick={onUpdateDefaults}
           size="xs"
         >

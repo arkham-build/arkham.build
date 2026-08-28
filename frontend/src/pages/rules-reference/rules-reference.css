@@ -260,3 +260,7 @@ html[data-theme="light"] .toc a {
     content: "\77";
   }
 }
+
+.grimoire-text :where(li) + :where(li) {
+  margin-top: 1rem;
+}
