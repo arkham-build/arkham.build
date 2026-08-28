@@ -668,11 +668,13 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         display,
         displaySortSelection,
         displaySettingsKey: opts.displaySettingsKey,
-        filters: cardsFilters({
-          additionalFilters: opts.additionalFilters ?? ["illustrator"],
-          showOwnershipFilter: opts.showOwnershipFilter,
-          showInvestigatorsFilter: opts.showOwnershipFilter,
-        }),
+        filters:
+          opts.filters ??
+          cardsFilters({
+            additionalFilters: opts.additionalFilters ?? ["illustrator"],
+            showOwnershipFilter: opts.showOwnershipFilter,
+            showInvestigatorsFilter: opts.showOwnershipFilter,
+          }),
         initialValues: values,
         key,
         systemFilter: and([

@@ -44,6 +44,8 @@ export function getPackIcon(code?: string) {
     case "tdep":
     case "tdec":
     case "tde":
+    case "tde_a":
+    case "tde_b":
       return "dream";
 
     case "ticc":

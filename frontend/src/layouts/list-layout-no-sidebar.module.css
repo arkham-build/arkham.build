@@ -105,7 +105,12 @@
 }
 
 .content .header {
-  padding-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  padding-inline: var(--scrollbar-padding);
+}
+
+.header-top {
+  margin-bottom: 0.25rem;
 }
 
 .footer {

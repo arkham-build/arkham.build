@@ -14,6 +14,7 @@ import { useListLayoutContext } from "./list-layout-context";
 import css from "./list-layout-no-sidebar.module.css";
 
 interface Props extends React.ComponentProps<typeof CardListContainer> {
+  headerTop?: React.ReactNode;
   omitBackButton?: boolean;
   titleString: string;
   title?: React.ReactNode;
@@ -24,7 +25,7 @@ interface Props extends React.ComponentProps<typeof CardListContainer> {
  * This component should be removed and folded into a refactored ListLayout component.
  */
 export function ListLayoutNoSidebar(props: Props) {
-  const { omitBackButton, title, titleString, ...rest } = props;
+  const { headerTop, omitBackButton, title, titleString, ...rest } = props;
   const { t } = useTranslation();
 
   const { filtersOpen, setFiltersOpen } = useListLayoutContext();
@@ -82,18 +83,14 @@ export function ListLayoutNoSidebar(props: Props) {
           {...rest}
           slotRight={
             !filtersOpen && (
-              <Button
-                className={css["toggle-filters"]}
-                onClick={() => setFiltersOpen(true)}
-                iconOnly
-                size="lg"
-              >
-                <FilterIcon />
-              </Button>
+              <FilterToggleButton onClick={() => setFiltersOpen(true)} />
             )
           }
           topContent={
             <header className={css["header"]}>
+              {headerTop && (
+                <div className={css["header-top"]}>{headerTop}</div>
+              )}
               <h1 className={css["title"]}>{title ?? titleString}</h1>
             </header>
           }
@@ -107,5 +104,18 @@ export function ListLayoutNoSidebar(props: Props) {
         <Filters targetDeck={undefined} />
       </nav>
     </div>
+  );
+}
+
+function FilterToggleButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button
+      className={css["toggle-filters"]}
+      onClick={onClick}
+      iconOnly
+      size="lg"
+    >
+      <FilterIcon />
+    </Button>
   );
 }

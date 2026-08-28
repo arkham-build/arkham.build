@@ -210,6 +210,7 @@ export type ListsSlice = {
       display?: Partial<ListDisplay>;
       displaySettingsKey?: string;
       fanMadeCycleCodes?: string[];
+      filters?: FilterKey[];
       lockedFilters?: Set<FilterKey>;
       search?: string;
       showInvestigatorFilter?: boolean;
