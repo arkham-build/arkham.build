@@ -217,6 +217,49 @@ describe("Interpreter", () => {
     });
   });
 
+  describe("Card backs", () => {
+    test("evaluates a conjunction against one card side at a time", () => {
+      const expr = parse('text !== "record"& text == "in your campaign log"');
+      const filter = compile(expr, {
+        ...ctx,
+        fieldLookupContext: {
+          ...ctx.fieldLookupContext,
+          matchBacks: true,
+        },
+      });
+      const shatteredRuins = createMockCard({
+        double_sided: true,
+        real_text:
+          'In your Campaign Log, record "Stranger" on the glyph record.',
+        real_back_text:
+          "You cannot enter Treacherous Path if there are clues on your location.",
+      });
+
+      expect(filter(shatteredRuins)).toBe(false);
+    });
+
+    test("does not combine a negative front match with a positive back match", () => {
+      const expr = parse('text !== "record" & text == "in your campaign log"');
+      const filter = compile(expr, {
+        ...ctx,
+        fieldLookupContext: {
+          ...ctx.fieldLookupContext,
+          matchBacks: true,
+        },
+      });
+      const lonelyCaverns = createMockCard({
+        double_sided: true,
+        real_name: "The Lonely Caverns",
+        real_text: "Do not remove doom from each location in play.",
+        real_back_name: "Serpents' Revenge",
+        real_back_text:
+          "If there are 8 or more tally marks in your Campaign Log, it enters play with damage recorded in your Campaign Log.",
+      });
+
+      expect(filter(lonelyCaverns)).toBe(false);
+    });
+  });
+
   describe("Groups", () => {
     test("groups override precedence", () => {
       const expr = parse("(xp == 0 | xp == 2) & cost < 3");

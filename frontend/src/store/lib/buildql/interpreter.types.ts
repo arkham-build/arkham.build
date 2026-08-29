@@ -22,6 +22,7 @@ export type FieldLookupContext = {
   i18n: i18n;
   lookupTables: LookupTables;
   matchBacks: boolean;
+  matchSide?: "front" | "back";
   metadata: Metadata;
 };
 

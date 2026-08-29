@@ -173,7 +173,7 @@ The query language is left-associative, meaning that expressions are evaluated f
 
 ## Card backs
 
-When the `[x] Backs` toggle is activated, queries will check both the front- and backside of a card when matching values. All fields can be prefixed with `back:` to query against the backside of a card. This can be used to compare with the frontside:
+When the `[x] Backs` toggle is activated, BuildQL evaluates the complete query against the front and then against the back of a card. Conditions in one query must match the same side. All fields can be prefixed with `back:` to query against the backside of a card. This can be used to compare with the frontside:
 
 ```
 back:subname != null & back:subname != subname
