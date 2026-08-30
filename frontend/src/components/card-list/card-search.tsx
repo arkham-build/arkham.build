@@ -85,16 +85,18 @@ export function CardSearch(props: Props) {
   ]);
 
   useEffect(() => {
+    const iconSlot = iconSlotRef.current;
+    if (!iconSlot) return;
+
     const updateIconSlotSize = () => {
-      if (iconSlotRef.current) {
-        setIconSlotSize(iconSlotRef.current.getBoundingClientRect().width);
-      }
+      setIconSlotSize(iconSlot.getBoundingClientRect().width);
     };
 
     updateIconSlotSize();
 
-    window.addEventListener("resize", updateIconSlotSize, { passive: true });
-    return () => window.removeEventListener("resize", updateIconSlotSize);
+    const resizeObserver = new ResizeObserver(updateIconSlotSize);
+    resizeObserver.observe(iconSlot);
+    return () => resizeObserver.disconnect();
   }, []);
 
   const onShortcut = useCallback(() => {
