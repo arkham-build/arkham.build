@@ -1,11 +1,11 @@
 import type {
   DeckFanMadeContentSlots,
   DeckMeta,
-  DeckWritePayload,
+  DeckMutablePayload,
 } from "@arkham-build/shared";
 import type { ArkhamDbRemoteDeck } from "./api-client/core/dtos.ts";
 
-export function extractHiddenSlots(deck: DeckWritePayload) {
+export function extractHiddenSlots(deck: DeckMutablePayload) {
   const meta = decodeDeckMeta(deck.meta);
   const investigatorCode = deck.investigator_code;
 

@@ -16,6 +16,7 @@
     "inspect:web": "node --inspect=localhost:9229 --experimental-strip-types --env-file=.env src/main.ts",
     "inspect:worker": "node --inspect=localhost:9230 --experimental-strip-types --env-file=.env src/worker.ts",
     "generate:database-types": "kysely-codegen --out-file src/db/schema.types.ts",
+    "generate:openapi": "node --experimental-strip-types src/scripts/generate-oauth-user-openapi.ts",
     "ingest": "npm run ingest:json-data && npm run ingest:arkhamdb-decklists",
     "ingest:json-data": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/scripts/ingest/index.ts",
     "ingest:arkhamdb-decklists": "node --experimental-strip-types --env-file-if-exists=.env --env-file-if-exists=../.env src/scripts/ingest-arkhamdb-decklists.ts",

@@ -1,0 +1,49 @@
+type: http_request
+model: http_request
+id: rq_CreateOAuthClient
+createdAt: 2026-07-21T22:35:01.000000
+updatedAt: 2026-07-21T22:35:01.000000
+workspaceId: wk_bBoraEVHnK
+folderId: fl_OAuthClients
+authentication: {}
+authenticationType: null
+body:
+  text: |
+    {
+      "name": "Example application",
+      "redirectUris": [
+        "https://example.com/oauth/callback",
+        "com.example.app:/oauth/callback"
+      ]
+    }
+bodyType: application/json
+description: Copy clientSecret from the response; it is returned only once.
+headers:
+- enabled: true
+  name: Authorization
+  value: Bearer ${[ admin_api_key ]}
+  id: OAuthCreateAuth
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: OAuthCreateContentType
+method: POST
+name: Create OAuth client
+sortPriority: 0.0
+url: ${[ base_url ]}/admin/oauth/clients
+urlParameters: []
+settingSendCookies:
+  enabled: false
+  value: true
+settingStoreCookies:
+  enabled: false
+  value: true
+settingValidateCertificates:
+  enabled: false
+  value: true
+settingFollowRedirects:
+  enabled: false
+  value: true
+settingRequestTimeout:
+  enabled: false
+  value: 0

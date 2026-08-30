@@ -349,7 +349,7 @@ async function updateRemoteAccountDeck(page: Page, deck: Deck) {
         expectedVersion: deck.version,
         name: `${deck.name} Remote`,
         source: accountProvider,
-        version: "errsync1",
+        version: "9.9",
       },
     },
   );

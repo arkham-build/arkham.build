@@ -1,0 +1,41 @@
+type: http_request
+model: http_request
+id: rq_OAuthAuthorizationUnsupportedResponse
+createdAt: 2026-07-22T00:00:03.000000
+updatedAt: 2026-07-22T00:00:03.000000
+workspaceId: wk_bBoraEVHnK
+folderId: fl_OAuth
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: Returns an unsupported_response_type callback while preserving state.
+headers: []
+method: GET
+name: Authorization error - unsupported response type
+sortPriority: 2000.0
+url: ${[ base_url ]}/v2/oauth/authorize
+urlParameters:
+- enabled: true
+  name: response_type
+  value: token
+  id: OAuthUnsupportedResponseType
+- enabled: true
+  name: client_id
+  value: ${[ oauth_client_id ]}
+  id: OAuthUnsupportedClientId
+- enabled: true
+  name: redirect_uri
+  value: https://example.com/oauth/callback
+  id: OAuthUnsupportedRedirectUri
+- enabled: true
+  name: scope
+  value: profile:read
+  id: OAuthUnsupportedScope
+- enabled: true
+  name: state
+  value: yaak-unsupported-response-state
+  id: OAuthUnsupportedState
+settingFollowRedirects:
+  enabled: true
+  value: false

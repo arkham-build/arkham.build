@@ -17,22 +17,6 @@ export async function waitForCondition(
   throw new Error("Timed out waiting for condition");
 }
 
-export async function waitForUrl(
-  url: string,
-  predicate: (response: Response) => boolean,
-) {
-  await waitForCondition(async () => {
-    try {
-      const response = await fetch(url, {
-        redirect: "manual",
-      });
-      return predicate(response);
-    } catch {
-      return false;
-    }
-  });
-}
-
 export async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url);
 

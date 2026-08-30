@@ -1,0 +1,41 @@
+type: http_request
+model: http_request
+id: rq_GetOAuthClient
+createdAt: 2026-07-21T22:35:03.000000
+updatedAt: 2026-07-21T22:35:03.000000
+workspaceId: wk_bBoraEVHnK
+folderId: fl_OAuthClients
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: Set oauth_client_id to a clientId returned by create or list.
+headers:
+- enabled: true
+  name: Authorization
+  value: Bearer ${[ admin_api_key ]}
+  id: OAuthGetAuth
+method: GET
+name: Get OAuth client
+sortPriority: 2000.0
+url: ${[ base_url ]}/admin/oauth/clients/:clientId
+urlParameters:
+- enabled: true
+  name: :clientId
+  value: ${[ oauth_client_id ]}
+  id: OAuthGetClientId
+settingSendCookies:
+  enabled: false
+  value: true
+settingStoreCookies:
+  enabled: false
+  value: true
+settingValidateCertificates:
+  enabled: false
+  value: true
+settingFollowRedirects:
+  enabled: false
+  value: true
+settingRequestTimeout:
+  enabled: false
+  value: 0

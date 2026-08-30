@@ -1,0 +1,2354 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Arkham Build OAuth and User API",
+    "version": "1.0.0",
+    "description": "OAuth 2.0 authorization-code API for confidential server-side clients. Client credentials are accepted only in form bodies. Native apps must forward authorization codes to a confidential backend; direct token exchange from an installed app is unsupported."
+  },
+  "externalDocs": {
+    "description": "Confidential-client integration guide",
+    "url": "https://github.com/arkham-build/arkham.build/blob/main/docs/oauth-integration.md"
+  },
+  "servers": [
+    {
+      "url": "https://api.arkham.build"
+    }
+  ],
+  "tags": [
+    {
+      "name": "OAuth",
+      "description": "Authorization, token exchange, and token revocation"
+    },
+    {
+      "name": "User",
+      "description": "Bearer-authenticated account profile"
+    },
+    {
+      "name": "User decks",
+      "description": "Bearer-authenticated account and ArkhamDB deck operations"
+    }
+  ],
+  "paths": {
+    "/v2/oauth/authorize": {
+      "get": {
+        "operationId": "authorizeOAuthClient",
+        "tags": ["OAuth"],
+        "summary": "Start an OAuth authorization request",
+        "description": "Starts an authorization-code flow. Every request is sent through authentication and explicit user consent, including requests for an existing grant. Redirect URI matching is exact.",
+        "parameters": [
+          {
+            "name": "response_type",
+            "in": "query",
+            "required": true,
+            "description": "Only code is supported",
+            "schema": {
+              "type": "string",
+              "enum": ["code"]
+            }
+          },
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "description": "Registered confidential client ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "redirect_uri",
+            "in": "query",
+            "required": true,
+            "description": "Exact registered HTTPS, localhost HTTP, or native custom-scheme redirect URI",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": true,
+            "description": "Space-separated scopes. profile:read is mandatory; write and delete scopes imply lesser deck scopes.",
+            "schema": {
+              "type": "string",
+              "examples": ["profile:read decks:read"]
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "description": "Non-empty client-generated value of at most 1024 UTF-8 bytes",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the arkham.build consent UI, or after the client and redirect URI are trusted, to the registered callback with an OAuth error and state. Approval and denial callbacks are issued by the session-authenticated consent API. Callback locations may use HTTPS, localhost HTTP, or a registered native custom scheme.",
+            "headers": {
+              "Location": {
+                "description": "Consent URL or registered client callback URL",
+                "schema": {
+                  "type": "string",
+                  "examples": [
+                    "https://arkham.build/oauth/consent?request=ab_ar_...",
+                    "https://example.com/oauth/callback?error=invalid_scope&state=...",
+                    "com.example.app:/oauth/callback?error=access_denied&state=..."
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "OAuth request cannot be safely redirected because the client or redirect URI is untrusted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/oauth/token": {
+      "post": {
+        "operationId": "exchangeOAuthToken",
+        "tags": ["OAuth"],
+        "summary": "Exchange an authorization code or refresh token",
+        "description": "Authenticates a confidential client with client_id and client_secret in the form body. HTTP Basic authentication is not accepted. Refresh exchanges rotate the submitted token and do not permit scope changes.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/OAuthAuthorizationCodeTokenRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/OAuthRefreshTokenRequest"
+                  }
+                ],
+                "discriminator": {
+                  "propertyName": "grant_type"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "One-hour access token and rotating 90-day refresh token",
+            "headers": {
+              "Cache-Control": {
+                "description": "Prevents storage of credential-bearing responses",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              },
+              "Pragma": {
+                "description": "HTTP/1.0 cache prevention",
+                "schema": {
+                  "type": "string",
+                  "const": "no-cache"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthTokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid OAuth token request, grant, scope, or grant type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/oauth/revoke": {
+      "post": {
+        "operationId": "revokeOAuthToken",
+        "tags": ["OAuth"],
+        "summary": "Revoke an OAuth access or refresh token",
+        "description": "Authenticates the confidential client with form-body credentials. Unknown tokens and tokens owned by another client return success. Revoking a refresh token also revokes access tokens issued from it.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthRevocationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token is revoked or was not recognized",
+            "headers": {
+              "Cache-Control": {
+                "description": "Prevents storage of credential-bearing responses",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              },
+              "Pragma": {
+                "description": "HTTP/1.0 cache prevention",
+                "schema": {
+                  "type": "string",
+                  "const": "no-cache"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid OAuth revocation request",
+            "headers": {
+              "Cache-Control": {
+                "description": "Prevents storage of credential-bearing responses",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              },
+              "Pragma": {
+                "description": "HTTP/1.0 cache prevention",
+                "schema": {
+                  "type": "string",
+                  "const": "no-cache"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client authentication failed",
+            "headers": {
+              "Cache-Control": {
+                "description": "Prevents storage of credential-bearing responses",
+                "schema": {
+                  "type": "string",
+                  "const": "no-store"
+                }
+              },
+              "Pragma": {
+                "description": "HTTP/1.0 cache prevention",
+                "schema": {
+                  "type": "string",
+                  "const": "no-cache"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/user/me": {
+      "get": {
+        "operationId": "getOAuthUserProfile",
+        "tags": ["User"],
+        "summary": "Get the authenticated user's public profile",
+        "description": "Requires profile:read. Email and identities are omitted.",
+        "security": [
+          {
+            "OAuthBearer": ["profile:read"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authenticated user's public profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthProfileResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token is missing, malformed, expired, revoked, or otherwise unusable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication challenge",
+                "schema": {
+                  "type": "string",
+                  "examples": ["Bearer"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Account is banned or the token lacks profile:read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer challenge, including the required scope when absent",
+                "schema": {
+                  "type": "string",
+                  "examples": [
+                    "Bearer error=\"insufficient_scope\", scope=\"decks:write\""
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/user/decks/manifest": {
+      "get": {
+        "operationId": "getOAuthDeckManifest",
+        "tags": ["User decks"],
+        "summary": "Get the user's deck manifest",
+        "description": "Requires decks:read. Manifests that include ArkhamDB perform an upstream conditional sync and return an opaque snapshot token for consistent batch reads. ArkhamDB failure produces a partial 200 response with account decks and providers.arkhamdb.available=false.",
+        "security": [
+          {
+            "OAuthBearer": ["decks:read"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "description": "Optionally include only one provider",
+            "schema": {
+              "$ref": "#/components/schemas/OAuthDeckManifestQuery/properties/source"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source-aware deck manifest, possibly partial when ArkhamDB is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthDeckManifestResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid source filter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token is unusable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication challenge",
+                "schema": {
+                  "type": "string",
+                  "examples": ["Bearer"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Token lacks decks:read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer challenge, including the required scope when absent",
+                "schema": {
+                  "type": "string",
+                  "examples": [
+                    "Bearer error=\"insufficient_scope\", scope=\"decks:write\""
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/user/decks/batch": {
+      "post": {
+        "operationId": "getOAuthDeckBatch",
+        "tags": ["User decks"],
+        "summary": "Get a batch of decks",
+        "description": "Requires decks:read. Accepts at most 250 provider-specific targets and preserves request order. ArkhamDB targets require the snapshot token returned by the manifest endpoint. The whole request fails if any target or the selected snapshot is unavailable.",
+        "security": [
+          {
+            "OAuthBearer": ["decks:read"]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthDeckBatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Requested decks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthDeckBatchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Batch request is invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token is unusable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication challenge",
+                "schema": {
+                  "type": "string",
+                  "examples": ["Bearer"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Token lacks decks:read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer challenge, including the required scope when absent",
+                "schema": {
+                  "type": "string",
+                  "examples": [
+                    "Bearer error=\"insufficient_scope\", scope=\"decks:write\""
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "A deck was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The selected ArkhamDB snapshot is no longer available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ArkhamDB is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/user/decks/{source}": {
+      "post": {
+        "operationId": "createOAuthDeck",
+        "tags": ["User decks"],
+        "summary": "Create a deck",
+        "description": "Requires decks:write. Additional request properties, including server-owned deck fields, are ignored. Account creates generate a UUID; ArkhamDB chooses its ID.",
+        "security": [
+          {
+            "OAuthBearer": ["decks:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source",
+            "in": "path",
+            "required": true,
+            "description": "Deck provider: account or arkhamdb",
+            "schema": {
+              "$ref": "#/components/schemas/OAuthDeckSource"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthDeckWrite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created deck",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthDeck"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Deck input is invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token is unusable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication challenge",
+                "schema": {
+                  "type": "string",
+                  "examples": ["Bearer"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Token lacks decks:write",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer challenge, including the required scope when absent",
+                "schema": {
+                  "type": "string",
+                  "examples": [
+                    "Bearer error=\"insufficient_scope\", scope=\"decks:write\""
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ArkhamDB is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/user/decks/{source}/{id}": {
+      "get": {
+        "operationId": "getOAuthDeck",
+        "tags": ["User decks"],
+        "summary": "Get one deck",
+        "description": "Requires decks:read.",
+        "security": [
+          {
+            "OAuthBearer": ["decks:read"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source",
+            "in": "path",
+            "required": true,
+            "description": "Deck provider: account or arkhamdb",
+            "schema": {
+              "$ref": "#/components/schemas/OAuthDeckSource"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Account deck string ID or ArkhamDB numeric ID, encoded as a path segment",
+            "schema": {
+              "$ref": "#/components/schemas/OAuthDeckRouteId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requested deck",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthDeck"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Deck target is invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token is unusable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication challenge",
+                "schema": {
+                  "type": "string",
+                  "examples": ["Bearer"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Token lacks decks:read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer challenge, including the required scope when absent",
+                "schema": {
+                  "type": "string",
+                  "examples": [
+                    "Bearer error=\"insufficient_scope\", scope=\"decks:write\""
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Deck was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ArkhamDB is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateOAuthDeck",
+        "tags": ["User decks"],
+        "summary": "Replace a deck",
+        "description": "Requires decks:write. Fully replaces mutable content while preserving server-owned fields and history links.",
+        "security": [
+          {
+            "OAuthBearer": ["decks:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source",
+            "in": "path",
+            "required": true,
+            "description": "Deck provider: account or arkhamdb",
+            "schema": {
+              "$ref": "#/components/schemas/OAuthDeckSource"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Account deck string ID or ArkhamDB numeric ID, encoded as a path segment",
+            "schema": {
+              "$ref": "#/components/schemas/OAuthDeckRouteId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthDeckWrite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated deck",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthDeck"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Deck input is invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token is unusable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication challenge",
+                "schema": {
+                  "type": "string",
+                  "examples": ["Bearer"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Token lacks decks:write",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer challenge, including the required scope when absent",
+                "schema": {
+                  "type": "string",
+                  "examples": [
+                    "Bearer error=\"insufficient_scope\", scope=\"decks:write\""
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Deck was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Deck transition conflicts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ArkhamDB is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteOAuthDeck",
+        "tags": ["User decks"],
+        "summary": "Delete a deck",
+        "description": "Requires decks:delete. Set all=true to delete the selected deck and its previous history chain.",
+        "security": [
+          {
+            "OAuthBearer": ["decks:delete"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source",
+            "in": "path",
+            "required": true,
+            "description": "Deck provider: account or arkhamdb",
+            "schema": {
+              "$ref": "#/components/schemas/OAuthDeckSource"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Account deck string ID or ArkhamDB numeric ID, encoded as a path segment",
+            "schema": {
+              "$ref": "#/components/schemas/OAuthDeckRouteId"
+            }
+          },
+          {
+            "name": "all",
+            "in": "query",
+            "required": false,
+            "description": "Delete the selected deck's previous history chain",
+            "schema": {
+              "$ref": "#/components/schemas/OAuthDeckDeleteQuery/properties/all"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deck deleted"
+          },
+          "400": {
+            "description": "Deck target is invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token is unusable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication challenge",
+                "schema": {
+                  "type": "string",
+                  "examples": ["Bearer"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Token lacks decks:delete",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer challenge, including the required scope when absent",
+                "schema": {
+                  "type": "string",
+                  "examples": [
+                    "Bearer error=\"insufficient_scope\", scope=\"decks:write\""
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Deck was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ArkhamDB is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/user/decks/{source}/{id}/upgrade": {
+      "post": {
+        "operationId": "upgradeOAuthDeck",
+        "tags": ["User decks"],
+        "summary": "Upgrade a deck",
+        "description": "Requires decks:write. Creates a child deck and links it to the selected parent using provider-specific history semantics.",
+        "security": [
+          {
+            "OAuthBearer": ["decks:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source",
+            "in": "path",
+            "required": true,
+            "description": "Deck provider: account or arkhamdb",
+            "schema": {
+              "$ref": "#/components/schemas/OAuthDeckSource"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Account deck string ID or ArkhamDB numeric ID, encoded as a path segment",
+            "schema": {
+              "$ref": "#/components/schemas/OAuthDeckRouteId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthDeckWrite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created upgraded deck",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthDeck"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Deck input is invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token is unusable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication challenge",
+                "schema": {
+                  "type": "string",
+                  "examples": ["Bearer"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Token lacks decks:write",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer challenge, including the required scope when absent",
+                "schema": {
+                  "type": "string",
+                  "examples": [
+                    "Bearer error=\"insufficient_scope\", scope=\"decks:write\""
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Deck was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Deck already has an upgrade",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ArkhamDB is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthUserError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OAuthAuthorizationCodeTokenRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "grant_type": {
+            "type": "string",
+            "const": "authorization_code"
+          },
+          "client_id": {
+            "description": "Confidential OAuth client identifier",
+            "examples": ["019c1234-5678-7000-8000-000000000000"],
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "client_secret": {
+            "description": "Confidential OAuth client secret",
+            "examples": ["ab_cs_..."],
+            "type": "string",
+            "minLength": 1
+          },
+          "code": {
+            "examples": ["ab_code_..."],
+            "type": "string",
+            "minLength": 1
+          },
+          "redirect_uri": {
+            "description": "Exact redirect URI supplied to the authorization endpoint",
+            "examples": ["https://example.com/oauth/callback"],
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "grant_type",
+          "client_id",
+          "client_secret",
+          "code",
+          "redirect_uri"
+        ],
+        "additionalProperties": false
+      },
+      "OAuthAuthorizationQuery": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "response_type": {
+            "examples": ["code"],
+            "type": "string"
+          },
+          "client_id": {
+            "examples": ["019c1234-5678-7000-8000-000000000000"],
+            "type": "string"
+          },
+          "redirect_uri": {
+            "examples": ["https://example.com/oauth/callback"],
+            "type": "string"
+          },
+          "scope": {
+            "examples": ["profile:read decks:read"],
+            "type": "string"
+          },
+          "state": {
+            "examples": ["opaque-client-state"],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OAuthDeck": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "description": "Full external deck representation.",
+        "type": "object",
+        "properties": {
+          "date_creation": {
+            "type": "string"
+          },
+          "date_update": {
+            "type": "string"
+          },
+          "description_md": {
+            "type": "string"
+          },
+          "exile_string": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ignoreDeckLimitSlots": {
+            "anyOf": [
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "maxLength": 255
+              }
+            ]
+          },
+          "investigator_code": {
+            "type": "string"
+          },
+          "investigator_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "next_deck": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string",
+                    "maxLength": 255
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "previous_deck": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string",
+                    "maxLength": 255
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "problem": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "too_few_cards",
+                      "too_many_cards",
+                      "too_many_copies",
+                      "invalid_cards",
+                      "deck_options_limit",
+                      "investigator"
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "maxLength": 255
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sideSlots": {
+            "anyOf": [
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "slots": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": ["local", "account", "shared", "arkhamdb"]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "taboo_id": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tags": {
+            "type": "string"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 8,
+            "pattern": "^\\d+\\.\\d+$"
+          },
+          "xp_adjustment": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "xp_spent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "xp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "date_creation",
+          "date_update",
+          "description_md",
+          "id",
+          "investigator_code",
+          "meta",
+          "name",
+          "slots",
+          "tags",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "OAuthDeckBatchRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "arkhamdbSyncToken": {
+            "description": "Opaque token selecting the exact ArkhamDB snapshot returned by the manifest, or null when ArkhamDB was not included or available",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decks": {
+            "description": "At most 250 source-and-ID targets",
+            "maxItems": 250,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "const": "account"
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    }
+                  },
+                  "required": ["source", "id"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "const": "arkhamdb"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": ["source", "id"],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          }
+        },
+        "required": ["decks"],
+        "additionalProperties": false
+      },
+      "OAuthDeckBatchResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "decks": {
+            "type": "array",
+            "items": {
+              "description": "Full external deck representation.",
+              "type": "object",
+              "properties": {
+                "date_creation": {
+                  "type": "string"
+                },
+                "date_update": {
+                  "type": "string"
+                },
+                "description_md": {
+                  "type": "string"
+                },
+                "exile_string": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "ignoreDeckLimitSlots": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {
+                        "type": "number"
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "id": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string",
+                      "maxLength": 255
+                    }
+                  ]
+                },
+                "investigator_code": {
+                  "type": "string"
+                },
+                "investigator_name": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "meta": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "next_deck": {
+                  "anyOf": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 255
+                        }
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "previous_deck": {
+                  "anyOf": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 255
+                        }
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "problem": {
+                  "anyOf": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "too_few_cards",
+                            "too_many_cards",
+                            "too_many_copies",
+                            "invalid_cards",
+                            "deck_options_limit",
+                            "investigator"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 255
+                        }
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "sideSlots": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {
+                        "type": "number"
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "slots": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "number"
+                  }
+                },
+                "source": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": ["local", "account", "shared", "arkhamdb"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "taboo_id": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "tags": {
+                  "type": "string"
+                },
+                "user_id": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "version": {
+                  "type": "string",
+                  "maxLength": 8,
+                  "pattern": "^\\d+\\.\\d+$"
+                },
+                "xp_adjustment": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "xp_spent": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "xp": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "date_creation",
+                "date_update",
+                "description_md",
+                "id",
+                "investigator_code",
+                "meta",
+                "name",
+                "slots",
+                "tags",
+                "version"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["decks"],
+        "additionalProperties": false
+      },
+      "OAuthDeckDeleteQuery": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "all": {
+            "description": "When true, delete the selected deck and its previous history chain",
+            "type": "string",
+            "enum": ["true", "false"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "OAuthDeckWrite": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "description": "Mutable deck content. Additional properties, including server-owned fields, are ignored.",
+        "type": "object",
+        "properties": {
+          "description_md": {
+            "type": "string"
+          },
+          "exile_string": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ignoreDeckLimitSlots": {
+            "anyOf": [
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "investigator_code": {
+            "type": "string"
+          },
+          "investigator_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "problem": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "too_few_cards",
+                      "too_many_cards",
+                      "too_many_copies",
+                      "invalid_cards",
+                      "deck_options_limit",
+                      "investigator"
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "maxLength": 255
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sideSlots": {
+            "anyOf": [
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "slots": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "taboo_id": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tags": {
+            "type": "string"
+          },
+          "xp_adjustment": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "xp_spent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "xp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "description_md",
+          "investigator_code",
+          "meta",
+          "name",
+          "slots",
+          "tags"
+        ],
+        "additionalProperties": true
+      },
+      "OAuthDeckManifestItem": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "const": "account"
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255
+              },
+              "updatedAt": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              }
+            },
+            "required": ["source", "id", "updatedAt", "version"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "const": "arkhamdb"
+              },
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "updatedAt": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              }
+            },
+            "required": ["source", "id", "updatedAt", "version"],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "OAuthDeckManifestQuery": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "source": {
+            "description": "Deck provider. Account IDs are strings; ArkhamDB IDs are positive integers in JSON request bodies.",
+            "type": "string",
+            "enum": ["account", "arkhamdb"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "OAuthDeckManifestResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "arkhamdbSyncToken": {
+            "description": "Opaque token selecting the exact ArkhamDB snapshot returned by the manifest, or null when ArkhamDB was not included or available",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "providers": {
+            "type": "object",
+            "properties": {
+              "account": {
+                "type": "object",
+                "properties": {
+                  "available": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["available"],
+                "additionalProperties": false
+              },
+              "arkhamdb": {
+                "type": "object",
+                "properties": {
+                  "available": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["available"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["account", "arkhamdb"],
+            "additionalProperties": false
+          },
+          "decks": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "const": "account"
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["source", "id", "updatedAt", "version"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "const": "arkhamdb"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["source", "id", "updatedAt", "version"],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          }
+        },
+        "required": ["version", "arkhamdbSyncToken", "providers", "decks"],
+        "additionalProperties": false
+      },
+      "OAuthDeckRouteId": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "description": "Provider-specific deck ID encoded as a path segment: an account string ID or an ArkhamDB positive integer.",
+        "examples": ["a148f775-4eeb-4c13-9340-60f6b8527512", "12345"],
+        "type": "string"
+      },
+      "OAuthDeckSource": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "description": "Deck provider. Account IDs are strings; ArkhamDB IDs are positive integers in JSON request bodies.",
+        "type": "string",
+        "enum": ["account", "arkhamdb"]
+      },
+      "OAuthDeckTarget": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "const": "account"
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255
+              }
+            },
+            "required": ["source", "id"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "const": "arkhamdb"
+              },
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": ["source", "id"],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "OAuthError": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "invalid_request",
+              "invalid_client",
+              "invalid_grant",
+              "invalid_scope",
+              "unauthorized_client",
+              "unsupported_grant_type",
+              "unsupported_response_type"
+            ]
+          },
+          "error_description": {
+            "type": "string"
+          }
+        },
+        "required": ["error", "error_description"],
+        "additionalProperties": false
+      },
+      "OAuthProfileResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Stable arkham.build account ID",
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "username"],
+        "additionalProperties": false
+      },
+      "OAuthRefreshTokenRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "grant_type": {
+            "type": "string",
+            "const": "refresh_token"
+          },
+          "client_id": {
+            "description": "Confidential OAuth client identifier",
+            "examples": ["019c1234-5678-7000-8000-000000000000"],
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "client_secret": {
+            "description": "Confidential OAuth client secret",
+            "examples": ["ab_cs_..."],
+            "type": "string",
+            "minLength": 1
+          },
+          "refresh_token": {
+            "examples": ["ab_rt_..."],
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "grant_type",
+          "client_id",
+          "client_secret",
+          "refresh_token"
+        ],
+        "additionalProperties": false
+      },
+      "OAuthRevocationRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "description": "Confidential OAuth client identifier",
+            "examples": ["019c1234-5678-7000-8000-000000000000"],
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "client_secret": {
+            "description": "Confidential OAuth client secret",
+            "examples": ["ab_cs_..."],
+            "type": "string",
+            "minLength": 1
+          },
+          "token": {
+            "examples": ["ab_rt_..."],
+            "type": "string",
+            "minLength": 1
+          },
+          "token_type_hint": {
+            "description": "Optional access_token or refresh_token lookup hint",
+            "examples": ["refresh_token"],
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": ["client_id", "client_secret", "token"],
+        "additionalProperties": false
+      },
+      "OAuthScope": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "string",
+        "enum": ["profile:read", "decks:read", "decks:write", "decks:delete"]
+      },
+      "OAuthTokenResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "token_type": {
+            "type": "string",
+            "const": "Bearer"
+          },
+          "access_token": {
+            "type": "string",
+            "pattern": "^ab_at_.*"
+          },
+          "expires_in": {
+            "type": "number",
+            "const": 3600
+          },
+          "refresh_token": {
+            "type": "string",
+            "pattern": "^ab_rt_.*"
+          },
+          "scope": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token_type",
+          "access_token",
+          "expires_in",
+          "refresh_token",
+          "scope"
+        ],
+        "additionalProperties": false
+      },
+      "OAuthUserError": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "invalid_token",
+              "insufficient_scope",
+              "account_banned",
+              "invalid_request",
+              "not_found",
+              "conflict",
+              "upstream_unavailable"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["error", "message"],
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "OAuthBearer": {
+        "type": "oauth2",
+        "description": "Opaque access token sent as Authorization: Bearer ab_at_.... Tokens are issued only to confidential server-side clients.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://api.arkham.build/v2/oauth/authorize",
+            "tokenUrl": "https://api.arkham.build/v2/oauth/token",
+            "scopes": {
+              "profile:read": "Read the stable account ID and username",
+              "decks:read": "Read account and connected ArkhamDB decks",
+              "decks:write": "Create, replace, and upgrade decks; implies decks:read",
+              "decks:delete": "Delete decks and history; implies decks:write and decks:read"
+            }
+          }
+        }
+      }
+    }
+  }
+}

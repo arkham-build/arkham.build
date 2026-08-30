@@ -14,7 +14,7 @@ const SIGNED_URL_EXPIRY_SECONDS = 5 * 60;
 
 export const ScanIdSchema = z.string().brand<"ScanId">();
 
-export type ScanId = z.infer<typeof ScanIdSchema>;
+type ScanId = z.infer<typeof ScanIdSchema>;
 
 export type ScansStorage = {
   createDownloadUrl(scanId: ScanId): Promise<string>;

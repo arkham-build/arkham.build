@@ -1,6 +1,7 @@
 import type { PgBoss, Queue } from "pg-boss";
 import {
   EMAIL_DELIVER_QUEUE,
+  TASK_CLEANUP_OAUTH_CREDENTIALS_QUEUE,
   TASK_INGEST_ARKHAMDB_DECKLISTS_QUEUE,
   TASK_INGEST_JSON_DATA_QUEUE,
   TASK_PURGE_CLOUDFLARE_CACHE_QUEUE,
@@ -13,6 +14,14 @@ const QUEUES: Queue[] = [
     retryBackoff: true,
     retryDelay: 30,
     retryLimit: 5,
+  },
+  {
+    name: TASK_CLEANUP_OAUTH_CREDENTIALS_QUEUE,
+    expireInSeconds: 300,
+    policy: "stately",
+    retryBackoff: true,
+    retryDelay: 60,
+    retryLimit: 2,
   },
   {
     name: TASK_INGEST_JSON_DATA_QUEUE,

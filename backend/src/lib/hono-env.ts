@@ -5,7 +5,7 @@ import type { JobDispatcher } from "../jobs/dispatcher.ts";
 import type { Config } from "./config.ts";
 import type { Logger } from "./logger.ts";
 
-export type HonoVariables = {
+type HonoVariables = {
   config: Config;
   db: Database;
   dispatcher: JobDispatcher;
@@ -19,7 +19,7 @@ export type HonoEnv = {
   Variables: HonoVariables;
 };
 
-export type WithRequiredHonoVariableKeys<K extends keyof HonoVariables> = {
+type WithRequiredHonoVariableKeys<K extends keyof HonoVariables> = {
   Variables: Omit<HonoVariables, K> & {
     [P in K]-?: NonNullable<HonoVariables[P]>;
   };
@@ -28,3 +28,5 @@ export type WithRequiredHonoVariableKeys<K extends keyof HonoVariables> = {
 export type SessionAuthHonoEnv = WithRequiredHonoVariableKeys<
   "account" | "session"
 >;
+
+export type OAuthBearerHonoEnv = WithRequiredHonoVariableKeys<"account">;
