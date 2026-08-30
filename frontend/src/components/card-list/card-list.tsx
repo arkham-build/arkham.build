@@ -190,6 +190,7 @@ export function CardList(props: CardListImplementationProps) {
       padded={paddedScroller}
       ref={setScrollParent as unknown as React.RefObject<HTMLDivElement | null>}
       type="always"
+      viewportClassName={css["scroll-viewport"]}
     >
       {listDisplay.viewMode !== "scans" &&
         data &&
