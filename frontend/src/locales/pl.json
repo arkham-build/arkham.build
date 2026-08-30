@@ -249,6 +249,7 @@
       "cycle_one": "cykl",
       "cycle_other": "cykle",
       "deck_options": {
+        "A deck cannot include more than one reward card with the permanent keyword.": "Talia nie może zawierać więcej niż jednej karty nagrody ze słowem kluczowym Trwała.",
         "Atleast constraint violated.": "Ograniczenie „przynajmniej” naruszone.",
         "Blessed": "Błogosławiona",
         "Blessed and Cursed": "Błogosławiona i przeklęta",
@@ -1029,6 +1030,7 @@
           "chapter_2": "Chapter 2",
           "chapter_2_help": "Stwórz pulę kart ze wszystkich zestawów z Chapteru 2.",
           "choose_cycle_placeholder": "Wybierz cykle...",
+          "choose_progression_target_placeholder": "Wybierz kampanię lub scenariusz...",          
           "collection": "Kolekcja",
           "collection_help": "Ustaw swoją aktualną <settings_link>Kolekcję</settings_link> kart jako pula tej talii. Może to być przydatne w celu zamrożenia puli kart talii lub udostępnienia „ustawień wstępnych” dla osób dzielących tę samą fizyczną kolekcję kart.",
           "configure_environment": "Skonfiguruj środowisko gry",
@@ -1046,6 +1048,9 @@
           "limited_faq25_help": "Podczas budowania talii w środowisku Ograniczonym gracze mogą budować swoje talie wyłącznie przy użyciu kart z Zestawu Podstawowego, pięciu talii początkowych badaczy i trzech wybranych przez siebie rozszerzeń badaczy.",
           "limited_help": "Podczas budowania talii w środowisku Ograniczonym gracze mogą budować swoje talie wyłącznie przy użyciu kart z Zestawu Podstawowego  2026, pięciu talii badaczy i trzech wybranych przez siebie rozszerzeń badaczy.",
           "placeholder": "Wybierz zestawy...",
+          "progression": "Progresja",
+          "progression_help": "Stwórz pulę kart z produktów, które były dostępne w momencie premiery wybranej kampanii lub scenariusza.",
+          "progression_target": "Kampania lub scenariusz",
           "section_title": "Ustawienia puli kart",
           "selected_cards": "Wybrane karty",
           "substitute_chapter_2_with_chapter_1": "Zastąp karty z zestawu podstawowego oraz talii badaczy z chapteru 2 odpowiednikami z chapteru 1.",
@@ -1491,6 +1496,7 @@
         "display_as_list": "Wyświetl jako lista",
         "display_as_list_text": "Wyświetl jako lista z tekstem karty",
         "display_as_scans": "Wyświetl jako skany",
+        "flip_all_scans": "Obróć wszystkie skany",
         "focus_search": "Skup na wyszukiwaniu",
         "move_down": "Przejdź w dół",
         "move_up": "Przejdź w górę",
@@ -1536,7 +1542,8 @@
         "list_settings": "Ustawienia listy",
         "max_columns": "Maks. liczba skanów w kolumnie",
         "sort": "Sortowanie",
-        "sort_default": "Domyślne użytkownika"
+        "sort_default": "Domyślne użytkownika",
+        "taboo_filter_override": "Nadpisane przez filtr „Lista tabu”."
       },
       "reset": "Przywróć domyślne",
       "search": {
@@ -1778,6 +1785,10 @@
       },
       "copy_to_clipboard": "Kopiuj do schowka",
       "copy_to_clipboard_success": "Skopiowano.",
+      "password_input": {
+        "hide_password": "Ukryj hasło",
+        "show_password": "Pokaż hasło"
+      },
       "pagination": {
         "next": "Następna",
         "previous": "Poprzednia"
