@@ -74,6 +74,11 @@ arkhamdbOAuthRoutes.get("/", (c) =>
   beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
     intent: "login",
     returnTo: "/auth/login",
+    successReturnTo: getFrontendReturnTo(
+      c.req.query("returnTo"),
+      c.get("config").FRONTEND_URL,
+      "/",
+    ),
   }),
 );
 
@@ -81,6 +86,11 @@ arkhamdbOAuthRoutes.get("/login", (c) =>
   beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
     intent: "login",
     returnTo: "/auth/login",
+    successReturnTo: getFrontendReturnTo(
+      c.req.query("returnTo"),
+      c.get("config").FRONTEND_URL,
+      "/",
+    ),
   }),
 );
 
@@ -88,6 +98,11 @@ arkhamdbOAuthRoutes.get("/signup", (c) =>
   beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
     intent: "signup",
     returnTo: "/auth/signup",
+    successReturnTo: getFrontendReturnTo(
+      c.req.query("returnTo"),
+      c.get("config").FRONTEND_URL,
+      "/",
+    ),
   }),
 );
 
@@ -98,7 +113,11 @@ arkhamdbOAuthRoutes.get(
     beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
       accountId: c.get("account").id,
       intent: "connect",
-      returnTo: getConnectReturnTo(c.req.query("returnTo")),
+      returnTo: getFrontendReturnTo(
+        c.req.query("returnTo"),
+        c.get("config").FRONTEND_URL,
+        "/settings?tab=account",
+      ),
     }),
 );
 
@@ -173,7 +192,10 @@ async function handleArkhamDbOAuthCallback(c: Context<HonoEnv>) {
     });
 
     setSessionCookie(c, session.token);
-    const path = existing ? "/" : "/auth/signup/complete";
+    const successReturnTo = validatedOAuthContext.successReturnTo ?? "/";
+    const path = existing
+      ? successReturnTo
+      : getProfileCompletionPath(successReturnTo);
     return c.redirect(`${config.FRONTEND_URL}${path}`);
   } catch (error) {
     return redirectToOAuthError(c, returnTo, error);
@@ -478,20 +500,36 @@ async function findExistingAccountSettings(db: Database, accountId: string) {
     .executeTakeFirst();
 }
 
-function getConnectReturnTo(returnTo: string | undefined) {
-  if (!returnTo) {
-    return "/settings?tab=account";
-  }
+function getFrontendReturnTo(
+  returnTo: string | undefined,
+  frontendBaseUrl: string,
+  fallback: string,
+) {
+  if (!returnTo) return fallback;
 
   if (!returnTo.startsWith("/")) {
-    throw new HTTPException(400, { message: "Invalid returnTo" });
+    throw invalidReturnTo();
   }
 
-  const url = new URL(returnTo, "http://internal");
+  const frontendUrl = new URL(frontendBaseUrl);
+  let url: URL;
 
-  if (url.origin !== "http://internal") {
-    throw new HTTPException(400, { message: "Invalid returnTo" });
+  try {
+    url = new URL(returnTo, frontendUrl);
+  } catch {
+    throw invalidReturnTo();
   }
 
+  if (url.origin !== frontendUrl.origin) throw invalidReturnTo();
   return `${url.pathname}${url.search}${url.hash}`;
+}
+
+function invalidReturnTo() {
+  return new HTTPException(400, { message: "Invalid returnTo URL" });
+}
+
+function getProfileCompletionPath(successReturnTo: string) {
+  if (successReturnTo === "/") return "/auth/signup/complete";
+  const query = new URLSearchParams({ redirect: successReturnTo });
+  return `/auth/signup/complete?${query.toString()}`;
 }

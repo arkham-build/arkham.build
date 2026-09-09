@@ -83,10 +83,6 @@ export const selectLookupTables = createSelector(
   },
 );
 
-export const selectClientId = (state: StoreState) => {
-  return state.app.clientId;
-};
-
 export const selectIsInitialized = (state: StoreState) => {
   return state.ui.initialized;
 };

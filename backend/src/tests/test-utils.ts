@@ -43,10 +43,7 @@ export function getTestDatabase() {
   return getDatabase(container.getConnectionUri());
 }
 
-export async function createAuthenticatedSessionCookie(
-  db: Database,
-  config: Config,
-) {
+async function createAuthenticatedSessionCookie(db: Database, config: Config) {
   const account = await db
     .selectFrom("account")
     .select("id")

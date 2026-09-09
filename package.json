@@ -17,6 +17,7 @@
   "scripts": {
     "dev:functions": "wrangler pages dev",
     "fmt": "oxlint --fix . && oxfmt --write .",
+    "generate:openapi": "npm run generate:openapi --workspace backend",
     "lint": "oxlint --deny-warnings --report-unused-disable-directives . && oxfmt --check .",
     "prepare:e2e": "playwright install --with-deps",
     "test:e2e": "playwright test --config test/e2e/playwright.config.ts",

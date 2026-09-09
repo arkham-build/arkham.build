@@ -1,4 +1,4 @@
-export function isPgErrorCode(
+function isPgErrorCode(
   error: unknown,
   code: string,
 ): error is { code: string } {

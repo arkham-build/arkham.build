@@ -1,7 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { expect, type Locator, type Page } from "@playwright/test";
-import { assert } from "./assert";
 
 export async function importDeck(page: Page) {
   await page.goto("/");
@@ -132,14 +131,6 @@ export async function upgradeDeck(page: Page, xp = 5) {
 
 export function defaultScreenshotMask(page: Page) {
   return [page.getByTestId("card-scan"), page.getByTestId("card-thumbnail")];
-}
-
-export async function openUrlInNewContext(page: Page, url: string) {
-  const ctx = await page.context().browser()?.newContext();
-  assert(ctx, "Browser context should not be null");
-  const ctxPage = await ctx.newPage();
-  await ctxPage.goto(url);
-  return ctxPage;
 }
 
 export async function importPackFromFile(page: Page, packPath: string) {

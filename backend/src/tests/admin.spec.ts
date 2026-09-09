@@ -96,7 +96,7 @@ describe("Admin routes", () => {
           name: "Existing deck",
           provider_type: "account",
           slots: { "01006": 1 },
-          version: "old",
+          version: "0.1",
         })
         .execute();
 

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import type { DeckWritePayload } from "@arkham-build/shared";
+import type { DeckMutablePayload } from "@arkham-build/shared";
 import { NoResultError } from "kysely";
 import type { Database } from "../../db/db.ts";
 import type { ArkhamdbDeckAdditionalMetadata } from "../../db/schema.types.ts";
@@ -8,7 +8,7 @@ import { isEmpty } from "../is-empty.ts";
 import type { ArkhamDbRemoteDeck } from "./api-client/core/dtos.ts";
 import { applyHiddenSlots, extractHiddenSlots } from "./hidden-slots.ts";
 
-export function decodeDeckMeta(meta: string): Record<string, unknown> {
+function decodeDeckMeta(meta: string): Record<string, unknown> {
   try {
     const metaJson = JSON.parse(meta);
     return isMetaObject(metaJson) ? metaJson : {};
@@ -17,7 +17,7 @@ export function decodeDeckMeta(meta: string): Record<string, unknown> {
   }
 }
 
-export function partitionDeckMeta(meta: Record<string, unknown>) {
+function partitionDeckMeta(meta: Record<string, unknown>) {
   const additionalMeta: Record<string, unknown> = {};
   const deckMeta: Record<string, unknown> = {};
 
@@ -47,7 +47,7 @@ type StoreAdditionalMetadataOptions = {
   extractHiddenSlots?: boolean;
 };
 
-export async function storeAdditionalMetadata<T extends DeckWritePayload>(
+export async function storeAdditionalMetadata<T extends DeckMutablePayload>(
   database: Database,
   id: string | number,
   deck: T,

@@ -3,6 +3,11 @@ export const authKeys = {
   session: () => [...authKeys.all, "session"] as const,
 };
 
+export const oauthGrantKeys = {
+  all: ["oauth-grants"] as const,
+  list: () => [...oauthGrantKeys.all, "list"] as const,
+};
+
 export const cacheKeys = {
   all: ["cache"] as const,
   dataVersion: (locale: string) =>

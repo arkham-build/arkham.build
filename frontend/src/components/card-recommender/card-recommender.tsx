@@ -31,6 +31,7 @@ import css from "./card-recommender.module.css";
 import { IncludeSideDeckToggle } from "./include-side-deck-toggle";
 import { RecommendationBar } from "./recommendation-bar";
 import { RecommenderRelativityToggle } from "./recommender-relativity-toggle";
+import { isEmpty } from "@/utils/is-empty";
 
 export function CardRecommender(
   props: CardListProps & {
@@ -278,7 +279,7 @@ function CardRecommenderInner(
   );
   /* oxlint-enable react/exhaustive-deps */
 
-  if (sortedCards.length === 0) {
+  if (isEmpty(sortedCards)) {
     return (
       <ErrorDisplay
         message={t("deck_edit.recommendations.no_results")}

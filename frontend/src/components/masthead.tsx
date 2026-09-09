@@ -52,7 +52,9 @@ export function Masthead(props: Props) {
   const session = useStore(selectSession);
   const collapseNav = useMedia("(max-width: 52rem)");
   const isAuthPage =
-    location.startsWith("/auth") || location.includes("/account-migration");
+    location.startsWith("/auth") ||
+    location.includes("/account-migration") ||
+    location.includes("/oauth");
 
   return (
     <header

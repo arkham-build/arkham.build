@@ -8,7 +8,7 @@ export interface CreateVerificationTokenParams {
   expiryHours: number;
 }
 
-export async function createVerificationToken(
+async function createVerificationToken(
   db: Database,
   params: CreateVerificationTokenParams,
 ) {
@@ -39,7 +39,7 @@ export async function replaceVerificationToken(
   return await createVerificationToken(db, params);
 }
 
-export async function deleteVerificationTokensByEmail(
+async function deleteVerificationTokensByEmail(
   db: Database,
   email: string,
   tokenType: "email_verification" | "password_reset",

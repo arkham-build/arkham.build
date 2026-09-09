@@ -111,7 +111,6 @@ describe("GET /v2/account/scans/:scanId/download", () => {
     vi.spyOn(S3Client.prototype, "send").mockRejectedValue(
       s3Error("AccessDenied", 403),
     );
-    vi.spyOn(console, "error").mockImplementation(() => {});
 
     const response = await app.request(DOWNLOAD_PATH, {
       headers: { Cookie: sessionCookie },

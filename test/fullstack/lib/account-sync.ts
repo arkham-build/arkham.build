@@ -6,7 +6,7 @@ export async function reloadAndSyncAccount(page: Page) {
   await syncAccount(page);
 }
 
-export async function syncAccount(page: Page) {
+async function syncAccount(page: Page) {
   await page.getByTestId("masthead-account-menu").click();
   await expect(page.getByTestId("masthead-account-sync")).toBeEnabled();
 

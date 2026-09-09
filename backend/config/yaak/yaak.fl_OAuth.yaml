@@ -1,0 +1,28 @@
+type: folder
+model: folder
+id: fl_OAuth
+createdAt: 2026-07-22T00:00:00.000000
+updatedAt: 2026-07-22T00:00:00.000000
+workspaceId: wk_bBoraEVHnK
+folderId: null
+authentication: {}
+authenticationType: null
+description: External OAuth authorization requests.
+headers: []
+name: OAuth
+sortPriority: 6000.0
+settingSendCookies:
+  enabled: true
+  value: false
+settingStoreCookies:
+  enabled: true
+  value: false
+settingValidateCertificates:
+  enabled: false
+  value: true
+settingFollowRedirects:
+  enabled: true
+  value: false
+settingRequestTimeout:
+  enabled: false
+  value: 0

@@ -13,6 +13,7 @@ import { useDisconnectOAuthIdentityMutation } from "@/queries/mutations/auth";
 import { useStore } from "@/store";
 import { selectSession } from "@/store/selectors/auth";
 import { formatDateTime } from "@/utils/formatting";
+import { ConnectedApps } from "./connected-apps";
 import css from "./connections.module.css";
 import { Section } from "./section";
 
@@ -27,6 +28,7 @@ export function OAuthConnections() {
           key={connection.provider}
         />
       ))}
+      <ConnectedApps />
     </Section>
   );
 }

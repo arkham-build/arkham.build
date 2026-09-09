@@ -1,0 +1,41 @@
+type: http_request
+model: http_request
+id: rq_OAuthAuthorizationUntrustedRedirect
+createdAt: 2026-07-22T00:00:04.000000
+updatedAt: 2026-07-22T00:00:04.000000
+workspaceId: wk_bBoraEVHnK
+folderId: fl_OAuth
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: Returns a direct JSON error and never redirects to the unregistered URI.
+headers: []
+method: GET
+name: Authorization error - untrusted redirect
+sortPriority: 3000.0
+url: ${[ base_url ]}/v2/oauth/authorize
+urlParameters:
+- enabled: true
+  name: response_type
+  value: code
+  id: OAuthUntrustedResponseType
+- enabled: true
+  name: client_id
+  value: ${[ oauth_client_id ]}
+  id: OAuthUntrustedClientId
+- enabled: true
+  name: redirect_uri
+  value: https://attacker.example/oauth/callback
+  id: OAuthUntrustedRedirectUri
+- enabled: true
+  name: scope
+  value: profile:read
+  id: OAuthUntrustedScope
+- enabled: true
+  name: state
+  value: yaak-untrusted-redirect-state
+  id: OAuthUntrustedState
+settingFollowRedirects:
+  enabled: true
+  value: false

@@ -47,5 +47,6 @@ Individual workspaces may contain additional commands in their `package.json` fi
 ## Further reading
 
 - see [docs/architecture.md](./docs/architecture.md) for a short overview of the app architecture.
+- see [docs/oauth-integration.md](./docs/oauth-integration.md) for the confidential OAuth client integration guide.
 - see [docs/metadata.md](./docs/metadata.md) for details about the metadata we use and how we extend it.
 - see [docs/translations.md](./docs/translations.md) for instructions how to translate the app.

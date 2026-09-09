@@ -118,7 +118,7 @@ async function fetchLegacyShareHistory(c: Context<HonoEnv>) {
   ]);
 }
 
-export function parseCodeFromArkhamDbUrl(input?: string) {
+function parseCodeFromArkhamDbUrl(input?: string) {
   if (!input) return undefined;
 
   const url = decodeURIComponent(input);

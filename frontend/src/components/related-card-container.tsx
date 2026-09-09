@@ -11,7 +11,7 @@ type TitledContainerProps = {
   titleNode: React.ReactNode;
 };
 
-export function TitledContainer(props: TitledContainerProps) {
+function TitledContainer(props: TitledContainerProps) {
   const { actions, children, className, selected, testId, titleNode } = props;
 
   return (

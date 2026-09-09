@@ -10,12 +10,12 @@ export class ApiError extends Error {
   }
 }
 
-export const ArkhamDBApiErrorSchema = z.object({
+const ArkhamDBApiErrorSchema = z.object({
   code: z.number(),
   message: z.string(),
 });
 
-export const OAuthErrorResponseSchema = z.object({
+const OAuthErrorResponseSchema = z.object({
   error: z.string(),
   error_description: z.string(),
 });

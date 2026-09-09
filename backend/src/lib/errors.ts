@@ -51,7 +51,6 @@ function logBadRequest(
 ) {
   c.get("logger")("warn", "Bad request", {
     method: c.req.method,
-    path: c.req.path,
     error: body.message,
     cause: body.cause,
   });

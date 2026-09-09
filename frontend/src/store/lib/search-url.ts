@@ -1,6 +1,6 @@
 import type { Search } from "../slices/lists.types";
 
-export type SearchFlagKey =
+type SearchFlagKey =
   | "includeBacks"
   | "includeFlavor"
   | "includeGameText"

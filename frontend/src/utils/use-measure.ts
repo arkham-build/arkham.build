@@ -1,11 +1,11 @@
 // ported with slight changes from react-use
 import { useLayoutEffect, useMemo, useState } from "react";
 
-export type UseMeasureRect = Pick<
+type UseMeasureRect = Pick<
   DOMRectReadOnly,
   "x" | "y" | "top" | "left" | "right" | "bottom" | "height" | "width"
 >;
-export type UseMeasureRef<E extends Element = Element> = (element: E) => void;
+type UseMeasureRef<E extends Element = Element> = (element: E) => void;
 export type UseMeasureResult<E extends Element = Element> = [
   UseMeasureRef<E>,
   UseMeasureRect,

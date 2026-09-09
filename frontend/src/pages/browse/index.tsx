@@ -19,7 +19,7 @@ import type { Filter } from "@/utils/fp";
 import { BrowseWithFilter } from "./browse-with-filter";
 import { type ChapterTab, SetTree } from "./set-tree";
 
-export function Browse() {
+function Browse() {
   const { t } = useTranslation();
 
   const [chapterTab, setChapterTab] = useTabUrlState<ChapterTab>(
@@ -98,7 +98,7 @@ export function Browse() {
   );
 }
 
-export function BrowsePack() {
+function BrowsePack() {
   const { pack_code } = useParams<{ pack_code: string }>();
   const pack = useStore((state) =>
     pack_code ? selectMetadata(state).packs[pack_code] : undefined,
@@ -117,7 +117,7 @@ export function BrowsePack() {
   );
 }
 
-export function BrowseCycle() {
+function BrowseCycle() {
   const { cycle_code } = useParams<{ cycle_code: string }>();
   const cycle = useStore((state) =>
     cycle_code ? selectMetadata(state).cycles[cycle_code] : undefined,
@@ -152,7 +152,7 @@ function browseChapterSystemFilter(chapterTab: ChapterTab): Filter {
   }
 }
 
-export function BrowseEncounterSet() {
+function BrowseEncounterSet() {
   const { encounter_code } = useParams<{ encounter_code: string }>();
   const encounterSet = useStore((state) =>
     encounter_code
