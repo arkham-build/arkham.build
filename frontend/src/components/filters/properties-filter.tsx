@@ -44,7 +44,12 @@ export function PropertiesFilter({ id }: FilterProps) {
 
   const renderProperty = useCallback((key: string, label: string) => {
     if (key === "unique") {
-      return <>{label} (&#10040;)</>;
+      return (
+        <>
+          {label} (
+          <i className="icon-unique" style={{ fontSize: "var(--text-2xs)" }} />)
+        </>
+      );
     }
 
     if (key === "multiClass") {

@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: test code */
+/* oxlint-disable typescript/no-explicit-any -- test code */
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import { getMockStore } from "@/test/get-mock-store";
@@ -21,7 +21,15 @@ describe("draft selectors", () => {
   describe("selectDraftCardPool", () => {
     it("returns only level 0 cards", () => {
       const state = store.getState();
-      const pool = selectDraftCardPool(state, "01001"); // Roland Banks
+      const pool = selectDraftCardPool(
+        state,
+        "01001",
+        [],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      ); // Roland Banks
 
       // All cards should be level 0
       for (const card of pool) {
@@ -31,7 +39,15 @@ describe("draft selectors", () => {
 
     it("excludes signature cards", () => {
       const state = store.getState();
-      const pool = selectDraftCardPool(state, "01001"); // Roland Banks
+      const pool = selectDraftCardPool(
+        state,
+        "01001",
+        [],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      ); // Roland Banks
 
       // Should not include Roland's signature cards
       expect(pool.find((c) => c.code === "01006")).toBeUndefined(); // Roland's .38 Special
@@ -39,7 +55,15 @@ describe("draft selectors", () => {
 
     it("excludes weaknesses", () => {
       const state = store.getState();
-      const pool = selectDraftCardPool(state, "01001");
+      const pool = selectDraftCardPool(
+        state,
+        "01001",
+        [],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      );
 
       // Should not include weaknesses
       for (const card of pool) {
@@ -49,7 +73,15 @@ describe("draft selectors", () => {
 
     it("returns empty array for invalid investigator", () => {
       const state = store.getState();
-      const pool = selectDraftCardPool(state, "invalid");
+      const pool = selectDraftCardPool(
+        state,
+        "invalid",
+        [],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      );
       expect(pool).toEqual([]);
     });
   });
@@ -68,7 +100,7 @@ describe("draft selectors", () => {
       const state = store.getState();
       const signatures = selectSignatureCards(state, "01001");
 
-      expect(signatures["00000"]).toBe(1); // Random basic weakness
+      expect(signatures["01000"]).toBe(1); // Random basic weakness
     });
 
     it("returns empty object for invalid investigator", () => {
@@ -118,7 +150,15 @@ describe("draft selectors", () => {
       }
 
       // Get base pool
-      const basePool = selectDraftCardPool(state, investigatorCode);
+      const basePool = selectDraftCardPool(
+        state,
+        investigatorCode,
+        [],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      );
       expect(basePool.length).toBeGreaterThan(0);
 
       // Initially, all cards should be available
@@ -198,7 +238,15 @@ describe("draft selectors", () => {
       const state = store.getState();
       const investigatorCode = "01001"; // Roland Banks (no limits)
 
-      const basePool = selectDraftCardPool(state, investigatorCode);
+      const basePool = selectDraftCardPool(
+        state,
+        investigatorCode,
+        [],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      );
       const available = selectAvailableDraftCards(
         state,
         investigatorCode,
@@ -215,7 +263,15 @@ describe("draft selectors", () => {
       const investigatorCode = "01001";
 
       // Find a card with deck_limit
-      const basePool = selectDraftCardPool(state, investigatorCode);
+      const basePool = selectDraftCardPool(
+        state,
+        investigatorCode,
+        [],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      );
       const cardWithLimit = basePool.find(
         (c) => c.deck_limit && c.deck_limit < 3,
       );
@@ -289,7 +345,15 @@ describe("draft selectors", () => {
       }
 
       // Pick some cards matching the limit
-      const basePool = selectDraftCardPool(state, investigatorCode);
+      const basePool = selectDraftCardPool(
+        state,
+        investigatorCode,
+        [],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      );
       const pickedCards: Record<string, number> = {};
       let pickedCount = 0;
       const limit = limitOption.limit as number;

@@ -1,5 +1,4 @@
-import type { SealedDeckResponse } from "@arkham-build/shared";
-import type { StorageProvider } from "@/utils/constants";
+import type { SealedDeckResponse, StorageProvider } from "@arkham-build/shared";
 
 export type DraftPhase = "setup" | "picking" | "complete";
 

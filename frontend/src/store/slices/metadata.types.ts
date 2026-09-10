@@ -1,21 +1,29 @@
-import type { Card } from "@arkham-build/shared";
-import type { Cycle } from "../schemas/cycle.schema";
-import type { DataVersion } from "../schemas/data-version.schema";
-import type { EncounterSet } from "../schemas/encounter-set.schema";
-import type { Faction, SubType, Type } from "../schemas/metadata.schema";
-import type { Pack } from "../schemas/pack.schema";
-import type { Taboo } from "../schemas/taboo.schema";
-import type { TabooSet } from "../schemas/taboo-set.schema";
+import type {
+  Campaign,
+  Card,
+  Cycle,
+  DataVersion,
+  EncounterSet,
+  JsonDataFaction,
+  JsonDataSubtype,
+  JsonDataType,
+  Pack,
+  Scenario,
+  Taboo,
+  TabooSet,
+} from "@arkham-build/shared";
 
 export type Metadata = {
+  campaigns: Record<string, Campaign>;
   cards: Record<string, Card>;
   dataVersion?: DataVersion;
   encounterSets: Record<string, EncounterSet>;
   cycles: Record<string, Cycle>;
-  factions: Record<string, Faction>;
+  factions: Record<string, JsonDataFaction>;
   packs: Record<string, Pack>;
-  subtypes: Record<string, SubType>;
-  types: Record<string, Type>;
+  scenarios: Record<string, Scenario>;
+  subtypes: Record<string, JsonDataSubtype>;
+  types: Record<string, JsonDataType>;
   tabooSets: Record<string, TabooSet>;
   taboos: Record<string, Taboo>;
 };

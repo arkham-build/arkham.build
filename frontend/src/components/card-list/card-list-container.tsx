@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CenterLayout } from "@/layouts/center-layout";
 import { useStore } from "@/store";
 import {
@@ -7,8 +7,9 @@ import {
 } from "@/store/selectors/lists";
 import { selectActiveList, selectMetadata } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
+import { useHotkey } from "@/utils/use-hotkey";
 import { Footer } from "../footer";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { CardGrid } from "./card-grid";
 import { CardGridGrouped } from "./card-grid-grouped";
 import { CardList } from "./card-list";
@@ -18,16 +19,26 @@ import { CardListNav } from "./card-list-nav";
 import { CardSearch } from "./card-search";
 import type { CardListProps } from "./types";
 
+const LIST_SCAN_MAX_COLUMNS_KEY = "list-scan-max-columns";
+const LIST_SCAN_MAX_COLUMNS_MIN = 1;
+const LIST_SCAN_MAX_COLUMNS_MAX = 6;
+const LIST_SCAN_MAX_COLUMNS_DEFAULT = 6;
+
 interface Props extends CardListProps {
+  ref?: React.Ref<HTMLDivElement>;
   topContent?: React.ReactNode;
 }
 
-export const CardListContainer = forwardRef(function CardListContainer(
-  props: Props,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
-  const { className, slotLeft, slotRight, targetDeck, topContent, ...rest } =
-    props;
+export function CardListContainer(props: Props) {
+  const {
+    className,
+    slotLeft,
+    slotRight,
+    targetDeck,
+    topContent,
+    ref,
+    ...rest
+  } = props;
 
   const ctx = useResolvedDeck();
 
@@ -50,6 +61,21 @@ export const CardListContainer = forwardRef(function CardListContainer(
   const list = useStore(selectActiveList);
   assert(list, "No active list found");
   const listDisplay = list.display;
+
+  const toggleListDefaultFlipped = useStore(
+    (state) => state.toggleListDefaultFlipped,
+  );
+  useHotkey("f", toggleListDefaultFlipped);
+
+  const [scanMaxColumns, setScanMaxColumns] = useState(
+    getInitialScanMaxColumns,
+  );
+
+  const onScanMaxColumnsChange = useCallback((value: number) => {
+    const clamped = clampScanMaxColumns(value);
+    setScanMaxColumns(clamped);
+    localStorage.setItem(LIST_SCAN_MAX_COLUMNS_KEY, String(clamped));
+  }, []);
 
   const onSelectGroup = useCallback(
     (evt: React.ChangeEvent<HTMLSelectElement>) => {
@@ -104,7 +130,9 @@ export const CardListContainer = forwardRef(function CardListContainer(
           deck={ctx.resolvedDeck}
           data={data}
           metadata={metadata}
+          onScanMaxColumnsChange={onScanMaxColumnsChange}
           onSelectGroup={onSelectGroup}
+          scanMaxColumns={scanMaxColumns}
           viewMode={listDisplay.viewMode}
         />
         {data && (
@@ -113,9 +141,11 @@ export const CardListContainer = forwardRef(function CardListContainer(
               <CardGrid
                 {...rest}
                 data={data}
+                defaultFlipped={list.defaultFlipped}
                 listDisplay={listDisplay}
                 metadata={metadata}
                 resolvedDeck={ctx.resolvedDeck}
+                scanMaxColumns={scanMaxColumns}
                 search={search}
               />
             )}
@@ -123,9 +153,11 @@ export const CardListContainer = forwardRef(function CardListContainer(
               <CardGridGrouped
                 {...rest}
                 data={data}
+                defaultFlipped={list.defaultFlipped}
                 listDisplay={listDisplay}
                 metadata={metadata}
                 resolvedDeck={ctx.resolvedDeck}
+                scanMaxColumns={scanMaxColumns}
                 search={search}
               />
             )}
@@ -146,4 +178,20 @@ export const CardListContainer = forwardRef(function CardListContainer(
       </div>
     </CenterLayout>
   );
-});
+}
+
+function getInitialScanMaxColumns() {
+  return clampScanMaxColumns(
+    localStorage.getItem(LIST_SCAN_MAX_COLUMNS_KEY)
+      ? Number(localStorage.getItem(LIST_SCAN_MAX_COLUMNS_KEY))
+      : LIST_SCAN_MAX_COLUMNS_DEFAULT,
+  );
+}
+
+function clampScanMaxColumns(value: number) {
+  if (!Number.isInteger(value)) return LIST_SCAN_MAX_COLUMNS_DEFAULT;
+  return Math.min(
+    LIST_SCAN_MAX_COLUMNS_MAX,
+    Math.max(LIST_SCAN_MAX_COLUMNS_MIN, value),
+  );
+}

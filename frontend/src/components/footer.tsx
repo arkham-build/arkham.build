@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from "react-i18next";
 import { cx } from "@/utils/cx";
 import css from "./footer.module.css";
 
@@ -6,28 +7,40 @@ type Props = {
 };
 
 export function Footer(props: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className={cx(css["footer"], props.className)}>
-      <p>
-        <a
-          href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/"
-          rel="noreferrer"
-          target="_blank"
-          tabIndex={-1}
-        >
-          Arkham Horror: The Card Game™
-        </a>{" "}
-        and all related content &copy;{" "}
-        <a
-          href="https://www.fantasyflightgames.com"
-          rel="noreferrer"
-          target="_blank"
-          tabIndex={-1}
-        >
-          Fantasy Flight Games (FFG)
-        </a>
-        . This site is not produced, endorsed by or affiliated with FFG.{" "}
-      </p>
+      <div className={css["footer-inner"]}>
+        <p>
+          <Trans
+            i18nKey="footer.disclaimer"
+            t={t}
+            components={{
+              arkham: (
+                <a
+                  href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/"
+                  rel="noreferrer"
+                  target="_blank"
+                  tabIndex={-1}
+                >
+                  {t("footer.arkham_title")}
+                </a>
+              ),
+              ffg: (
+                <a
+                  href="https://www.fantasyflightgames.com"
+                  rel="noreferrer"
+                  target="_blank"
+                  tabIndex={-1}
+                >
+                  {t("footer.ffg")}
+                </a>
+              ),
+            }}
+          />
+        </p>
+      </div>
     </div>
   );
 }

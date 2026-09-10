@@ -27,6 +27,7 @@ export interface PopoverOptions {
   modal?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  strategy?: "absolute" | "fixed";
 }
 
 export function usePopover({
@@ -79,7 +80,7 @@ export function usePopover({
     enabled: !hoverDisabled,
     restMs: 50,
     handleClose: safePolygon({
-      blockPointerEvents: true,
+      blockPointerEvents: false,
     }),
   });
 
@@ -114,10 +115,6 @@ type ContextType =
   | undefined;
 
 export const PopoverContext = createContext<ContextType>(undefined);
-
-export const usePopoverContext = () => {
-  return useContext(PopoverContext);
-};
 
 export const usePopoverContextChecked = () => {
   const context = useContext(PopoverContext);

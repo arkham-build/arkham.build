@@ -1,4 +1,3 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ArrowDownWideNarrowIcon, LoaderCircleIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,12 +9,12 @@ import { Loader } from "@/components/ui/loader";
 import { Pagination } from "@/components/ui/pagination";
 import { Select } from "@/components/ui/select";
 import { AppLayout } from "@/layouts/app-layout";
+import { useDecklistsSearchQuery } from "@/queries/decklists";
 import {
   type DecklistsFiltersState,
   deckSearchQuery,
   parseDeckSearchQuery,
   type SortType,
-  searchDecklists,
 } from "@/store/services/requests/decklists-search";
 import { ApiError } from "@/store/services/requests/shared";
 import {
@@ -39,11 +38,8 @@ function BrowseDecklists() {
     setState(parseDeckSearchQuery(searchParams));
   }, [searchParams]);
 
-  const { data, isPending, error, isPlaceholderData } = useQuery({
-    placeholderData: keepPreviousData,
-    queryFn: () => searchDecklists(deckSearchQuery(state, 30)),
-    queryKey: ["decklists", deckSearchQuery(state, 30).toString()],
-  });
+  const { data, isPending, error, isPlaceholderData } =
+    useDecklistsSearchQuery(state);
 
   const onOffsetChange = (offset: number) => {
     const nextState = { ...state, offset };

@@ -1,17 +1,18 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, Pack } from "@arkham-build/shared";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import type { Pack } from "@/store/schemas/pack.schema";
 import {
   selectLimitedPoolPackOptions,
   selectPackMapper,
 } from "@/store/selectors/lists";
+import { isDeckbuildingPoolPack } from "@/utils/environments";
 import { displayPackName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { PackName } from "../pack-name";
 import { Button } from "../ui/button";
 import { Combobox } from "../ui/combobox/combobox";
+import { ResultTag } from "../ui/combobox/combobox-results";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { Field } from "../ui/field";
 import { ConfigureEnvironmentModal } from "./configure-environment-modal";
@@ -33,20 +34,23 @@ export function LimitedCardPoolField(props: Props) {
 
   const locale = useStore((state) => state.settings.locale);
 
-  const items = useMemo(
-    () =>
-      packs.filter(
-        (pack) =>
-          pack.cycle_code !== "parallel" &&
-          pack.cycle_code !== "promotional" &&
-          pack.cycle_code !== "side_stories",
-      ),
-    [packs],
-  );
+  const items = useMemo(() => packs.filter(isDeckbuildingPoolPack), [packs]);
 
   const packRenderer = useCallback(
     (pack: Pack) => <PackName pack={pack} shortenNewFormat />,
     [],
+  );
+
+  const packResultRenderer = useCallback(
+    (pack: Pack, onRemove?: () => void) => (
+      <ResultTag
+        data-testid={`combobox-result-${pack.code}`}
+        onRemove={onRemove}
+      >
+        {packRenderer(pack)}
+      </ResultTag>
+    ),
+    [packRenderer],
   );
 
   const packToString = useCallback(
@@ -64,9 +68,9 @@ export function LimitedCardPoolField(props: Props) {
   return (
     <Dialog>
       <Field
+        className={css["field"]}
         data-testid="limited-card-pool-field"
         full
-        padded
         helpText={t("deck_edit.config.card_pool.help")}
       >
         <div className={css["environment-actions"]}>
@@ -91,7 +95,7 @@ export function LimitedCardPoolField(props: Props) {
           onValueChange={onChange}
           placeholder={t("deck_edit.config.card_pool.placeholder")}
           renderItem={packRenderer}
-          renderResult={packRenderer}
+          renderResult={packResultRenderer}
           showLabel
           selectedItems={selectedItems.map(packMapper)}
         />

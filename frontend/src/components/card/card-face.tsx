@@ -5,11 +5,12 @@ import { useTranslation } from "react-i18next";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
 import { displayAttribute, sideways } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
-import { CardScan } from "../card-scan";
+import { CardScan, type CardScanActionSlot } from "../card-scan";
 import { CardThumbnail } from "../card-thumbnail";
 import { Button } from "../ui/button";
 import css from "./card.module.css";
 import { CardDetails } from "./card-details";
+import { CardErrata } from "./card-errata";
 import { CardHeader } from "./card-header";
 import { CardIcons } from "./card-icons";
 import { CardMeta } from "./card-meta";
@@ -20,11 +21,13 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
   className?: string;
   ignoreTaboo?: boolean;
+  omitImage?: boolean;
   onPrintingSelect?: (card: Card) => void;
   resolvedCard: CardWithRelations | ResolvedCard;
   setIgnoreTaboo?: React.Dispatch<React.SetStateAction<boolean>>;
   size: "compact" | "tooltip" | "full";
   slotHeaderActions?: React.ReactNode;
+  slotScanActions?: CardScanActionSlot;
   titleLinks?: "card" | "card-modal" | "dialog";
 }
 
@@ -33,11 +36,13 @@ export function CardFace(props: Props) {
     children,
     className,
     ignoreTaboo,
+    omitImage,
     onPrintingSelect,
     resolvedCard,
     setIgnoreTaboo,
     size,
     slotHeaderActions,
+    slotScanActions,
     titleLinks,
     ...rest
   } = props;
@@ -47,7 +52,8 @@ export function CardFace(props: Props) {
   const { card } = resolvedCard;
   const [isSideways, setSideways] = useState(sideways(card));
 
-  const showImage = size === "full" || card.type_code !== "story";
+  const showImage =
+    !omitImage && (size === "full" || card.type_code !== "story");
 
   const onFlip = useCallback((_: boolean, sideways: boolean) => {
     setSideways(sideways);
@@ -82,6 +88,7 @@ export function CardFace(props: Props) {
           size={size}
           text={displayAttribute(card, "text")}
           typeCode={card.type_code}
+          vengeance={card.vengeance}
           victory={card.victory}
         />
         <CardTabooText card={card} showOriginalText={size !== "tooltip"}>
@@ -94,6 +101,13 @@ export function CardFace(props: Props) {
             </Button>
           )}
         </CardTabooText>
+        {!!card.errata_date && (
+          <CardErrata
+            cardCode={card.code}
+            errataDate={card.errata_date}
+            size={size}
+          />
+        )}
         <CardMeta
           linked={size !== "tooltip"}
           onPrintingSelect={onPrintingSelect}
@@ -106,7 +120,12 @@ export function CardFace(props: Props) {
       {showImage &&
         (size === "full" ? (
           <div className={css["image"]}>
-            <CardScan card={card} onFlip={onFlip} ignoreTaboo={ignoreTaboo} />
+            <CardScan
+              card={card}
+              ignoreTaboo={ignoreTaboo}
+              leftActionSlot={slotScanActions}
+              onFlip={onFlip}
+            />
           </div>
         ) : (
           <div className={css["image"]}>

@@ -1,14 +1,15 @@
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: not relevant. */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: backdrop needs to be clickable. */
+/* oxlint-disable jsx-a11y/click-events-have-key-events -- not relevant. */
+/* oxlint-disable jsx-a11y/no-static-element-interactions -- backdrop needs to be clickable. */
 
-import type { Card as CardT } from "@arkham-build/shared";
+import { ACCOUNT_PERMISSIONS, type Card as CardT } from "@arkham-build/shared";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
   CheckCircleIcon,
   DicesIcon,
+  DownloadIcon,
 } from "lucide-react";
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { useStore } from "@/store";
@@ -16,6 +17,8 @@ import {
   getRelatedCardQuantity,
   getRelatedCards,
 } from "@/store/lib/resolve-card";
+import type { ResolvedDeck } from "@/store/lib/types";
+import { selectSession } from "@/store/selectors/auth";
 import { selectCardWithRelations } from "@/store/selectors/card-view";
 import { selectShowFanMadeRelations } from "@/store/selectors/shared";
 import type { CardModalConfig } from "@/store/slices/ui.types";
@@ -30,15 +33,18 @@ import { formatRelationTitle } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
 import { useMedia } from "@/utils/use-media";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { Annotation } from "../annotations/annotation";
 import { PopularDecks } from "../arkhamdb-decklists/popular-decks";
 import { Card } from "../card/card";
+import { CardScenarios } from "../card-scenarios/card-scenarios";
+import { CardFavorite } from "../card-tags/card-favorite";
+import { CardTagManager, CardTags } from "../card-tags/card-tags";
 import { CardSet } from "../cardset";
 import { Customizations } from "../customizations/customizations";
 import { CustomizationsEditor } from "../customizations/customizations-editor";
 import { AttachableCards } from "../deck-tools/attachable-cards";
 import { CardPoolExtension } from "../limited-card-pool/card-pool-extension";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { Button } from "../ui/button";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { HotkeyTooltip } from "../ui/hotkey";
@@ -49,6 +55,7 @@ import { AnnotationEdit } from "./card-modal-annotation-edit";
 import { CardModalAttachmentQuantities } from "./card-modal-attachment-quantities";
 import { CardModalQuantities } from "./card-modal-quantities";
 import { CardPageLink } from "./card-page-link";
+import { InvestigatorTraitsChoice } from "./investigator-traits-choice";
 import { SpecialistAccess, SpecialistInvestigators } from "./specialist";
 
 type Props = {
@@ -68,13 +75,12 @@ export function CardModal(props: Props) {
     modalContext?.setOpen(false);
   }, [modalContext]);
 
-  const quantitiesRef = useRef<HTMLDivElement>(null);
+  const onPointerDownBackdrop = useCallback(
+    (evt: React.PointerEvent) => {
+      if (evt.target !== evt.currentTarget) return;
 
-  const onClickBackdrop = useCallback(
-    (evt: React.MouseEvent) => {
-      if (evt.target === quantitiesRef.current) {
-        onCloseModal();
-      }
+      evt.preventDefault();
+      onCloseModal();
     },
     [onCloseModal],
   );
@@ -83,8 +89,16 @@ export function CardModal(props: Props) {
     selectCardWithRelations(state, props.code, true, ctx.resolvedDeck),
   );
 
+  const isNonLocalFanMadeCard = useStore((state) => {
+    const pack = cardWithRelations?.pack;
+    return (
+      pack?.official === false && !state.fanMadeData.projects[pack.cycle_code]
+    );
+  });
+
+  const session = useStore(selectSession);
   const settings = useStore((state) => state.settings);
-  const showFanMadeRelations = useStore(selectShowFanMadeRelations);
+  const showAllFanMadeRelations = useStore(selectShowFanMadeRelations);
 
   const openCardModal = useStore((state) => state.openCardModal);
   const listOrder = useStore((state) => state.ui.cardModal.config?.listOrder);
@@ -99,6 +113,7 @@ export function CardModal(props: Props) {
   }, [completeTask, ctx.resolvedDeck, cardWithRelations?.card, openCardModal]);
 
   const canRenderFull = useMedia("(min-width: 45rem)");
+  const hasSidebar = useMedia("(min-width: 42rem)");
 
   const handlePrintingSelect = useCallback(
     (card: CardT) => {
@@ -107,16 +122,34 @@ export function CardModal(props: Props) {
     [openCardModal],
   );
 
+  const renderScanDownloadAction = useCallback(
+    (scanId: string) => (
+      <Button
+        as="a"
+        href={`${import.meta.env.VITE_API_URL}/v2/account/scans/${encodeURIComponent(scanId)}/download`}
+        size="sm"
+      >
+        <DownloadIcon />
+        Download
+      </Button>
+    ),
+    [],
+  );
+
   if (!cardWithRelations) return null;
+
+  const canDownloadScan =
+    !!cardWithRelations.card.official &&
+    !!session?.account.permissions.includes(ACCOUNT_PERMISSIONS.SCANS_DOWNLOAD);
 
   const showQuantities =
     !!ctx.resolvedDeck && cardWithRelations?.card.type_code !== "investigator";
   const showExtraQuantities = ctx.resolvedDeck?.hasExtraDeck;
-  const related = getRelatedCards(
-    cardWithRelations,
-    showFanMadeRelations,
-    settings.showPreviews,
-  );
+
+  const related = getRelatedCards(cardWithRelations, {
+    showAllFanMadeRelations,
+    showPreviews: settings.showPreviews,
+  });
 
   const attachableDefinition = ctx.resolvedDeck?.availableAttachments.find(
     (config) => config.code === cardWithRelations.card.code,
@@ -125,65 +158,80 @@ export function CardModal(props: Props) {
   const annotation = ctx.resolvedDeck?.annotations[cardWithRelations.card.code];
 
   const cardNode = (
-    <>
-      <Card
-        className={cx(css["card"], css["shadow"])}
-        resolvedCard={cardWithRelations}
-        onPrintingSelect={handlePrintingSelect}
-        size={canRenderFull ? "full" : "compact"}
-        slotCardFooter={
-          <>
-            {ctx.resolvedDeck &&
-              canShowCardPoolExtension(cardWithRelations.card) && (
-                <div className={css["related"]}>
-                  <CardPoolExtension
-                    canEdit={canEdit}
-                    card={cardWithRelations.card}
-                    deck={ctx.resolvedDeck}
-                    showLabel
-                  />
-                </div>
-              )}
+    <Card
+      className={cx(css["card"], css["shadow"])}
+      resolvedCard={cardWithRelations}
+      onPrintingSelect={handlePrintingSelect}
+      size={canRenderFull ? "full" : "compact"}
+      slotScanActions={
+        canRenderFull && canDownloadScan ? renderScanDownloadAction : undefined
+      }
+      titleLinks="card"
+      slotCardFooter={
+        <>
+          {ctx.resolvedDeck &&
+            canShowCardPoolExtension(cardWithRelations.card) && (
+              <div className={css["related"]}>
+                <CardPoolExtension
+                  canEdit={canEdit}
+                  card={cardWithRelations.card}
+                  deck={ctx.resolvedDeck}
+                  showLabel
+                />
+              </div>
+            )}
 
-            {!!ctx.resolvedDeck &&
-              (canEdit ? (
+          {!!ctx.resolvedDeck &&
+            (canEdit ? (
+              <div className={css["related"]}>
+                <AnnotationEdit
+                  cardCode={cardWithRelations.card.code}
+                  deckId={ctx.resolvedDeck.id}
+                  text={annotation}
+                />
+              </div>
+            ) : (
+              annotation && (
                 <div className={css["related"]}>
-                  <AnnotationEdit
-                    cardCode={cardWithRelations.card.code}
-                    deckId={ctx.resolvedDeck.id}
-                    text={annotation}
-                  />
+                  <Annotation content={annotation} />
                 </div>
-              ) : (
-                annotation && (
-                  <div className={css["related"]}>
-                    <Annotation content={annotation} />
-                  </div>
-                )
-              ))}
-          </>
-        }
-      >
-        {ctx.resolvedDeck && !!attachableDefinition && (
-          <AttachableCards
+              )
+            ))}
+          {!hasSidebar && (
+            <CardModalTags cardCode={cardWithRelations.card.code} />
+          )}
+        </>
+      }
+    >
+      {ctx.resolvedDeck && !!attachableDefinition && (
+        <AttachableCards
+          card={cardWithRelations.card}
+          definition={attachableDefinition}
+          readonly={!canEdit}
+          resolvedDeck={ctx.resolvedDeck}
+        />
+      )}
+      {cardWithRelations.card.customization_options ? (
+        ctx.resolvedDeck ? (
+          <CustomizationsEditor
+            canEdit={canEdit}
             card={cardWithRelations.card}
-            definition={attachableDefinition}
-            readonly={!canEdit}
-            resolvedDeck={ctx.resolvedDeck}
+            deck={ctx.resolvedDeck}
           />
-        )}
-        {cardWithRelations.card.customization_options ? (
-          ctx.resolvedDeck ? (
-            <CustomizationsEditor
-              canEdit={canEdit}
-              card={cardWithRelations.card}
-              deck={ctx.resolvedDeck}
-            />
-          ) : (
-            <Customizations card={cardWithRelations.card} />
-          )
-        ) : undefined}
-      </Card>
+        ) : (
+          <Customizations card={cardWithRelations.card} />
+        )
+      ) : undefined}
+    </Card>
+  );
+
+  const relationsNode = (
+    <>
+      {cardWithRelations.card.encounter_code && (
+        <div className={css["related"]}>
+          <CardScenarios card={cardWithRelations.card} />
+        </div>
+      )}
       {!isEmpty(related) && (
         <div className={css["related"]}>
           {related.map(([key, value]) => {
@@ -203,7 +251,14 @@ export function CardModal(props: Props) {
             );
           })}
           {cardWithRelations.card.type_code === "investigator" && (
-            <SpecialistAccess card={cardWithRelations.card} />
+            <SpecialistAccess
+              card={cardWithRelations.card}
+              investigatorFront={
+                isDeckInvestigator(cardWithRelations.card, ctx.resolvedDeck)
+                  ? ctx.resolvedDeck?.investigatorFront.card
+                  : undefined
+              }
+            />
           )}
         </div>
       )}
@@ -220,6 +275,15 @@ export function CardModal(props: Props) {
             <PopularDecks scope={cardWithRelations.card} />
           </div>
         )}
+      {ctx.resolvedDeck && (
+        <div className={css["related"]}>
+          <InvestigatorTraitsChoice
+            canEdit={canEdit}
+            card={cardWithRelations.card}
+            deck={ctx.resolvedDeck}
+          />
+        </div>
+      )}
     </>
   );
 
@@ -230,31 +294,8 @@ export function CardModal(props: Props) {
   return (
     <Modal key={cardWithRelations.card.code} data-testid="card-modal">
       <ModalBackdrop />
-      <ModalInner size="60rem">
+      <ModalInner size="64rem">
         <ModalActions>
-          {cardWithRelations.card.type_code === "investigator" &&
-            !isStaticInvestigator(cardWithRelations.card) && (
-              <>
-                <Link
-                  asChild
-                  href={deckCreateLink(cardWithRelations.card)}
-                  onClick={onCloseModal}
-                >
-                  <Button as="a" data-testid="card-modal-create-deck">
-                    <i className="icon-deck" /> {t("deck.actions.create")}
-                  </Button>
-                </Link>
-                <Link
-                  asChild
-                  href={`/deck/draft/${cardWithRelations.card.code}`}
-                  onClick={onCloseModal}
-                >
-                  <Button as="a" data-testid="card-modal-draft-deck">
-                    <DicesIcon /> {t("deck_draft.title")}
-                  </Button>
-                </Link>
-              </>
-            )}
           <CardPageLink card={cardWithRelations.card} />
           <CardReviewsLink card={cardWithRelations.card} />
           {canEdit &&
@@ -267,42 +308,100 @@ export function CardModal(props: Props) {
               </Button>
             )}
         </ModalActions>
-        {showQuantities || listOrder ? (
-          <div className={css["container"]}>
-            <div className={css["card"]}>{cardNode}</div>
-            <div
-              className={css["quantities"]}
-              onClick={onClickBackdrop}
-              ref={quantitiesRef}
-            >
-              {listOrder && (
-                <CardModalArrowNavigation
-                  code={props.code}
-                  listOrder={listOrder}
-                />
-              )}
-              {showQuantities && (
-                <CardModalQuantities
-                  canEdit={canEdit}
-                  card={cardWithRelations.card}
-                  deck={ctx.resolvedDeck}
-                  onCloseModal={onCloseModal}
-                  showExtraQuantities={showExtraQuantities}
-                />
-              )}
-              {!isEmpty(ctx.resolvedDeck?.availableAttachments) && (
-                <CardModalAttachmentQuantities
-                  card={cardWithRelations.card}
-                  resolvedDeck={ctx.resolvedDeck}
-                />
-              )}
-            </div>
+        <div className={css["container"]}>
+          <div
+            className={css["card"]}
+            data-testid="card-modal-card-column"
+            onPointerDown={onPointerDownBackdrop}
+          >
+            {cardNode}
+            {relationsNode}
           </div>
-        ) : (
-          cardNode
-        )}
+          <div
+            className={css["quantities"]}
+            data-testid="card-modal-sidebar"
+            onPointerDown={onPointerDownBackdrop}
+          >
+            {listOrder && (
+              <CardModalArrowNavigation
+                code={props.code}
+                listOrder={listOrder}
+              />
+            )}
+            {cardWithRelations.card.type_code === "investigator" &&
+              !isStaticInvestigator(cardWithRelations.card) &&
+              !isNonLocalFanMadeCard && (
+                <div className={css["sidebar-actions"]}>
+                  <Link
+                    asChild
+                    href={deckCreateLink(cardWithRelations.card)}
+                    onClick={onCloseModal}
+                  >
+                    <Button as="a" data-testid="card-modal-create-deck">
+                      <i className="icon-deck" /> {t("deck.actions.create")}
+                    </Button>
+                  </Link>
+                  <Link
+                    asChild
+                    href={`/deck/draft/${cardWithRelations.card.code}`}
+                    onClick={onCloseModal}
+                  >
+                    <Button as="a" data-testid="card-modal-draft-deck">
+                      <DicesIcon /> {t("deck_draft.title")}
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            {showQuantities && (
+              <CardModalQuantities
+                canEdit={canEdit}
+                card={cardWithRelations.card}
+                deck={ctx.resolvedDeck}
+                onCloseModal={onCloseModal}
+                showExtraQuantities={showExtraQuantities}
+              />
+            )}
+            {!isEmpty(ctx.resolvedDeck?.availableAttachments) && (
+              <CardModalAttachmentQuantities
+                card={cardWithRelations.card}
+                resolvedDeck={ctx.resolvedDeck}
+              />
+            )}
+            <CardFavorite card={cardWithRelations.card} />
+            {hasSidebar && (
+              <CardModalTags cardCode={cardWithRelations.card.code} sidebar />
+            )}
+          </div>
+        </div>
       </ModalInner>
     </Modal>
+  );
+}
+
+function CardModalTags(props: { cardCode: string; sidebar?: boolean }) {
+  const { cardCode, sidebar } = props;
+  const { t } = useTranslation();
+
+  return (
+    <div
+      className={
+        sidebar ? cx(css["quantity"], css["tag-card"]) : css["tag-field"]
+      }
+    >
+      <h3 className={css["related-title"]}>
+        {t("card_tags.title")}
+        <CardTagManager cardCode={cardCode} />
+      </h3>
+      <CardTags cardCode={cardCode} stacked={sidebar} />
+    </div>
+  );
+}
+
+function isDeckInvestigator(card: CardT, deck: ResolvedDeck | undefined) {
+  return (
+    !!deck &&
+    (card.code === deck.investigatorFront.card.code ||
+      card.code === deck.investigatorBack.card.code)
   );
 }
 

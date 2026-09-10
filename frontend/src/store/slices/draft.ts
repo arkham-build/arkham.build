@@ -1,21 +1,20 @@
-import type { Card, DeckOption } from "@arkham-build/shared";
+import {
+  type Card,
+  countExperience,
+  type DeckOption,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
-import {
-  cardLimit,
-  countExperience,
-  displayAttribute,
-  isSpecialCard,
-} from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
-import { currentEnvironmentPacks } from "@/utils/environments";
+import { cardLimit, displayAttribute, isSpecialCard } from "@/utils/card-utils";
+import { environments } from "@/utils/environments";
 import { range } from "@/utils/range";
 import { shuffle } from "@/utils/shuffle";
 import { applyCardChanges } from "../lib/card-edits";
 import { filterInvestigatorAccess } from "../lib/filtering";
 import { resolveCardWithRelations } from "../lib/resolve-card";
 import { resolveDeck } from "../lib/resolve-deck";
-import { selectConnectionsData } from "../selectors/connections";
+import { isStorageProviderAvailable } from "../lib/sync";
 import {
   selectAvailableDraftCards,
   selectLegalCustomizableCards,
@@ -64,7 +63,7 @@ function getRandomLegalCustomizationUpgrade(
   }
 
   // Get investigator access filter with actual level checking for customizable cards
-  const accessFilter = filterInvestigatorAccess(investigator, {
+  const accessFilter = filterInvestigatorAccess(investigator, undefined, {
     customizable: {
       level: "actual",
       properties: "all",
@@ -166,19 +165,17 @@ export const createDraftSlice: StateCreator<StoreState, [], [], DraftSlice> = (
         );
       }
 
-      const connections = selectConnectionsData(state);
       const provider = settings.defaultStorageProvider;
 
       // when arkhamdb is set as default storage, but not available, default to local.
       const providerExists =
-        provider !== "arkhamdb" ||
-        connections.some((c) => c.provider === provider);
+        provider !== "arkhamdb" || isStorageProviderAvailable(state, provider);
 
       // Apply current environment packs if default environment is set to "current"
       // This matches deck-create behavior - manual selections will override this
       const cardPool =
         settings.defaultEnvironment === "current"
-          ? currentEnvironmentPacks(Object.values(metadata.cycles))
+          ? environments.currentFaq25(Object.values(metadata.cycles))
           : undefined;
 
       // Determine the back card code (where deck_requirements are defined)
@@ -242,7 +239,6 @@ export const createDraftSlice: StateCreator<StoreState, [], [], DraftSlice> = (
         {
           lookupTables,
           metadata,
-          sharing: state.sharing,
         },
         collator,
         deck,
@@ -278,18 +274,16 @@ export const createDraftSlice: StateCreator<StoreState, [], [], DraftSlice> = (
 
       const settings = state.settings;
 
-      const connections = selectConnectionsData(state);
       const provider = settings.defaultStorageProvider;
 
       const providerExists =
-        provider !== "arkhamdb" ||
-        connections.some((c) => c.provider === provider);
+        provider !== "arkhamdb" || isStorageProviderAvailable(state, provider);
 
       // Use card pool from the original deck if set, otherwise use default environment
       const cardPool = resolved.cardPool
         ? resolved.cardPool
         : settings.defaultEnvironment === "current"
-          ? currentEnvironmentPacks(Object.values(metadata.cycles))
+          ? environments.currentFaq25(Object.values(metadata.cycles))
           : undefined;
 
       // Convert Selections (Record<string, Selection>) to draft format (Record<string, string>)
@@ -692,7 +686,7 @@ export const createDraftSlice: StateCreator<StoreState, [], [], DraftSlice> = (
     // We still create a new object reference to ensure state updates are detected
 
     // Update customization upgrades
-    const customizationUpgrades = { ...(draft.customizationUpgrades ?? {}) };
+    const customizationUpgrades = { ...draft.customizationUpgrades };
     if (!customizationUpgrades[cardCode]) {
       customizationUpgrades[cardCode] = {};
     }

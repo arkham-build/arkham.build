@@ -1,5 +1,6 @@
+import type { StorageProvider } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
-import { LockKeyholeIcon, ShareIcon } from "lucide-react";
+import { CloudIcon, HardDriveIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useShallow } from "zustand/react/shallow";
@@ -8,7 +9,6 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
 import { selectMetadata } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
-import { EVERGREEN_CYCLES, type StorageProvider } from "@/utils/constants";
 import { resolveLimitedPoolPacks } from "@/utils/environments";
 import { capitalize, formatProviderName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
@@ -24,6 +24,14 @@ import {
 } from "../ui/tooltip";
 import css from "./deck-tags.module.css";
 
+const EVERGREEN_CYCLES = [
+  "core",
+  "investigator",
+  "return",
+  "core_ch2",
+  "investigator_decks_ch2",
+];
+
 export function DeckTagsContainer({ children }: { children: React.ReactNode }) {
   return (
     <ul className={css["tags"]} data-testid="deck-tags">
@@ -37,14 +45,18 @@ export function DeckTags(props: { tags: string[] }) {
   const { tags } = props;
 
   return tags.map((s, i) => (
-    // biome-ignore lint/suspicious/noArrayIndexKey: order is stable.
+    // oxlint-disable-next-line react/no-array-index-key -- order is stable.
     <Tag as="li" key={i} size="xs">
       {capitalize(s.trim())}
     </Tag>
   ));
 }
 
-export function SealedDeckTag({ deck }: { deck: ResolvedDeck | undefined }) {
+export function SealedDeckTag({
+  deck,
+}: {
+  deck: Pick<ResolvedDeck, "sealedDeck"> | undefined;
+}) {
   const { t } = useTranslation();
 
   const value = deck?.sealedDeck;
@@ -66,7 +78,11 @@ export function SealedDeckTag({ deck }: { deck: ResolvedDeck | undefined }) {
   );
 }
 
-export function DraftTag({ deck }: { deck: ResolvedDeck | undefined }) {
+export function DraftTag({
+  deck,
+}: {
+  deck: Pick<ResolvedDeck, "metaParsed"> | undefined;
+}) {
   const { t } = useTranslation();
 
   const isDraft = deck?.metaParsed?.is_draft === true;
@@ -79,18 +95,26 @@ export function DraftTag({ deck }: { deck: ResolvedDeck | undefined }) {
   );
 }
 
-export const providerTagRenderer = (tag: StorageProvider, t: TFunction) => {
+export function ProviderTagInner({
+  tag,
+  t,
+}: {
+  tag: StorageProvider;
+  t: TFunction;
+}) {
   let icon = null;
 
-  if (tag === "arkhamdb") {
+  const canonicalTag = tag ?? "local";
+
+  if (canonicalTag === "arkhamdb") {
     icon = <i className="icon-elder_sign" />;
-  } else if (tag === "local") {
-    icon = <LockKeyholeIcon />;
-  } else if (tag === "shared") {
-    icon = <ShareIcon />;
+  } else if (canonicalTag === "local") {
+    icon = <HardDriveIcon />;
+  } else if (canonicalTag === "account") {
+    icon = <CloudIcon />;
   }
 
-  const str = tag.trim();
+  const str = canonicalTag.trim();
 
   return (
     <>
@@ -100,27 +124,26 @@ export const providerTagRenderer = (tag: StorageProvider, t: TFunction) => {
           ? formatProviderName(str)
           : str === "local"
             ? t("deck.tags.private")
-            : str === "shared"
-              ? t("deck.tags.shared")
+            : str === "account"
+              ? t("deck.tags.account")
               : capitalize(str)}
       </span>
     </>
   );
-};
+}
 
-export function ProviderTag({ deck }: { deck: ResolvedDeck | undefined }) {
+export function ProviderTag({
+  deck,
+}: {
+  deck: Pick<ResolvedDeck, "source"> | undefined;
+}) {
   const { t } = useTranslation();
 
-  let source: StorageProvider = "local";
-  if (deck?.source) {
-    source = deck.source as StorageProvider;
-  } else if (deck?.shared) {
-    source = "shared";
-  }
+  const source = (deck?.source as StorageProvider) || "local";
 
   return (
     <Tag as="li" size="xs">
-      {providerTagRenderer(source, t)}
+      <ProviderTagInner tag={source} t={t} />
     </Tag>
   );
 }
@@ -140,7 +163,7 @@ export function LimitedCardPoolTag({
   deck,
   omitLegacy = false,
 }: {
-  deck: ResolvedDeck | undefined;
+  deck: Pick<ResolvedDeck, "cardPool"> | undefined;
   omitLegacy?: boolean;
 }) {
   const { t } = useTranslation();
@@ -210,26 +233,13 @@ function LimitedPoolLabel({ cardPool }: { cardPool: string[] | undefined }) {
     (p) => !EVERGREEN_CYCLES.includes(p.cycle_code),
   );
 
-  if (packs.length !== 3) {
-    return t("deck_edit.config.card_pool.custom");
+  // XXX: this will need adjusting once the pool is "full"
+  if (packs.every((p) => p.chapter === 2)) {
+    return <>{t("deck_edit.config.card_pool.current")}</>;
   }
 
-  const packCycles = packs
-    .map((p) => metadata.cycles[p.cycle_code])
-    .sort((a, b) => b.position - a.position);
-
-  if (
-    packCycles[1]?.position === packCycles[0]?.position - 1 &&
-    packCycles[2]?.position === packCycles[0]?.position - 2
-  ) {
-    const currentCycle = packCycles[0];
-
-    return (
-      <>
-        {t("deck_edit.config.card_pool.current")}
-        <PackIcon code={currentCycle.code} />
-      </>
-    );
+  if (packs.length !== 3) {
+    return t("deck_edit.config.card_pool.custom");
   }
 
   return (

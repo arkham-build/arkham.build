@@ -4,16 +4,24 @@ import { useRestingTooltip } from "../ui/tooltip.hooks";
 import type { Props as ListCardInnerProps } from "./list-card-inner";
 import { ListCardInner } from "./list-card-inner";
 
-export interface Props
-  extends Omit<ListCardInnerProps, "figureRef" | "referenceProps"> {
+export interface Props extends Omit<
+  ListCardInnerProps,
+  "cardLinkProps" | "closeCardTooltip" | "figureRef"
+> {
   tooltip?: React.ReactNode;
 }
 
 export function ListCard(props: Props) {
   const { card, tooltip, ...rest } = props;
 
-  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
-    useRestingTooltip();
+  const {
+    closeTooltip,
+    refs,
+    referenceProps,
+    isMounted,
+    floatingStyles,
+    transitionStyles,
+  } = useRestingTooltip();
 
   const settings = useStore((state) => state.settings);
 
@@ -35,8 +43,9 @@ export function ListCard(props: Props) {
         cardSkillIconsDisplay={
           rest.cardSkillIconsDisplay ?? settings.cardSkillIconsDisplay
         }
+        cardLinkProps={referenceProps}
+        closeCardTooltip={closeTooltip}
         figureRef={refs.setReference}
-        referenceProps={referenceProps}
         size={rest.size ?? settings.cardSize}
       />
       {isMounted && (

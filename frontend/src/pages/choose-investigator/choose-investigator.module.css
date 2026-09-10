@@ -17,15 +17,6 @@
   font-family: var(--font-family-content);
 }
 
-.signature button {
-  text-decoration: none;
-  background-color: var(--palette-point-five);
-  color: var(--text);
-  padding: 0.125rem 0.25rem;
-  font-size: var(--text-sm);
-  border-radius: var(--rounded);
-}
-
 .choose-investigator-buttons {
   display: flex;
   flex-flow: row nowrap;

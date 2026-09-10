@@ -3,9 +3,9 @@ import type {
   ApiDeckRequirements,
   ApiRestrictions,
   JsonDataCard,
+  JsonDataCycle,
+  JsonDataPack,
 } from "@arkham-build/shared";
-import type { JsonDataCycle } from "@/store/schemas/cycle.schema";
-import type { JsonDataPack } from "@/store/schemas/pack.schema";
 
 export function packToApiFormat(pack: JsonDataPack & { official?: boolean }) {
   return {
@@ -24,7 +24,7 @@ export function cycleToApiFormat(
 }
 
 export function cardToApiFormat(
-  card: JsonDataCard & { official?: boolean },
+  card: JsonDataCard & { official?: boolean; chapter?: number },
   mode = "card",
 ): ApiCard {
   const fullCard: ApiCard = {

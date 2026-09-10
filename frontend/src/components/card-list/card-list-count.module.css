@@ -18,7 +18,7 @@
       content: "*";
       top: 0;
       right: -0.375rem;
-      color: var(--nord-9);
+      color: var(--color-primary);
       z-index: 2;
       font-size: var(--text-2xs);
       line-height: 1;

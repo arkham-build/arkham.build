@@ -19,17 +19,25 @@ export function CardLink({
 
   const openCardModal = useStore((state) => state.openCardModal);
 
-  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
-    useRestingTooltip();
+  const {
+    closeTooltip,
+    refs,
+    referenceProps,
+    isMounted,
+    floatingStyles,
+    transitionStyles,
+  } = useRestingTooltip();
 
   const onClick = useCallback(
     (evt: React.MouseEvent) => {
       const linkPrevented = preventLeftClick(evt);
+      closeTooltip();
+
       if (linkPrevented) {
         openCardModal(card.code);
       }
     },
-    [openCardModal, card.code],
+    [card.code, closeTooltip, openCardModal],
   );
 
   return (

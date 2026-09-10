@@ -13,8 +13,9 @@ import {
   cardFormatDefinition,
   cardToMarkdown,
 } from "@/pages/deck-edit/editor/notes-rte/cards-to-markdown";
+import { useSaveSettings } from "@/pages/settings/use-save-settings";
 import { useStore } from "@/store";
-import { filterEncounterCards } from "@/store/lib/filtering";
+import { filterEncounterCards, filterPlayerCards } from "@/store/lib/filtering";
 import { makeSortFunction } from "@/store/lib/sorting";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectListCards } from "@/store/selectors/lists";
@@ -24,7 +25,7 @@ import {
   selectMetadata,
 } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
-import { and, not } from "@/utils/fp";
+import { and } from "@/utils/fp";
 import css from "./notes-rte.module.css";
 import {
   type CardOrigin,
@@ -53,18 +54,23 @@ export function CardsPopover(props: Props) {
 
   const metadata = useStore(selectMetadata);
   const lookupTables = useStore(selectLookupTables);
-  const setSettings = useStore((state) => state.setSettings);
+  const settings = useStore((state) => state.settings);
 
-  const locale = useStore((state) => state.settings.locale);
+  const locale = settings.locale;
 
-  const onUpdateDefaults = useCallback(() => {
-    setSettings({
+  const { isPending: isSavingSettings, saveSettings } = useSaveSettings({
+    settings: {
+      ...settings,
       notesEditor: {
         defaultFormat: cardFormat,
         defaultOrigin: cardOrigin,
       },
-    });
-  }, [setSettings, cardFormat, cardOrigin]);
+    },
+  });
+
+  const onUpdateDefaults = useCallback(() => {
+    void saveSettings();
+  }, [saveSettings]);
 
   const cards = useStore(
     useShallow((state) => selectCardOptions(state, cardOrigin, deck)),
@@ -111,7 +117,7 @@ export function CardsPopover(props: Props) {
       <div className={css["cards-popover-header"]}>
         <Button
           data-testid="notes-rte-update-defaults"
-          disabled={!settingsChanged}
+          disabled={!settingsChanged || isSavingSettings}
           onClick={onUpdateDefaults}
           size="xs"
         >
@@ -192,7 +198,7 @@ function selectCardOptions(
 
     cards.push(...(listCards?.cards ?? []));
   } else if (origin === "player") {
-    const filterFn = not(filterEncounterCards);
+    const filterFn = filterPlayerCards;
 
     cards.push(...Object.values(metadata.cards).filter(filterFn));
   } else if (origin === "campaign") {
@@ -206,7 +212,19 @@ function selectCardOptions(
 
     cards.push(...Object.values(metadata.cards).filter(filterFn));
   } else {
+    const investigatorSlots = Array.from([
+      deck.investigatorFront.card.code,
+      deck.investigatorBack.card.code,
+    ]).reduce(
+      (acc, code) => {
+        acc[code] = 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
     const deckSlots = {
+      ...investigatorSlots,
       ...deck.slots,
       ...deck.sideSlots,
       ...deck.exileSlots,

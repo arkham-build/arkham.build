@@ -1,11 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
-import {
-  fillSearch,
-  importPackFromFile,
-  openUrlInNewContext,
-  shareDeck,
-  unshareDeck,
-} from "./actions";
+import { fillSearch, importPackFromFile } from "./actions";
 import { mockApiCalls } from "./mocks";
 
 test.beforeEach(async ({ page }) => {
@@ -46,20 +40,23 @@ test.describe("fan-made content", () => {
     await page.goto("/settings?tab=fan-made-content");
     await importPackFromFile(page, "fan_made_investigator_project.json");
 
-    page
-      .getByTestId("collection")
-      .getByTestId("collection-project-view-cards")
-      .click();
-
-    const page1 = await page.waitForEvent("popup");
+    const [previewPage] = await Promise.all([
+      page.waitForEvent("popup"),
+      page
+        .getByTestId("collection")
+        .getByTestId("collection-project-view-cards")
+        .click(),
+    ]);
 
     await expect(
-      page1.getByRole("main").getByText("Ordinary Citizens", { exact: true }),
+      previewPage
+        .getByRole("main")
+        .getByText("Ordinary Citizens", { exact: true }),
     ).toBeVisible();
-    await page1.getByTestId("search-input").click();
-    await page1.getByTestId("search-input").fill("Lucia");
+    await previewPage.getByTestId("search-input").click();
+    await previewPage.getByTestId("search-input").fill("Lucia");
     await expect(
-      page1.getByRole("link", { name: "Scan of a33f6beb-915c-428c-" }),
+      previewPage.getByRole("link", { name: "Scan of a33f6beb-915c-428c-" }),
     ).toBeVisible();
   });
 
@@ -113,61 +110,6 @@ test.describe("fan-made content", () => {
     await expect(
       page.getByTestId("listcard-38fa4050-d63d-4870-91cd-a076d642f192"),
     ).toBeVisible();
-  });
-
-  test("share deck with fan-made cards", async ({ page }) => {
-    await createDeckWithFanMadeCard(page);
-    await shareDeck(page, false);
-
-    const ctxPage = await openUrlInNewContext(page, page.url());
-
-    await expect(
-      ctxPage.getByTestId("listcard-22be57b3-4e9f-4ecf-8f95-adf3edcf239d"),
-    ).toBeVisible();
-
-    await ctxPage.close();
-    await unshareDeck(page);
-  });
-
-  test("import a shared deck with fan-made cards", async ({ page }) => {
-    await createDeckWithFanMadeCard(page);
-    await shareDeck(page, false);
-
-    const ctxPage = await openUrlInNewContext(page, page.url());
-    await ctxPage.getByTestId("share-import").click();
-    await ctxPage.getByTestId("view-edit").click();
-    await ctxPage.getByTestId("card-type-encounter").click();
-    await fillSearch(ctxPage, "The Persian");
-
-    await expect(
-      ctxPage
-        .getByTestId("virtuoso-item-list")
-        .getByTestId("listcard-22be57b3-4e9f-4ecf-8f95-adf3edcf239d"),
-    ).toBeVisible();
-    await expect(
-      ctxPage
-        .getByTestId("editor-tabs-slots")
-        .getByTestId("listcard-22be57b3-4e9f-4ecf-8f95-adf3edcf239d"),
-    ).toBeVisible();
-
-    await ctxPage.close();
-    await unshareDeck(page);
-  });
-
-  test("cards from fan-made cards are not shown in the collection", async ({
-    page,
-  }) => {
-    await createDeckWithFanMadeCard(page);
-    await shareDeck(page, false);
-
-    const ctxPage = await openUrlInNewContext(page, page.url());
-    await ctxPage.getByTestId("share-import").click();
-    await ctxPage.getByTestId("masthead-logo").click();
-    await ctxPage.getByTestId("card-type-encounter").click();
-    await fillSearch(ctxPage, "The Persian");
-
-    await ctxPage.close();
-    await unshareDeck(page);
   });
 
   test("fan-made packs can be quick-installed via their id", async ({
@@ -268,6 +210,26 @@ test.describe("fan-made content", () => {
         .getByTestId("cardset-level")
         .getByTestId("listcard-cd00bc7f-398e-4f3b-885f-1048cd840086"),
     ).not.toBeVisible();
+  });
+
+  test("investigator placeholders can set BuildQL deckbuilding", async ({
+    page,
+  }) => {
+    await page.goto("/settings?tab=fan-made-content");
+    await importPackFromFile(page, "investigator_placeholders.json");
+    await page.getByTestId("masthead-logo").click();
+    await page.getByTestId("collection-create-deck").click();
+    await fillSearch(page, "jane doe");
+    await page.getByTestId("create-choose-investigator").click();
+    await page.getByTestId("create-save").click();
+    await page.getByTestId("editor-tab-config").click();
+    await page
+      .getByTestId("meta-buildql-deck-option")
+      .fill('faction = "rogue" & level = 5');
+    await fillSearch(page, "The Red Clock");
+    await expect(page.getByTestId("listcard-08058")).toBeVisible();
+    await fillSearch(page, "shotgun");
+    await expect(page.getByTestId("listcard-01029")).not.toBeVisible();
   });
 });
 

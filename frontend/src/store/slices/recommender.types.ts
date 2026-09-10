@@ -1,4 +1,4 @@
-import type { Id } from "../schemas/deck.schema";
+import type { Id } from "@arkham-build/shared";
 
 export type RecommenderState = {
   recommender: {

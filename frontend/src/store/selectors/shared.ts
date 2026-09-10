@@ -1,7 +1,7 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, Cycle, Pack } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import { official } from "@/utils/card-utils";
-import { PREVIEW_PACKS } from "@/utils/constants";
+import { SearchTextCache } from "@/utils/fuzzy";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import { time, timeEnd } from "@/utils/time";
@@ -10,9 +10,8 @@ import { Interpreter } from "../lib/buildql/interpreter";
 import { ownedCardCount } from "../lib/card-ownership";
 import { addProjectToMetadata, cloneMetadata } from "../lib/fan-made-content";
 import { createLookupTables } from "../lib/lookup-tables";
+import type { LookupTables } from "../lib/lookup-tables.types";
 import type { ResolvedDeck } from "../lib/types";
-import type { Cycle } from "../schemas/cycle.schema";
-import type { Pack } from "../schemas/pack.schema";
 import type { StoreState } from "../slices";
 import type { Metadata } from "../slices/metadata.types";
 
@@ -71,6 +70,11 @@ export const selectMetadata = createSelector(
   },
 );
 
+export const selectSearchTextCache = createSelector(
+  selectMetadata,
+  () => new SearchTextCache(),
+);
+
 export const selectLookupTables = createSelector(
   selectMetadata,
   (state: StoreState) => state.settings,
@@ -106,13 +110,15 @@ export const selectCollection = createSelector(
     return settings.showPreviews
       ? {
           ...collection,
-          ...PREVIEW_PACKS.reduce(
-            (acc, code) => {
-              acc[code] = 1;
-              return acc;
-            },
-            {} as Record<string, number>,
-          ),
+          ...Object.values(metadata.packs)
+            .filter((p) => p.preview)
+            .reduce(
+              (acc, { code }) => {
+                acc[code] = 1;
+                return acc;
+              },
+              {} as Record<string, number>,
+            ),
         }
       : collection;
   },
@@ -133,23 +139,6 @@ export const selectCardOwnedCount = createSelector(
         showAllCards: settings.showAllCards,
       });
     };
-  },
-);
-
-export const selectConnectionLock = createSelector(
-  (state: StoreState) => state.remoting,
-  (remoting) => {
-    return remoting.sync || remoting.arkhamdb
-      ? i18n.t("settings.connections.lock", { provider: "ArkhamDB" })
-      : undefined;
-  },
-);
-
-export const selectConnectionLockForDeck = createSelector(
-  selectConnectionLock,
-  (_: StoreState, deck: ResolvedDeck) => deck,
-  (remoting, deck) => {
-    return remoting && deck.source === "arkhamdb" ? remoting : undefined;
   },
 );
 
@@ -275,44 +264,34 @@ export const selectPrintingsForCard = createSelector(
     showFanMadeRelations,
     cardCode,
   ) => {
-    const duplicates = Object.keys(
-      lookupTables.relations.duplicates[cardCode] ?? {},
-    );
+    const packCodes = collectPrintingCodes(cardCode, lookupTables).reduce(
+      (acc, code) => {
+        const card = metadata.cards[code];
 
-    const reprints = Object.keys(
-      lookupTables.relations.reprints[cardCode] ?? {},
-    );
+        if (!card) return acc;
 
-    const basePrints = Object.keys(
-      lookupTables.relations.basePrints[cardCode] ?? {},
-    );
+        const canShow =
+          (showFanMadeRelations || official(card)) &&
+          (showPreviews || !card.preview);
 
-    const packCodes = Array.from(
-      new Set([cardCode, ...duplicates, ...reprints, ...basePrints]),
-    ).reduce((acc, code) => {
-      const card = metadata.cards[code];
+        if (!canShow) return acc;
 
-      const canShow =
-        (showFanMadeRelations || official(card)) &&
-        (showPreviews || !card.preview);
+        acc.set(card.pack_code, card);
+        const reprintPacks = lookupTables.reprintPacksByPack[card.pack_code];
 
-      if (!canShow) return acc;
-
-      acc.set(card.pack_code, card);
-      const reprintPacks = lookupTables.reprintPacksByPack[card.pack_code];
-
-      if (card) {
         if (reprintPacks) {
           Object.keys(reprintPacks).forEach((reprintCode) => {
-            const targetType = card.encounter_code ? "encounter" : "player";
-            const reprintPack = metadata.packs[reprintCode];
-            const reprintType = reprintPack.reprint?.type;
-            if (reprintType === targetType) acc.set(reprintCode, card);
+            const targetType = card.encounter_code ? "campaign" : "player";
+            if (metadata.packs[reprintCode]?.reprint_type === targetType) {
+              acc.set(reprintCode, card);
+            }
           });
         }
-      }
-      return acc;
-    }, new Map<string, Card>());
+
+        return acc;
+      },
+      new Map<string, Card>(),
+    );
 
     const printings = Array.from(packCodes.entries())
       .map(([packCode, card]) => {
@@ -360,18 +339,69 @@ export const selectPrintingsForCard = createSelector(
 export const selectBuildQlInterpreter = createSelector(
   selectMetadata,
   selectLookupTables,
-  selectActiveList,
+  selectSearchTextCache,
+  (state: StoreState) => !!selectActiveList(state)?.search?.includeBacks,
+  (state: StoreState) => state.cardTags,
   (_: StoreState, deck?: ResolvedDeck) => deck,
-  (metadata, lookupTables, list, deck) => {
+  (metadata, lookupTables, searchTextCache, matchBacks, cardTags, deck) => {
     return new Interpreter({
       fields,
       fieldLookupContext: {
+        cardTags,
         deck,
+        deckCardTags: deck?.deckCardTags,
         i18n,
         lookupTables,
-        matchBacks: !!list?.search?.includeBacks,
+        matchBacks,
         metadata,
       },
+      searchTextCache,
     });
   },
 );
+
+export const selectStaticBuildQlInterpreter = createSelector(
+  selectMetadata,
+  selectLookupTables,
+  selectSearchTextCache,
+  (state: StoreState) => !!selectActiveList(state)?.search?.includeBacks,
+  (state: StoreState) => state.cardTags,
+  (metadata, lookupTables, searchTextCache, matchBacks, cardTags) => {
+    return new Interpreter({
+      fields,
+      fieldLookupContext: {
+        cardTags,
+        deck: undefined,
+        i18n,
+        lookupTables,
+        matchBacks,
+        metadata,
+      },
+      searchTextCache,
+    });
+  },
+);
+
+function collectPrintingCodes(cardCode: string, lookupTables: LookupTables) {
+  const firstHop = collectPrintingNeighborCodes([cardCode], lookupTables);
+  const secondHop = collectPrintingNeighborCodes(firstHop, lookupTables);
+
+  return Array.from(new Set([cardCode, ...firstHop, ...secondHop]));
+}
+
+function collectPrintingNeighborCodes(
+  cardCodes: string[],
+  lookupTables: LookupTables,
+) {
+  return cardCodes.flatMap((code) => {
+    const duplicates = Object.keys(
+      lookupTables.relations.duplicates[code] ?? {},
+    );
+    const reprints = Object.keys(lookupTables.relations.reprints[code] ?? {});
+    const basePrints = Object.keys(
+      lookupTables.relations.basePrints[code] ?? {},
+    );
+
+    return [...duplicates, ...reprints, ...basePrints];
+  });
+}

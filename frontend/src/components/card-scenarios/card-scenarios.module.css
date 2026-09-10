@@ -1,0 +1,12 @@
+.scenario-list {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 0.75rem;
+  list-style: none;
+  align-items: center;
+}
+
+.scenario-icon {
+  padding: 0 0.25rem;
+  font-size: var(--icon-3xl);
+}

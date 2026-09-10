@@ -5,51 +5,86 @@ import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
+import { parseSearchFlags } from "@/store/lib/search-url";
 import { selectListCards } from "@/store/selectors/lists";
 import { selectIsInitialized } from "@/store/selectors/shared";
-import { useDocumentTitle } from "@/utils/use-document-title";
 
 function Search() {
   const { t } = useTranslation();
 
   const [searchParams] = useSearchParams();
+  const query = searchParams.get("q") || "";
+
+  const cardTypeParam = searchParams.get("card_type");
+  const { includeBacks, includeFlavor, includeGameText, includeName } =
+    parseSearchFlags(searchParams);
+
+  const cardType =
+    cardTypeParam === "player" || cardTypeParam === "encounter"
+      ? cardTypeParam
+      : "";
+
+  const listKey = "search";
 
   const activeListId = useStore((state) => state.activeList);
   const isInitalized = useStore(selectIsInitialized);
 
   const title = t("search.title");
-  useDocumentTitle(title);
 
-  const activeList = useStore((state) => state.lists[state.activeList ?? ""]);
+  const activeList = useStore((state) => state.lists[listKey]);
+  const hasActiveList = useStore((state) => !!state.lists[listKey]);
+
   const addList = useStore((state) => state.addList);
   const setActiveList = useStore((state) => state.setActiveList);
+  const setSearchFlag = useStore((state) => state.setSearchFlag);
   const setSearchValue = useStore((state) => state.setSearchValue);
   const removeList = useStore((state) => state.removeList);
   const mounted = useRef(false);
-
-  const listKey = "search";
+  const syncedCardType = useRef(cardType);
 
   useEffect(() => {
-    addList(
-      listKey,
-      {
-        card_type: "",
-      },
-      {
-        search: "",
-        showInvestigatorFilter: false,
-        showOwnershipFilter: false,
-      },
-    );
+    if (!hasActiveList || syncedCardType.current !== cardType) {
+      addList(
+        listKey,
+        {
+          card_type: cardType,
+        },
+        {
+          search: "",
+          showInvestigatorFilter: false,
+          showOwnershipFilter: false,
+        },
+      );
+      syncedCardType.current = cardType;
+    }
 
     setActiveList(listKey);
-    setSearchValue(searchParams.get("q") || "");
+    // TODO: should be optimized into a single state update.
+    setSearchFlag("includeName", includeName);
+    setSearchFlag("includeGameText", includeGameText);
+    setSearchFlag("includeFlavor", includeFlavor);
+    setSearchFlag("includeBacks", includeBacks);
+    setSearchValue(query);
+  }, [
+    addList,
+    cardType,
+    hasActiveList,
+    includeBacks,
+    includeFlavor,
+    includeGameText,
+    includeName,
+    query,
+    setActiveList,
+    setSearchFlag,
+    setSearchValue,
+  ]);
 
+  useEffect(() => {
     return () => {
       removeList(listKey);
       setActiveList(undefined);
     };
-  }, [addList, removeList, setActiveList, searchParams, setSearchValue]);
+  }, [removeList, setActiveList]);
 
   const listCards = useStore((state) =>
     selectListCards(state, undefined, undefined),
@@ -59,7 +94,7 @@ function Search() {
     return null;
   }
 
-  if (!mounted.current && listCards?.totalCardCount === 1) {
+  if (!mounted.current && listCards?.cards.length === 1) {
     return <Redirect to={`/card/${listCards.cards[0].code}`} />;
   }
 

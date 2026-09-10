@@ -1,10 +1,5 @@
-import {
-  BookTextIcon,
-  EllipsisIcon,
-  PlusIcon,
-  Trash2Icon,
-  UploadIcon,
-} from "lucide-react";
+import { type DeckId, isArkhamDBIdentity } from "@arkham-build/shared";
+import { EllipsisIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Virtuoso } from "react-virtuoso";
@@ -30,12 +25,17 @@ import {
 } from "@/components/ui/popover";
 import { Scroller } from "@/components/ui/scroller";
 import { useToast } from "@/components/ui/toast.hooks";
+import {
+  useDeleteAllDecksMutation,
+  useImportFromFilesMutation,
+} from "@/queries/mutations/decks";
 import { useStore } from "@/store";
-import { selectConnectionsData } from "@/store/selectors/connections";
+import type { DeckSummary as DeckSummaryType } from "@/store/lib/types";
 import { selectDecksDisplayList } from "@/store/selectors/deck-collection";
-import { isEmpty } from "@/utils/is-empty";
+import { ARKHAMDB_WARNING_VISIBLE } from "@/utils/constants";
 import { useHotkey } from "@/utils/use-hotkey";
 import { FileInput } from "../ui/file-input";
+import { Notice } from "../ui/notice";
 import css from "./deck-collection.module.css";
 import { DeckCollectionFilters } from "./deck-collection-filters";
 import { DeckCollectionFolder } from "./deck-collection-folder";
@@ -51,20 +51,29 @@ export function DeckCollection() {
   const toast = useToast();
 
   const deckCollection = useStore(selectDecksDisplayList);
-  const hasConnections = !isEmpty(useStore(selectConnectionsData));
 
-  const importDecks = useStore((state) => state.importFromFiles);
-  const deleteAllDecks = useStore((state) => state.deleteAllDecks);
+  const importDecksMutation = useImportFromFilesMutation();
+  const deleteAllDecksMutation = useDeleteAllDecksMutation();
+
+  const hasConnections = useStore(
+    (state) => state.auth.status === "authenticated",
+  );
+
+  const hasArkhamDBConnection = useStore(
+    (state) =>
+      state.auth.status === "authenticated" &&
+      !!state.auth.session?.identities.some(isArkhamDBIdentity),
+  );
 
   const onAddFiles = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement>) => {
       const files = evt.target.files;
       if (files?.length) {
-        importDecks(files);
+        importDecksMutation.mutate(files);
         setPopoverOpen(false);
       }
     },
-    [importDecks],
+    [importDecksMutation],
   );
 
   const onDeleteAll = useCallback(async () => {
@@ -78,7 +87,7 @@ export function DeckCollection() {
         variant: "loading",
       });
       try {
-        await deleteAllDecks();
+        await deleteAllDecksMutation.mutateAsync();
         toast.dismiss(toastId);
       } catch (err) {
         toast.dismiss(toastId);
@@ -90,7 +99,7 @@ export function DeckCollection() {
         });
       }
     }
-  }, [deleteAllDecks, toast, t]);
+  }, [deleteAllDecksMutation, toast, t]);
 
   const deleteDeck = useDeleteDeck();
   const duplicateDeck = useDuplicateDeck();
@@ -103,6 +112,11 @@ export function DeckCollection() {
 
   return (
     <div className={css["container"]}>
+      {ARKHAMDB_WARNING_VISIBLE && hasArkhamDBConnection && (
+        <Notice className={css["banner"]} variant="warning">
+          {t("deck_collection.arkhamdb_response_time_banner")}
+        </Notice>
+      )}
       <header className={css["header"]}>
         <h2 className={css["title"]}>{t("deck_collection.title")}</h2>
         <div className={css["actions"]}>
@@ -111,12 +125,6 @@ export function DeckCollection() {
               <DeckCollectionImport />
             </Popover>
           )}
-          <Link to="/decklists" asChild>
-            <Button as="a" data-testid="collection-deck-guides" size="sm">
-              <BookTextIcon />
-              {t("decklists.browse.title")}
-            </Button>
-          </Link>
           <Popover onOpenChange={setPopoverOpen} open={popoverOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -135,7 +143,7 @@ export function DeckCollection() {
                     id="collection-import"
                     multiple
                     onChange={onAddFiles}
-                    size="full"
+                    full
                     variant="bare"
                   >
                     <UploadIcon /> {t("deck_collection.import_json")}
@@ -144,7 +152,7 @@ export function DeckCollection() {
                 <DropdownButton
                   data-testid="collection-delete-all"
                   onClick={onDeleteAll}
-                  size="full"
+                  full
                   variant="bare"
                 >
                   <Trash2Icon /> {t("deck_collection.delete_all")}
@@ -174,7 +182,10 @@ export function DeckCollection() {
       {deckCollection.total ? (
         <Scroller
           className={css["scroller"]}
-          ref={setScrollParent as unknown as React.RefObject<HTMLDivElement>}
+          padded
+          ref={
+            setScrollParent as unknown as React.RefObject<HTMLDivElement | null>
+          }
           type="hover"
         >
           <Virtuoso
@@ -202,26 +213,12 @@ export function DeckCollection() {
                   />
                 )}
                 {entry.type === "deck" && (
-                  <div
-                    className={css["deck"]}
-                    data-testid={`collection-deck-${entry.deck.name}`}
-                    style={{ "--depth": entry.depth } as React.CSSProperties}
-                  >
-                    <DeckSummary
-                      data-testid="collection-deck"
-                      deck={entry.deck}
-                      interactive
-                      showThumbnail
-                      size="sm"
-                      validation={entry.deck.problem}
-                    >
-                      <DeckSummaryQuickActions
-                        deck={entry.deck}
-                        onDeleteDeck={deleteDeck}
-                        onDuplicateDeck={duplicateDeck}
-                      />
-                    </DeckSummary>
-                  </div>
+                  <DeckCollectionDeckEntry
+                    deck={entry.deck}
+                    deleteDeck={deleteDeck}
+                    depth={entry.depth}
+                    duplicateDeck={duplicateDeck}
+                  />
                 )}
               </div>
             )}
@@ -240,10 +237,10 @@ export function DeckCollection() {
                     {t("deck.actions.create")}
                   </Button>
                 </Link>
-                <Link href="/settings" asChild>
+                <Link href="/auth/login" asChild>
                   <Button variant="bare">
                     <i className="icon-elder_sign" />
-                    {t("deck_collection.connect_arkhamdb")}
+                    {t("auth.login.action")}
                   </Button>
                 </Link>
               </nav>
@@ -251,6 +248,46 @@ export function DeckCollection() {
           </figure>
         </div>
       )}
+    </div>
+  );
+}
+
+function DeckCollectionDeckEntry({
+  deck,
+  deleteDeck,
+  depth,
+  duplicateDeck,
+}: {
+  deck: DeckSummaryType;
+  deleteDeck: (id: DeckId) => Promise<void>;
+  depth: number;
+  duplicateDeck: (id: DeckId) => void;
+}) {
+  const hasSyncConflict = useStore(
+    (state) => state.sync.decks.items[deck.id]?.status === "conflict",
+  );
+
+  return (
+    <div
+      className={css["deck"]}
+      data-testid={`collection-deck-${deck.name}`}
+      style={{ "--depth": depth } as React.CSSProperties}
+    >
+      <DeckSummary
+        data-testid="collection-deck"
+        deck={deck}
+        hasSyncConflict={hasSyncConflict}
+        interactive
+        showThumbnail
+        size="sm"
+        validation={deck.problem}
+      >
+        <DeckSummaryQuickActions
+          deck={deck}
+          onDeleteDeck={deleteDeck}
+          onDuplicateDeck={duplicateDeck}
+        />
+      </DeckSummary>
     </div>
   );
 }

@@ -1,7 +1,9 @@
+import type { Id } from "@arkham-build/shared";
 import {
   ArchiveIcon,
   ArchiveRestoreIcon,
   CircleAlertIcon,
+  CircleQuestionMarkIcon,
   CopyIcon,
   PencilIcon,
   Trash2Icon,
@@ -9,12 +11,9 @@ import {
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
-import { useStore } from "@/store";
 import type { DeckValidationResult } from "@/store/lib/deck-validation";
 import { deckTags } from "@/store/lib/resolve-deck";
-import type { ResolvedDeck } from "@/store/lib/types";
-import type { Id } from "@/store/schemas/deck.schema";
-import { selectConnectionLockForDeck } from "@/store/selectors/shared";
+import type { DeckSummary as DeckSummaryType } from "@/store/lib/types";
 import { displayAttribute, getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { CardThumbnail } from "../card-thumbnail";
@@ -36,8 +35,9 @@ import css from "./deck-summary.module.css";
 
 type DeckSummaryProps = {
   children?: React.ReactNode;
-  deck: ResolvedDeck;
+  deck: DeckSummaryType;
   elevation?: "normal" | "elevated";
+  hasSyncConflict?: boolean;
   interactive?: boolean;
   showThumbnail?: boolean;
   showShadow?: boolean;
@@ -52,6 +52,7 @@ export function DeckSummary(props: DeckSummaryProps) {
     children,
     deck,
     elevation,
+    hasSyncConflict,
     interactive,
     showShadow,
     showThumbnail,
@@ -91,7 +92,15 @@ export function DeckSummary(props: DeckSummaryProps) {
           {showThumbnail && (
             <div className={css["thumbnail"]}>
               <CardThumbnail card={card} />
-              {!!validation &&
+              {hasSyncConflict && (
+                <DefaultTooltip
+                  tooltip={t("deck_sync.conflict.collection_badge")}
+                >
+                  <CircleQuestionMarkIcon className={css["conflict"]} />
+                </DefaultTooltip>
+              )}
+              {!hasSyncConflict &&
+                !!validation &&
                 (typeof validation === "string" || !validation?.valid) && (
                   <div className={css["validation"]}>
                     <CircleAlertIcon />
@@ -127,8 +136,12 @@ export function DeckSummary(props: DeckSummaryProps) {
       <div className={css["meta"]}>
         {children}
         <DeckTagsContainer>
-          <ProviderTag deck={deck} />
-          <FolderTag deckId={deck.id} />
+          {type === "deck" && (
+            <>
+              <ProviderTag deck={deck} />
+              <FolderTag deckId={deck.id} />
+            </>
+          )}
           <LimitedCardPoolTag deck={deck} omitLegacy />
           <SealedDeckTag deck={deck} />
           <DraftTag deck={deck} />
@@ -140,7 +153,7 @@ export function DeckSummary(props: DeckSummaryProps) {
 }
 
 type DeckSummaryQuickActionsProps = {
-  deck: ResolvedDeck;
+  deck: DeckSummaryType;
   onDeleteDeck?: (id: Id) => Promise<void>;
   onDuplicateDeck?: (id: Id) => void;
 };
@@ -150,10 +163,6 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
 
   const { t } = useTranslation();
   const [, navigate] = useLocation();
-
-  const connectionLock = useStore((state) =>
-    selectConnectionLockForDeck(state, deck),
-  );
 
   const onDuplicate = useCallback(
     (evt: React.MouseEvent) => {
@@ -166,7 +175,7 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
   const onDelete = useCallback(
     (evt: React.MouseEvent) => {
       cancelEvent(evt);
-      onDeleteDeck?.(deck.id);
+      void onDeleteDeck?.(deck.id)?.catch(console.error);
     },
     [deck.id, onDeleteDeck],
   );
@@ -241,9 +250,8 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
       <Button
         className={css["quick-action"]}
         iconOnly
-        disabled={!!connectionLock}
         onClick={onDelete}
-        tooltip={connectionLock ? connectionLock : t("deck.actions.delete")}
+        tooltip={t("deck.actions.delete")}
       >
         <Trash2Icon />
       </Button>

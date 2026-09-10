@@ -71,7 +71,7 @@ export function InvestigatorCardAccessFilter(props: FilterProps) {
           i18nKey="filters.investigator_card_access.help"
           components={{
             a: (
-              // biome-ignore lint/a11y/useAnchorContent: interpolation.
+              // oxlint-disable-next-line jsx-a11y/anchor-has-content -- interpolation.
               <a
                 href="https://arkham-starter.com/tool/who"
                 target="_blank"

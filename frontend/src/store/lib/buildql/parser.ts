@@ -21,7 +21,7 @@ export class ParserError extends Error {
   }
 }
 
-export class Parser {
+class Parser {
   private tokens: Token[];
   private current = 0;
 

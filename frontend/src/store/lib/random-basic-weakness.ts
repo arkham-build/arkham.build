@@ -1,10 +1,13 @@
+import {
+  type Collection,
+  type Settings as SettingsState,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
 import { cardLimit } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { resolveLimitedPoolPacks } from "@/utils/environments";
 import { isEmpty } from "@/utils/is-empty";
 import { randomInt } from "@/utils/random-int";
 import type { Metadata } from "../slices/metadata.types";
-import type { SettingsState } from "../slices/settings.types";
 import { ownedCardCount } from "./card-ownership";
 import type { LookupTables } from "./lookup-tables.types";
 import type { ResolvedDeck } from "./types";
@@ -26,8 +29,8 @@ export function randomBasicWeaknessForDeck(
     settings.useLimitedPoolForWeaknessDraw && !isEmpty(limitedPool);
 
   const collection = useLimitedPool
-    ? limitedPool.reduce<Record<string, number>>((acc, curr) => {
-        acc[curr] = settings.collection?.[curr] ?? 1;
+    ? limitedPool.reduce<Collection>((acc, curr) => {
+        acc[curr] = settings.collection?.[curr] || 1;
         return acc;
       }, {})
     : settings.collection;
@@ -37,14 +40,18 @@ export function randomBasicWeaknessForDeck(
   ).reduce<string[]>((acc, code) => {
     const card = metadata.cards[code];
 
-    const ownedCount = ownedCardCount({
-      card,
+    const opts = {
       metadata,
       lookupTables,
       collection,
       showAllCards: !useLimitedPool && settings.showAllCards,
       strict:
         useLimitedPool || settings.cardListsDefaultContentType === "official",
+    };
+
+    const ownedCount = ownedCardCount({
+      card,
+      ...opts,
     });
 
     if (
@@ -56,6 +63,16 @@ export function randomBasicWeaknessForDeck(
       return acc;
     }
 
+    if (card.reprint_of) {
+      const reprinted = metadata.cards[card.reprint_of];
+      const ownedBase = ownedCardCount({
+        card: reprinted,
+        ...opts,
+      });
+
+      if (ownedBase > 0) return acc;
+    }
+
     if (
       card.restrictions?.faction &&
       !card.restrictions.faction.includes(factionCode)
@@ -63,7 +80,12 @@ export function randomBasicWeaknessForDeck(
       return acc;
     }
 
-    const codes = Array.from({ length: ownedCount }, () => code);
+    const codes = Array.from(
+      {
+        length: Math.min(ownedCount, card.deck_limit ?? 0),
+      },
+      () => code,
+    );
     acc.push(...codes);
 
     return acc;

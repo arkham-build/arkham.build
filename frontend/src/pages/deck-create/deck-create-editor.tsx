@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, StorageProvider } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
 import { ArrowRightLeftIcon, Settings2Icon } from "lucide-react";
 import { useCallback, useMemo } from "react";
@@ -10,26 +10,25 @@ import { ListCard } from "@/components/list-card/list-card";
 import { TabooSelect } from "@/components/taboo-select";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { PageTitle } from "@/components/ui/page-title";
 import type { SelectOption } from "@/components/ui/select";
 import { Select } from "@/components/ui/select";
 import { useToast } from "@/components/ui/toast.hooks";
+import { useCreateDeckMutation } from "@/queries/mutations/decks";
 import { useStore } from "@/store";
 import { decodeSelections } from "@/store/lib/deck-meta";
 import type { CardWithRelations } from "@/store/lib/types";
-import { selectConnectionsData } from "@/store/selectors/connections";
 import {
   selectDeckCreateChecked,
   selectDeckCreateInvestigators,
+  selectDeckCreateStorageProviderOptions,
 } from "@/store/selectors/deck-create";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
-import { selectConnectionLock } from "@/store/selectors/shared";
-import type { StorageProvider } from "@/utils/constants";
-import { formatProviderName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import { useGoBack } from "@/utils/use-go-back";
 import { useAccentColor } from "../../utils/use-accent-color";
 import { SelectionEditor } from "../deck-edit/editor/selection-editor";
+import { useSaveSettings } from "../settings/use-save-settings";
 import css from "./deck-create.module.css";
 
 export function DeckCreateEditor() {
@@ -38,42 +37,16 @@ export function DeckCreateEditor() {
   const deckCreate = useStore(selectDeckCreateChecked);
   const { back, investigator } = useStore(selectDeckCreateInvestigators);
 
-  useDocumentTitle(`Create ${investigator.card.real_name} deck`);
-
-  const connections = useStore(selectConnectionsData);
-  const connectionLock = useStore(selectConnectionLock);
-  const provider = useStore((state) => state.deckCreate?.provider);
   const settings = useStore((state) => state.settings);
 
-  const createDeck = useStore((state) => state.createDeck);
   const setTitle = useStore((state) => state.deckCreateSetTitle);
   const setTabooSet = useStore((state) => state.deckCreateSetTabooSet);
   const setSelection = useStore((state) => state.deckCreateSetSelection);
   const setProvider = useStore((state) => state.deckCreateSetProvider);
 
-  const toast = useToast();
-  const [, navigate] = useLocation();
+  const onDeckCreate = useCreateDeck();
 
   const goBack = useGoBack();
-
-  const onDeckCreate = useCallback(async () => {
-    const toastId = toast.show({
-      children: t("deck_create.loading"),
-      variant: "loading",
-    });
-
-    try {
-      const id = await createDeck();
-      navigate(`/deck/edit/${id}`, { replace: true });
-      toast.dismiss(toastId);
-    } catch (err) {
-      toast.dismiss(toastId);
-      toast.show({
-        children: t("deck_create.error", { error: (err as Error).message }),
-        variant: "error",
-      });
-    }
-  }, [toast, createDeck, navigate, t]);
 
   const setInvestigatorCode = useStore(
     (state) => state.deckCreateSetInvestigatorCode,
@@ -120,13 +93,16 @@ export function DeckCreateEditor() {
     [setSelection],
   );
 
-  const onStorageDefaultChange = useCallback(() => {
-    const state = useStore.getState();
-
-    state.setSettings({
+  const { isPending: isSavingSettings, saveSettings } = useSaveSettings({
+    settings: {
+      ...settings,
       defaultStorageProvider: deckCreate.provider as StorageProvider,
-    });
-  }, [deckCreate.provider]);
+    },
+  });
+
+  const onStorageDefaultChange = useCallback(async () => {
+    await saveSettings();
+  }, [saveSettings]);
 
   const investigatorActionRenderer = useCallback(
     (card: Card) => (
@@ -141,30 +117,19 @@ export function DeckCreateEditor() {
   const selections = decodeSelections(back, deckCreate.selections);
   const cssVariables = useAccentColor(investigator.card);
 
-  const storageProviderOptions = useMemo(
-    () => [
-      {
-        label: t("deck_edit.config.storage_provider.local"),
-        value: "local",
-      },
-      {
-        label: t("deck_edit.config.storage_provider.shared"),
-        value: "shared",
-      },
-      ...connections.map((connection) => ({
-        label: formatProviderName(connection.provider),
-        value: connection.provider,
-      })),
-    ],
-    [t, connections],
+  const storageProviderOptions = useStore(
+    selectDeckCreateStorageProviderOptions,
   );
 
-  const providerChanged =
-    deckCreate.provider !== settings.defaultStorageProvider;
+  const providerChanged = false;
+  // XXX: when arkhamdb is stable again => deckCreate.provider !== settings.defaultStorageProvider;
 
   return (
     <div className={css["editor"]} style={cssVariables}>
-      <Field full padded>
+      <PageTitle>
+        {t("deck_create.title", { name: investigator.card.real_name })}
+      </PageTitle>
+      <Field full>
         <FieldLabel htmlFor="provider">
           {t("deck_edit.config.storage_provider.title")}
         </FieldLabel>
@@ -173,15 +138,16 @@ export function DeckCreateEditor() {
           name="provider"
           options={storageProviderOptions}
           onChange={(evt) => {
-            setProvider(evt.target.value);
+            setProvider(evt.target.value as StorageProvider);
           }}
           required
-          value={deckCreate.provider}
+          value={deckCreate.provider as string}
         />
         {providerChanged && (
           <Button
             className={css["provider-default"]}
             data-testid="create-provider-set-default"
+            disabled={isSavingSettings}
             onClick={onStorageDefaultChange}
             size="xs"
             variant="primary"
@@ -191,7 +157,7 @@ export function DeckCreateEditor() {
           </Button>
         )}
       </Field>
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="title">{t("deck_edit.config.name")}</FieldLabel>
         <input
           data-testid="create-title"
@@ -202,7 +168,7 @@ export function DeckCreateEditor() {
         />
       </Field>
 
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="create-taboo">
           {t("deck_edit.config.taboo")}
         </FieldLabel>
@@ -215,7 +181,7 @@ export function DeckCreateEditor() {
 
       {investigator.relations?.parallel && (
         <>
-          <Field full padded>
+          <Field full>
             <FieldLabel htmlFor="investigator-front">
               {t("deck_edit.config.sides.investigator_front")}
             </FieldLabel>
@@ -229,7 +195,7 @@ export function DeckCreateEditor() {
               value={deckCreate.investigatorFrontCode}
             />
           </Field>
-          <Field full padded>
+          <Field full>
             <FieldLabel htmlFor="investigator-back">
               {t("deck_edit.config.sides.investigator_back")}
             </FieldLabel>
@@ -270,13 +236,7 @@ export function DeckCreateEditor() {
       <nav className={css["editor-nav"]}>
         <Button
           data-testid="create-save"
-          disabled={!!connectionLock && provider === "arkhamdb"}
           onClick={onDeckCreate}
-          tooltip={
-            connectionLock && provider === "arkhamdb"
-              ? connectionLock
-              : undefined
-          }
           variant="primary"
         >
           {t("deck.actions.create")}
@@ -287,6 +247,32 @@ export function DeckCreateEditor() {
       </nav>
     </div>
   );
+}
+
+function useCreateDeck() {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const [, navigate] = useLocation();
+  const createDeckMutation = useCreateDeckMutation();
+
+  return useCallback(async () => {
+    const toastId = toast.show({
+      children: t("deck_create.loading"),
+      variant: "loading",
+    });
+
+    try {
+      const id = await createDeckMutation.mutateAsync();
+      navigate(`/deck/edit/${id}`, { replace: true });
+      toast.dismiss(toastId);
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.show({
+        children: t("deck_create.error", { error: (err as Error).message }),
+        variant: "error",
+      });
+    }
+  }, [createDeckMutation, navigate, t, toast]);
 }
 
 function getInvestigatorOptions(
@@ -335,7 +321,7 @@ function DeckCreateCardPool({ investigator }: { investigator: Card }) {
   );
 
   return (
-    <Field full padded bordered>
+    <Field full>
       <FieldLabel>{t("deck_edit.config.card_pool.section_title")}</FieldLabel>
       <LimitedCardPoolField
         investigator={investigator}

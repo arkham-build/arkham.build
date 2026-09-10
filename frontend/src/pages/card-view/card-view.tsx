@@ -1,43 +1,33 @@
-import { FloatingPortal } from "@floating-ui/react";
-import { GlobeIcon } from "lucide-react";
+import { DownloadIcon, GlobeIcon } from "lucide-react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams, useSearchParams } from "wouter";
+import { Link, useParams } from "wouter";
 import {
   CardArkhamDBLink,
   CardReviewsLink,
 } from "@/components/card-modal/card-arkhamdb-links";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
-import { CardScan } from "@/components/card-scan";
+import { CardFavorite } from "@/components/card-tags/card-favorite";
+import { CardTagManager, CardTags } from "@/components/card-tags/card-tags";
 import { Footer } from "@/components/footer";
 import { Masthead } from "@/components/masthead";
-import { Printing } from "@/components/printing";
 import { Button } from "@/components/ui/button";
-import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
+import { PageTitle } from "@/components/ui/page-title";
 import { CardViewCards } from "@/pages/card-view/card-view-cards";
 import { useStore } from "@/store";
+import { filterPlayerCards } from "@/store/lib/filtering";
 import type { CardWithRelations } from "@/store/lib/types";
 import { selectCardWithRelations } from "@/store/selectors/card-view";
 import {
-  type Printing as PrintingT,
-  selectLookupTables,
-  selectPrintingsForCard,
-} from "@/store/selectors/shared";
-import {
-  cardUrl,
   deckCreateLink,
   displayAttribute,
   isStaticInvestigator,
-  oldFormatCardUrl,
 } from "@/utils/card-utils";
-import {
-  CYCLES_WITH_STANDALONE_PACKS,
-  FLOATING_PORTAL_ID,
-} from "@/utils/constants";
 import { cx } from "@/utils/cx";
-import { useDocumentTitle } from "@/utils/use-document-title";
+import { download } from "@/utils/download";
 import { ErrorStatus } from "../errors/404";
 import css from "./card-view.module.css";
-import { Faq } from "./faq";
+import { Printings } from "./printings";
 import { UsableBy } from "./usable-by";
 
 function CardView() {
@@ -47,12 +37,22 @@ function CardView() {
   const cardWithRelations = useStore((state) =>
     selectCardWithRelations(state, code, true, undefined),
   );
+  const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
 
-  useDocumentTitle(
-    cardWithRelations
-      ? `${displayAttribute(cardWithRelations.card, "name")}`
-      : undefined,
-  );
+  const onExport = useCallback(() => {
+    if (!cardWithRelations) return;
+
+    const cards = [
+      cardWithRelations.card,
+      ...(cardWithRelations.back?.card ? [cardWithRelations.back.card] : []),
+    ];
+
+    download(
+      JSON.stringify(cards, null, 2),
+      `${cardWithRelations.card.code}.json`,
+      "application/json",
+    );
+  }, [cardWithRelations]);
 
   if (!cardWithRelations) {
     return <ErrorStatus statusCode={404} />;
@@ -63,13 +63,14 @@ function CardView() {
     isInvestigator && !isStaticInvestigator(cardWithRelations.card);
 
   const deckbuildable =
-    !cardWithRelations.card.encounter_code && !isInvestigator;
+    filterPlayerCards(cardWithRelations.card) && !isInvestigator;
 
   const parallel = (cardWithRelations as CardWithRelations).relations?.parallel
     ?.card;
 
   return (
     <CardModalProvider>
+      <PageTitle>{displayAttribute(cardWithRelations.card, "name")}</PageTitle>
       <div className={cx(css["layout"], "fade-in")}>
         <Masthead className={css["header"]} />
         <main className={css["main"]}>
@@ -83,29 +84,36 @@ function CardView() {
             <SidebarSection title={t("card_view.section_printings")}>
               <Printings code={cardWithRelations.card.code} />
             </SidebarSection>
+            <SidebarSection
+              title={
+                <>
+                  {t("card_tags.title")}
+                  <CardTagManager cardCode={cardWithRelations.card.code} />
+                </>
+              }
+            >
+              <CardTags cardCode={cardWithRelations.card.code} />
+            </SidebarSection>
             <SidebarSection title={t("card_view.section_actions")}>
-              <CardArkhamDBLink card={cardWithRelations.card} size="full">
-                <GlobeIcon /> {t("card_view.actions.open_on_arkhamdb")}
-              </CardArkhamDBLink>
-              <CardReviewsLink card={cardWithRelations.card} size="full" />
               {isBuildableInvestigator && (
                 <Link asChild href={deckCreateLink(cardWithRelations.card)}>
-                  <Button
-                    as="a"
-                    data-testid="card-modal-create-deck"
-                    size="full"
-                  >
+                  <Button as="a" data-testid="card-modal-create-deck" full>
                     <i className="icon-deck" /> {t("deck.actions.create")}
                   </Button>
                 </Link>
               )}
+              <CardFavorite card={cardWithRelations.card} />
+              <CardArkhamDBLink card={cardWithRelations.card} full>
+                <GlobeIcon /> {t("card_view.actions.open_on_arkhamdb")}
+              </CardArkhamDBLink>
+              <CardReviewsLink card={cardWithRelations.card} full />
+              {devModeEnabled && (
+                <Button data-testid="card-view-export" onClick={onExport} full>
+                  <DownloadIcon />
+                  {t("lists.nav.export")}
+                </Button>
+              )}
             </SidebarSection>
-
-            {cardWithRelations.card.official && (
-              <SidebarSection title={t("card_view.section_faq")}>
-                <Faq card={cardWithRelations.card} />
-              </SidebarSection>
-            )}
 
             {(deckbuildable || isInvestigator) && (
               <SidebarSection title={t("card_view.section_deckbuilding")}>
@@ -115,7 +123,7 @@ function CardView() {
                       asChild
                       href={`/card/${cardWithRelations.card.code}/usable_cards`}
                     >
-                      <Button size="full" data-testid="usable-cards" as="a">
+                      <Button full data-testid="usable-cards" as="a">
                         <i className="icon-cards" />
                         {t("card_view.actions.usable_by", {
                           prefix: "",
@@ -131,11 +139,7 @@ function CardView() {
                         asChild
                         href={`/card/${parallel.code}/usable_cards`}
                       >
-                        <Button
-                          size="full"
-                          data-testid="usable-cards-parallel"
-                          as="a"
-                        >
+                        <Button full data-testid="usable-cards-parallel" as="a">
                           <i className="icon-cards" />
                           {t("card_view.actions.usable_by", {
                             prefix: `${t("common.parallel")} `,
@@ -160,7 +164,10 @@ function CardView() {
   );
 }
 
-function SidebarSection(props: { title: string; children: React.ReactNode }) {
+function SidebarSection(props: {
+  title: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <section className={css["sidebar-section"]}>
       <header className={css["sidebar-section-header"]}>
@@ -168,81 +175,6 @@ function SidebarSection(props: { title: string; children: React.ReactNode }) {
       </header>
       <div className={css["sidebar-section-content"]}>{props.children}</div>
     </section>
-  );
-}
-
-function Printings(props: { code: string }) {
-  const printings = useStore((state) =>
-    selectPrintingsForCard(state, props.code),
-  );
-
-  const [search] = useSearchParams();
-  const oldFormat = search.get("old_format") === "true";
-
-  const lookupTables = useStore(selectLookupTables);
-
-  return (
-    <ul className={css["printings"]}>
-      {printings.map((printing) => {
-        const reprintPackCode =
-          lookupTables.reprintPacksByPack[printing.pack.code];
-
-        return (
-          <li key={`${printing.pack.code}-${printing.card.code}`}>
-            <ListPrinting
-              active={
-                printing.card.code === props.code &&
-                (CYCLES_WITH_STANDALONE_PACKS.includes(printing.cycle.code) ||
-                  oldFormat === !printing.pack.reprint)
-              }
-              printing={printing}
-              oldFormat={!!reprintPackCode}
-            />
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-function ListPrinting({
-  active,
-  oldFormat,
-  printing,
-}: {
-  active?: boolean;
-  oldFormat?: boolean;
-  printing: PrintingT;
-}) {
-  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
-    useRestingTooltip();
-
-  const url = oldFormat
-    ? oldFormatCardUrl(printing.card)
-    : cardUrl(printing.card);
-
-  return (
-    <>
-      <Link
-        {...referenceProps}
-        className={cx(css["printings-item"], active && css["active"])}
-        ref={refs.setReference}
-        to={url}
-      >
-        <Printing printing={printing} linked={false} />
-      </Link>
-      {isMounted && (
-        <FloatingPortal id={FLOATING_PORTAL_ID}>
-          <div
-            className={css["preview"]}
-            ref={refs.setFloating}
-            style={{ ...floatingStyles, ...transitionStyles }}
-          >
-            <CardScan card={printing.card} preventFlip />
-          </div>
-        </FloatingPortal>
-      )}
-    </>
   );
 }
 

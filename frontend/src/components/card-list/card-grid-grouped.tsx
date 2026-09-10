@@ -11,14 +11,21 @@ import type { Metadata } from "@/store/slices/metadata.types";
 import { cx } from "@/utils/cx";
 import { preventLeftClick } from "@/utils/prevent-links";
 import { CardScan } from "../card-scan";
+import { CardFavoriteAction } from "../card-tags/card-favorite";
 import { Scroller } from "../ui/scroller";
 import { CardActions } from "./card-actions";
 import css from "./card-grid.module.css";
 import { Grouphead } from "./grouphead";
 import type { CardListImplementationProps } from "./types";
 
-export function CardGridGrouped(props: CardListImplementationProps) {
-  const { data, metadata, search, ...rest } = props;
+export function CardGridGrouped(
+  props: CardListImplementationProps & {
+    defaultFlipped: boolean;
+    scanMaxColumns: number;
+  },
+) {
+  const { data, defaultFlipped, metadata, scanMaxColumns, search, ...rest } =
+    props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
@@ -84,14 +91,13 @@ export function CardGridGrouped(props: CardListImplementationProps) {
     [data],
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a search should reset scroll position.
   useEffect(() => {
     setCurrentTop(-1);
     activeGroup.current = undefined;
     virtuosoRef.current?.scrollToIndex(0);
   }, [search]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a change to card count should reset scroll position.
+  /* oxlint-disable react/exhaustive-deps -- a change to card count should reset scroll position. */
   useEffect(() => {
     if (activeGroup.current) {
       const idx = data.groups.findIndex((g) => g.key === activeGroup.current);
@@ -102,13 +108,16 @@ export function CardGridGrouped(props: CardListImplementationProps) {
       }
     }
   }, [data?.cards.length]);
+  /* oxlint-enable react/exhaustive-deps */
 
   return (
     <Scroller
       className={css["scroller"]}
       data-testid="card-list-scroller"
-      ref={setScrollParent as unknown as React.RefObject<HTMLDivElement>}
+      padded
+      ref={setScrollParent as unknown as React.RefObject<HTMLDivElement | null>}
       type="always"
+      viewportClassName={css["scroll-viewport"]}
     >
       {data && (
         <Virtuoso
@@ -122,8 +131,10 @@ export function CardGridGrouped(props: CardListImplementationProps) {
               {...rest}
               group={group}
               data={data}
+              defaultFlipped={defaultFlipped}
               index={index}
               metadata={metadata}
+              scanMaxColumns={scanMaxColumns}
             />
           )}
         />
@@ -136,11 +147,21 @@ function CardGridGroup(
   props: {
     group: CardGroupType;
     data: ListState;
+    defaultFlipped: boolean;
     index: number;
     metadata: Metadata;
+    scanMaxColumns: number;
   } & CardListImplementationProps,
 ) {
-  const { group, data, index, metadata, ...rest } = props;
+  const {
+    group,
+    data,
+    defaultFlipped,
+    index,
+    metadata,
+    scanMaxColumns,
+    ...rest
+  } = props;
   const { cards, groupCounts } = data;
 
   const counts = groupCounts[index];
@@ -155,6 +176,17 @@ function CardGridGroup(
     [cards, counts, offset],
   );
 
+  const cssVariables = useMemo(
+    () => ({
+      "--grid-columns-2": Math.min(2, scanMaxColumns),
+      "--grid-columns-3": Math.min(3, scanMaxColumns),
+      "--grid-columns-4": Math.min(4, scanMaxColumns),
+      "--grid-columns-5": Math.min(5, scanMaxColumns),
+      "--grid-columns-6": Math.min(6, scanMaxColumns),
+    }),
+    [scanMaxColumns],
+  );
+
   return (
     <div className={css["group"]} key={group.key}>
       <Grouphead
@@ -162,24 +194,33 @@ function CardGridGroup(
         grouping={group}
         metadata={metadata}
       />
-      <div className={cx(css["group-items"], css["grouped"])}>
+      <div
+        className={cx(css["group-items"], css["grouped"])}
+        style={cssVariables as React.CSSProperties}
+      >
         {groupCards.map((card) => (
-          <CardGridItem {...rest} card={card} key={card.code} />
+          <CardGridItem
+            {...rest}
+            card={card}
+            defaultFlipped={defaultFlipped}
+            key={card.code}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-export function CardGridItem(
+function CardGridItem(
   props: {
     card: Card;
+    defaultFlipped: boolean;
   } & Pick<
     CardListImplementationProps,
     "getListCardProps" | "quantities" | "resolvedDeck"
   >,
 ) {
-  const { card, getListCardProps, quantities } = props;
+  const { card, defaultFlipped, getListCardProps, quantities } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
@@ -204,6 +245,11 @@ export function CardGridItem(
     [openModal],
   );
 
+  const leftActionSlot = useCallback(
+    () => <CardFavoriteAction card={card} />,
+    [card],
+  );
+
   const quantity = quantities?.[card.code] ?? 0;
 
   return (
@@ -219,7 +265,12 @@ export function CardGridItem(
         onKeyUp={onPressEnter}
         tabIndex={0}
       >
-        <CardScan card={card} lazy />
+        <CardScan
+          card={card}
+          defaultFlipped={defaultFlipped}
+          lazy
+          leftActionSlot={leftActionSlot}
+        />
       </Link>
       <div className={css["group-item-actions"]}>
         <CardActions

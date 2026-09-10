@@ -1,13 +1,5 @@
 import type { Span } from "./lexer.types";
 
-export type NodeType =
-  | "BINARY"
-  | "GROUP"
-  | "LIST"
-  | "LITERAL"
-  | "REGEX"
-  | "IDENTIFIER";
-
 export type BinaryOperator =
   | "=="
   | "="

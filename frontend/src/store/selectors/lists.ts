@@ -1,10 +1,13 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, CardTagsState, Cycle, Pack } from "@arkham-build/shared";
 import {
   ASSET_SLOT_ORDER,
+  CARD_TAG_FAVORITE_ID,
   FACTION_ORDER,
   type FactionName,
+  normalizeCardTagName,
   SKILL_KEYS,
   type SkillKey,
+  SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import {
@@ -12,12 +15,15 @@ import {
   official,
   splitMultiValue,
 } from "@/utils/card-utils";
+import { inferChapterNumber } from "@/utils/chapters";
 import {
   CYCLES_WITH_STANDALONE_PACKS,
   NO_SLOT_STRING,
-  SPECIAL_CARD_CODES,
 } from "@/utils/constants";
-import { resolveLimitedPoolPacks } from "@/utils/environments";
+import {
+  isDeckbuildingPoolPack,
+  resolveLimitedPoolPacks,
+} from "@/utils/environments";
 import {
   capitalize,
   displayPackName,
@@ -28,14 +34,23 @@ import { and, not, or } from "@/utils/fp";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import { time, timeEnd } from "@/utils/time";
+import type { Interpreter } from "../lib/buildql/interpreter";
+import { parse as parseBuildQl } from "../lib/buildql/parser";
 import { applyCardChanges } from "../lib/card-edits";
-import { getAdditionalDeckOptions } from "../lib/deck-validation";
+import {
+  getCardTagFilterCode,
+  getCardTagNameFromFilterCode,
+  mergeCardTagNames,
+  resolveCardTagCardCode,
+} from "../lib/card-tags";
+import { getAdditionalDeckOptions } from "../lib/deck-options";
 import {
   containsCard,
   filterActions,
   filterAssets,
   filterBacksides,
   filterCardPool,
+  filterCardTags,
   filterCost,
   filterCycleCode,
   filterDuplicates,
@@ -53,6 +68,7 @@ import {
   filterOfficial,
   filterOwnership,
   filterPackCode,
+  filterPlayerCards,
   filterProperties,
   filterSealed,
   filterSkillIcons,
@@ -71,8 +87,6 @@ import {
   sortByName,
 } from "../lib/sorting";
 import { isResolvedDeck, type ResolvedDeck } from "../lib/types";
-import type { Cycle } from "../schemas/cycle.schema";
-import type { Pack } from "../schemas/pack.schema";
 import type { StoreState } from "../slices";
 import type {
   AssetFilter,
@@ -95,11 +109,14 @@ import type {
 import type { Metadata } from "../slices/metadata.types";
 import {
   selectActiveList,
+  selectBuildQlInterpreter,
   selectCollection,
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
+  selectSearchTextCache,
   selectSettingsTabooId,
+  selectShowFanMadeRelations,
   selectTraitMapper,
 } from "./shared";
 
@@ -118,12 +135,48 @@ export type ListState = {
 
 export type TargetDeck = "slots" | "extraSlots" | "both";
 
+const EMPTY_CARD_TAG_STATE: CardTagsState = {
+  tags: [],
+  cardTags: {},
+  favorites: {},
+};
+
+const selectActiveCardTagState = createSelector(
+  selectActiveList,
+  (state: StoreState) => state.cardTags,
+  (activeList, cardTags) =>
+    listUsesCardTagFilter(activeList) ? cardTags : EMPTY_CARD_TAG_STATE,
+);
+
+function listUsesCardTagFilter(list: List | undefined) {
+  if (!list?.filtersEnabled) return false;
+
+  for (const [id] of list.filters.entries()) {
+    const filter = list.filterValues[id];
+    if (filter?.type !== "card_tags") continue;
+
+    return (filter.value as MultiselectFilter).length > 0;
+  }
+
+  return false;
+}
+
+function evaluateBuildQlSearch(value: string, buildQlInterpreter: Interpreter) {
+  try {
+    return buildQlInterpreter.evaluate(parseBuildQl(value));
+  } catch {
+    return undefined;
+  }
+}
+
 function makeUserFilter(
   metadata: Metadata,
   lookupTables: LookupTables,
+  cardTags: CardTagsState,
   list: List,
   resolvedDeck: ResolvedDeck | undefined,
   targetDeck: TargetDeck | undefined,
+  buildQlInterpreter: Interpreter,
 ) {
   const filters: Filter[] = [];
 
@@ -145,6 +198,19 @@ function makeUserFilter(
       case "asset": {
         const value = filterValue.value as AssetFilter;
         const filter = filterAssets(value, lookupTables);
+        if (filter) filters.push(filter);
+        break;
+      }
+
+      case "card_tags": {
+        const value = filterValue.value as MultiselectFilter;
+        const filter = filterCardTags(
+          value,
+          cardTags,
+          metadata,
+          lookupTables.relations.fronts,
+          resolvedDeck,
+        );
         if (filter) filters.push(filter);
         break;
       }
@@ -180,14 +246,18 @@ function makeUserFilter(
         const value = filterValue.value as string | undefined;
 
         if (value) {
-          const filter = [];
-          const accessFilter = filterInvestigatorAccess(metadata.cards[value], {
-            customizable: {
-              properties: "all",
-              level: "all",
+          const filter: Filter[] = [(card) => card.code === value];
+          const accessFilter = filterInvestigatorAccess(
+            metadata.cards[value],
+            buildQlInterpreter,
+            {
+              customizable: {
+                properties: "all",
+                level: "all",
+              },
+              targetDeck,
             },
-            targetDeck,
-          });
+          );
           const weaknessFilter = filterInvestigatorWeaknessAccess(
             metadata.cards[value],
             { targetDeck },
@@ -208,7 +278,10 @@ function makeUserFilter(
         if (value.range) {
           if (resolvedDeck) {
             filters.push(
-              filterLevel(value, resolvedDeck?.investigatorBack?.card),
+              filterLevel(value, buildQlInterpreter, {
+                checkEffectiveLevel: true,
+                investigator: resolvedDeck?.investigatorBack?.card,
+              }),
             );
           } else {
             const filterIndex = list.filters.indexOf("investigator");
@@ -218,7 +291,12 @@ function makeUserFilter(
             const investigator = filterValue
               ? metadata.cards[filterValue as string]
               : undefined;
-            filters.push(filterLevel(value, investigator));
+            filters.push(
+              filterLevel(value, buildQlInterpreter, {
+                checkEffectiveLevel: true,
+                investigator,
+              }),
+            );
           }
         }
 
@@ -285,7 +363,7 @@ function makeUserFilter(
           const filter = (card: Card) => {
             if (card.type_code !== "investigator") return false;
 
-            const filter = filterInvestigatorAccess(card, {
+            const filter = filterInvestigatorAccess(card, buildQlInterpreter, {
               customizable: {
                 properties: "all",
                 level: "all",
@@ -354,16 +432,29 @@ export function selectCanonicalTabooSetId(
 ) {
   if (resolvedDeck) return resolvedDeck.taboo_id;
 
-  const filters = selectActiveListFilters(state);
-  const filterId = filters.indexOf("taboo_set");
+  const filterValue = selectActiveTabooSetFilterValue(state);
+  if (filterValue != null) return filterValue;
 
-  const filterValue = filterId
-    ? selectActiveListFilter(state, filterId)
-    : undefined;
+  return selectListTabooSetId(state);
+}
 
-  if (typeof filterValue?.value === "number") return filterValue.value;
+export function selectListTabooSetId(state: StoreState) {
+  const activeList = selectActiveList(state);
+
+  if (activeList?.tabooSetOverride !== undefined) {
+    return activeList.tabooSetOverride;
+  }
 
   return selectSettingsTabooId(state.settings, selectMetadata(state));
+}
+
+export function selectActiveTabooSetFilterValue(state: StoreState) {
+  const filters = selectActiveListFilters(state);
+  const filterId = filters.indexOf("taboo_set");
+  const filterValue =
+    filterId >= 0 ? selectActiveListFilter(state, filterId) : undefined;
+
+  return typeof filterValue?.value === "number" ? filterValue.value : undefined;
 }
 
 // Custom equality check for deck's card access.
@@ -377,6 +468,7 @@ export function selectCanonicalTabooSetId(
 // 7. Deck card pool changes.
 // 8. Sealed deck changes.
 // 9. Stored deck has changed.
+// 10. BuildQL deck option overrides
 const deckAccessEqual = (
   a: ResolvedDeck | undefined,
   b: ResolvedDeck | undefined,
@@ -393,18 +485,27 @@ const deckAccessEqual = (
       JSON.stringify(a.selections) === JSON.stringify(b.selections) && // 6
       JSON.stringify(a.cardPool) === JSON.stringify(b.cardPool) && // 7
       a.sealedDeck === b.sealedDeck && // 8
-      a.date_update === b.date_update // 9
+      a.date_update === b.date_update && // 9
+      a.metaParsed.buildql_deck_options_override ===
+        b.metaParsed.buildql_deck_options_override // 10
     );
   }
 
-  // biome-ignore lint/suspicious/noDoubleEquals: we want a shallow equality check in this context.
+  // oxlint-disable-next-line eqeqeq -- we want a shallow equality check in this context.
   return a == b;
 };
+
+// These cache selectors intentionally return their input so resultEqualityCheck can
+// preserve the previous deck reference when only unrelated deck data changes.
+const deckCacheDevModeChecks = {
+  identityFunctionCheck: "never",
+} as const;
 
 const selectDeckCachedByCardAccess = createSelector(
   (_: StoreState, resolvedDeck: ResolvedDeck | undefined) => resolvedDeck,
   (resolvedDeck) => resolvedDeck,
   {
+    devModeChecks: deckCacheDevModeChecks,
     memoizeOptions: {
       resultEqualityCheck: deckAccessEqual,
     },
@@ -415,6 +516,7 @@ const selectDeckInvestigatorFilter = createSelector(
   selectMetadata,
   selectLookupTables,
   selectDeckCachedByCardAccess,
+  selectBuildQlInterpreter,
   (state: StoreState) => state.settings,
   (
     _: StoreState,
@@ -427,6 +529,7 @@ const selectDeckInvestigatorFilter = createSelector(
     metadata,
     lookupTables,
     resolvedDeck,
+    buildQlInterpreter,
     settings,
     targetDeck,
     showUnusableCards,
@@ -451,17 +554,21 @@ const selectDeckInvestigatorFilter = createSelector(
 
     const ors = [];
 
-    const investigatorFilter = filterInvestigatorAccess(investigatorBack, {
-      additionalDeckOptions: getAdditionalDeckOptions(resolvedDeck),
-      customizable: {
-        properties: "all",
-        level: "all",
+    const investigatorFilter = filterInvestigatorAccess(
+      investigatorBack,
+      buildQlInterpreter,
+      {
+        additionalDeckOptions: getAdditionalDeckOptions(resolvedDeck),
+        customizable: {
+          properties: "all",
+          level: "all",
+        },
+        investigatorFront: resolvedDeck.investigatorFront.card,
+        selections: resolvedDeck.selections,
+        targetDeck,
+        showLimitedAccess,
       },
-      investigatorFront: resolvedDeck.investigatorFront.card,
-      selections: resolvedDeck.selections,
-      targetDeck,
-      showLimitedAccess,
-    });
+    );
 
     const weaknessFilter = filterInvestigatorWeaknessAccess(investigatorBack, {
       targetDeck,
@@ -528,7 +635,7 @@ const customizationsEqual = (
 ) => {
   return isResolvedDeck(a) && isResolvedDeck(b)
     ? JSON.stringify(a.customizations) === JSON.stringify(b.customizations)
-    : // biome-ignore lint/suspicious/noDoubleEquals: we want a shallow equality check in this context.
+    : // oxlint-disable-next-line eqeqeq -- we want a shallow equality check in this context.
       a == b;
 };
 
@@ -536,6 +643,7 @@ const selectDeckCachedByCustomizations = createSelector(
   (_: StoreState, resolvedDeck: ResolvedDeck | undefined) => resolvedDeck,
   (resolvedDeck) => resolvedDeck,
   {
+    devModeChecks: deckCacheDevModeChecks,
     memoizeOptions: {
       resultEqualityCheck: customizationsEqual,
     },
@@ -553,7 +661,7 @@ const fanMadeDataEqual = (
 ) => {
   return isResolvedDeck(a) && isResolvedDeck(b)
     ? JSON.stringify(a.fanMadeData) === JSON.stringify(b.fanMadeData)
-    : // biome-ignore lint/suspicious/noDoubleEquals: we want a shallow equality check in this context.
+    : // oxlint-disable-next-line eqeqeq -- we want a shallow equality check in this context.
       a == b;
 };
 
@@ -561,6 +669,7 @@ const selectDeckCachedByFanMadeData = createSelector(
   (_: StoreState, resolvedDeck: ResolvedDeck | undefined) => resolvedDeck,
   (resolvedDeck) => resolvedDeck,
   {
+    devModeChecks: deckCacheDevModeChecks,
     memoizeOptions: {
       resultEqualityCheck: fanMadeDataEqual,
     },
@@ -605,6 +714,7 @@ const selectBaseListCards = createSelector(
     time("select_base_list_cards");
 
     let filteredCards = Object.values(metadata.cards);
+    const totalCardCount = filteredCards.length;
 
     // filters can be impacted by card changes, apply them now.
     if (tabooSetId || customizations) {
@@ -626,8 +736,8 @@ const selectBaseListCards = createSelector(
 
       return Boolean(
         fanMadeData?.cards?.[card.code] ||
-          fanMadeProjects?.[pack.cycle_code] ||
-          fanMadeCycleCodes?.includes(pack.cycle_code),
+        fanMadeProjects?.[pack.cycle_code] ||
+        fanMadeCycleCodes?.includes(pack.cycle_code),
       );
     });
 
@@ -644,7 +754,7 @@ const selectBaseListCards = createSelector(
         const value = cardTypeFilter.value as CardTypeFilter;
 
         if (value === "player") {
-          filters.push(not(filterEncounterCards));
+          filters.push(filterPlayerCards);
         } else if (value === "encounter") {
           filters.push(filterEncounterCards);
         }
@@ -652,7 +762,6 @@ const selectBaseListCards = createSelector(
     }
 
     filteredCards = filteredCards.filter(and(filters));
-    const totalCardCount = filteredCards.length;
 
     filters = [];
 
@@ -709,6 +818,9 @@ export const selectListCards = createSelector(
   selectActiveList,
   selectBaseListCards,
   selectLocaleSortingCollator,
+  selectBuildQlInterpreter,
+  selectSearchTextCache,
+  selectActiveCardTagState,
   (_: StoreState, resolvedDeck: ResolvedDeck | undefined) => resolvedDeck,
   (
     _: StoreState,
@@ -716,15 +828,20 @@ export const selectListCards = createSelector(
     targetDeck: TargetDeck | undefined,
   ) => targetDeck,
   (state: StoreState) => state.ui.showUnusableCards,
+  (state: StoreState) => state.settings.collection,
   (
     metadata,
     lookupTables,
     activeList,
     baseFilterResult,
     sortingCollator,
+    buildQlInterpreter,
+    searchTextCache,
+    cardTags,
     deck,
     targetDeck,
     showUnusableCards,
+    collection,
   ) => {
     if (!baseFilterResult || !activeList) return undefined;
 
@@ -743,6 +860,7 @@ export const selectListCards = createSelector(
           metadata,
           lookupTables,
           deck,
+          collection,
         ),
       );
 
@@ -754,13 +872,24 @@ export const selectListCards = createSelector(
 
     if (search.value) {
       if (search.mode === "buildql") {
-        if (search.buildQlSearch) {
+        const buildQlSearchValue = search.buildQlSearchValue ?? search.value;
+        const buildQlSearch = evaluateBuildQlSearch(
+          buildQlSearchValue,
+          buildQlInterpreter,
+        );
+
+        if (buildQlSearch) {
           try {
-            filteredCards = filteredCards.filter(search.buildQlSearch);
+            filteredCards = filteredCards.filter(buildQlSearch);
           } catch {}
         }
       } else {
-        filteredCards = applySearch(activeList.search, filteredCards, metadata);
+        filteredCards = applySearch(
+          activeList.search,
+          filteredCards,
+          metadata,
+          searchTextCache,
+        );
       }
     }
 
@@ -768,9 +897,11 @@ export const selectListCards = createSelector(
     const userFilter = makeUserFilter(
       metadata,
       lookupTables,
+      cardTags,
       activeList,
       deck,
       targetDeck,
+      buildQlInterpreter,
     );
 
     if (userFilter) {
@@ -888,11 +1019,11 @@ export const selectListFilterProperties = createSelector(
         packs.add(card.pack_code);
         const pack = metadata.packs[card.pack_code];
 
-        if (official(pack) && !pack?.reprint) {
+        if (official(pack) && !pack?.reprint_type) {
           const cycle = metadata.cycles[pack?.cycle_code];
           const reprintPackId = `${cycle?.code}${card.encounter_code ? "c" : "p"}`;
           const reprintPack = metadata.packs[reprintPackId];
-          if (reprintPack?.reprint) packs.add(reprintPack.code);
+          if (reprintPack?.reprint_type) packs.add(reprintPack.code);
         }
 
         if (card.encounter_code) {
@@ -1013,6 +1144,89 @@ export const selectActionOptions = createSelector(
 );
 
 /**
+ * Card Tags
+ */
+
+type CardTagFilterOption = {
+  code: string;
+  name: string;
+};
+
+export const selectCardTagMapper = createSelector(
+  selectLocaleSortingCollator,
+  (_) => {
+    return (code: string): CardTagFilterOption => {
+      if (code === CARD_TAG_FAVORITE_ID) {
+        return { code, name: i18n.t("card_tags.favorite") };
+      }
+
+      return {
+        code,
+        name: getCardTagNameFromFilterCode(code) ?? code,
+      };
+    };
+  },
+);
+
+export const selectCardTagOptions = createSelector(
+  selectMetadata,
+  selectLookupTables,
+  selectBaseListCards,
+  (state: StoreState) => state.cardTags,
+  (_: StoreState, resolvedDeck: ResolvedDeck | undefined) => resolvedDeck,
+  selectLocaleSortingCollator,
+  selectCardTagMapper,
+  (
+    metadata,
+    lookupTables,
+    baseFilterResult,
+    cardTags,
+    resolvedDeck,
+    collator,
+    mapper,
+  ) => {
+    const tagNames = new Map<string, string>();
+    let hasFavorite = false;
+
+    for (const card of baseFilterResult?.filteredCards ?? []) {
+      const canonicalCode = resolveCardTagCardCode(
+        metadata,
+        lookupTables.relations.fronts,
+        card.code,
+      );
+
+      if (cardTags.favorites?.[canonicalCode]) {
+        hasFavorite = true;
+      }
+
+      const assignedTagNames = mergeCardTagNames(
+        resolvedDeck?.deckCardTags[canonicalCode],
+        cardTags.cardTags[canonicalCode],
+      );
+
+      for (const tagName of assignedTagNames) {
+        const normalizedName = normalizeCardTagName(tagName);
+
+        if (!tagNames.has(normalizedName)) {
+          tagNames.set(normalizedName, tagName);
+        }
+      }
+    }
+
+    const options = Array.from(tagNames.values())
+      .map((tagName) => getCardTagFilterCode(tagName))
+      .map(mapper)
+      .sort((a, b) => collator.compare(a.name, b.name));
+
+    if (hasFavorite) {
+      options.unshift(mapper(CARD_TAG_FAVORITE_ID));
+    }
+
+    return options;
+  },
+);
+
+/**
  * Asset
  */
 
@@ -1057,7 +1271,7 @@ export const selectAssetOptions = createSelector(
 
     const skillBoosts = SKILL_KEYS.filter((x) => x !== "wild");
 
-    uses.sort();
+    uses.sort((a, b) => a.name.localeCompare(b.name));
 
     return {
       health: filterProps.health,
@@ -1173,7 +1387,7 @@ export const selectInvestigatorOptions = createSelector(
     >((acc, code) => {
       const card = metadata.cards[code];
 
-      if (card && !card.duplicate_of_code && !card.encounter_code) {
+      if (card && !card.duplicate_of_code && filterPlayerCards(card)) {
         acc.push(card);
       }
 
@@ -1183,7 +1397,7 @@ export const selectInvestigatorOptions = createSelector(
     investigators.sort(sortByName(collator));
 
     return [
-      { label: i18n.t("filters.investigator.any_investigator"), value: "" },
+      { label: "Any investigator", value: "" },
       ...investigators.map((card) => ({
         label: displayAttribute(card, "name"),
         value: card.code,
@@ -1265,7 +1479,7 @@ export const selectCyclesAndPacks = createSelector(
 
         for (const code of Object.keys(packTable)) {
           const pack = metadata.packs[code];
-          (pack.reprint ? reprintPacks : packs).push(pack);
+          (pack.reprint_type ? reprintPacks : packs).push(pack);
         }
 
         reprintPacks.sort((a, b) => a.position - b.position);
@@ -1293,12 +1507,44 @@ export const selectCyclesAndPacks = createSelector(
   },
 );
 
+export function groupCyclesByChapter(
+  cycles: CycleWithPacks[],
+): [string, CycleWithPacks[]][] {
+  const byChapter = cycles.reduce(
+    (acc, cycle) => {
+      const packsByChapter = cycle.packs.reduce<Record<number, Pack[]>>(
+        (chapterAcc, pack) => {
+          const chapter = inferChapterNumber(pack);
+          chapterAcc[chapter] ??= [];
+          chapterAcc[chapter].push(pack);
+          return chapterAcc;
+        },
+        {},
+      );
+
+      for (const [chapterStr, packs] of Object.entries(packsByChapter)) {
+        const chapter = Number.parseInt(chapterStr, 10);
+        acc[chapter] ??= [];
+        if (!isEmpty(packs)) {
+          acc[chapter].push({ ...cycle, packs });
+        }
+      }
+      return acc;
+    },
+    {} as Record<number, CycleWithPacks[]>,
+  );
+
+  return Object.entries(byChapter).sort((a, b) => +b[0] - +a[0]);
+}
+
 export const selectCampaignCycles = createSelector(
   selectCyclesAndPacks,
   (cycles) =>
     cycles.filter(
       (cycle) =>
-        official(cycle) && !CYCLES_WITH_STANDALONE_PACKS.includes(cycle.code),
+        official(cycle) &&
+        (cycle.code.includes("core") ||
+          !CYCLES_WITH_STANDALONE_PACKS.includes(cycle.code)),
     ),
 );
 
@@ -1317,7 +1563,7 @@ const selectCycleChanges = createSelector(
   (metadata, value) => {
     return value
       .map((id) => displayPackName(metadata.cycles[id]))
-      .join(` ${i18n.t("filters.or")} `);
+      .join(` ${i18n.t("common.or")} `);
   },
 );
 
@@ -1336,7 +1582,11 @@ export const selectPackOptions = createSelector(
             listFilterProperties.packs.has(p.code),
           ),
         );
-      } else if (official(cycle) && cycle.packs.length === 2) {
+      } else if (
+        official(cycle) &&
+        cycle.packs.length === 2 &&
+        cycle.position <= 11
+      ) {
         acc.push(
           ...cycle.packs.filter((p) => listFilterProperties.packs.has(p.code)),
         );
@@ -1360,12 +1610,24 @@ function newFormatPlayerPack(pack: Pack) {
 export const selectLimitedPoolPackOptions = createSelector(
   selectCyclesAndPacks,
   (state: StoreState) => state.fanMadeData.projects,
-  (cycles, fanMadeProjects) => {
+  (_: StoreState, filter?: (cycle: Cycle) => boolean) => filter,
+  (cycles, fanMadeProjects, filter) => {
     return cycles.flatMap((cycle) => {
+      if (filter && !filter(cycle)) {
+        return [];
+      }
+
       // Fan-made content
       if (!official(cycle)) {
         if (!fanMadeProjects?.[cycle.code]) return [];
         return cycle.packs;
+      }
+
+      // Non-deckbuilding
+      if (
+        ![...cycle.packs, ...cycle.reprintPacks].some(isDeckbuildingPoolPack)
+      ) {
+        return [];
       }
 
       // Core set
@@ -1379,11 +1641,10 @@ export const selectLimitedPoolPackOptions = createSelector(
       }
 
       // New format
-      if (cycle.packs.length === 2) {
+      if (cycle.packs.length === 2 && cycle.position <= 11) {
         return cycle.packs.filter(newFormatPlayerPack);
       }
 
-      // Everything else
       return cycle.packs;
     });
   },
@@ -1566,9 +1827,17 @@ export const selectAvailableUpgrades = createSelector(
   selectDeckInvestigatorFilter,
   selectMetadata,
   selectLookupTables,
+  selectShowFanMadeRelations,
   (_: StoreState, deck: ResolvedDeck) => deck,
   (_: StoreState, __: ResolvedDeck, target: "slots" | "extraSlots") => target,
-  (accessFilter, metadata, lookupTables, deck, target) => {
+  (
+    accessFilter,
+    metadata,
+    lookupTables,
+    showFanMadeRelations,
+    deck,
+    target,
+  ) => {
     const availableUpgrades: AvailableUpgrades = {
       upgrades: {},
       shrewdAnalysisPresent: false,
@@ -1593,6 +1862,8 @@ export const selectAvailableUpgrades = createSelector(
 
         const isUpgrade = version?.xp && version.xp > (card.xp ?? 0);
         if (!isUpgrade) return acc;
+
+        if (!showFanMadeRelations && !official(version)) return acc;
 
         const hasAccess = accessFilter?.(version);
         if (!hasAccess) return acc;
@@ -1659,7 +1930,7 @@ function selectAssetChanges(value: AssetFilter) {
   const slot = value.slots.reduce((acc, key) => {
     return !acc
       ? `${t("filters.slot.title")}: ${key}`
-      : `${acc} ${t("filters.or")} ${key}`;
+      : `${acc} ${t("common.or")} ${key}`;
   }, "");
 
   const uses = value.uses.reduce((acc, key) => {
@@ -1669,7 +1940,7 @@ function selectAssetChanges(value: AssetFilter) {
 
     return !acc
       ? `${t("filters.uses.title")}: ${displayStr}`
-      : `${acc} ${t("filters.or")} ${displayStr}`;
+      : `${acc} ${t("common.or")} ${displayStr}`;
   }, "");
 
   const skillBoosts = value.skillBoosts.reduce((acc, key) => {
@@ -1677,7 +1948,7 @@ function selectAssetChanges(value: AssetFilter) {
 
     return !acc
       ? `${t("filters.skill_boost.title")}: ${displayStr}`
-      : `${acc} ${t("filters.or")} ${displayStr}`;
+      : `${acc} ${t("common.or")} ${displayStr}`;
   }, "");
 
   const healthFilter = formatHealthChanges(
@@ -1700,6 +1971,17 @@ const selectActionChanges = (value: MultiselectFilter) => {
   return value.map((code) => i18n.t(`common.actions.${code}`)).join(", ");
 };
 
+const selectCardTagChanges = createSelector(
+  selectCardTagMapper,
+  (_: StoreState, value: MultiselectFilter) => value,
+  (mapper, value) => {
+    if (!value.length) return "";
+    return value
+      .map((code) => mapper(code).name)
+      .join(` ${i18n.t("common.or")} `);
+  },
+);
+
 function selectCostChanges(value: CostFilter) {
   if (!value.range) return "";
 
@@ -1720,8 +2002,8 @@ const selectEncounterSetChanges = createSelector(
   selectMetadata,
   (value, metadata) => {
     return value
-      .map((id) => metadata.encounterSets[id].name)
-      .join(` ${i18n.t("filters.or")} `);
+      .map((id) => displayPackName(metadata.encounterSets[id]))
+      .join(` ${i18n.t("common.or")} `);
   },
 );
 
@@ -1741,7 +2023,7 @@ function selectHealthChanges(value: [number, number] | undefined) {
 export function selectIllustratorChanges(value: MultiselectFilter) {
   const count = value.length;
   if (!count) return "";
-  return value.join(` ${i18n.t("filters.or")} `);
+  return value.join(` ${i18n.t("common.or")} `);
 }
 
 function selectInvestigatorCardAccessChanges(value: MultiselectFilter) {
@@ -1806,7 +2088,7 @@ const selectPackChanges = createSelector(
 
     return resolveLimitedPoolPacks(metadata, value)
       .map((pack) => displayPackName(pack))
-      .join(` ${i18n.t("filters.or")} `);
+      .join(` ${i18n.t("common.or")} `);
   },
 );
 
@@ -1847,7 +2129,7 @@ function selectSubtypeChanges(value: SubtypeFilter) {
   const labels = subtypeLabels();
   if (enabled.length === 0) return labels["none"];
 
-  return enabled.map(([key]) => labels[key]).join(` ${i18n.t("filters.or")} `);
+  return enabled.map(([key]) => labels[key]).join(` ${i18n.t("common.or")} `);
 }
 
 const selectTabooSetChanges = createSelector(
@@ -1868,14 +2150,14 @@ function selectTraitChanges(value: MultiselectFilter) {
       const key = `common.traits.${code}`;
       return i18n.exists(key) ? i18n.t(key) : code;
     })
-    .join(` ${i18n.t("filters.or")} `);
+    .join(` ${i18n.t("common.or")} `);
 }
 
 function selectTypeChanges(value: MultiselectFilter) {
   if (!value.length) return "";
   return value
     .map((code) => i18n.t(`common.type.${code}`))
-    .join(` ${i18n.t("filters.or")} `);
+    .join(` ${i18n.t("common.or")} `);
 }
 
 export function selectFilterChanges<T extends keyof FilterMapping>(
@@ -1890,6 +2172,10 @@ export function selectFilterChanges<T extends keyof FilterMapping>(
 
     case "asset": {
       return selectAssetChanges(value as AssetFilter);
+    }
+
+    case "card_tags": {
+      return selectCardTagChanges(state, value as MultiselectFilter);
     }
 
     case "cost": {

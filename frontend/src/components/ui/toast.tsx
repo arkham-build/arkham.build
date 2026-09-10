@@ -37,7 +37,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <ToastContext.Provider value={ctx}>
+    <ToastContext value={ctx}>
       {children}
       <FloatingPortal id={FLOATING_PORTAL_ID}>
         <section className={css["toast-container"]}>
@@ -51,7 +51,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           ))}
         </section>
       </FloatingPortal>
-    </ToastContext.Provider>
+    </ToastContext>
   );
 }
 
@@ -67,7 +67,7 @@ function Toast(props: {
   const locationRef = useRef(location);
 
   const toastRef = useRef<HTMLOutputElement>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const removeToast = useCallback(() => {
     return new Promise<void>((resolve) => {
@@ -95,7 +95,7 @@ function Toast(props: {
     if (!toast?.duration) return;
 
     timeoutRef.current = setTimeout(() => {
-      removeToast();
+      void removeToast().catch(console.error);
     }, toast.duration);
 
     return () => {
@@ -109,7 +109,7 @@ function Toast(props: {
       locationRef.current !== location &&
       !toast.persistent
     ) {
-      removeToast();
+      void removeToast().catch(console.error);
     }
   }, [location, removeToast, toast.duration, toast.persistent]);
 

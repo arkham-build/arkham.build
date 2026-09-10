@@ -6,13 +6,14 @@ import { CardScan } from "@/components/card-scan";
 import { Masthead } from "@/components/masthead";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { PageTitle } from "@/components/ui/page-title";
 import { useToast } from "@/components/ui/toast.hooks";
+import { useAddFanMadeProjectMutation } from "@/queries/mutations/fan-made";
 import { useStore } from "@/store";
 import { parseFanMadeProject } from "@/store/lib/fan-made-content";
 import { selectMetadata } from "@/store/selectors/shared";
 import { cardToApiFormat } from "@/utils/arkhamdb-json-format";
 import { cx } from "@/utils/cx";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import css from "./core-2026-reveal.module.css";
 
 const API_URL = import.meta.env.VITE_SOUVENIR_API_URL || "";
@@ -23,7 +24,7 @@ function Core2026Reveal() {
   const [pack, setPack] = useState<FanMadeProject | null>(null);
   const souvenirRef = useRef<HTMLDivElement | null>(null);
 
-  const addFanMadeProject = useStore((state) => state.addFanMadeProject);
+  const addFanMadeProjectMutation = useAddFanMadeProjectMutation();
 
   useEffect(() => {
     if (pack && souvenirRef.current) {
@@ -31,31 +32,15 @@ function Core2026Reveal() {
     }
   }, [pack]);
 
-  const mutation = useMutation({
-    mutationFn: async (name: string) => {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create souvenir");
-      }
-
-      return response.json();
-    },
-  });
+  const mutation = useCreateSouvenirMutation();
 
   const onSubmit = useCallback(
-    async (evt: React.FormEvent) => {
+    async (evt: React.SubmitEvent) => {
       evt.preventDefault();
       try {
         const res = await mutation.mutateAsync(name);
         const pack = parseFanMadeProject(res);
-        addFanMadeProject(res);
+        await addFanMadeProjectMutation.mutateAsync(res);
         setPack(pack);
       } catch (err) {
         toast.show({
@@ -65,7 +50,7 @@ function Core2026Reveal() {
         });
       }
     },
-    [name, mutation, toast, addFanMadeProject],
+    [addFanMadeProjectMutation, name, mutation, toast],
   );
 
   const downloadPack = useCallback(() => {
@@ -90,16 +75,15 @@ function Core2026Reveal() {
 
   const metadata = useStore(selectMetadata);
 
-  useDocumentTitle("Core Set 2026 Reveal");
-
   const fingerprintKit = metadata.cards["12031"];
   const goldBug = metadata.cards["12098"];
 
   return (
     <main className={css["layout"]}>
+      <PageTitle>Core Set 2026 Reveal</PageTitle>
       <header className={css["header"]}>
         <div className={css["header-nav"]}>
-          <Masthead hideLocaleSwitch hideSyncStatus invert />
+          <Masthead hideLocaleSwitch invert />
         </div>
         <div className={css["header-backdrop"]}>
           <img
@@ -229,6 +213,32 @@ function Core2026Reveal() {
       )}
     </main>
   );
+}
+
+const blogKeys = {
+  all: ["blog"] as const,
+  souvenir: () => [...blogKeys.all, "souvenir"] as const,
+};
+
+function useCreateSouvenirMutation() {
+  return useMutation({
+    mutationKey: blogKeys.souvenir(),
+    mutationFn: async (name: string) => {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create souvenir");
+      }
+
+      return response.json();
+    },
+  });
 }
 
 export default Core2026Reveal;

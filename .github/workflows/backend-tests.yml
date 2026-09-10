@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Check
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           cache: "npm"
           node-version-file: "package.json"
@@ -29,8 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Test
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           cache: "npm"
           node-version-file: "package.json"

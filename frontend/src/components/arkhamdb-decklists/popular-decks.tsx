@@ -1,12 +1,12 @@
 import type { Card } from "@arkham-build/shared";
-import { useQuery } from "@tanstack/react-query";
 import { AlertCircleIcon, ExternalLinkIcon } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "wouter";
-import {
-  deckSearchQuery,
-  searchDecklists,
-} from "@/store/services/requests/decklists-search";
+import { usePopularDecklistsQuery } from "@/queries/decklists";
+import { useStore } from "@/store";
+import { filterPlayerCards } from "@/store/lib/filtering";
+import { selectLookupTables } from "@/store/selectors/shared";
+import { deckSearchQuery } from "@/store/services/requests/decklists-search";
 import { displayAttribute, getCanonicalCardCode } from "@/utils/card-utils";
 import { getAccentColorsForFaction } from "@/utils/use-accent-color";
 import { CardLink } from "../card-link";
@@ -24,7 +24,10 @@ export function PopularDecks(props: Props) {
   const { scope } = props;
   const { t } = useTranslation();
 
-  const enabled = !scope.encounter_code;
+  const lookupTables = useStore(selectLookupTables);
+
+  const enabled =
+    filterPlayerCards(scope) && !lookupTables.relations.bonded[scope.code];
 
   const scopeParams = {
     filters: {
@@ -37,11 +40,11 @@ export function PopularDecks(props: Props) {
     },
   };
 
-  const { data, error, isPending } = useQuery({
-    queryKey: ["popular-decks", scope.code],
-    queryFn: () => searchDecklists(deckSearchQuery(scopeParams, 10)),
+  const { data, error, isPending } = usePopularDecklistsQuery(
+    scope.code,
+    scopeParams,
     enabled,
-  });
+  );
 
   if (!enabled) return null;
 

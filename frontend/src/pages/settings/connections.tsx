@@ -1,176 +1,229 @@
+import {
+  type Identity,
+  isArkhamDBIdentity,
+  OAUTH_CONNECTIONS,
+  type OAuthConnection,
+} from "@arkham-build/shared";
 import { CheckIcon, CloudOffIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { StatusPill } from "@/components/ui/status-pill";
+import { useToast } from "@/components/ui/toast.hooks";
+import { useDisconnectOAuthIdentityMutation } from "@/queries/mutations/auth";
 import { useStore } from "@/store";
-import { selectAvailableConnections } from "@/store/selectors/connections";
-import { selectConnectionLock } from "@/store/selectors/shared";
-import type { Connection, Provider } from "@/store/slices/connections.types";
-import { cx } from "@/utils/cx";
-import { capitalize, formatDate, formatProviderName } from "@/utils/formatting";
+import { selectSession } from "@/store/selectors/auth";
+import { formatDateTime } from "@/utils/formatting";
 import css from "./connections.module.css";
+import { Section } from "./section";
 
-export function Connections() {
-  const connections = useStore((state) => state.connections);
-
-  return (
-    <>
-      {selectAvailableConnections().map((provider) => {
-        const connection: Connection | undefined = connections.data?.[provider];
-
-        return (
-          <article className={css["connection"]} key={provider}>
-            <header className={css["header"]}>
-              <h3 className={css["title"]}>
-                <i className="icon-elder_sign" />
-                ArkhamDB
-              </h3>
-              {connection?.status && (
-                <ConnectionStatusOutput connection={connection} />
-              )}
-            </header>
-            <div className={css["content"]}>
-              {connection != null ? (
-                <ConnectionDetails
-                  connection={connection}
-                  lastSyncedAt={connections.lastSyncedAt}
-                />
-              ) : (
-                <ConnectionInit provider={provider} />
-              )}
-            </div>
-          </article>
-        );
-      })}
-    </>
-  );
-}
-
-function ConnectionStatusOutput(props: { connection: Connection }) {
-  const { status } = props.connection;
+export function OAuthConnections() {
   const { t } = useTranslation();
 
   return (
-    <output className={css["status"]} data-testid="connection-status">
-      <span className={cx(css["status-icon"], css[status])}>
-        {status === "connected" && <CheckIcon />}
-        {status === "disconnected" && <CloudOffIcon />}
-      </span>
-      <span>
-        {status === "connected" && t("settings.connections.connected")}
-        {status === "disconnected" && t("settings.connections.disconnected")}
-      </span>
-    </output>
+    <Section title={t("settings.account.oauth.title")}>
+      {OAUTH_CONNECTIONS.map((connection) => (
+        <OAuthConnectionCard
+          connection={connection}
+          key={connection.provider}
+        />
+      ))}
+    </Section>
   );
 }
 
-function ConnectionDetails(props: {
-  connection: Connection;
-  lastSyncedAt?: number;
+export function OAuthConnectionCard(props: {
+  connection: OAuthConnection;
+  returnTo?: string;
+  variant?: "default" | "onboarding";
 }) {
+  const { connection, returnTo, variant = "default" } = props;
   const { t } = useTranslation();
+  const session = useStore(selectSession);
+  const toast = useToast();
+  const disconnectOAuthIdentityMutation = useDisconnectOAuthIdentityMutation();
 
-  const { connection, lastSyncedAt } = props;
-  const unsync = useStore((state) => state.unsync);
+  const providerName = t(
+    `settings.account.oauth.providers.${connection.provider}`,
+  );
+  const identity = session?.identities.find(
+    (item) => item.provider === connection.provider,
+  );
+  const isConnected = !!identity;
+  const canDisconnect = identity ? isDisconnectable(identity) : false;
+  const connectHref = getOAuthConnectHref(connection, returnTo);
+  const isOnboarding = variant === "onboarding";
+  const status = getConnectionStatus(identity);
+  const statusProps =
+    status === "connected"
+      ? {
+          color: "var(--color-success)",
+          icon: <CheckIcon />,
+          label: t("settings.account.oauth.connected"),
+        }
+      : {
+          color: "var(--color-error)",
+          icon: <CloudOffIcon />,
+          label: t("settings.account.oauth.disconnected"),
+        };
 
-  const connectionLock = useStore(selectConnectionLock);
+  const onDisconnect = async () => {
+    const toastId = toast.show({
+      children: t("settings.account.oauth.disconnecting", {
+        provider: providerName,
+      }),
+      variant: "loading",
+    });
 
-  const onRemoveConnection = useCallback(async () => {
-    // TODO: surface this error
-    await unsync(connection.provider as Provider).catch(console.error);
-  }, [unsync, connection]);
+    try {
+      await disconnectOAuthIdentityMutation.mutateAsync(connection.provider);
+      toast.dismiss(toastId);
+    } catch (error) {
+      toast.dismiss(toastId);
+      toast.show({
+        children: t("settings.account.oauth.disconnect_error", {
+          error: (error as Error).message,
+          provider: providerName,
+        }),
+        variant: "error",
+      });
+    }
+  };
 
   return (
-    <>
-      <details className={css["details"]}>
-        <summary>{t("settings.connections.details")}</summary>
-        <dl className={css["details-properties"]}>
-          {connection.user.username && (
-            <>
-              <dt>{t("settings.connections.username")}</dt>
-              <dd>{connection.user.username}</dd>
-            </>
-          )}
-          {connection.user.id && (
-            <>
-              <dt>{t("settings.connections.user_id")}</dt>
-              <dd>{connection.user.id}</dd>
-            </>
-          )}
-          <dt>{t("settings.connections.created_at")}</dt>
-          <dd>{formatDate(connection.createdAt)}</dd>
-          <dt>{t("settings.connections.last_synced_at")}</dt>
-          <dd>{lastSyncedAt ? new Date(lastSyncedAt).toUTCString() : "-"}</dd>
-
-          {connection.syncDetails && (
-            <>
-              <dt>{t("settings.connections.sync_status")}</dt>
-              <dd>{capitalize(connection.syncDetails.status)}</dd>
-              {connection.syncDetails.status === "success" && (
-                <>
-                  <dt>{t("settings.connections.items_synced")}</dt>
-                  <dd>
-                    {connection.syncDetails.itemsSynced} /{" "}
-                    {connection.syncDetails.itemsTotal}
-                  </dd>
-                  <dt>{t("settings.connections.last_modified")}</dt>
-                  <dd>{connection.syncDetails.lastModified}</dd>
-                </>
-              )}
-              <dt>{t("settings.connections.sync_errors")}</dt>
-              <dd>
-                {connection.syncDetails?.errors?.length
-                  ? connection.syncDetails.errors.join(", ")
-                  : t("settings.connections.no_errors")}
-              </dd>
-            </>
-          )}
-        </dl>
-      </details>
-      <div className={css["actions"]}>
-        <Button
-          as="a"
-          disabled={!!connectionLock}
-          href={`${import.meta.env.VITE_API_URL}/auth/signin?provider=${connection.provider}`}
-          type="button"
-          size="sm"
-        >
-          {t("settings.connections.reconnect")}
-        </Button>
-        <Button
-          type="button"
-          disabled={!!connectionLock}
-          onClick={onRemoveConnection}
-          size="sm"
-        >
-          {t("settings.connections.disconnect")}
-        </Button>
+    <article className={css["connection"]}>
+      <header className={css["header"]}>
+        <h3 className={css["title"]}>
+          <i className={connection.icon} />
+          {providerName}
+        </h3>
+        {isConnected && (
+          <StatusPill
+            color={statusProps.color}
+            icon={statusProps.icon}
+            testId="connection-status"
+          >
+            {statusProps.label}
+          </StatusPill>
+        )}
+      </header>
+      <div className={css["content"]}>
+        {isConnected ? (
+          <>
+            <ConnectionDetails identity={identity} />
+            {!isOnboarding && (
+              <div className={css.actions}>
+                <Button
+                  as="a"
+                  disabled={disconnectOAuthIdentityMutation.isPending}
+                  href={connectHref}
+                  variant="secondary"
+                >
+                  {t("settings.account.oauth.reconnect")}
+                </Button>
+                <Button
+                  disabled={
+                    disconnectOAuthIdentityMutation.isPending || !canDisconnect
+                  }
+                  onClick={onDisconnect}
+                  variant="secondary"
+                >
+                  {t("settings.account.oauth.disconnect")}
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <p>
+              {t("settings.account.oauth.connect_help", {
+                provider: providerName,
+              })}
+            </p>
+            <div className={css.actions}>
+              <Button
+                as="a"
+                disabled={disconnectOAuthIdentityMutation.isPending}
+                href={connectHref}
+                variant="secondary"
+              >
+                {t("settings.account.oauth.connect")}
+              </Button>
+            </div>
+          </>
+        )}
       </div>
-    </>
+    </article>
   );
 }
 
-function ConnectionInit(props: { provider: Provider }) {
+function ConnectionDetails({ identity }: { identity: Identity }) {
   const { t } = useTranslation();
-  const { provider } = props;
+
+  if (!isArkhamDBIdentity(identity)) return null;
 
   return (
-    <>
-      <p className={css["info-text"]}>
-        {t("settings.connections.connect_help", {
-          provider: formatProviderName(provider),
-        })}
-      </p>
-      <div className={css["actions"]}>
-        <Button
-          as="a"
-          href={`${import.meta.env.VITE_API_URL}/auth/signin?provider=${provider}`}
-          type="button"
-          size="sm"
-        >
-          {t("settings.connections.connect")}
-        </Button>
-      </div>
-    </>
+    <details className={css["details"]}>
+      <summary>{t("settings.account.oauth.details")}</summary>
+      <dl className={css["details-properties"]}>
+        {identity.details.username && (
+          <>
+            <dt>
+              {t("settings.account.oauth.providers.arkhamdb")}{" "}
+              {t("settings.account.profile.username")}
+            </dt>
+            <dd>{identity.details.username}</dd>
+          </>
+        )}
+        {identity.providerUserId && (
+          <>
+            <dt>{t("settings.account.oauth.user_id")}</dt>
+            <dd>{identity.providerUserId}</dd>
+          </>
+        )}
+        <dt>{t("settings.account.oauth.sync_status")}</dt>
+        <dd>{t(`settings.account.oauth.status.${identity.details.status}`)}</dd>
+        <dt>{t("settings.account.oauth.last_synced_at")}</dt>
+        <dd>
+          {identity.details.lastSyncedAt
+            ? formatDateTime(identity.details.lastSyncedAt)
+            : t("settings.account.oauth.none")}
+        </dd>
+        <dt>{t("settings.account.oauth.last_error")}</dt>
+        <dd>
+          {identity.details.lastError ?? t("settings.account.oauth.none")}
+        </dd>
+      </dl>
+    </details>
   );
+}
+
+type ConnectionStatus = "connected" | "disconnected";
+
+function isDisconnectable(identity: Identity) {
+  return "canDisconnect" in identity && identity.canDisconnect;
+}
+
+function getConnectionStatus(identity: Identity | undefined): ConnectionStatus {
+  if (!identity) {
+    return "disconnected";
+  }
+
+  if (isArkhamDBIdentity(identity) && identity.details.status !== "healthy") {
+    return "disconnected";
+  }
+
+  return "connected";
+}
+
+function getOAuthConnectHref(
+  connection: OAuthConnection,
+  returnTo: string | undefined,
+) {
+  const path = `${import.meta.env.VITE_API_URL}/auth/${connection.provider}/connect`;
+
+  if (!returnTo) {
+    return path;
+  }
+
+  return `${path}?returnTo=${encodeURIComponent(returnTo)}`;
 }

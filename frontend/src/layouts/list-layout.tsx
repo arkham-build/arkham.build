@@ -1,7 +1,7 @@
-/** biome-ignore-all lint/a11y: TODO */
+/* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-element-interactions -- TODO */
 import { FilterIcon } from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CollapseSidebarButton } from "@/components/collapse-sidebar-button";
 import { Masthead } from "@/components/masthead";
@@ -22,7 +22,8 @@ type Props = {
   className?: string;
   filters?: React.ReactNode;
   hideSidebarCollapse?: boolean;
-  mastheadContent?: React.ReactNode;
+  inert?: boolean;
+  mastheadNav?: React.ReactNode;
   noFade?: boolean;
   sidebar: React.ReactNode;
   sidebarWidthMax: string;
@@ -34,7 +35,8 @@ export function ListLayout(props: Props) {
     className,
     filters,
     hideSidebarCollapse,
-    mastheadContent,
+    inert,
+    mastheadNav,
     noFade,
     sidebar,
     sidebarWidthMax,
@@ -47,6 +49,11 @@ export function ListLayout(props: Props) {
 
   const floatingSidebar = useMedia(MQ_FLOATING_SIDEBAR);
   const floatingFilters = useMedia(MQ_FLOATING_FILTERS);
+
+  const previousFloatingSidebar = useRef(floatingSidebar);
+  const previousFloatingFilters = useRef(floatingFilters);
+  const [floatingTransitionsEnabled, setFloatingTransitionsEnabled] =
+    useState(false);
 
   const filtersRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -78,19 +85,27 @@ export function ListLayout(props: Props) {
   }, []);
 
   useEffect(() => {
-    setSidebarOpen(!floatingSidebar);
+    const frame = requestAnimationFrame(() => {
+      setFloatingTransitionsEnabled(true);
+    });
 
     return () => {
-      setSidebarOpen(!floatingSidebar);
+      cancelAnimationFrame(frame);
     };
+  }, []);
+
+  useEffect(() => {
+    if (previousFloatingSidebar.current === floatingSidebar) return;
+
+    previousFloatingSidebar.current = floatingSidebar;
+    setSidebarOpen(!floatingSidebar);
   }, [floatingSidebar, setSidebarOpen]);
 
   useEffect(() => {
-    setFiltersOpen(!floatingFilters);
+    if (previousFloatingFilters.current === floatingFilters) return;
 
-    return () => {
-      setFiltersOpen(!floatingFilters);
-    };
+    previousFloatingFilters.current = floatingFilters;
+    setFiltersOpen(!floatingFilters);
   }, [floatingFilters, setFiltersOpen]);
 
   const floatingMenuOpen =
@@ -123,12 +138,14 @@ export function ListLayout(props: Props) {
         !noFade && "fade-in",
         className,
         floatingMenuOpen && css["floating-menu-open"],
+        !floatingTransitionsEnabled && css["floating-transitions-disabled"],
         filters && css["has-filters"],
       )}
+      inert={inert}
       onClick={onContentClick}
       style={{ "--sidebar-width-max": sidebarWidthMax } as React.CSSProperties}
     >
-      <Masthead className={css["header"]}>{mastheadContent}</Masthead>
+      <Masthead className={css["header"]} navSlot={mastheadNav} />
       <div
         className={cx(css["sidebar"], floatingSidebar && css["floating"])}
         data-state={sidebarOpen ? "open" : "closed"}

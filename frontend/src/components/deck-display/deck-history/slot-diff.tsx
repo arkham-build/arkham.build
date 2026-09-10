@@ -49,7 +49,7 @@ export function SlotDiff(props: {
             {additions.map((change, idx) => (
               <DiffEntry
                 listCardProps={listCardProps}
-                // biome-ignore lint/suspicious/noArrayIndexKey: no natural key available.
+                // oxlint-disable-next-line react/no-array-index-key -- no natural key available.
                 key={idx}
                 deck={deck}
                 change={change}
@@ -69,7 +69,7 @@ export function SlotDiff(props: {
             {removals.map((change, idx) => (
               <DiffEntry
                 listCardProps={listCardProps}
-                // biome-ignore lint/suspicious/noArrayIndexKey: no natural key available.
+                // oxlint-disable-next-line react/no-array-index-key -- no natural key available.
                 key={idx}
                 deck={deck}
                 change={change}

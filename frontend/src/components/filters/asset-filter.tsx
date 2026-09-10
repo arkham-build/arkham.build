@@ -16,6 +16,7 @@ import { SkillIcon } from "../icons/skill-icon";
 import SlotIcon from "../icons/slot-icon";
 import { Checkbox } from "../ui/checkbox";
 import { Combobox } from "../ui/combobox/combobox";
+import { ResultTag } from "../ui/combobox/combobox-results";
 import { RangeSelect } from "../ui/range-select";
 import css from "./filters.module.css";
 import type { FilterProps } from "./filters.types";
@@ -36,6 +37,22 @@ function renderSlot(c: Option) {
     <>
       <SlotIcon code={c.code} /> {c.name}
     </>
+  );
+}
+
+function renderNameResult(c: Option, onRemove?: () => void) {
+  return (
+    <ResultTag data-testid={`combobox-result-${c.code}`} onRemove={onRemove}>
+      {renderName(c)}
+    </ResultTag>
+  );
+}
+
+function renderSlotResult(c: Option, onRemove?: () => void) {
+  return (
+    <ResultTag data-testid={`combobox-result-${c.code}`} onRemove={onRemove}>
+      {renderSlot(c)}
+    </ResultTag>
   );
 }
 
@@ -134,7 +151,7 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
         onValueChange={onChangeSlot}
         placeholder={t("filters.slot.placeholder")}
         renderItem={renderSlot}
-        renderResult={renderSlot}
+        renderResult={renderSlotResult}
         selectedItems={filter.value.slots.map(slotsMapper)}
         showLabel
       />
@@ -164,7 +181,7 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
         onValueChange={onChangeUses}
         placeholder={t("filters.uses.placeholder")}
         renderItem={renderName}
-        renderResult={renderName}
+        renderResult={renderNameResult}
         selectedItems={filter.value.uses.map(usesMapper)}
         showLabel
       />

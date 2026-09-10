@@ -1,5 +1,5 @@
+import type { ListConfig } from "@arkham-build/shared";
 import type { StoreState } from "@/store/slices";
-import type { ListConfig } from "@/store/slices/settings.types";
 
 function migrate(_state: unknown, version: number) {
   const state = _state as StoreState;
@@ -9,7 +9,7 @@ function migrate(_state: unknown, version: number) {
       delete (
         state.settings.lists[
           key as keyof StoreState["settings"]["lists"]
-          // biome-ignore lint/suspicious/noExplicitAny: safe.
+          // oxlint-disable-next-line typescript/no-explicit-any -- safe.
         ] as any
       ).showCardText;
 

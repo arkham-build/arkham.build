@@ -1,61 +1,68 @@
-import { forwardRef } from "react";
 import { cx } from "@/utils/cx";
 import css from "./button.module.css";
 import { DefaultTooltip } from "./tooltip";
 
 export type ButtonType = "a" | "button" | "summary" | "label";
 
+type ButtonRounding = "full" | "lg" | "xl";
+
 export type Props<T extends ButtonType> = React.ComponentProps<T> & {
   as?: T;
   children: React.ReactNode;
   className?: string;
   disabled?: boolean;
+  full?: boolean;
   iconOnly?: boolean;
-  variant?: "primary" | "secondary" | "bare" | "link";
-  size?: "xxs" | "xs" | "sm" | "lg" | "xl" | "full" | "none";
+  rounded?: ButtonRounding;
+  size?: "xxs" | "xs" | "sm" | "lg" | "xl" | "none";
   tooltip?: React.ReactNode;
-  round?: boolean;
+  variant?: "primary" | "secondary" | "danger" | "bare" | "link";
 };
 
-export const Button = forwardRef(function Button<
-  T extends "a" | "button" | "summary" | "label",
->(props: Props<T>, ref: React.ForwardedRef<Element>) {
+export function Button<T extends "a" | "button" | "summary" | "label">(
+  props: Props<T>,
+) {
   const {
     as,
     children,
     disabled,
+    full,
     iconOnly,
-    variant = "secondary",
+    ref,
+    rounded,
     size,
     tooltip,
-    round,
+    variant = "secondary",
     ...rest
   } = props;
-  // biome-ignore lint/suspicious/noExplicitAny: safe.
+  // oxlint-disable-next-line typescript/no-explicit-any -- safe.
   const Element: any = disabled ? "button" : (as ?? "button");
 
-  return (
-    <DefaultTooltip tooltip={tooltip}>
-      <Element
-        {...rest}
-        className={cx(
-          css["button"],
-          variant && css[variant],
-          size && css[size],
-          iconOnly && css["icon-only"],
-          round && css["round"],
-          rest.className,
-        )}
-        type={
-          Element === "button"
-            ? ((rest as React.ComponentProps<"button">).type ?? "button")
-            : undefined
-        }
-        disabled={disabled}
-        ref={ref}
-      >
-        {children}
-      </Element>
-    </DefaultTooltip>
+  const button = (
+    <Element
+      {...rest}
+      className={cx(
+        css["button"],
+        variant && css[variant],
+        size && css[size],
+        full && css["full"],
+        iconOnly && css["icon-only"],
+        rounded && css[`rounded-${rounded}`],
+        rest.className,
+      )}
+      type={
+        Element === "button"
+          ? ((rest as React.ComponentProps<"button">).type ?? "button")
+          : undefined
+      }
+      disabled={disabled}
+      ref={ref}
+    >
+      {children}
+    </Element>
   );
-});
+
+  if (!tooltip) return button;
+
+  return <DefaultTooltip tooltip={tooltip}>{button}</DefaultTooltip>;
+}

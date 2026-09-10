@@ -1,7 +1,7 @@
+import type { Cycle } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import type { Cycle } from "@/store/schemas/cycle.schema";
 import {
   selectActiveListFilter,
   selectCycleMapper,

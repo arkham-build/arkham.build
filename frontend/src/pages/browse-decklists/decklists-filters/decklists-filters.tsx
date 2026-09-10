@@ -14,6 +14,7 @@ import { ExcludedCards } from "./excluded-cards";
 import { InvestigatorFactions } from "./investigator-factions";
 import { PublishDate } from "./publish-date";
 import { RequiredCards } from "./required-cards";
+import { XpRange } from "./xp-range";
 
 type Props = {
   filters: DecklistsFiltersState["filters"];
@@ -32,7 +33,7 @@ export function DecklistsFilters({
   const [formState, setFormState] =
     useState<DecklistsFiltersState["filters"]>(filters);
 
-  const handleSubmit = (evt: React.FormEvent) => {
+  const handleSubmit = (evt: React.SubmitEvent) => {
     evt.preventDefault();
     onFiltersChange(formState);
   };
@@ -78,6 +79,7 @@ export function DecklistsFilters({
             </div>
             <div className={css["filters-col"]}>
               <PublishDate formState={formState} setFormState={setFormState} />
+              <XpRange formState={formState} setFormState={setFormState} />
               <Author formState={formState} setFormState={setFormState} />
               <DeckName formState={formState} setFormState={setFormState} />
               <DescriptionLength

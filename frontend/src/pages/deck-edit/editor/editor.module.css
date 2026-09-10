@@ -53,9 +53,8 @@
   flex: 1 1 auto;
 }
 
-.editor-tabs-content {
-  padding-left: 0.125rem;
-  padding-right: 0.625rem;
+.editor-tabs-content-viewport {
+  padding-inline: 0.5rem;
 }
 
 .editor-tabs > * + * {
@@ -79,12 +78,9 @@
   margin-top: 0.375rem;
 }
 
-.meta {
-  padding-inline: 0.5rem;
-}
-
-.meta > * + * {
-  margin-top: 0.25rem;
+.meta > * + *,
+.meta-card-pool > * + * {
+  margin-top: 0.5rem;
 }
 
 .actions-invalid {
@@ -92,7 +88,7 @@
 }
 
 .actions-invalid svg {
-  fill: var(--nord-13);
-  stroke: var(--nord-0);
+  fill: var(--color-warning);
+  stroke: var(--color-warning-contrast);
   font-size: var(--icon-base);
 }

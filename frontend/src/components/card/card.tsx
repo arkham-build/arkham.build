@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
 import { reversed } from "@/utils/card-utils";
 import { dataLanguage } from "@/utils/formatting";
+import type { CardScanActionSlot } from "../card-scan";
 import { Button } from "../ui/button";
 import css from "./card.module.css";
 import { CardBack } from "./card-back";
@@ -15,10 +16,12 @@ type Props = {
   canToggleBackside?: boolean;
   children?: React.ReactNode;
   className?: string;
+  omitImage?: boolean;
   onPrintingSelect?: (card: CardT) => void;
   resolvedCard: ResolvedCard | CardWithRelations;
   slotCardFooter?: React.ReactNode;
   slotHeaderActions?: React.ReactNode;
+  slotScanActions?: CardScanActionSlot;
   titleLinks?: "card" | "card-modal" | "dialog";
   size?: "compact" | "tooltip" | "full";
 };
@@ -34,11 +37,13 @@ export function Card(props: Props) {
     canToggleBackside,
     children,
     className,
+    omitImage,
     onPrintingSelect,
     resolvedCard,
     size = "full",
     slotCardFooter,
     slotHeaderActions,
+    slotScanActions,
     titleLinks,
   } = props;
 
@@ -53,12 +58,14 @@ export function Card(props: Props) {
   const frontNode = (
     <CardFace
       className={className}
+      omitImage={omitImage}
       onPrintingSelect={onPrintingSelect}
       resolvedCard={resolvedCard}
       size={size}
       ignoreTaboo={ignoreTaboo}
       setIgnoreTaboo={setIgnoreTaboo}
       slotHeaderActions={slotHeaderActions}
+      slotScanActions={slotScanActions}
       titleLinks={titleLinks}
     >
       {slotCardFooter}
@@ -68,10 +75,24 @@ export function Card(props: Props) {
   let backNode = null;
 
   if (card.double_sided && !back) {
-    backNode = <CardBack card={card} size={size} ignoreTaboo={ignoreTaboo} />;
+    backNode = (
+      <CardBack
+        card={card}
+        ignoreTaboo={ignoreTaboo}
+        size={size}
+        slotScanActions={slotScanActions}
+        titleLinks={titleLinks}
+      />
+    );
   } else if (back) {
     backNode = (
-      <CardFace resolvedCard={back} size={size} ignoreTaboo={ignoreTaboo} />
+      <CardFace
+        ignoreTaboo={ignoreTaboo}
+        resolvedCard={back}
+        size={size}
+        slotScanActions={slotScanActions}
+        titleLinks={titleLinks}
+      />
     );
   }
 

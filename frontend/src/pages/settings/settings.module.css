@@ -1,7 +1,8 @@
-.main {
+.container {
+  padding-top: 0.5rem;
+
   @media screen and (min-width: 45rem) {
-    padding-inline: 1.5rem;
-    padding-top: 1rem;
+    padding-top: 0.75rem;
   }
 }
 
@@ -25,6 +26,7 @@
   top: 0;
   z-index: 3;
   border-radius: var(--rounded);
+  margin-top: 1.5rem;
 
   @media screen and (min-width: 45rem) {
     padding: 0.75rem 1rem;
@@ -80,16 +82,6 @@
   margin-top: 1rem;
 }
 
-.row {
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: 1fr;
-
-  @media screen and (min-width: 45rem) {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
 .lists {
   display: flex;
   flex-flow: row wrap;
@@ -98,7 +90,7 @@
 }
 
 .list {
-  border: 1px solid var(--palette-point-five);
+  border: 1px solid var(--palette-1);
   padding: 1rem;
   min-width: min(24rem, 100%);
   border-radius: var(--rounded);
@@ -134,4 +126,108 @@
 
 .list-group-title {
   font-size: var(--text-base);
+}
+
+.sync-toast {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sync-toast-details {
+  font-size: var(--text-xs);
+  overflow-wrap: anywhere;
+}
+
+.sync-toast-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.row {
+  display: grid;
+  column-gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+
+  @media screen and (min-width: 45rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.row > * {
+  min-width: 0;
+}
+
+.account-container {
+  padding: 0.75rem;
+  background-color: var(--palette-point-five);
+  border: 1px solid var(--palette-1);
+  border-radius: var(--rounded);
+}
+
+.account-container > * + * {
+  margin-top: 0.5rem;
+}
+
+.account-details {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--palette-point-five);
+}
+
+.account-details > * + * {
+  margin-top: 0.5rem;
+}
+
+.account-details-properties {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.25rem;
+  align-items: center;
+
+  @media screen and (min-width: 45rem) {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.5rem 1rem;
+  }
+
+  & dt {
+    font-weight: 700;
+
+    &::after {
+      content: ":";
+    }
+  }
+
+  & dd {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.pending-email {
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.pending-email > * + * {
+  margin-top: 0.375rem;
+}
+
+.danger-zone {
+  border: 1px solid color-mix(in srgb, var(--color-error) 65%, transparent);
+  border-radius: var(--rounded);
+}
+
+.danger-zone > summary {
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0.75rem;
+  color: var(--color-error);
+}
+
+.danger-zone[open] > summary {
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--color-error) 35%, transparent);
+}
+
+.danger-zone .account-container {
+  border: 0;
 }

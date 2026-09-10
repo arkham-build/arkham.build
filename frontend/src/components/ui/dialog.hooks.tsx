@@ -29,6 +29,13 @@ type ContextType =
   | undefined;
 
 export const DialogContext = createContext<ContextType>(undefined);
+export const DialogTransitionStylesContext = createContext<
+  React.CSSProperties | undefined
+>(undefined);
+
+export const useDialogTransitionStyles = () => {
+  return useContext(DialogTransitionStylesContext);
+};
 
 export const useDialogContextChecked = () => {
   const context = useContext(DialogContext);
@@ -71,7 +78,7 @@ export function useDialog({
   const context = data.context;
 
   const click = useClick(context);
-  const dismiss = useDismiss(context, { outsidePressEvent: "mousedown" });
+  const dismiss = useDismiss(context);
   const role = useRole(context);
 
   const interactions = useInteractions([click, dismiss, role]);

@@ -1,5 +1,6 @@
 .collapse-container {
-  --size: 0.625rem;
+  --size: 0.25rem;
+
   height: 100%;
   position: absolute;
   top: 0;

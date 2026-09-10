@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearch } from "wouter";
@@ -18,14 +18,12 @@ import {
 import { Scroller } from "@/components/ui/scroller";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/components/ui/toast.hooks";
+import { useUpgradeDeckMutation } from "@/queries/mutations/decks";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import {
-  selectConnectionLockForDeck,
-  selectMetadata,
-} from "@/store/selectors/shared";
+import { selectMetadata } from "@/store/selectors/shared";
+import { selectDeckHasConflict } from "@/store/selectors/sync";
 import { decodeExileSlots, displayAttribute } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";
 import { useAccentColor } from "@/utils/use-accent-color";
@@ -77,15 +75,12 @@ function selectExilableCards(deck: ResolvedDeck) {
 
 export function UpgradeModal(props: Props) {
   const { deck } = props;
-  const [, navigate] = useLocation();
   const search = useSearch();
-  const toast = useToast();
   const { t } = useTranslation();
 
-  const connectionLock = useStore((state) =>
-    selectConnectionLockForDeck(state, deck),
+  const hasSyncConflict = useStore((state) =>
+    selectDeckHasConflict(state, deck.id),
   );
-  const upgradeDeck = useStore((state) => state.upgradeDeck);
 
   const [xp, setXp] = useState(
     new URLSearchParams(search).get("upgrade_xp")?.toString() ?? "",
@@ -179,100 +174,72 @@ export function UpgradeModal(props: Props) {
     modalContext?.setOpen(false);
   }, [modalContext]);
 
-  const onUpgrade = useCallback(
-    async (path = "edit", useDraftFlow = true) => {
-      const enteredXp = xp ? +xp : 0;
-      const remainingXp =
-        (deck.xp ?? 0) + (deck.xp_adjustment ?? 0) - (deck.xp_spent ?? 0);
+  const [, navigate] = useLocation();
 
-      // For draft decks, navigate to draft upgrade flow (unless useDraftFlow is false)
-      if (isDraftDeck && useDraftFlow) {
-        // Calculate NEW XP (entered + bonuses) - this is what will be spent
-        let newXp = enteredXp;
-        if (hasCharonsObol) newXp += 2;
-        if (hasGreatWork && !usurped) newXp += 1;
+  const onDraftUpgrade = useCallback(() => {
+    const enteredXp = xp ? +xp : 0;
+    const remainingXp =
+      (deck.xp ?? 0) + (deck.xp_adjustment ?? 0) - (deck.xp_spent ?? 0);
 
-        // Total available XP for card pool filtering (remaining + new)
-        const totalAvailableXp = remainingXp + newXp;
+    // Calculate NEW XP (entered + bonuses) - this is what will be spent.
+    let newXp = enteredXp;
+    if (hasCharonsObol) newXp += 2;
+    if (hasGreatWork && !usurped) newXp += 1;
 
-        onCloseModal();
-        const params = new URLSearchParams({
-          upgrade_deck: deck.id.toString(),
-          xp: newXp.toString(), // Only pass NEW XP
-          previous_remaining_xp: remainingXp.toString(), // Pass remaining XP separately
-          total_available_xp: totalAvailableXp.toString(), // Total for card pool filtering
-          cards_per_pick: cardsPerPick.toString(),
-          skips_allowed: skipsAllowed.toString(),
-        });
+    // Total available XP for card pool filtering (remaining + new).
+    const totalAvailableXp = remainingXp + newXp;
 
-        // Add researched cards as comma-separated list
-        if (researchedCards.size > 0) {
-          params.set("researched", Array.from(researchedCards).join(","));
-        }
-        if (exileString) {
-          params.set("exile", exileString);
-        }
-        navigate(
-          `/deck/draft/${deck.investigatorFront.card.code}?${params.toString()}`,
-        );
-        return;
-      }
+    onCloseModal();
+    const params = new URLSearchParams({
+      upgrade_deck: deck.id.toString(),
+      xp: newXp.toString(), // Only pass NEW XP
+      previous_remaining_xp: remainingXp.toString(), // Pass remaining XP separately
+      total_available_xp: totalAvailableXp.toString(), // Total for card pool filtering
+      cards_per_pick: cardsPerPick.toString(),
+      skips_allowed: skipsAllowed.toString(),
+    });
 
-      // Normal upgrade flow: only use entered XP + bonuses
-      // Remaining XP will be handled automatically by upgradeDeck via xpCarryover
-      let upgradeXp = enteredXp;
-      if (hasCharonsObol) upgradeXp += 2;
-      if (hasGreatWork && !usurped) upgradeXp += 1;
+    // Add researched cards as comma-separated list
+    if (researchedCards.size > 0) {
+      params.set("researched", Array.from(researchedCards).join(","));
+    }
+    if (exileString) {
+      params.set("exile", exileString);
+    }
+    navigate(
+      `/deck/draft/${deck.investigatorFront.card.code}?${params.toString()}`,
+    );
+  }, [
+    deck.id,
+    deck.xp,
+    deck.xp_adjustment,
+    deck.xp_spent,
+    deck.investigatorFront.card.code,
+    xp,
+    onCloseModal,
+    navigate,
+    exileString,
+    usurped,
+    hasGreatWork,
+    hasCharonsObol,
+    cardsPerPick,
+    skipsAllowed,
+    researchedCards,
+  ]);
 
-      const toastId = toast.show({
-        children: t("deck_view.upgrade_modal.loading"),
-        variant: "loading",
-      });
-
-      try {
-        const newDeck = await upgradeDeck({
-          id: deck.id,
-          xp: upgradeXp,
-          exileString,
-          usurped: hasGreatWork ? usurped : undefined,
-        });
-
-        toast.dismiss(toastId);
-        onCloseModal();
-
-        navigate(`/deck/${path}/${newDeck.id}`);
-      } catch (err) {
-        toast.dismiss(toastId);
-        toast.show({
-          children: t("deck_view.upgrade_modal.error", {
-            error: (err as Error).message,
-          }),
-          variant: "error",
-        });
-      }
-    },
-    [
-      deck.id,
-      deck.xp,
-      deck.xp_adjustment,
-      deck.xp_spent,
-      deck.investigatorFront.card.code,
-      upgradeDeck,
-      xp,
-      onCloseModal,
-      navigate,
-      toast,
+  const { onSave: onSaveUpgrade, onSaveClose: onSaveCloseUpgrade } =
+    useUpgradeDeck({
+      deck,
       exileString,
-      usurped,
-      hasGreatWork,
       hasCharonsObol,
-      isDraftDeck,
-      cardsPerPick,
-      skipsAllowed,
-      researchedCards,
-      t,
-    ],
-  );
+      hasGreatWork,
+      onCloseModal,
+      usurped,
+      xp,
+    });
+
+  const onSave = isDraftDeck ? onDraftUpgrade : onSaveUpgrade;
+  const onSaveClose = isDraftDeck ? onDraftUpgrade : onSaveCloseUpgrade;
 
   const onXpChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
     setXp(evt.target.value);
@@ -309,15 +276,7 @@ export function UpgradeModal(props: Props) {
   const totalAvailableXp = remainingXp + enteredXp;
 
   const disabled =
-    (xp === "" && remainingXp <= 0) || totalAvailableXp < 1 || !!connectionLock;
-
-  const onSave = useCallback(() => {
-    onUpgrade("edit", true);
-  }, [onUpgrade]);
-
-  const onSaveClose = useCallback(() => {
-    onUpgrade("view", false);
-  }, [onUpgrade]);
+    (xp === "" && remainingXp <= 0) || totalAvailableXp < 1 || hasSyncConflict;
 
   useHotkey("cmd+enter", onSave, { disabled, allowInputFocused: true });
 
@@ -345,13 +304,20 @@ export function UpgradeModal(props: Props) {
                 <HotkeyTooltip
                   keybind="cmd+enter"
                   description={
-                    connectionLock ?? t("deck_view.actions.save_upgrade")
+                    hasSyncConflict
+                      ? t("deck_sync.conflict.edit_locked")
+                      : t("deck_view.actions.save_upgrade")
                   }
                 >
                   <Button
                     data-testid="upgrade-save"
                     disabled={disabled}
                     onClick={onSave}
+                    tooltip={
+                      hasSyncConflict
+                        ? t("deck_sync.conflict.edit_locked")
+                        : undefined
+                    }
                     variant="primary"
                   >
                     {t("deck_view.actions.save_upgrade_short")}
@@ -360,13 +326,20 @@ export function UpgradeModal(props: Props) {
                 <HotkeyTooltip
                   keybind="cmd+shift+enter"
                   description={
-                    connectionLock ?? t("deck_view.actions.save_upgrade_close")
+                    hasSyncConflict
+                      ? t("deck_sync.conflict.edit_locked")
+                      : t("deck_view.actions.save_upgrade_close")
                   }
                 >
                   <Button
                     data-testid="upgrade-save-close"
                     disabled={disabled}
                     onClick={onSaveClose}
+                    tooltip={
+                      hasSyncConflict
+                        ? t("deck_sync.conflict.edit_locked")
+                        : undefined
+                    }
                     variant="bare"
                   >
                     {t("deck_view.actions.save_upgrade_close_short")}
@@ -381,12 +354,12 @@ export function UpgradeModal(props: Props) {
           style={cssVariables}
         >
           <div className={css["content"]}>
-            <Field bordered full>
+            <Field full>
               <FieldLabel htmlFor="xp-gained">
                 {t("deck_view.upgrade_modal.xp_gained")}
               </FieldLabel>
               <input
-                // biome-ignore lint/a11y/noAutofocus: this is a modal.
+                // oxlint-disable-next-line jsx-a11y/no-autofocus -- this is a modal.
                 autoFocus
                 onChange={onXpChange}
                 min="0"
@@ -410,7 +383,7 @@ export function UpgradeModal(props: Props) {
             </Field>
             {isDraftDeck && (
               <>
-                <Field full padded>
+                <Field full>
                   <FieldLabel htmlFor="cards-per-pick">
                     {t("deck_view.upgrade_modal.cards_per_pick")}
                   </FieldLabel>
@@ -432,7 +405,7 @@ export function UpgradeModal(props: Props) {
                     </output>
                   </div>
                 </Field>
-                <Field full padded>
+                <Field full>
                   <FieldLabel htmlFor="skips-allowed">
                     {t("deck_draft.setup.skips_allowed")}
                   </FieldLabel>
@@ -455,7 +428,7 @@ export function UpgradeModal(props: Props) {
                   </div>
                 </Field>
                 {researchedBaseCards.length > 0 && (
-                  <Field full padded>
+                  <Field full>
                     <FieldLabel>
                       {t("deck_view.upgrade_modal.researched_cards")}
                     </FieldLabel>
@@ -545,11 +518,11 @@ export function UpgradeModal(props: Props) {
               </Field>
             )}
             {!isEmpty(exilableCards) && (
-              <Field bordered>
+              <Field>
                 <FieldLabel htmlFor="xp-gained">
                   {t("common.exiled_cards")}
                 </FieldLabel>
-                <Scroller className={css["exile"]}>
+                <Scroller className={css["exile"]} padded>
                   <ul>
                     {exilableCards.map(({ card, limit }) => (
                       <ListCard
@@ -572,4 +545,87 @@ export function UpgradeModal(props: Props) {
       </ModalInner>
     </Modal>
   );
+}
+
+function useUpgradeDeck({
+  deck,
+  exileString,
+  hasCharonsObol,
+  hasGreatWork,
+  onCloseModal,
+  usurped,
+  xp,
+}: {
+  deck: ResolvedDeck;
+  exileString: string;
+  hasCharonsObol: boolean;
+  hasGreatWork: boolean;
+  onCloseModal: () => void;
+  usurped: boolean;
+  xp: string;
+}) {
+  const [, navigate] = useLocation();
+  const toast = useToast();
+  const { t } = useTranslation();
+  const upgradeDeckMutation = useUpgradeDeckMutation();
+
+  const onUpgrade = useCallback(
+    async (path: "edit" | "view") => {
+      const toastId = toast.show({
+        children: t("deck_view.upgrade_modal.loading"),
+        variant: "loading",
+      });
+
+      let upgradeXp = xp ? +xp : 0;
+      if (hasCharonsObol) upgradeXp += 2;
+      if (hasGreatWork && !usurped) upgradeXp += 1;
+
+      try {
+        const newDeck = await upgradeDeckMutation.mutateAsync({
+          id: deck.id,
+          xp: upgradeXp,
+          exileString,
+          usurped: hasGreatWork ? usurped : undefined,
+        });
+
+        toast.dismiss(toastId);
+        onCloseModal();
+        navigate(`/deck/${path}/${newDeck.id}`);
+      } catch (err) {
+        toast.dismiss(toastId);
+        toast.show({
+          children: t("deck_view.upgrade_modal.error", {
+            error: (err as Error).message,
+          }),
+          variant: "error",
+        });
+      }
+    },
+    [
+      deck.id,
+      exileString,
+      hasCharonsObol,
+      hasGreatWork,
+      navigate,
+      onCloseModal,
+      t,
+      toast,
+      upgradeDeckMutation,
+      usurped,
+      xp,
+    ],
+  );
+
+  const onSave = useCallback(() => {
+    void onUpgrade("edit");
+  }, [onUpgrade]);
+
+  const onSaveClose = useCallback(() => {
+    void onUpgrade("view");
+  }, [onUpgrade]);
+
+  return {
+    onSave,
+    onSaveClose,
+  };
 }

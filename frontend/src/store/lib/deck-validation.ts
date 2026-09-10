@@ -1,28 +1,35 @@
-import type {
-  ApiDeckRequirements,
-  Card,
-  DeckOption,
+import {
+  type ApiDeckRequirements,
+  type Card,
+  cardLevel,
+  type DeckMeta,
+  type DeckOption,
+  SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
 import {
-  cardLevel,
   cardLimit,
   isRandomBasicWeaknessLike,
   isStaticInvestigator,
   splitMultiValue,
 } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
-import { range } from "@/utils/range";
 import { time, timeEnd } from "@/utils/time";
 import type { Metadata } from "../slices/metadata.types";
+import type { Interpreter } from "./buildql/interpreter";
+import {
+  getAdditionalDeckOptions,
+  insertAdditionalDeckOptions,
+  mapCardsToDeckOptions,
+} from "./deck-options";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {
   filterCardPool,
   filterInvestigatorAccess,
   filterInvestigatorWeaknessAccess,
+  isRewardCard,
   makeOptionFilter,
 } from "./filtering";
 import type { LookupTables } from "./lookup-tables.types";
-import type { DeckMeta, ResolvedDeck } from "./types";
+import type { ResolvedDeck } from "./types";
 
 export type DeckValidationResult = {
   valid: boolean;
@@ -165,39 +172,15 @@ export type DeckValidationError =
   | TooFewCardsError
   | DeckRequirementsNotMetError;
 
-function findIndexReversed<T>(
-  array: T[],
-  predicate: (item: T) => boolean,
-): number {
-  for (let i = array.length - 1; i >= 0; i -= 1) {
-    if (predicate(array[i])) return i;
-  }
-
-  return -1;
-}
-
 function formatReturnValue(errors: DeckValidationError[]) {
   return { valid: errors.length === 0, errors };
-}
-
-export function getAdditionalDeckOptions(deck: ResolvedDeck) {
-  return Object.values(deck.cards.slots).reduce((acc, { card }) => {
-    if (card.type_code !== "investigator" && card.deck_options) {
-      const quantity = deck.slots[card.code] ?? 0;
-
-      for (const _ of range(0, quantity)) {
-        acc.push(...card.deck_options);
-      }
-    }
-
-    return acc;
-  }, [] as DeckOption[]);
 }
 
 export function validateDeck(
   deck: ResolvedDeck,
   metadata: Metadata,
   lookupTables: LookupTables,
+  buildQlInterpreter: Interpreter,
 ): DeckValidationResult {
   time("validate_deck");
 
@@ -217,12 +200,21 @@ export function validateDeck(
 
   const errors: DeckValidationError[] = [
     ...validateDeckSize(deck),
-    ...validateSlots(deck, metadata, lookupTables),
+    ...validateRewardCardLimit(deck),
+    ...validateSlots(deck, metadata, lookupTables, buildQlInterpreter),
   ];
 
   if (deck.hasExtraDeck) {
     errors.push(...validateExtraDeckSize(deck));
-    errors.push(...validateSlots(deck, metadata, lookupTables, "extraSlots"));
+    errors.push(
+      ...validateSlots(
+        deck,
+        metadata,
+        lookupTables,
+        buildQlInterpreter,
+        "extraSlots",
+      ),
+    );
   }
 
   if (deck.cardPool?.length) {
@@ -246,17 +238,19 @@ function validateInvestigator(deck: ResolvedDeck) {
 
   let valid = true;
 
+  const deckMeta = deck.metaParsed as DeckMeta & Record<string, unknown>;
+
   for (const option of investigatorBack.deck_options) {
     if (option.deck_size_select) {
-      valid = !!deck.metaParsed.deck_size_selected;
+      valid = !!deckMeta.deck_size_selected;
     } else if (option.faction_select) {
       valid =
-        !!(option.id && deck.metaParsed[option.id as keyof DeckMeta]) ||
-        !!deck.metaParsed.faction_selected ||
-        (!!deck.metaParsed.faction_1 && !!deck.metaParsed.faction_2);
+        !!(option.id && deckMeta[option.id]) ||
+        !!deckMeta.faction_selected ||
+        (!!deckMeta.faction_1 && !!deckMeta.faction_2);
     } else if (option.option_select) {
       const key = option.id ?? "option_selected";
-      valid = !!deck.metaParsed[key as keyof DeckMeta];
+      valid = !!deckMeta[key];
     }
 
     if (!valid) break;
@@ -324,12 +318,41 @@ function validateDeckSize(deck: ResolvedDeck): DeckValidationError[] {
     : [];
 }
 
+function validateRewardCardLimit(deck: ResolvedDeck): DeckValidationError[] {
+  const limit = 1;
+  const count = Object.entries(deck.slots).reduce((total, [code, quantity]) => {
+    if (quantity <= 0) return total;
+
+    const card = deck.cards.slots[code]?.card;
+    return card?.permanent && isRewardCard(card) ? total + quantity : total;
+  }, 0);
+
+  return count > limit
+    ? [
+        {
+          type: "INVALID_DECK_OPTION",
+          details: {
+            count: `(${count} / ${limit})`,
+            error:
+              "A deck cannot include more than one reward card with the permanent keyword.",
+          },
+        },
+      ]
+    : [];
+}
+
 function validateExtraDeckSize(deck: ResolvedDeck): DeckValidationError[] {
   const investigatorBack = deck.investigatorBack.card;
 
+  const hasSideDeckSizeOption = investigatorBack.side_deck_options?.some(
+    (o) => !!o.deck_size_select,
+  );
+
   // FIXME: this is a hack. Instead, we should not count signatures towards side deck size.
   const targetDeckSize =
-    (investigatorBack.side_deck_requirements?.size ?? 0) + 1;
+    hasSideDeckSizeOption && deck.metaParsed.deck_size_selected
+      ? Number.parseInt(deck.metaParsed.deck_size_selected, 10) + 1
+      : (investigatorBack.side_deck_requirements?.size ?? 0) + 1;
 
   const deckSize = Object.values(deck.extraSlots ?? {}).reduce(
     (acc, curr) => acc + curr,
@@ -408,16 +431,23 @@ function validateSlots(
   deck: ResolvedDeck,
   metadata: Metadata,
   lookupTables: LookupTables,
+  buildQlInterpreter: Interpreter,
   mode: "slots" | "extraSlots" = "slots",
 ): DeckValidationError[] {
   const validators: SlotValidator[] = [
     new DeckLimitsValidator(deck),
     new DeckRequiredCardsValidator(deck, lookupTables, mode),
-    new DeckOptionsValidator(deck, lookupTables, mode),
+    new DeckOptionsValidator(deck, lookupTables, buildQlInterpreter, mode),
   ];
 
   if (mode === "extraSlots") {
-    validators.push(new SideDeckLimitsValidator());
+    validators.push(
+      new SideDeckLimitsValidator(
+        deck.investigatorBack.card.code === SPECIAL_CARD_CODES.PARALLEL_JIM
+          ? 1
+          : undefined,
+      ),
+    );
   }
 
   const accessor =
@@ -459,7 +489,7 @@ interface SlotValidator {
 class DeckLimitsValidator implements SlotValidator {
   limitOverride: number | undefined;
   violations: Record<string, DeckLimitViolation> = {};
-  quantityByName: Record<string, number> = {};
+  propertiesByName: Record<string, { quantity: number; limit: number }> = {};
   ignoreDeckLimitSlots: Record<string, number> = {};
   eldritchBranded?: string;
 
@@ -480,19 +510,29 @@ class DeckLimitsValidator implements SlotValidator {
       ? `${card.real_name} (${card.real_subname})`
       : card.real_name;
 
-    const limit = this.getCardLimit(card);
-
     // some copies of this card might be ignored, e.g. for parallel Agnes and TCU "Ace of Rods".
     const copies = quantity - (this.ignoreDeckLimitSlots[card.code] ?? 0);
+    const limit = this.getCardLimit(card);
 
-    this.quantityByName[name] ??= 0;
-    this.quantityByName[name] += copies;
+    this.propertiesByName[name] ??= {
+      quantity: 0,
+      limit,
+    };
 
-    if (this.quantityByName[name] > limit) {
+    this.propertiesByName[name].quantity += copies;
+
+    this.propertiesByName[name].limit = Math.min(
+      this.propertiesByName[name].limit,
+      limit,
+    );
+
+    if (
+      this.propertiesByName[name].quantity > this.propertiesByName[name].limit
+    ) {
       this.violations[name] = {
         code: card.code,
-        limit,
-        quantity: this.quantityByName[name],
+        limit: this.propertiesByName[name].limit,
+        quantity: this.propertiesByName[name].quantity,
       };
     }
   }
@@ -732,6 +772,7 @@ class DeckRequiredCardsValidator implements SlotValidator {
 }
 
 class DeckOptionsValidator implements SlotValidator {
+  buildQlInterpreter: Interpreter;
   cards: Card[] = [];
   signatures: Card[] = [];
   config: InvestigatorAccessConfig;
@@ -746,6 +787,7 @@ class DeckOptionsValidator implements SlotValidator {
   constructor(
     deck: ResolvedDeck,
     lookupTables: LookupTables,
+    buildQlInterpreter: Interpreter,
     mode: "slots" | "extraSlots" = "slots",
   ) {
     const investigatorBack = deck.investigatorBack.card;
@@ -755,9 +797,13 @@ class DeckOptionsValidator implements SlotValidator {
 
     this.config = config;
     this.deckOptions = deckOptions;
+    this.buildQlInterpreter = buildQlInterpreter;
 
-    this.playerCardFilter = filterInvestigatorAccess(investigatorBack, config);
-
+    this.playerCardFilter = filterInvestigatorAccess(
+      investigatorBack,
+      buildQlInterpreter,
+      config,
+    );
     this.weaknessFilter = filterInvestigatorWeaknessAccess(investigatorBack);
   }
 
@@ -768,7 +814,7 @@ class DeckOptionsValidator implements SlotValidator {
     config: InvestigatorAccessConfig;
     deckOptions: DeckOption[];
   } {
-    const deckOptions: DeckOption[] =
+    const options: DeckOption[] =
       mode === "slots"
         ? [
             {
@@ -777,20 +823,16 @@ class DeckOptionsValidator implements SlotValidator {
               virtual: true,
               error: "You cannot have more than one Covenant in your deck.",
             },
+            ...(deck.investigatorBack.card.deck_options ?? []),
           ]
-        : [];
-
-    const options =
-      mode === "slots"
-        ? [...(deck.investigatorBack.card.deck_options || [])]
-        : [...(deck.investigatorBack.card.side_deck_options || [])];
-
-    deckOptions.push(...options);
+        : [...(deck.investigatorBack.card.side_deck_options ?? [])];
 
     const additionalDeckOptions =
       mode === "slots" ? getAdditionalDeckOptions(deck) : [];
-
-    deckOptions.push(...additionalDeckOptions);
+    const deckOptions = insertAdditionalDeckOptions(
+      options,
+      additionalDeckOptions,
+    );
 
     return {
       config: {
@@ -959,7 +1001,11 @@ class DeckOptionsValidator implements SlotValidator {
     for (const option of options) {
       if (!option.virtual || option.atleast) continue;
 
-      const filter = makeOptionFilter(option as DeckOption, this.config);
+      const filter = makeOptionFilter(
+        option as DeckOption,
+        this.buildQlInterpreter,
+        this.config,
+      );
       if (!filter) continue;
 
       let matchCount = 0;
@@ -986,103 +1032,29 @@ class DeckOptionsValidator implements SlotValidator {
 
   validateLimit(options: DeckOption[]): DeckValidationError[] {
     const errors: DeckValidationError[] = [];
+    const { overflowByOption } = mapCardsToDeckOptions(
+      this.cards,
+      this.quantities,
+      options,
+      this.buildQlInterpreter,
+      this.config,
+    );
 
-    /**
-     * Tracks which card copies have been matched by a deck option.
-     * This allows us to keep track of whether any cards remain unmatched,
-     * which means that they violate the deck_building restrictions.
-     * Invariants:
-     *  - `option.atleast` are ignored.
-     *  - `option.virtual` (used for covenants) etc. are validated in `validateVirtualLimit`.
-     *  - deck_options are sorted from "unlimited > limited".
-     */
-    const optionMatched = new Map<string, number>();
+    for (let optionIndex = 0; optionIndex < options.length; optionIndex += 1) {
+      const option = options[optionIndex];
+      const overflow = overflowByOption.get(optionIndex);
+      if (option?.limit == null || !overflow) continue;
 
-    /**
-     * Once a card matches a `not` deck option, no further options can match it.
-     * This is relevant when a limit option precedes a `not` option and a later filter would match it as well.
-     * This does not occur in official content, but it does occur in fan-made content.
-     */
-    const exclusions = new Set<string>();
-
-    for (let i = 0; i < options.length; i += 1) {
-      const option = options[i];
-      if (option.virtual) continue;
-
-      const filter = makeOptionFilter(option as DeckOption, this.config);
-
-      let matchCount = 0;
-
-      const isLimitOption = !option.not && option.limit;
-
-      if (filter) {
-        for (const card of this.cards) {
-          if (exclusions.has(card.code)) continue;
-
-          const quantity = this.quantities[card.code];
-
-          // all copies of the card fulfill a previous deck option.
-          if (quantity === optionMatched.get(card.code)) continue;
-
-          const matches = filter(card);
-          // card access not given by deck_option.
-          if (!matches) continue;
-
-          if (matches && option.not) {
-            exclusions.add(card.code);
-            continue;
-          }
-
-          for (let j = 0; j < quantity; j++) {
-            const matchedQuantity = optionMatched.get(card.code) ?? 0;
-
-            // if the current match count exceeds the limit,
-            // no more cards can be covered by this option.
-            if (
-              matchedQuantity === quantity ||
-              (isLimitOption && matchCount >= (option.limit as number))
-            ) {
-              break;
-            }
-
-            if (matches) matchCount += 1;
-
-            if (matches && !option.not) {
-              optionMatched.set(card.code, matchedQuantity + 1);
-            }
-          }
-
-          // if the current match count exceeds the limit,
-          // no more cards can be covered by this option.
-          if (isLimitOption && matchCount >= (option.limit as number)) {
-            break;
-          }
-        }
-      }
-    }
-
-    const unmatchedCardCount = Object.entries(this.quantities)
-      .filter(([code, quantity]) => optionMatched.get(code) !== quantity)
-      .reduce(
-        (acc, [code, quantity]) =>
-          acc + quantity - (optionMatched.get(code) ?? 0),
+      const overflowCount = Array.from(overflow.values()).reduce(
+        (total, quantity) => total + quantity,
         0,
       );
-
-    if (unmatchedCardCount > 0) {
-      const lastLimitOptionIndex = findIndexReversed(
-        options,
-        (o) => o.limit != null && !o.virtual && !o.atleast,
-      );
-      if (lastLimitOptionIndex === -1) return errors;
-
-      const option = options[lastLimitOptionIndex];
 
       errors.push({
         type: "INVALID_DECK_OPTION",
         details: {
           error: option.error ?? "Too many off-class cards.",
-          count: `(${(option.limit ?? 0) + unmatchedCardCount} / ${option.limit})`,
+          count: `(${option.limit + overflowCount} / ${option.limit})`,
         },
       });
     }
@@ -1093,7 +1065,12 @@ class DeckOptionsValidator implements SlotValidator {
 
 class SideDeckLimitsValidator implements SlotValidator {
   cards: Card[] = [];
+  limitOverride: number | undefined = undefined;
   quantities: number[] = [];
+
+  constructor(limitOverride?: number) {
+    this.limitOverride = limitOverride;
+  }
 
   add(card: Card, quantity: number) {
     if (card.subtype_code !== "basicweakness") {
@@ -1109,7 +1086,9 @@ class SideDeckLimitsValidator implements SlotValidator {
       const card = this.cards[i];
       const quantity = this.quantities[i];
 
-      if (quantity > 1 && card.xp != null) {
+      const limit = this.limitOverride ?? card.deck_limit ?? 0;
+
+      if (quantity > limit && card.xp != null) {
         errors.push({
           type: "INVALID_CARD_COUNT",
           details: [

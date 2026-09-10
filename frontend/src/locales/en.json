@@ -46,6 +46,104 @@
       "attached": "Attached to {{name}}",
       "eligible": "Eligible for {{name}}"
     },
+    "auth": {
+      "arkhamdb_login_banner": "The ArkhamDB API is currently slow. If you are having trouble, log in with your email.",
+      "arkhamdb_signup_banner": "The ArkhamDB API is currently slow. If you are having trouble, sign up with your email.",
+      "email": "Email",
+      "email_or_username": "Email or username",
+      "errors": {
+        "account_not_verified": "Your account has not been verified yet. Please <verifyLink>verify</verifyLink> your email before logging in.",
+        "captcha_load_failed": "Failed to load Turnstile captcha.",
+        "forgot_password_failed": "Failed to initiate password reset: {{error}}",
+        "invalid_credentials": "Invalid email or password",
+        "login_failed": "Login failed: {{error}}",
+        "password_reset_failed": "Password reset failed: {{error}}",
+        "rate_limited": "Too many requests. Please wait {{interval}} before trying again",
+        "signup_failed": "Signup failed: {{error}}",
+        "verify_email_failed": "Email verification failed: {{error}}",
+        "verify_email_send_failed": "Failed to resend verification email: {{error}}"
+      },
+      "forgot_password": {
+        "description": "Enter your email or username and we'll send you instructions on how to reset your password.",
+        "submit": "Send password reset instructions",
+        "success": "If an account exists, you'll receive a reset link shortly.",
+        "title": "Forgot password"
+      },
+      "login": {
+        "action": "Log in",
+        "forgot_password": "Forgot password?",
+        "no_account": "Don't have an account?",
+        "title": "Log in",
+        "with_arkhamdb": "Log in with ArkhamDB"
+      },
+      "logout": "Logout",
+      "menu": {
+        "logged_in_as": "Logged in as {{name}}",
+        "sync_account": "Sync data",
+        "sync_error": "Failed to sync data: {{error}}",
+        "sync_status": {
+          "conflict": "Account sync conflict",
+          "error": "Account sync error",
+          "idle": "Account sync idle",
+          "loading": "Account sync loading",
+          "partial": "Account sync partially failed",
+          "saving": "Account sync saving",
+          "synced": "Account sync complete"
+        },
+        "syncing": "Syncing account data..."
+      },
+      "oauth_errors": {
+        "arkhamdb_invalid_response": "ArkhamDB sign-in failed. Please try again.",
+        "arkhamdb_no_decks": "Your ArkhamDB account must have at least one deck before you can continue.",
+        "identity_belongs_to_another_account": "This ArkhamDB account is already linked to another account.",
+        "invalid_state": "ArkhamDB sign-in expired or became invalid. Please try again.",
+        "oauth_failed": "ArkhamDB sign-in failed. Please try again.",
+        "oauth_missing_code": "ArkhamDB sign-in was cancelled or did not complete. Please try again."
+      },
+      "password": "Password",
+      "password_validation": "Minimum 8 characters",
+      "reset_password": {
+        "confirm_password": "Confirm password",
+        "password": "New password",
+        "success": "Password reset successfully. You can now log in.",
+        "title": "Reset password"
+      },
+      "signup": {
+        "action": "Sign up",
+        "complete_profile": {
+          "description": "Choose a username for your account. This will be displayed publicly on your decks and contributions.",
+          "title": "Complete your profile",
+          "upload": {
+            "decks": {
+              "help": "Uploads your local deck collection to your account.",
+              "label": "Upload local decks"
+            },
+            "settings": {
+              "help": "Uploads your collection and display preferences.",
+              "label": "Upload settings"
+            },
+            "title": "Upload local data"
+          }
+        },
+        "has_account": "Already have an account?",
+        "legal_acceptance": "By creating an account, you agree to the <terms>Terms of Service</terms> and acknowledge the <privacy>Privacy Policy</privacy>.",
+        "success": "Signed up successfully! Please check your email to verify your account. You'll choose a username after your first login.",
+        "title": "Sign up",
+        "verifying": "Verifying...",
+        "with_arkhamdb": "Sign up with ArkhamDB"
+      },
+      "username": "Username",
+      "username_validation": "Letters, numbers, underscores, and hyphens only",
+      "verify_email": {
+        "action": "Verify email",
+        "resend": "Resend verification email",
+        "resend_action": "Resend verification email",
+        "resend_success": "Verification email sent successfully. Please check your inbox.",
+        "success": "Email verified! You can now log in.",
+        "title": "Verify email",
+        "token": "Verification token"
+      }
+    },
     "browse": {
       "title": "Browse cards"
     },
@@ -54,11 +152,38 @@
         "complete_task": "Complete task",
         "open_card_page": "Card page",
         "reviews": "Reviews"
+      },
+      "custom_behavior": {
+        "investigator_traits": {
+          "help": "{{card}} can add a new trait to your your investigator's traits.",
+          "title": "Investigator trait choice"
+        }
       }
+    },
+    "card_scenarios": {
+      "standalone": "Standalone",
+      "title": "Scenarios using <em>{{name}}</em>",
+      "tooltip": "{{name}} <em>({{campaignName}})</em>"
+    },
+    "card_tags": {
+      "account_title": "Global tags",
+      "deck_placeholder": "Add deck tag...",
+      "deck_title": "Deck tags",
+      "favorite": "Favorite",
+      "manage": {
+        "action": "Manage tags",
+        "delete": "Delete",
+        "error": "Failed to update card tags: {{error}}",
+        "name": "Tag name",
+        "save": "Update tag",
+        "title": "Manage tags",
+        "unknown_error": "Unknown error"
+      },
+      "placeholder": "Add global tag...",
+      "title": "Tags"
     },
     "card_view": {
       "actions": {
-        "faq": "View FAQ",
         "open_on_arkhamdb": "Open on ArkhamDB",
         "reviews": "View reviews",
         "show_original_image": "Show original card image",
@@ -68,16 +193,18 @@
         "view_backside": "Backside",
         "who_can_take": "Who can take this card?"
       },
+      "errata_notice": "Errata ({{date}})",
       "faq": {
         "empty": "No FAQ entries available.",
         "error": "Failed to load FAQ entries.",
-        "loading": "Loading FAQ entries...",
         "title": "FAQ"
+      },
+      "ratings": {
+        "title": "Card ratings"
       },
       "scan": "Scan of {{code}}",
       "section_actions": "Actions",
       "section_deckbuilding": "Deckbuilding",
-      "section_faq": "FAQ",
       "section_printings": "Printings",
       "thumbnail": "Thumbnail of {{code}}"
     },
@@ -117,11 +244,13 @@
         "value": "Cost {{cost}}",
         "x": "Cost X"
       },
+      "create_named": "Create \"{{name}}\"",
       "customizable": "Customizable",
       "customizations": "Customizations",
       "cycle_one": "cycle",
       "cycle_other": "cycles",
       "deck_options": {
+        "A deck cannot include more than one reward card with the permanent keyword.": "Deck cannot include more than one reward card with the permanent keyword.",
         "Atleast constraint violated.": "Atleast constraint violated.",
         "Blessed": "Blessed",
         "Blessed and Cursed": "Blessed and Cursed",
@@ -156,7 +285,8 @@
         "You cannot have more than 5 level 0 Seeker cards": "You cannot have more than 5 level 0 Seeker cards",
         "You cannot have more than 5 level 0 Survivor cards": "You cannot have more than 5 level 0 Survivor cards",
         "You cannot have more than one Covenant in your deck.": "You cannot have more than one Covenant in your deck.",
-        "You must have at least 7 cards from 3 different factions": "You must have at least 7 cards from 3 different classes",
+        "You must have at least 6 cards from each faction.": "You must have at least 6 cards from each faction.",
+        "You must have at least 7 cards from 3 different factions": "You must have at least 7 cards from 3 different factions",
         "You must have at least 7 cards from each class": "You must have at least 7 cards from each class"
       },
       "decks": {
@@ -198,9 +328,11 @@
       "more_actions": "More actions",
       "myriad": "Myriad",
       "no_entries": "No entries",
+      "no_results": "No results",
+      "non_collection_cards": "{{count}} non-collection cards",
       "none": "None",
-      "nonexceptional": "Non-exceptional",
       "ok": "OK",
+      "or": "or",
       "pack_one": "pack",
       "pack_other": "packs",
       "packs_new_format": {
@@ -226,6 +358,7 @@
         "replacement": "Replacements",
         "requiredCards": "Signatures",
         "restrictedTo": "Restricted to",
+        "sideDeckRequiredCards": "Extra Deck Signatures",
         "specialist": "Specialist",
         "specialist_investigators": "Specialist Investigators"
       },
@@ -257,6 +390,7 @@
       "sort_asc": "Sort ascending",
       "sort_desc": "Sort descending",
       "specialist": "Specialist",
+      "stage": "Stage",
       "subtype": {
         "basicweakness": "Basic Weakness",
         "none": "No subtype",
@@ -304,6 +438,7 @@
         "Act 1": "Act 1",
         "Act 2": "Act 2",
         "Agency": "Agency",
+        "Alchemy": "Alchemy",
         "Alexandria": "Alexandria",
         "Allied": "Allied",
         "Ally": "Ally",
@@ -311,6 +446,7 @@
         "Ancient": "Ancient",
         "Ancient One": "Ancient One",
         "Apiary": "Apiary",
+        "Apparel": "Apparel",
         "Arkham": "Arkham",
         "Arkham Asylum": "Arkham Asylum",
         "Armor": "Armor",
@@ -342,6 +478,7 @@
         "Carnevale": "Carnevale",
         "Cart": "Cart",
         "Casino": "Casino",
+        "Castle": "Castle",
         "Cave": "Cave",
         "Central": "Central",
         "Charm": "Charm",
@@ -361,6 +498,7 @@
         "Conspirator": "Conspirator",
         "Construct": "Construct",
         "Corruption": "Corruption",
+        "Cosmos": "Cosmos",
         "Coterie": "Coterie",
         "Covenant": "Covenant",
         "Creature": "Creature",
@@ -381,6 +519,7 @@
         "Developed": "Developed",
         "Dhole": "Dhole",
         "Dilemma": "Dilemma",
+        "Dinosaur": "Dinosaur",
         "Distortion": "Distortion",
         "Dormant": "Dormant",
         "Double": "Double",
@@ -438,6 +577,7 @@
         "Haunted": "Haunted",
         "Havana": "Havana",
         "Hazard": "Hazard",
+        "Headwear": "Headwear",
         "Hemlock Vale": "Hemlock Vale",
         "Hex": "Hex",
         "Hideout": "Hideout",
@@ -533,6 +673,8 @@
         "Present-Day": "Present-Day",
         "Prison": "Prison",
         "Private": "Private",
+        "Profession": "Profession",
+        "Prop": "Prop",
         "Providence": "Providence",
         "Public": "Public",
         "R'lyeh": "R'lyeh",
@@ -560,6 +702,8 @@
         "Ruins": "Ruins",
         "Salem": "Salem",
         "Sanctum": "Sanctum",
+        "Satellite": "Satellite",
+        "Saturnite": "Saturnite",
         "Scheme": "Scheme",
         "Scholar": "Scholar",
         "Science": "Science",
@@ -572,6 +716,7 @@
         "Serpent": "Serpent",
         "Service": "Service",
         "Servitor": "Servitor",
+        "Set": "Set",
         "Shantak": "Shantak",
         "Shattered": "Shattered",
         "Ship": "Ship",
@@ -639,6 +784,7 @@
         "Witch": "Witch",
         "Witch House": "Witch House",
         "Woods": "Woods",
+        "Worker": "Worker",
         "Y'ha-nthlei": "Y'ha-nthlei",
         "Yithian": "Yithian",
         "Yoth": "Yoth",
@@ -668,6 +814,7 @@
       "uses": {
         "aether": "Aether",
         "ammo": "Ammo",
+        "arrow": "Arrow",
         "bounties": "Bounties",
         "brilliance": "Brilliance",
         "chances": "Chances",
@@ -682,8 +829,11 @@
         "obsessions": "Obsessions",
         "offerings": "Offerings",
         "portents": "Portents",
+        "renown": "Renown",
         "resources": "Resources",
+        "rumors": "Rumors",
         "secrets": "Secrets",
+        "shards": "Shards",
         "shell": "Shell",
         "signs": "Signs",
         "supplies": "Supplies",
@@ -694,13 +844,9 @@
         "whistles": "Whistles",
         "wishes": "Wishes"
       },
+      "vengeance": "Vengeance",
       "victory": "Victory",
       "xp": "XP"
-    },
-    "connect": {
-      "error": "Failed to connect {{provider}}: {{error}}",
-      "syncing": "Syncing {{provider}}...",
-      "title": "Connecting {{provider}}..."
     },
     "deck": {
       "actions": {
@@ -737,10 +883,10 @@
         "increment_xp": "Increase available amount of XP for this upgrade",
         "no_changes": "No changes.",
         "summary": "{{xpSpent}} of {{xp}} XP spent",
-        "title": "Latest upgrade",
-        "xp_spent": "XP spent"
+        "title": "Latest upgrade"
       },
       "limited_decks": {
+        "Collector": "Collector",
         "Secondary Class": "Secondary class",
         "Versatile": "Versatile"
       },
@@ -756,9 +902,10 @@
         "xp_required_help": "Amount of XP required to build this deck from scratch."
       },
       "tags": {
+        "account": "arkham.build",
         "draft": "Draft",
         "limited_pool": "Limited pool",
-        "private": "Private",
+        "private": "Device",
         "sealed": "Sealed",
         "shared": "Shared"
       },
@@ -772,20 +919,22 @@
         "duplicate_error": "Failed to duplicate deck: {{error}}",
         "export_error": "Failed to export deck: {{error}}",
         "upload_error": "Failed to upload deck to {{provider}}: {{error}}",
-        "upload_loading": "Uploading deck to {{provider}}..."
+        "upload_loading": "Uploading deck to {{provider}}...",
+        "upload_requires_duplicate": "You must first duplicate this deck before uploading it to ArkhamDB."
       },
       "tools": {
+        "average_cost": "Average cost: {{cost}}",
         "cards": "Cards",
         "count": "Count",
         "factions": "Classes",
         "factions_tooltip": "{{count}} {{faction}} {{cards}}",
         "loading": "Loading deck tools...",
+        "median_cost": "Median cost: {{cost}}",
         "resource_cost": "Resource cost",
         "resource_cost_tooltip": "{{count}} {{cards}} of cost {{cost}}",
         "resource_costs": "Resource costs",
         "skill_icons": "Skill icons",
-        "skill_icons_tooltip": "{{count}} {{skill}} {{icons}}",
-        "title": "Deck tools"
+        "skill_icons_tooltip": "{{count}} {{skill}} {{icons}}"
       },
       "validation": {
         "card_not_in_limited_pool": "The following cards are not part of this deck's card pool:",
@@ -800,6 +949,7 @@
     },
     "deck_collection": {
       "archive": "Archive",
+      "arkhamdb_response_time_banner": "The ArkhamDB API is currently slow. If you are having trouble, upload decks directly to arkham.build instead.",
       "collection_empty": "Collection empty",
       "connect_arkhamdb": "Connect to ArkhamDB",
       "count": "{{count}} decks",
@@ -812,7 +962,9 @@
       "import": "Import",
       "import_arkhamdb": "Import from ArkhamDB",
       "import_arkhamdb_help": "Enter a public ArkhamDB deck id, deck url or deck guide url. Decks will be <strong>copied</strong> over and deck history and upgrade state will not be imported. If you are meaning to sync your ArkhamDB decks with this app, <settings_link>connect your arkhamdb account.</settings_link>",
+      "import_error": "Failed to import deck: {{error}}",
       "import_json": "Import from JSON files",
+      "import_loading": "Importing deck...",
       "more_filters": "More filters",
       "search_placeholder": "Search decks...",
       "sorting": {
@@ -846,7 +998,8 @@
       "sealed_deck": {
         "error": "Failed to fetch sealed deck: {{error}}",
         "loading": "Fetching sealed deck..."
-      }
+      },
+      "title": "Create {{name}} deck"
     },
     "deck_draft": {
       "title": "Draft Deck",
@@ -877,7 +1030,7 @@
         "cycle_decks": "Cycle deck lists",
         "decrement_quantity": "Decrement deck quantity",
         "decrement_side_quantity": "Decrement side deck quantity",
-        "draft_random_basic_weakness": "Draft random basic weakness",
+        "draft_random_basic_weakness": "Draft random basic weakness <em>(Boon of the Morrígan)</em>",
         "draft_random_basic_weakness_success": "<strong>{{name}}</strong> was added to your deck.",
         "draw_random_basic_weakness": "Draw random basic weakness",
         "draw_random_basic_weakness_success": "<strong>{{name}}</strong> is your random basic weakness.",
@@ -888,31 +1041,45 @@
         "move_to_side_deck": "Move to side deck",
         "quick_discard": "Discard changes (and stay on page)",
         "quick_save_deck": "Save deck (and stay on page)",
-        "quick_upgrade": "Upgrade {{name}}",
         "set_quantity": "Set deck quantity",
         "set_side_quantity": "Set side deck quantity"
       },
       "changes_restored": "Unsaved changes were restored.",
       "config": {
+        "buildql_deck_option": "BuildQL deckbuilding override",
         "card_pool": {
           "apply_environment": "Apply {{environment}} environment",
           "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "The Campaign Play-Along is an ongoing event hosted on the Mythos Busters discord server. It is designed to play Arkham campaigns together, share stories and generally create a sense of community.",
+          "chapter_1": "Chapter 1",
+          "chapter_1_help": "Set the card pool to all packs in chapter 1.",
+          "chapter_2": "Chapter 2",
+          "chapter_2_help": "Set the card pool to all packs in chapter 2.",
           "choose_cycle_placeholder": "Select cycles...",
+          "choose_progression_target_placeholder": "Select a campaign or standalone scenario...",
           "collection": "Collection",
           "collection_help": "Set your current <settings_link>collection</settings_link> as this deck's card pool. This can be useful to freeze the deck's card pool, or to share a \"build preset\" with people sharing a physical collection.",
           "configure_environment": "Configure environment",
           "current": "Current",
-          "current_help": "When deckbuilding in the Current Environment, players may only deckbuild with core cards, the five starter decks and the three most recent investigator expansions.",
+          "current_faq25": "Current (FAQ 2.5)",
+          "current_faq25_help": "When deckbuilding in the Current Environment, players may only deckbuild with core cards, the five starter decks and the three most recent investigator expansions.",
+          "current_help": "When deckbuilding in the the Current environment, players may use the following products: The 2026 core set, the five investigator decks, the two most recently released deckbuilding expansions and the two most recently released investigator expansions after the 2026 core set.",
           "custom": "Custom pool",
           "help": "Investigators, signature cards and story assets are not affected by this selection.",
+          "help_chapter_1": "This is a Chapter 1 environment.",
           "legacy": "Legacy",
           "legacy_help": "When deckbuilding in the Legacy Environment, players may build their decks and use investigators, player cards, and weaknesses from any Arkham Horror: The Card Game™ product. There are no restrictions whatsoever.",
           "limited": "Limited",
-          "limited_help": "When deckbuilding in the Limited Environment, players may only build their decks with cards from the core set, the five starter decks and three different investigator expansions of their choice.",
+          "limited_faq25": "Limited (FAQ 2.5)",
+          "limited_faq25_help": "When deckbuilding in the Limited Environment, players may only build their decks with cards from the core set, the five starter decks and three different investigator expansions of their choice.",
+          "limited_help": "When deckbuilding in the the Limited environment, players may use the following products: The 2026 core set, the five investigator decks, three different player card expansions of their choice.",
           "placeholder": "Select packs...",
+          "progression": "Progression",
+          "progression_help": "Set the card pool to the products that were available when the selected campaign or standalone scenario was released.",
+          "progression_target": "Campaign or standalone scenario",
           "section_title": "Card pool settings",
           "selected_cards": "Selected cards",
+          "substitute_chapter_2_with_chapter_1": "Substitute chapter 2 core and investigator decks with chapter 1 equivalents",
           "title": "Limited card pool"
         },
         "name": "Deck name",
@@ -931,8 +1098,10 @@
           "parallel_front": "Parallel front"
         },
         "storage_provider": {
-          "local": "Private",
-          "shared": "Shared",
+          "account": "arkham.build",
+          "arkhamdb": "ArkhamDB",
+          "local": "Device",
+          "shared": "Legacy API",
           "title": "Storage provider"
         },
         "taboo": "Taboo list",
@@ -957,7 +1126,7 @@
         "cancel_button": "Cancel",
         "choice_title": "Choose one weakness to cancel",
         "confirm_button": "Confirm",
-        "explanation_body": "This is a common house rule to give the player more control over the basic weakness in comparison to fully randomizing it. Three basic weaknesses are drawn at random, the player gets to cancel one of them and then one of the remaining two weaknesses is added to the deck at random.",
+        "explanation_body": "The <em>Boon of the Morrígan</em> gives players more control over the basic weakness in comparison to fully randomizing it. Three basic weaknesses are drawn at random, the player gets to cancel one of them and then one of the remaining two weaknesses is added to the deck at random.",
         "explanation_title": "Explanation",
         "title": "Drafting a basic weakness",
         "too_few_rbw": "Too few random basic weaknesses available to perform draft."
@@ -1032,8 +1201,22 @@
         "title": "Versions"
       }
     },
+    "deck_sync": {
+      "conflict": {
+        "action_error": "Failed to resolve deck conflict: {{error}}",
+        "collection_badge": "Deck conflict needs attention",
+        "description": "This deck changed remotely before your change completed. Refresh to apply the latest remote state.",
+        "description_remote_missing": "This deck was deleted remotely before your change completed. Discard the local deck to match the remote state.",
+        "discard_local": "Discard local deck",
+        "edit_locked": "Resolve the deck conflict before editing.",
+        "refresh": "Refresh",
+        "remote_version": "Remote version: {{version}}",
+        "title": "Deck sync conflict"
+      }
+    },
     "deck_view": {
       "actions": {
+        "check_card": "Mark {{card}} as collected",
         "display_as_list": "Display as list",
         "display_as_scans": "Display as scans",
         "import": "Import deck to collection",
@@ -1041,12 +1224,10 @@
         "save_upgrade_close": "Save upgrade and close",
         "save_upgrade_close_short": "Save and close",
         "save_upgrade_short": "Upgrade",
-        "upload": "Upload to {{provider}}"
+        "upload": "Upload to {{provider}}",
+        "upload_account": "Upload"
       },
-      "connections": {
-        "description": "This deck is set up to sync with {{provider}}.",
-        "view": "View on {{provider}}"
-      },
+      "checklist": "Checklist",
       "discounts": {
         "adaptable": "Adaptable",
         "arcaneResearch": "Arcane Research",
@@ -1055,12 +1236,14 @@
       },
       "history": {
         "added": "Added",
+        "created": "Created",
         "current_upgrade": "Current upgrade",
         "discounts": "Discounts",
         "initial_deck": "Initial deck",
         "no_changes": "No changes",
         "removed": "Removed",
         "slot_changes": "{{slot}} changes",
+        "updated": "Updated",
         "upgrade": "Upgrade #{{index}}",
         "upgrade_xp": "XP available: {{xp}}{{adjustment}} (spent: {{spent}})"
       },
@@ -1071,17 +1254,13 @@
       "newer_version": "There is a <a>newer version</a> of this deck. This deck is read-only.",
       "scans": "Scans",
       "sharing": {
-        "create": "Create share",
-        "create_failed": "Failed to create share: {{error}}",
-        "create_tooltip": "Sharing creates a publicly accessible, read-only link to the deck. Anyone with the link can view the deck, but not edit it.<br />Shares can be removed at any time. Removing a share does not affect the deck itself.",
-        "delete": "Delete share",
-        "delete_failed": "Failed to delete share: {{error}}",
-        "description": "Deck is stored locally.",
-        "description_present": "This deck has a public share, it can be viewed using <a>this link</a>.",
-        "title": "Public share",
-        "update": "Update share",
-        "update_failed": "Failed to update share: {{error}}"
+        "api_link": "Json API",
+        "description": "Deck is stored on this device.",
+        "description_present": "Deck is stored via {{provider}}. It can be viewed using <a>this link</a>.",
+        "title": "Access",
+        "view_on_arkhamdb": "View on ArkhamDB"
       },
+      "show_deck_list": "Show deck list",
       "tab_deck_list": "Deck",
       "tab_history": "History",
       "tab_notes": "Notes",
@@ -1122,7 +1301,8 @@
         "name_placeholder": "Enter name (e.g. Deck Guide)...",
         "required_cards": "Required cards",
         "submit": "Apply",
-        "title": "Filter criteria"
+        "title": "Filter criteria",
+        "xp_range": "XP required"
       },
       "sorting": {
         "date": "Most recent",
@@ -1151,6 +1331,11 @@
       "home": "Return home",
       "preview_publish": "Deck contains cards not supported by {{provider}}: {{names}}. Please remove them before uploading.",
       "report": "Report issue"
+    },
+    "external_embed": {
+      "load": "Load external content",
+      "notice": "This external content is blocked until you choose to load it. Loading it may allow the provider to process your data and set cookies.",
+      "title": "External content"
     },
     "fan_made_content": {
       "actions": {
@@ -1185,6 +1370,7 @@
         "card_lists": "Card lists",
         "card_lists_help": "This setting controls the default value of the \"Fan-made content\" filter in card lists."
       },
+      "short_title": "Fan-made",
       "status": {
         "alpha": "Alpha",
         "beta": "Beta",
@@ -1211,9 +1397,13 @@
       },
       "all": "All",
       "and": "and",
-      "locked": "This filter is locked",
       "asset": {
         "title": "Asset"
+      },
+      "card_tags": {
+        "favorites": "Favorites",
+        "placeholder": "Select tags...",
+        "title": "Card tags"
       },
       "cost": {
         "even": "Even",
@@ -1228,9 +1418,6 @@
       "encounter_set": {
         "placeholder": "Select encounter sets...",
         "title": "Encounter set"
-      },
-      "environment": {
-        "title": "Environment"
       },
       "fan_made_content": {
         "all": "Show everything",
@@ -1261,7 +1448,6 @@
         "no_level": "Null",
         "title": "Level"
       },
-      "or": "or",
       "ownership": {
         "owned": "Owned",
         "title": "Ownership",
@@ -1309,6 +1495,15 @@
         "title": "Uses"
       }
     },
+    "footer": {
+      "arkham_title": "Arkham Horror: The Card Game™",
+      "disclaimer": "<arkham>Arkham Horror: The Card Game™</arkham> and all related content © <ffg>Fantasy Flight Games (FFG)</ffg>. This site is not produced, endorsed by, or affiliated with FFG.",
+      "ffg": "Fantasy Flight Games (FFG)",
+      "legal": "Legal",
+      "legal_notice": "Legal Notice",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    },
     "help": {
       "about": "About this site",
       "changelog": "Changelog",
@@ -1333,6 +1528,7 @@
         "display_as_list": "Display as list",
         "display_as_list_text": "Display as list with card text",
         "display_as_scans": "Display as scans",
+        "flip_all_scans": "Flip all scans",
         "focus_search": "Focus search",
         "move_down": "Move down",
         "move_up": "Move up",
@@ -1373,10 +1569,13 @@
         "display_as_list_text": "List with card text",
         "display_as_scans": "Scans",
         "display_as_scans_grouped": "Scans (grouped)",
+        "export": "Export",
         "jump_to": "Jump to...",
         "list_settings": "List settings",
+        "max_columns": "Max. scans per columns",
         "sort": "Sort",
-        "sort_default": "User default"
+        "sort_default": "User default",
+        "taboo_filter_override": "Overridden by the \"Taboo list\" filter"
       },
       "reset": "Reset to default",
       "search": {
@@ -1385,9 +1584,15 @@
         "include_game_text": "Game text",
         "include_name": "Name",
         "placeholder": "Search cards...",
+        "share": "Share query",
         "title": "Search"
       },
       "sort_by": "Sort by"
+    },
+    "masthead": {
+      "browse": "Browse",
+      "navigation": "Primary navigation",
+      "rules": "Rules"
     },
     "popular_decks": {
       "decklists_link": "Browse all deck guides",
@@ -1405,25 +1610,89 @@
       "title": "Preview season is here!"
     },
     "rules": {
-      "title": "Rules reference",
       "back_to_top": "Back to top",
+      "grimoire": {
+        "empty": "No grimoire content found.",
+        "error": "Failed to load grimoire content.",
+        "intro_description": "The Arkham Grimoire is a comprehensive collection of rulings covering all known situations in the game. As a living document, it is maintained online and updated as new cards, rules, and interactions are introduced or discovered. This document contains information pertaining to more advanced topics such as the interpretation of card text, the resolution of timing conflicts, frequently asked questions, and a list of all keywords and other rules text.",
+        "intro_title": "The Arkham Grimoire",
+        "loading": "Loading grimoire content...",
+        "open_link": "Open the Grimoire",
+        "references": "References"
+      },
       "search_placeholder": "Search keywords...",
+      "title": "Rules reference",
       "toc": "Table of contents"
     },
     "search": {
       "title": "Search results"
     },
     "settings": {
-      "backup": {
-        "confirm": "Are you sure you want to restore this backup? Any existing data will be overwritten.",
-        "create": "Create backup",
-        "help": "Create a backup of your settings, decks and card collection as a JSON file. You can use this file to restore your data on this device or another device.",
-        "help_warning": "When a backup is restored, <strong>any existing data will be overwritten.</strong>",
-        "no_file_selected": "No file selected",
-        "restore": "Restore backup",
-        "restore_error": "Failed to restore backup: {{error}}",
-        "restore_success": "Backup restored successfully.",
-        "title": "Backup & Restore"
+      "account": {
+        "danger_zone": "Danger zone",
+        "delete": {
+          "confirm_help": "Type {{username}} to confirm account deletion.",
+          "confirm_label": "Confirmation",
+          "deleting": "Deleting account...",
+          "help": "Permanently delete your arkham.build account and associated data. This deletes server-side credentials, sessions, account-synced decks, settings, and OAuth connections. Account-linked decks are removed from this device. Device-only decks, settings, and other browser data is not deleted. Content synced to ArkhamDB is not deleted from ArkhamDB.",
+          "submit": "Delete account",
+          "title": "Delete account"
+        },
+        "email": {
+          "add": "Add email",
+          "add_help": "Add an email address and password as an alternative way to sign in.",
+          "cancel_pending": "Cancel email verification",
+          "canceling_pending": "Canceling email verification...",
+          "current_password": "Current password",
+          "new_email": "New email",
+          "new_email_help": "Leave blank to keep your current email.",
+          "new_password": "New password",
+          "new_password_help": "Leave blank to keep your current password.",
+          "pending": "Pending email",
+          "pending_help": "Check {{email}} to <verifyLink>verify it</verifyLink>.",
+          "save": "Update credentials",
+          "saving": "Saving credentials...",
+          "status": "Status",
+          "status_pending": "Pending verification",
+          "status_verified": "Verified",
+          "title": "Credentials"
+        },
+        "oauth": {
+          "connect": "Connect",
+          "connect_help": "Connect your {{provider}} account to sync your decks and login with it.",
+          "connected": "Connected",
+          "details": "Details",
+          "disconnect": "Disconnect",
+          "disconnect_error": "Failed to disconnect {{provider}}: {{error}}",
+          "disconnected": "There is a problem with this connection, please reconnect.",
+          "disconnecting": "Disconnecting {{provider}}...",
+          "last_error": "Last error",
+          "last_synced_at": "Last sync",
+          "none": "None",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "Refresh",
+          "status": {
+            "healthy": "Healthy",
+            "unhealthy": "Unhealthy"
+          },
+          "sync_status": "Sync status",
+          "title": "Connections",
+          "user_id": "User ID"
+        },
+        "privacy_rights": {
+          "body": "You can export your data from the Support tab and delete your account below. For GDPR requests that are not self-service, such as restriction or objection requests, contact <privacyEmail />.",
+          "title": "Privacy and data rights"
+        },
+        "profile": {
+          "save": "Save profile",
+          "saving": "Saving profile...",
+          "title": "Profile",
+          "username": "Username",
+          "username_help": "Letters, numbers, underscores, and hyphens only"
+        },
+        "title": "Account"
       },
       "card_data": {
         "card_count": "Card count",
@@ -1432,7 +1701,6 @@
         "loading": "Loading latest card data...",
         "locale": "Locale",
         "sync": "Sync card data",
-        "title": "Card data",
         "up_to_date": "Card data is up to date.",
         "update_available": "New card data is available."
       },
@@ -1448,31 +1716,15 @@
         "show_previews_help": "When this is checked, unreleased cards will be shown in the application and can be added to decks.",
         "title": "Collection"
       },
-      "connections": {
-        "connect": "Connect",
-        "connect_help": "Connect your {{provider}} account to sync your decks.",
-        "connected": "Connected",
-        "created_at": "Connected since",
-        "details": "Details",
-        "disconnect": "Disconnect",
-        "disconnected": "There is a problem with this connection, please reconnect.",
-        "disconnected_all": "There is a problem with one of your connections. Please refresh it in the settings.",
-        "items_synced": "Items synced",
-        "last_modified": "Data timestamp",
-        "last_synced_at": "Last sync",
-        "lock": "Another {{provider}} operation is in progress, please wait...",
-        "no_errors": "No errors",
-        "provider_error": "Syncing {{provider}} failed: {{error}}",
-        "provider_syncing": "Syncing {{provider}}...",
-        "reconnect": "Refresh",
-        "sync": "Sync",
-        "sync_all": "Sync {{collectionLabels}} decks",
-        "sync_errors": "Sync errors",
-        "sync_status": "Sync status",
-        "syncing": "Sync in progress",
-        "title": "Connected accounts",
-        "user_id": "User ID",
-        "username": "Username"
+      "conflict": {
+        "description": "Your account settings changed somewhere else. Refresh to load the remote version, or overwrite it with your current local changes.",
+        "overwrite": "Overwrite",
+        "refresh": "Reload page",
+        "remote_revision": "Remote revision: {{revision}}"
+      },
+      "developer": {
+        "dev_mode_enabled": "Enable developer mode",
+        "title": "Developer"
       },
       "display": {
         "card_display": "Card display settings",
@@ -1482,7 +1734,9 @@
         "card_level_icon_only": "In card icon only",
         "card_show_collection_number": "Show collection number",
         "card_show_details": "Show card details",
+        "card_show_favorite_highlights": "Highlight favorites",
         "card_show_icon": "Show card icon",
+        "card_show_tags": "Show card tags",
         "card_show_thumbnail": "Show card thumbnail",
         "card_show_unique_icon": "Show unique icon",
         "card_size": "Size",
@@ -1493,8 +1747,6 @@
         "card_skill_icons_simple": "Simple",
         "font_size": "Font size",
         "font_size_preview": "Armitage had an idea that the alphabet might be something esoterically used by certain forbidden cults which have come down from old times, and which have inherited many forms and traditions from the wizards of the Saracenic world.",
-        "hide_weaknesses": "Hide weaknesses in player card lists",
-        "hide_weaknesses_help": "When this is checked, weaknesses are hidden in player card lists by default and need to be enabled in the <strong>Subtype</strong> filter to be visible.",
         "show_card_modal_popular_decks": "Show popular decks in card modals",
         "show_card_modal_popular_decks_help": "When this is checked, popular decks containing the card will be shown in the card modal.",
         "show_move_to_side_deck": "Show \"Move to side deck\" button",
@@ -1521,6 +1773,7 @@
         "deck_view_scans": "Deck view (scans)",
         "title": "Lists"
       },
+      "load_error": "Failed to load account settings. Using local settings: {{error}}",
       "locale": {
         "help": "This changes the display language of the app, including card and metadata text.",
         "title": "Language"
@@ -1528,6 +1781,13 @@
       "preview": "Preview",
       "save": "Save settings",
       "saving": "Saving settings...",
+      "support": {
+        "create": "Export data",
+        "data_export_title": "Data export",
+        "help": "Export a copy of your settings, decks and card collection as a JSON file.",
+        "metadata_title": "Application data",
+        "title": "Support"
+      },
       "title": "Settings"
     },
     "suzi_standalone_setup": {
@@ -1557,6 +1817,10 @@
       },
       "copy_to_clipboard": "Copy to clipboard",
       "copy_to_clipboard_success": "Copied.",
+      "password_input": {
+        "hide_password": "Hide password",
+        "show_password": "Show password"
+      },
       "pagination": {
         "next": "Next",
         "previous": "Previous"

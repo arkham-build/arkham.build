@@ -107,7 +107,7 @@
 
 .error {
   border-radius: var(--rounded);
-  border: 2px solid var(--nord-11);
+  border: 2px solid var(--color-error);
   display: flex;
   font-size: var(--text-sm);
   gap: 0.125rem;
@@ -126,7 +126,7 @@
   gap: 0.375rem;
   font-size: var(--text-lg);
   font-weight: 700;
-  color: var(--palette-4);
+  color: var(--palette-5);
 }
 
 .empty-icon {

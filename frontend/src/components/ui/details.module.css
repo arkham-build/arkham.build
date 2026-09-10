@@ -16,7 +16,7 @@
 
 .details-content {
   border: 1px solid var(--palette-point-five);
-  padding: 0.5rem 1rem;
+  padding-block: 0.5rem;
   border-radius: var(--rounded);
 }
 

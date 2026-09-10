@@ -1,13 +1,13 @@
 {
   "translation": {
     "about": {
-      "description": "<p>Die in dieser App dargestellten Informationen über <ffg>Arkham Horror: Das Kartenspiel™</ffg>, sowohl textlich als auch grafisch, sind © Fantasy Flight Games {{date}}. Diese Anwendung ist ein Fanprojekt und wird nicht von Fantasy Flight Games produziert, unterstützt oder gefördert.</p><p>Diese Anwendung wurde von <felix_url>Felix</felix_url> und <contrib_url>Beitragenden</contrib_url> zur Unterstützung der Arkham Horror: Das Kartenspiel™ Community entwickelt. Der Quellcode dieses Projekts ist auf <github_url>Github</github_url> verfügbar. Feedback und Fehlerberichte sind über Github Issues oder den entsprechenden Channel auf dem Mythos Busters Discord Server willkommen.</p><p>Alle Grafiken und Illustrationen sind geistiges Eigentum ihrer gekennzeichneten Urheber. Alle Arkham Horror: Das Kartenspiel™ Bilder und Grafiken sind urheberrechtlich geschützt durch Fantasy Flight Games.</p>",
+      "description": "<p>Die in dieser App dargestellten Informationen über <ffg>Arkham Horror: Das Kartenspiel™</ffg>, sowohl textlich als auch grafisch, sind © Fantasy Flight Games {{date}}. Diese Anwendung ist ein Fanprojekt und wird nicht von Fantasy Flight Games produziert, unterstützt oder gefördert.</p><p>Diese Anwendung wurde von <felix_url>Felix</felix_url> und <contrib_url>Beitragenden</contrib_url> zur Unterstützung der Arkham Horror: Das Kartenspiel™ Community entwickelt. Der Quellcode dieses Projekts ist auf <github_url>GitHub</github_url> verfügbar. Feedback und Fehlerberichte sind über GitHub Issues oder den entsprechenden Channel auf dem Mythos Busters Discord-Server willkommen.</p><p>Alle Grafiken und Illustrationen sind geistiges Eigentum ihrer gekennzeichneten Urheber. Alle Arkham Horror: Das Kartenspiel™ Bilder und Grafiken sind urheberrechtlich geschützt durch Fantasy Flight Games.</p>",
       "hall_of_fame": {
-        "arkham_db": "OAuth Zugang zu ArkhamDB.",
+        "arkham_db": "OAuth-Zugang zu ArkhamDB.",
         "card_design": "Anwendungsspezifische Spielerkarten.",
         "code": "Signifikante Code-Beiträge zu der Anwendung.",
-        "customization_api": "Zugang zu API, die es ermöglicht, Verbesserungsbögen zu zeichnen.",
-        "metadata": "Einpflege Metadaten.",
+        "customization_api": "Zugang zu einer API, die es ermöglicht, Verbesserungsbögen zu zeichnen.",
+        "metadata": "Einpflege von Metadaten.",
         "qa": "QA Testing.",
         "testing": "Testen der Anwendung, Feedback und Fehlermeldungen in der frühen Entwicklungsphase.",
         "title": "Hall of Fame",
@@ -46,6 +46,102 @@
       "attached": "Angehängt an {{name}}",
       "eligible": "Kompatibel mit {{name}}"
     },
+    "auth": {
+      "email": "E-Mail",
+      "email_or_username": "E-Mail oder Nutzername",
+      "errors": {
+        "account_not_verified": "Konto ist noch nicht freigeschaltet. Bitte <verifyLink>bestätige</verifyLink> deine E-Mail, bevor du dich einloggst.",
+        "captcha_load_failed": "Turnstile Captcha konnte nicht geladen werden.",
+        "forgot_password_failed": "Passwort konnte nicht zurückgesetzt werden: {{error}}",
+        "invalid_credentials": "E-Mail oder Passwort falsch",
+        "login_failed": "Login fehlgeschlagen: {{error}}",
+        "password_reset_failed": "Zurücksetzen des Passworts fehlgeschlagen: {{error}}",
+        "rate_limited": "Zu viele Anfragen. Bitte warte {{interval}} bevor du es noch einmal versuchst.",
+        "signup_failed": "Registrierung fehlgeschlagen: {{error}}",
+        "verify_email_failed": "Bestätigung der E-Mail fehlgeschlagen: {{error}}",
+        "verify_email_send_failed": "Versand der Bestätigungs-E-Mail fehlgeschlagen: {{error}}"
+      },
+      "forgot_password": {
+        "description": "Gib deine E-Mail oder deinen Nutzernamen ein, um dein Passwort zurückzusetzen.",
+        "submit": "Passwort zurücksetzen",
+        "success": "Falls ein Konto existiert, erhältst du in Kürze einen Link zum Zurücksetzen.",
+        "title": "Passwort vergessen"
+      },
+      "login": {
+        "forgot_password": "Passwort vergessen",
+        "no_account": "Noch kein Konto?",
+        "title": "Anmeldung",
+        "action": "Anmelden",
+        "with_arkhamdb": "Mit ArkhamDB anmelden"
+      },
+      "logout": "Ausloggen",
+      "menu": {
+        "logged_in_as": "Eingeloggt als {{name}}",
+        "sync_account": "Synchronisieren",
+        "sync_error": "Synchronisieren fehlgeschlagen: {{error}}",
+        "sync_status": {
+          "conflict": "Synchronisierungskonflikt",
+          "error": "Synchronisierungsfehler",
+          "idle": "Noch nicht synchronisiert",
+          "loading": "Synchronisiert",
+          "partial": "Nicht vollständig synchronisiert",
+          "saving": "Synchronisierung läuft",
+          "synced": "Synchronisierung abgeschlossen"
+        },
+        "syncing": "Konto wird synchronisiert..."
+      },
+      "oauth_errors": {
+        "arkhamdb_invalid_response": "Anmeldung mit ArkhamDB fehlgeschlagen. Bitte versuche es erneut.",
+        "arkhamdb_no_decks": "Dein ArkhamDB-Konto muss mindestens ein Deck enthalten.",
+        "identity_belongs_to_another_account": "Dieses ArkhamDB-Konto ist schon mit einem anderen Nutzer verknüpft.",
+        "invalid_state": "ArkhamDB-Verbindung ist abgelaufen. Bitte versuche es erneut.",
+        "oauth_failed": "Anmeldung mit ArkhamDB fehlgeschlagen. Bitte versuche es erneut.",
+        "oauth_missing_code": "Anmeldung mit ArkhamDB abgebrochen."
+      },
+      "password": "Passwort",
+      "password_validation": "Mindestens 8 Zeichen",
+      "reset_password": {
+        "confirm_password": "Passwort bestätigen",
+        "password": "Neues Passwort",
+        "success": "Zurücksetzen des Passworts erfolgreich. Du kannst dich jetzt anmelden.",
+        "title": "Passwort zurücksetzen"
+      },
+      "signup": {
+        "complete_profile": {
+          "description": "Wähle einen Nutzernamen. Dieser wird auf deinem Profil und deinen Beiträgen angezeigt.",
+          "title": "Profil vervollständigen",
+          "upload": {
+            "decks": {
+              "help": "Lade alle lokalen Decks in dein Konto hoch.",
+              "label": "Lokale Decks hochladen"
+            },
+            "settings": {
+              "help": "Lade deine Einstellungen und Sammlung in dein Konto hoch.",
+              "label": "Einstellungen hochladen"
+            },
+            "title": "Lokale Daten hochladen"
+          }
+        },
+        "has_account": "Konto vorhanden?",
+        "legal_acceptance": "Mit dem Anlegen eines Kontos stimmst du unseren <terms>Nutzungsbedingungen</terms> zu und nimmst unsere <privacy>Datenschutzerklärung</privacy> zur Kenntnis.",
+        "success": "Registrierung erfolgreich! Bitte bestätige deine E-Mail, bevor du dich einloggst. Deinen Nutzernamen kannst du nach dem Anmelden auswählen.",
+        "action": "Registrieren",
+        "title": "Registrierung",
+        "verifying": "Bestätigen...",
+        "with_arkhamdb": "Mit ArkhamDB registrieren"
+      },
+      "username": "Nutzername",
+      "username_validation": "Nur Buchstaben, Zahlen, Bindestriche, und Unterstriche",
+      "verify_email": {
+        "action": "E-Mail bestätigen",
+        "resend": "Erneut anfordern",
+        "resend_action": "Bestätigungs-E-Mail anfordern",
+        "resend_success": "Bestätigungs-E-Mail erfolgreich versandt. Bitte überprüfe dein Postfach.",
+        "success": "E-Mail bestätigt! Du kannst dich jetzt anmelden.",
+        "title": "E-Mail-Bestätigung",
+        "token": "Bestätigungs-Token"
+      }
+    },
     "browse": {
       "title": "Kartenbrowser"
     },
@@ -54,11 +150,21 @@
         "complete_task": "Aufgabe vollenden",
         "open_card_page": "Kartenseite",
         "reviews": "Meinungen"
+      },
+      "custom_behavior": {
+        "investigator_traits": {
+          "help": "{{card}} kann den Merkmalen deines Ermittlers ein neues Merkmal hinzufügen.",
+          "title": "Merkmalsauswahl"
+        }
       }
+    },
+    "card_scenarios": {
+      "standalone": "Standalone",
+      "title": "Szenarien mit <em>{{name}}</em>",
+      "tooltip": "{{name}} <em>({{campaignName}})</em>"
     },
     "card_view": {
       "actions": {
-        "faq": "FAQ anzeigen",
         "open_on_arkhamdb": "In ArkhamDB öffnen",
         "reviews": "Meinungen",
         "show_original_image": "Originalversion anzeigen",
@@ -68,16 +174,15 @@
         "view_backside": "Rückseite",
         "who_can_take": "Wer kann {{name}} verwenden?"
       },
+      "errata_notice": "Errata ({{date}})",
       "faq": {
         "empty": "Keine FAQ-Einträge vorhanden.",
         "error": "FAQ-Einträge konnten nicht geladen werden.",
-        "loading": "FAQ-Einträge werden geladen...",
         "title": "FAQ"
       },
       "scan": "Scan von {{code}}",
       "section_actions": "Aktionen",
       "section_deckbuilding": "Deckbau",
-      "section_faq": "FAQ",
       "section_printings": "Editionen",
       "thumbnail": "Thumbnail für {{code}}"
     },
@@ -136,25 +241,26 @@
         "Too many off-class cards for Versatile.": "Zu viele Off-Class-Karten für \"Vielseitig\".",
         "Too many off-class cards.": "Zu viele Off-Class-Karten.",
         "Trait Choice": "Ausgewähltes Merkmal",
-        "You cannot have assets that take up an ally slot.": "Du kannst keine Vorteile haben, die einen Verbündeten-Slot belegen.",
-        "You cannot have more than 15 level 0-1 Guardian and/or Survivor cards": "Du kannst nicht mehr als 15 Level 0-1 Wächter und/oder Überlebende Karten haben",
+        "You cannot have assets that take up an ally slot.": "Du kannst keine Vorteile haben, die einen Verbündeten-Slot belegen",
+        "You cannot have more than 15 level 0-1 Guardian and/or Survivor cards": "Du kannst nicht mehr als 15 Stufe 0-1 Wächter und/oder Überlebende Karten haben",
         "You cannot have more than 15 level 0-1 Seeker and/or Mystic cards": "Du kannst nicht mehr als 15 Stufe 0-1 Sucher- und/oder Mystikerkarten haben",
         "You cannot have more than 5 Guardian and/or Mystic cards": "Du kannst nicht mehr als 5 Wächter- und/oder Mystikerkarten haben",
         "You cannot have more than 5 Mystic cards.": "Du kannst nicht mehr als 5 Mystiker Karten haben.",
-        "You cannot have more than 5 Rogue cards.": "Du kannst nicht mehr als 5 Schurken Karten haben.",
-        "You cannot have more than 5 Seeker and/or Survivor cards": "Du kannst nicht mehr als 5 Sucher und/oder Überlebender Karten haben.",
-        "You cannot have more than 5 Survivor cards.": "Du kannst nicht mehr als 5 Überlebender Karten haben.",
+        "You cannot have more than 5 Rogue cards.": "Du kannst nicht mehr als 5 Schurken Karten haben",
+        "You cannot have more than 5 Seeker and/or Survivor cards": "Du kannst nicht mehr als 5 Sucher und/oder Überlebender Karten haben",
+        "You cannot have more than 5 Survivor cards.": "Du kannst nicht mehr als 5 Überlebender Karten haben",
         "You cannot have more than 5 cards that are not Guardian or Neutral": "Du kannst nicht mehr als 5 Karten haben die nicht Wächter oder Neutral sind",
         "You cannot have more than 5 cards that are not Mystic or Neutral": "Du kannst nicht mehr als 5 Karten haben die nicht Mystiker oder Neutral sind",
         "You cannot have more than 5 cards that are not Rogue or Neutral": "Du kannst nicht mehr als 5 Karten haben die nicht Schurke oder Neutral sind",
         "You cannot have more than 5 cards that are not Seeker or Neutral": "Du kannst nicht mehr als 5 Karten haben die nicht Sucher oder Neutral sind",
         "You cannot have more than 5 cards that are not Survivor or Neutral": "Du kannst nicht mehr als 5 Karten haben die nicht Überlebender oder Neutral sind",
-        "You cannot have more than 5 level 0 Guardian cards": "Du darfst nicht mehr als 5 Level 0 Wächter Karten haben",
+        "You cannot have more than 5 level 0 Guardian cards": "Du darfst nicht mehr als 5 Stufe 0 Wächter Karten haben",
         "You cannot have more than 5 level 0 Mystic cards": "Du kannst nicht mehr als 5 Stufe 0 Mystikerkarten haben",
-        "You cannot have more than 5 level 0 Rogue cards": "Du darfst nicht mehr als 5 Level 0 Schurken Karten haben",
-        "You cannot have more than 5 level 0 Seeker cards": "Du darfst nicht mehr als 5 Level 0 Sucher Karten haben",
-        "You cannot have more than 5 level 0 Survivor cards": "Du darfst nicht mehr als 5 Level 0 Überlebender Karten haben",
-        "You cannot have more than one Covenant in your deck.": "Du kannst nicht mehr als einen Bund in deinem Deck haben.",
+        "You cannot have more than 5 level 0 Rogue cards": "Du darfst nicht mehr als 5 Stufe 0 Schurken Karten haben",
+        "You cannot have more than 5 level 0 Seeker cards": "Du darfst nicht mehr als 5 Stufe 0 Sucher Karten haben",
+        "You cannot have more than 5 level 0 Survivor cards": "Du darfst nicht mehr als 5 Stufe 0 Überlebender Karten haben",
+        "You cannot have more than one Covenant in your deck.": "Du kannst nicht mehr als einen Bund in deinem Deck haben",
+        "You must have at least 6 cards from each faction.": "Du musst mindestens 6 Karten von jeder Klasse haben",
         "You must have at least 7 cards from 3 different factions": "Du musst mindestens 7 Karten von 3 verschiedenen Klassen haben",
         "You must have at least 7 cards from each class": "Du musst mindestens 7 Karten von jeder Klasse haben"
       },
@@ -197,9 +303,10 @@
       "more_actions": "Weitere Aktionen",
       "myriad": "Unzählig",
       "no_entries": "Keine Einträge",
+      "non_collection_cards": "{{count}} nicht im Besitz",
       "none": "Keine Auswahl",
-      "nonexceptional": "Nicht-Außergewöhnlich",
       "ok": "OK",
+      "or": "oder",
       "pack_one": "Pack",
       "pack_other": "Packs",
       "packs_new_format": {
@@ -213,7 +320,7 @@
       "proceed": "Fortfahren",
       "relations": {
         "advanced": "Weiterentwickelte Signaturkarten",
-        "base": "Basisentwickler",
+        "base": "Basisermittler",
         "bonded": "Gebunden an",
         "bound": "Gebunden-Karten",
         "extra": "Spezielle Karten",
@@ -225,8 +332,9 @@
         "replacement": "Ersatz-Signaturkarten",
         "requiredCards": "Signaturkarten",
         "restrictedTo": "Limitiert auf",
-        "specialist": "Specialist",
-        "specialist_investigators": "Specialist Investigators"
+        "sideDeckRequiredCards": "Extra Deck Signaturen",
+        "specialist": "Spezialistenkarten",
+        "specialist_investigators": "Spezialisten-Ermittler"
       },
       "reset": "Zurücksetzen",
       "seal": "Versiegeln",
@@ -256,6 +364,7 @@
       "sort_asc": "Aufsteigend sortieren",
       "sort_desc": "Absteigend sortieren",
       "specialist": "Spezialist",
+      "stage": "Abfolge",
       "subtype": {
         "basicweakness": "Grundschwäche",
         "none": "Kein Untertyp",
@@ -303,6 +412,7 @@
         "Act 1": "Szene 1",
         "Act 2": "Szene 2",
         "Agency": "Behörde",
+        "Alchemy": "Alchemy",
         "Alexandria": "Alexandria",
         "Allied": "Verbündet",
         "Ally": "Verbündeter",
@@ -310,10 +420,11 @@
         "Ancient": "Uralt",
         "Ancient One": "Großer Alter",
         "Apiary": "Apiary",
+        "Apparel": "Apparel",
         "Arkham": "Arkham",
         "Arkham Asylum": "Arkham Sanatorium",
         "Armor": "Rüstung",
-        "Artifact": "Artifact",
+        "Artifact": "Artefakt",
         "Artist": "Künstler",
         "Assistant": "Assistent",
         "Attack": "Angriff",
@@ -341,6 +452,7 @@
         "Carnevale": "Karneval",
         "Cart": "Karren",
         "Casino": "Casino",
+        "Castle": "Castle",
         "Cave": "Höhle",
         "Central": "Zentral",
         "Charm": "Glücksbringer",
@@ -353,13 +465,14 @@
         "Clover Club": "Clover Club",
         "Coastal": "Küste",
         "Colour": "Farbe",
-        "Completed": "Completed",
+        "Completed": "Vollendet",
         "Composure": "Gelassenheit",
         "Condition": "Zustand",
         "Connection": "Verbindung",
         "Conspirator": "Verschwörer",
         "Construct": "Konstrukt",
         "Corruption": "Verderbnis",
+        "Cosmos": "Cosmos",
         "Coterie": "Coterie",
         "Covenant": "Bund",
         "Creature": "Kreatur",
@@ -380,6 +493,7 @@
         "Developed": "Entwickelt",
         "Dhole": "Dhole",
         "Dilemma": "Dilemma",
+        "Dinosaur": "Dinosaur",
         "Distortion": "Verzerrung",
         "Dormant": "Ruhend",
         "Double": "Doppelt",
@@ -397,7 +511,7 @@
         "Enraged": "Enraged",
         "Entrepreneur": "Unternehmer",
         "Evidence": "Beweis",
-        "Exhibit": "Austellung",
+        "Exhibit": "Ausstellung",
         "Expedition": "Expedition",
         "Expert": "Experte",
         "Extradimensional": "Außerdimensional",
@@ -425,7 +539,7 @@
         "Ghast": "Ghast",
         "Ghoul": "Ghoul",
         "Glacier": "Gletscher",
-        "Glyph": "Glyph",
+        "Glyph": "Glyphe",
         "Government": "Regierung",
         "Grant": "Zuschuss",
         "Graveyard": "Friedhof",
@@ -437,6 +551,7 @@
         "Haunted": "Heimgesucht",
         "Havana": "Havana",
         "Hazard": "Gefahr",
+        "Headwear": "Headwear",
         "Hemlock Vale": "Hemlock Vale",
         "Hex": "Verwünschung",
         "Hideout": "Versteck",
@@ -446,8 +561,8 @@
         "Hybrid": "Hybrid",
         "Illicit": "Illegal",
         "Improvised": "Improvisiert",
-        "Incomplete": "Incomplete",
-        "Inconspicuous": "Inconspicuous",
+        "Incomplete": "Unvollendet",
+        "Inconspicuous": "Unauffällig",
         "Injury": "Verletzung",
         "Innate": "Angeboren",
         "Innocent": "Unschuldig",
@@ -486,7 +601,7 @@
         "Melee": "Nahkampf",
         "Mexico City": "Mexiko-Stadt",
         "Mi-Go": "Mi-Go",
-        "Midtown": "Stadmitte",
+        "Midtown": "Stadtmitte",
         "Mirage": "Trugbild",
         "Misfortune": "Unglück",
         "Miskatonic": "Miskatonic",
@@ -501,7 +616,7 @@
         "New Orleans": "New Orleans",
         "New York City": "New York City",
         "Nightgaunt": "Dunkeldürrer",
-        "Obstacle": "Hinderniss",
+        "Obstacle": "Hindernis",
         "Occult": "Okkult",
         "Ocean": "Ozean",
         "Omen": "Omen",
@@ -519,7 +634,7 @@
         "Past": "Vergangenheit",
         "Patron": "Mäzen",
         "Performer": "Performer",
-        "Plot": "Plot",
+        "Plot": "Handlung",
         "Pnakotus": "Pnakotus",
         "Poison": "Gift",
         "Police": "Polizei",
@@ -532,9 +647,11 @@
         "Present-Day": "Gegenwart",
         "Prison": "Gefängnis",
         "Private": "Privat",
+        "Profession": "Profession",
+        "Prop": "Prop",
         "Providence": "Providence",
         "Public": "Öffentlich",
-        "R'lyeh": "R'lyeh",
+        "R'lyeh": "R’lyeh",
         "Rail": "Bahngleis",
         "Ranged": "Fernkampf",
         "Relic": "Relikt",
@@ -559,6 +676,8 @@
         "Ruins": "Ruinen",
         "Salem": "Salem",
         "Sanctum": "Heiligtum",
+        "Satellite": "Satellite",
+        "Saturnite": "Saturnite",
         "Scheme": "Komplott",
         "Scholar": "Gelehrter",
         "Science": "Wissenschaft",
@@ -571,6 +690,7 @@
         "Serpent": "Schlange",
         "Service": "Dienstleistung",
         "Servitor": "Diener",
+        "Set": "Set",
         "Shantak": "Shantak",
         "Shattered": "Zerstört",
         "Ship": "Schiff",
@@ -587,10 +707,10 @@
         "St Mary's": "St Mary's",
         "Stable": "Stabil",
         "Staff": "Personal",
-        "Star Spawn": "Star Spawn",
+        "Star Spawn": "Sternengezücht",
         "Station": "Haltestelle",
         "Steps": "Stufen",
-        "Stowaway": "Stowaway",
+        "Stowaway": "Blinder Passagier",
         "Summit": "Summit",
         "Summon": "Beschwörung",
         "Sunken": "Versunken",
@@ -638,8 +758,9 @@
         "Witch": "Hexe",
         "Witch House": "Hexenhaus",
         "Woods": "Wälder",
-        "Y'ha-nthlei": "Y'ha-nthlei",
-        "Yithian": "Yithian",
+        "Worker": "Worker",
+        "Y'ha-nthlei": "Y-ha'nthlei",
+        "Yithian": "Yith",
         "Yoth": "Yoth",
         "Yuggoth": "Yuggoth",
         "Zoog": "Zoog"
@@ -667,8 +788,9 @@
       "uses": {
         "aether": "Äther",
         "ammo": "Munition",
+        "arrow": "Arrow",
         "bounties": "Kopfgelder",
-        "brilliance": "Brillianz",
+        "brilliance": "Brillanz",
         "chances": "Chances",
         "charges": "Ladungen",
         "discoveries": "Discoveries",
@@ -681,8 +803,11 @@
         "obsessions": "Obsessions",
         "offerings": "Angebote",
         "portents": "Vorzeichen",
+        "renown": "Renown",
         "resources": "Ressourcen",
+        "rumors": "Rumors",
         "secrets": "Geheimnisse",
+        "shards": "Shards",
         "shell": "Shell",
         "signs": "Signs",
         "supplies": "Ausrüstung",
@@ -696,15 +821,10 @@
       "victory": "Sieg",
       "xp": "EP"
     },
-    "connect": {
-      "error": "Verbindung mit {{provider}} fehlgeschlagen: {{error}}",
-      "syncing": "{{provider}} synchronisiert...",
-      "title": "{{provider}} verbindet..."
-    },
     "deck": {
       "actions": {
         "archive": "Deck archivieren",
-        "copy_id": "Deck Id kopieren",
+        "copy_id": "Deck-ID kopieren",
         "create": "Deck erstellen",
         "delete": "Deck löschen",
         "delete_upgrade": "Verbesserung löschen",
@@ -729,15 +849,17 @@
       },
       "cards": "Karten im Deck",
       "customization_sheet": "Individualisierungen für {{name}}",
-      "id": "Deck Id",
+      "id": "Deck-ID",
       "latest_upgrade": {
         "add_to_deck": "Zum Deck hinzufügen",
+        "decrement_xp": "Reduziere die Anzahl an verfügbaren EP",
+        "increment_xp": "Erhöhe die Anzahl an verfügbaren EP",
         "no_changes": "Keine Änderungen.",
         "summary": "{{xpSpent}} von {{xp}} EP ausgegeben",
-        "title": "Aktuelle Verbesserung",
-        "xp_spent": "EP ausgegeben"
+        "title": "Aktuelle Verbesserung"
       },
       "limited_decks": {
+        "Collector": "Collector",
         "Secondary Class": "Sekundärklasse",
         "Versatile": "Vielseitig"
       },
@@ -753,7 +875,7 @@
         "xp_required_help": "Benötigte Erfahrungspunkte, um dieses Deck von Grund auf zu erstellen."
       },
       "tags": {
-        "limited_pool": "Eingeschränkter Kartenpool",
+        "account": "arkham.build",
         "private": "Privat",
         "sealed": "Versiegelt",
         "shared": "Freigegeben"
@@ -771,17 +893,18 @@
         "upload_loading": "Deck wird zu {{provider}} hochgeladen..."
       },
       "tools": {
+        "average_cost": "Durchschnitt: {{cost}}",
         "cards": "Karten",
         "count": "Anzahl",
         "factions": "Klassen",
         "factions_tooltip": "{{count}} {{faction}} {{cards}}",
         "loading": "Werkzeuge laden...",
+        "median_cost": "Median: {{cost}}",
         "resource_cost": "Ressourcenkosten",
         "resource_cost_tooltip": "{{count}} {{cards}}, die {{cost}} kosten",
         "resource_costs": "Ressourcenkosten",
         "skill_icons": "Fertigkeitssymbole",
-        "skill_icons_tooltip": "{{count}} \"{{skill}}\" {{icons}}",
-        "title": "Werkzeuge"
+        "skill_icons_tooltip": "{{count}} \"{{skill}}\" {{icons}}"
       },
       "validation": {
         "card_not_in_limited_pool": "Die folgenden Karten sind nicht Teil des Kartenpools für dieses Deck:",
@@ -800,15 +923,17 @@
       "connect_arkhamdb": "ArkhamDB verbinden",
       "count": "{{count}} Decks",
       "count_hidden": " ({{count}} ausgeblendet)",
-      "deck_url_or_id": "Deck URL oder ID",
+      "deck_url_or_id": "Deck-URL oder ID",
       "delete_all": "Lokale Decks löschen",
-      "delete_all_confirm": "Bist du sicher, dass du alle lokale Decks löschen möchtest?",
+      "delete_all_confirm": "Bist du sicher, dass du alle lokalen Decks löschen möchtest?",
       "delete_all_error": "Löschen der privaten Decks fehlgeschlagen: {{error}}",
       "delete_all_loading": "Lokale Decks werden gelöscht...",
       "import": "Importieren",
       "import_arkhamdb": "ArkhamDB Deck importieren",
       "import_arkhamdb_help": "Gib die ID oder URL eines öffentlichen ArkhamDB Decks oder Deck Guides ein, um es zu importieren. Das Deck wird als <strong>separate Kopie</strong> ohne vorherige Versionen importiert.",
-      "import_json": "JSON Dateien importieren",
+      "import_error": "Import fehlgeschlagen: {{error}}",
+      "import_json": "JSON-Dateien importieren",
+      "import_loading": "Deck wird importiert...",
       "more_filters": "Mehr Filter",
       "search_placeholder": "Decks durchsuchen...",
       "sorting": {
@@ -842,7 +967,8 @@
       "sealed_deck": {
         "error": "Versiegeltes Deck konnte nicht geladen werden: {{error}}",
         "loading": "Versiegeltes Deck wird geladen..."
-      }
+      },
+      "title": "{{name}} Deck erstellen"
     },
     "deck_edit": {
       "actions": {
@@ -850,7 +976,7 @@
         "cycle_decks": "Deckliste wechseln",
         "decrement_quantity": "Anzahl im Deck verringern",
         "decrement_side_quantity": "Anzahl im Nebendeck verringern",
-        "draft_random_basic_weakness": "Eine zufällige Basisschwäche draften",
+        "draft_random_basic_weakness": "Eine zufällige Grundschwäche draften",
         "draft_random_basic_weakness_success": "<strong>{{name}}</strong> wurde deinem Deck hinzugefügt.",
         "draw_random_basic_weakness": "Zufällige Grundschwäche ziehen",
         "draw_random_basic_weakness_success": "<strong>{{name}}</strong> ist deine zufällige Grundschwäche.",
@@ -861,12 +987,12 @@
         "move_to_side_deck": "In das Nebendeck bewegen",
         "quick_discard": "Verwerfen (und auf der Seite bleiben)",
         "quick_save_deck": "Deck speichern (und auf der Seite bleiben)",
-        "quick_upgrade": "{{name}} verbesseren",
         "set_quantity": "Anzahl im Deck festlegen",
         "set_side_quantity": "Anzahl im Nebendeck festlegen"
       },
       "changes_restored": "Ungespeicherte Änderungen wurden wiederhergestellt.",
       "config": {
+        "buildql_deck_option": "BuildQL deckbuilding override",
         "card_pool": {
           "apply_environment": "{{environment}} Umgebung anwenden",
           "campaign_playalong": "Campaign Play-Along",
@@ -875,17 +1001,23 @@
           "collection": "Sammlung",
           "collection_help": "Setze deine aktuelle <settings_link>Sammlung</settings_link> als Kartenpool für dieses Deck. Dies kann praktisch sein während du deine Sammlung aufbaust - oder wenn mehrere Spieler eine Sammlung teilen.",
           "configure_environment": "Umgebung auswählen",
-          "current": "Current",
-          "current_help": "In der \"Current\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und den drei neuesten Ermittlererweiterungen verwenden.",
+          "current": "Aktuell",
+          "current_faq25": "Aktuell (FAQ 2.5)",
+          "current_faq25_help": "In der \"aktuellen\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und den drei neuesten Ermittlererweiterungen verwenden.",
+          "current_help": "In der \"aktuellen\" Umgebung dürfen Decks Karten der folgenden Produkte enthalten: Grundspiel (2026), 5 Ermittlerdecks, die 2 neuesten Deckbau-Erweiterungen und die 2 neuesten Ermittler-Erweiterungen nach dem Grundspiel (2026).",
           "custom": "Benutzerdefinierte Umgebung",
           "help": "Auswahl gilt nicht für Ermittler, Signaturkarten und Schwächen.",
+          "help_chapter_1": "Diese Umgebung ist auf Kapitel 1 beschränkt.",
           "legacy": "Legacy",
           "legacy_help": "In der \"Legacy\" Umgebung dürfen Decks alle erschienenen Karten ohne Einschränkungen verwenden.",
-          "limited": "Limited",
-          "limited_help": "In der \"Limited\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und bis zu drei weiteren Ermittlererweiterungen verwenden.",
+          "limited": "Limitiert",
+          "limited_faq25": "Limitiert (FAQ 2.5)",
+          "limited_faq25_help": "In der \"limitierten\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und bis zu drei weiteren Ermittlererweiterungen verwenden.",
+          "limited_help": "In der \"limitierten\" Umgebung dürfen Decks Karten der folgenden Produkte enthalten: Grundspiel (2026), 5 Ermittlerdecks, 3 verschiedene Spielerkarten-Erweiterungen deiner Wahl.",
           "placeholder": "Packs auswählen...",
           "section_title": "Kartenpooleinstellungen",
           "selected_cards": "Ausgewählte Karten",
+          "substitute_chapter_2_with_chapter_1": "Ersetze Karten aus Kapitel 2 mit Kapitel 1-Äquivalenten.",
           "title": "Eingeschränkter Kartenpool"
         },
         "name": "Name",
@@ -895,14 +1027,16 @@
           "title": "Versiegelt"
         },
         "sides": {
-          "investigator_back": "Vorderseite",
-          "investigator_front": "Rückseite",
+          "investigator_back": "Rückseite",
+          "investigator_front": "Vorderseite",
           "original_back": "Originale Rückseite",
           "original_front": "Originale Vorderseite",
           "parallel_back": "Parallele Rückseite",
           "parallel_front": "Parallele Vorderseite"
         },
         "storage_provider": {
+          "account": "arkham.build",
+          "arkhamdb": "ArkhamDB",
           "local": "Lokal",
           "shared": "Freigegeben",
           "title": "Speicherort"
@@ -929,13 +1063,13 @@
         "cancel_button": "Abbrechen",
         "choice_title": "Wähle eine Schwäche zum Annullieren",
         "confirm_button": "Bestätigen",
-        "explanation_body": "Dies ist eine gängige Hausregel, um dem Spieler mehr Kontrolle über die Basisschwäche zu geben, anstatt sie vollständig zufällig zu bestimmen. Drei Grundwschwächen werden zufällig bestimmt, der Spieler annuliert eine davon und dann wird zufällig eine der verbleibenden beiden Schwächen dem Deck hinzugefügt.",
+        "explanation_body": "Die <em>Gunst der Morrígan</em> gibt Spielern mehr Kontrolle über die Grundschwäche, als wenn diese vollkommen zufällig bestimmt würde. Drei Grundschwächen werden zufällig gezogen; der Spieler darf eine davon ausschließen, und anschließend wird eine der beiden verbleibenden Schwächen zufällig dem Deck hinzugefügt.",
         "explanation_title": "Erklärung",
-        "title": "Basisschwäche draften",
+        "title": "Grundschwäche draften",
         "too_few_rbw": "Nicht genügend Grundschwächen verfügbar, um Draft durchzuführen."
       },
       "notes": {
-        "banner_url": "Titelbild URL",
+        "banner_url": "Titelbild-URL",
         "banner_url_help": "Titelbild für das Deck, das in der Deckansicht und Linkvorschau angezeigt wird. Für beste Ergebnisse das Seitenformat 4:1 und eine Breite von mind. 1440px verwenden.",
         "banner_url_placeholder": "URL eingeben",
         "description": "Notizen",
@@ -969,7 +1103,7 @@
       "quick_upgrade": {
         "available_upgrades": "Verfügbare Verbesserungen",
         "shrewd_analysis": "Scharfsinnige Analyse verwenden",
-        "shrewd_analysis_help": "Das Deck erhält eine XP Anpassung, die die eingesparten Ehrfahrungspunkte reflektiert.",
+        "shrewd_analysis_help": "Das Deck erhält eine EP-Anpassung, die die eingesparten Erfahrungspunkte reflektiert.",
         "title": "{{name}} verbessern"
       },
       "read_only": "Dieses Deck ist schreibgeschützt, da eine Verbesserung existiert.",
@@ -1004,6 +1138,19 @@
         "title": "Versionen"
       }
     },
+    "deck_sync": {
+      "conflict": {
+        "action_error": "Synchronisierungskonflikt konnte nicht gelöst werden: {{error}}",
+        "collection_badge": "Synchronisierungskonflikte müssen gelöst werden.",
+        "description": "Dieses Deck wurde in deinem Konto bearbeitet. Aktualisiere, um die Kontodaten anzuwenden.",
+        "description_remote_missing": "Dieses Deck existiert nicht mehr in deinem Konto. Lösche das lokale Deck, um den Konflikt zu lösen.",
+        "discard_local": "Lokales Deck löschen",
+        "edit_locked": "Der Konflikt muss gelöst werden, bevor das Deck bearbeitet werden kann.",
+        "refresh": "Aktualisieren",
+        "remote_version": "Konto-Version: {{version}}",
+        "title": "Konflikte"
+      }
+    },
     "deck_view": {
       "actions": {
         "display_as_list": "Als Liste anzeigen",
@@ -1013,11 +1160,8 @@
         "save_upgrade_close": "Verbesserung speichern und schließen",
         "save_upgrade_close_short": "Speichern und schließen",
         "save_upgrade_short": "Verbessern",
-        "upload": "Zu {{provider}} hochladen"
-      },
-      "connections": {
-        "description": "Dieses Deck synchronisiert mit {{provider}}.",
-        "view": "In {{provider}} anzeigen"
+        "upload": "Zu {{provider}} hochladen",
+        "upload_account": "Hochladen"
       },
       "discounts": {
         "adaptable": "Anpassungsfähig",
@@ -1027,12 +1171,14 @@
       },
       "history": {
         "added": "Hinzugefügt",
+        "created": "Erstellt",
         "current_upgrade": "Aktuelle Verbesserung",
         "discounts": "Rabatte",
         "initial_deck": "Initiales Deck",
         "no_changes": "Keine Änderungen.",
         "removed": "Entfernt",
         "slot_changes": "{{slot}}änderungen",
+        "updated": "Bearbeitet",
         "upgrade": "Verbesserung #{{index}}",
         "upgrade_xp": "{{xp}}{{adjustment}} EP verfügbar (ausgegeben: {{spent}})"
       },
@@ -1043,30 +1189,26 @@
       "newer_version": "Dieses Deck ist schreibgeschützt, da eine <a>aktuellere Version</a> verfügbar ist.",
       "scans": "Scans",
       "sharing": {
-        "create": "Freigeben",
-        "create_failed": "Erstellen der Freigabe fehlgeschlagen: {{error}}",
-        "create_tooltip": "Eine Freigabe ist ein öffentlich verfügbarer, schreibgeschützter Link zu diesem Deck. Jeder, der über diesen Link verfügt, kann das Deck ansehen, es aber nicht bearbeiten.<br />Die Freigabe kann jederzeit aufgehoben werden, ohne das lokale Deck zu löschen.",
-        "delete": "Freigabe aufheben",
-        "delete_failed": "Löschen der Freigabe fehlgeschlagen: {{error}}",
-        "description": "Dieses Deck ist nicht freigeben.",
-        "description_present": "Dieses Deck ist öffentlich freigegeben und kann über den <a>folgenden Link</a> angesehen werden.",
+        "api_link": "JSON-API",
+        "description": "Dieses Deck ist nicht freigegeben.",
+        "description_present": "Dieses Deck ist öffentlich über {{provider}} freigegeben und kann über den <a>folgenden Link</a> angesehen werden.",
         "title": "Öffentliche Freigabe",
-        "update": "Freigabe aktualisieren",
-        "update_failed": "Aktualisieren der Freigabe fehlgeschlagen: {{error}}"
+        "view_on_arkhamdb": "Auf ArkhamDB anzeigen"
       },
+      "show_deck_list": "Deck anzeigen",
       "tab_deck_list": "Deck",
       "tab_history": "Verlauf",
       "tab_notes": "Notizen",
       "tab_recommendations": "Empfehlungen",
       "tab_tools": "Werkzeuge",
       "upgrade_modal": {
-        "automatic_xp_gain": "+{{count}} EP werden dem Upgrade automatisch hinzufügt.",
+        "automatic_xp_gain": "+{{count}} EP werden dem Upgrade automatisch hinzugefügt.",
         "error": "Verbesserung fehlgeschlagen: {{error}}",
         "great_work_label": "Der Homunkulus hat sich meines Körpers bemächtigt.",
         "great_work_status_usurped": "Das Große Werk wird zusammen mit jeder deiner Signaturkarten aus deinem Deck entfernt. Dein Ermittler wird durch den Homunkulus ersetzt.",
         "loading": "Verbesserung wird gespeichert...",
         "title": "Deck verbessern",
-        "xp_gained": "Erhaltene Ehrfahrungspunkte"
+        "xp_gained": "Erhaltene Erfahrungspunkte"
       }
     },
     "decklists": {
@@ -1078,7 +1220,7 @@
       },
       "filters": {
         "author": "Autor",
-        "author_placeholder": "Namen des Autors eingeben (z.b. Valentin1331)...",
+        "author_placeholder": "Namen des Autors eingeben (z.B. Valentin1331)...",
         "description_length": "Min. Länge der Deck-Guides",
         "description_length_long": "Lang",
         "description_length_medium": "Mittel",
@@ -1089,13 +1231,14 @@
         "name_placeholder": "Name eingeben...",
         "required_cards": "Benötigte Karten",
         "submit": "Anwenden",
-        "title": "Suchkriterien"
+        "title": "Suchkriterien",
+        "xp_range": "Erforderliche EP"
       },
       "sorting": {
-        "date": "Most recent",
-        "likes": "Most likes",
-        "popularity": "Most popular",
-        "user_reputation": "Highest user reputation"
+        "date": "Neueste",
+        "likes": "Meiste Likes",
+        "popularity": "Am beliebtesten",
+        "user_reputation": "Popularität des Autors"
       }
     },
     "draw_simulator": {
@@ -1116,8 +1259,13 @@
       "500_help": "Details zum Fehler können in der Browserkonsole eingesehen werden.",
       "500_help_2": "Achtung: Bitte versuche nicht, diesen Fehler zu lösen, indem du Cookies oder Browserdaten löschst, da dies auch die von arkham.build genutzte lokale Datenbank löschen kann.",
       "home": "Startseite",
-      "preview_publish": "Deck enthält Karten, die von {{provider}} nicht unterstützt werden: {{names}}. Bitte entferne sie, bevor du das Deck zu hochlädst.",
+      "preview_publish": "Deck enthält Karten, die von {{provider}} nicht unterstützt werden: {{names}}. Bitte entferne sie, bevor du das Deck hochlädst.",
       "report": "Fehler melden"
+    },
+    "external_embed": {
+      "load": "Externen Inhalt laden",
+      "notice": "Dieser externe Inhalt wurde aus Datenschutzgründen blockiert. Klicke \"Externen Inhalt laden\", um den Inhalt dennoch anzuzeigen.",
+      "title": "Externer Inhalt"
     },
     "fan_made_content": {
       "actions": {
@@ -1133,6 +1281,7 @@
       "content_types": "Inhaltstypen",
       "content_version": "Inhaltsversion",
       "empty": "Keine Inhalte installiert",
+      "filter_fan_made_content": "Inhalte durchsuchen...",
       "import_url": {
         "label": "Inhalts-URL",
         "placeholder": "Gib eine URL ein...",
@@ -1143,6 +1292,7 @@
         "available_content_loading": "Verfügbare Inhalte werden geladen...",
         "content_loading": "Lade Inhalte...",
         "fetch_failed": "Inhalt konnte nicht geladen werden: {{error}}",
+        "no_match": "Keine Inhalte, die dem Filter entsprechen",
         "parse_failed": "Inhalt konnte nicht hinzugefügt werden: {{error}}",
         "registry_failed": "Verfügbare Inhalte konnten nicht geladen werden: {{error}}"
       },
@@ -1150,6 +1300,7 @@
         "card_lists": "Kartenlisten",
         "card_lists_help": "Standardwert für den \"Inoffizielle Inhalte\" Filter in den Kartenlisten."
       },
+      "short_title": "Fan-made",
       "status": {
         "alpha": "Alpha",
         "beta": "Beta",
@@ -1193,9 +1344,6 @@
         "placeholder": "Begegnungsset auswählen...",
         "title": "Begegnungsset"
       },
-      "environment": {
-        "title": "Umgebung"
-      },
       "fan_made_content": {
         "all": "Alles anzeigen",
         "fan_made": "Nur inoffizielle Inhalte",
@@ -1215,7 +1363,7 @@
         "title": "Ermittler"
       },
       "investigator_card_access": {
-        "help": "If you need more, use arkham-starter's <a>/who tool</a>.",
+        "help": "Für mehr Optionen nutze arkham-starters <a>/who-Tool</a>.",
         "title": "Verfügbare Karten"
       },
       "investigator_skills": {
@@ -1225,7 +1373,6 @@
         "no_level": "Keine Stufe",
         "title": "Stufe"
       },
-      "or": "oder",
       "ownership": {
         "owned": "In Besitz",
         "title": "Kartensammlung",
@@ -1272,6 +1419,15 @@
         "placeholder": "Anwendungsattribut auswählen...",
         "title": "Anwendungen"
       }
+    },
+    "footer": {
+      "arkham_title": "Arkham Horror: The Card Game™",
+      "disclaimer": "<arkham>Arkham Horror: The Card Game™</arkham> und alle Inhalte © <ffg>Fantasy Flight Games (FFG)</ffg>. Diese Seite wird nicht von FFG betrieben.",
+      "ffg": "Fantasy Flight Games (FFG)",
+      "legal": "Rechtliches",
+      "legal_notice": "Impressum",
+      "privacy": "Datenschutz",
+      "terms": "Nutzungsbedingungen"
     },
     "help": {
       "about": "Über diese Seite",
@@ -1337,8 +1493,10 @@
         "display_as_list_text": "Liste mit Kartentext",
         "display_as_scans": "Scans",
         "display_as_scans_grouped": "Scans (gruppiert)",
+        "export": "Export",
         "jump_to": "Springe zu...",
         "list_settings": "Listenoptionen",
+        "max_columns": "Max. Scans pro Spalte",
         "sort": "Sortierung",
         "sort_default": "Nutzereinstellung"
       },
@@ -1349,9 +1507,15 @@
         "include_game_text": "Spieltext",
         "include_name": "Name",
         "placeholder": "Karten durchsuchen...",
+        "share": "Suche teilen",
         "title": "Suche"
       },
       "sort_by": "Sortierung"
+    },
+    "masthead": {
+      "browse": "Karten",
+      "navigation": "Navigation",
+      "rules": "Regeln"
     },
     "popular_decks": {
       "decklists_link": "Alle Deck-Guides ansehen",
@@ -1369,22 +1533,89 @@
       "title": "Kartenvorschau"
     },
     "rules": {
-      "title": "Spielregeln"
+      "back_to_top": "Zum Seitenanfang",
+      "grimoire": {
+        "empty": "Keine Inhalte.",
+        "error": "Arkham Grimoire konnte nicht geladen werden.",
+        "intro_description": "Das Arkham Grimoire ist ein umfassendes Referenzhandbuch, das die Regeln für alle Situationen im Spiel abdeckt.",
+        "intro_title": "Das Arkham Grimoire",
+        "loading": "Arkham Grimoire wird geladen...",
+        "open_link": "Arkham Grimoire öffnen",
+        "references": "Referenzen"
+      },
+      "search_placeholder": "Stichwort suchen...",
+      "title": "Spielregeln",
+      "toc": "Inhaltsverzeichnis"
     },
     "search": {
       "title": "Ergebnisse"
     },
     "settings": {
-      "backup": {
-        "confirm": "Bist du sicher, dass du diese Sicherung wiederherstellen möchtest? Alle aktuellen Daten werden überschrieben.",
-        "create": "Sicherung erstellen",
-        "help": "Erstelle eine Sicherung deiner Einstellungen, Decks und Kartensammlung als JSON Datei. Diese Datei kann genutzt werden, um deine Daten auf diesem oder einem anderen Gerät wiederherzustellen.",
-        "help_warning": "Das Wiederherstellen einer Sicherung <strong>überschreibt alle vorhandenen Daten</strong>.",
-        "no_file_selected": "Keine Datei ausgewählt",
-        "restore": "Sicherung wiederherstellen",
-        "restore_error": "Sicherung konnte nicht wiederhergestellt werden: {{error}}",
-        "restore_success": "Sicherung wurde erfolgreich wiederhergestellt.",
-        "title": "Sicherung & Wiederherstellung"
+      "account": {
+        "danger_zone": "Gefahrenzone",
+        "delete": {
+          "confirm_help": "Gib {{username}} ein, um die Kontolöschung zu bestätigen.",
+          "confirm_label": "Bestätigen",
+          "deleting": "Konto wird gelöscht...",
+          "help": "Lösche dein arkham.build-Konto und die zugehörigen Daten dauerhaft. Dadurch werden serverseitige Zugangsdaten, Sitzungen, mit dem Konto synchronisierte Decks, Einstellungen und OAuth-Verbindungen gelöscht. Mit dem Konto verknüpfte Decks werden von diesem Gerät entfernt. Nur auf diesem Gerät gespeicherte Decks, Einstellungen und andere Browserdaten werden nicht gelöscht. Mit ArkhamDB synchronisierte Inhalte werden nicht aus ArkhamDB gelöscht.",
+          "submit": "Konto löschen",
+          "title": "Konto löschen"
+        },
+        "email": {
+          "add": "E-Mail hinzufügen",
+          "add_help": "Füge eine E-Mail-Adresse und ein Passwort als alternative Anmeldemethode hinzu.",
+          "cancel_pending": "E-Mail-Bestätigung abbrechen",
+          "canceling_pending": "E-Mail-Bestätigung wird abgebrochen...",
+          "current_password": "Aktuelles Passwort",
+          "new_email": "Neue E-Mail",
+          "new_email_help": "Leer lassen, um deine aktuelle E-Mail-Adresse beizubehalten.",
+          "new_password": "Neues Passwort",
+          "new_password_help": "Leer lassen, um dein aktuelles Passwort beizubehalten.",
+          "pending": "Ausstehende E-Mail-Adresse",
+          "pending_help": "Überprüfe die E-Mail-Adresse {{email}}, um sie zu <verifyLink>bestätigen</verifyLink>.",
+          "save": "Zugangsdaten aktualisieren",
+          "saving": "Zugangsdaten werden gespeichert...",
+          "status": "Status",
+          "status_pending": "Überprüfung ausstehend",
+          "status_verified": "Bestätigt",
+          "title": "Zugangsdaten"
+        },
+        "oauth": {
+          "connect": "Verbinden",
+          "connect_help": "Verbinde dein {{provider}}-Konto, um deine Decks zu synchronisieren und dich damit anzumelden.",
+          "connected": "Verbunden",
+          "details": "Details",
+          "disconnect": "Trennen",
+          "disconnect_error": "Fehler beim Trennen von {{provider}}: {{error}}",
+          "disconnected": "Es besteht ein Problem mit dieser Verbindung. Bitte erneut verbinden.",
+          "disconnecting": "{{provider}} wird getrennt...",
+          "last_error": "Letzter Fehler",
+          "last_synced_at": "Letzte Synchronisierung",
+          "none": "/",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "Erneut verbinden",
+          "status": {
+            "healthy": "Erfolgreich",
+            "unhealthy": "Nicht erfolgreich"
+          },
+          "sync_status": "Synchronisierungsstatus",
+          "title": "Verbindungen",
+          "user_id": "Nutzer-ID"
+        },
+        "privacy_rights": {
+          "body": "Du kannst deine Daten über den Support-Tab exportieren und dein Konto unten löschen. Für DSGVO-Anfragen, die nicht per Selbstbedienung möglich sind, wie Anfragen zur Einschränkung oder zum Widerspruch, kontaktiere <privacyEmail />.",
+          "title": "Datenschutz und Datenrechte"
+        },
+        "profile": {
+          "save": "Profil speichern",
+          "saving": "Profil wird gespeichert...",
+          "title": "Profil",
+          "username": "Nutzername",
+          "username_help": "Nur Buchstaben, Zahlen, Bindestriche, und Unterstriche"
+        },
+        "title": "Konto"
       },
       "card_data": {
         "card_count": "Kartenanzahl",
@@ -1393,13 +1624,13 @@
         "loading": "Kartendaten werden geladen...",
         "locale": "Sprache",
         "sync": "Kartendaten laden",
-        "title": "Kartendaten",
         "up_to_date": "Kartendaten sind aktuell.",
         "update_available": "Neue Kartendaten sind verfügbar."
       },
       "collection": {
         "card_collection": "Kartensammlung",
         "card_count": "Kartenanzahl",
+        "chapter": "Kapitel {{number}}",
         "new_format": "Neues Format",
         "old_format": "Altes Format",
         "show_all_cards_owned": "Alle Karten anzeigen",
@@ -1408,31 +1639,15 @@
         "show_previews_help": "Wenn dies aktiviert ist, werden Vorschauen in der Anwendung angezeigt und können zu Decks hinzugefügt werden.",
         "title": "Kartensammlung"
       },
-      "connections": {
-        "connect": "Verbinden",
-        "connect_help": "Verbinde dein {{provider}}-Konto, um deine Decks zu synchronisieren.",
-        "connected": "Verbunden",
-        "created_at": "Verbunden seit",
-        "details": "Details",
-        "disconnect": "Trennen",
-        "disconnected": "Es besteht ein Problem mit dieser Verbindung. Bitte erneut verbinden..",
-        "disconnected_all": "Es besteht ein Problem mit einer deiner Verbindungen. Bitte in den Einstellungen erneut verbinden.",
-        "items_synced": "Synchronisierte Objekte",
-        "last_modified": "Letzte Änderung",
-        "last_synced_at": "Letzte Synchronisierung",
-        "lock": "Another {{provider}} operation is in progress, please wait...",
-        "no_errors": "Keine Fehler",
-        "provider_error": "Synchronisierung mit {{provider}} fehlgeschlagen: {{error}}",
-        "provider_syncing": "{{provider}} synchronisieren...",
-        "reconnect": "Erneut verbinden",
-        "sync": "Sync",
-        "sync_all": "{{collectionLabels}} Decks synchronisieren",
-        "sync_errors": "Fehler",
-        "sync_status": "Status",
-        "syncing": "Synchronisierung läuft...",
-        "title": "Verbundene Konten",
-        "user_id": "Nutzer ID",
-        "username": "Nutzername"
+      "conflict": {
+        "description": "Deine Kontoeinstellungen wurden an anderer Stelle geändert. Aktualisiere, um die Konto-Version zu laden, oder überschreibe sie mit deinen aktuellen lokalen Änderungen.",
+        "overwrite": "Überschreiben",
+        "refresh": "Aktualisieren",
+        "remote_revision": "Konto-Version: {{revision}}"
+      },
+      "developer": {
+        "dev_mode_enabled": "Entwicklermodus anschalten",
+        "title": "Entwicklermodus"
       },
       "display": {
         "card_display": "Kartenanzeige",
@@ -1444,7 +1659,7 @@
         "card_show_details": "Details anzeigen",
         "card_show_icon": "Kostensymbol anzeigen",
         "card_show_thumbnail": "Thumbnail anzeigen",
-        "card_show_unique_icon": "Show unique icon",
+        "card_show_unique_icon": "Einzigartigskeitssymbol anzeigen",
         "card_size": "Anzeigegröße",
         "card_size_sm": "Kompakt",
         "card_size_standard": "Standard",
@@ -1452,9 +1667,7 @@
         "card_skill_icons_as_printed": "Wie gedruckt",
         "card_skill_icons_simple": "Einfach",
         "font_size": "Schriftgröße",
-        "font_size_preview": "Dann plötzlich sah ich es. Mit nur einem leichten Schäumen des Wassers, das seinen Aufsteig an die Oberfläche kennzeichnete, glitt das Ding über dem finstren Gewässer in mein Blickfeld. Gewaltig wie Polyphemos und widerwärtig wie ein riesiges Ungeheuer aus einem Albtraum schoss es den Monolithen hoch, um den es seine gigantischen, schuppenbedeckten Arme schlang, während es sein scheußliches Haupt neigte und rhythmische Laute ausstieß. Ich glaube, in diesem Augenblick wurde ich wahnsinnig.",
-        "hide_weaknesses": "Schwächen in Spielerkartenlisten standardmäßig ausblenden",
-        "hide_weaknesses_help": "Wenn dies aktiviert ist, werden Schwächen in Spielerkartenlisten standardmäßig ausgeblendet und müssen im <strong>Untertyp</strong>-Filter aktiviert werden, um sichtbar zu sein.",
+        "font_size_preview": "Dann plötzlich sah ich es. Mit nur einem leichten Schäumen des Wassers, das seinen Aufstieg an die Oberfläche kennzeichnete, glitt das Ding über dem finstren Gewässer in mein Blickfeld. Gewaltig wie Polyphemos und widerwärtig wie ein riesiges Ungeheuer aus einem Albtraum schoss es den Monolithen hoch, um den es seine gigantischen, schuppenbedeckten Arme schlang, während es sein scheußliches Haupt neigte und rhythmische Laute ausstieß. Ich glaube, in diesem Augenblick wurde ich wahnsinnig.",
         "show_card_modal_popular_decks": "Populäre Decks in Kartenmodals anzeigen",
         "show_card_modal_popular_decks_help": "Wenn dies aktiviert ist, werden populäre Decks, die die jeweilige Karte enthalten, im Kartenmodal angezeigt.",
         "show_move_to_side_deck": "\"Ins Nebendeck bewegen\" Button anzeigen",
@@ -1469,18 +1682,19 @@
       },
       "error": "Speichern der Einstellungen fehlgeschlagen: {{error}}",
       "general": {
-        "default_environment": "Default environment",
+        "default_environment": "Standardumgebung",
         "default_taboo": "Voreingestellte Tabuliste",
         "latest_taboo": "Aktuelle Tabuliste",
         "title": "Allgemein",
-        "weakness_limited_card_pool": "Zufällige Basisschwäche aus eingeschränktem Kartenpool ziehen",
-        "weakness_limited_card_pool_help": "Wenn dies aktiviert ist, berücksichtigt das Ziehen der zufälligen Basisschwäche den eingeschränkten Kartenpool eines Decks, wenn einer hinterlegt ist."
+        "weakness_limited_card_pool": "Zufällige Grundschwäche aus eingeschränktem Kartenpool ziehen",
+        "weakness_limited_card_pool_help": "Wenn dies aktiviert ist, berücksichtigt das Ziehen der zufälligen Grundschwäche den eingeschränkten Kartenpool eines Decks, wenn einer hinterlegt ist."
       },
       "lists": {
         "deck_view": "Deckansicht",
         "deck_view_scans": "Deckansicht (Scans)",
         "title": "Listen"
       },
+      "load_error": "Kontoeinstellungen konnten nicht geladen werden. Lokale Einstellungen werden verwendet: {{error}}",
       "locale": {
         "help": "Ändert die Anzeigesprache der Nutzeroberfläche sowie der Karten- und Metadaten.",
         "title": "Sprache"
@@ -1488,10 +1702,17 @@
       "preview": "Vorschau",
       "save": "Speichern",
       "saving": "Einstellungen werden gespeichert...",
+      "support": {
+        "create": "Sicherung erstellen",
+        "data_export_title": "Datenexport",
+        "help": "Erstelle eine Sicherung deiner Einstellungen, Decks und Kartensammlung als JSON-Datei. Diese Datei kann genutzt werden, um deine Daten auf diesem oder einem anderen Gerät wiederherzustellen.",
+        "metadata_title": "Anwendungsdaten",
+        "title": "Sicherung & Wiederherstellung"
+      },
       "title": "Einstellungen"
     },
     "suzi_standalone_setup": {
-      "description": "FAQ 2.4 beschreibt, wie Einzelspielszenario-Decks für Suzi erstellt werden können. Es werden zufällige Level 1-5 Karten gezogen, bis die gewünschte Anzahl an Erfahrungspunkten erreicht ist. Im Anschluss wird eine identische Anzahl an Karten aus dem Deck entfernt.",
+      "description": "FAQ 2.4 beschreibt, wie Einzelspielszenario-Decks für Suzi erstellt werden können. Es werden zufällige Karten der Stufen 1-5 gezogen, bis die gewünschte Anzahl an Erfahrungspunkten erreicht ist. Im Anschluss wird eine identische Anzahl an Karten aus dem Deck entfernt.",
       "draw_cards": "Karten ziehen",
       "limit_collection": "Nur Karten aus meiner Sammlung verwenden",
       "limit_exile": "Exilkarten ausschließen (\"Ultimatum of Exile\")",
@@ -1517,9 +1738,13 @@
       },
       "copy_to_clipboard": "In die Zwischenablage kopieren",
       "copy_to_clipboard_success": "Kopiert.",
+      "password_input": {
+        "hide_password": "Passwort ausblenden",
+        "show_password": "Passwort anzeigen"
+      },
       "pagination": {
-        "next": "Next",
-        "previous": "Previous"
+        "next": "Weiter",
+        "previous": "Zurück"
       }
     }
   }

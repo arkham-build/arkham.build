@@ -1,12 +1,15 @@
 import {
   ASSET_SLOT_ORDER,
   type Card,
+  cardLevel,
   FACTION_ORDER,
   type FactionName,
   PLAYER_TYPE_ORDER,
   type PlayerType,
 } from "@arkham-build/shared";
 import { displayAttribute, splitMultiValue } from "@/utils/card-utils";
+import { inferChapterNumber } from "@/utils/chapters";
+import { displayPackName } from "@/utils/formatting";
 import type { SortingType } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
 
@@ -37,11 +40,14 @@ export function sortByName(collator: Intl.Collator) {
 }
 
 function sortByLevel(a: Card, b: Card) {
-  if (a.xp === b.xp) {
+  const aLevel = cardLevel(a);
+  const bLevel = cardLevel(b);
+
+  if (aLevel === bLevel) {
     return +(a.parallel ?? false) - +(b.parallel ?? false);
   }
 
-  return (a.xp ?? 100) - (b.xp ?? 100);
+  return (aLevel ?? 100) - (bLevel ?? 100);
 }
 
 export function sortByPosition(a: Card, b: Card) {
@@ -61,6 +67,10 @@ function sortByCycle(metadata: Metadata) {
 
     if (!packA || !packB) {
       return 0;
+    }
+
+    if (packA.chapter !== packB.chapter) {
+      return inferChapterNumber(packA) - inferChapterNumber(packB);
     }
 
     const cycleA = metadata.cycles[packA.cycle_code];
@@ -174,7 +184,7 @@ export function sortByEncounterSet(
       cycleA.position - cycleB.position ||
       packA.position - packB.position ||
       (setA.position ?? 0) - (setB.position ?? 0) ||
-      collator.compare(setA.name, setB.name)
+      collator.compare(displayPackName(setA), displayPackName(setB))
     );
   };
 }

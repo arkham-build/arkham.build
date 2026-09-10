@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { official } from "@/utils/card-utils";
 import { CARD_SET_ORDER } from "@/utils/constants";
 import type { StoreState } from "../slices";
@@ -85,6 +86,13 @@ export function resolveCardWithRelations<T extends boolean>(
           deps,
           collator,
           "requiredCards",
+          card.code,
+          tabooSetId,
+        ),
+        sideDeckRequiredCards: resolveRelationArray(
+          deps,
+          collator,
+          "sideDeckRequiredCards",
           card.code,
           tabooSetId,
         ),
@@ -258,11 +266,16 @@ function sortRelations(a: string, b: string) {
   return CARD_SET_ORDER.indexOf(a) - CARD_SET_ORDER.indexOf(b);
 }
 
+type GetRelatedCardOpts = {
+  showAllFanMadeRelations: boolean;
+  showPreviews: boolean;
+  fanMadeCardOverride?: (card: Card) => boolean;
+};
+
 export function getRelatedCards(
   cardWithRelations: CardWithRelations,
-  showFanMadeRelations: boolean,
-  showPreviews: boolean,
-): [string, ResolvedCard | ResolvedCard[]][] {
+  opts: GetRelatedCardOpts,
+) {
   return Object.entries(cardWithRelations.relations ?? {})
     .reduce(
       (acc, [key, value]) => {
@@ -270,10 +283,13 @@ export function getRelatedCards(
 
         const values = (Array.isArray(value) ? value : [value]).filter((v) => {
           if (!v) return false;
-          return (
-            (showPreviews || !v.card.preview) &&
-            (showFanMadeRelations || official(v.card))
-          );
+
+          const fanMadeAllowed =
+            opts.showAllFanMadeRelations ||
+            official(v.card) ||
+            opts.fanMadeCardOverride?.(v.card) === true;
+
+          return (opts.showPreviews || !v.card.preview) && fanMadeAllowed;
         });
 
         if (values.length > 0) {

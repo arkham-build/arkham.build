@@ -1,104 +1,46 @@
-import type {
-  CallbackArgs,
-  VictoryLabelStyleObject,
-  VictoryThemeDefinition,
-} from "victory";
-import i18n from "@/utils/i18n";
+export const chartTheme = {
+  height: 360,
 
-const baseChartProps = {
-  height: 250,
-};
-
-const baseLabelStyles: VictoryLabelStyleObject = {
-  fontFamily: "var(--font-family-ui)",
-  fill: "var(--text)",
-  fontSize: 12,
-  lineHeight: 16,
-};
-
-export const containerTheme = {
-  touchAction: "auto",
-};
-
-export const chartsTheme: VictoryThemeDefinition = {
-  chart: {
-    ...baseChartProps,
-    padding: 0,
+  colors: {
+    primary: "var(--color-primary)",
+    primaryHover: "var(--color-primary-hover)",
+    axis: "var(--palette-2)",
+    grid: "var(--palette-3)",
+    text: "var(--text)",
+    pieStroke: "var(--palette-0)",
+    cursorFill: "var(--palette-2)",
   },
-  line: {
-    ...baseChartProps,
-    style: {
-      data: {
-        stroke: "var(--nord-10)",
-        strokeWidth: 2,
-      },
-    },
+
+  cursorOpacity: 0.3,
+
+  strokeWidth: {
+    line: 2,
+    axis: 2,
+    grid: 1,
+    pie: 3,
   },
+
+  gridDasharray: "5 10",
+
+  font: {
+    family: "var(--font-family-ui)",
+    size: 12,
+  },
+
   scatter: {
-    ...baseChartProps,
-    style: {
-      data: { fill: "var(--nord-10)" },
-    },
+    r: 2,
+    fill: "var(--color-primary)",
   },
-  axis: {
-    ...baseChartProps,
-    style: {
-      axisLabel: { ...baseLabelStyles, padding: 30 },
-      axis: { stroke: "var(--palette-2)", strokeWidth: 2 },
-      grid: {
-        stroke: "var(--palette-3)",
-        strokeDasharray: "5, 10",
-        strokeWidth: 1,
-      },
-      tickLabels: { ...baseLabelStyles, padding: 10 },
-    },
-  },
-  tooltip: {
-    pointerLength: 0,
-    style: baseLabelStyles,
-    flyoutStyle: {
-      fill: "var(--palette-1)",
-      stroke: "var(--palette-2)",
-      strokeWidth: 1,
-    },
-    flyoutPadding: { top: 10, bottom: 10, left: 6, right: 6 },
-  },
-  pie: {
-    ...baseChartProps,
-    padding: 0,
-    style: {
-      labels: {
-        ...baseLabelStyles,
-        padding: 4,
-      },
-      data: {
-        stroke: "var(--palette-0)",
-        strokeWidth: 2,
-      },
-    },
-  },
-  polarAxis: {
-    ...baseChartProps,
-    style: {
-      axis: {
-        fill: "transparent",
-        stroke: "var(--palette-2)",
-        strokeWidth: 2,
-      },
-      grid: {
-        fill: "none",
-        stroke: "var(--palette-3)",
-        strokeDasharray: "5, 10",
-      },
-      tickLabels: {
-        padding: 20,
-      },
-    },
-  },
+} as const;
+
+export const axisTickStyle: React.SVGProps<SVGTextElement> = {
+  fontFamily: chartTheme.font.family,
+  fontSize: chartTheme.font.size,
+  fill: chartTheme.colors.text,
 };
 
-export function tooltipWidth({ text }: CallbackArgs) {
-  const baseWidth = i18n.language === "zh" || i18n.language === "ko" ? 12 : 8;
-
-  return text.length * baseWidth + 20;
-}
+export const axisLabelStyle = {
+  fontFamily: chartTheme.font.family,
+  fontSize: chartTheme.font.size,
+  fill: chartTheme.colors.text,
+};

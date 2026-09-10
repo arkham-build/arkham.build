@@ -1,4 +1,3 @@
-import { forwardRef } from "react";
 import { cx } from "@/utils/cx";
 import css from "./tag.module.css";
 
@@ -6,15 +5,21 @@ type Props<T extends React.ElementType> = {
   as?: T;
   children: React.ReactNode;
   className?: string;
+  ref?: React.Ref<T>;
   size?: "sm" | "xs";
   variant?: "inverse";
 };
 
-export const Tag = forwardRef(function TagInner<T extends React.ElementType>(
-  props: Props<T>,
-  ref: React.Ref<T>,
-) {
-  const { as = "span", children, className, size, variant, ...rest } = props;
+export function Tag<T extends React.ElementType>(props: Props<T>) {
+  const {
+    as = "span",
+    children,
+    className,
+    size,
+    variant,
+    ref,
+    ...rest
+  } = props;
   const Element: React.ElementType = as;
 
   return (
@@ -31,4 +36,4 @@ export const Tag = forwardRef(function TagInner<T extends React.ElementType>(
       {children}
     </Element>
   );
-});
+}

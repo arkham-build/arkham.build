@@ -1,11 +1,12 @@
+import type { Deck } from "@arkham-build/shared";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
-import type { Deck } from "@/store/schemas/deck.schema";
 import { getMockStore } from "@/test/get-mock-store";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
+  selectStaticBuildQlInterpreter,
 } from "../selectors/shared";
 import type { StoreState } from "../slices";
 import { validateDeck } from "./deck-validation";
@@ -140,6 +141,17 @@ const tests = [
   // Versatile
   ["valid: Versatile with added off-class card", "versatile"],
   ["invalid: Versatile with too many off-class cards", "versatile_invalid"],
+  // Collector
+  [
+    "valid: Collector preserves overlapping limited access for cards that need it",
+    "collector_with_overlapping_limited_access",
+  ],
+  [
+    "invalid: Collector does not claim excess cards from another limited option",
+    "collector_with_other_limited_access_invalid",
+  ],
+  ["invalid: Collector + Dunwich Splash", "collector_splash_invalid"],
+  ["valid: Collector + Dunwich Splash", "collector_splash_valid"],
   // || Jenny
   ["valid: || Jenny Barnes with 10 off-class Talents", "parallel_jenny"],
   [
@@ -238,6 +250,8 @@ const tests = [
   // Myriad
   ["valid: myriad cards with different subnames", "myriad_subname"],
   ["invalid: myriad cards with different subnames", "myriad_subname_invalid"],
+  // Upgrades change deck limit
+  ["invalid: upgrade changes deck limit", "limits_by_name_invalid"],
   // Suzi
   ["valid: Suzi with valid 'at_least' constraint", "suzi"],
   [
@@ -283,11 +297,11 @@ function validate(store: StoreApi<StoreState>, deck: Deck) {
   const state = store.getState();
   const metadata = selectMetadata(state);
   const lookupTables = selectLookupTables(state);
+  const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
 
   return validateDeck(
     resolveDeck(
       {
-        sharing: state.sharing,
         metadata,
         lookupTables,
       },
@@ -296,6 +310,7 @@ function validate(store: StoreApi<StoreState>, deck: Deck) {
     ),
     metadata,
     lookupTables,
+    buildQlInterpreter,
   );
 }
 

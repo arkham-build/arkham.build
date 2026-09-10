@@ -10,49 +10,36 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useToast } from "@/components/ui/toast.hooks";
+import { useImportDeckMutation } from "@/queries/mutations/decks";
 import { useStore } from "@/store";
+import { selectSession } from "@/store/selectors/auth";
 import css from "./deck-collection.module.css";
 
 export function DeckCollectionImport() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const importDeck = useStore((state) => state.importDeck);
+  const { importDeck, isPending } = useImportDeck();
 
-  const toast = useToast();
+  const session = useStore(selectSession);
 
   const onFormSubmit = useCallback(
-    async (evt: React.FormEvent) => {
+    async (evt: React.SubmitEvent<HTMLFormElement>) => {
       evt.preventDefault();
 
-      if (evt.currentTarget instanceof HTMLFormElement) {
-        const input = new FormData(evt.currentTarget)
-          .get("deck-id")
-          ?.toString();
-        setLoading(true);
+      const value = new FormData(evt.currentTarget).get("deck-id");
+      const input = typeof value === "string" ? value : "";
 
-        try {
-          await importDeck(input ?? "");
-
-          toast.show({
-            children: "Deck import successful.",
-            duration: 3000,
-            variant: "success",
-          });
-
-          setOpen(false);
-        } catch (err) {
-          toast.show({
-            children: `Error: ${err instanceof Error ? err.message : "Unknown error."}`,
-            variant: "error",
-          });
-        } finally {
-          setLoading(false);
-        }
+      try {
+        await importDeck(input);
+        setOpen(false);
+      } catch {
+        return;
       }
     },
-    [importDeck, toast.show],
+    [importDeck],
   );
+
+  if (session) return null;
 
   return (
     <Popover onOpenChange={setOpen} open={open} placement="bottom-start">
@@ -98,15 +85,51 @@ export function DeckCollectionImport() {
           <footer className={css["import-footer"]}>
             <Button
               data-testid="import-submit"
-              disabled={loading}
+              disabled={isPending}
               type="submit"
             >
               {t("deck_collection.import")}
             </Button>
-            {loading && <LoaderCircleIcon className="spin" />}
+            {isPending && <LoaderCircleIcon className="spin" />}
           </footer>
         </form>
       </PopoverContent>
     </Popover>
   );
+}
+
+function useImportDeck() {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const importDeckMutation = useImportDeckMutation();
+
+  const importDeck = useCallback(
+    async (input: string) => {
+      const toastId = toast.show({
+        children: t("deck_collection.import_loading"),
+        variant: "loading",
+      });
+
+      try {
+        await importDeckMutation.mutateAsync(input);
+        toast.dismiss(toastId);
+      } catch (error) {
+        toast.dismiss(toastId);
+        toast.show({
+          children: t("deck_collection.import_error", {
+            error: error instanceof Error ? error.message : "Unknown error",
+          }),
+          variant: "error",
+        });
+
+        throw error;
+      }
+    },
+    [importDeckMutation, t, toast],
+  );
+
+  return {
+    importDeck,
+    isPending: importDeckMutation.isPending,
+  };
 }

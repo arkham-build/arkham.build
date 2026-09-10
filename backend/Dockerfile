@@ -4,9 +4,7 @@ FROM amacneil/dbmate:2 AS dbmate
 # Base image
 FROM node:24-alpine AS base
 
-RUN apk add --update busybox-suid && rm -rf /var/cache/apk/*
 COPY --from=dbmate /usr/local/bin/dbmate /usr/local/bin/dbmate
-COPY backend/config/crontab /app/config/crontab
 
 # Dependencies stage
 FROM base AS deps
@@ -29,14 +27,20 @@ ENV PORT=3000
 
 COPY package.json ./
 COPY --from=deps /app/node_modules ./node_modules
+RUN --mount=from=deps,source=/app/backend,target=/deps-backend \
+    if [ -d /deps-backend/node_modules ]; then \
+      mkdir -p backend && \
+      cp -a /deps-backend/node_modules backend/node_modules; \
+    fi
 COPY backend ./backend
 COPY shared ./shared
 
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 && \
-    chown -R nodejs:nodejs /app
+    adduser -S nodejs -u 1001 -G nodejs
+
+WORKDIR /app/backend
 
 USER nodejs
 
 EXPOSE $PORT
-CMD ["npm", "run", "start", "-w", "backend"]
+CMD ["node", "--experimental-strip-types", "src/main.ts"]

@@ -21,7 +21,7 @@
 
 .icon-background {
   position: absolute;
-  color: var(--nord-4);
+  color: var(--white);
   font-size: calc(2 * var(--card-text-size, var(--text-sm)));
   z-index: 1;
 }

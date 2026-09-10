@@ -52,6 +52,10 @@
   transform: translateY(0.25rem);
 }
 
+.content {
+  min-width: 18rem;
+}
+
 .content > * + * {
   margin-top: 0.25rem;
 }

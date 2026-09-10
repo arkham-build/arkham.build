@@ -50,12 +50,12 @@ export function DecklistValidation(props: Props) {
         <Scroller className={css["scroller"]}>
           <ul className={css["decklist-validation-results"]}>
             {validation.errors.map((error, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: no unique key available.
+              // oxlint-disable-next-line react/no-array-index-key -- no unique key available.
               <li className={css["decklist-validation-result"]} key={i}>
                 {isTooManyCardsError(error) && (
                   <>
                     {t("deck.validation.too_many_cards", {
-                      deck: `${t(`common.decks.${error.details.target}`)}`,
+                      deck: t(`common.decks.${error.details.target}`),
                     })}{" "}
                     ({error.details.count} / {error.details.countRequired})
                   </>
@@ -63,7 +63,7 @@ export function DecklistValidation(props: Props) {
                 {isTooFewCardsError(error) && (
                   <>
                     {t("deck.validation.too_few_cards", {
-                      deck: `${t(`common.decks.${error.details.target}`)}`,
+                      deck: t(`common.decks.${error.details.target}`),
                     })}{" "}
                     ({error.details.count} / {error.details.countRequired})
                   </>

@@ -7,7 +7,6 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLookupTables } from "@/store/selectors/shared";
 import type { Slot } from "@/store/slices/deck-edits.types";
 import { cardLimit } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { inputFocused } from "@/utils/keyboard";
 import { QuantityInput } from "../ui/quantity-input";
 import css from "./card-modal.module.css";
@@ -132,7 +131,7 @@ export function CardModalQuantities(props: Props) {
           />
         </article>
       )}
-      {!isBonded && showIgnoreDeckLimitSlots(deck, card) && (
+      {!isBonded && (
         <article className={css["quantity"]}>
           <h3 className={css["quantity-title"]}>
             {t("common.decks.ignoreDeckLimitSlots")}
@@ -149,25 +148,5 @@ export function CardModalQuantities(props: Props) {
         </article>
       )}
     </>
-  );
-}
-
-function showIgnoreDeckLimitSlots(deck: ResolvedDeck | undefined, card: Card) {
-  if (!deck) return false;
-
-  const traits = card.real_traits ?? "";
-  const investigator = deck.investigatorBack.card.code;
-
-  return (
-    // cards that are already ignored.
-    !!deck.ignoreDeckLimitSlots?.[card.code] ||
-    // parallel agnes & spells
-    (investigator === SPECIAL_CARD_CODES.PARALLEL_AGNES &&
-      traits.includes("Spell")) ||
-    // parallel skids & gambit / fortune
-    (investigator === SPECIAL_CARD_CODES.PARALLEL_SKIDS &&
-      (traits.includes("Gambit") || traits.includes("Fortune"))) ||
-    // ace of rods
-    card.code === SPECIAL_CARD_CODES.ACE_OF_RODS
   );
 }

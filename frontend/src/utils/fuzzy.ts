@@ -1,16 +1,44 @@
 import { isEmpty } from "./is-empty";
 import { normalizeDiacritics } from "./normalize-diacritics";
 
-export function fuzzyMatch(haystack: string[], needle: RegExp) {
-  return haystack.some((part) => needle.test(prepare(part)));
+const DEFAULT_CACHE_LIMIT = 50_000;
+
+export class SearchTextCache {
+  private cache = new Map<string, string>();
+
+  constructor(private limit = DEFAULT_CACHE_LIMIT) {}
+
+  prepare(str: string) {
+    const cached = this.cache.get(str);
+    if (cached != null) return cached;
+
+    if (this.cache.size >= this.limit) {
+      this.cache.clear();
+    }
+
+    const prepared = prepareSearchText(str);
+    this.cache.set(str, prepared);
+
+    return prepared;
+  }
+}
+
+export function fuzzyMatch(
+  haystack: string[],
+  needle: RegExp,
+  searchTextCache?: SearchTextCache,
+) {
+  return haystack.some((part) =>
+    needle.test(searchTextCache?.prepare(part) ?? prepareSearchText(part)),
+  );
+}
+
+export function prepareSearchText(str: string) {
+  return normalizeDiacritics(str).trim();
 }
 
 function escapeRegex(str: string) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function prepare(str: string) {
-  return normalizeDiacritics(str).trim();
 }
 
 /**
@@ -19,7 +47,7 @@ function prepare(str: string) {
  * 20 chars to accomodate "[...] at a skill test [...]".
  */
 export function prepareNeedle(str: string, tokenDistance = 20) {
-  const parts = prepare(str).split(/\s+/);
+  const parts = prepareSearchText(str).split(/\s+/);
   if (isEmpty(parts)) return null;
 
   const expression = parts

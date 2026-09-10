@@ -1,9 +1,10 @@
+import { SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import { assert } from "@/utils/assert";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { formatRelationTitle } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
 import { resolveCardWithRelations } from "../lib/resolve-card";
+import { hasHealthyArkhamDBIdentity } from "../lib/sync";
 import type { CardSet, CardWithRelations, ResolvedCard } from "../lib/types";
 import type { StoreState } from "../slices";
 import {
@@ -49,6 +50,32 @@ export const selectDeckCreateInvestigators = createSelector(
   },
 );
 
+export const selectDeckCreateStorageProviderOptions = createSelector(
+  (state: StoreState) => state.auth,
+  (state: StoreState) => state.settings.locale,
+  (auth) => {
+    const providers: string[] = ["local", "account", "arkhamdb"];
+
+    return providers
+      .filter((provider) => {
+        switch (provider) {
+          case "local":
+            return true;
+          case "account":
+            return auth.status === "authenticated";
+          case "arkhamdb":
+            return hasHealthyArkhamDBIdentity(auth);
+          default:
+            return false;
+        }
+      })
+      .map((provider) => ({
+        label: i18n.t(`deck_edit.config.storage_provider.${provider}`),
+        value: provider,
+      }));
+  },
+);
+
 export const selectDeckCreateCardSets = createSelector(
   selectMetadata,
   selectLookupTables,
@@ -59,7 +86,7 @@ export const selectDeckCreateCardSets = createSelector(
     const groupings: CardSet[] = [];
 
     const { back, investigator } = investigators;
-    const { relations } = investigator;
+    const { relations } = back;
 
     const deckSizeRequirement = investigator.card.deck_requirements?.size ?? 30;
 
@@ -103,13 +130,12 @@ export const selectDeckCreateCardSets = createSelector(
       });
     }
 
-    if (
-      relations?.parallelCards?.length &&
-      (deckCreate.investigatorBackCode === SPECIAL_CARD_CODES.PARALLEL_JIM ||
-        deckCreate.investigatorFrontCode ===
-          SPECIAL_CARD_CODES.PARALLEL_WENDY ||
-        deckCreate.investigatorFrontCode === SPECIAL_CARD_CODES.PARALLEL_ROLAND)
-    ) {
+    const showParallelCards =
+      deckCreate.investigatorFrontCode === SPECIAL_CARD_CODES.PARALLEL_ROLAND ||
+      deckCreate.investigatorFrontCode === SPECIAL_CARD_CODES.PARALLEL_WENDY ||
+      deckCreate.investigatorBackCode === SPECIAL_CARD_CODES.PARALLEL_JIM;
+
+    if (showParallelCards && relations?.parallelCards?.length) {
       groupings.push({
         id: "extra",
         title: formatRelationTitle("extra"),
@@ -118,11 +144,28 @@ export const selectDeckCreateCardSets = createSelector(
           deckCreate.investigatorFrontCode ===
           SPECIAL_CARD_CODES.PARALLEL_ROLAND,
         canSelect: false,
-        selected: true,
+        selected: showParallelCards,
         quantities: relations.parallelCards.reduce(
           (acc, { card }) => {
             acc[card.code] =
               deckCreate.extraCardQuantities[card.code] ?? card.quantity;
+            return acc;
+          },
+          {} as Record<string, number>,
+        ),
+      });
+    }
+
+    if (relations?.sideDeckRequiredCards?.length) {
+      groupings.push({
+        id: "sideDeckRequiredCards",
+        title: formatRelationTitle("sideDeckRequiredCards"),
+        canSelect: false,
+        selected: true,
+        cards: relations.sideDeckRequiredCards,
+        quantities: relations.sideDeckRequiredCards.reduce(
+          (acc, { card }) => {
+            acc[card.code] = card.quantity;
             return acc;
           },
           {} as Record<string, number>,

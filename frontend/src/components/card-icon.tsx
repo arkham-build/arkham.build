@@ -1,5 +1,5 @@
-import type { Card } from "@arkham-build/shared";
-import { cardLevel, getCardColor } from "@/utils/card-utils";
+import { type Card, cardLevel } from "@arkham-build/shared";
+import { getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import css from "./card-icon.module.css";
 import { CostIcon } from "./icons/cost-icon";

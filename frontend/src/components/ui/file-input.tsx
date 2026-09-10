@@ -1,7 +1,9 @@
 import { Button, type Props as ButtonProps } from "./button";
 
-interface Props
-  extends Omit<ButtonProps<"label">, "as" | "htmlFor" | "onChange" | "ref"> {
+interface Props extends Omit<
+  ButtonProps<"label">,
+  "as" | "htmlFor" | "onChange" | "ref"
+> {
   accept?: string;
   children: React.ReactNode;
   id: string;

@@ -21,8 +21,10 @@ import {
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { StoreState } from "@/store/slices";
+import { MQ_WIDE_PREVIEW } from "@/utils/constants";
 import { debounce } from "@/utils/debounce";
 import { useAccentColor } from "@/utils/use-accent-color";
+import { useMedia } from "@/utils/use-media";
 import { CardsPopover } from "./cards-popover";
 import css from "./notes-rte.module.css";
 import { useNotesRichTextEditorContext } from "./notes-rte-context";
@@ -85,6 +87,7 @@ export function NotesRichTextEditor({ deck }: { deck: ResolvedDeck }) {
 
 function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
   const { t } = useTranslation();
+  const isWide = useMedia(MQ_WIDE_PREVIEW);
 
   const { popoverOpen, setPopoverOpen, textareaRef } =
     useNotesRichTextEditorContext();
@@ -170,38 +173,40 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
           </PopoverContent>
         </Popover>
       </div>
-      <div>
-        <Dialog
-          onOpenChange={(val) => {
-            if (!val) {
-              textareaRef.current?.focus();
-            }
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button size="sm">
-              <EyeIcon />
-              {t("deck_edit.notes.toolbar.preview")}
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <Modal>
-              <ModalBackdrop />
-              <ModalInner size="48rem">
-                <ModalActions />
-                <DefaultModalContent
-                  title={t("deck_edit.notes.toolbar.preview")}
-                >
-                  <DeckDescription
-                    className={css["preview"]}
-                    content={deck.description_md ?? ""}
-                  />
-                </DefaultModalContent>
-              </ModalInner>
-            </Modal>
-          </DialogContent>
-        </Dialog>
-      </div>
+      {!isWide && (
+        <div>
+          <Dialog
+            onOpenChange={(val) => {
+              if (!val) {
+                textareaRef.current?.focus();
+              }
+            }}
+          >
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <EyeIcon />
+                {t("deck_edit.notes.toolbar.preview")}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <Modal>
+                <ModalBackdrop />
+                <ModalInner size="48rem">
+                  <ModalActions />
+                  <DefaultModalContent
+                    title={t("deck_edit.notes.toolbar.preview")}
+                  >
+                    <DeckDescription
+                      className={css["preview"]}
+                      content={deck.description_md ?? ""}
+                    />
+                  </DefaultModalContent>
+                </ModalInner>
+              </Modal>
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
     </nav>
   );
 }

@@ -1,0 +1,20 @@
+.preview {
+  height: 100%;
+  min-height: 0;
+  border-left: 1px solid var(--palette-1);
+  padding-block: 0.625rem;
+}
+
+.preview-title {
+  font-size: var(--text-lg);
+  padding-inline: var(--scrollbar-padding);
+  padding-bottom: 0.375rem;
+}
+
+.preview-inner > * + * {
+  margin-top: 0.625rem;
+}
+
+.banner {
+  position: relative;
+}

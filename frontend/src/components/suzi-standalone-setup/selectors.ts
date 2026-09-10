@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { createSelector, createStructuredSelector } from "reselect";
 import { applyCardChanges } from "@/store/lib/card-edits";
 import {
@@ -14,10 +14,10 @@ import {
   selectCollection,
   selectLookupTables,
   selectMetadata,
+  selectStaticBuildQlInterpreter,
 } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { and } from "@/utils/fp";
 import { isEmpty } from "@/utils/is-empty";
 
@@ -41,6 +41,7 @@ export const selectAvailableUpgrades = createSelector(
     selectMetadata,
     selectLookupTables,
     selectCollection,
+    selectStaticBuildQlInterpreter,
     (_: StoreState, deck: ResolvedDeck) => deck,
     (_: StoreState, __: ResolvedDeck, options: AvailableUpgradeOptions) =>
       options,
@@ -49,17 +50,22 @@ export const selectAvailableUpgrades = createSelector(
     metadata,
     lookupTables,
     collection,
+    buildQlInterpreter,
     deck,
     { checkOwnership, includeFanMade, ultimatumOfExile },
   ) => {
     const suzi = metadata.cards[SPECIAL_CARD_CODES.SUZI];
 
-    const cardAccessFilter = filterInvestigatorAccess(suzi);
+    const cardAccessFilter = filterInvestigatorAccess(suzi, buildQlInterpreter);
     assert(cardAccessFilter, "expected card access filter to be defined");
 
     const filters = [
       filterDuplicates,
-      filterLevel({ range: [1, 5] }, suzi),
+      (c: Card) => c.deck_limit !== 0,
+      filterLevel({ range: [1, 5] }, buildQlInterpreter, {
+        checkEffectiveLevel: false,
+        investigator: suzi,
+      }),
       cardAccessFilter,
       (c: Card) =>
         !c.real_text?.includes("Researched") && !c.customization_options,

@@ -1,19 +1,11 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { useStore } from "@/store";
+import { createContext, useContext } from "react";
 import type { CardFormat } from "./cards-to-markdown";
 
 export type CardOrigin = "deck" | "usable" | "player" | "campaign";
-type ToolbarPopover = "symbols" | "cards";
+export type ToolbarPopover = "symbols" | "cards";
 
 interface TextareaContextType {
-  textareaRef: React.RefObject<HTMLTextAreaElement>;
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 
   cardFormat: CardFormat;
   cardOrigin: CardOrigin;
@@ -27,75 +19,9 @@ interface TextareaContextType {
   setPopoverOpen: (popover: ToolbarPopover | undefined) => void;
 }
 
-const NotesRichTextEditorContext = createContext<
+export const NotesRichTextEditorContext = createContext<
   TextareaContextType | undefined
 >(undefined);
-
-export function NotesRichTextEditorContextProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const { defaultOrigin, defaultFormat } = useStore(
-    (state) => state.settings.notesEditor,
-  );
-
-  const [cardOrigin, setCardOrigin] = useState<CardOrigin>(defaultOrigin);
-  const [cardFormat, setCardFormat] = useState<CardFormat>(defaultFormat);
-  const [popoverOpen, setPopoverOpen] = useState<ToolbarPopover | undefined>(
-    undefined,
-  );
-
-  const insertTextAtCaret = useCallback((text: string) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    if (document.activeElement !== textarea) {
-      textarea.focus();
-    }
-
-    document.execCommand("insertText", false, text);
-
-    textarea.dispatchEvent(
-      new Event("input", {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
-
-    setTimeout(() => {
-      if (document.activeElement !== textarea) {
-        textarea.focus();
-      }
-    });
-  }, []);
-
-  const settingsChanged =
-    defaultFormat !== cardFormat || defaultOrigin !== cardOrigin;
-
-  const contextValue = useMemo(
-    () => ({
-      textareaRef,
-      insertTextAtCaret,
-      cardOrigin,
-      cardFormat,
-      popoverOpen,
-      settingsChanged,
-      setCardOrigin,
-      setCardFormat,
-      setPopoverOpen,
-    }),
-    [insertTextAtCaret, cardOrigin, cardFormat, popoverOpen, settingsChanged],
-  );
-
-  return (
-    <NotesRichTextEditorContext.Provider value={contextValue}>
-      {children}
-    </NotesRichTextEditorContext.Provider>
-  );
-}
 
 export function useNotesRichTextEditorContext() {
   const context = useContext(NotesRichTextEditorContext);

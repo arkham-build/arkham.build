@@ -1,11 +1,14 @@
-import type { Card } from "@arkham-build/shared";
+import {
+  type Card,
+  type Settings,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
 import type { ReferenceType } from "@floating-ui/react";
 import { FileWarningIcon, StarIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { useStore } from "@/store";
-import type { SettingsState } from "@/store/slices/settings.types";
 import {
   cardLimit,
   displayAttribute,
@@ -14,7 +17,6 @@ import {
   isEnemyLike,
   parseCardTextHtml,
 } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { dataLanguage } from "@/utils/formatting";
 import { preventLeftClick } from "@/utils/prevent-links";
@@ -42,11 +44,13 @@ export type Props = {
   annotation?: string | null;
   as?: "li" | "div";
   card: Card;
-  cardLevelDisplay?: SettingsState["cardLevelDisplay"];
-  cardShowCollectionNumber?: SettingsState["cardShowCollectionNumber"];
-  cardSkillIconsDisplay?: SettingsState["cardSkillIconsDisplay"];
-  cardShowUniqueIcon?: SettingsState["cardShowUniqueIcon"];
+  cardLinkProps?: React.ComponentProps<"div">;
+  cardLevelDisplay?: Settings["cardLevelDisplay"];
+  cardShowCollectionNumber?: Settings["cardShowCollectionNumber"];
+  cardSkillIconsDisplay?: Settings["cardSkillIconsDisplay"];
+  cardShowUniqueIcon?: Settings["cardShowUniqueIcon"];
   className?: string;
+  closeCardTooltip?: () => void;
   disableKeyboard?: boolean;
   disableModalOpen?: boolean;
   figureRef?: (node: ReferenceType | null) => void;
@@ -54,6 +58,7 @@ export type Props = {
   isActive?: boolean;
   isForbidden?: boolean;
   isCardNotInLimitedPool?: boolean;
+  isFaded?: boolean;
   isIgnored?: number;
   isRemoved?: boolean;
   limitOverride?: number;
@@ -64,14 +69,15 @@ export type Props = {
   onChangeCardQuantity?: (card: Card, quantity: number, limit: number) => void;
   ownedCount?: number;
   quantity?: number;
-  referenceProps?: React.ComponentProps<"div">;
   renderCardAction?: RenderCallback;
   renderCardAfter?: RenderCallback;
   renderCardBefore?: RenderCallback;
   renderCardMetaExtra?: RenderCallback;
+  renderCardTags?: RenderCallback;
   renderCardExtra?: RenderCallback;
   size?: "xs" | "sm" | "investigator" | "standard";
   showCardText?: boolean;
+  style?: React.CSSProperties;
   showInvestigatorIcons?: boolean;
   titleOpens?: "card-modal" | "dialog";
 };
@@ -81,11 +87,13 @@ export function ListCardInner(props: Props) {
     annotation,
     as = "div",
     card,
+    cardLinkProps,
     cardLevelDisplay,
     cardShowCollectionNumber,
     cardShowUniqueIcon,
     cardSkillIconsDisplay,
     className,
+    closeCardTooltip,
     disableKeyboard,
     disableModalOpen,
     figureRef,
@@ -93,6 +101,7 @@ export function ListCardInner(props: Props) {
     isActive,
     isForbidden,
     isCardNotInLimitedPool,
+    isFaded,
     isIgnored,
     isRemoved,
     limitOverride,
@@ -103,15 +112,16 @@ export function ListCardInner(props: Props) {
     onChangeCardQuantity,
     ownedCount,
     quantity,
-    referenceProps,
     renderCardAction,
     renderCardAfter,
     renderCardBefore,
     renderCardExtra,
     renderCardMetaExtra,
+    renderCardTags,
     showCardText,
     showInvestigatorIcons,
     size,
+    style,
     titleOpens = "card-modal",
   } = props;
 
@@ -135,6 +145,8 @@ export function ListCardInner(props: Props) {
   const openModal = useCallback(
     (evt: React.MouseEvent) => {
       const linkPrevented = preventLeftClick(evt);
+      closeCardTooltip?.();
+
       if (linkPrevented) {
         if (titleOpens === "dialog" && dialogContext) {
           dialogContext.setOpen(true);
@@ -143,10 +155,12 @@ export function ListCardInner(props: Props) {
         }
       }
     },
-    [openCardModal, card.code, titleOpens, dialogContext],
+    [card.code, closeCardTooltip, dialogContext, openCardModal, titleOpens],
   );
 
   const limit = cardLimit(card, limitOverride);
+  const cardTags = renderCardTags?.(card, quantity);
+  const cardExtra = renderCardExtra?.(card, quantity);
 
   return (
     <Element
@@ -158,13 +172,16 @@ export function ListCardInner(props: Props) {
         isRemoved && quantity === 0 && css["removed"],
         isForbidden && css["forbidden"],
         isCardNotInLimitedPool && css["card-not-in-limited-pool"],
+        isFaded && css["faded"],
         isActive && css["active"],
         showCardText && css["card-text"],
         css[card.faction_code],
         !!renderCardAfter && css["has-after"],
+        !!cardTags && css["has-tags"],
       )}
       data-testid={`listcard-${card.code}`}
       lang={dataLanguage()}
+      style={style}
     >
       <div className={css["listcard-action"]}>
         {!!renderCardAction && renderCardAction(card, quantity)}
@@ -193,8 +210,9 @@ export function ListCardInner(props: Props) {
                 className={css["thumbnail-link"]}
                 disableModalOpen={disableModalOpen}
                 openModal={openModal}
+                referenceProps={cardLinkProps}
               >
-                <div className={css["thumbnail"]} {...referenceProps}>
+                <div className={css["thumbnail"]}>
                   <CardThumbnail card={card} />
                 </div>
               </ListCardLink>
@@ -208,12 +226,13 @@ export function ListCardInner(props: Props) {
 
             <figcaption className={css["caption"]}>
               <div className={cx(css["name-container"], colorCls)}>
-                <h4 className={css["name"]} {...referenceProps}>
+                <h4 className={css["name"]}>
                   <ListCardLink
                     card={card}
                     data-testid="listcard-title"
                     disableModalOpen={disableModalOpen}
                     openModal={openModal}
+                    referenceProps={cardLinkProps}
                   >
                     <CardName
                       card={card}
@@ -226,31 +245,33 @@ export function ListCardInner(props: Props) {
                         cardShowCollectionNumber || !!card.reprint_of
                       }
                       cardShowUniqueIcon={cardShowUniqueIcon}
+                      slotAfter={
+                        ownedCount != null &&
+                        card.code !==
+                          SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS &&
+                        (!ownedCount ||
+                          (quantity != null && ownedCount < quantity)) && (
+                          <DefaultTooltip
+                            tooltip={
+                              quantity &&
+                              t("deck.stats.unowned", {
+                                count: quantity - ownedCount,
+                                total: quantity,
+                              })
+                            }
+                          >
+                            <span
+                              className={css["ownership"]}
+                              data-testid="ownership"
+                            >
+                              <FileWarningIcon />
+                            </span>
+                          </DefaultTooltip>
+                        )
+                      }
                     />
                   </ListCardLink>
                 </h4>
-
-                {ownedCount != null &&
-                  card.code !== SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS &&
-                  (!ownedCount ||
-                    (quantity != null && ownedCount < quantity)) && (
-                    <DefaultTooltip
-                      tooltip={
-                        quantity &&
-                        t("deck.stats.unowned", {
-                          count: quantity - ownedCount,
-                          total: quantity,
-                        })
-                      }
-                    >
-                      <span
-                        className={css["ownership"]}
-                        data-testid="ownership"
-                      >
-                        <FileWarningIcon />
-                      </span>
-                    </DefaultTooltip>
-                  )}
                 {ignoredCount > 0 && (
                   <DefaultTooltip
                     tooltip={t("deck.stats.ignored", { count: ignoredCount })}
@@ -307,7 +328,7 @@ export function ListCardInner(props: Props) {
                     <h5
                       className={css["subname"]}
                       title={displayAttribute(card, "subname")}
-                      // biome-ignore lint/security/noDangerouslySetInnerHtml: safe and necessary.
+                      // oxlint-disable-next-line react/no-danger -- safe and necessary.
                       dangerouslySetInnerHTML={{
                         __html: parseCardTextHtml(
                           displayAttribute(card, "subname"),
@@ -338,7 +359,8 @@ export function ListCardInner(props: Props) {
             </figcaption>
           </figure>
         </div>
-        {renderCardExtra?.(card, quantity)}
+        {cardTags && <div className={css["listcard-tags"]}>{cardTags}</div>}
+        {cardExtra && <div className={css["listcard-extra"]}>{cardExtra}</div>}
       </div>
       {!!renderCardAfter && (
         <div className={css["listcard-after"]}>
@@ -355,6 +377,8 @@ export function ListCardInner(props: Props) {
             text={displayAttribute(card, "text")}
             size="tooltip"
             typeCode={card.type_code}
+            vengeance={card.vengeance}
+            victory={card.victory}
           />
           {card.real_back_text && (
             <CardText
@@ -374,18 +398,24 @@ function ListCardLink({
   children,
   disableModalOpen,
   openModal,
+  referenceProps,
   ...rest
 }: {
   card: Card;
   children: React.ReactNode;
   disableModalOpen?: boolean;
   openModal?: (evt: React.MouseEvent) => void;
+  referenceProps?: React.ComponentProps<"div">;
   className?: string;
   "data-testid"?: string;
 }) {
   if (disableModalOpen) {
     return (
-      <span className={cx(css["name-static"], rest.className)} {...rest}>
+      <span
+        {...referenceProps}
+        {...rest}
+        className={cx(css["name-static"], rest.className)}
+      >
         {children}
       </span>
     );
@@ -393,6 +423,7 @@ function ListCardLink({
 
   return (
     <Link
+      {...referenceProps}
       {...rest}
       href={`~/card/${card.code}`}
       onClick={openModal}

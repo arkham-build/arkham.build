@@ -10,6 +10,7 @@ import {
   SquareArrowUpIcon,
 } from "lucide-react";
 import { cloneElement } from "react";
+import { cx } from "@/utils/cx";
 import { parseHotkey } from "@/utils/use-hotkey";
 import css from "./hotkey.module.css";
 import { DefaultTooltip, type DefaultTooltipProps } from "./tooltip";
@@ -50,12 +51,19 @@ function renderKey(key: string) {
   }
 }
 
-export function Keybind(props: Pick<Props, "keybind">) {
+export function Keybind(
+  props: Pick<Props, "keybind"> & { alwaysVisible?: boolean },
+) {
   const parsed = parseHotkey(props.keybind);
   if (!parsed) return null;
 
   return (
-    <span className={css["keybind"]}>
+    <span
+      className={cx(
+        css["keybind"],
+        props.alwaysVisible && css["keybind-always"],
+      )}
+    >
       {parsed.modifiers.map((mod) => (
         <kbd key={mod}>{renderKey(mod)}</kbd>
       ))}

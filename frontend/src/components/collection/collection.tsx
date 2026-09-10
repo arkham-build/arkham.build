@@ -1,3 +1,4 @@
+import type { Settings as SettingsState } from "@arkham-build/shared";
 import { BarChart3Icon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -5,13 +6,11 @@ import { Link } from "wouter";
 import PackIcon from "@/components/icons/pack-icon";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { useStore } from "@/store";
-import type { Pack } from "@/store/schemas/pack.schema";
 import { selectCycleCardCounts } from "@/store/selectors/collection";
 import {
-  type CycleWithPacks,
+  groupCyclesByChapter,
   selectCyclesAndPacks,
 } from "@/store/selectors/lists";
-import type { SettingsState } from "@/store/slices/settings.types";
 import { official } from "@/utils/card-utils";
 import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
 import { displayPackName } from "@/utils/formatting";
@@ -19,6 +18,7 @@ import { isEmpty } from "@/utils/is-empty";
 import { Button } from "../ui/button";
 import { MediaCard } from "../ui/media-card";
 import css from "./collection.module.css";
+import { CollectionChapterActions } from "./collection-chapter-actions";
 import { CollectionCount } from "./collection-count";
 import { CollectionCycleActions } from "./collection-cycle-actions";
 import { CollectionPack } from "./collection-pack";
@@ -40,34 +40,10 @@ export function CollectionSettings(props: Props) {
     return officialCycles;
   }, [cyclesWithPacks]);
 
-  const cyclesByChapter = useMemo(() => {
-    const cyclesByChapter = collectionCycles.reduce(
-      (acc, cycle) => {
-        const packsByChapter = cycle.packs.reduce<Record<number, Pack[]>>(
-          (chapterAcc, pack) => {
-            const chapter = pack.chapter ?? 1;
-            chapterAcc[chapter] ??= [];
-            chapterAcc[chapter].push(pack);
-            return chapterAcc;
-          },
-          {},
-        );
-
-        Object.entries(packsByChapter).forEach(([chapterStr, packs]) => {
-          const chapter = Number.parseInt(chapterStr, 10);
-          acc[chapter] ??= [];
-          acc[chapter].push({
-            ...cycle,
-            packs,
-          });
-        });
-        return acc;
-      },
-      {} as Record<number, CycleWithPacks[]>,
-    );
-
-    return Object.entries(cyclesByChapter).sort((a, b) => +b[0] - +a[0]);
-  }, [collectionCycles]);
+  const cyclesByChapter = useMemo(
+    () => groupCyclesByChapter(collectionCycles),
+    [collectionCycles],
+  );
 
   const canEdit = !!setSettings;
 
@@ -82,6 +58,35 @@ export function CollectionSettings(props: Props) {
       }));
     },
     [setSettings],
+  );
+
+  const onToggleChapter = useCallback(
+    (evt: React.MouseEvent) => {
+      if (evt.currentTarget instanceof HTMLButtonElement) {
+        const chapter = evt.currentTarget.dataset.chapter;
+
+        const val = Number.parseInt(
+          evt.currentTarget.dataset.val as string,
+          10,
+        );
+
+        const cycles = cyclesByChapter.find(([c]) => c === chapter)?.[1] ?? [];
+
+        setSettings?.((prev) => ({
+          ...prev,
+          collection: {
+            ...prev.collection,
+            ...cycles.reduce<SettingsState["collection"]>((acc, cycle) => {
+              for (const pack of [...cycle.packs, ...cycle.reprintPacks]) {
+                acc[pack.code] = val;
+              }
+              return acc;
+            }, {}),
+          },
+        }));
+      }
+    },
+    [cyclesByChapter, setSettings],
   );
 
   const onToggleCycle = useCallback(
@@ -126,7 +131,7 @@ export function CollectionSettings(props: Props) {
   );
 
   return (
-    <Field bordered>
+    <Field>
       <FieldLabel className={css["collection-label"]} htmlFor="collection">
         <strong>{t("settings.collection.card_collection")}</strong>
         {!canShowCounts && (
@@ -145,11 +150,19 @@ export function CollectionSettings(props: Props) {
       >
         {cyclesByChapter.map(([chapter, cycles]) => (
           <div className={css["chapter"]} key={chapter}>
-            <h3 className={css["chapter-title"]}>
-              {t("settings.collection.chapter", {
-                number: chapter,
-              })}
-            </h3>
+            <div className={css["chapter-header"]}>
+              <h3 className={css["chapter-title"]}>
+                {t("settings.collection.chapter", {
+                  number: chapter,
+                })}
+              </h3>
+              {canEdit && (
+                <CollectionChapterActions
+                  chapter={chapter}
+                  onToggleChapter={onToggleChapter}
+                />
+              )}
+            </div>
             <div className={css["cycles"]}>
               {cycles.map((cycle) => (
                 <MediaCard

@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: checked */
+/* oxlint-disable typescript/no-non-null-assertion -- checked */
 
 import type { Card } from "@arkham-build/shared";
 import {
@@ -6,38 +6,38 @@ import {
   RecommendationsRequestSchema,
   type RecommendationsResponse,
 } from "@arkham-build/shared";
-import { useQuery } from "@tanstack/react-query";
-import { forwardRef, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ErrorDisplay,
   ErrorImage,
 } from "@/components/error-display/error-display";
+import { useRecommendationsQuery } from "@/queries/recommendations";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { type ListState, selectListCards } from "@/store/selectors/lists";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
-import { getRecommendations } from "@/store/services/queries";
 import { ApiError } from "@/store/services/requests/shared";
 import type { ListDisplay } from "@/store/slices/lists.types";
 import { cx } from "@/utils/cx";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { DecklistsDateRangeInput } from "../arkhamdb-decklists/decklists-date-range-input";
 import { CardList } from "../card-list/card-list";
 import { CardSearch } from "../card-list/card-search";
 import type { CardListProps } from "../card-list/types";
 import { Footer } from "../footer";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { Loader } from "../ui/loader";
 import css from "./card-recommender.module.css";
 import { IncludeSideDeckToggle } from "./include-side-deck-toggle";
 import { RecommendationBar } from "./recommendation-bar";
 import { RecommenderRelativityToggle } from "./recommender-relativity-toggle";
 
-export const CardRecommender = forwardRef(function CardRecommender(
-  props: CardListProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
+export function CardRecommender(
+  props: CardListProps & {
+    ref?: React.Ref<HTMLDivElement>;
+  },
 ) {
-  const { slotLeft, slotRight, ...rest } = props;
+  const { ref, slotLeft, slotRight, ...rest } = props;
 
   const { t } = useTranslation();
   const { resolvedDeck } = useResolvedDeck();
@@ -58,46 +58,35 @@ export const CardRecommender = forwardRef(function CardRecommender(
     coreCards,
   } = recommender;
 
-  const recommendationQuery = () => {
-    if (!resolvedDeck?.id) {
-      return Promise.resolve({ recommendations: [], decks_analyzed: 0 });
-    }
+  const canonicalFrontCode =
+    resolvedDeck?.metaParsed.alternate_front ?? resolvedDeck?.investigator_code;
+  const canonicalBackCode =
+    resolvedDeck?.metaParsed.alternate_back ?? resolvedDeck?.investigator_code;
 
-    const canonicalFrontCode =
-      resolvedDeck?.metaParsed.alternate_front ??
-      resolvedDeck?.investigator_code;
-
-    const canonicalBackCode =
-      resolvedDeck?.metaParsed.alternate_back ??
-      resolvedDeck?.investigator_code;
-
-    const canonicalizedInvestigatorCode = `${canonicalFrontCode}-${canonicalBackCode}`;
-
-    return getRecommendations(
-      RecommendationsRequestSchema.parse({
-        canonical_investigator_code: canonicalizedInvestigatorCode,
+  const request = resolvedDeck?.id
+    ? RecommendationsRequestSchema.parse({
+        canonical_investigator_code: `${canonicalFrontCode}-${canonicalBackCode}`,
         analyze_side_decks: includeSideDeck,
         analysis_algorithm: isRelative ? "percentile_rank" : "absolute_rank",
         required_cards: coreCards[resolvedDeck.id] || [],
         date_range: dateRange,
-      }),
-    );
-  };
+      })
+    : null;
 
-  const { data, error, isPending } = useQuery({
-    queryFn: recommendationQuery,
-    queryKey: [
-      "recommendations",
-      resolvedDeck?.id,
-      includeSideDeck,
-      isRelative,
-      coreCards[resolvedDeck?.id ?? ""],
-      dateRange,
-      resolvedDeck?.metaParsed.alternate_back,
-      resolvedDeck?.metaParsed.alternate_front,
-    ],
-    retry: false,
-  });
+  const requestKey = [
+    resolvedDeck?.id,
+    includeSideDeck,
+    isRelative,
+    coreCards[resolvedDeck?.id ?? ""],
+    dateRange,
+    resolvedDeck?.metaParsed.alternate_back,
+    resolvedDeck?.metaParsed.alternate_front,
+  ];
+
+  const { data, error, isPending } = useRecommendationsQuery(
+    request,
+    requestKey,
+  );
 
   const onKeyboardNavigate = useCallback((evt: React.KeyboardEvent) => {
     if (
@@ -170,13 +159,13 @@ export const CardRecommender = forwardRef(function CardRecommender(
       <Footer />
     </article>
   );
-});
+}
 
 function DeckCount(props: { decksAnalyzed?: number }) {
   const { decksAnalyzed } = props;
   const { t } = useTranslation();
 
-  if (!decksAnalyzed == null) return null;
+  if (decksAnalyzed == null) return null;
 
   return (
     <span className={css["toggle-decks-count"]}>
@@ -264,6 +253,7 @@ function CardRecommenderInner(
     key: "recommendations",
   };
 
+  /* oxlint-disable react/exhaustive-deps -- these lookup tables are rebuilt together on every render. */
   const listCardPropsWithRecommendations = useCallback(
     (card: Card) => ({
       ...getListCardProps?.(card),
@@ -286,6 +276,7 @@ function CardRecommenderInner(
       idMappings,
     ],
   );
+  /* oxlint-enable react/exhaustive-deps */
 
   if (sortedCards.length === 0) {
     return (

@@ -44,7 +44,7 @@ test.describe("limited card pool", () => {
     await createLimitedPoolDeck(page);
     await fillSearch(page, "machete");
     await expect(page.getByTestId("listcard-01520")).toBeVisible();
-    await page.getByTestId("search").getByRole("button").click();
+    await page.getByTestId("search").getByTestId("search-clear").click();
     await fillSearch(page, "runic axe");
     await expect(page.getByTestId("listcard-09022")).not.toBeVisible();
   });
@@ -152,7 +152,9 @@ test.describe("limited card pool", () => {
 
     // assert the card is now in the card pool
     await page.getByTestId("search-input").fill("strong-armed");
-    await expect(page.getByTestId("listcard-10031")).toBeVisible();
+    await expect(
+      page.getByTestId("virtuoso-item-list").getByTestId("listcard-10031"),
+    ).toBeVisible();
 
     combobox = page
       .getByTestId("meta-limited-card-pool")
@@ -171,18 +173,15 @@ test.describe("environments", () => {
   test("applies the current environment", async ({ page }) => {
     await page.goto("deck/create/01001");
     await page.getByTestId("limited-card-pool-environments").click();
-    await page.getByTestId("limited-card-pool-environment-current").click();
+    await page
+      .getByTestId("limited-card-pool-environment-current_faq25")
+      .click();
     await page
       .getByTestId("limited-card-pool-environment-current-apply")
       .click();
     await expect(
       page.getByTestId("limited-card-pool-field"),
     ).toHaveScreenshot();
-
-    await page.getByTestId("create-save").click();
-    await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
-    await page.getByTestId("editor-save").click();
-    await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
   });
 
   test("applies the legacy environment", async ({ page }) => {
@@ -207,7 +206,9 @@ test.describe("environments", () => {
   test("applies a limited environment", async ({ page }) => {
     await page.goto("deck/create/01001");
     await page.getByTestId("limited-card-pool-environments").click();
-    await page.getByTestId("limited-card-pool-environment-limited").click();
+    await page
+      .getByTestId("limited-card-pool-environment-limited_faq25")
+      .click();
     await page
       .getByTestId("cycle-select-combobox")
       .getByTestId("combobox-input")
@@ -254,6 +255,7 @@ test.describe("environments", () => {
       .getByTestId("combobox-input")
       .fill("dunwich");
     await page.getByTestId("combobox-menu-item-dwl").click();
+    await page.getByTestId("cpa-use-chapter-1").check();
     await page
       .getByTestId("limited-card-pool-environment-campaign_playalong-apply")
       .click();
@@ -264,6 +266,41 @@ test.describe("environments", () => {
     await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
     await page.getByTestId("editor-save").click();
     await expect(page.getByTestId("limited-card-pool-tag")).toHaveScreenshot();
+  });
+
+  test("applies chapter environments", async ({ page }) => {
+    await page.goto("deck/create/01001");
+
+    await page.getByTestId("limited-card-pool-environments").click();
+    await page.getByTestId("limited-card-pool-environment-chapter_1").click();
+    await page
+      .getByTestId("limited-card-pool-environment-chapter_1-apply")
+      .click();
+
+    const cardPoolField = page.getByTestId("limited-card-pool-field");
+
+    await expect(
+      cardPoolField.getByTestId("combobox-result-rcore"),
+    ).toBeVisible();
+    await expect(
+      cardPoolField.getByTestId("combobox-result-core_2026"),
+    ).not.toBeVisible();
+
+    await page.getByTestId("limited-card-pool-environments").click();
+    await page.getByTestId("limited-card-pool-environment-chapter_2").click();
+    await page
+      .getByTestId("limited-card-pool-environment-chapter_2-apply")
+      .click();
+
+    await expect(
+      cardPoolField.getByTestId("combobox-result-core_2026"),
+    ).toBeVisible();
+    await expect(
+      cardPoolField.getByTestId("combobox-result-tom"),
+    ).toBeVisible();
+    await expect(
+      cardPoolField.getByTestId("combobox-result-rcore"),
+    ).not.toBeVisible();
   });
 
   test("applies collection environment", async ({ page }) => {
@@ -356,7 +393,7 @@ test.describe("sealed deck", () => {
         .getByTestId("quantity-value"),
     ).toContainText("1/1");
 
-    expect(
+    await expect(
       page
         .getByTestId("virtuoso-item-list")
         .getByTestId("listcard-02149")

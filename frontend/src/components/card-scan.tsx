@@ -15,32 +15,46 @@ import { useAgathaEasterEggTransform } from "@/utils/easter-egg-agatha";
 import css from "./card-scan.module.css";
 import { Button } from "./ui/button";
 
+export type CardScanActionSlot = (scanId: string) => React.ReactNode;
+
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   card: Card;
   className?: string;
-  defaultFlipped?: boolean;
   draggable?: boolean;
   flipped: boolean;
   hideFlipButton?: boolean;
   ignoreTaboo?: boolean;
   lazy?: boolean;
+  leftActionSlot?: CardScanActionSlot;
   onFlip?: (value: boolean, sideways: boolean) => void;
   preventFlip?: boolean;
   suffix?: string;
 }
 
-export function CardScan(props: Omit<Props, "flipped">) {
-  const [flipped, setFlipped] = useState(false);
+type CardScanProps = Omit<Props, "flipped"> & {
+  defaultFlipped?: boolean;
+};
+
+export function CardScan(props: CardScanProps) {
+  const { defaultFlipped = false, onFlip: onFlipProp, ...rest } = props;
+  const [flipped, setFlipped] = useState(defaultFlipped);
+  const [previousDefaultFlipped, setPreviousDefaultFlipped] =
+    useState(defaultFlipped);
+
+  if (defaultFlipped !== previousDefaultFlipped) {
+    setPreviousDefaultFlipped(defaultFlipped);
+    setFlipped(defaultFlipped);
+  }
 
   const onFlip = useCallback(
     (value: boolean, sideways: boolean) => {
       setFlipped(value);
-      props.onFlip?.(value, sideways);
+      onFlipProp?.(value, sideways);
     },
-    [props],
+    [onFlipProp],
   );
 
-  return <CardScanControlled {...props} flipped={flipped} onFlip={onFlip} />;
+  return <CardScanControlled {...rest} flipped={flipped} onFlip={onFlip} />;
 }
 
 export function CardScanControlled(props: Props) {
@@ -54,6 +68,7 @@ export function CardScanControlled(props: Props) {
     hideFlipButton,
     ignoreTaboo,
     lazy,
+    leftActionSlot,
     suffix,
     ...rest
   } = props;
@@ -71,7 +86,9 @@ export function CardScanControlled(props: Props) {
       : backType;
 
   const tabooSetId =
-    card.taboo_set_id && card.taboo_set_id <= 9 ? card.taboo_set_id : undefined;
+    card.taboo_set_id && card.taboo_set_id <= 10
+      ? card.taboo_set_id
+      : undefined;
 
   const imageCode = useAgathaEasterEggTransform(
     !ignoreTaboo && tabooSetId
@@ -83,6 +100,7 @@ export function CardScanControlled(props: Props) {
     tabooSetId ? `${backCode}-${tabooSetId}` : backCode,
   );
 
+  const visibleScanId = flipped ? reverseImageCode : imageCode;
   const isSideways = sideways(card);
 
   const reverseSideways = backCard
@@ -161,19 +179,24 @@ export function CardScanControlled(props: Props) {
               className={css["scan-flip-trigger"]}
               onClick={onToggleFlip}
               iconOnly
-              round
+              rounded="full"
             >
               <RotateCcwIcon />
             </Button>
           )}
         </>
       )}
+      {leftActionSlot && (
+        <div className={css["scan-left-action-slot"]}>
+          {leftActionSlot(visibleScanId)}
+        </div>
+      )}
     </div>
   );
 }
 
 export function CardScanInner(
-  props: Omit<Props, "card" | "flipped"> & {
+  props: Omit<Props, "card" | "flipped" | "leftActionSlot"> & {
     alt: string;
     url: string;
     initialHidden?: boolean;

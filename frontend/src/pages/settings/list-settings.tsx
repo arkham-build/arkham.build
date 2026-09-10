@@ -1,3 +1,4 @@
+import type { Settings } from "@arkham-build/shared";
 import type React from "react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -17,19 +18,18 @@ import {
   MIXED_DEFAULTS,
   PLAYER_DEFAULTS,
 } from "@/store/slices/settings";
-import type { SettingsState } from "@/store/slices/settings.types";
 import { formatGroupingType } from "@/utils/formatting";
 import css from "./settings.module.css";
 import type { SettingProps } from "./types";
 
 interface Props extends SettingProps {
-  listKey: keyof SettingsState["lists"];
+  listKey: keyof Settings["lists"];
   title: React.ReactNode;
   disabledSortings?: string[];
   disabledGroupings?: string[];
 }
 
-function getGroupItemsForList(listKey: keyof SettingsState["lists"]) {
+function getGroupItemsForList(listKey: keyof Settings["lists"]) {
   if (listKey === "encounter") {
     return [...ENCOUNTER_GROUPING_TYPES];
   }
@@ -47,7 +47,7 @@ function getGroupItemsForList(listKey: keyof SettingsState["lists"]) {
   return [...PLAYER_GROUPING_TYPES];
 }
 
-function getSortItemsForList(listKey: keyof SettingsState["lists"]) {
+function getSortItemsForList(listKey: keyof Settings["lists"]) {
   if (listKey === "investigator") {
     return ["cycle", "faction", "name", "position"];
   }
@@ -59,7 +59,7 @@ function getSortItemsForList(listKey: keyof SettingsState["lists"]) {
   return [...SORTING_TYPES];
 }
 
-function getDefaultsForList(listKey: keyof SettingsState["lists"]) {
+function getDefaultsForList(listKey: keyof Settings["lists"]) {
   if (listKey === "encounter") {
     return structuredClone(ENCOUNTER_DEFAULTS);
   }
@@ -151,8 +151,8 @@ function sortListItems<T>(items: T[], activeItems: T[]) {
 function ListSettingsList<T extends string>(props: {
   activeItems: T[];
   items: T[];
-  listKey: keyof SettingsState["lists"];
-  setSettings: React.Dispatch<React.SetStateAction<SettingsState>>;
+  listKey: keyof Settings["lists"];
+  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
   subKey: "sort" | "group";
   title: React.ReactNode;
 }) {

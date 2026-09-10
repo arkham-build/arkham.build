@@ -9,20 +9,19 @@ import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { CardSet } from "@/components/cardset";
 import { Footer } from "@/components/footer";
 import { Masthead } from "@/components/masthead";
+import { ResolvedDeckProvider } from "@/components/resolved-deck-context-provider";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/page-title";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
-import { createDeck } from "@/store/lib/deck-factory";
+import { createAdapter } from "@/store/lib/deck-crud";
+import { makeDeck } from "@/store/lib/deck-factory";
 import {
   encodeCardPool,
   encodeCustomizations,
   encodeSealedDeck,
 } from "@/store/lib/deck-meta";
 import { resolveDeck } from "@/store/lib/resolve-deck";
-import {
-  disconnectProviderIfUnauthorized,
-  syncAdapters,
-} from "@/store/lib/sync";
 import type { Customizations, ResolvedDeck } from "@/store/lib/types";
 import { dehydrate } from "@/store/persist";
 import {
@@ -35,13 +34,10 @@ import {
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
-import { newDeck, updateDeck } from "@/store/services/queries";
-import { assertCanPublishDeck } from "@/utils/arkhamdb";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { displayAttribute, isSpecialCard } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { useAccentColor } from "@/utils/use-accent-color";
-import { useDocumentTitle } from "@/utils/use-document-title";
-import { ResolvedDeckProvider } from "@/utils/use-resolved-deck";
 import css from "./deck-draft.module.css";
 import { DraftEditor } from "./draft-editor";
 import { DraftPicker } from "./draft-picker";
@@ -208,7 +204,6 @@ function DeckDraft() {
             {
               lookupTables,
               metadata,
-              sharing: state.sharing,
             },
             collator,
             originalDeck,
@@ -255,7 +250,7 @@ function DeckDraft() {
       }
     }
 
-    const deck = createDeck({
+    const deck = makeDeck({
       investigator_code: draft.investigatorCode,
       investigator_name: investigator.card.real_name,
       name: draft.title,
@@ -267,11 +262,7 @@ function DeckDraft() {
 
     // Resolve the deck to get ResolvedDeck structure
     try {
-      return resolveDeck(
-        { metadata, lookupTables, sharing: { decks: {} } },
-        collator,
-        deck,
-      );
+      return resolveDeck({ metadata, lookupTables }, collator, deck);
     } catch {
       return null;
     }
@@ -293,6 +284,7 @@ function DeckDraftInner(props: { resolvedDraftDeck: ResolvedDeck }) {
   const { t } = useTranslation();
   const toast = useToast();
   const [, navigate] = useLocation();
+  const client = useHttpClient();
 
   const metadata = useStore(selectMetadata);
   const draft = useStore(selectDraftChecked);
@@ -303,13 +295,11 @@ function DeckDraftInner(props: { resolvedDraftDeck: ResolvedDeck }) {
   );
   const generateDraftOptions = useStore((state) => state.generateDraftOptions);
   const resetDraft = useStore((state) => state.resetDraft);
-  const createShare = useStore((state) => state.createShare);
-  const setRemoting = useStore((state) => state.setRemoting);
   const upgradeDeck = useStore((state) => state.upgradeDeck);
 
   const { investigator, back } = useStore(selectDraftInvestigators);
 
-  useDocumentTitle(`${t("deck_draft.title")}: ${investigator.card.real_name}`);
+  const pageTitle = `${t("deck_draft.title")}: ${investigator.card.real_name}`;
 
   // Calculate deck size excluding special cards (same logic as decodeSlots)
   const currentDeckSize = (() => {
@@ -462,7 +452,6 @@ function DeckDraftInner(props: { resolvedDraftDeck: ResolvedDeck }) {
           {
             lookupTables,
             metadata,
-            sharing: state.sharing,
           },
           collator,
           originalDeck,
@@ -527,7 +516,7 @@ function DeckDraftInner(props: { resolvedDraftDeck: ResolvedDeck }) {
         try {
           // Call upgradeDeck which will create a new deck with the merged slots
           // Only pass NEW XP spent - upgradeDeck will handle remaining XP automatically
-          const newDeck = await upgradeDeck({
+          const newDeck = await upgradeDeck(client, {
             id: draft.upgradeDeckId,
             xp: newXpSpent,
             exileString: draft.exileString ?? "",
@@ -615,7 +604,7 @@ function DeckDraftInner(props: { resolvedDraftDeck: ResolvedDeck }) {
 
       // Create the deck
       // Use base investigator code, with parallel selections stored in meta
-      let deck = createDeck({
+      let deck = makeDeck({
         investigator_code: draft.investigatorCode,
         investigator_name: investigator.card.real_name,
         name:
@@ -631,7 +620,6 @@ function DeckDraftInner(props: { resolvedDraftDeck: ResolvedDeck }) {
         {
           lookupTables,
           metadata,
-          sharing: state.sharing,
         },
         collator,
         deck,
@@ -644,49 +632,13 @@ function DeckDraftInner(props: { resolvedDraftDeck: ResolvedDeck }) {
         deck.meta = JSON.stringify(meta);
       }
 
-      // Handle provider-specific saving
-      if (draft.provider === "arkhamdb") {
-        assertCanPublishDeck(resolved);
-
-        setRemoting("arkhamdb", true);
-
-        try {
-          const adapter = new syncAdapters["arkhamdb"](useStore.getState);
-          const { id } = await newDeck(state.app.clientId, adapter.out(deck));
-
-          deck = adapter.in(
-            await updateDeck(state.app.clientId, adapter.out({ ...deck, id })),
-          );
-        } catch (err) {
-          disconnectProviderIfUnauthorized("arkhamdb", err, useStore.setState);
-          throw err;
-        } finally {
-          setRemoting("arkhamdb", false);
-        }
-      }
-
-      // Save to local storage
-      useStore.setState({
-        data: {
-          ...state.data,
-          decks: {
-            ...state.data.decks,
-            [deck.id]: deck,
-          },
-          history: {
-            ...state.data.history,
-            [deck.id]: [],
-          },
-        },
-      });
-
-      // Handle shared provider
-      if (draft.provider === "shared") {
-        await createShare(deck.id as string);
-      }
+      // Persist the deck (publishes to the storage provider when synced).
+      deck.source = draft.provider ?? "local";
+      deck = await createAdapter.persist(client, state, deck);
+      createAdapter.transition(useStore.setState, deck);
 
       // Persist state
-      await dehydrate(state, "app");
+      await dehydrate(useStore.getState(), "app");
 
       toast.dismiss(toastId);
       resetDraft();
@@ -705,8 +657,7 @@ function DeckDraftInner(props: { resolvedDraftDeck: ResolvedDeck }) {
     t,
     resetDraft,
     navigate,
-    createShare,
-    setRemoting,
+    client,
     upgradeDeck,
   ]);
 
@@ -718,6 +669,7 @@ function DeckDraftInner(props: { resolvedDraftDeck: ResolvedDeck }) {
         className={cx(css["layout"], css["layout-draft-setup"], "fade-in")}
         style={accentColor}
       >
+        <PageTitle>{pageTitle}</PageTitle>
         <Masthead className={css["layout-header"]} />
         <div className={css["layout-sidebar"]}>
           <DraftSetupEditor
@@ -744,6 +696,7 @@ function DeckDraftInner(props: { resolvedDraftDeck: ResolvedDeck }) {
       className={cx(css["layout"], css["layout-draft-picking"])}
       style={accentColor}
     >
+      <PageTitle>{pageTitle}</PageTitle>
       <Masthead className={css["layout-header"]} />
 
       <div className={css["layout-sidebar"]}>

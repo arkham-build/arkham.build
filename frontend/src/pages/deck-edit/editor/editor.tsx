@@ -3,6 +3,7 @@ import type { FilteredListCardPropsGetter } from "@/components/card-list/types";
 import { DeckStats } from "@/components/deck-stats";
 import { DecklistGroup } from "@/components/decklist/decklist-groups";
 import { DecklistSection } from "@/components/decklist/decklist-section";
+import { useResolvedDeckChecked } from "@/components/resolved-deck-context";
 import { Scroller } from "@/components/ui/scroller";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useStore } from "@/store";
@@ -15,7 +16,6 @@ import { getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { useAccentColor } from "@/utils/use-accent-color";
-import { useResolvedDeckChecked } from "@/utils/use-resolved-deck";
 import { MetaEditor } from "./config-editor";
 import css from "./editor.module.css";
 import { EditorActions } from "./editor-actions";
@@ -84,7 +84,10 @@ export function Editor(props: Props) {
           ))}
         </TabsList>
 
-        <Scroller className={css["editor-tabs-content"]}>
+        <Scroller
+          className={css["editor-tabs-content"]}
+          viewportClassName={css["editor-tabs-content-viewport"]}
+        >
           <TabsContent value="slots" data-testid="editor-tabs-slots">
             <EditorGroup
               deck={deck}
@@ -157,6 +160,7 @@ function EditorGroup(props: {
       ) : (
         <DecklistGroup
           getListCardProps={getListCardProps}
+          showCardTags={false}
           grouping={grouping}
           deck={deck}
           showXP={props.showXP}

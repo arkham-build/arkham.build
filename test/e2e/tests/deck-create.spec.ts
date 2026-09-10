@@ -39,7 +39,10 @@ test.describe("deck create", () => {
       "1 card",
     );
 
-    await page.getByTestId("listcard-title").click();
+    await page
+      .getByTestId("listcard-03005")
+      .getByRole("link", { name: "William Yorick", exact: true })
+      .click();
     await expect(page.getByTestId("card-modal")).toBeVisible();
     await page.getByTestId("card-modal-create-deck").click();
 
@@ -93,7 +96,7 @@ test.describe("deck create", () => {
   test("select advanced signatures", async ({ page }) => {
     await page.goto("/deck/create/02003");
 
-    await page.getByLabel("Advanced Signatures", { exact: true }).click();
+    await page.getByText("Advanced Signatures", { exact: true }).click();
 
     await page.getByTestId("create-save").click();
 
@@ -122,7 +125,7 @@ test.describe("deck create", () => {
 
     await page.getByTestId("filters-faction-seeker").click();
     await expect(page.getByTestId("cardlist-count").first()).toContainText(
-      "49 cards",
+      "58 cards",
     );
 
     await page.getByTestId("filters-faction-seeker").click();
@@ -220,12 +223,13 @@ test.describe("deck create", () => {
     await page.goto("/deck/create");
     await page
       .getByTestId("listcard-01003")
-      .getByTestId("listcard-title")
+      .getByRole("link", { name: '"Skids" O\'Toole', exact: true })
       .click();
 
     await page
+      .getByTestId("card-modal")
       .getByTestId("listcard-90008")
-      .getByTestId("listcard-title")
+      .getByRole("link", { name: '"Skids" O\'Toole', exact: true })
       .click();
     await page.getByTestId("card-modal-create-deck").click();
 
@@ -241,13 +245,5 @@ test.describe("deck create", () => {
     await expect(locateScan(page, "10003b")).not.toBeVisible();
     await expect(locateScan(page, "90008")).toBeVisible();
     await expect(locateScan(page, "90008b")).toBeVisible();
-  });
-
-  test("update storage provider default", async ({ page }) => {
-    await page.goto("/deck/create/01001");
-    await page.getByTestId("create-provider").selectOption("shared");
-    await page.getByTestId("create-provider-set-default").click();
-    await page.reload();
-    await expect(page.getByTestId("create-provider")).toHaveValue("shared");
   });
 });

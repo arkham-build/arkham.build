@@ -14,7 +14,7 @@ export function SelectionEditor(props: Props) {
   const { t } = useTranslation();
 
   return Object.entries(selections).map(([key, value]) => (
-    <Field full key={key} padded>
+    <Field full key={key}>
       <FieldLabel>{formatDeckOptionString(value.name)}</FieldLabel>
       {value.type === "deckSize" && (
         <Select

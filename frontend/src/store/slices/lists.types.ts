@@ -1,7 +1,6 @@
-import type { SkillKey } from "@arkham-build/shared";
+import type { DecklistConfig, SkillKey } from "@arkham-build/shared";
 import type { Filter } from "@/utils/fp";
 import type { ResolvedDeck } from "../lib/types";
-import type { DecklistConfig } from "./settings.types";
 
 export type AssetFilter = {
   health: undefined | [number, number];
@@ -80,6 +79,7 @@ type InvestigatorCardAccessFilter = string[] | undefined;
 export type FilterMapping = {
   action: MultiselectFilter;
   asset: AssetFilter;
+  card_tags: MultiselectFilter;
   card_type: CardTypeFilter;
   cost: CostFilter;
   cycle: MultiselectFilter;
@@ -114,7 +114,7 @@ export type FilterObject<K extends FilterKey> = {
 
 export type Search = {
   buildQlError?: Error;
-  buildQlSearch?: Filter;
+  buildQlSearchValue?: string;
   includeBacks: boolean;
   includeFlavor: boolean;
   includeGameText: boolean;
@@ -122,6 +122,11 @@ export type Search = {
   mode: "buildql" | "simple";
   value: string;
 };
+
+export type SearchFlag = keyof Pick<
+  Search,
+  "includeBacks" | "includeFlavor" | "includeGameText" | "includeName"
+>;
 
 export type GroupingType =
   | "base_upgrades"
@@ -161,7 +166,14 @@ export type ListDisplay = {
   viewMode: ViewMode;
 };
 
+export type ListDisplaySettings = {
+  displaySortSelection: string;
+  viewMode: ViewMode;
+};
+
 export type List = {
+  defaultFlipped: boolean;
+  tabooSetOverride?: number | null;
   // Unowned fan-made content (in cache) is filtered from lists by default.
   // For fan-made content preview pages, we need to cache and "whitelist" the fan-made data
   // for the displayed list, which is what this field can be used for.
@@ -175,6 +187,7 @@ export type List = {
   };
   initialState: Omit<List, "initialState">;
   key: string;
+  displaySettingsKey?: string;
   // Applied before any kind of other filtering is applied to card list.
   systemFilter?: Filter;
   search: Search;
@@ -186,38 +199,43 @@ type Lists = {
 
 export type ListsSlice = {
   activeList?: string;
+  listDisplaySettings: Record<string, ListDisplaySettings>;
   lists: Lists;
 
   addList(
     key: string,
     initialValues?: Partial<Record<FilterKey, FilterMapping[FilterKey]>>,
     opts?: {
-      display?: Partial<ListDisplay>;
-      fanMadeCycleCodes?: string[];
       additionalFilters?: FilterKey[];
+      display?: Partial<ListDisplay>;
+      displaySettingsKey?: string;
+      fanMadeCycleCodes?: string[];
       lockedFilters?: Set<FilterKey>;
       search?: string;
       showInvestigatorFilter?: boolean;
       showOwnershipFilter?: boolean;
+      systemFilter?: Filter;
     },
   ): void;
 
   removeList(key: string): void;
 
   setFiltersEnabled(value: boolean): void;
+  setListTabooSetOverride(value: number | null): void;
   setListViewMode(value: ViewMode): void;
+  toggleListDefaultFlipped(): void;
   setListSort(value: DecklistConfig | undefined): void;
 
   setFilterValue<T>(id: number, payload: T): void;
   setFilterOpen(id: number, open: boolean): void;
 
   setActiveList(value: string | undefined): void;
-  setSearchValue(value: string, deck?: ResolvedDeck): void;
-  setSearchFlag(
-    flag: keyof Omit<Search, "value">,
-    value: boolean,
+  setSearchValue(
+    value: string,
     deck?: ResolvedDeck,
+    opts?: { clearMode?: boolean },
   ): void;
+  setSearchFlag(flag: SearchFlag, value: boolean, deck?: ResolvedDeck): void;
 
   resetFilter(id: number): void;
   resetFilters(): void;

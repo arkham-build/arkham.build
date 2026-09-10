@@ -5,7 +5,7 @@ import {
   decodeSearch,
   encodeSearch,
 } from "@arkham-build/shared";
-import { apiV2Request } from "./shared";
+import type { HttpClient } from "../http-client";
 
 export type SortType = "user_reputation" | "date" | "likes" | "popularity";
 
@@ -20,8 +20,11 @@ export type DecklistsFiltersState = {
   sort_dir: "asc" | "desc";
 };
 
-export async function searchDecklists(params: URLSearchParams) {
-  const res = await apiV2Request(
+export async function searchDecklists(
+  client: HttpClient,
+  params: URLSearchParams,
+) {
+  const res = await client.request(
     `/v2/public/arkhamdb-decklists/search?${params.toString()}`,
   );
 

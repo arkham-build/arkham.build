@@ -16,7 +16,6 @@ test.describe("printings", () => {
       await page.goto("/");
       await fillSearch(page, "Deduction");
       await assertDuplicateVisible(page, DEDUCTION_CODES, "01039");
-      await expect(card(page, DEDUCTION_REPRINT_CODE)).not.toBeVisible();
     });
 
     test("list shows revised core printing if queried", async ({ page }) => {
@@ -51,7 +50,6 @@ test.describe("printings", () => {
     test("card list shows reprint alongside core set printing when both exist", async ({
       page,
     }) => {
-      await enablePreviews(page);
       await page.goto("/");
       await fillSearch(page, "Deduction");
       await assertDuplicateVisible(page, DEDUCTION_CODES, "01039");
@@ -146,7 +144,7 @@ async function filterPack(page: Page, packName: string) {
 
 async function enablePreviews(page: Page) {
   await page.goto("/settings?tab=collection");
-  await page.getByTestId("settings-show-previews").check();
+  await page.getByTestId("settings-show-previews").click();
   await page.getByTestId("settings-save").click();
   await page.goto("/");
 }

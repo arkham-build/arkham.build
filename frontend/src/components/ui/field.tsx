@@ -7,7 +7,6 @@ interface Props extends React.ComponentProps<"div"> {
   className?: string;
   full?: boolean;
   helpText?: React.ReactNode;
-  padded?: boolean;
 }
 
 export function FieldLabel<T extends React.ElementType>({
@@ -30,8 +29,7 @@ export function FieldLabel<T extends React.ElementType>({
 }
 
 export function Field(props: Props) {
-  const { bordered, children, className, full, helpText, padded, ...rest } =
-    props;
+  const { bordered, children, className, full, helpText, ...rest } = props;
 
   return (
     <div
@@ -40,7 +38,6 @@ export function Field(props: Props) {
         css["field"],
         className,
         bordered && css["bordered"],
-        padded && css["padded"],
         full && css["full"],
       )}
     >

@@ -1,4 +1,3 @@
-import type { ResolvedDeck } from "@/store/lib/types";
 import i18n from "./i18n";
 
 export function localizeArkhamDBBaseUrl() {
@@ -7,7 +6,14 @@ export function localizeArkhamDBBaseUrl() {
   const baseUrl = new URL(import.meta.env.VITE_ARKHAMDB_BASE_URL);
   if (lng === "en") return baseUrl.origin;
 
-  baseUrl.hostname = `${lng}.${baseUrl.hostname}`;
+  // ArkhamDB does not support `zh-cn` yet, so route every Chinese locale
+  // (`zh`, `zh-cn`) to its `zh` subdomain.
+  if (lng.startsWith("zh")) {
+    baseUrl.hostname = `zh.${baseUrl.hostname}`;
+  } else {
+    baseUrl.hostname = `${lng}.${baseUrl.hostname}`;
+  }
+
   return baseUrl.origin;
 }
 
@@ -34,10 +40,6 @@ export function redirectArkhamDBLinks(evt: React.MouseEvent) {
       window.open(url, "_blank");
     }
   }
-}
-
-export function assertCanPublishDeck(_: ResolvedDeck) {
-  return true;
 }
 
 function parseVersion(str: string) {

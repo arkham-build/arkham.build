@@ -6,7 +6,7 @@
   transition: border 0.15s ease-in-out;
 
   &:focus-within {
-    border-color: 1px solid var(--focus);
+    border-color: 1px solid var(--color-focus);
   }
 }
 
@@ -30,8 +30,19 @@
 
 .validation {
   display: inline-block;
-  background: var(--health);
+  background: var(--color-error);
   color: var(--color-inverted);
+  border-radius: 100%;
+  padding: 1px;
+  position: absolute;
+  bottom: -0.125rem;
+  right: -0.125rem;
+}
+
+.conflict {
+  display: inline-block;
+  background: var(--color-warning);
+  color: var(--color-warning-contrast);
   border-radius: 100%;
   padding: 1px;
   position: absolute;
@@ -93,7 +104,7 @@
   font-size: var(--text-xs);
 }
 
-:lang(ko, zh, zh-Hant, zh-Hans) .sub {
+:is(:lang(ko), :lang(zh)) .sub {
   font-style: normal;
 }
 

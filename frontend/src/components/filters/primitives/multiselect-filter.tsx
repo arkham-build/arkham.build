@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { Combobox } from "@/components/ui/combobox/combobox";
+import { ResultTag } from "@/components/ui/combobox/combobox-results";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
 import { FilterContainer } from "./filter-container";
@@ -45,6 +46,18 @@ export function MultiselectFilter<T extends Coded>(props: Props<T>) {
     [onChange],
   );
 
+  const renderResult = useCallback(
+    (item: T, onRemove?: () => void) => (
+      <ResultTag
+        data-testid={`combobox-result-${item.code}`}
+        onRemove={onRemove}
+      >
+        {nameRenderer ? nameRenderer(item) : item.code}
+      </ResultTag>
+    ),
+    [nameRenderer],
+  );
+
   return (
     <FilterContainer
       data-testid={`filter-${title}`}
@@ -67,7 +80,7 @@ export function MultiselectFilter<T extends Coded>(props: Props<T>) {
         onValueChange={onValueChange}
         placeholder={placeholder}
         renderItem={nameRenderer}
-        renderResult={nameRenderer}
+        renderResult={renderResult}
         selectedItems={value}
       />
       {collapsibleContent}

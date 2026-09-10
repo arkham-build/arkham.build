@@ -1,0 +1,30 @@
+type: http_request
+model: http_request
+id: rq_q8LmN2vPxS
+createdAt: 2026-06-06T10:20:00
+updatedAt: 2026-06-06T08:13:40.749491
+workspaceId: wk_bBoraEVHnK
+folderId: fl_k2Yxg7LqPm
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers:
+- enabled: true
+  name: Authorization
+  value: Bearer ${[ admin_api_key ]}
+  id: Uv3Qp8LmX1
+method: GET
+name: List account moderation actions
+sortPriority: 5000.002
+url: ${[ base_url ]}/admin/account_moderation_actions
+urlParameters:
+- enabled: true
+  name: username
+  value: fffelice
+  id: c2Rk9YwLmP
+- enabled: true
+  name: ''
+  value: ''
+  id: IsqHaYc0v0

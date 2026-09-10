@@ -46,11 +46,16 @@ export function RangeSelect(props: Props) {
 
   return (
     <div className={cx(css["field"], className)}>
-      <label className={cx(css["label"], !showLabel && "sr-only")} htmlFor={id}>
+      <label
+        className={cx(css["label"], !showLabel && "sr-only")}
+        htmlFor={id}
+        id={`${id}-label`}
+      >
         {label}
       </label>
       <Slider
         {...rest}
+        aria-labelledby={`${id}-label`}
         className={sliderClassName}
         id={id}
         max={max}

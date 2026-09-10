@@ -5,6 +5,8 @@ import {
 } from "../lib/search-params.ts";
 import { DateRangeSchema } from "./date-range.schema.ts";
 
+export const RECOMMENDATIONS_REQUIRED_CARDS_LIMIT = 50;
+
 export const RecommendationsRequestSchema = z.object({
   analysis_algorithm: z
     .enum(["absolute_rank", "percentile_rank"])
@@ -18,7 +20,10 @@ export const RecommendationsRequestSchema = z.object({
   canonical_investigator_code: z.string(),
   date_range: DateRangeSchema,
   required_cards: z
-    .preprocess(coerceStringArray, z.array(z.string()))
+    .preprocess(
+      coerceStringArray,
+      z.array(z.string()).max(RECOMMENDATIONS_REQUIRED_CARDS_LIMIT),
+    )
     .optional()
     .default([]),
 });

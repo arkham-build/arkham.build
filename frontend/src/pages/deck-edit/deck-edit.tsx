@@ -15,17 +15,16 @@ import { CardListContainer } from "@/components/card-list/card-list-container";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { CardRecommender } from "@/components/card-recommender/card-recommender";
 import { CoreCardCheckbox } from "@/components/card-recommender/core-card-checkbox";
+import { DeckConflictOverlay } from "@/components/deck-conflict/deck-conflict-panel";
 import { DeckTools } from "@/components/deck-tools/deck-tools";
 import { DecklistValidation } from "@/components/decklist/decklist-validation";
 import { Filters } from "@/components/filters/filters";
+import { useResolvedDeckChecked } from "@/components/resolved-deck-context";
+import { ResolvedDeckProvider } from "@/components/resolved-deck-context-provider";
 import { Button } from "@/components/ui/button";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  useTabUrlState,
-} from "@/components/ui/tabs";
+import { PageTitle } from "@/components/ui/page-title";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTabUrlState } from "@/components/ui/tabs.hooks";
 import { useToast } from "@/components/ui/toast.hooks";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { useStore } from "@/store";
@@ -35,22 +34,18 @@ import {
   selectResolvedDeckById,
 } from "@/store/selectors/decks";
 import { selectLookupTables } from "@/store/selectors/shared";
+import { selectDeckHasConflict } from "@/store/selectors/sync";
 import { mapTabToSlot } from "@/store/slices/deck-edits.types";
 import { isStaticInvestigator } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import { useHotkey } from "@/utils/use-hotkey";
-import {
-  ResolvedDeckProvider,
-  useResolvedDeckChecked,
-} from "@/utils/use-resolved-deck";
 import { ErrorStatus } from "../errors/404";
 import { CardAccessToggles } from "./card-access-toggles";
 import { CardExtras } from "./card-extras";
 import css from "./deck-edit.module.css";
 import { Editor } from "./editor/editor";
 import { NotesEditor } from "./editor/notes-editor";
-import { NotesRichTextEditorContextProvider } from "./editor/notes-rte/notes-rte-context";
+import { NotesRichTextEditorContextProvider } from "./editor/notes-rte/notes-rte-context-provider";
 import { UndoHistory } from "./editor/undo-history";
 
 function DeckEdit() {
@@ -92,8 +87,6 @@ function DeckEdit() {
 function DeckEditInner() {
   const { canEdit, resolvedDeck: deck } = useResolvedDeckChecked();
   const { t } = useTranslation();
-
-  useDocumentTitle(t("deck_edit.title", { name: deck.name }));
 
   const [currentTab, setCurrentTab] = useTabUrlState("slots", "list");
   const [currentTool, setCurrentTool] = useTabUrlState<string>(
@@ -142,6 +135,9 @@ function DeckEditInner() {
 
   const updateCardQuantity = useStore((state) => state.updateCardQuantity);
   const validation = useStore((state) => selectDeckValid(state, deck));
+  const hasSyncConflict = useStore((state) =>
+    selectDeckHasConflict(state, deck.id),
+  );
   const lookupTables = useStore(selectLookupTables);
 
   const accentColor = useAccentColor(deck.investigatorBack.card);
@@ -172,8 +168,8 @@ function DeckEditInner() {
     setCurrentTab("config");
   }, [setCurrentTab]);
 
-  useHotkey("d", onCycleDeck);
-  useHotkey("c", onSetMeta);
+  useHotkey("d", onCycleDeck, { disabled: hasSyncConflict });
+  useHotkey("c", onSetMeta, { disabled: hasSyncConflict });
 
   const renderCoreCardCheckbox = useCallback(
     (card: Card, quantity?: number) => {
@@ -202,6 +198,7 @@ function DeckEditInner() {
   const getListCardProps = useCallback(
     (card: Card) => ({
       onChangeCardQuantity:
+        // always allow removing weaknesses and campaign cards
         canEdit || card.encounter_code || card.subtype_code
           ? onChangeCardQuantity
           : undefined,
@@ -226,8 +223,10 @@ function DeckEditInner() {
 
   return (
     <ListLayoutContextProvider>
+      <PageTitle>{t("deck_edit.title", { name: deck.name })}</PageTitle>
       <NotesRichTextEditorContextProvider>
         <ListLayout
+          inert={hasSyncConflict}
           filters={
             tabHasFilters ? (
               <Filters targetDeck={targetDeck}>
@@ -339,6 +338,7 @@ function DeckEditInner() {
             </Tabs>
           )}
         </ListLayout>
+        {hasSyncConflict && <DeckConflictOverlay deckId={deck.id} />}
       </NotesRichTextEditorContextProvider>
     </ListLayoutContextProvider>
   );
@@ -350,7 +350,7 @@ function RestoreDeckChanges({ id }: { id: string }) {
   const discardEdits = useStore((state) => state.discardEdits);
   const changes = useStore((state) => state.deckEdits[id]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: should only fire on initial changes present.
+  /* oxlint-disable react/exhaustive-deps -- should only fire on initial changes present. */
   useEffect(() => {
     let toastId: string | null = null;
 
@@ -393,6 +393,7 @@ function RestoreDeckChanges({ id }: { id: string }) {
       }
     };
   }, [discardEdits, id, toast, t]);
+  /* oxlint-enable react/exhaustive-deps */
 
   return null;
 }

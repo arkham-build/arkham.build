@@ -1,7 +1,6 @@
+import type { Cycle, Pack } from "@arkham-build/shared";
 import PackIcon from "@/components/icons/pack-icon";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { Cycle } from "@/store/schemas/cycle.schema";
-import type { Pack } from "@/store/schemas/pack.schema";
 import type { CollectionCounts } from "@/store/selectors/collection";
 import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
 import { cx } from "@/utils/cx";
@@ -41,7 +40,7 @@ export function CollectionPack(props: Props) {
 
   return (
     <li
-      className={cx(css["pack"], pack.reprint && css["reprint"])}
+      className={cx(css["pack"], pack.reprint_type && css["reprint"])}
       key={pack.code}
     >
       {hasQuantity ? (

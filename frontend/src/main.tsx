@@ -1,32 +1,24 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import "./styles/main.css";
 import "@fontsource-variable/noto-sans/standard.css";
 import "@fontsource-variable/noto-sans/standard-italic.css";
 import "@fontsource-variable/noto-serif/standard.css";
 import "@fontsource-variable/noto-serif/standard-italic.css";
 import "./styles/icons-encounters.css";
 import "./styles/icons-icon.css";
-import "./styles/main.css";
 
-import "@/utils/i18n";
-
+import React from "react";
+import ReactDOM from "react-dom/client";
 import i18n from "@/utils/i18n";
 import App from "./app";
 import { useStore } from "./store";
 import { tabSync } from "./store/persist";
 import type { TabSyncEvent } from "./store/persist/tab-sync";
+import { createHttpClient } from "./store/services/http-client";
 import {
   queryCards,
   queryDataVersion,
   queryMetadata,
-} from "./store/services/queries";
-import { retryFailedDynamicImport } from "./utils/retry-failed-dynamic-import";
-import { applyStoredColorTheme } from "./utils/use-color-theme";
-
-// see: https://vite.dev/guide/build.html#load-error-handling
-window.addEventListener("vite:preloadError", () => {
-  retryFailedDynamicImport();
-});
+} from "./store/services/requests/cache";
 
 const rootNode = document.getElementById("root");
 
@@ -34,9 +26,14 @@ if (!rootNode) {
   throw new Error("fatal: did not find root node in DOM.");
 }
 
+const httpClient = createHttpClient({
+  apiUrl: import.meta.env.VITE_API_URL,
+  onUnauthorized: () => useStore.getState().handleUnauthorized(),
+});
+
 ReactDOM.createRoot(rootNode).render(
   <React.StrictMode>
-    <App />
+    <App httpClient={httpClient} />
   </React.StrictMode>,
 );
 
@@ -50,11 +47,17 @@ init().catch((err) => {
 });
 
 async function init() {
-  applyStoredColorTheme();
+  const store = useStore.getState();
 
-  await useStore
-    .getState()
-    .init(queryMetadata, queryDataVersion, queryCards, { refresh: false });
+  await store.init(
+    (locale, revision) => queryMetadata(httpClient, locale, revision),
+    (locale) => queryDataVersion(httpClient, locale),
+    (locale, revision) => queryCards(httpClient, locale, revision),
+    {
+      refresh: false,
+    },
+  );
+  await store.initSession(httpClient);
 
   const tabSyncListener = (evt: TabSyncEvent) => {
     useStore.setState(evt.state);

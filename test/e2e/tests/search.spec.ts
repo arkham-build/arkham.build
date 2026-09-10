@@ -1,4 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { mockApiCalls } from "./mocks";
+
+test.beforeEach(async ({ page }) => {
+  await mockApiCalls(page);
+});
 
 test.describe("search", () => {
   test("search with ?q= query param", async ({ page }) => {

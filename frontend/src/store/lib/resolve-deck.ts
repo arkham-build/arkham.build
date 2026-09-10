@@ -1,15 +1,27 @@
-import type { Attachments, Card } from "@arkham-build/shared";
-import { decodeExileSlots } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
+import {
+  type Attachments,
+  type Card,
+  countExperience,
+  type Deck,
+  type DeckMeta,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
+import {
+  decodeExileSlots,
+  isSpecialCard,
+  splitMultiValue,
+} from "@/utils/card-utils";
+import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
-import type { Deck } from "../schemas/deck.schema";
 import type { StoreState } from "../slices";
 import { getAttachableCards } from "./attachments";
+import { applyCardChanges } from "./card-edits";
 import {
   decodeAnnotations,
   decodeAttachments,
-  decodeCardPool,
+  decodeCardPoolFromSlots,
   decodeCustomizations,
+  decodeDeckCardTags,
   decodeDeckMeta,
   decodeSealedDeck,
   decodeSelections,
@@ -17,13 +29,13 @@ import {
 import type { LookupTables } from "./lookup-tables.types";
 import { resolveCardWithRelations } from "./resolve-card";
 import { decodeExtraSlots, decodeSlots } from "./slots";
-import type { CardWithRelations, DeckMeta, ResolvedDeck } from "./types";
+import type { CardWithRelations, DeckSummary, ResolvedDeck } from "./types";
 
 /**
  * Given a decoded deck, resolve all cards and metadata for display.
  */
 export function resolveDeck(
-  deps: Pick<StoreState, "metadata" | "sharing"> & {
+  deps: Pick<StoreState, "metadata"> & {
     lookupTables: LookupTables;
   },
   collator: Intl.Collator,
@@ -47,7 +59,7 @@ export function resolveDeck(
     );
   }
 
-  const investigatorFront = getInvestigatorForSide(
+  let investigatorFront = getInvestigatorForSide(
     deps,
     collator,
     deck.taboo_id,
@@ -56,7 +68,7 @@ export function resolveDeck(
     "alternate_front",
   );
 
-  const investigatorBack = getInvestigatorForSide(
+  let investigatorBack = getInvestigatorForSide(
     deps,
     collator,
     deck.taboo_id,
@@ -65,13 +77,25 @@ export function resolveDeck(
     "alternate_back",
   );
 
-  const hasExtraDeck = !!investigatorBack.card.side_deck_options;
-  const hasParallel = !!investigator.relations?.parallel;
-  const hasReplacements = !isEmpty(investigator.relations?.replacement);
-
   if (!investigatorFront || !investigatorBack) {
     throw new Error(`Investigator not found: ${deck.investigator_code}`);
   }
+
+  if (
+    deckMeta.buildql_deck_options_override &&
+    SPECIAL_CARD_CODES.GENERIC_CUSTOM_INVESTIGATORS.includes(
+      investigatorBack.card.code,
+    )
+  ) {
+    investigatorBack = structuredClone(investigatorBack);
+    investigatorBack.card.deck_options = [
+      { buildql_query: deckMeta.buildql_deck_options_override },
+    ];
+  }
+
+  const hasExtraDeck = !!investigatorBack.card.side_deck_options;
+  const hasParallel = !!investigator.relations?.parallel;
+  const hasReplacements = !isEmpty(investigator.relations?.replacement);
 
   const sealedDeck = decodeSealedDeck(deckMeta);
 
@@ -98,6 +122,13 @@ export function resolveDeck(
     customizations,
   );
 
+  investigatorFront = applyInvestigatorTraitBehavior(
+    investigatorFront,
+    cards.slots,
+    deck.slots,
+    deckMeta,
+  );
+
   const availableAttachments = Object.entries(
     getAttachableCards(deck, deps.metadata),
   ).reduce<Attachments[]>((acc, [code, value]) => {
@@ -108,7 +139,7 @@ export function resolveDeck(
     return acc;
   }, []);
 
-  const cardPool = decodeCardPool(deck.slots, cards["slots"], deckMeta);
+  const cardPool = decodeCardPoolFromSlots(deck.slots, deps.metadata, deckMeta);
 
   const resolved = {
     ...deck,
@@ -119,6 +150,7 @@ export function resolveDeck(
     cardPool,
     cards,
     customizations,
+    deckCardTags: decodeDeckCardTags(deckMeta),
     extraSlots,
     exileSlots: exileSlots,
     fanMadeData,
@@ -132,7 +164,6 @@ export function resolveDeck(
     sealedDeck,
     selections: decodeSelections(investigatorBack, deckMeta),
     sideSlots: Array.isArray(deck.sideSlots) ? {} : deck.sideSlots,
-    shared: !!deps.sharing.decks[deck.id],
     stats: {
       deckSize,
       deckSizeTotal,
@@ -145,6 +176,75 @@ export function resolveDeck(
   } as ResolvedDeck;
 
   return resolved as ResolvedDeck;
+}
+
+function applyInvestigatorTraitBehavior(
+  investigatorFront: CardWithRelations,
+  deckCards: Record<string, { card: Card }>,
+  quantities: Record<string, number>,
+  deckMeta: DeckMeta,
+) {
+  const gainedTraits = Object.entries(deckCards).flatMap(([code, { card }]) => {
+    if ((quantities[code] ?? 0) <= 0) return [];
+
+    const behavior = card.custom_behavior;
+    if (behavior?.type !== "investigator_traits") return [];
+
+    if (Array.isArray(behavior.values)) return behavior.values;
+
+    const selection = deckMeta[`custom_behavior:${card.code}`];
+    return selection ? [selection] : [];
+  });
+
+  if (!gainedTraits.length) return investigatorFront;
+
+  const card = appendTraits(investigatorFront.card, gainedTraits);
+  if (card === investigatorFront.card) return investigatorFront;
+
+  return {
+    ...investigatorFront,
+    card,
+  };
+}
+
+function appendTraits(card: Card, traits: string[]) {
+  const existingTraits = splitMultiValue(card.real_traits);
+
+  const seenTraits = new Set(
+    existingTraits.map((trait) => trait.toLowerCase()),
+  );
+
+  const addedTraits = traits.reduce<string[]>((acc, trait) => {
+    const normalized = trait.trim();
+    if (!normalized || seenTraits.has(normalized.toLowerCase())) return acc;
+
+    seenTraits.add(normalized.toLowerCase());
+    acc.push(normalized);
+    return acc;
+  }, []);
+
+  if (!addedTraits.length) return card;
+
+  const allTraits = [...existingTraits, ...addedTraits];
+
+  return {
+    ...card,
+    real_traits: formatTraits(allTraits),
+    traits: formatDisplayTraits(allTraits),
+  };
+}
+
+function formatTraits(traits: string[]) {
+  return `${traits.join(". ")}.`;
+}
+
+function formatDisplayTraits(traits: string[]) {
+  return formatTraits(
+    traits.map((trait) => {
+      const key = `common.traits.${trait}`;
+      return i18n.exists(key) ? i18n.t(key) : trait;
+    }),
+  );
 }
 
 function getInvestigatorForSide(
@@ -195,23 +295,165 @@ export function getDeckLimitOverride(
     return deckLimit;
   }
 
-  if (sealed[code] != null) {
-    return Math.min(sealed[code], deckLimit);
-  }
+  let sealedTotal = sealed[code] ?? 0;
 
-  const duplicates = lookupTables.relations.duplicates[code];
-  if (!duplicates) return undefined;
-
-  for (const duplicateCode of Object.keys(duplicates)) {
+  for (const duplicateCode of Object.keys(
+    lookupTables.relations.duplicates[code] ?? {},
+  )) {
     if (sealed[duplicateCode] != null) {
-      return Math.min(sealed[duplicateCode], deckLimit);
+      sealedTotal += sealed[duplicateCode];
     }
   }
 
-  return undefined;
+  return Math.min(sealedTotal, deckLimit);
 }
 
-export function deckTags(deck: ResolvedDeck, delimiter = " ") {
+/**
+ * Lightweight deck resolution for collection display.
+ * Resolves only the investigator and computes stats from raw metadata lookups,
+ * skipping full card resolution, charts, and other expensive operations.
+ */
+export function resolveDeckSummary(
+  deps: Pick<StoreState, "metadata"> & {
+    lookupTables: LookupTables;
+  },
+  collator: Intl.Collator,
+  deck: Deck,
+): DeckSummary {
+  const deckMeta = decodeDeckMeta(deck);
+
+  const investigator = resolveCardWithRelations(
+    deps,
+    collator,
+    deck.investigator_code,
+    deck.taboo_id,
+    undefined,
+    true,
+  ) as CardWithRelations;
+
+  if (!investigator) {
+    throw new Error(
+      `Investigator not found in store: ${deck.id} - ${deck.investigator_code}`,
+    );
+  }
+
+  const investigatorFront = getInvestigatorForSide(
+    deps,
+    collator,
+    deck.taboo_id,
+    investigator,
+    deckMeta,
+    "alternate_front",
+  );
+
+  const investigatorBack = getInvestigatorForSide(
+    deps,
+    collator,
+    deck.taboo_id,
+    investigator,
+    deckMeta,
+    "alternate_back",
+  );
+
+  if (!investigatorFront || !investigatorBack) {
+    throw new Error(`Investigator not found: ${deck.investigator_code}`);
+  }
+
+  const customizations = decodeCustomizations(deckMeta, deps.metadata);
+  const extraSlots = decodeExtraSlots(deckMeta);
+
+  const { xpRequired, deckSize, deckSizeTotal } = computeDeckStats(
+    deps.metadata,
+    deck,
+    extraSlots,
+    customizations,
+  );
+
+  return {
+    cardPool: decodeCardPoolFromSlots(deck.slots, deps.metadata, deckMeta),
+    date_creation: deck.date_creation,
+    date_update: deck.date_update,
+    extraSlots,
+    hasParallel: !!investigator.relations?.parallel,
+    id: deck.id,
+    investigatorBack,
+    investigatorFront,
+    metaParsed: deckMeta,
+    name: deck.name,
+    problem: deck.problem,
+    sealedDeck: decodeSealedDeck(deckMeta),
+    sideSlots: Array.isArray(deck.sideSlots) ? null : (deck.sideSlots ?? null),
+    slots: deck.slots,
+    source: deck.source,
+    stats: { xpRequired, deckSize, deckSizeTotal },
+    tags: deck.tags,
+    xp: deck.xp,
+    xp_adjustment: deck.xp_adjustment,
+  };
+}
+
+function computeDeckStats(
+  metadata: StoreState["metadata"],
+  deck: Deck,
+  extraSlots: Record<string, number> | null,
+  customizations: ReturnType<typeof decodeCustomizations>,
+) {
+  let xpRequired = 0;
+  let deckSize = 0;
+  let deckSizeTotal = 0;
+  const myriadCounted: Record<string, boolean> = {};
+
+  for (const [code, quantity] of Object.entries(deck.slots)) {
+    const rawCard = metadata.cards[code];
+    if (!rawCard) continue;
+
+    const card = applyCardChanges(
+      rawCard,
+      metadata,
+      deck.taboo_id,
+      customizations,
+    );
+
+    deckSizeTotal += quantity;
+
+    xpRequired +=
+      card.myriad && myriadCounted[card.real_name]
+        ? 0
+        : countExperience(card, quantity);
+
+    if (card.myriad && !myriadCounted[card.real_name]) {
+      myriadCounted[card.real_name] = true;
+    }
+
+    if (!isSpecialCard(card)) {
+      deckSize += Math.max(
+        quantity - (deck.ignoreDeckLimitSlots?.[code] ?? 0),
+        0,
+      );
+    }
+  }
+
+  if (extraSlots) {
+    for (const [code, quantity] of Object.entries(extraSlots)) {
+      const rawCard = metadata.cards[code];
+      if (!rawCard) continue;
+
+      const card = applyCardChanges(
+        rawCard,
+        metadata,
+        deck.taboo_id,
+        customizations,
+      );
+
+      xpRequired += countExperience(card, quantity);
+      deckSizeTotal += quantity;
+    }
+  }
+
+  return { xpRequired, deckSize, deckSizeTotal };
+}
+
+export function deckTags(deck: Pick<DeckSummary, "tags">, delimiter = " ") {
   return (
     deck.tags
       ?.trim()

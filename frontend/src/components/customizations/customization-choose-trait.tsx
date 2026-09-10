@@ -1,7 +1,9 @@
-import { useCallback } from "react";
+import { PlusIcon } from "lucide-react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { Combobox } from "@/components/ui/combobox/combobox";
+import { ResultTag } from "@/components/ui/combobox/combobox-results";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
 import {
@@ -47,6 +49,18 @@ export function CustomizationChooseTraits(props: Props) {
     [],
   );
 
+  const resultRenderer = useCallback(
+    (trait: { code: string; name: string }, onRemove?: () => void) => (
+      <ResultTag
+        data-testid={`combobox-result-${trait.code}`}
+        onRemove={onRemove}
+      >
+        {nameRenderer(trait)}
+      </ResultTag>
+    ),
+    [nameRenderer],
+  );
+
   const onValueChange = useCallback(
     (newSelections: Coded[]) => {
       onChange(newSelections.map((card) => card.code));
@@ -54,8 +68,22 @@ export function CustomizationChooseTraits(props: Props) {
     [onChange],
   );
 
+  const creatable = useMemo(
+    () => ({
+      label: (name: string) => (
+        <>
+          <PlusIcon />
+          {t("common.create_named", { name })}
+        </>
+      ),
+      onCreate: (name: string) => onChange([...selections, name]),
+    }),
+    [onChange, selections, t],
+  );
+
   return (
     <Combobox
+      creatable={creatable}
       disabled={disabled}
       id={`${id}-choose-trait`}
       items={traits}
@@ -65,7 +93,7 @@ export function CustomizationChooseTraits(props: Props) {
       locale={locale}
       readonly={readonly}
       renderItem={nameRenderer}
-      renderResult={nameRenderer}
+      renderResult={resultRenderer}
       onValueChange={onValueChange}
       placeholder={t("deck_edit.customizable.traits_placeholder", {
         count: limit,

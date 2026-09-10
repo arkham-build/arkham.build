@@ -1,4 +1,4 @@
-import { useQueries } from "@tanstack/react-query";
+import type { Id } from "@arkham-build/shared";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
@@ -9,11 +9,12 @@ import {
   type DeckDisplayProps,
   type DeckDisplayType,
 } from "@/components/deck-display/deck-display";
+import { ResolvedDeckProvider } from "@/components/resolved-deck-context-provider";
 import { Loader } from "@/components/ui/loader";
+import { useArkhamDbDecklistMetaQuery } from "@/queries/decklists";
+import { useArkhamDbDeckQuery } from "@/queries/legacy";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";
-import { syncAdapters } from "@/store/lib/sync";
-import type { Id } from "@/store/schemas/deck.schema";
 import {
   getDeckHistory,
   selectDeckHistoryCached,
@@ -21,16 +22,12 @@ import {
   selectResolvedDeckById,
 } from "@/store/selectors/decks";
 import {
-  selectClientId,
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
-import { queryDeck } from "@/store/services/queries";
-import { fetchArkhamDBDecklistMeta } from "@/store/services/requests/decklist-meta";
 import { ApiError } from "@/store/services/requests/shared";
 import { isNumeric } from "@/utils/is-numeric";
-import { ResolvedDeckProvider } from "@/utils/use-resolved-deck";
 import { ErrorStatus } from "../errors/404";
 import { ShareInner } from "../share/share";
 
@@ -58,47 +55,25 @@ function DeckView() {
 }
 
 function ArkhamDBDeckView({ id, type }: { id: string; type: DeckDisplayType }) {
-  const clientId = useStore(selectClientId);
   const { t } = useTranslation();
 
   const idInt = Number.parseInt(id, 10);
 
-  const cacheFanMadeContent = useStore((state) => state.cacheFanMadeContent);
-
-  async function queryFn() {
-    const decks = await queryDeck(clientId, type, idInt);
-    cacheFanMadeContent(decks);
-    const adapter = new syncAdapters.arkhamdb(useStore.getState);
-    return decks.map((deck) => adapter.in(deck));
-  }
-
-  const [
-    { data, isPending, error },
-    { data: meta, isPending: metaPending, isEnabled: metaEnabled },
-  ] = useQueries({
-    queries: [
-      {
-        queryKey: ["deck", type, idInt],
-        queryFn,
-      },
-      {
-        queryKey: ["deck_meta", idInt],
-        queryFn: () => fetchArkhamDBDecklistMeta(idInt),
-        enabled: type === "decklist",
-      },
-    ],
-  });
+  const { data, isPending, error } = useArkhamDbDeckQuery(type, idInt);
+  const { data: meta, isPending: metaPending } = useArkhamDbDecklistMetaQuery(
+    idInt,
+    type === "decklist",
+  );
 
   const metadata = useStore(selectMetadata);
   const lookupTables = useStore(selectLookupTables);
-  const sharing = useStore((state) => state.sharing);
   const collator = useStore(selectLocaleSortingCollator);
 
   if (Number.isNaN(idInt)) {
     return <ErrorStatus statusCode={404} />;
   }
 
-  if (isPending || (metaEnabled && metaPending)) {
+  if (isPending || (type === "decklist" && metaPending)) {
     return <Loader show message={t("deck_view.loading")} />;
   }
 
@@ -114,7 +89,6 @@ function ArkhamDBDeckView({ id, type }: { id: string; type: DeckDisplayType }) {
       {
         metadata,
         lookupTables,
-        sharing,
       },
       collator,
       deck,

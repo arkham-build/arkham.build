@@ -1,16 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
+import { setSearchFlagParams } from "@/store/lib/search-url";
 import { selectActiveListSearch } from "@/store/selectors/lists";
+import { selectActiveList } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
 import { debounce } from "@/utils/debounce";
 import { useAgathaEasterEggTrigger } from "@/utils/easter-egg-agatha";
 import { useHotkey } from "@/utils/use-hotkey";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { Checkbox } from "../ui/checkbox";
-import { ErrorBubble } from "../ui/error-bubble";
+import { CopyToClipboard } from "../ui/copy-to-clipboard";
 import { SearchInput } from "../ui/search-input";
+import { StatusBubble } from "../ui/status-bubble";
 import { Tag } from "../ui/tag";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./card-search.module.css";
@@ -42,24 +45,58 @@ export function CardSearch(props: Props) {
   const { resolvedDeck } = useResolvedDeck();
 
   const search = useStore(selectActiveListSearch);
+  const activeList = useStore(selectActiveList);
   assert(search, "Search bar requires an active list.");
+
+  const { includeBacks, includeFlavor, includeGameText, includeName } = search;
 
   const easterEggHandler = useAgathaEasterEggTrigger();
 
   const [inputValue, setInputValue] = useState(search.value ?? "");
   const [iconSlotSize, setIconSlotSize] = useState(0);
 
+  const pasted = useRef(false);
+
+  const cardType = useMemo(() => {
+    const id = activeList?.filters.indexOf("card_type");
+    if (id == null || id < 0) return "";
+    const value = activeList?.filterValues[id]?.value;
+    return value === "player" || value === "encounter" ? value : "";
+  }, [activeList]);
+
+  const shareUrl = useMemo(() => {
+    const url = new URL("/search", window.location.origin);
+    url.searchParams.set("q", inputValue);
+    if (cardType) url.searchParams.set("card_type", cardType);
+    setSearchFlagParams(url.searchParams, {
+      includeBacks,
+      includeFlavor,
+      includeGameText,
+      includeName,
+    });
+    return url.toString();
+  }, [
+    cardType,
+    includeBacks,
+    includeFlavor,
+    includeGameText,
+    includeName,
+    inputValue,
+  ]);
+
   useEffect(() => {
+    const iconSlot = iconSlotRef.current;
+    if (!iconSlot) return;
+
     const updateIconSlotSize = () => {
-      if (iconSlotRef.current) {
-        setIconSlotSize(iconSlotRef.current.getBoundingClientRect().width);
-      }
+      setIconSlotSize(iconSlot.getBoundingClientRect().width);
     };
 
     updateIconSlotSize();
 
-    window.addEventListener("resize", updateIconSlotSize, { passive: true });
-    return () => window.removeEventListener("resize", updateIconSlotSize);
+    const resizeObserver = new ResizeObserver(updateIconSlotSize);
+    resizeObserver.observe(iconSlot);
+    return () => resizeObserver.disconnect();
   }, []);
 
   const onShortcut = useCallback(() => {
@@ -76,15 +113,25 @@ export function CardSearch(props: Props) {
 
   const onValueChange = useCallback(
     (val: string) => {
+      const changeOpts = {
+        clearMode: val.length <= 1 || pasted.current,
+      };
+
+      pasted.current = false;
       setInputValue(val);
-      debouncedSetSearchValue(val, resolvedDeck);
+      debouncedSetSearchValue(val, resolvedDeck, changeOpts);
+
       if (easterEggHandler(val)) {
         setInputValue("");
-        debouncedSetSearchValue("", resolvedDeck);
+        debouncedSetSearchValue("", resolvedDeck, changeOpts);
       }
     },
     [debouncedSetSearchValue, easterEggHandler, resolvedDeck],
   );
+
+  const onInputPaste = useCallback(() => {
+    pasted.current = true;
+  }, []);
 
   const onToggleGameText = useCallback(
     (val: boolean | string) => {
@@ -119,25 +166,35 @@ export function CardSearch(props: Props) {
   );
 
   const iconSlotNode = (
-    <DefaultTooltip
-      tooltip={search.buildQlError?.message}
-      options={{ paused: !search.buildQlError }}
-    >
-      <a
-        className={cx(
-          css["buildql-tag"],
-          search.mode === "buildql" && css["active"],
-        )}
-        href="https://github.com/arkham-build/arkham.build/blob/main/frontend/src/store/lib/buildql/buildql.md#buildql"
-        target="_blank"
-        rel="noreferrer"
+    <>
+      <DefaultTooltip
+        tooltip={search.buildQlError?.message}
+        options={{ paused: !search.buildQlError }}
       >
-        <Tag size="xs">
-          {!!search.buildQlError && <ErrorBubble />}
-          BuildQL
-        </Tag>
-      </a>
-    </DefaultTooltip>
+        <a
+          className={cx(
+            css["buildql-tag"],
+            search.mode === "buildql" && css["active"],
+          )}
+          href="https://github.com/arkham-build/arkham.build/blob/main/frontend/src/store/lib/buildql/buildql.md#buildql"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <Tag size="xs">
+            {!!search.buildQlError && <StatusBubble variant="error" />}
+            BuildQL
+          </Tag>
+        </a>
+      </DefaultTooltip>
+      {!!inputValue && (
+        <CopyToClipboard
+          size="sm"
+          text={shareUrl}
+          tooltip={t("lists.search.share")}
+          variant="bare"
+        />
+      )}
+    </>
   );
 
   return (
@@ -153,6 +210,7 @@ export function CardSearch(props: Props) {
             inputClassName={css["field-input"]}
             onValueChange={onValueChange}
             onKeyDown={onInputKeyDown}
+            onPaste={onInputPaste}
             placeholder={t("lists.search.placeholder")}
             iconSlotSize={iconSlotSize}
             iconSlot={

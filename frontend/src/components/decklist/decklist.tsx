@@ -1,16 +1,19 @@
-import type { Card } from "@arkham-build/shared";
-import { LayoutGridIcon, LayoutListIcon, SortDescIcon } from "lucide-react";
+import type { DecklistConfig } from "@arkham-build/shared";
+import { type Card, countExperience } from "@arkham-build/shared";
+import {
+  LayoutGridIcon,
+  LayoutListIcon,
+  ListChecksIcon,
+  SortDescIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
-import { countGroupRows, type DeckGrouping } from "@/store/lib/deck-grouping";
+import { sortPresetId } from "@/store/lib/list-display";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckGroups } from "@/store/selectors/decks";
-import { sortPresetId } from "@/store/slices/lists";
 import type { ViewMode } from "@/store/slices/lists.types";
-import type { DecklistConfig } from "@/store/slices/settings.types";
-import { countExperience } from "@/utils/card-utils";
 import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
@@ -25,7 +28,7 @@ import { Button } from "../ui/button";
 import { DropdownMenu } from "../ui/dropdown-menu";
 import { HotkeyTooltip } from "../ui/hotkey";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { useTabUrlState } from "../ui/tabs";
+import { useTabUrlState } from "../ui/tabs.hooks";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import css from "./decklist.module.css";
 import { DecklistGroup } from "./decklist-groups";
@@ -34,10 +37,11 @@ import { DecklistSection } from "./decklist-section";
 type Props = {
   className?: string;
   deck: ResolvedDeck;
+  enableChecklistMode?: boolean;
 };
 
 export function Decklist(props: Props) {
-  const { className, deck } = props;
+  const { className, deck, enableChecklistMode } = props;
   const { t } = useTranslation();
 
   const settings = useStore((state) => state.settings);
@@ -48,6 +52,11 @@ export function Decklist(props: Props) {
   );
 
   const [displayConfigId, setDisplayConfigId] = useState(DEFAULT_LIST_SORT_ID);
+  const [checklistMode, setChecklistMode] = useState(false);
+  const checklistValue = checklistMode ? "checklist" : undefined;
+  const [checkedCardQuantities, setCheckedCardQuantities] = useState<
+    ReadonlyMap<string, number>
+  >(() => new Map());
 
   const [displayConfig, setDisplayConfig] = useState<DecklistConfig>(
     viewMode === "scans" ? settings.lists.deckScans : settings.lists.deck,
@@ -135,6 +144,34 @@ export function Decklist(props: Props) {
     [settings.lists.deck, settings.lists.deckScans, viewMode],
   );
 
+  const onChecklistModeChange = useCallback(
+    (value: string) => {
+      setChecklistMode(value === "checklist" && value !== checklistValue);
+    },
+    [checklistValue],
+  );
+
+  const onChecklistClear = useCallback(() => {
+    setCheckedCardQuantities(new Map());
+  }, []);
+
+  const onCardCheckedQuantityChange = useCallback(
+    (cardKey: string, quantity: number) => {
+      setCheckedCardQuantities((current) => {
+        const next = new Map(current);
+
+        if (quantity > 0) {
+          next.set(cardKey, quantity);
+        } else {
+          next.delete(cardKey);
+        }
+
+        return next;
+      });
+    },
+    [],
+  );
+
   const labels = useMemo(
     () => ({
       slots: t("common.decks.slots"),
@@ -188,6 +225,27 @@ export function Decklist(props: Props) {
             </DropdownMenu>
           </PopoverContent>
         </Popover>
+        {enableChecklistMode && (
+          <>
+            <ToggleGroup
+              type="single"
+              value={checklistValue}
+              onValueChange={onChecklistModeChange}
+            >
+              <ToggleGroupItem
+                className={css["checklist-toggle"]}
+                value="checklist"
+              >
+                <ListChecksIcon /> {t("deck_view.checklist")}
+              </ToggleGroupItem>
+            </ToggleGroup>
+            {checklistMode && checkedCardQuantities.size > 0 && (
+              <Button onClick={onChecklistClear} size="xs" variant="bare">
+                {t("common.clear")}
+              </Button>
+            )}
+          </>
+        )}
       </nav>
 
       <div className={css["decklist"]} data-testid="view-decklist">
@@ -195,12 +253,16 @@ export function Decklist(props: Props) {
           <DecklistSection
             size={Object.keys(deck.slots).length}
             title={labels["slots"]}
-            columns={getColumnMode(viewMode as ViewMode, groups.slots)}
+            columns={getColumnMode(viewMode as ViewMode)}
           >
             <DecklistGroup
+              checkedCardQuantities={
+                checklistMode ? checkedCardQuantities : undefined
+              }
               deck={deck}
               grouping={groups.slots}
               getListCardProps={getListCardProps}
+              onCardCheckedQuantityChange={onCardCheckedQuantityChange}
               viewMode={viewMode as ViewMode}
             />
           </DecklistSection>
@@ -210,15 +272,19 @@ export function Decklist(props: Props) {
           <div className={css["decklist-additional"]}>
             {groups.sideSlots && (
               <DecklistSection
-                columns={getColumnMode(viewMode as ViewMode, groups.sideSlots)}
+                columns={getColumnMode(viewMode as ViewMode)}
                 showTitle
                 title={labels["sideSlots"]}
                 extraInfos={`${computeXPSum(deck, "sideSlots")} ${t("common.xp")}`}
               >
                 <DecklistGroup
+                  checkedCardQuantities={
+                    checklistMode ? checkedCardQuantities : undefined
+                  }
                   deck={deck}
                   grouping={groups.sideSlots}
                   getListCardProps={getListCardProps}
+                  onCardCheckedQuantityChange={onCardCheckedQuantityChange}
                   viewMode={viewMode as ViewMode}
                   showXP
                 />
@@ -226,17 +292,18 @@ export function Decklist(props: Props) {
             )}
             {groups.bondedSlots && (
               <DecklistSection
-                columns={getColumnMode(
-                  viewMode as ViewMode,
-                  groups.bondedSlots,
-                )}
+                columns={getColumnMode(viewMode as ViewMode)}
                 title={labels["bondedSlots"]}
                 showTitle
               >
                 <DecklistGroup
+                  checkedCardQuantities={
+                    checklistMode ? checkedCardQuantities : undefined
+                  }
                   deck={deck}
                   grouping={groups.bondedSlots}
                   getListCardProps={getListCardProps}
+                  onCardCheckedQuantityChange={onCardCheckedQuantityChange}
                   viewMode={viewMode as ViewMode}
                 />
               </DecklistSection>
@@ -244,14 +311,18 @@ export function Decklist(props: Props) {
 
             {groups.extraSlots && (
               <DecklistSection
-                columns={getColumnMode(viewMode as ViewMode, groups.extraSlots)}
+                columns={getColumnMode(viewMode as ViewMode)}
                 title={labels["extraSlots"]}
                 showTitle
               >
                 <DecklistGroup
+                  checkedCardQuantities={
+                    checklistMode ? checkedCardQuantities : undefined
+                  }
                   deck={deck}
                   grouping={groups.extraSlots}
                   getListCardProps={getListCardProps}
+                  onCardCheckedQuantityChange={onCardCheckedQuantityChange}
                   viewMode={viewMode as ViewMode}
                 />
               </DecklistSection>
@@ -268,9 +339,9 @@ export function Decklist(props: Props) {
   );
 }
 
-function getColumnMode(viewMode: ViewMode, group: DeckGrouping) {
+function getColumnMode(viewMode: ViewMode) {
   if (viewMode === "scans") return "scans";
-  return countGroupRows(group) < 5 ? "single" : "auto";
+  return "auto";
 }
 
 function computeXPSum(deck: ResolvedDeck, slotKey: "sideSlots" | "slots") {

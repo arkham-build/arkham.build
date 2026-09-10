@@ -1,18 +1,16 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, cardLevel, countExperience } from "@arkham-build/shared";
 import { CheckIcon, DicesIcon, EyeIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
-import { cardLevel } from "@/utils/card-utils";
 import { isEmpty } from "@/utils/is-empty";
 import { shuffle } from "@/utils/shuffle";
 import { getAccentColorsForFaction } from "@/utils/use-accent-color";
 import { CardScanControlled } from "../card-scan";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { Field, FieldLabel } from "../ui/field";
 import {
@@ -26,34 +24,14 @@ import { SuziStandaloneSetupBackdrop } from "./suzi-standalone-backdrop";
 import css from "./suzi-standalone-setup.module.css";
 
 type Props = {
-  children: React.ReactNode;
   deck: ResolvedDeck;
 };
 
-export function SuziStandaloneSetupDialog(props: Props) {
-  const { children, deck } = props;
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
-        <SuziStandaloneSetup deck={deck} />
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function SuziStandaloneSetup(props: Pick<Props, "deck">) {
-  const dialogContext = useDialogContextChecked();
-
-  if (!dialogContext.open) {
-    return null;
-  }
-
+export function SuziStandaloneSetup(props: Props) {
   return <SuziStandaloneSetupInner {...props} />;
 }
 
-function SuziStandaloneSetupInner(props: Pick<Props, "deck">) {
+function SuziStandaloneSetupInner(props: Props) {
   const { deck } = props;
 
   const [, navigate] = useLocation();
@@ -81,7 +59,7 @@ function SuziStandaloneSetupInner(props: Pick<Props, "deck">) {
   );
 
   const drawResults = useCallback(
-    (evt: React.FormEvent) => {
+    (evt: React.SubmitEvent) => {
       evt.preventDefault();
 
       const state = useStore.getState();
@@ -97,7 +75,7 @@ function SuziStandaloneSetupInner(props: Pick<Props, "deck">) {
       const drawn: Card[] = [];
 
       for (const card of availableUpgrades) {
-        const cost = cardLevel(card) ?? 0;
+        const cost = countExperience(card, 1);
         if (cost <= targetXp) {
           targetXp -= cost;
           drawn.push(card);
@@ -136,10 +114,10 @@ function SuziStandaloneSetupInner(props: Pick<Props, "deck">) {
   }, [createEdit, navigate, deck, results]);
 
   const revealAll = useCallback(() => {
-    setRevealed((prev) => {
+    setRevealed(() => {
       const newRevealed: Record<number, boolean> = {};
       results.forEach((_, idx) => {
-        newRevealed[idx] = !prev[idx] || prev[idx];
+        newRevealed[idx] = true;
       });
       return newRevealed;
     });
@@ -167,7 +145,7 @@ function SuziStandaloneSetupInner(props: Pick<Props, "deck">) {
             <Field full>
               <FieldLabel>{t("suzi_standalone_setup.xp")}</FieldLabel>
               <input
-                // biome-ignore lint/a11y/noAutofocus: expected here.
+                // oxlint-disable-next-line jsx-a11y/no-autofocus -- expected here.
                 autoFocus
                 type="number"
                 min={1}
@@ -235,7 +213,7 @@ function SuziStandaloneSetupInner(props: Pick<Props, "deck">) {
                       onClick={() => {
                         setRevealed((prev) => ({
                           ...prev,
-                          [idx]: !prev[idx] || prev[idx],
+                          [idx]: true,
                         }));
                       }}
                       type="button"

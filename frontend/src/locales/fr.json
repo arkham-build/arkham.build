@@ -60,6 +60,7 @@
       "tooltip_count_player": "Nombre total de cartes Joueur dans {{type}}"
     },
     "common": {
+      "or": "ou",
       "actions": {
         "draw": "Piocher",
         "engage": "Engager",
@@ -1001,7 +1002,6 @@
         "no_level": "Nul",
         "title": "Niveau"
       },
-      "or": "ou",
       "ownership": {
         "owned": "Possédé",
         "title": "Possession",
@@ -1133,7 +1133,7 @@
       "title": "La saison des prévisualisations est arrivée !"
     },
     "settings": {
-      "backup": {
+      "support": {
         "confirm": "Êtes-vous sûr de vouloir restaurer cette sauvegarde ? Toutes les données existantes seront écrasées.",
         "create": "Créer une sauvegarde",
         "help": "Créez une sauvegarde de vos paramètres, decks et collection de cartes au format JSON. Vous pourrez l’utiliser pour restaurer vos données sur cet appareil ou un autre.",
@@ -1167,29 +1167,18 @@
         "title": "Collection"
       },
       "connections": {
-        "connect": "Se connecter",
-        "connect_help": "Connectez votre compte {{provider}} pour synchroniser vos decks.",
-        "connected": "Connecté",
-        "created_at": "Connecté depuis",
-        "details": "Détails",
-        "disconnect": "Se déconnecter",
-        "disconnected": "Il y a un problème avec cette connexion, veuillez la rafraîchir.",
         "disconnected_all": "Il y a un problème avec l’une de vos connexions. Veuillez la rafraîchir dans les paramètres.",
         "items_synced": "Objets synchronisés",
         "last_modified": "Horodatage des données",
-        "last_synced_at": "Dernière synchro",
         "lock": "Une autre opération {{provider}} est en cours, veuillez patienter…",
         "no_errors": "Aucune erreur",
         "provider_error": "Échec de la synchronisation avec {{provider}} : {{error}}",
         "provider_syncing": "Synchronisation avec {{provider}}…",
-        "reconnect": "Rafraîchir",
         "sync": "Synchroniser",
         "sync_all": "Synchroniser les decks de {{collectionLabels}}",
         "sync_errors": "Erreurs de synchronisation",
         "sync_status": "Statut de synchronisation",
         "syncing": "Synchronisation en cours",
-        "title": "Comptes connectés",
-        "user_id": "ID Utilisateur",
         "username": "Nom d’utilisateur"
       },
       "display": {
@@ -1230,7 +1219,28 @@
       "preview": "Aperçu",
       "save": "Enregistrer les paramètres",
       "saving": "Enregistrement des paramètres…",
-      "title": "Paramètres"
+      "title": "Paramètres",
+      "account": {
+        "oauth": {
+          "connect": "Se connecter",
+          "connect_help": "Connectez votre compte {{provider}} pour synchroniser vos decks et vous connecter avec celui-ci.",
+          "connected": "Connecté",
+          "created_at": "Connecté depuis",
+          "details": "Détails",
+          "disconnect": "Déconnecter",
+          "disconnect_error": "Échec de la déconnexion de {{provider}} : {{error}}",
+          "disconnecting": "Déconnexion de {{provider}}…",
+          "last_synced_at": "Dernière synchro",
+          "not_connected": "Non connecté",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "Rafraîchir",
+          "title": "Connexions",
+          "user_id": "ID utilisateur",
+          "disconnected": "Il y a un problème avec cette connexion, veuillez la rafraîchir."
+        }
+      }
     },
     "ui": {
       "cards_combobox": {

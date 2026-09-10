@@ -1,4 +1,8 @@
-import type { Card, SealedDeckResponse } from "@arkham-build/shared";
+import type {
+  Card,
+  SealedDeckResponse,
+  StorageProvider,
+} from "@arkham-build/shared";
 
 export type CardSet = "requiredCards" | "advanced" | "replacement";
 
@@ -9,7 +13,7 @@ type DeckCreateState = {
   investigatorFrontCode: string;
   investigatorBackCode: string;
   extraCardQuantities: Record<string, number>;
-  provider: string;
+  provider: StorageProvider;
   sets: CardSet[];
   selections: {
     [key: string]: string;
@@ -26,7 +30,7 @@ export type DeckCreateSlice = {
 
   deckCreateChangeExtraCardQuantity: (card: Card, quantity: number) => void;
 
-  deckCreateSetProvider(provider: string): void;
+  deckCreateSetProvider(provider: StorageProvider): void;
   deckCreateSetSelection(key: string, value: string): void;
   deckCreateSetTabooSet: (value: number | undefined) => void;
   deckCreateSetTitle: (value: string) => void;

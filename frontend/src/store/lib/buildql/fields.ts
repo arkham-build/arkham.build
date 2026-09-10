@@ -1,5 +1,10 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, countExperience } from "@arkham-build/shared";
 import {
+  mergeCardTagNames,
+  resolveCardTagCardCode,
+} from "@/store/lib/card-tags";
+import {
+  filterCardPool,
   filterInvestigatorAccess,
   filterInvestigatorWeaknessAccess,
   filterTag,
@@ -18,12 +23,6 @@ import type {
   FieldLookupContext,
   FieldType,
 } from "./interpreter.types";
-
-export class BackArray<T> extends Array<T> {
-  constructor(items: T[]) {
-    super(...items);
-  }
-}
 
 interface FieldDefinition {
   aliases?: string[];
@@ -52,11 +51,7 @@ const fieldDefinitions: FieldDefinition[] = [
   {
     aliases: ["ch"],
     name: "chapter",
-    lookup: backResolver((card, { metadata }) => {
-      const pack = metadata.packs[card.pack_code];
-      if (!pack?.chapter) return 1;
-      return pack.chapter;
-    }),
+    lookup: backResolver((card) => card.chapter ?? 1),
     type: "number",
   },
   {
@@ -130,7 +125,7 @@ const fieldDefinitions: FieldDefinition[] = [
         const encounterSet = metadata.encounterSets[card.encounter_code];
         if (!encounterSet) return null;
 
-        return [card.encounter_code, encounterSet.name];
+        return [card.encounter_code, displayPackName(encounterSet)];
       },
     name: "encounter_set",
     type: "string",
@@ -196,17 +191,28 @@ const fieldDefinitions: FieldDefinition[] = [
       if (!otherLevels) return false;
 
       const accessFilter = deck
-        ? filterInvestigatorAccess(deck.investigatorBack.card, {
+        ? filterInvestigatorAccess(deck.investigatorBack.card, undefined, {
             customizable: { properties: "all", level: "all" },
             investigatorFront: deck.investigatorFront.card,
             selections: deck.selections,
           })
         : undefined;
+      const cardPoolFilter = filterCardPool(
+        deck?.cardPool,
+        metadata,
+        lookupTables,
+      );
 
       return Object.keys(otherLevels).some((otherCode) => {
         const otherCard = metadata.cards[otherCode];
-        if (!otherCard || (otherCard.xp ?? 0) <= (card.xp ?? 0)) return false;
-        return !deck || accessFilter?.(otherCard);
+        if (!otherCard) return false;
+
+        const cardXp = countExperience(card, 1);
+        const otherCardXp = countExperience(otherCard, 1);
+
+        if (otherCardXp <= cardXp) return false;
+        if (deck && !accessFilter?.(otherCard)) return false;
+        return !cardPoolFilter || cardPoolFilter(otherCard);
       });
     }),
     name: "has_upgrade",
@@ -266,8 +272,9 @@ const fieldDefinitions: FieldDefinition[] = [
 
       const investigator = ctx.metadata.cards[fieldValue];
       if (investigator?.type_code !== "investigator") return false;
+      if (card.code === investigator.code) return fieldValue;
 
-      const accessFilter = filterInvestigatorAccess(investigator, {
+      const accessFilter = filterInvestigatorAccess(investigator, undefined, {
         customizable: {
           properties: "all",
           level: "all",
@@ -296,13 +303,37 @@ const fieldDefinitions: FieldDefinition[] = [
     type: "number",
   },
   {
+    lookup: () => (card, ctx) => {
+      if (!ctx.deck) return null;
+      return ctx.deck.sideSlots?.[card.code] ?? null;
+    },
+    name: "in_side_deck",
+    type: "number",
+  },
+  {
+    aliases: ["fav"],
+    lookup:
+      () =>
+      (card, { cardTags, lookupTables, metadata }) => {
+        const canonicalCode = resolveCardTagCardCode(
+          metadata,
+          lookupTables.relations.fronts,
+          card.code,
+        );
+
+        return cardTags.favorites?.[canonicalCode] ?? false;
+      },
+    name: "is_favorite",
+    type: "boolean",
+  },
+  {
     aliases: ["iu"],
     lookup: backResolver((card, { deck, lookupTables, metadata }) => {
       const otherLevels = lookupTables.relations.level[card.code];
       if (!otherLevels) return false;
 
       const accessFilter = deck
-        ? filterInvestigatorAccess(deck.investigatorBack.card, {
+        ? filterInvestigatorAccess(deck.investigatorBack.card, undefined, {
             customizable: { properties: "all", level: "all" },
             investigatorFront: deck.investigatorFront.card,
             selections: deck.selections,
@@ -318,7 +349,13 @@ const fieldDefinitions: FieldDefinition[] = [
     name: "is_upgrade",
     type: "boolean",
   },
-
+  {
+    aliases: ["lvl"],
+    legacyAlias: "p",
+    lookup: backResolver((card) => card.xp ?? null),
+    name: "level",
+    type: "number",
+  },
   {
     aliases: ["mu", "multi"],
     lookup: backResolver(
@@ -335,7 +372,10 @@ const fieldDefinitions: FieldDefinition[] = [
   },
   {
     aliases: ["na"],
-    lookup: backResolver((card) => displayAttribute(card, "name")),
+    lookup: backResolver((card) => {
+      const name = displayAttribute(card, "name");
+      return card.abbreviation ? [name, card.abbreviation] : name;
+    }),
     name: "name",
     type: "string",
   },
@@ -433,6 +473,26 @@ const fieldDefinitions: FieldDefinition[] = [
     type: "string",
   },
   {
+    lookup:
+      () =>
+      (card, { cardTags, deckCardTags, lookupTables, metadata }) => {
+        const canonicalCode = resolveCardTagCardCode(
+          metadata,
+          lookupTables.relations.fronts,
+          card.code,
+        );
+
+        const tagNames = mergeCardTagNames(
+          deckCardTags?.[canonicalCode],
+          cardTags.cardTags[canonicalCode],
+        );
+
+        return tagNames.length ? tagNames : null;
+      },
+    name: "tag",
+    type: "string",
+  },
+  {
     aliases: ["ts"],
     lookup:
       () =>
@@ -515,9 +575,10 @@ const fieldDefinitions: FieldDefinition[] = [
     type: "number",
   },
   {
-    aliases: ["level", "lvl"],
-    legacyAlias: "p",
-    lookup: backResolver((card) => card.xp ?? null),
+    lookup: backResolver((card) => {
+      if (card.xp == null) return null;
+      return countExperience(card, 1);
+    }),
     name: "xp",
     type: "number",
   },
@@ -526,7 +587,8 @@ const fieldDefinitions: FieldDefinition[] = [
 function backResolver(resolver: FieldLookup) {
   return (onlyReturnBackAttr = false) => {
     return (card: Card, ctx: FieldLookupContext) => {
-      if (!ctx.matchBacks && !onlyReturnBackAttr) return resolver(card, ctx);
+      const returnBackAttr = onlyReturnBackAttr || ctx.matchSide === "back";
+      if (!returnBackAttr) return resolver(card, ctx);
 
       let back: Card | undefined;
       if (card.double_sided) {
@@ -535,11 +597,7 @@ function backResolver(resolver: FieldLookup) {
         back = ctx.metadata.cards[card.back_link_id];
       }
 
-      if (onlyReturnBackAttr) return resolver(back ?? ({} as Card), ctx);
-
-      return back
-        ? new BackArray([resolver(card, ctx), resolver(back, ctx)].flat())
-        : resolver(card, ctx);
+      return resolver(back ?? ({} as Card), ctx);
     };
   };
 }

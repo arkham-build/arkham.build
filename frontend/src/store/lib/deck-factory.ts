@@ -1,4 +1,4 @@
-import type { Deck } from "@/store/schemas/deck.schema";
+import type { Deck } from "@arkham-build/shared";
 import { randomId } from "@/utils/crypto";
 import i18n from "@/utils/i18n";
 
@@ -9,7 +9,7 @@ type Payload = {
   slots: Record<string, number>;
 } & Partial<Omit<Deck, "id" | "date_creation" | "date_update">>;
 
-export function createDeck(values: Payload): Deck {
+export function makeDeck(values: Payload): Deck {
   const timestamp = new Date().toISOString();
 
   return {
@@ -37,7 +37,7 @@ export function getDefaultDeckName(name: string, faction: string) {
   return i18n.t(`deck_create.default_name.${faction}`, { name });
 }
 
-export function cloneDeck(deck: Deck): Deck {
+export function makeDeckCopy(deck: Deck): Deck {
   const now = new Date().toISOString();
 
   return {
@@ -50,7 +50,7 @@ export function cloneDeck(deck: Deck): Deck {
     next_deck: null,
     previous_deck: null,
     version: "0.1",
-    source: undefined,
+    source: null,
     xp: null,
     xp_adjustment: null,
     xp_spent: null,

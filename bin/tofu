@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ $# -lt 2 ]]; then
+  echo "Usage: bin/tofu <bootstrap|cloudflare|github> <command> [arguments...]" >&2
+  exit 2
+fi
+
+stack="$1"
+shift
+
+case "$stack" in
+  bootstrap | cloudflare | github) ;;
+  *)
+    echo "Unknown OpenTofu stack: $stack" >&2
+    exit 2
+    ;;
+esac
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repository_root="$(cd "${script_dir}/.." && pwd)"
+stack_directory="${repository_root}/opentofu/${stack}"
+environment_file="${stack_directory}/.env.op"
+
+if [[ ! -f "$environment_file" ]]; then
+  echo "Missing 1Password environment file: $environment_file" >&2
+  exit 1
+fi
+
+run_state_backup() {
+  op run --env-file="$environment_file" -- \
+    "${script_dir}/tofu-state-backup" "$stack"
+}
+
+requires_state_backup() {
+  local tofu_command="$1"
+  local state_command="${2:-}"
+
+  case "$tofu_command" in
+    apply | destroy | import | refresh | taint | untaint) return 0 ;;
+    state)
+      case "$state_command" in
+        mv | push | replace-provider | rm) return 0 ;;
+      esac
+      ;;
+  esac
+
+  return 1
+}
+
+if [[ "$1" == "backup" ]]; then
+  if [[ $# -ne 1 ]]; then
+    echo "Usage: bin/tofu $stack backup" >&2
+    exit 2
+  fi
+
+  run_state_backup
+  exit 0
+fi
+
+if requires_state_backup "$@"; then
+  run_state_backup
+fi
+
+exec op run --env-file="$environment_file" -- \
+  tofu -chdir="$stack_directory" "$@"

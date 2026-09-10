@@ -13,7 +13,11 @@
   width: 100%;
 
   &:hover {
-    background: color-mix(in srgb, var(--folder-color) 95%, white 5%);
+    background: color-mix(
+      in srgb,
+      var(--folder-color) 90%,
+      var(--palette-6) 10%
+    );
   }
 }
 
@@ -27,7 +31,7 @@
   gap: 0.375rem;
 
   &:focus-visible {
-    border: 1px solid var(--focus);
+    border: 1px solid var(--color-focus);
   }
 }
 

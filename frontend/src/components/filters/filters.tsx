@@ -10,14 +10,15 @@ import {
 import { selectActiveList } from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
 import { useHotkey } from "@/utils/use-hotkey";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { PreviewBanner } from "../preview-banner";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { HotkeyTooltip } from "../ui/hotkey";
 import { Scroller } from "../ui/scroller";
 import { ActionFilter } from "./action-filter";
 import { AssetFilter } from "./asset-filter";
+import { CardTagsFilter } from "./card-tags-filter";
 import { CardTypeFilter } from "./card-type-filter";
 import { CostFilter } from "./cost-filter";
 import { CycleFilter } from "./cycle-filter";
@@ -62,8 +63,6 @@ export function Filters(props: Props) {
   const toggleFiltersEnabled = useCallback(() => {
     updateFiltersEnabled(!filtersEnabled);
   }, [filtersEnabled, updateFiltersEnabled]);
-
-  useHotkey;
 
   useHotkey("alt+f", toggleFiltersEnabled, {
     allowInputFocused: true,
@@ -114,7 +113,7 @@ export function Filters(props: Props) {
           </Button>
         </HotkeyTooltip>
       </div>
-      <Scroller type="hover">
+      <Scroller type="hover" padded>
         <div className={css["content"]}>
           {filters.map((filter, id) => {
             const params = {
@@ -124,10 +123,11 @@ export function Filters(props: Props) {
             };
 
             return (
-              // biome-ignore lint/suspicious/noArrayIndexKey: index is unique key.
+              // oxlint-disable-next-line react/no-array-index-key -- index is unique key.
               <Fragment key={id}>
                 {filter === "action" && <ActionFilter {...params} />}
                 {filter === "asset" && <AssetFilter {...params} />}
+                {filter === "card_tags" && <CardTagsFilter {...params} />}
                 {filter === "card_type" && (
                   <CardTypeFilter
                     className={css["card-type-filter"]}

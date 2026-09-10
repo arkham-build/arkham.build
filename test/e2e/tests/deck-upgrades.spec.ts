@@ -28,6 +28,13 @@ async function clearDeckDescription(page: Page) {
   await page.waitForTimeout(300);
 }
 
+function historyScreenshotMask(page: Page) {
+  return [
+    ...defaultScreenshotMask(page),
+    page.getByTestId("history-entry-meta"),
+  ];
+}
+
 test.describe("upgrades: interactions", () => {
   test("upgrade a deck", async ({ page }) => {
     await importStandardDeck(page);
@@ -144,7 +151,7 @@ test.describe("upgrades: interactions", () => {
 
     await page.waitForTimeout(5000);
     await expect(page.getByTestId("history")).toHaveScreenshot({
-      mask: defaultScreenshotMask(page),
+      mask: historyScreenshotMask(page),
     });
   });
 });
@@ -167,7 +174,7 @@ test.describe("upgrades: views", () => {
     await page.getByTestId("tab-history").click();
 
     await expect(page.getByTestId("history")).toHaveScreenshot({
-      mask: defaultScreenshotMask(page),
+      mask: historyScreenshotMask(page),
     });
   });
 
@@ -202,7 +209,7 @@ test.describe("upgrades: views", () => {
 
     await page.waitForTimeout(5000);
     await expect(page.getByTestId("history")).toHaveScreenshot({
-      mask: defaultScreenshotMask(page),
+      mask: historyScreenshotMask(page),
     });
   });
 
@@ -240,7 +247,7 @@ test.describe("upgrades: views", () => {
 
     await page.waitForTimeout(5000);
     await expect(page.getByTestId("history")).toHaveScreenshot({
-      mask: defaultScreenshotMask(page),
+      mask: historyScreenshotMask(page),
     });
   });
 
@@ -272,7 +279,7 @@ test.describe("upgrades: views", () => {
     await page.getByTestId("tab-history").click();
     await page.waitForTimeout(5000);
     await expect(page.getByTestId("history")).toHaveScreenshot({
-      mask: defaultScreenshotMask(page),
+      mask: historyScreenshotMask(page),
     });
   });
 
@@ -330,7 +337,7 @@ test.describe("upgrades: views", () => {
 
     await page.waitForTimeout(5000);
     await expect(page.getByTestId("history")).toHaveScreenshot({
-      mask: defaultScreenshotMask(page),
+      mask: historyScreenshotMask(page),
     });
   });
 });

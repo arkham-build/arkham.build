@@ -25,23 +25,24 @@ export type Item = {
   value: Value;
 };
 
-type Props = {
+type Props<T extends Item> = {
   className?: string;
   disabled?: boolean;
   id?: string;
-  items: Item[];
-  itemToString?: (item: Item) => string;
+  items: T[];
+  itemToString?: (item: T) => string;
   initialOpen?: boolean;
   menuClassName?: string;
   onOpenChange?: (open: boolean) => void;
   onValueChange: (value: Value) => void;
-  renderItem?: (item: Item | undefined) => React.ReactNode;
-  renderControl?: (item: Item | undefined) => React.ReactNode;
+  portal?: boolean;
+  renderItem?: (item: T | undefined) => React.ReactNode;
+  renderControl?: (item: T | undefined) => React.ReactNode;
   value: Value;
   variant?: "compact";
 };
 
-export function CustomSelect(props: Props) {
+export function CustomSelect<T extends Item>(props: Props<T>) {
   const {
     className,
     disabled,
@@ -51,6 +52,7 @@ export function CustomSelect(props: Props) {
     itemToString = defaultItemToString,
     menuClassName,
     onValueChange,
+    portal = true,
     renderControl,
     renderItem = defaultRenderItem,
     value,
@@ -114,6 +116,48 @@ export function CustomSelect(props: Props) {
     [listNav, typeahead, click, dismiss, role],
   );
 
+  const menuNode = open ? (
+    <FloatingFocusManager context={context} modal={false}>
+      <div
+        ref={refs.setFloating}
+        style={floatingStyles}
+        {...getFloatingProps()}
+      >
+        <div className={cx(css["menu"], menuClassName)}>
+          <Scroller>
+            <FloatingList elementsRef={elementsRef} labelsRef={labelsRef}>
+              {items.map((item, index) => (
+                <Option
+                  {...getItemProps({
+                    onClick: () => onSelectItem(index),
+                    onKeyDown(event: React.KeyboardEvent<HTMLLIElement>) {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        onSelectItem(index);
+                      }
+
+                      if (event.key === " " && !isTypingRef.current) {
+                        event.preventDefault();
+                        onSelectItem(index);
+                      }
+                    },
+                  })}
+                  activeIndex={activeIndex}
+                  data-testid={`custom-select-option-${item.value}`}
+                  key={item.value}
+                  item={item}
+                  itemToString={itemToString}
+                  renderItem={renderItem}
+                  selectedIndex={selectedIndex}
+                />
+              ))}
+            </FloatingList>
+          </Scroller>
+        </div>
+      </div>
+    </FloatingFocusManager>
+  ) : null;
+
   return (
     <div
       className={cx(css["container"], variant && css[variant], className)}
@@ -130,54 +174,17 @@ export function CustomSelect(props: Props) {
         {(renderControl || renderItem)(selectedItem)}
         <ChevronsUpDownIcon className={css["control-indicator"]} />
       </button>
-      {open && (
-        <FloatingPortal id={FLOATING_PORTAL_ID}>
-          <FloatingFocusManager context={context} modal={false}>
-            <div
-              ref={refs.setFloating}
-              style={floatingStyles}
-              {...getFloatingProps()}
-            >
-              <div className={cx(css["menu"], menuClassName)}>
-                <Scroller>
-                  <FloatingList elementsRef={elementsRef} labelsRef={labelsRef}>
-                    {items.map((item, index) => (
-                      <Option
-                        {...getItemProps({
-                          onClick: () => onSelectItem(index),
-                          onKeyDown(event) {
-                            if (event.key === "Enter") {
-                              event.preventDefault();
-                              onSelectItem(index);
-                            }
-
-                            if (event.key === " " && !isTypingRef.current) {
-                              event.preventDefault();
-                              onSelectItem(index);
-                            }
-                          },
-                        })}
-                        activeIndex={activeIndex}
-                        data-testid={`custom-select-option-${item.value}`}
-                        key={item.value}
-                        item={item}
-                        itemToString={itemToString}
-                        renderItem={renderItem}
-                        selectedIndex={selectedIndex}
-                      />
-                    ))}
-                  </FloatingList>
-                </Scroller>
-              </div>
-            </div>
-          </FloatingFocusManager>
-        </FloatingPortal>
-      )}
+      {menuNode &&
+        (portal ? (
+          <FloatingPortal id={FLOATING_PORTAL_ID}>{menuNode}</FloatingPortal>
+        ) : (
+          menuNode
+        ))}
     </div>
   );
 }
 
-function Option({
+function Option<T extends Item>({
   activeIndex,
   item,
   itemToString,
@@ -186,9 +193,9 @@ function Option({
   ...rest
 }: {
   activeIndex: number | null;
-  item: Item;
-  itemToString: (item: Item) => string;
-  renderItem: (item: Item) => React.ReactNode;
+  item: T;
+  itemToString: (item: T) => string;
+  renderItem: (item: T) => React.ReactNode;
   selectedIndex: number;
 } & React.HTMLAttributes<HTMLButtonElement>) {
   const { ref, index } = useListItem({
@@ -207,7 +214,6 @@ function Option({
         isActive && css["active"],
       )}
       ref={ref}
-      role="option"
       type="button"
     >
       {isSelected && <CheckIcon className={css["option-indicator"]} />}
@@ -216,10 +222,10 @@ function Option({
   );
 }
 
-function defaultItemToString(item: Item) {
+function defaultItemToString<T extends Item>(item: T) {
   return item ? item.label : "";
 }
 
-function defaultRenderItem(item: Item) {
+function defaultRenderItem<T extends Item>(item: T) {
   return <span>{item.label}</span>;
 }

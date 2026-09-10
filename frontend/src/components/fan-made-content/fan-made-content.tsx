@@ -3,7 +3,7 @@ import {
   type FanMadeProjectInfo,
   FanMadeProjectSchema,
 } from "@arkham-build/shared";
-import { type UseQueryResult, useQuery } from "@tanstack/react-query";
+import type { UseQueryResult } from "@tanstack/react-query";
 import {
   BookDashedIcon,
   CheckIcon,
@@ -20,12 +20,17 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "wouter";
 import { z } from "zod";
 import type { SettingProps } from "@/pages/settings/types";
+import {
+  useFanMadeProjectsQuery,
+  useQuickInstallQuery,
+} from "@/queries/fan-made";
+import {
+  useAddFanMadeProjectMutation,
+  useRemoveFanMadeProjectMutation,
+} from "@/queries/mutations/fan-made";
 import { useStore } from "@/store";
 import { selectOwnedFanMadeProjects } from "@/store/selectors/fan-made-content";
-import {
-  queryFanMadeProjectData,
-  queryFanMadeProjects,
-} from "@/store/services/queries";
+import { queryFanMadeProjectData } from "@/store/services/requests/fan-made-projects";
 import type { FanMadeContentFilter } from "@/store/slices/lists.types";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
@@ -61,8 +66,6 @@ type Filterable = {
 };
 
 export function FanMadeContent(props: SettingProps) {
-  const { t } = useTranslation();
-  const toast = useToast();
   const [searchParams] = useSearchParams();
 
   // TECH DEBT: the current preview implementation re-uses the card grid.
@@ -74,47 +77,8 @@ export function FanMadeContent(props: SettingProps) {
     };
   }, [closeCardModal]);
 
-  const addFanMadeProject = useStore((state) => state.addFanMadeProject);
-
-  const listingsQuery = useQuery({
-    queryFn: queryFanMadeProjects,
-    queryKey: ["fan-made-project-info"],
-  });
-
-  const onAddProject = useCallback(
-    async (payload: unknown) => {
-      try {
-        const search = new URLSearchParams(window.location.search);
-        search.delete("install_id");
-        search.delete("install_url");
-
-        window.history.replaceState(
-          {},
-          "",
-          `${window.location.pathname}?${search.toString()}`,
-        );
-
-        await addFanMadeProject(payload);
-      } catch (err) {
-        const message =
-          err instanceof z.core.$ZodError
-            ? z.prettifyError(err)
-            : (err as Error).message;
-
-        toast.show({
-          children: t("fan_made_content.messages.parse_failed", {
-            error: message,
-          }),
-          variant: "error",
-        });
-
-        console.error(err);
-        // biome-ignore lint/suspicious/noExplicitAny: debug
-        console.info("error details:", (err as any)?.issues);
-      }
-    },
-    [addFanMadeProject, toast, t],
-  );
+  const listingsQuery = useFanMadeProjectsQuery();
+  const onAddProject = useAddFanMadeProject();
 
   const installId = searchParams.get("install_id");
   const installUrl = searchParams.get("install_url");
@@ -164,6 +128,47 @@ export function FanMadeContent(props: SettingProps) {
         />
       )}
     </div>
+  );
+}
+
+function useAddFanMadeProject() {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const addFanMadeProjectMutation = useAddFanMadeProjectMutation();
+
+  return useCallback(
+    async (payload: unknown) => {
+      try {
+        const search = new URLSearchParams(window.location.search);
+        search.delete("install_id");
+        search.delete("install_url");
+
+        window.history.replaceState(
+          {},
+          "",
+          `${window.location.pathname}?${search.toString()}`,
+        );
+
+        await addFanMadeProjectMutation.mutateAsync(payload);
+      } catch (err) {
+        const message =
+          err instanceof z.core.$ZodError
+            ? z.prettifyError(err)
+            : (err as Error).message;
+
+        toast.show({
+          children: t("fan_made_content.messages.parse_failed", {
+            error: message,
+          }),
+          variant: "error",
+        });
+
+        console.error(err);
+        // oxlint-disable-next-line typescript/no-explicit-any -- debug
+        console.info("error details:", (err as any)?.issues);
+      }
+    },
+    [addFanMadeProjectMutation, t, toast],
   );
 }
 
@@ -286,7 +291,7 @@ function Collection({ onAddProject, listingsQuery, filterFn }: RegistryProps) {
   const { onAddFromRegistry, onAddFromUrl, onAddLocalProject } =
     useProjectRegistry(onAddProject);
 
-  const removeFanMadeProject = useStore((state) => state.removeFanMadeProject);
+  const removeFanMadeProjectMutation = useRemoveFanMadeProjectMutation();
 
   return (
     <section className={css["section"]} data-testid="collection">
@@ -384,7 +389,9 @@ function Collection({ onAddProject, listingsQuery, filterFn }: RegistryProps) {
                 <Button
                   data-testid="collection-project-uninstall"
                   size="sm"
-                  onClick={() => removeFanMadeProject(project.meta.code)}
+                  onClick={() => {
+                    removeFanMadeProjectMutation.mutate(project.meta.code);
+                  }}
                 >
                   <Trash2Icon /> {t("fan_made_content.actions.uninstall")}
                 </Button>
@@ -445,7 +452,7 @@ function Registry({ onAddProject, listingsQuery, filterFn }: RegistryProps) {
             const projectOwned = owned[meta.code];
 
             const addProject = () => {
-              onAddFromRegistry(listing);
+              void onAddFromRegistry(listing).catch(console.error);
             };
 
             return (
@@ -602,7 +609,7 @@ function ProjectCard(props: {
       <div className={cx(css["content"], "longform")}>
         {meta.description && (
           <div
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: escaped in markdown parser
+            // oxlint-disable-next-line react/no-danger -- escaped in markdown parser
             dangerouslySetInnerHTML={{
               __html: parseMarkdown(meta.description),
             }}
@@ -641,19 +648,20 @@ function QuickInstallDialog({
         return res.json();
       };
 
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading } = useQuickInstallQuery(
+    id || url,
     queryFn,
-    queryKey: ["quick-install", id || url],
-    enabled: open && (id != null || url != null),
-  });
-
-  const onInstall = useCallback(async () => {
-    if (!data) return;
-    await onAddProject(data);
-    setOpen(false);
-  }, [data, onAddProject]);
+    open,
+  );
 
   const validation = data ? FanMadeProjectSchema.safeParse(data) : undefined;
+  const project = validation?.success ? validation.data : undefined;
+
+  const onInstall = useCallback(async () => {
+    if (!project) return;
+    await onAddProject(project);
+    setOpen(false);
+  }, [onAddProject, project]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -688,9 +696,9 @@ function QuickInstallDialog({
                   status={400}
                 />
               )}
-              {data && validation?.success && (
+              {project && (
                 <div className={css["quick-install"]}>
-                  <ProjectCard project={data} />
+                  <ProjectCard project={project} />
                   <nav className={css["quick-install-actions"]}>
                     <Button
                       variant="primary"
@@ -765,14 +773,15 @@ function useProjectRegistry(onAddProject: (payload: unknown) => Promise<void>) {
   );
 
   const onAddFromUrl = useCallback(
-    async (evt: React.FormEvent<HTMLFormElement>) => {
+    async (evt: React.SubmitEvent<HTMLFormElement>) => {
       evt.preventDefault();
       evt.stopPropagation();
 
       const formData = new FormData(evt.currentTarget);
+      const value = formData.get("url");
+      if (typeof value !== "string" || !value) return;
 
-      const url = formData.get("url")?.toString();
-      if (!url) return;
+      const url = value;
 
       await onAddQuery(async () => {
         const res = await fetch(url);

@@ -1,10 +1,17 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: test code */
+/* oxlint-disable typescript/no-explicit-any -- test code */
 
-import type { Card } from "@arkham-build/shared";
+import {
+  CARD_TAG_FAVORITE_ID,
+  type Card,
+  type Collection,
+} from "@arkham-build/shared";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
 import { getMockStore } from "@/test/get-mock-store";
-import { selectLookupTables } from "../selectors/shared";
+import {
+  selectLookupTables,
+  selectStaticBuildQlInterpreter,
+} from "../selectors/shared";
 import type { StoreState } from "../slices";
 import type {
   AssetFilter,
@@ -12,10 +19,13 @@ import type {
   LevelFilter,
   SkillIconsFilter,
 } from "../slices/lists.types";
+import { applyTaboo } from "./card-edits";
+import { getCardTagFilterCode } from "./card-tags";
 import type { InvestigatorAccessConfig } from "./filtering";
 import {
   filterActions,
   filterAssets,
+  filterCardTags,
   filterCost,
   filterFactions,
   filterInvestigatorAccess,
@@ -26,6 +36,7 @@ import {
   filterTagFallback,
   makeOptionFilter,
 } from "./filtering";
+import type { ResolvedDeck } from "./types";
 
 describe("filter: investigator access", () => {
   let store: StoreApi<StoreState>;
@@ -36,8 +47,11 @@ describe("filter: investigator access", () => {
     target: string,
     config?: InvestigatorAccessConfig,
   ) {
+    const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
+
     return filterInvestigatorAccess(
       state.metadata.cards[code],
+      buildQlInterpreter,
       config,
     )?.(state.metadata.cards[target]);
   }
@@ -73,6 +87,12 @@ describe("filter: investigator access", () => {
       const state = store.getState();
       expect(applyFilter(state, "06002", "11099")).toBeTruthy();
       expect(applyFilter(state, "01001", "11099")).toBeFalsy();
+    });
+
+    it("handles case: faction-restricted basic weaknesses", () => {
+      const state = store.getState();
+      expect(applyFilter(state, "01001", "09124")).toBeTruthy();
+      expect(applyFilter(state, "01001", "09128")).toBeFalsy();
     });
   });
 
@@ -527,16 +547,20 @@ describe("filter: investigator access", () => {
   describe("trait changes from parallel fronts", () => {
     it("uses parallel front traits for checking trait-based access", () => {
       const state = store.getState();
+      const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
 
       const wendyAdams = state.metadata.cards["01005"];
       const parallelWendyAdams = state.metadata.cards["90037"];
       const forbiddenSutra = state.metadata.cards["11103"];
 
-      expect(filterInvestigatorAccess(wendyAdams)?.(forbiddenSutra)).toEqual(
-        false,
-      );
+      expect(
+        filterInvestigatorAccess(
+          wendyAdams,
+          buildQlInterpreter,
+        )?.(forbiddenSutra),
+      ).toEqual(false);
 
-      const filter = filterInvestigatorAccess(wendyAdams, {
+      const filter = filterInvestigatorAccess(wendyAdams, buildQlInterpreter, {
         investigatorFront: parallelWendyAdams,
       });
 
@@ -559,7 +583,10 @@ describe("filter: level", () => {
     config: LevelFilter,
     investigator?: Card,
   ) {
-    return filterLevel(config, investigator)(state.metadata.cards[code]);
+    const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
+    return filterLevel(config, buildQlInterpreter, {
+      investigator,
+    })(state.metadata.cards[code]);
   }
 
   it("handles case: no range", () => {
@@ -618,6 +645,24 @@ describe("filter: level", () => {
     expect(applyFilter(state, "02015", config)).toBeFalsy(); // weakness
   });
 
+  it("handles case: effective taboo level", () => {
+    const state = store.getState();
+    const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
+    const signumCrucis = applyTaboo(
+      state.metadata.cards["07197"],
+      state.metadata,
+      10,
+    );
+    const config: LevelFilter = { range: [0, 0] };
+
+    expect(filterLevel(config, buildQlInterpreter)(signumCrucis)).toBeFalsy();
+    expect(
+      filterLevel(config, buildQlInterpreter, {
+        checkEffectiveLevel: true,
+      })(signumCrucis),
+    ).toBeTruthy();
+  });
+
   it("handles case: customizable access", () => {
     const state = store.getState();
 
@@ -645,9 +690,13 @@ describe("filter: level", () => {
 
   it("handles case: customizable exceeds level", () => {
     const state = store.getState();
+    const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
 
     expect(
-      filterLevel({ range: [0, 5] } as any)({
+      filterLevel(
+        { range: [0, 5] } as any,
+        buildQlInterpreter,
+      )({
         ...state.metadata.cards["09022"],
         xp: 0,
         customization_xp: 12,
@@ -958,6 +1007,95 @@ describe("filter: skills", () => {
   });
 });
 
+describe("filter: card tags", () => {
+  let store: StoreApi<StoreState>;
+
+  beforeAll(async () => {
+    store = await getMockStore();
+    store.setState({
+      cardTags: {
+        tags: ["Favorites", "Upgrade"],
+        cardTags: {
+          "01016": ["Upgrade"],
+          "07211a": ["Favorites"],
+        },
+        favorites: {
+          "01001": true,
+        },
+      },
+    });
+  });
+
+  function applyFilter(
+    state: StoreState,
+    code: string,
+    value: string[],
+    deck?: Pick<ResolvedDeck, "deckCardTags">,
+  ) {
+    return filterCardTags(
+      value,
+      state.cardTags,
+      state.metadata,
+      selectLookupTables(state).relations.fronts,
+      deck,
+    )?.(state.metadata.cards[code]);
+  }
+
+  it("returns no filter when no tags are selected", () => {
+    const state = store.getState();
+    expect(
+      filterCardTags(
+        [],
+        state.cardTags,
+        state.metadata,
+        selectLookupTables(state).relations.fronts,
+      ),
+    ).toBeUndefined();
+  });
+
+  it("matches cards assigned to a selected tag", () => {
+    const state = store.getState();
+    const upgrade = getCardTagFilterCode("Upgrade");
+    expect(applyFilter(state, "01016", [upgrade])).toBeTruthy();
+    expect(applyFilter(state, "01017", [upgrade])).toBeFalsy();
+  });
+
+  it("matches favorite assignments", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "01001", [CARD_TAG_FAVORITE_ID])).toBeTruthy();
+    expect(applyFilter(state, "01002", [CARD_TAG_FAVORITE_ID])).toBeFalsy();
+  });
+
+  it("matches duplicate and back cards by canonical card identity", () => {
+    const state = store.getState();
+    expect(
+      applyFilter(state, "01516", [getCardTagFilterCode("Upgrade")]),
+    ).toBeTruthy();
+    expect(
+      applyFilter(state, "07211b", [getCardTagFilterCode("Favorites")]),
+    ).toBeTruthy();
+  });
+
+  it("does not match alternate cards as the same card identity", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "90024", [CARD_TAG_FAVORITE_ID])).toBeFalsy();
+  });
+
+  it("matches deck-local tags only with deck context", () => {
+    const state = store.getState();
+    const filterCode = getCardTagFilterCode("Scenario");
+    const deck = {
+      deckCardTags: {
+        "01017": ["Scenario"],
+      },
+    } satisfies Pick<ResolvedDeck, "deckCardTags">;
+
+    expect(applyFilter(state, "01017", [filterCode])).toBeFalsy();
+    expect(applyFilter(state, "01017", [filterCode], deck)).toBeTruthy();
+    expect(applyFilter(state, "01018", [filterCode], deck)).toBeFalsy();
+  });
+});
+
 describe("filter: ownership", () => {
   let store: StoreApi<StoreState>;
 
@@ -965,11 +1103,7 @@ describe("filter: ownership", () => {
     store = await getMockStore();
   });
 
-  function applyFilter(
-    state: StoreState,
-    code: string,
-    config: Record<string, number | boolean>,
-  ) {
+  function applyFilter(state: StoreState, code: string, config: Collection) {
     return filterOwnership({
       card: state.metadata.cards[code],
       metadata: state.metadata,
@@ -982,41 +1116,45 @@ describe("filter: ownership", () => {
   it("handles case: pack owned", () => {
     const state = store.getState();
     expect(applyFilter(state, "51007", {})).toBeFalsy();
-    expect(applyFilter(state, "51007", { rtdwl: true })).toBeTruthy();
+    expect(applyFilter(state, "51007", { rtdwl: 1 })).toBeTruthy();
   });
 
   it("handles case: new / old formats", () => {
     const state = store.getState();
     expect(applyFilter(state, "02301", {})).toBeFalsy();
-    expect(applyFilter(state, "02301", { litas: true })).toBeTruthy();
-    expect(applyFilter(state, "02301", { dwlp: true })).toBeTruthy();
+    expect(applyFilter(state, "02301", { litas: 1 })).toBeTruthy();
+    expect(applyFilter(state, "02301", { dwlp: 1 })).toBeTruthy();
   });
 
   it("handles case: core set", () => {
     const state = store.getState();
     expect(applyFilter(state, "01039", {})).toBeFalsy();
-    expect(applyFilter(state, "01039", { core: true })).toBeTruthy();
-    expect(applyFilter(state, "01039", { rcore: true })).toBeTruthy();
+    expect(applyFilter(state, "01039", { core: 1 })).toBeTruthy();
+    expect(applyFilter(state, "01039", { rcore: 1 })).toBeTruthy();
   });
 
-  // TODO: while we and arkhamcards both normalize cards to core set ids,
-  //       arkhamdb doesn't, so we might want to make this case work.
-  // it("handles case: revised core", () => {
-  //   const state = store.getState();
-  //   expect(applyFilter(state, "01539", { core: true })).toBeTruthy();
-  //   expect(applyFilter(state, "01539", { rcore: true })).toBeTruthy();
-  // });
+  it("handles case: revised core", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "01539", { core: 1 })).toBeTruthy();
+    expect(applyFilter(state, "01539", { rcore: 1 })).toBeTruthy();
+  });
 
   it("handles case: extended revised core", () => {
     const state = store.getState();
-    expect(applyFilter(state, "51007", { core: true })).toBeFalsy();
-    expect(applyFilter(state, "51007", { rcore: true })).toBeTruthy();
+    expect(applyFilter(state, "51007", { core: 1 })).toBeFalsy();
+    expect(applyFilter(state, "51007", { rcore: 1 })).toBeTruthy();
   });
 
   it("handles case: reprints", () => {
     const state = store.getState();
     expect(applyFilter(state, "01039", {})).toBeFalsy();
-    expect(applyFilter(state, "01039", { har: true })).toBeTruthy();
+    expect(applyFilter(state, "01039", { har: 1 })).toBeTruthy();
+  });
+
+  it("handles case: charisma reprint", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "01694", { core: 1, dwlp: 1 })).toBeFalsy();
+    expect(applyFilter(state, "02158", { core: 1, dwlp: 1 })).toBeTruthy();
   });
 });
 
@@ -1049,6 +1187,12 @@ describe("filter: investigator weakness access", () => {
     expect(applyFilter(state, "60101", "01100")).toBeTruthy();
   });
 
+  it("handles case: weakness is a faction-restricted basic weakness", () => {
+    const state = store.getState();
+    expect(applyFilter(state, "01001", "09124")).toBeTruthy();
+    expect(applyFilter(state, "01001", "09128")).toBeFalsy();
+  });
+
   it("handles case: weakness is multi-stage weakness", () => {
     const state = store.getState();
     expect(applyFilter(state, "60101", "04042")).toBeTruthy();
@@ -1077,7 +1221,8 @@ describe("filter: custom content options", () => {
     };
 
     const state = store.getState();
-    const filter = makeOptionFilter(option);
+    const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
+    const filter = makeOptionFilter(option, buildQlInterpreter);
     expect(filter?.(state.metadata.cards["05187"])).toBeTruthy();
     expect(filter?.(state.metadata.cards["60127"])).toBeFalsy();
   });
@@ -1092,7 +1237,9 @@ describe("filter: custom content options", () => {
     };
 
     const state = store.getState();
-    const filter = makeOptionFilter(option);
+    const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
+
+    const filter = makeOptionFilter(option, buildQlInterpreter);
     expect(filter?.(state.metadata.cards["05187"])).toBeTruthy();
     expect(filter?.(state.metadata.cards["60127"])).toBeFalsy();
   });

@@ -18,7 +18,7 @@
 }
 
 .results {
-  --color-neutral: var(--palette-three-point-five);
+  --color-neutral: var(--palette-4);
 
   display: grid;
   gap: 1rem;
@@ -48,7 +48,7 @@
   &:focus-visible {
     transform: translateY(-0.25rem);
     transition: transform 0.125s ease;
-    border: 2px solid var(--focus);
+    border: 2px solid var(--color-focus);
   }
 }
 

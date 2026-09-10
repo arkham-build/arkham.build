@@ -1,6 +1,6 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, Deck, DecklistConfig, Id } from "@arkham-build/shared";
 import { createSelector } from "reselect";
-import { resolveDeck } from "@/store/lib/resolve-deck";
+import { resolveDeck, resolveDeckSummary } from "@/store/lib/resolve-deck";
 import { time, timeEnd } from "@/utils/time";
 import { applyCardChanges } from "../lib/card-edits";
 import {
@@ -21,11 +21,10 @@ import {
 import { limitedSlotOccupation } from "../lib/limited-slots";
 import type { LookupTables } from "../lib/lookup-tables.types";
 import { makeSortFunction, sortAlphabeticalLatin } from "../lib/sorting";
-import type { Customization, ResolvedDeck } from "../lib/types";
-import type { Deck, Id } from "../schemas/deck.schema";
+import type { Customization, DeckSummary, ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";
-import type { DecklistConfig } from "../slices/settings.types";
 import {
+  selectBuildQlInterpreter,
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
@@ -34,19 +33,18 @@ import {
 export const selectResolvedDeckById = createSelector(
   selectMetadata,
   selectLookupTables,
-  (state: StoreState) => state.sharing,
   selectLocaleSortingCollator,
   (state: StoreState, deckId?: Id) =>
     deckId ? state.data.decks[deckId] : undefined,
   (state: StoreState, deckId?: Id, applyEdits?: boolean) =>
     deckId && applyEdits ? state.deckEdits?.[deckId] : undefined,
-  (metadata, lookupTables, sharing, collator, deck, edits) => {
+  (metadata, lookupTables, collator, deck, edits) => {
     if (!deck) return undefined;
 
     time("select_resolved_deck");
 
     const resolvedDeck = resolveDeck(
-      { metadata, lookupTables, sharing },
+      { metadata, lookupTables },
       collator,
       edits ? applyDeckEdits(deck, edits, metadata) : deck,
     );
@@ -56,32 +54,30 @@ export const selectResolvedDeckById = createSelector(
   },
 );
 
-export const selectLocalDecks = createSelector(
+export const selectLocalDeckSummaries = createSelector(
   (state: StoreState) => state.data,
   selectMetadata,
   selectLookupTables,
-  (state: StoreState) => state.sharing,
   selectLocaleSortingCollator,
-  (data, metadata, lookupTables, sharing, collator) => {
-    time("select_local_decks");
+  (data, metadata, lookupTables, collator) => {
+    time("select_local_deck_summaries");
 
-    const resolvedDecks = Object.keys(data.history).reduce<ResolvedDeck[]>(
+    const summaries = Object.keys(data.history).reduce<DeckSummary[]>(
       (acc, id) => {
         const deck = data.decks[id];
 
         try {
           if (deck) {
-            const resolved = resolveDeck(
-              { metadata, lookupTables, sharing },
-              collator,
-              deck,
+            acc.push(
+              resolveDeckSummary({ metadata, lookupTables }, collator, deck),
             );
-            acc.push(resolved);
           } else {
             console.warn(`Could not find deck ${id} in local storage.`);
           }
         } catch (err) {
-          console.error(`Error resolving deck ${id}: ${err}`);
+          console.error(
+            `Error resolving deck summary ${id}: ${(err as Error).toString()}`,
+          );
         }
 
         return acc;
@@ -89,12 +85,12 @@ export const selectLocalDecks = createSelector(
       [],
     );
 
-    resolvedDecks.sort((a, b) =>
+    summaries.sort((a, b) =>
       sortAlphabeticalLatin(b.date_update, a.date_update),
     );
 
-    timeEnd("select_local_decks");
-    return resolvedDecks;
+    timeEnd("select_local_deck_summaries");
+    return summaries;
   },
 );
 
@@ -102,9 +98,10 @@ export const selectDeckValid = createSelector(
   (_: StoreState, deck: ResolvedDeck | undefined) => deck,
   selectLookupTables,
   selectMetadata,
-  (deck, lookupTables, metadata) => {
+  selectBuildQlInterpreter,
+  (deck, lookupTables, metadata, buildQlInterpreter) => {
     return deck
-      ? validateDeck(deck, metadata, lookupTables)
+      ? validateDeck(deck, metadata, lookupTables, buildQlInterpreter)
       : { valid: false, errors: [] };
   },
 );
@@ -148,6 +145,8 @@ export type CustomizationUpgrade = {
 };
 
 export type HistoryEntry = ChangeStats & {
+  dateCreation: string;
+  dateUpdate: string;
   differences: {
     slots: SlotUpgrade[];
     extraSlots: SlotUpgrade[];
@@ -163,6 +162,7 @@ function getHistoryEntry(
   changes: ChangeRecord,
   metadata: StoreState["metadata"],
   collator: Intl.Collator,
+  deck: Pick<ResolvedDeck, "date_creation" | "date_update">,
 ): HistoryEntry {
   const { customizations, exileSlots, id, stats, tabooSetId } = changes;
 
@@ -232,6 +232,8 @@ function getHistoryEntry(
   return {
     id,
     ...stats,
+    dateCreation: deck.date_creation,
+    dateUpdate: deck.date_update,
     differences,
   };
 }
@@ -241,27 +243,31 @@ export function getDeckHistory(
   metadata: StoreState["metadata"],
   collator: Intl.Collator,
 ) {
-  const changes: ChangeRecord[] = [];
+  const history: HistoryEntry[] = [];
 
   for (let i = 0; i < decks.length - 1; i++) {
     const prev = decks[i];
     const next = decks[i + 1];
-    changes.unshift(getChangeRecord(prev, next, false));
-  }
 
-  const history = changes.map((change) =>
-    getHistoryEntry(change, metadata, collator),
-  );
+    history.unshift(
+      getHistoryEntry(
+        getChangeRecord(prev, next, false),
+        metadata,
+        collator,
+        next,
+      ),
+    );
+  }
 
   history.push({
     id: decks[0].id,
     changes: {
-      exileSlots: {},
       customizations: {},
       slots: {},
       extraSlots: {},
-      tabooSetId: null,
     },
+    dateCreation: decks[0].date_creation,
+    dateUpdate: decks[0].date_update,
     differences: {
       slots: [],
       extraSlots: [],
@@ -273,7 +279,7 @@ export function getDeckHistory(
     xpSpent: 0,
     xp: 0,
     modifierStats: {},
-  } as HistoryEntry);
+  });
 
   return history;
 }
@@ -283,15 +289,14 @@ export const selectDeckHistoryCached = createSelector(
   selectMetadata,
   selectLookupTables,
   (state: StoreState) => state.data,
-  (state: StoreState) => state.sharing,
   (state: StoreState) => state.settings,
   selectLocaleSortingCollator,
-  (id, metadata, lookupTables, data, sharing, settings, collator) => {
+  (id, metadata, lookupTables, data, settings, collator) => {
     const deck = data.decks[id];
     if (!deck) return [];
 
     return selectDeckHistory(
-      { metadata, data, sharing, settings },
+      { metadata, data, settings },
       lookupTables,
       collator,
       deck,
@@ -299,8 +304,8 @@ export const selectDeckHistoryCached = createSelector(
   },
 );
 
-export function selectDeckHistory(
-  deps: Pick<StoreState, "metadata" | "data" | "sharing" | "settings">,
+function selectDeckHistory(
+  deps: Pick<StoreState, "metadata" | "data" | "settings">,
   lookupTables: LookupTables,
   collator: Intl.Collator,
   deck: Deck,
@@ -317,7 +322,7 @@ export function selectDeckHistory(
 
   const resolvedDecks = history.map((deckId) =>
     resolveDeck(
-      { metadata: deps.metadata, lookupTables, sharing: deps.sharing },
+      { metadata: deps.metadata, lookupTables },
       collator,
       deckId === deck.id ? deck : deps.data.decks[deckId],
     ),
@@ -329,7 +334,7 @@ export function selectDeckHistory(
   return deckHistory;
 }
 
-function findDeckHistory(deck: Deck, dataSlice: StoreState["data"]) {
+export function findDeckHistory(deck: Deck, dataSlice: StoreState["data"]) {
   if (dataSlice.history[deck.id]) {
     const history = [...dataSlice.history[deck.id]];
     history.unshift(deck.id);
@@ -372,7 +377,7 @@ export const selectLatestUpgrade = createSelector(
     if (!prev || !next) return undefined;
     time("latest_upgrade");
     const changes = getChangeRecord(prev, next, false);
-    const differences = getHistoryEntry(changes, metadata, collator);
+    const differences = getHistoryEntry(changes, metadata, collator, next);
     timeEnd("latest_upgrade");
     return differences as UpgradeStats & HistoryEntry;
   },
@@ -380,9 +385,10 @@ export const selectLatestUpgrade = createSelector(
 
 export const selectLimitedSlotOccupation = createSelector(
   (_: StoreState, deck: ResolvedDeck) => deck,
-  (deck) => {
+  selectBuildQlInterpreter,
+  (deck, buildQlInterpreter) => {
     time("limited_slot_occupation");
-    const value = limitedSlotOccupation(deck);
+    const value = limitedSlotOccupation(deck, buildQlInterpreter);
     timeEnd("limited_slot_occupation");
     return value;
   },
@@ -400,16 +406,15 @@ export const selectDeckGroups = createSelector(
 export const selectUndoHistory = createSelector(
   selectMetadata,
   selectLookupTables,
-  (state: StoreState) => state.sharing,
   (state: StoreState) => state.data,
   selectLocaleSortingCollator,
   (_: StoreState, deck: ResolvedDeck) => deck,
-  (metadata, lookupTables, sharing, data, collator, deck) => {
+  (metadata, lookupTables, data, collator, deck) => {
     const prevDeck = data.decks[deck.id];
     if (!prevDeck) return [];
 
     const prev = resolveDeck(
-      { metadata, lookupTables: lookupTables, sharing },
+      { metadata, lookupTables: lookupTables },
       collator,
       prevDeck,
     );
@@ -419,6 +424,7 @@ export const selectUndoHistory = createSelector(
         getChangeRecord(prev, deck, true),
         metadata,
         collator,
+        deck,
       ),
       version: "current",
       dateUpdate: new Date().toISOString(),
@@ -427,7 +433,10 @@ export const selectUndoHistory = createSelector(
     if (!data.undoHistory?.[deck.id]) return [current];
 
     const history = data.undoHistory?.[deck.id].map((undoEntry) => ({
-      data: getHistoryEntry(undoEntry.changes, metadata, collator),
+      data: getHistoryEntry(undoEntry.changes, metadata, collator, {
+        date_creation: undoEntry.date_update,
+        date_update: undoEntry.date_update,
+      }),
       dateUpdate: undoEntry.date_update,
       version: undoEntry.version,
     }));

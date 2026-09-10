@@ -1,21 +1,12 @@
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: not relevant. */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: catches onclick bubbles up from content. */
-import {
-  autoPlacement,
-  autoUpdate,
-  FloatingPortal,
-  offset,
-  shift,
-  useFloating,
-  useTransitionStyles,
-} from "@floating-ui/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+/* oxlint-disable jsx-a11y/click-events-have-key-events -- not relevant. */
+/* oxlint-disable jsx-a11y/no-static-element-interactions -- catches onclick bubbles up from content. */
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { useCardLinkTooltip } from "@/components/card-tooltip/use-card-link-tooltip";
 import { useStore } from "@/store";
 import { redirectArkhamDBLinks } from "@/utils/arkhamdb";
-import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { parseMarkdown } from "@/utils/markdown";
-import { CardTooltip } from "./card-tooltip/card-tooltip";
 import css from "./deck-description.module.css";
 
 type Props = {
@@ -26,91 +17,43 @@ type Props = {
 
 function DeckDescription(props: Props) {
   const { centered, className, content } = props;
+  const { t } = useTranslation();
 
   const openCardModal = useStore((state) => state.openCardModal);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [cardTooltip, setCardTooltip] = useState<string>("");
+  const { cardLinkTooltip, referenceProps } = useCardLinkTooltip();
 
-  const restTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
-
-  useEffect(
-    () => () => {
-      if (restTimeoutRef.current) clearTimeout(restTimeoutRef.current);
-    },
-    [],
+  const descriptionMarkup = useMemo(
+    () => ({
+      __html: parseMarkdown(content, {
+        noImageReferrer: true,
+        externalEmbeds: {
+          loadLabel: t("external_embed.load"),
+          notice: t("external_embed.notice"),
+          title: t("external_embed.title"),
+        },
+      }),
+    }),
+    [content, t],
   );
-
-  const { context, refs, floatingStyles } = useFloating({
-    open: !!cardTooltip,
-    onOpenChange: () => setCardTooltip(""),
-    middleware: [shift(), autoPlacement(), offset(2)],
-    whileElementsMounted: autoUpdate,
-    strategy: "fixed",
-    placement: "bottom-start",
-  });
-
-  const { isMounted, styles: transitionStyles } = useTransitionStyles(context);
-
-  const onMouseMove = useCallback(
-    (evt: MouseEvent) => {
-      const code = getCardCodeForEvent(evt);
-
-      if (code) {
-        clearTimeout(restTimeoutRef.current);
-
-        restTimeoutRef.current = setTimeout(() => {
-          refs.setReference(evt.target as HTMLAnchorElement);
-          setCardTooltip(code);
-        }, 25);
-      }
-    },
-    [refs],
-  );
-
-  const onMouseLeave = useCallback(
-    (evt: MouseEvent) => {
-      clearTimeout(restTimeoutRef.current);
-
-      const code = getCardCodeForEvent(evt);
-      if (code === cardTooltip || !code) {
-        evt.preventDefault();
-        setCardTooltip("");
-      }
-    },
-    [cardTooltip],
-  );
-
-  useEffect(() => {
-    const div = containerRef.current;
-    if (!div) return;
-
-    const links = div.querySelectorAll("a");
-
-    for (const link of links) {
-      link.addEventListener("pointermove", onMouseMove);
-      link.addEventListener("pointerleave", onMouseLeave);
-      link.addEventListener("mouseleave", onMouseLeave);
-    }
-
-    return () => {
-      for (const link of links) {
-        link.removeEventListener("pointermove", onMouseMove);
-        link.removeEventListener("pointerleave", onMouseLeave);
-        link.removeEventListener("mouseleave", onMouseLeave);
-      }
-    };
-  }, [onMouseMove, onMouseLeave]);
 
   const onLinkClick = useCallback(
     (evt: React.MouseEvent) => {
       if (evt.target instanceof HTMLElement) {
-        const anchor = evt.target.closest("a") as HTMLAnchorElement;
-        const href = anchor.getAttribute("href");
+        const loadEmbedButton = evt.target.closest("[data-load-embed]");
+
+        if (loadEmbedButton) {
+          evt.preventDefault();
+          loadExternalEmbed(loadEmbedButton);
+          return;
+        }
+
+        const anchor = evt.target.closest("a") as HTMLAnchorElement | null;
+        const href = anchor?.getAttribute("href");
 
         if (href?.includes("/card/") && !href.includes("#")) {
           evt.preventDefault();
-          const code = anchor.href.split("/card/").at(-1);
+          const code = anchor?.href.split("/card/").at(-1);
 
           if (code) {
             openCardModal(code);
@@ -119,11 +62,6 @@ function DeckDescription(props: Props) {
           }
         } else {
           redirectArkhamDBLinks(evt);
-        }
-
-        if (anchor != null) {
-          if (anchor.href.startsWith("/card")) {
-          }
         }
       }
     },
@@ -140,36 +78,47 @@ function DeckDescription(props: Props) {
           className,
         )}
         data-testid="description-content"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: we sanitize html content.
-        dangerouslySetInnerHTML={{
-          __html: parseMarkdown(content),
-        }}
+        // oxlint-disable-next-line react/no-danger -- we sanitize html content.
+        dangerouslySetInnerHTML={descriptionMarkup}
         onClick={onLinkClick}
-        ref={containerRef}
+        {...referenceProps}
       />
 
-      {isMounted && cardTooltip && (
-        <FloatingPortal id={FLOATING_PORTAL_ID}>
-          <div
-            ref={refs.setFloating}
-            style={{ ...floatingStyles, ...transitionStyles }}
-          >
-            <CardTooltip code={cardTooltip} />
-          </div>
-        </FloatingPortal>
-      )}
+      {cardLinkTooltip}
     </>
   );
 }
 
-function getCardCodeForEvent(
-  evt: React.MouseEvent | MouseEvent,
-): string | undefined {
-  const target = (evt.target as HTMLElement)?.closest("a");
+function loadExternalEmbed(trigger: Element) {
+  const placeholder = trigger.closest("[data-embed-src]");
 
-  if (target instanceof HTMLAnchorElement) {
-    return /\/card\/(.*)$/.exec(target.href)?.[1];
+  if (!(placeholder instanceof HTMLElement)) {
+    return;
   }
+
+  const { embedAllow, embedAllowfullscreen, embedSrc, embedTitle } =
+    placeholder.dataset;
+
+  if (!embedSrc) {
+    return;
+  }
+
+  const iframe = document.createElement("iframe");
+  iframe.src = embedSrc;
+  iframe.title = embedTitle ?? "";
+  iframe.loading = "lazy";
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+
+  if (embedAllow) {
+    iframe.allow = embedAllow;
+  }
+
+  if (embedAllowfullscreen === "true") {
+    iframe.allowFullscreen = true;
+  }
+
+  placeholder.replaceChildren(iframe);
+  placeholder.removeAttribute("data-embed-src");
 }
 
 export default DeckDescription;

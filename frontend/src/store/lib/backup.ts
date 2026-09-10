@@ -7,8 +7,10 @@ import type { StoreState } from "../slices";
 type Backup = { data: StoreState; version: number };
 
 export function prepareBackup(state: StoreState) {
-  const data: Record<string, unknown> = appStorage.partialize(state);
+  const data: Partial<StoreState> = appStorage.partialize(state);
   data.metadata = undefined;
+  data.sync = undefined;
+  data.auth = undefined;
 
   const backup = JSON.stringify({
     version: VERSION,

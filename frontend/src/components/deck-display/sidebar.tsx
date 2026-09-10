@@ -1,17 +1,21 @@
+import { type Id, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import {
   ArchiveIcon,
   ArchiveRestoreIcon,
   CopyIcon,
   DicesIcon,
   EllipsisIcon,
+  ExternalLinkIcon,
   ImportIcon,
   PencilIcon,
   ShareIcon,
   Trash2Icon,
+  UploadIcon,
 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useLocation, useSearch } from "wouter";
+import { DeckConflictPanel } from "@/components/deck-conflict/deck-conflict-panel";
 import { DeckInvestigator } from "@/components/deck-investigator/deck-investigator";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -24,23 +28,19 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/components/ui/toast.hooks";
 import { UpgradeModal } from "@/pages/deck-view/upgrade-modal";
+import { useImportSharedDeckMutation } from "@/queries/mutations/decks";
 import { useStore } from "@/store";
+import { isSyncedStorageProvider } from "@/store/lib/sync";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Id } from "@/store/schemas/deck.schema";
-import { selectConnectionsData } from "@/store/selectors/connections";
+import { selectDeckCreateStorageProviderOptions } from "@/store/selectors/deck-create";
 import type { History } from "@/store/selectors/decks";
-import {
-  selectConnectionLock,
-  selectConnectionLockForDeck,
-} from "@/store/selectors/shared";
+import { selectDeckHasConflict } from "@/store/selectors/sync";
 import { localizeArkhamDBBaseUrl } from "@/utils/arkhamdb";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
-import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
 import { DeckDetail, DeckDetails } from "../deck-details";
 import { DeckInvestigatorModal } from "../deck-investigator/deck-investigator-modal";
-import { SuziStandaloneSetupDialog } from "../suzi-standalone-setup/suzi-standalone-setup";
+import { SuziStandaloneSetup } from "../suzi-standalone-setup/suzi-standalone-setup";
 import { CopyToClipboard } from "../ui/copy-to-clipboard";
 import { HotkeyTooltip } from "../ui/hotkey";
 import type { DeckDisplayType } from "./deck-display";
@@ -52,7 +52,7 @@ import {
   useDuplicateDeck,
   useExportJson,
   useExportText,
-  useUploadDeck,
+  useUploadDeckToProvider,
 } from "./hooks";
 import css from "./sidebar.module.css";
 import type { DeckOrigin } from "./types";
@@ -66,25 +66,11 @@ type Props = {
   type: DeckDisplayType;
 };
 
+const uploadProviders = ["account", "arkhamdb"] as const;
+type UploadProvider = (typeof uploadProviders)[number];
+
 export function Sidebar(props: Props) {
   const { className, history, innerClassName, origin, deck, type } = props;
-
-  const connectionsData = useStore(selectConnectionsData);
-
-  const uploadDeck = useUploadDeck();
-  const onUpload = useCallback(() => {
-    uploadDeck(deck.id);
-  }, [deck.id, uploadDeck]);
-
-  const isReadOnly = !!deck.next_deck;
-
-  const canUploadToArkhamDB =
-    origin === "local" &&
-    !isReadOnly &&
-    deck.source !== "arkhamdb" &&
-    !isEmpty(connectionsData);
-
-  const onArkhamDBUpload = canUploadToArkhamDB ? onUpload : undefined;
 
   return (
     <div className={className}>
@@ -97,24 +83,12 @@ export function Sidebar(props: Props) {
         <SidebarActions
           deck={deck}
           history={history}
-          onArkhamDBUpload={onArkhamDBUpload}
           origin={origin}
           type={type}
         />
         <DeckDetails deck={deck} />
         {origin === "local" && <SidebarUpgrade deck={deck} />}
-
-        {(origin === "arkhamdb" || deck.source === "arkhamdb") && (
-          <ArkhamDBDetails deck={deck} />
-        )}
-
-        {deck.source !== "arkhamdb" && (
-          <Sharing
-            onArkhamDBUpload={onArkhamDBUpload}
-            deck={deck}
-            origin={origin}
-          />
-        )}
+        <Sharing deck={deck} type={type} />
       </div>
     </div>
   );
@@ -144,9 +118,8 @@ function SidebarActions(props: {
   deck: ResolvedDeck;
   history?: History;
   type: DeckDisplayType;
-  onArkhamDBUpload?: () => void;
 }) {
-  const { history, origin, deck, onArkhamDBUpload, type } = props;
+  const { history, origin, deck, type } = props;
 
   const { t } = useTranslation();
   const [, navigate] = useLocation();
@@ -155,14 +128,15 @@ function SidebarActions(props: {
 
   const [actionsOpen, setActionsOpen] = useState(false);
 
-  const [upgradeModalOpen, setUpgradeModalOpen] = useState(
-    origin === "local" && search.includes("upgrade") && !deck.next_deck,
+  const hasSyncConflict = useStore((state) =>
+    selectDeckHasConflict(state, deck.id),
   );
 
-  const connectionLock = useStore(selectConnectionLock);
-
-  const deckConnectionLock = useStore((state) =>
-    selectConnectionLockForDeck(state, deck),
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(
+    origin === "local" &&
+      search.includes("upgrade") &&
+      !deck.next_deck &&
+      !hasSyncConflict,
   );
 
   const deleteDeck = useDeleteDeck();
@@ -181,9 +155,9 @@ function SidebarActions(props: {
 
   const onDeleteLatest = useCallback(() => {
     if (deck.previous_deck) {
-      deleteUpgrade(deck.id);
+      void deleteUpgrade(deck.id).catch(console.error);
     } else {
-      onDelete();
+      void onDelete().catch(console.error);
     }
   }, [deleteUpgrade, onDelete, deck]);
 
@@ -202,8 +176,18 @@ function SidebarActions(props: {
 
   const onDuplicate = useCallback(() => {
     setActionsOpen(false);
-    duplicateDeck(deck.id);
+    void duplicateDeck(deck.id).catch(console.error);
   }, [deck.id, duplicateDeck]);
+
+  const uploadDeckToProvider = useUploadDeckToProvider();
+
+  const onUpload = useCallback(
+    (provider: UploadProvider) => {
+      setActionsOpen(false);
+      void uploadDeckToProvider(deck.id, provider);
+    },
+    [deck.id, uploadDeckToProvider],
+  );
 
   const onUpgradeModalOpenChange = useCallback((val: boolean) => {
     setUpgradeModalOpen(val);
@@ -213,20 +197,21 @@ function SidebarActions(props: {
   }, []);
 
   const onOpenUpgradeModal = useCallback(() => {
+    if (hasSyncConflict) return;
     setUpgradeModalOpen(true);
-  }, []);
+  }, [hasSyncConflict]);
 
   const onEdit = useCallback(() => {
     navigate(`/deck/edit/${deck.id}`);
   }, [deck.id, navigate]);
 
-  const importSharedDeck = useStore((state) => state.importSharedDeck);
+  const importSharedDeckMutation = useImportSharedDeckMutation();
 
   const { isArchived, toggleArchived } = useChangeArchiveStatus(deck.id);
 
   const onImport = useCallback(async () => {
     try {
-      const id = await importSharedDeck(deck, type);
+      const id = await importSharedDeckMutation.mutateAsync({ deck, type });
 
       navigate(`/deck/view/${id}`);
     } catch (err) {
@@ -237,17 +222,29 @@ function SidebarActions(props: {
         variant: "error",
       });
     }
-  }, [deck, importSharedDeck, toast.show, navigate, t, type]);
+  }, [deck, importSharedDeckMutation, toast, navigate, t, type]);
 
   const isReadOnly = !!deck.next_deck;
   const isLocal = origin === "local";
+  const isLocalOnly = isLocal && !deck.source;
 
-  useHotkey("e", onEdit, { disabled: isReadOnly || !isLocal });
-  useHotkey("u", onOpenUpgradeModal, { disabled: isReadOnly || !isLocal });
+  const storageProviderOptions = useStore(
+    selectDeckCreateStorageProviderOptions,
+  );
+  const availableUploadProviders = uploadProviders.filter((provider) =>
+    storageProviderOptions.some((option) => option.value === provider),
+  );
+
+  useHotkey("e", onEdit, {
+    disabled: hasSyncConflict || isReadOnly || !isLocal,
+  });
+  useHotkey("u", onOpenUpgradeModal, {
+    disabled: hasSyncConflict || isReadOnly || !isLocal,
+  });
   useHotkey("cmd+a", toggleArchived, { disabled: !isLocal });
   useHotkey("cmd+backspace", onDelete, { disabled: isReadOnly || !isLocal });
   useHotkey("cmd+shift+backspace", onDeleteLatest, {
-    disabled: isReadOnly || !isLocal,
+    disabled: hasSyncConflict || isReadOnly || !isLocal,
   });
   useHotkey("cmd+i", onImport, { disabled: isLocal });
   useHotkey("cmd+d", onDuplicate, { disabled: !isLocal });
@@ -283,21 +280,27 @@ function SidebarActions(props: {
           )}
         </Notice>
       )}
+      {hasSyncConflict && <DeckConflictPanel deckId={deck.id} />}
       <div className={css["actions"]}>
         {origin === "local" ? (
           <>
-            <HotkeyTooltip keybind="e" description={t("deck.actions.edit")}>
-              <Link to={`/deck/edit/${deck.id}`} asChild>
+            <Link to={`/deck/edit/${deck.id}`} asChild>
+              <HotkeyTooltip keybind="e" description={t("deck.actions.edit")}>
                 <Button
                   data-testid="view-edit"
-                  disabled={isReadOnly}
+                  disabled={isReadOnly || hasSyncConflict}
                   as="a"
-                  size="full"
+                  full
+                  tooltip={
+                    hasSyncConflict
+                      ? t("deck_sync.conflict.edit_locked")
+                      : undefined
+                  }
                 >
                   <PencilIcon /> {t("deck.actions.edit_short")}
                 </Button>
-              </Link>
-            </HotkeyTooltip>
+              </HotkeyTooltip>
+            </Link>
             <Dialog
               onOpenChange={onUpgradeModalOpenChange}
               open={upgradeModalOpen}
@@ -309,8 +312,13 @@ function SidebarActions(props: {
                 <DialogTrigger asChild>
                   <Button
                     data-testid="view-upgrade"
-                    disabled={isReadOnly}
-                    size="full"
+                    disabled={hasSyncConflict || isReadOnly}
+                    full
+                    tooltip={
+                      hasSyncConflict
+                        ? t("deck_sync.conflict.edit_locked")
+                        : undefined
+                    }
                   >
                     <i className="icon-xp-bold" />{" "}
                     {t("deck.actions.upgrade_short")}
@@ -327,185 +335,181 @@ function SidebarActions(props: {
             keybind="cmd+i"
             description={t("deck_view.actions.import")}
           >
-            <Button size="full" onClick={onImport} data-testid="share-import">
+            <Button full onClick={onImport} data-testid="share-import">
               <ImportIcon /> {t("deck_view.actions.import")}
             </Button>
           </HotkeyTooltip>
         )}
-        <Popover
-          modal
-          placement="bottom-start"
-          open={actionsOpen}
-          onOpenChange={setActionsOpen}
-        >
-          <PopoverTrigger asChild>
-            <Button
-              variant="bare"
-              data-testid="view-more-actions"
-              aria-label={t("common.more_actions")}
-            >
-              <EllipsisIcon />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <DropdownMenu>
-              {deck.investigatorBack.card.code === SPECIAL_CARD_CODES.SUZI && (
-                <>
-                  <SuziStandaloneSetupDialog deck={deck}>
-                    <DropdownButton data-testid="view-suzi-chaos-mode">
-                      <DicesIcon />
-                      {t("suzi_standalone_setup.title_short")}
-                    </DropdownButton>
-                  </SuziStandaloneSetupDialog>
+        <Dialog>
+          <Popover
+            modal
+            placement="bottom-start"
+            open={actionsOpen}
+            onOpenChange={setActionsOpen}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                variant="bare"
+                data-testid="view-more-actions"
+                aria-label={t("common.more_actions")}
+              >
+                <EllipsisIcon />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <DropdownMenu>
+                {deck.investigatorBack.card.code ===
+                  SPECIAL_CARD_CODES.SUZI && (
+                  <>
+                    <DialogTrigger asChild>
+                      <DropdownButton
+                        data-testid="view-suzi-chaos-mode"
+                        onClick={() => setActionsOpen(false)}
+                      >
+                        <DicesIcon />
+                        {t("suzi_standalone_setup.title_short")}
+                      </DropdownButton>
+                    </DialogTrigger>
 
-                  <hr />
-                </>
-              )}
-              {origin === "local" && (
-                <>
-                  <DropdownButton
-                    hotkey="cmd+d"
-                    data-testid="view-duplicate"
-                    onClick={onDuplicate}
-                  >
-                    <CopyIcon />
-                    {t("deck.actions.duplicate_short")}
-                  </DropdownButton>
-                  <DropdownButton
-                    data-testid="view-archive"
-                    hotkey="cmd+a"
-                    onClick={toggleArchived}
-                  >
-                    {isArchived ? (
-                      <>
-                        <ArchiveRestoreIcon />
-                        {t("deck.actions.unarchive")}
-                      </>
-                    ) : (
-                      <>
-                        <ArchiveIcon />
-                        {t("deck.actions.archive")}
-                      </>
-                    )}
-                  </DropdownButton>
-                  <hr />
-                </>
-              )}
-              {onArkhamDBUpload && (
-                <>
-                  <DropdownButton
-                    data-testid="view-upload"
-                    disabled={!!connectionLock}
-                    size="full"
-                    tooltip={connectionLock}
-                    variant="bare"
-                    onClick={onArkhamDBUpload}
-                  >
-                    <i className="icon-elder_sign" />{" "}
-                    {t("deck_view.actions.upload", {
-                      provider: "ArkhamDB",
-                    })}
-                  </DropdownButton>
-                  <hr />
-                </>
-              )}
-              <DropdownButton
-                data-testid="view-export-json"
-                onClick={onExportJson}
-              >
-                {t("deck.actions.export_json")}
-              </DropdownButton>
-              <DropdownButton
-                data-testid="view-export-text"
-                onClick={onExportText}
-              >
-                {t("deck.actions.export_text")}
-              </DropdownButton>
-              {origin === "local" && (
-                <>
-                  <hr />
-                  {!!deck.previous_deck && (
+                    <hr />
+                  </>
+                )}
+                {origin === "local" && (
+                  <>
                     <DropdownButton
-                      data-testid="view-delete-upgrade"
-                      disabled={isReadOnly || !!deckConnectionLock}
-                      hotkey="cmd+shift+backspace"
-                      onClick={onDeleteUpgrade}
-                      tooltip={deckConnectionLock}
+                      hotkey="cmd+d"
+                      data-testid="view-duplicate"
+                      onClick={onDuplicate}
                     >
-                      <i className="icon-xp-bold" />{" "}
-                      {t("deck.actions.delete_upgrade")}
+                      <CopyIcon />
+                      {t("deck.actions.duplicate_short")}
                     </DropdownButton>
-                  )}
-                  <DropdownButton
-                    data-testid="view-delete"
-                    disabled={isReadOnly || !!deckConnectionLock}
-                    hotkey="cmd+backspace"
-                    onClick={onDelete}
-                    tooltip={deckConnectionLock}
-                  >
-                    <Trash2Icon /> {t("deck.actions.delete")}
-                  </DropdownButton>
-                </>
-              )}
-            </DropdownMenu>
-          </PopoverContent>
-        </Popover>
+                    {isLocalOnly &&
+                      availableUploadProviders.map((provider) => (
+                        <DropdownButton
+                          key={provider}
+                          data-testid={`view-upload-${provider}`}
+                          onClick={() => onUpload(provider)}
+                        >
+                          <UploadIcon />
+                          {provider === "account"
+                            ? t("deck_view.actions.upload_account")
+                            : t("deck_view.actions.upload", {
+                                provider: t(
+                                  `deck_edit.config.storage_provider.${provider}`,
+                                ),
+                              })}
+                        </DropdownButton>
+                      ))}
+                    <DropdownButton
+                      data-testid="view-archive"
+                      hotkey="cmd+a"
+                      onClick={toggleArchived}
+                    >
+                      {isArchived ? (
+                        <>
+                          <ArchiveRestoreIcon />
+                          {t("deck.actions.unarchive")}
+                        </>
+                      ) : (
+                        <>
+                          <ArchiveIcon />
+                          {t("deck.actions.archive")}
+                        </>
+                      )}
+                    </DropdownButton>
+                    <hr />
+                  </>
+                )}
+                <DropdownButton
+                  data-testid="view-export-json"
+                  onClick={onExportJson}
+                >
+                  {t("deck.actions.export_json")}
+                </DropdownButton>
+                <DropdownButton
+                  data-testid="view-export-text"
+                  onClick={onExportText}
+                >
+                  {t("deck.actions.export_text")}
+                </DropdownButton>
+                {origin === "local" && (
+                  <>
+                    <hr />
+                    {!!deck.previous_deck && (
+                      <DropdownButton
+                        data-testid="view-delete-upgrade"
+                        disabled={hasSyncConflict || isReadOnly}
+                        hotkey="cmd+shift+backspace"
+                        onClick={onDeleteUpgrade}
+                        tooltip={
+                          hasSyncConflict
+                            ? t("deck_sync.conflict.edit_locked")
+                            : undefined
+                        }
+                      >
+                        <i className="icon-xp-bold" />{" "}
+                        {t("deck.actions.delete_upgrade")}
+                      </DropdownButton>
+                    )}
+                    <DropdownButton
+                      data-testid="view-delete"
+                      disabled={isReadOnly}
+                      hotkey="cmd+backspace"
+                      onClick={onDelete}
+                    >
+                      <Trash2Icon /> {t("deck.actions.delete")}
+                    </DropdownButton>
+                  </>
+                )}
+              </DropdownMenu>
+            </PopoverContent>
+          </Popover>
+          {deck.investigatorBack.card.code === SPECIAL_CARD_CODES.SUZI && (
+            <DialogContent>
+              <SuziStandaloneSetup deck={deck} />
+            </DialogContent>
+          )}
+        </Dialog>
       </div>
     </>
   );
 }
 
-function Sharing(props: {
-  onArkhamDBUpload?: () => void;
-  deck: ResolvedDeck;
-  origin: DeckOrigin;
-}) {
-  const { deck, onArkhamDBUpload, origin } = props;
-  const toast = useToast();
+function Sharing(props: { deck: ResolvedDeck; type: DeckDisplayType }) {
+  const { deck, type } = props;
   const { t } = useTranslation();
+  const toast = useToast();
 
-  const deckData = useStore((state) => state.data.decks[props.deck.id]);
-  const share = useStore((state) => state.sharing.decks[props.deck.id]);
+  const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
+  const storageProviderOptions = useStore(
+    selectDeckCreateStorageProviderOptions,
+  );
 
-  const connectionLock = useStore(selectConnectionLock);
+  const isSynced = isSyncedStorageProvider(deck.source);
 
-  const createShare = useStore((state) => state.createShare);
-  const deleteShare = useStore((state) => state.deleteShare);
-  const updateShare = useStore((state) => state.updateShare);
+  const availableUploadProviders = uploadProviders.filter((provider) =>
+    storageProviderOptions.some((option) => option.value === provider),
+  );
 
-  async function withToast(fn: () => Promise<unknown>, action: string) {
-    const id = toast.show({
-      children: t(`deck_view.sharing.${action}`),
-      variant: "loading",
+  const uploadDeckToProvider = useUploadDeckToProvider();
+
+  const onUpload = useCallback(
+    (provider: UploadProvider) => {
+      void uploadDeckToProvider(deck.id, provider);
+    },
+    [deck.id, uploadDeckToProvider],
+  );
+
+  const onAccountDeckArkhamDBUpload = useCallback(() => {
+    toast.show({
+      children: t("deck.toasts.upload_requires_duplicate"),
+      variant: "error",
     });
+  }, [t, toast]);
 
-    try {
-      await fn();
-      toast.dismiss(id);
-    } catch (err) {
-      toast.dismiss(id);
-      toast.show({
-        children: t(`deck_view.sharing.${action}_failed`, {
-          error: (err as Error).message,
-        }),
-        variant: "error",
-      });
-    }
-  }
-
-  const onCreateShare = async () => {
-    await withToast(() => createShare(deck.id as string), "create");
-  };
-
-  const onDeleteShare = async () => {
-    await withToast(() => deleteShare(deck.id as string), "delete");
-  };
-
-  const onUpdateShare = async () => {
-    await withToast(() => updateShare(deckData), "update");
-  };
-
-  const isReadOnly = !!deck.next_deck;
+  const canUploadAccountDeckToArkhamDB =
+    deck.source === "account" && availableUploadProviders.includes("arkhamdb");
 
   return (
     <section className={css["details"]} data-testid="share">
@@ -514,63 +518,65 @@ function Sharing(props: {
         icon={<ShareIcon />}
         label={t("deck_view.sharing.title")}
       >
-        {share || origin !== "local" ? (
+        {isSynced ? (
           <div className={css["share"]}>
-            <ShareInfo id={deck.id} path={`/share/${deck.id}`} />
-            {origin === "local" && (
-              <nav className={css["share-actions"]}>
-                {deck.date_update !== share && (
-                  <Button
-                    disabled={isReadOnly}
-                    onClick={onUpdateShare}
-                    size="sm"
-                  >
-                    {t("deck_view.sharing.update")}
-                  </Button>
-                )}
+            <ShareInfo deck={deck} path={`/${type}/view/${deck.id}`} />
+            <nav className={css["share-actions"]}>
+              {devModeEnabled && (
+                <DevModeApiLinkButton id={deck.id} type={type} />
+              )}
+              {canUploadAccountDeckToArkhamDB && (
                 <Button
+                  data-testid="share-upload-arkhamdb"
+                  onClick={onAccountDeckArkhamDBUpload}
                   size="sm"
-                  onClick={onDeleteShare}
-                  data-testid="share-delete"
                 >
-                  {t("deck_view.sharing.delete")}
+                  <UploadIcon />
+                  {t("deck_view.actions.upload", {
+                    provider: t("deck_edit.config.storage_provider.arkhamdb"),
+                  })}
                 </Button>
-              </nav>
-            )}
+              )}
+              {deck.source === "arkhamdb" && (
+                <Button
+                  as="a"
+                  href={`${localizeArkhamDBBaseUrl()}/${type}/view/${deck.id}`}
+                  size="sm"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {t("deck_view.sharing.view_on_arkhamdb")}
+                </Button>
+              )}
+            </nav>
           </div>
         ) : (
           <div className={css["share-empty"]}>
             <p>{t("deck_view.sharing.description")}</p>
-            <div className={css["share-actions"]}>
-              <Button
-                data-testid="share-create"
-                disabled={isReadOnly}
-                onClick={onCreateShare}
-                size="sm"
-                tooltip={
-                  <Trans
-                    t={t}
-                    i18nKey="deck_view.sharing.create_tooltip"
-                    components={{ br: <br />, strong: <strong /> }}
-                  />
-                }
-              >
-                <ShareIcon />
-                {t("deck_view.sharing.create")}
-              </Button>
-              {onArkhamDBUpload && (
-                <Button
-                  data-testid="view-upload"
-                  disabled={!!connectionLock}
-                  onClick={onArkhamDBUpload}
-                  tooltip={connectionLock}
-                  size="sm"
-                >
-                  <i className="icon-elder_sign" />{" "}
-                  {t("deck_view.actions.upload", { provider: "ArkhamDB" })}
-                </Button>
-              )}
-            </div>
+            {availableUploadProviders.length > 0 && (
+              <nav className={css["share-actions"]}>
+                {availableUploadProviders.map((provider) => (
+                  <Button
+                    key={provider}
+                    onClick={() => onUpload(provider)}
+                    disabled={
+                      provider !== "account" &&
+                      !!(deck.previous_deck || deck.next_deck)
+                    }
+                    size="sm"
+                  >
+                    <UploadIcon />
+                    {provider === "account"
+                      ? t("deck_view.actions.upload_account")
+                      : t("deck_view.actions.upload", {
+                          provider: t(
+                            `deck_edit.config.storage_provider.${provider}`,
+                          ),
+                        })}
+                  </Button>
+                ))}
+              </nav>
+            )}
           </div>
         )}
       </DeckDetail>
@@ -578,8 +584,8 @@ function Sharing(props: {
   );
 }
 
-function ShareInfo(props: { id: Id; path: string }) {
-  const { id, path } = props;
+function ShareInfo(props: { deck: ResolvedDeck; path: string }) {
+  const { deck, path } = props;
   const { t } = useTranslation();
 
   return (
@@ -588,9 +594,14 @@ function ShareInfo(props: { id: Id; path: string }) {
         <Trans
           t={t}
           i18nKey="deck_view.sharing.description_present"
+          values={{
+            provider: t(
+              `deck_edit.config.storage_provider.${deck.source || "account"}`,
+            ),
+          }}
           components={{
             a: (
-              // biome-ignore lint/a11y/useAnchorContent: interpolation.
+              // oxlint-disable-next-line jsx-a11y/anchor-has-content -- interpolation.
               <a
                 data-testid="share-link"
                 href={path}
@@ -607,10 +618,10 @@ function ShareInfo(props: { id: Id; path: string }) {
         />
       </p>
       <p>
-        {t("deck.id")}: <code>{id}</code>
+        {t("deck.id")}: <code>{deck.id}</code>
         <CopyToClipboard
           className={css["share-copy"]}
-          text={`${id}`}
+          text={`${deck.id}`}
           variant="bare"
         />
       </p>
@@ -618,41 +629,26 @@ function ShareInfo(props: { id: Id; path: string }) {
   );
 }
 
-function ArkhamDBDetails(props: { deck: ResolvedDeck }) {
-  const { deck } = props;
+function DevModeApiLinkButton({ id, type }: { id: Id; type: DeckDisplayType }) {
   const { t } = useTranslation();
 
+  const url = new URL(`${import.meta.env.VITE_API_URL}/v1/public/share/${id}`);
+
+  if (type === "decklist") {
+    url.searchParams.set("type", "decklist");
+  }
+
   return (
-    <>
-      <section className={css["details"]} data-testid="share">
-        <DeckDetail
-          as="div"
-          icon={<i className="icon-elder_sign" />}
-          label="ArkhamDB"
-        >
-          <p>
-            {t("deck_view.connections.description", { provider: "ArkhamDB" })}
-          </p>
-          <Button
-            as="a"
-            href={`${localizeArkhamDBBaseUrl()}/deck/view/${deck.id}`}
-            size="sm"
-            rel="noreferrer"
-            target="_blank"
-          >
-            {t("deck_view.connections.view", { provider: "ArkhamDB" })}
-          </Button>
-        </DeckDetail>
-      </section>
-      <section className={css["details"]} data-testid="share">
-        <DeckDetail
-          as="div"
-          icon={<ShareIcon />}
-          label={t("deck_view.sharing.title")}
-        >
-          <ShareInfo id={deck.id} path={`/deck/view/${deck.id}`} />
-        </DeckDetail>
-      </section>
-    </>
+    <Button
+      as="a"
+      data-testid="share-api-link"
+      href={url.toString()}
+      rel="noreferrer"
+      target="_blank"
+      size="sm"
+    >
+      <ExternalLinkIcon />
+      {t("deck_view.sharing.api_link")}
+    </Button>
   );
 }

@@ -60,7 +60,8 @@
   bottom: 0.125rem;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--nord-1);
+  background: var(--palette-2);
+  color: var(--text);
   z-index: 2;
 }
 

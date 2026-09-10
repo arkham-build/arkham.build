@@ -1,6 +1,7 @@
-import type { Card } from "@arkham-build/shared";
+import type { Card, CardTagsState } from "@arkham-build/shared";
 import type { i18n } from "i18next";
 import type { Metadata } from "@/store/slices/metadata.types";
+import type { SearchTextCache } from "@/utils/fuzzy";
 import type { LookupTables } from "../lookup-tables.types";
 import type { ResolvedDeck } from "../types";
 
@@ -15,10 +16,13 @@ export type FieldValue =
 export type FieldType = "string" | "text" | "number" | "boolean";
 
 export type FieldLookupContext = {
+  cardTags: CardTagsState;
   deck: ResolvedDeck | undefined;
+  deckCardTags?: ResolvedDeck["deckCardTags"];
   i18n: i18n;
   lookupTables: LookupTables;
   matchBacks: boolean;
+  matchSide?: "front" | "back";
   metadata: Metadata;
 };
 
@@ -41,4 +45,5 @@ export interface FieldDescriptor {
 export type InterpreterContext = {
   fields: Record<string, FieldDescriptor>;
   fieldLookupContext: FieldLookupContext;
+  searchTextCache: SearchTextCache;
 };

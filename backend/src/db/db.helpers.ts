@@ -14,12 +14,45 @@ export async function applySqlFiles(db: Database, pathToFolder: string) {
   for (const fileName of folder) {
     if (!fileName.endsWith(".sql")) continue;
     const filePath = path.join(folderPath, fileName);
-    let sqlText = await fs.promises.readFile(filePath, "utf-8");
-
-    if (sqlText.includes("-- migrate:up")) {
-      sqlText = sqlText.split("-- migrate:down")[0] as string;
-    }
+    const sqlText = sanitizeSqlFile(
+      await fs.promises.readFile(filePath, "utf-8"),
+    );
 
     await db.executeQuery(sql.raw(sqlText).compile(db));
   }
+}
+
+/**
+ * Serialize objects to format that the postgres npm library can handle.
+ */
+export function serializeRecords<T extends object>(
+  data: ReadonlyArray<object>,
+): T[] {
+  return data.map((row) => {
+    const serializedRow: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(row)) {
+      if (typeof value === "object" && value != null) {
+        serializedRow[key] = JSON.stringify(value);
+      } else {
+        serializedRow[key] = value ?? null;
+      }
+    }
+
+    return serializedRow as T;
+  });
+}
+
+function sanitizeSqlFile(sqlText: string) {
+  let sanitized = sqlText;
+
+  if (sanitized.includes("-- migrate:up")) {
+    sanitized = sanitized.split("-- migrate:down")[0] as string;
+  }
+
+  return sanitized
+    .split("\n")
+    .filter((line) => !line.startsWith("\\"))
+    .filter((line) => line !== "SET transaction_timeout = 0;")
+    .join("\n");
 }

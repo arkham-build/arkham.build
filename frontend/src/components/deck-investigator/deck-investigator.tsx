@@ -53,14 +53,13 @@ export function DeckInvestigator(props: Props) {
   const [backToggled, toggleBack] = useState(false);
   const { t } = useTranslation();
 
-  const showFanMadeRelations = useStore(selectShowFanMadeRelations);
+  const showAllFanMadeRelations = useStore(selectShowFanMadeRelations);
   const settings = useStore((state) => state.settings);
 
-  const related = getRelatedCards(
-    deck.cards.investigator,
-    showFanMadeRelations,
-    settings.showPreviews,
-  ).filter(([key]) => key !== "parallel");
+  const related = getRelatedCards(deck.cards.investigator, {
+    showAllFanMadeRelations,
+    showPreviews: settings.showPreviews,
+  }).filter(([key]) => key !== "parallel");
 
   const hasBack =
     deck.investigatorBack.card.double_sided ||
@@ -150,7 +149,10 @@ export function DeckInvestigator(props: Props) {
               />
             );
           })}
-          <SpecialistAccess card={deck.investigatorBack.card} />
+          <SpecialistAccess
+            card={deck.investigatorBack.card}
+            investigatorFront={deck.investigatorFront.card}
+          />
         </div>
       )}
     </div>

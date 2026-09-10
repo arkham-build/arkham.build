@@ -1,16 +1,22 @@
-import type { Card } from "@arkham-build/shared";
+import {
+  type Card,
+  type Settings as SettingsState,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
-import { DEFAULT_LIST_SORT_ID, SPECIAL_CARD_CODES } from "@/utils/constants";
+import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
 import type { Filter } from "@/utils/fp";
 import { and, not } from "@/utils/fp";
 import { parse as parseBuildQl } from "../lib/buildql/parser";
 import {
   filterBacksides,
-  filterEncounterCards,
+  filterPlayerCards,
   filterPreviews,
   filterType,
 } from "../lib/filtering";
+import { SORTING_PRESETS, sortPresetId } from "../lib/list-display";
+import { DEFAULT_SEARCH_FLAGS } from "../lib/search-url";
 import type { ResolvedDeck } from "../lib/types";
 import { selectBuildQlInterpreter } from "../selectors/shared";
 import type { StoreState } from ".";
@@ -37,6 +43,7 @@ import type {
   LevelFilter,
   List,
   ListDisplay,
+  ListDisplaySettings,
   ListsSlice,
   OwnershipFilter,
   PropertiesFilter,
@@ -44,7 +51,6 @@ import type {
   SkillIconsFilter,
   SubtypeFilter,
 } from "./lists.types";
-import type { DecklistConfig, SettingsState } from "./settings.types";
 
 const SYSTEM_FILTERS: Filter[] = [
   filterBacksides,
@@ -74,6 +80,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
   get,
 ) => ({
   activeList: getInitialList(),
+  listDisplaySettings: {},
   lists: {},
 
   resetFilters() {
@@ -96,6 +103,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
             ...list.initialState,
             display: getDisplaySettings(initialValues, state.settings),
             initialState: list.initialState,
+            search: list.search,
           },
         },
       };
@@ -133,8 +141,29 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       set({ activeList: undefined });
     } else {
       set((state) => {
-        assert(state.lists[value], `list ${value} not defined.`);
-        return { activeList: value };
+        const list = state.lists[value];
+        assert(list, `list ${value} not defined.`);
+
+        const displaySettings = list.displaySettingsKey
+          ? state.listDisplaySettings[list.displaySettingsKey]
+          : undefined;
+
+        if (!displaySettings) return { activeList: value };
+
+        return {
+          activeList: value,
+          lists: {
+            ...state.lists,
+            [value]: {
+              ...list,
+              display: applyListDisplaySettings(
+                list.initialState.display,
+                displaySettings,
+              ),
+              displaySortSelection: displaySettings.displaySortSelection,
+            },
+          },
+        };
       });
     }
   },
@@ -179,6 +208,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       switch (filterValues[id].type) {
         case "illustrator":
         case "action":
+        case "card_tags":
         case "cycle":
         case "encounter_set":
         case "trait":
@@ -385,6 +415,8 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
     let list = state.lists[state.activeList];
     assert(list, `list ${state.activeList} not defined.`);
 
+    if (list.search[flag] === value) return;
+
     set((state) => ({
       lists: {
         ...state.lists,
@@ -404,31 +436,29 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       list = state.lists[activeList];
       assert(list, `list ${activeList} not defined.`);
 
-      const { filter: buildQlSearch, error: buildQlError } = evaluateBuildQl(
-        state,
-        list.search.value,
-        deck,
-      );
+      const buildQlResult = list.search.value
+        ? evaluateBuildQl(state, list.search.value, deck)
+        : undefined;
 
-      if (buildQlSearch) {
-        set((state) => ({
-          lists: {
-            ...state.lists,
-            [activeList]: {
-              ...list,
-              search: {
-                ...list.search,
-                buildQlSearch,
-                buildQlError,
-              },
+      set((state) => ({
+        lists: {
+          ...state.lists,
+          [activeList]: {
+            ...list,
+            search: {
+              ...list.search,
+              buildQlError: buildQlResult?.error,
+              buildQlSearchValue: buildQlResult?.filter
+                ? list.search.value
+                : list.search.buildQlSearchValue,
             },
           },
-        }));
-      }
+        },
+      }));
     }
   },
 
-  setSearchValue(value, deck) {
+  setSearchValue(value, deck, { clearMode } = { clearMode: false }) {
     set((state) => {
       assert(state.activeList, "no active list is defined.");
 
@@ -441,10 +471,15 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         deck,
       );
 
-      const isBuildQl =
-        value && (list.search.mode === "buildql" || !!buildQlSearch);
+      const inBuildQlMode = clearMode ? false : list.search.mode === "buildql";
 
+      const isBuildQl = Boolean(value && (inBuildQlMode || buildQlSearch));
       const mode = isBuildQl ? "buildql" : "simple";
+      const buildQlSearchValue = buildQlSearch
+        ? value
+        : isBuildQl
+          ? list.search.buildQlSearchValue
+          : undefined;
 
       return {
         lists: {
@@ -455,10 +490,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
               ...list.search,
               mode,
               buildQlError: isBuildQl ? buildQlError : undefined,
-              buildQlSearch:
-                isBuildQl && !buildQlSearch
-                  ? list.search.buildQlSearch
-                  : buildQlSearch,
+              buildQlSearchValue,
               value,
             },
           },
@@ -486,6 +518,44 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
     });
   },
 
+  setListTabooSetOverride(value) {
+    set((state) => {
+      assert(state.activeList, "no active list is defined.");
+
+      const list = state.lists[state.activeList];
+      assert(list, `list ${state.activeList} not defined.`);
+
+      return {
+        lists: {
+          ...state.lists,
+          [state.activeList]: {
+            ...list,
+            tabooSetOverride: value,
+          },
+        },
+      };
+    });
+  },
+
+  toggleListDefaultFlipped() {
+    set((state) => {
+      assert(state.activeList, "no active list is defined.");
+
+      const list = state.lists[state.activeList];
+      assert(list, `list ${state.activeList} not defined.`);
+
+      return {
+        lists: {
+          ...state.lists,
+          [state.activeList]: {
+            ...list,
+            defaultFlipped: !list.defaultFlipped,
+          },
+        },
+      };
+    });
+  },
+
   setListViewMode(viewMode) {
     set((state) => {
       assert(state.activeList, "no active list is defined.");
@@ -494,6 +564,11 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       assert(list, `list ${state.activeList} not defined.`);
 
       return {
+        listDisplaySettings: updateListDisplaySettings(
+          state.listDisplaySettings,
+          list,
+          { viewMode },
+        ),
         lists: {
           ...state.lists,
           [state.activeList]: {
@@ -529,7 +604,16 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         };
       }
 
+      const displaySortSelection = config
+        ? sortPresetId(config)
+        : DEFAULT_LIST_SORT_ID;
+
       return {
+        listDisplaySettings: updateListDisplaySettings(
+          state.listDisplaySettings,
+          list,
+          { displaySortSelection },
+        ),
         lists: {
           ...state.lists,
           [state.activeList]: {
@@ -538,9 +622,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
               ...list.display,
               ...preset,
             },
-            displaySortSelection: config
-              ? sortPresetId(config)
-              : DEFAULT_LIST_SORT_ID,
+            displaySortSelection,
           },
         },
       };
@@ -565,14 +647,27 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
 
       const values = mergeInitialValues(initialValues ?? {}, state.settings);
 
-      const display = {
+      let display: ListDisplay = {
         ...getDisplaySettings(values, state.settings),
         ...opts.display,
       };
 
+      let displaySortSelection = DEFAULT_LIST_SORT_ID;
+
+      const displaySettings = opts.displaySettingsKey
+        ? state.listDisplaySettings[opts.displaySettingsKey]
+        : undefined;
+
+      if (displaySettings) {
+        display = applyListDisplaySettings(display, displaySettings);
+        displaySortSelection = displaySettings.displaySortSelection;
+      }
+
       lists[key] = makeList({
         fanMadeCycleCodes: opts.fanMadeCycleCodes,
         display,
+        displaySortSelection,
+        displaySettingsKey: opts.displaySettingsKey,
         filters: cardsFilters({
           additionalFilters: opts.additionalFilters ?? ["illustrator"],
           showOwnershipFilter: opts.showOwnershipFilter,
@@ -580,14 +675,15 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         }),
         initialValues: values,
         key,
-        systemFilter: and([...SYSTEM_FILTERS]),
+        systemFilter: and([
+          ...SYSTEM_FILTERS,
+          ...(state.settings.showPreviews ? [] : [not(filterPreviews)]),
+          ...(opts.systemFilter ? [opts.systemFilter] : []),
+        ]),
         search: {
           value: opts.search ?? "",
           mode: "simple",
-          includeBacks: false,
-          includeFlavor: false,
-          includeGameText: false,
-          includeName: true,
+          ...DEFAULT_SEARCH_FLAGS,
         },
         lockedFilters: opts.lockedFilters ?? new Set<FilterKey>(),
       });
@@ -598,6 +694,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
 
   removeList(key) {
     set((state) => {
+      if (!state.lists[key]) return state;
       const lists = { ...state.lists };
       delete lists[key];
       return { lists };
@@ -624,11 +721,56 @@ function makeSearch(): Search {
   return {
     value: "",
     mode: "simple",
-    includeBacks: false,
-    includeFlavor: false,
-    includeGameText: false,
-    includeName: true,
+    ...DEFAULT_SEARCH_FLAGS,
   };
+}
+
+function applyListDisplaySettings(
+  display: ListDisplay,
+  displaySettings: ListDisplaySettings,
+): ListDisplay {
+  const preset = getSortPreset(displaySettings.displaySortSelection);
+
+  return {
+    ...display,
+    ...(preset
+      ? {
+          grouping: preset.group,
+          sorting: preset.sort,
+        }
+      : {}),
+    viewMode: displaySettings.viewMode,
+  };
+}
+
+function updateListDisplaySettings(
+  settings: Record<string, ListDisplaySettings>,
+  list: List,
+  patch: Partial<ListDisplaySettings>,
+) {
+  if (!list.displaySettingsKey) return settings;
+
+  const current = settings[list.displaySettingsKey] ?? {
+    displaySortSelection: list.displaySortSelection,
+    viewMode: list.display.viewMode,
+  };
+
+  return {
+    ...settings,
+    [list.displaySettingsKey]: {
+      ...current,
+      ...patch,
+    },
+  };
+}
+
+function getSortPreset(id: string) {
+  if (id === DEFAULT_LIST_SORT_ID) return undefined;
+
+  const preset = SORTING_PRESETS.find((preset) => sortPresetId(preset) === id);
+  assert(preset, `unknown list sort preset ${id}.`);
+
+  return preset;
 }
 
 function makeFilterObject<K extends FilterKey>(
@@ -736,6 +878,7 @@ function makeFilterValue(
     case "illustrator":
     case "investigator_card_access":
     case "action":
+    case "card_tags":
     case "cycle":
     case "encounter_set":
     case "pack":
@@ -851,6 +994,8 @@ function makeFilterValue(
 type MakeListOptions = {
   fanMadeCycleCodes?: string[];
   display: ListDisplay;
+  displaySettingsKey?: string;
+  displaySortSelection?: string;
   filters: FilterKey[];
   initialValues?: Partial<Record<FilterKey, unknown>>;
   key: string;
@@ -864,12 +1009,16 @@ function makeList({
   key,
   filters,
   display,
+  displaySettingsKey,
+  displaySortSelection = DEFAULT_LIST_SORT_ID,
   systemFilter,
   initialValues,
   search,
   lockedFilters = new Set<FilterKey>(),
 }: MakeListOptions): List {
   const list = {
+    defaultFlipped: false,
+    tabooSetOverride: undefined,
     fanMadeCycleCodes,
     filters,
     filterValues: filters.reduce<List["filterValues"]>((acc, curr, i) => {
@@ -879,7 +1028,8 @@ function makeList({
     }, {}),
     filtersEnabled: true,
     display,
-    displaySortSelection: DEFAULT_LIST_SORT_ID,
+    displaySettingsKey,
+    displaySortSelection,
     key,
     systemFilter,
     search: search ?? makeSearch(),
@@ -902,6 +1052,7 @@ function investigatorFilters({
   }
 
   filters.push(
+    "card_tags",
     "fan_made_content",
     "pack",
     "investigator_card_access",
@@ -932,7 +1083,7 @@ function cardsFilters({
     filters.push("ownership");
   }
 
-  filters.push("fan_made_content");
+  filters.push("card_tags", "fan_made_content");
 
   if (showInvestigatorsFilter) {
     filters.push("investigator");
@@ -996,7 +1147,7 @@ export function makeLists(
       systemFilter: and([
         systemFilter,
         filterType(["investigator"]),
-        not(filterEncounterCards),
+        filterPlayerCards,
       ]),
       initialValues,
       key: "create_deck",
@@ -1084,8 +1235,4 @@ function getDisplaySettings(
       };
     }
   }
-}
-
-export function sortPresetId(config: DecklistConfig): string {
-  return [...config.group, ...config.sort].join("|");
 }

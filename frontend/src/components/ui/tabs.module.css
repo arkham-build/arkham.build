@@ -59,12 +59,12 @@
 
   .trigger[data-state="active"] {
     background-color: var(--background-active);
-    border-bottom: 0.125rem solid var(--accent-color-dark, var(--nord-10));
+    border-bottom: 0.125rem solid var(--accent-color-dark, var(--color-primary));
   }
 
   .trigger:not([data-state="active"]):hover,
   .trigger:not([data-state="active"]):focus-visible {
-    border-color: var(--accent-color, var(--nord-10));
+    border-color: var(--accent-color, var(--color-primary-hover));
     z-index: 1;
   }
 

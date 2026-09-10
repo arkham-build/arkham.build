@@ -1,4 +1,4 @@
-import type { Card } from "@arkham-build/shared";
+import { cardLevel, type Card } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { CardScanControlled } from "@/components/card-scan";
@@ -13,7 +13,7 @@ import {
   selectMetadata,
 } from "@/store/selectors/shared";
 import type { DraftOption } from "@/store/slices/draft.types";
-import { cardLevel, isSpecialCard } from "@/utils/card-utils";
+import { isSpecialCard } from "@/utils/card-utils";
 import { getAccentColorsForFaction } from "@/utils/use-accent-color";
 import { CustomizationUpgradeCard } from "./customization-upgrade-card";
 import css from "./deck-draft.module.css";
@@ -80,7 +80,6 @@ export function DraftPicker(props: Props) {
             {
               lookupTables,
               metadata,
-              sharing: state.sharing,
             },
             collator,
             deck,
@@ -122,7 +121,6 @@ export function DraftPicker(props: Props) {
             {
               lookupTables,
               metadata,
-              sharing: state.sharing,
             },
             collator,
             tempDeck,

@@ -1,8 +1,15 @@
 import type { Card } from "@arkham-build/shared";
 import type { i18n, TFunction } from "i18next";
 import { beforeAll, describe, expect, test } from "vitest";
-import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
+import {
+  selectLocaleSortingCollator,
+  selectLookupTables,
+  selectMetadata,
+} from "@/store/selectors/shared";
+import { makeTestDeck } from "@/test/factories";
 import { getMockStore } from "@/test/get-mock-store";
+import { SearchTextCache } from "@/utils/fuzzy";
+import { resolveDeck } from "../resolve-deck";
 import { fields } from "./fields";
 import { Interpreter } from "./interpreter";
 import type { InterpreterContext } from "./interpreter.types";
@@ -30,20 +37,48 @@ function compile(expr: ReturnType<typeof parse>, ctx: InterpreterContext) {
 
 describe("Interpreter", () => {
   let ctx: InterpreterContext;
+  let deckCtx: InterpreterContext;
 
   beforeAll(async () => {
     const mockStore = await getMockStore();
+    const state = mockStore.getState();
+    const metadata = selectMetadata(state);
+    const lookupTables = selectLookupTables(state);
+
     ctx = {
       fields,
       fieldLookupContext: {
+        cardTags: {
+          tags: [],
+          cardTags: {},
+          favorites: {},
+        },
         deck: undefined,
         matchBacks: false,
         i18n: {
           language: "en",
           t: ((key: string) => key) as TFunction,
         } as i18n,
-        metadata: selectMetadata(mockStore.getState()),
-        lookupTables: selectLookupTables(mockStore.getState()),
+        metadata,
+        lookupTables,
+      },
+      searchTextCache: new SearchTextCache(),
+    };
+
+    const deck = resolveDeck(
+      { lookupTables, metadata },
+      selectLocaleSortingCollator(state),
+      makeTestDeck({
+        slots: { "01006": 1 },
+        sideSlots: { "01007": 2 },
+      }),
+    );
+
+    deckCtx = {
+      ...ctx,
+      fieldLookupContext: {
+        ...ctx.fieldLookupContext,
+        deck,
       },
     };
   });
@@ -182,6 +217,49 @@ describe("Interpreter", () => {
     });
   });
 
+  describe("Card backs", () => {
+    test("evaluates a conjunction against one card side at a time", () => {
+      const expr = parse('text !== "record"& text == "in your campaign log"');
+      const filter = compile(expr, {
+        ...ctx,
+        fieldLookupContext: {
+          ...ctx.fieldLookupContext,
+          matchBacks: true,
+        },
+      });
+      const shatteredRuins = createMockCard({
+        double_sided: true,
+        real_text:
+          'In your Campaign Log, record "Stranger" on the glyph record.',
+        real_back_text:
+          "You cannot enter Treacherous Path if there are clues on your location.",
+      });
+
+      expect(filter(shatteredRuins)).toBe(false);
+    });
+
+    test("does not combine a negative front match with a positive back match", () => {
+      const expr = parse('text !== "record" & text == "in your campaign log"');
+      const filter = compile(expr, {
+        ...ctx,
+        fieldLookupContext: {
+          ...ctx.fieldLookupContext,
+          matchBacks: true,
+        },
+      });
+      const lonelyCaverns = createMockCard({
+        double_sided: true,
+        real_name: "The Lonely Caverns",
+        real_text: "Do not remove doom from each location in play.",
+        real_back_name: "Serpents' Revenge",
+        real_back_text:
+          "If there are 8 or more tally marks in your Campaign Log, it enters play with damage recorded in your Campaign Log.",
+      });
+
+      expect(filter(lonelyCaverns)).toBe(false);
+    });
+  });
+
   describe("Groups", () => {
     test("groups override precedence", () => {
       const expr = parse("(xp == 0 | xp == 2) & cost < 3");
@@ -244,6 +322,74 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ health: 5, sanity: 3 }))).toBe(true);
       expect(filter(createMockCard({ health: 3, sanity: 5 }))).toBe(false);
     });
+
+    test("tag matches account and deck-local card tags case-insensitively", () => {
+      const expr = parse('tag ? ["upgrade", "deck plan"]');
+      const filter = compile(expr, {
+        ...ctx,
+        fieldLookupContext: {
+          ...ctx.fieldLookupContext,
+          cardTags: {
+            tags: ["Upgrade"],
+            cardTags: {
+              "01016": ["Upgrade"],
+            },
+            favorites: {},
+          },
+          deckCardTags: {
+            "01017": ["Deck Plan"],
+          },
+        },
+      });
+
+      expect(filter(createMockCard({ code: "01016" }))).toBe(true);
+      expect(filter(createMockCard({ code: "01516" }))).toBe(true);
+      expect(filter(createMockCard({ code: "01017" }))).toBe(true);
+      expect(filter(createMockCard({ code: "01018" }))).toBe(false);
+    });
+
+    test("is_favorite matches favorited cards", () => {
+      const expr = parse("is_favorite = true");
+      const aliasExpr = parse("fav = true");
+      const favoriteCtx: InterpreterContext = {
+        ...ctx,
+        fieldLookupContext: {
+          ...ctx.fieldLookupContext,
+          cardTags: {
+            tags: [],
+            cardTags: {},
+            favorites: {
+              "01016": true,
+            },
+          },
+        },
+      };
+      const filter = compile(expr, favoriteCtx);
+      const aliasFilter = compile(aliasExpr, favoriteCtx);
+
+      expect(filter(createMockCard({ code: "01016" }))).toBe(true);
+      expect(filter(createMockCard({ code: "01516" }))).toBe(true);
+      expect(filter(createMockCard({ code: "01018" }))).toBe(false);
+      expect(aliasFilter(createMockCard({ code: "01016" }))).toBe(true);
+    });
+  });
+
+  describe("Deck fields", () => {
+    test("in_deck reads main deck quantities", () => {
+      const expr = parse("in_deck == 1");
+      const filter = compile(expr, deckCtx);
+
+      expect(filter(createMockCard({ code: "01006" }))).toBe(true);
+      expect(filter(createMockCard({ code: "01007" }))).toBe(false);
+    });
+
+    test("in_side_deck reads side deck quantities", () => {
+      const expr = parse("in_side_deck == 2");
+      const filter = compile(expr, deckCtx);
+
+      expect(filter(createMockCard({ code: "01007" }))).toBe(true);
+      expect(filter(createMockCard({ code: "01006" }))).toBe(false);
+    });
   });
 
   describe("Text vs String field handling", () => {
@@ -271,6 +417,24 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ name: "Roland" }))).toBe(false);
     });
 
+    test("strict equals (==) on string fields preserves surrounding whitespace", () => {
+      const expr = parse('name == "Roland Banks "');
+      const filter = compile(expr, ctx);
+
+      expect(filter(createMockCard({ name: "Roland Banks" }))).toBe(false);
+      expect(filter(createMockCard({ name: "Roland Banks " }))).toBe(true);
+    });
+
+    test("strict equals (==) on text fields preserves surrounding whitespace", () => {
+      const expr = parse('text == " fight "');
+      const filter = compile(expr, ctx);
+
+      expect(filter(createMockCard({ text: "fight" }))).toBe(false);
+      expect(filter(createMockCard({ text: "a fight" }))).toBe(false);
+      expect(filter(createMockCard({ text: "fight text" }))).toBe(false);
+      expect(filter(createMockCard({ text: "a fight text" }))).toBe(true);
+    });
+
     test("loose equals (=) on text fields uses fuzzy match", () => {
       const expr = parse('text = "fight combat"');
       const filter = compile(expr, ctx);
@@ -291,6 +455,16 @@ describe("Interpreter", () => {
 
       expect(filter(createMockCard({ name: "Roland Banks" }))).toBe(true);
       expect(filter(createMockCard({ name: "Wendy Adams" }))).toBe(false);
+    });
+
+    test("name matches abbreviation", () => {
+      const expr = parse('name = "mm"');
+      const filter = compile(expr, ctx);
+
+      expect(
+        filter(createMockCard({ name: "Machete", abbreviation: "mm" })),
+      ).toBe(true);
+      expect(filter(createMockCard({ name: "Machete" }))).toBe(false);
     });
 
     test("throws error when comparing text field with string field", () => {
@@ -387,7 +561,14 @@ describe("Interpreter", () => {
         xp: 0,
       });
 
+      const rolandBanks = createMockCard({
+        code: "01001",
+        name: "Roland Banks",
+        type_code: "investigator",
+      });
+
       expect(filter(rolandCard)).toBe(true);
+      expect(filter(rolandBanks)).toBe(true);
     });
 
     test("investigator_access field works with investigator code on right side", () => {

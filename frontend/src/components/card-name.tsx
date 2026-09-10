@@ -1,13 +1,11 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, cardLevel, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { useStore } from "@/store";
 import { selectMetadata } from "@/store/selectors/shared";
 import {
-  cardLevel,
   cycleOrPack,
   displayAttribute,
   parseCardTextHtml,
 } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import css from "./card-name.module.css";
 import { ExperienceDots } from "./experience-dots";
@@ -21,6 +19,7 @@ interface Props {
   cardShowUniqueIcon?: boolean;
   className?: string;
   invert?: boolean;
+  slotAfter?: React.ReactNode;
 }
 
 export function CardName(props: Props) {
@@ -32,6 +31,7 @@ export function CardName(props: Props) {
     children,
     className,
     invert,
+    slotAfter,
   } = props;
   const level = cardLevel(card);
 
@@ -42,7 +42,7 @@ export function CardName(props: Props) {
       )}
       {children}
       <span
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: safe.
+        // oxlint-disable-next-line react/no-danger -- safe.
         dangerouslySetInnerHTML={{
           __html: parseCardTextHtml(displayAttribute(card, "name"), {
             bullets: false,
@@ -57,6 +57,7 @@ export function CardName(props: Props) {
         card.code !== SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS && (
           <CardPackDetail card={card} invert={invert} />
         )}
+      {slotAfter}
     </div>
   );
 }
@@ -71,7 +72,7 @@ function CardPackDetail(props: { card: Card; invert?: boolean }) {
   const displayPack = cycleOrPack(cycle, pack);
 
   return (
-    <span className={css["pack-detail"]}>
+    <span className={cx(css["pack-detail"], invert && css["invert"])}>
       <PackIcon
         className={css["pack-detail-icon"]}
         code={displayPack.code}

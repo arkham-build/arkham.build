@@ -1,4 +1,4 @@
-import type { Deck, Id, Slots } from "@/store/schemas/deck.schema";
+import type { Deck, DeckMeta, Id, Slots } from "@arkham-build/shared";
 import { decodeExileSlots } from "@/utils/card-utils";
 import { isEmpty } from "@/utils/is-empty";
 import { omit } from "@/utils/omit";
@@ -9,17 +9,19 @@ import {
   decodeAnnotations,
   decodeAttachments,
   decodeCustomizations,
+  decodeDeckCardTags,
   decodeDeckMeta,
   encodeAnnotations,
   encodeAttachments,
   encodeCustomizations,
+  encodeDeckCardTags,
 } from "./deck-meta";
 import { type ChangeStats, getChangeStats } from "./deck-upgrades";
 import { decodeExtraSlots, encodeExtraSlots } from "./slots";
 import type {
   Annotations,
   Customizations,
-  DeckMeta,
+  DeckCardTags,
   ResolvedDeck,
 } from "./types";
 
@@ -134,8 +136,11 @@ export function applyDeckEdits(
   );
 
   const annotationEdits = mergeAnnotationEdits(edits, currentDeckMeta);
+  const deckCardTagEdits = edits.deckCardTags
+    ? mergeDeckCardTagEdits(edits, currentDeckMeta)
+    : undefined;
 
-  // adjust customizations & attachments based on deck edits.
+  // adjust generated deck meta based on deck edits.
   const deckMeta = Object.assign(
     structuredClone(
       omit(
@@ -143,12 +148,14 @@ export function applyDeckEdits(
         (k) =>
           k.startsWith("attachments_") ||
           k.startsWith("cus_") ||
-          k.startsWith("annotation_"),
+          k.startsWith("annotation_") ||
+          (edits.deckCardTags != null && k === "deck_card_tags"),
       ),
     ),
     customizationEdits,
     attachmentEdits,
     annotationEdits,
+    deckCardTagEdits,
   );
 
   deck.meta = JSON.stringify({
@@ -248,6 +255,21 @@ function mergeAnnotationEdits(edits: EditState, deckMeta: DeckMeta) {
   }
 
   return encodeAnnotations(annotations);
+}
+
+function mergeDeckCardTagEdits(edits: EditState, deckMeta: DeckMeta) {
+  const deckCardTags: DeckCardTags = decodeDeckCardTags(deckMeta);
+
+  for (const [code, tagNames] of Object.entries(edits.deckCardTags ?? {})) {
+    if (tagNames?.length) {
+      deckCardTags[code] = tagNames;
+    } else {
+      delete deckCardTags[code];
+    }
+  }
+
+  const encoded = encodeDeckCardTags(deckCardTags);
+  return encoded ? { deck_card_tags: encoded } : {};
 }
 
 /**

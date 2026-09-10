@@ -16,7 +16,7 @@ test.describe("filters", () => {
 
     await page
       .getByTestId("filters-level-shortcut")
-      .getByRole("radio", { name: "Level 0" })
+      .getByRole("button", { name: "Level 0" })
       .click();
 
     await page
@@ -94,16 +94,72 @@ test.describe("filters", () => {
     await page.getByTestId("search-input").blur();
 
     await page.getByTestId("collection-create-deck").hover();
-    await page.locator('[data-test-id="card-list-config"]').click();
-    await page.getByLabel("List with card text").click();
+    await page.getByTestId("card-list-config").click();
+    await page.getByText("List with card text").click();
 
     await expect(page.getByTestId("card-text").first()).toBeVisible();
     await expect(page.getByTestId("card-text").nth(1)).toBeVisible();
 
-    await page.getByLabel("Scans (Grouped)").click();
+    await page.getByText("Scans (Grouped)").click();
 
     await expect(page.getByTestId("card-text").first()).not.toBeVisible();
     await expect(page.getByTestId("card-text").nth(1)).not.toBeVisible();
+  });
+
+  test("override the taboo set for a card list", async ({ page }) => {
+    await page.getByTestId("card-list-config").click();
+
+    const tabooSelect = page.getByTestId("card-list-taboo-set");
+    await expect(tabooSelect).toHaveValue("");
+    await tabooSelect.selectOption("6");
+
+    await page.locator("body").press("Escape");
+    await page
+      .getByRole("heading", { name: "Taboo list", exact: true })
+      .first()
+      .click();
+    await page.getByTestId("filter-Taboo list-input").selectOption("1");
+    await page.getByTestId("card-list-config").click();
+
+    const configDialog = page.getByRole("dialog");
+    await expect(page.getByTestId("card-list-taboo-set")).toBeDisabled();
+    await expect(page.getByTestId("card-list-taboo-set")).toHaveValue("6");
+    await expect(
+      configDialog.getByText('Overridden by the "Taboo list" filter', {
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    await fillSearch(page, "Rex Murphy");
+    await page
+      .getByTestId("listcard-02002")
+      .getByTestId("listcard-title")
+      .click();
+    await expect(page.getByTestId("card-taboo").first()).toBeVisible();
+    await expect(page.getByTestId("card-taboo").first()).not.toContainText(
+      "Mutated.",
+    );
+
+    await page.locator("body").press("Escape");
+    await page.getByTestId("filter-Taboo list-input").selectOption("");
+    await page.getByTestId("card-list-config").click();
+    await expect(page.getByTestId("card-list-taboo-set")).toBeEnabled();
+    await expect(page.getByTestId("card-list-taboo-set")).toHaveValue("6");
+    await page.getByTestId("card-list-taboo-set").selectOption("");
+
+    await page
+      .getByTestId("listcard-02002")
+      .getByTestId("listcard-title")
+      .click();
+    await expect(page.getByTestId("card-taboo")).toHaveCount(0);
+  });
+
+  test("omit the taboo override from the deck editor", async ({ page }) => {
+    await page.goto("/deck/create/01001");
+    await page.getByTestId("create-save").click();
+    await page.getByTestId("card-list-config").click();
+
+    await expect(page.getByTestId("card-list-taboo-set")).toHaveCount(0);
   });
 
   test("filter investigator stats shortcut", async ({ page }) => {
@@ -220,9 +276,9 @@ test.describe("filters", () => {
   }) => {
     await fillSearch(page, "runic axe");
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 0" }).click();
+    await page.getByRole("button", { name: "Level 0" }).click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 1-" }).click();
+    await page.getByRole("button", { name: "Level 1-" }).click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
   });
 
@@ -238,9 +294,9 @@ test.describe("filters", () => {
       .click();
     await page.getByTestId("custom-select-option-04002").click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 1-" }).click();
+    await page.getByRole("button", { name: "Level 1-" }).click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 0" }).click();
+    await page.getByRole("button", { name: "Level 0" }).click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
     await fillSearch(page, "honed instinct");
     await expect(page.getByTestId("listcard-09061")).not.toBeVisible();
@@ -251,10 +307,10 @@ test.describe("filters", () => {
     await page.getByTestId("create-save").click();
     await fillSearch(page, "runic axe");
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 0" }).click();
+    await page.getByRole("button", { name: "Level 0" }).click();
 
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
-    await page.getByRole("radio", { name: "Level 1-" }).click();
+    await page.getByRole("button", { name: "Level 1-" }).click();
     await expect(page.getByTestId("listcard-09022")).toBeVisible();
     await page.getByRole("heading", { name: "Level" }).click();
     await page.getByLabel("Minimum").click();

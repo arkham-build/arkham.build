@@ -5,36 +5,50 @@ import { CardlistCount } from "@/components/card-list/card-list-count";
 import { useStore } from "@/store";
 import { getGroupingKeyLabel, NONE } from "@/store/lib/grouping";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { ListState } from "@/store/selectors/lists";
-import { selectActiveList } from "@/store/selectors/shared";
+import {
+  selectActiveTabooSetFilterValue,
+  type ListState,
+  selectListTabooSetId,
+} from "@/store/selectors/lists";
+import { selectActiveList, selectMetadata } from "@/store/selectors/shared";
 import type { ViewMode } from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
+import { download } from "@/utils/download";
 import { useHotkey } from "@/utils/use-hotkey";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import {
   DeckTagsContainer,
   LimitedCardPoolTag,
   SealedDeckTag,
 } from "../deck-tags/deck-tags";
+import { useResolvedDeck } from "../resolved-deck-context";
 import { SortSelect } from "../sort-select";
+import { TabooSelect } from "../taboo-select";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuSection,
   DropdownRadioGroupItem,
 } from "../ui/dropdown-menu";
+import { Field, FieldLabel } from "../ui/field";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { RadioGroup } from "../ui/radio-group";
 import { Scroller } from "../ui/scroller";
 import { Select } from "../ui/select";
+import { Slider } from "../ui/slider";
 import css from "./card-list-nav.module.css";
+import { Card } from "@arkham-build/shared";
+
+const SCAN_MAX_COLUMNS_MIN = 1;
+const SCAN_MAX_COLUMNS_MAX = 6;
 
 type Props = {
   data: ListState | undefined;
   deck?: ResolvedDeck;
   metadata: Metadata;
+  onScanMaxColumnsChange: (value: number) => void;
   onSelectGroup: (evt: React.ChangeEvent<HTMLSelectElement>) => void;
+  scanMaxColumns: number;
   viewMode: ViewMode;
 };
 
@@ -43,6 +57,33 @@ export function CardListNav(props: Props) {
   const { t } = useTranslation();
 
   const { resolvedDeck: deck } = useResolvedDeck();
+
+  const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
+
+  const onExport = useCallback(() => {
+    if (!data) return;
+
+    const metadata = selectMetadata(useStore.getState());
+
+    const exportCards = data.cards.reduce((acc, card) => {
+      acc.push(card);
+
+      if (card.back_link_id) {
+        const backCard = metadata.cards[card.back_link_id];
+        if (backCard) {
+          acc.push(backCard);
+        }
+      }
+
+      return acc;
+    }, [] as Card[]);
+
+    download(
+      JSON.stringify(exportCards, null, 2),
+      "cards.json",
+      "application/json",
+    );
+  }, [data]);
 
   const hasAssetGroup = data?.groups.some((group) =>
     group.key.includes("asset"),
@@ -86,6 +127,16 @@ export function CardListNav(props: Props) {
           </DeckTagsContainer>
         )}
         <CardlistCount data={data} />
+        {devModeEnabled && !deck && (
+          <Button
+            data-testid="card-list-export"
+            onClick={onExport}
+            size="xs"
+            variant="link"
+          >
+            {t("lists.nav.export")}
+          </Button>
+        )}
       </output>
       <div className={css["nav-row"]}>
         {data && (
@@ -98,13 +149,28 @@ export function CardListNav(props: Props) {
             value=""
           />
         )}
-        <DisplaySettings viewMode={props.viewMode} />
+        <DisplaySettings
+          onScanMaxColumnsChange={props.onScanMaxColumnsChange}
+          scanMaxColumns={props.scanMaxColumns}
+          showTabooSetOverride={!deck}
+          viewMode={props.viewMode}
+        />
       </div>
     </nav>
   );
 }
 
-function DisplaySettings({ viewMode }: { viewMode: ViewMode }) {
+function DisplaySettings({
+  onScanMaxColumnsChange,
+  scanMaxColumns,
+  showTabooSetOverride,
+  viewMode,
+}: {
+  onScanMaxColumnsChange: (value: number) => void;
+  scanMaxColumns: number;
+  showTabooSetOverride: boolean;
+  viewMode: ViewMode;
+}) {
   const { t } = useTranslation();
 
   const setListViewMode = useStore((state) => state.setListViewMode);
@@ -114,6 +180,31 @@ function DisplaySettings({ viewMode }: { viewMode: ViewMode }) {
   );
 
   const setListSort = useStore((state) => state.setListSort);
+
+  const tabooSetId = useStore(selectListTabooSetId);
+
+  const tabooSetFilterActive = useStore(
+    (state) => selectActiveTabooSetFilterValue(state) != null,
+  );
+
+  const setListTabooSetOverride = useStore(
+    (state) => state.setListTabooSetOverride,
+  );
+
+  const onTabooSetChange = useCallback(
+    (evt: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = evt.target.value;
+      setListTabooSetOverride(value ? Number.parseInt(value, 10) : null);
+    },
+    [setListTabooSetOverride],
+  );
+
+  const onScanMaxColumnsCommit = useCallback(
+    (value: number[]) => {
+      onScanMaxColumnsChange(value[0]);
+    },
+    [onScanMaxColumnsChange],
+  );
 
   // TECH DEBT: option names and display names have diverted, reconcile.
   const onToggleList = useCallback(() => {
@@ -142,13 +233,15 @@ function DisplaySettings({ viewMode }: { viewMode: ViewMode }) {
   useHotkey("alt+s", onToggleScans);
   useHotkey("alt+shift+s", onToggleScansGrouped);
 
+  const showScanColumns = viewMode === "scans" || viewMode === "scans-grouped";
+
   return (
     <Popover placement="bottom-end">
       <PopoverTrigger asChild>
         <Button
           className={css["nav-config"]}
           aria-label={t("lists.nav.list_settings")}
-          data-test-id="card-list-config"
+          data-testid="card-list-config"
           variant="bare"
           iconOnly
           size="lg"
@@ -181,6 +274,47 @@ function DisplaySettings({ viewMode }: { viewMode: ViewMode }) {
                 </DropdownRadioGroupItem>
               </RadioGroup>
             </DropdownMenuSection>
+            {showScanColumns && (
+              <DropdownMenuSection>
+                <Field>
+                  <FieldLabel>{t("lists.nav.max_columns")}</FieldLabel>
+                  <div className={css["scan-columns"]}>
+                    <Slider
+                      aria-label={t("lists.nav.max_columns")}
+                      id="list-scan-max-columns"
+                      max={SCAN_MAX_COLUMNS_MAX}
+                      min={SCAN_MAX_COLUMNS_MIN}
+                      onValueChange={onScanMaxColumnsCommit}
+                      step={1}
+                      value={[scanMaxColumns]}
+                    />
+                    <output className={css["scan-columns-value"]}>
+                      {scanMaxColumns}
+                    </output>
+                  </div>
+                </Field>
+              </DropdownMenuSection>
+            )}
+            {showTabooSetOverride && (
+              <DropdownMenuSection title={t("common.taboo")}>
+                <Field
+                  full
+                  helpText={
+                    tabooSetFilterActive
+                      ? t("lists.nav.taboo_filter_override")
+                      : undefined
+                  }
+                >
+                  <TabooSelect
+                    aria-label={t("common.taboo")}
+                    disabled={tabooSetFilterActive}
+                    id="card-list-taboo-set"
+                    onChange={onTabooSetChange}
+                    value={tabooSetId}
+                  />
+                </Field>
+              </DropdownMenuSection>
+            )}
             <DropdownMenuSection title={t("lists.nav.sort")}>
               <SortSelect
                 selectedId={sortSelection ?? DEFAULT_LIST_SORT_ID}

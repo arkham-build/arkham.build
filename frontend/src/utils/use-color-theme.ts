@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import i18n from "@/utils/i18n";
 import { useMedia } from "./use-media";
 
@@ -12,7 +12,7 @@ export function getAvailableThemes(): Record<string, string> {
 
 const DEFAULT_THEME = "dark";
 
-function getColorThemePreference() {
+export function getColorThemePreference() {
   const pref = localStorage.getItem("color-scheme-preference");
   if (pref && getAvailableThemes()[pref]) return pref;
   return DEFAULT_THEME;
@@ -22,29 +22,12 @@ function persistColorTheme(theme: string | null | undefined) {
   localStorage.setItem("color-scheme-preference", theme ?? DEFAULT_THEME);
 }
 
-function applyColorTheme(theme: string, prefersDarkMode: boolean) {
-  const root = document.documentElement;
-  if (theme === "dark") {
-    root.classList.remove("theme-light", "theme-system");
-    root.classList.add("theme-dark");
-  } else if (theme === "light") {
-    root.classList.remove("theme-dark", "theme-system");
-    root.classList.add("theme-light");
-  } else {
-    root.classList.remove("theme-dark", "theme-light");
-    root.classList.add("theme-system");
-  }
+export function applyColorTheme(theme: string, prefersDarkMode: boolean) {
   if (theme === "system") {
     document.documentElement.dataset.theme = prefersDarkMode ? "dark" : "light";
   } else {
     document.documentElement.dataset.theme = theme;
   }
-}
-
-export function applyStoredColorTheme() {
-  const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
-  const theme = getColorThemePreference();
-  applyColorTheme(theme, prefersDarkMode.matches);
 }
 
 export function useColorThemeManager() {
@@ -75,4 +58,12 @@ export function useResolvedColorTheme() {
   }
 
   return currentTheme;
+}
+
+export function useColorThemeListener() {
+  const prefersDarkMode = useMedia("(prefers-color-scheme: dark)");
+  useEffect(() => {
+    const current = getColorThemePreference();
+    applyColorTheme(current, prefersDarkMode);
+  }, [prefersDarkMode]);
 }

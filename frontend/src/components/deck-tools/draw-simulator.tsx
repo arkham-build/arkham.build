@@ -1,10 +1,8 @@
-import type { Card } from "@arkham-build/shared";
+import { type Card, type Id, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { ShuffleIcon } from "lucide-react";
-import { useCallback, useReducer } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Id } from "@/store/schemas/deck.schema";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { range } from "@/utils/range";
@@ -22,45 +20,6 @@ type Props = {
   deck: ResolvedDeck;
 };
 
-type DrawSimulatorCardProps = {
-  index: number;
-  state: State;
-  card: Card;
-  dispatch: React.Dispatch<Action>;
-};
-
-function DrawSimulatorCard(props: DrawSimulatorCardProps) {
-  const { card, dispatch, index, state } = props;
-
-  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
-    useRestingTooltip({ delay: 350 });
-
-  return (
-    <li className={css["card"]}>
-      <button
-        {...referenceProps}
-        ref={refs.setReference}
-        className={cx(
-          css["card-toggle"],
-          state.selection.includes(index) && css["selected"],
-        )}
-        onClick={() => dispatch({ type: "select", index })}
-        type="button"
-      >
-        <CardScan card={card} preventFlip draggable={false} />
-      </button>
-      {isMounted && (
-        <PortaledCardTooltip
-          card={card}
-          ref={refs.setFloating}
-          floatingStyles={floatingStyles}
-          transitionStyles={transitionStyles}
-        />
-      )}
-    </li>
-  );
-}
-
 export function DrawSimulator(props: Props) {
   const { deck } = props;
 
@@ -76,8 +35,8 @@ export function DrawSimulator(props: Props) {
   );
 
   const reset = useCallback(() => {
-    dispatch({ type: "reset" });
-  }, []);
+    dispatch({ type: "reset", deck });
+  }, [deck]);
 
   const reshuffle = useCallback(() => {
     dispatch({ type: "reshuffle" });
@@ -90,6 +49,10 @@ export function DrawSimulator(props: Props) {
   const toggleMulligan = useCallback(() => {
     dispatch({ type: "toggleMulligan" });
   }, []);
+
+  useEffect(() => {
+    reset();
+  }, [deck, reset]);
 
   return (
     <Plane className={css["container"]} as="article">
@@ -148,20 +111,65 @@ export function DrawSimulator(props: Props) {
       </nav>
       {!isEmpty(state.drawn) && (
         <ol className={css["drawn"]}>
-          {state.drawn.map((code, index) => (
-            <DrawSimulatorCard
-              key={`${index}-${code}`}
-              card={deck.cards.slots[code].card}
-              index={index}
-              state={state}
-              dispatch={dispatch}
-            />
-          ))}
+          {state.drawn.map((code, index) => {
+            if (!deck.cards.slots[code]) return null;
+            return (
+              <DrawSimulatorCard
+                // oxlint-disable-next-line react/no-array-index-key -- duplicate cards need the draw position to distinguish them.
+                key={`${index}-${code}`}
+                card={deck.cards.slots[code].card}
+                index={index}
+                state={state}
+                dispatch={dispatch}
+              />
+            );
+          })}
         </ol>
       )}
     </Plane>
   );
 }
+
+type DrawSimulatorCardProps = {
+  index: number;
+  state: State;
+  card: Card;
+  dispatch: React.Dispatch<Action>;
+};
+
+function DrawSimulatorCard(props: DrawSimulatorCardProps) {
+  const { card, dispatch, index, state } = props;
+
+  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
+    useRestingTooltip({ delay: 350 });
+
+  return (
+    <li className={css["card"]}>
+      <button
+        {...referenceProps}
+        ref={refs.setReference}
+        className={cx(
+          css["card-toggle"],
+          state.selection.includes(index) && css["selected"],
+        )}
+        onClick={() => dispatch({ type: "select", index })}
+        type="button"
+      >
+        <CardScan card={card} preventFlip draggable={false} />
+      </button>
+      {isMounted && (
+        <PortaledCardTooltip
+          card={card}
+          ref={refs.setFloating}
+          floatingStyles={floatingStyles}
+          transitionStyles={transitionStyles}
+        />
+      )}
+    </li>
+  );
+}
+
+// Reducer
 
 type InitAction = {
   type: "init";
@@ -185,6 +193,7 @@ type RedrawAction = {
 
 type ResetAction = {
   type: "reset";
+  deck: ResolvedDeck;
 };
 
 type SelectAction = {
@@ -244,7 +253,7 @@ function drawReducer(state: State, action: Action): State {
     case "reset": {
       return {
         ...state,
-        bag: shuffle([...state.bag, ...state.drawn]),
+        bag: prepareBag(action.deck),
         drawn: [],
         mulliganMode: state.mulliganMode,
         selection: [],
@@ -303,7 +312,7 @@ function drawReducer(state: State, action: Action): State {
 
       if (!state.mulliganMode) {
         for (const _ of range(0, codes.length)) {
-          // biome-ignore lint/style/noNonNullAssertion: we extend the bag for each draw, so this is safe.
+          // oxlint-disable-next-line typescript/no-non-null-assertion -- we extend the bag for each draw, so this is safe.
           drawn.push(bag.shift()!);
         }
 
@@ -372,29 +381,42 @@ function drawReducer(state: State, action: Action): State {
 }
 
 function prepareBag(deck: ResolvedDeck) {
-  const cards = Object.values(deck.cards.slots).reduce((acc, { card }) => {
+  const cards = [];
+
+  const attachedQuantities = Object.values(deck.attachments ?? {}).reduce(
+    (acc, curr) => {
+      for (const [code, qty] of Object.entries(curr)) {
+        acc[code] ??= 0;
+        acc[code] += qty;
+      }
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  for (const { card } of Object.values(deck.cards.slots)) {
     const drawable =
       !card.permanent &&
       !card.double_sided &&
       !card.back_link_id &&
       !card.starts_in_play &&
       !card.starts_in_hand &&
-      card.code !== SPECIAL_CARD_CODES.ON_THE_MEND &&
-      Object.entries(deck.attachments ?? {}).every(
-        ([_, attached]) => !attached?.[card.code],
-      );
+      card.code !== SPECIAL_CARD_CODES.ON_THE_MEND;
 
-    if (drawable) {
-      const quantity = deck.slots[card.code] ?? 0;
-      for (const _ of range(0, quantity)) {
-        acc.push(card.code);
-      }
+    if (!drawable) {
+      continue;
     }
 
-    return acc;
-  }, [] as string[]);
+    const quantity =
+      (deck.slots[card.code] ?? 0) - (attachedQuantities[card.code] ?? 0);
+
+    if (quantity > 0) {
+      for (const _ of range(0, quantity)) {
+        cards.push(card.code);
+      }
+    }
+  }
 
   shuffle(cards);
-
   return cards;
 }

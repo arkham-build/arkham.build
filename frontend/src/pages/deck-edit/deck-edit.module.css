@@ -21,6 +21,9 @@
 
 .tabs-list {
   flex: 0 0 auto;
+  @media screen and (min-width: 45rem) {
+    margin-inline: 0.625rem;
+  }
 }
 
 .tab {
@@ -41,14 +44,16 @@
   flex: 0 0 auto;
 }
 
+.card-access-toggles {
+  padding: 0.625rem 0.5rem;
+  margin-inline: 0.125rem;
+  border: 1px solid var(--palette-1);
+}
+
 .card-access-toggles > * + * {
   margin-top: 0.375rem;
 }
 
 .card-access-toggles.active {
-  border-color: var(--nord-8);
-}
-
-:root[data-theme="light"] .card-access-toggles.active {
-  border-color: var(--nord-10);
+  border-color: var(--color-primary);
 }

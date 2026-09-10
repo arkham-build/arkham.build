@@ -1,12 +1,15 @@
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: escape handler is defined higher up. */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: backdrop needs to be clickable. */
+/* oxlint-disable jsx-a11y/click-events-have-key-events -- escape handler is defined higher up. */
+/* oxlint-disable jsx-a11y/no-static-element-interactions -- backdrop needs to be clickable. */
 import { XIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { MQ_MOBILE } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { useMedia } from "@/utils/use-media";
 import { Button } from "./button";
-import { useDialogContextChecked } from "./dialog.hooks";
+import {
+  useDialogContextChecked,
+  useDialogTransitionStyles,
+} from "./dialog.hooks";
 import css from "./modal.module.css";
 import { Scroller } from "./scroller";
 
@@ -17,14 +20,36 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Modal(props: Props) {
-  const { children, className, ...rest } = props;
+  const { children, className, style, ...rest } = props;
 
   const closeModal = useCloseModal();
+  const transitionStyles = useDialogTransitionStyles();
 
   const modalRef = useRef<HTMLDivElement>(null);
   const hasAddedState = useRef(false);
 
   const isMobile = useMedia(MQ_MOBILE);
+
+  const onPointerDownBackdrop = useCallback(
+    (evt: React.PointerEvent) => {
+      evt.preventDefault();
+
+      if (isMobile) {
+        window.history.back();
+      } else {
+        closeModal();
+      }
+    },
+    [closeModal, isMobile],
+  );
+
+  const modalStyle = useMemo(
+    () => ({
+      ...style,
+      ...transitionStyles,
+    }),
+    [style, transitionStyles],
+  );
 
   useEffect(() => {
     if (!isMobile) return;
@@ -62,14 +87,9 @@ export function Modal(props: Props) {
     <div
       {...rest}
       className={cx(css["modal"], className)}
-      onMouseDown={
-        isMobile
-          ? () => {
-              window.history.back();
-            }
-          : closeModal
-      }
+      onPointerDown={onPointerDownBackdrop}
       ref={modalRef}
+      style={modalStyle}
     >
       {children}
     </div>
@@ -123,7 +143,7 @@ type ModalInnerProps = {
 export function ModalInner(props: ModalInnerProps) {
   const { className, children, size } = props;
 
-  const stopPropagation = useCallback((evt: React.MouseEvent) => {
+  const stopPropagation = useCallback((evt: React.PointerEvent) => {
     evt.stopPropagation();
   }, []);
 
@@ -135,10 +155,10 @@ export function ModalInner(props: ModalInnerProps) {
   );
 
   return (
-    <Scroller type="always">
+    <Scroller type="always" padded>
       <div
         className={cx(css["inner"], className)}
-        onMouseDown={stopPropagation}
+        onPointerDown={stopPropagation}
         style={cssVariables as React.CSSProperties}
       >
         {children}

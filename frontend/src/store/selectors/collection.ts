@@ -1,5 +1,5 @@
+import { SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { createSelector } from "reselect";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { and } from "@/utils/fp";
 import { ownedCardCount } from "../lib/card-ownership";
 import {

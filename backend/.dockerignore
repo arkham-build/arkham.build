@@ -8,7 +8,7 @@ src/tests
 .env
 .env*
 .gitignore
-biome.json
+.ox*
 docker-compose*
 Dockerfile
 Makefile

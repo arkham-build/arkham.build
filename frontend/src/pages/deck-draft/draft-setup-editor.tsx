@@ -1,3 +1,4 @@
+import type { StorageProvider } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
 import { DicesIcon, Settings2Icon } from "lucide-react";
 import { useCallback, useMemo } from "react";
@@ -13,15 +14,14 @@ import { Slider } from "@/components/ui/slider";
 import { useStore } from "@/store";
 import { decodeSelections } from "@/store/lib/deck-meta";
 import type { CardWithRelations } from "@/store/lib/types";
-import { selectConnectionsData } from "@/store/selectors/connections";
 import { selectCanStartDraft } from "@/store/selectors/draft";
+import { selectDeckCreateStorageProviderOptions } from "@/store/selectors/deck-create";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
 import { assert } from "@/utils/assert";
-import type { StorageProvider } from "@/utils/constants";
-import { formatProviderName } from "@/utils/formatting";
 import { useAccentColor } from "@/utils/use-accent-color";
 import css from "../deck-create/deck-create.module.css";
 import { SelectionEditor } from "../deck-edit/editor/selection-editor";
+import { useSaveSettings } from "../settings/use-save-settings";
 
 type Props = {
   investigator: CardWithRelations;
@@ -36,7 +36,6 @@ export function DraftSetupEditor(props: Props) {
   const draft = useStore((state) => state.draft);
   assert(draft, "Draft must be initialized.");
 
-  const connections = useStore(selectConnectionsData);
   const settings = useStore((state) => state.settings);
 
   const setTitle = useStore((state) => state.draftSetTitle);
@@ -97,33 +96,22 @@ export function DraftSetupEditor(props: Props) {
     [setSelection],
   );
 
-  const onStorageDefaultChange = useCallback(() => {
-    const state = useStore.getState();
-
-    state.setSettings({
+  const { isPending: isSavingSettings, saveSettings } = useSaveSettings({
+    settings: {
+      ...settings,
       defaultStorageProvider: draft.provider as StorageProvider,
-    });
-  }, [draft.provider]);
+    },
+  });
+
+  const onStorageDefaultChange = useCallback(async () => {
+    await saveSettings();
+  }, [saveSettings]);
 
   const selections = decodeSelections(back, draft.selections);
   const cssVariables = useAccentColor(investigator.card);
 
-  const storageProviderOptions = useMemo(
-    () => [
-      {
-        label: t("deck_edit.config.storage_provider.local"),
-        value: "local",
-      },
-      {
-        label: t("deck_edit.config.storage_provider.shared"),
-        value: "shared",
-      },
-      ...connections.map((connection) => ({
-        label: formatProviderName(connection.provider),
-        value: connection.provider,
-      })),
-    ],
-    [t, connections],
+  const storageProviderOptions = useStore(
+    selectDeckCreateStorageProviderOptions,
   );
 
   const providerChanged = draft.provider !== settings.defaultStorageProvider;
@@ -150,7 +138,7 @@ export function DraftSetupEditor(props: Props) {
 
   return (
     <div className={css["editor"]} style={cssVariables}>
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="provider">
           {t("deck_edit.config.storage_provider.title")}
         </FieldLabel>
@@ -162,12 +150,13 @@ export function DraftSetupEditor(props: Props) {
             setProvider(evt.target.value as StorageProvider);
           }}
           required
-          value={draft.provider}
+          value={draft.provider as string}
         />
         {providerChanged && (
           <Button
             className={css["provider-default"]}
             data-testid="draft-provider-set-default"
+            disabled={isSavingSettings}
             onClick={onStorageDefaultChange}
             size="xs"
             variant="primary"
@@ -177,7 +166,7 @@ export function DraftSetupEditor(props: Props) {
           </Button>
         )}
       </Field>
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="title">{t("deck_edit.config.name")}</FieldLabel>
         <input
           data-testid="draft-title"
@@ -188,7 +177,7 @@ export function DraftSetupEditor(props: Props) {
         />
       </Field>
 
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="draft-taboo">
           {t("deck_edit.config.taboo")}
         </FieldLabel>
@@ -201,7 +190,7 @@ export function DraftSetupEditor(props: Props) {
 
       {investigator.relations?.parallel && (
         <>
-          <Field full padded>
+          <Field full>
             <FieldLabel htmlFor="investigator-front">
               {t("deck_edit.config.sides.investigator_front")}
             </FieldLabel>
@@ -215,7 +204,7 @@ export function DraftSetupEditor(props: Props) {
               value={draft.investigatorFrontCode}
             />
           </Field>
-          <Field full padded>
+          <Field full>
             <FieldLabel htmlFor="investigator-back">
               {t("deck_edit.config.sides.investigator_back")}
             </FieldLabel>
@@ -239,7 +228,7 @@ export function DraftSetupEditor(props: Props) {
         />
       )}
 
-      <Field full padded bordered>
+      <Field full bordered>
         <FieldLabel>{t("deck_edit.config.card_pool.section_title")}</FieldLabel>
         <LimitedCardPoolField
           investigator={investigator.card}
@@ -249,7 +238,7 @@ export function DraftSetupEditor(props: Props) {
         <SealedDeckField onValueChange={setSealedDeck} value={sealedDeck} />
       </Field>
 
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="cards-per-pick">
           {t("deck_draft.setup.cards_per_pick")}
         </FieldLabel>
@@ -269,7 +258,7 @@ export function DraftSetupEditor(props: Props) {
         </div>
       </Field>
 
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="skips-allowed">
           {t("deck_draft.setup.skips_allowed")}
         </FieldLabel>
@@ -290,7 +279,7 @@ export function DraftSetupEditor(props: Props) {
       </Field>
 
       {!canStart && (
-        <Field full padded>
+        <Field full>
           <div className={css["error-message"]}>
             {t("deck_draft.setup.insufficient_cards", { required, available })}
           </div>

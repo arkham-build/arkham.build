@@ -1,0 +1,14 @@
+.favorite-icon,
+.favorite-action-icon {
+  stroke: var(--survivor);
+}
+
+.favorite.active .favorite-icon,
+.favorite-action.active .favorite-action-icon {
+  fill: var(--survivor);
+}
+
+.favorite-action.active {
+  visibility: visible;
+  opacity: 1;
+}

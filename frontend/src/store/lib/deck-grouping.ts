@@ -1,9 +1,7 @@
-import type { Card } from "@arkham-build/shared";
-import type { Slots } from "@/store/schemas/deck.schema";
-import { countExperience } from "@/utils/card-utils";
+import type { DecklistConfig, Slots } from "@arkham-build/shared";
+import { type Card, countExperience } from "@arkham-build/shared";
 import { isEmpty } from "@/utils/is-empty";
 import type { Metadata } from "../slices/metadata.types";
-import type { DecklistConfig } from "../slices/settings.types";
 import {
   type GroupedCards,
   type GroupingResult,
@@ -66,10 +64,6 @@ export function groupDeckCards(
     acc[key] = grouped;
     return acc;
   }, {});
-}
-
-export function countGroupRows(grouping: DeckGrouping) {
-  return grouping.data.reduce((acc, group) => acc + group.cards.length, 0);
 }
 
 function countGroup(cards: Card[], quantities?: Record<string, number>) {

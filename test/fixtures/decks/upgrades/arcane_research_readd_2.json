@@ -1,0 +1,30 @@
+{
+  "id": "issue331-after",
+  "date_creation": "2025-12-15T07:33:16.000Z",
+  "date_update": "2025-12-15T07:45:38.000Z",
+  "description_md": "Upgrade Divination (1) to Divination (4), then purchase another Divination (1). The upgrade costs 1 XP after two Arcane Research discounts and the new copy costs 1 XP.",
+  "meta": "{}",
+  "ignoreDeckLimitSlots": {},
+  "sideSlots": {},
+  "next_deck": null,
+  "previous_deck": null,
+  "tags": "",
+  "version": "0.2",
+  "taboo_id": 9,
+  "xp": 2,
+  "xp_spent": 2,
+  "exile_string": "",
+  "xp_adjustment": 0,
+  "investigator_code": "01004",
+  "investigator_name": "Agnes Baker",
+  "name": "Issue 331",
+  "slots": {
+    "08101": 1,
+    "08103": 1,
+    "01000": 1,
+    "01012": 1,
+    "01013": 1,
+    "04109": 2
+  },
+  "problem": "too_few_cards"
+}

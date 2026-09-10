@@ -1,3 +1,5 @@
+import { type Deck, DeckSchema } from "@arkham-build/shared";
+import collectorOverlappingAccess from "@test/fixtures/decks/validation/collector_with_overlapping_limited_access.json";
 import limitCustomizableLevel0 from "@test/fixtures/decks/validation/customizable_level_below.json";
 import limitCarolyn from "@test/fixtures/decks/validation/tag_based_access.json";
 import limitCarolynInvalid from "@test/fixtures/decks/validation/tag_based_access_invalid.json";
@@ -5,12 +7,12 @@ import limitCarolynVersatile from "@test/fixtures/decks/validation/tag_based_acc
 import limitCarolynVersatileInvalid from "@test/fixtures/decks/validation/tag_based_access_versatile_invalid.json";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
-import { type Deck, DeckSchema } from "@/store/schemas/deck.schema";
 import { getMockStore } from "@/test/get-mock-store";
 import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
+  selectStaticBuildQlInterpreter,
 } from "../selectors/shared";
 import type { StoreState } from "../slices";
 import {
@@ -29,14 +31,15 @@ function toSnapShot(value: LimitedSlotOccupation) {
 function snapshotResult(state: StoreState, deck: Deck) {
   const metadata = selectMetadata(state);
   const lookupTables = selectLookupTables(state);
-  const sharing = state.sharing;
+  const buildQlInterpreter = selectStaticBuildQlInterpreter(state);
 
   return limitedSlotOccupation(
     resolveDeck(
-      { lookupTables, metadata, sharing },
+      { lookupTables, metadata },
       selectLocaleSortingCollator(state),
       deck,
     ),
+    buildQlInterpreter,
   )?.map(toSnapShot);
 }
 
@@ -50,9 +53,8 @@ describe("limitedSlotOccupation()", () => {
   it("handles investigators with limit deckbuilding", () => {
     const state = store.getState();
 
-    expect(
-      snapshotResult(state, DeckSchema.parse(limitCarolyn)),
-    ).toMatchInlineSnapshot(`
+    expect(snapshotResult(state, DeckSchema.parse(limitCarolyn)))
+      .toMatchInlineSnapshot(`
       [
         {
           "entries": 15,
@@ -61,9 +63,8 @@ describe("limitedSlotOccupation()", () => {
       ]
     `);
 
-    expect(
-      snapshotResult(state, DeckSchema.parse(limitCarolynInvalid)),
-    ).toMatchInlineSnapshot(`
+    expect(snapshotResult(state, DeckSchema.parse(limitCarolynInvalid)))
+      .toMatchInlineSnapshot(`
       [
         {
           "entries": 16,
@@ -76,9 +77,8 @@ describe("limitedSlotOccupation()", () => {
   it("handles presence of dynamic limit deck building (versatile)", () => {
     const state = store.getState();
 
-    expect(
-      snapshotResult(state, DeckSchema.parse(limitCarolynVersatile)),
-    ).toMatchInlineSnapshot(`
+    expect(snapshotResult(state, DeckSchema.parse(limitCarolynVersatile)))
+      .toMatchInlineSnapshot(`
       [
         {
           "entries": 15,
@@ -107,12 +107,29 @@ describe("limitedSlotOccupation()", () => {
     `);
   });
 
+  it("allocates overlapping cards without wasting limited access", () => {
+    const state = store.getState();
+
+    expect(snapshotResult(state, DeckSchema.parse(collectorOverlappingAccess)))
+      .toMatchInlineSnapshot(`
+      [
+        {
+          "entries": 1,
+          "index": 4,
+        },
+        {
+          "entries": 15,
+          "index": 5,
+        },
+      ]
+    `);
+  });
+
   it("handles customizable deckbuilding", () => {
     const state = store.getState();
 
-    expect(
-      snapshotResult(state, DeckSchema.parse(limitCustomizableLevel0)),
-    ).toMatchInlineSnapshot(`
+    expect(snapshotResult(state, DeckSchema.parse(limitCustomizableLevel0)))
+      .toMatchInlineSnapshot(`
       [
         {
           "entries": 7,
@@ -125,9 +142,8 @@ describe("limitedSlotOccupation()", () => {
 
     limitCustomizableLevel1.meta = '{"cus_09022":"0|1"}';
 
-    expect(
-      snapshotResult(state, DeckSchema.parse(limitCustomizableLevel1)),
-    ).toMatchInlineSnapshot(`
+    expect(snapshotResult(state, DeckSchema.parse(limitCustomizableLevel1)))
+      .toMatchInlineSnapshot(`
       [
         {
           "entries": 5,

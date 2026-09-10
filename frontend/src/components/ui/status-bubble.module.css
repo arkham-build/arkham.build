@@ -1,0 +1,49 @@
+.status-bubble {
+  top: -0.125rem;
+  right: -0.125rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--color-error);
+  color: var(--color-inverted);
+  border-radius: 100%;
+  padding: 1px;
+  position: absolute;
+}
+
+.status-bubble.success {
+  background: var(--color-success);
+}
+
+.status-bubble.loading {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  animation: pulse 1.25s ease-in-out infinite;
+}
+
+.status-bubble.warning {
+  background: var(--color-warning);
+  color: var(--color-warning-contrast);
+}
+
+.status-bubble.error {
+  background: var(--color-error);
+}
+
+.status-bubble svg {
+  width: 1em;
+  height: 1em;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

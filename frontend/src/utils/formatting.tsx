@@ -1,10 +1,16 @@
+import type {
+  Campaign,
+  Cycle,
+  EncounterSet,
+  Pack,
+  Scenario,
+  StorageProvider,
+  TabooSet,
+} from "@arkham-build/shared";
 import i18next from "i18next";
 import { createSelector } from "reselect";
-import type { Cycle } from "@/store/schemas/cycle.schema";
-import type { Pack } from "@/store/schemas/pack.schema";
-import type { TabooSet } from "@/store/schemas/taboo-set.schema";
 import i18n from "@/utils/i18n";
-import { LOCALES, type StorageProvider } from "./constants";
+import { LOCALES } from "./constants";
 
 export function capitalize(s: string | number) {
   const str = s.toString();
@@ -80,13 +86,15 @@ export function formatProviderName(name: StorageProvider) {
     }
 
     default: {
-      return capitalize(name);
+      return capitalize(name ?? "local");
     }
   }
 }
 
-export function displayPackName(pack: Pack | Cycle) {
-  return pack.name ?? pack.real_name ?? "";
+export function displayPackName(
+  pack: Pack | Cycle | EncounterSet | Scenario | Campaign,
+) {
+  return pack?.name ?? pack?.real_name ?? "";
 }
 
 export function shortenPackName(pack: Pack) {
@@ -102,5 +110,5 @@ export function formatDeckOptionString(str: string | undefined) {
 }
 
 export function dataLanguage() {
-  return LOCALES[i18n.language]?.dataLocale;
+  return LOCALES[i18n.language.toLocaleLowerCase()]?.displayValue;
 }

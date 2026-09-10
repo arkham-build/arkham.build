@@ -16,17 +16,17 @@ export function CopyToClipboard(props: Props) {
   const { copyToClipboard, isCopied } = useCopyToClipboard();
 
   const onClick = useCallback(() => {
-    copyToClipboard(text);
+    void copyToClipboard(text).catch(console.error);
   }, [copyToClipboard, text]);
 
   return (
     <Button
+      {...rest}
       tooltip={
         isCopied
           ? t("ui.copy_to_clipboard_success")
           : (tooltip ?? t("ui.copy_to_clipboard"))
       }
-      {...rest}
       iconOnly
       onClick={onClick}
     >

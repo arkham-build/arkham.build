@@ -1,10 +1,8 @@
-import type { RadioGroupItemProps } from "@radix-ui/react-radio-group";
-import { forwardRef } from "react";
 import { cx } from "@/utils/cx";
 import { Button, type Props as ButtonProps, type ButtonType } from "./button";
 import css from "./dropdown-menu.module.css";
 import { Keybind } from "./hotkey";
-import { RadioGroupItem } from "./radio-group";
+import { RadioGroupItem, type RadioGroupItemProps } from "./radio-group";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
@@ -20,13 +18,10 @@ export function DropdownMenu(props: Props) {
   );
 }
 
-export const DropdownButton = forwardRef(function DropdownButton<
-  T extends ButtonType,
->(
+export function DropdownButton<T extends ButtonType>(
   props: ButtonProps<T> & { hotkey?: string },
-  ref: React.Ref<HTMLButtonElement>,
 ) {
-  const { children, className, hotkey, ...rest } = props;
+  const { children, className, hotkey, ref, ...rest } = props;
 
   const childNodes = hotkey ? (
     <span className={css["dropdown-button-row"]}>
@@ -43,12 +38,12 @@ export const DropdownButton = forwardRef(function DropdownButton<
       ref={ref}
       className={cx(css["dropdown-button"], className)}
       variant="bare"
-      size="full"
+      full
     >
       {childNodes}
     </Button>
   );
-});
+}
 
 export function DropdownRadioGroupItem(
   props: RadioGroupItemProps & {
@@ -75,7 +70,7 @@ export function DropdownRadioGroupItem(
 }
 
 export function DropdownMenuSection(props: {
-  title: React.ReactNode;
+  title?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -84,13 +79,19 @@ export function DropdownMenuSection(props: {
   return (
     <section className={cx(css["section"], className)}>
       <header className={css["header"]}>
-        <h4 className={css["title"]}>{title}</h4>
+        {title && <h4 className={css["title"]}>{title}</h4>}
       </header>
       <div className={css["content"]}>{children}</div>
     </section>
   );
 }
 
-export function DropdownItem({ children }: { children: React.ReactNode }) {
-  return <div className={css["dropdown-item"]}>{children}</div>;
+export function DropdownItem({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: React.ReactNode;
+}) {
+  return <div className={cx(css["dropdown-item"], className)}>{children}</div>;
 }

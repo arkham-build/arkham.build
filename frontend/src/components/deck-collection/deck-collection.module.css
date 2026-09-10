@@ -6,9 +6,19 @@
   min-height: 0;
 }
 
+.banner {
+  flex: 0 0 auto;
+  align-items: center;
+  margin: 0.625rem var(--scrollbar-padding) 0;
+  font-size: var(--text-sm);
+}
+
+.banner + .header {
+  padding-top: 0;
+}
+
 .scroller {
   flex: 1 1 auto;
-  padding-inline: 0.75rem;
   padding-bottom: 0.75rem;
 }
 
@@ -34,7 +44,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding-top: 0.75rem;
-  padding-inline: 0.75rem;
+  padding-inline: var(--scrollbar-padding);
 }
 
 .title {
@@ -51,7 +61,7 @@
 
 .placeholder {
   text-align: center;
-  color: var(--palette-three-point-five);
+  color: var(--palette-4);
 }
 
 .placeholder > i {

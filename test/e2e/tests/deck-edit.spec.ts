@@ -40,6 +40,63 @@ test.describe("deck edit", () => {
     await assertEditorDeckQuantity(page, "01016", 2);
   });
 
+  test("assign deck-local card tags", async ({ page }) => {
+    await page.goto("/deck/create/01001");
+    await page.getByTestId("create-save").click();
+    await fillSearch(page, ".45 automatic");
+    await adjustListCardQuantity(page, "01016", "increment");
+
+    await page
+      .getByTestId("editor-tabs-slots")
+      .getByTestId("listcard-01016")
+      .getByTestId("listcard-title")
+      .click();
+
+    await page
+      .getByTestId("deck-card-tags-01016")
+      .getByTestId("combobox-input")
+      .click();
+    await page
+      .getByTestId("deck-card-tags-01016")
+      .getByTestId("combobox-input")
+      .fill("Scenario");
+    await page.getByTestId("combobox-menu-item-create:Scenario").click();
+
+    await expect(page.getByTestId("deck-card-tags-01016")).toContainText(
+      "Scenario",
+    );
+
+    await page.locator("body").press("Escape");
+    await page
+      .getByTestId("editor-tabs-slots")
+      .getByTestId("listcard-01016")
+      .hover();
+    await expect(page.getByTestId("card-tooltip")).toContainText("Scenario");
+
+    await page.mouse.move(0, 0);
+    await fillSearch(page, "");
+    await page
+      .getByTestId("filter-Card tags")
+      .getByTestId("collapsible-trigger")
+      .click();
+    await page
+      .getByTestId("filter-Card tags")
+      .getByTestId("combobox-input")
+      .click();
+    await page
+      .getByTestId("filter-Card tags")
+      .getByTestId("combobox-input")
+      .fill("Scenario");
+    await page.getByTestId("combobox-menu-item-tag:Scenario").click();
+
+    await expect(page.getByTestId("cardlist-count").first()).toContainText(
+      "1 card",
+    );
+    await expect(
+      page.getByTestId("card-list-scroller").getByTestId("listcard-01016"),
+    ).toBeVisible();
+  });
+
   test("add card with bonds", async ({ page }) => {
     await page.goto("/deck/create/01001");
     await page.getByTestId("create-save").click();
@@ -589,10 +646,13 @@ test.describe("deck edit", () => {
       .getByTestId("listcard-09042")
       .getByTestId("listcard-title")
       .click();
-    await page.getByTestId("combobox-input").click();
-    await page.getByTestId("combobox-input").fill("grim memoir");
+    const customizationInput = page
+      .getByTestId("customizations-editor")
+      .getByTestId("combobox-input");
+    await customizationInput.click();
+    await customizationInput.fill("grim memoir");
     await page.getByTestId("listcard-09044").click();
-    await page.getByTestId("combobox-input").press("Escape");
+    await customizationInput.press("Escape");
     await page.locator("body").press("Escape");
 
     await fillSearch(page, "honed instinct");
@@ -623,10 +683,10 @@ test.describe("deck edit", () => {
       .getByTestId("listcard-09101")
       .getByTestId("listcard-title")
       .click();
-    await page.getByTestId("combobox-input").click();
-    await page.getByTestId("combobox-input").fill("monster");
+    await customizationInput.click();
+    await customizationInput.fill("monster");
     await page.getByTestId("combobox-menu-item-Monster").click();
-    await page.getByTestId("combobox-input").press("Escape");
+    await customizationInput.press("Escape");
     await page.locator("body").press("Escape");
 
     await fillSearch(page, "friends in low places");
@@ -635,10 +695,10 @@ test.describe("deck edit", () => {
       .getByTestId("listcard-09060")
       .getByTestId("listcard-title")
       .click();
-    await page.getByTestId("combobox-input").click();
-    await page.getByTestId("combobox-input").fill("item");
+    await customizationInput.click();
+    await customizationInput.fill("item");
     await page.getByTestId("combobox-menu-item-Item").click();
-    await page.getByTestId("combobox-input").press("Escape");
+    await customizationInput.press("Escape");
     await page.locator("body").press("Escape");
 
     await fillSearch(page, "summoned servitor");
@@ -668,9 +728,9 @@ test.describe("deck edit", () => {
       .getByTestId("listcard-09079")
       .getByTestId("listcard-title")
       .click();
-    await page.getByTestId("combobox-input").click();
+    await customizationInput.click();
     await page.getByTestId("combobox-menu-item-intellect").click();
-    await page.getByTestId("combobox-input").press("Escape");
+    await customizationInput.press("Escape");
     await page.locator("body").press("Escape");
 
     await page.getByTestId("editor-save").click();
@@ -735,7 +795,7 @@ test.describe("deck edit", () => {
       .getByTestId("quantity-increment")
       .click();
 
-    assertEditorDeckQuantity(page, "11755a", 1);
+    await assertEditorDeckQuantity(page, "11755a", 1);
 
     await page
       .getByTestId("virtuoso-item-list")

@@ -1,7 +1,9 @@
-import type {
-  Card,
-  DeckOption,
-  SealedDeckResponse,
+import {
+  type Card,
+  type DeckOption,
+  realCardLevel,
+  type SealedDeckResponse,
+  SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
 import { createSelector } from "reselect";
 import { applyCardChanges } from "@/store/lib/card-edits";
@@ -21,9 +23,8 @@ import type {
 } from "@/store/lib/types";
 import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";
-import { cardLimit, realCardLevel } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
-import { currentEnvironmentPacks } from "@/utils/environments";
+import { cardLimit } from "@/utils/card-utils";
+import { environments } from "@/utils/environments";
 import { formatRelationTitle } from "@/utils/formatting";
 import { and, or } from "@/utils/fp";
 import i18n from "@/utils/i18n";
@@ -138,7 +139,7 @@ export const selectDraftCardPool = createSelector(
     const investigator = metadata.cards[investigatorCode];
     if (!investigator) return [];
 
-    const cardAccessFilter = filterInvestigatorAccess(investigator, {
+    const cardAccessFilter = filterInvestigatorAccess(investigator, undefined, {
       additionalDeckOptions,
     });
     if (!cardAccessFilter) return [];
@@ -182,7 +183,7 @@ export const selectDraftCardPool = createSelector(
       effectiveCardPool = cardPool;
     } else if (cardPool === undefined && defaultEnvironment === "current") {
       // No cardPool set and default environment is "current" - use current environment packs
-      effectiveCardPool = currentEnvironmentPacks(
+      effectiveCardPool = environments.currentFaq25(
         Object.values(metadata.cycles),
       );
     }
@@ -350,7 +351,7 @@ export const selectAvailableDraftCards = createSelector(
       const option = allDeckOptions[i];
       if (option.atleast && option.virtual) continue;
 
-      const filter = makeOptionFilter(option, {
+      const filter = makeOptionFilter(option, undefined, {
         showLimitedAccess: true,
       });
 
@@ -736,7 +737,7 @@ export const selectDraftDebugInfo = createSelector(
     for (const option of backCard.deck_options) {
       if (!option.limit || option.not || option.virtual) continue;
 
-      const filter = makeOptionFilter(option, {
+      const filter = makeOptionFilter(option, undefined, {
         showLimitedAccess: true,
       });
       if (filter) {

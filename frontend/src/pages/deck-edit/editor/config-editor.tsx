@@ -1,6 +1,8 @@
-import type {
-  DeckOptionSelectType,
-  SealedDeckResponse,
+import {
+  type Card,
+  type DeckOptionSelectType,
+  type SealedDeckResponse,
+  SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
 import { useCallback, useId, useMemo } from "react";
@@ -15,9 +17,11 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import type { SelectOption } from "@/components/ui/select";
 import { Select } from "@/components/ui/select";
 import { useStore } from "@/store";
+import { parse } from "@/store/lib/buildql/parser";
 import { encodeCardPool, encodeSealedDeck } from "@/store/lib/deck-meta";
 import type { CardWithRelations, ResolvedDeck } from "@/store/lib/types";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
+import { selectBuildQlInterpreter } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { debounce } from "@/utils/debounce";
 import css from "./editor.module.css";
@@ -59,6 +63,11 @@ const selectUpdateTabooId = (state: StoreState) => state.updateTabooId;
 const selectUpdateMetaProperty = (state: StoreState) =>
   state.updateMetaProperty;
 
+const selectUpdateMetaPropertyDebounced = createSelector(
+  (state: StoreState) => state.updateMetaProperty,
+  (updateMetaProperty) => debounce(updateMetaProperty, 100),
+);
+
 const selectUpdateInvestigatorSide = (state: StoreState) =>
   state.updateInvestigatorSide;
 
@@ -82,6 +91,9 @@ export function MetaEditor(props: Props) {
   const updateTabooId = useStore(selectUpdateTabooId);
   const updateMetaProperty = useStore(selectUpdateMetaProperty);
   const updateInvestigatorSide = useStore(selectUpdateInvestigatorSide);
+  const updateMetaPropertyDebounced = useStore(
+    selectUpdateMetaPropertyDebounced,
+  );
 
   const onTabooChange = useCallback(
     (evt: React.ChangeEvent<HTMLSelectElement>) => {
@@ -141,6 +153,32 @@ export function MetaEditor(props: Props) {
     [updateInvestigatorSide, deck.id],
   );
 
+  const interpreter = useStore((state) =>
+    selectBuildQlInterpreter(state, deck),
+  );
+
+  const onBuildqlDeckOptionChange = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement>) => {
+      if (evt.target instanceof HTMLInputElement) {
+        try {
+          if (evt.target.value) {
+            const filter = interpreter.evaluate(parse(evt.target.value));
+            filter({} as Card); // test for runtime errors
+          }
+
+          updateMetaPropertyDebounced(
+            deck.id,
+            "buildql_deck_options_override",
+            evt.target.value || null,
+          );
+        } catch (error) {
+          console.warn("Error parsing buildQL deck option override", error);
+        }
+      }
+    },
+    [updateMetaPropertyDebounced, deck.id, interpreter],
+  );
+
   const onCardPoolChange = useCallback(
     (selectedItems: string[]) => {
       updateMetaProperty(deck.id, "card_pool", encodeCardPool(selectedItems));
@@ -170,7 +208,7 @@ export function MetaEditor(props: Props) {
 
   return (
     <div className={css["meta"]}>
-      <Field full padded>
+      <Field full>
         <FieldLabel>{t("deck_edit.config.name")}</FieldLabel>
         <input
           defaultValue={deck.name}
@@ -179,7 +217,7 @@ export function MetaEditor(props: Props) {
           type="text"
         />
       </Field>
-      <Field full helpText={t("deck_edit.config.tags_help")} padded>
+      <Field full helpText={t("deck_edit.config.tags_help")}>
         <FieldLabel>{t("deck_edit.config.tags")}</FieldLabel>
         <input
           defaultValue={deck.tags ?? ""}
@@ -188,7 +226,7 @@ export function MetaEditor(props: Props) {
         />
       </Field>
 
-      <Field full padded>
+      <Field full>
         <Checkbox
           checked={deck.metaParsed.is_draft === true}
           id={draftCheckboxId}
@@ -199,7 +237,7 @@ export function MetaEditor(props: Props) {
 
       {deck.hasParallel && (
         <>
-          <Field full padded>
+          <Field full>
             <FieldLabel>
               {t("deck_edit.config.sides.investigator_front")}
             </FieldLabel>
@@ -216,7 +254,7 @@ export function MetaEditor(props: Props) {
               value={deck.investigatorFront.card.code}
             />
           </Field>
-          <Field full padded>
+          <Field full>
             <FieldLabel>
               {t("deck_edit.config.sides.investigator_back")}
             </FieldLabel>
@@ -241,7 +279,7 @@ export function MetaEditor(props: Props) {
           selections={deck.selections}
         />
       )}
-      <Field full padded>
+      <Field full>
         <FieldLabel htmlFor="meta-taboo-set">
           {t("deck_edit.config.taboo")}
         </FieldLabel>
@@ -252,7 +290,11 @@ export function MetaEditor(props: Props) {
         />
       </Field>
 
-      <Field data-testid="meta-limited-card-pool" full padded bordered>
+      <Field
+        className={css["meta-card-pool"]}
+        data-testid="meta-limited-card-pool"
+        full
+      >
         <FieldLabel as="div">
           {t("deck_edit.config.card_pool.section_title")}
         </FieldLabel>
@@ -267,6 +309,22 @@ export function MetaEditor(props: Props) {
           value={deck.sealedDeck}
         />
       </Field>
+      {SPECIAL_CARD_CODES.GENERIC_CUSTOM_INVESTIGATORS.includes(
+        deck.investigatorBack.card.code,
+      ) && (
+        <Field full>
+          <FieldLabel htmlFor="meta-buildql-deck-option">
+            {t("deck_edit.config.buildql_deck_option")}
+          </FieldLabel>
+          <input
+            data-testid="meta-buildql-deck-option"
+            defaultValue={deck.metaParsed.buildql_deck_options_override ?? ""}
+            id="meta-buildql-deck-option"
+            onChange={onBuildqlDeckOptionChange}
+            type="text"
+          />
+        </Field>
+      )}
     </div>
   );
 }

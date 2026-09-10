@@ -34,12 +34,13 @@ export function SkillIconsFilter({ id }: FilterProps) {
   const { onReset, onOpenChange, onChange, locked } = useFilter(id);
 
   const onToggleChange = useCallback(
-    (key: keyof SkillIconsFilterType, val: string) => {
+    (key: keyof SkillIconsFilterType, value: string) => {
+      const currentValue = filter.value[key]?.toString();
       onChange({
-        [key]: val ? +val : undefined,
+        [key]: value === currentValue ? undefined : +value,
       });
     },
-    [onChange],
+    [filter.value, onChange],
   );
 
   return (
@@ -66,7 +67,7 @@ export function SkillIconsFilter({ id }: FilterProps) {
                 onToggleChange(key as keyof SkillIconsFilterType, val)
               }
               type="single"
-              value={value ? value.toString() : ""}
+              value={value?.toString()}
             >
               <ToggleGroupItem value="1">1+</ToggleGroupItem>
               <ToggleGroupItem value="2">2+</ToggleGroupItem>

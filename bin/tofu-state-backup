@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: bin/tofu-state-backup <bootstrap|cloudflare|github>" >&2
+  exit 2
+fi
+
+stack="$1"
+
+case "$stack" in
+  bootstrap | cloudflare | github) ;;
+  *)
+    echo "Unknown OpenTofu stack: $stack" >&2
+    exit 2
+    ;;
+esac
+
+command -v aws >/dev/null || {
+  echo "The AWS CLI is required to back up OpenTofu state." >&2
+  exit 1
+}
+
+: "${TF_VAR_cloudflare_account_id:?Missing TF_VAR_cloudflare_account_id}"
+: "${AWS_ACCESS_KEY_ID:?Missing AWS_ACCESS_KEY_ID}"
+: "${AWS_SECRET_ACCESS_KEY:?Missing AWS_SECRET_ACCESS_KEY}"
+
+state_bucket="arkham-build-opentofu-state"
+state_key="${stack}/state.tfstate"
+endpoint="https://${TF_VAR_cloudflare_account_id}.r2.cloudflarestorage.com"
+
+error_file="$(mktemp "${TMPDIR:-/tmp}/tofu-state-backup.XXXXXX")"
+trap 'rm -f "$error_file"' EXIT
+
+if ! aws s3api head-object \
+  --region auto \
+  --endpoint-url "$endpoint" \
+  --bucket "$state_bucket" \
+  --key "$state_key" \
+  >/dev/null 2>"$error_file"; then
+  if grep -Eq "404|Not Found|NoSuchKey" "$error_file"; then
+    echo "No existing state for $stack; skipping backup."
+    exit 0
+  fi
+
+  cat "$error_file" >&2
+  exit 1
+fi
+
+timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
+backup_key="history/${stack}/${timestamp}-${RANDOM}.tfstate"
+
+AWS_PAGER="" aws s3api copy-object \
+  --region auto \
+  --endpoint-url "$endpoint" \
+  --bucket "$state_bucket" \
+  --copy-source "${state_bucket}/${state_key}" \
+  --key "$backup_key" \
+  >/dev/null
+
+echo "Created encrypted state backup: s3://${state_bucket}/${backup_key}"

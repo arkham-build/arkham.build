@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ssh_target="${SSH_TARGET:-app@159.195.14.203}"
+container="${DB_CONTAINER:-api-arkham-build-db}"
+local_port="${LOCAL_PORT:-15432}"
+remote_port="${REMOTE_PORT:-5432}"
+database="${DB_NAME:-api_arkham_build_production}"
+user="${DB_USER:-postgres}"
+
+db_ip="$(ssh "${ssh_target}" "docker inspect -f '{{range .NetworkSettings.Networks}}{{println .IPAddress}}{{end}}' ${container} | awk 'NF { print; exit }'")"
+
+if [[ -z "${db_ip}" ]]; then
+  echo "Could not determine IP for ${container}" >&2
+  exit 1
+fi
+
+echo "Forwarding 127.0.0.1:${local_port} to ${container} (${db_ip}:${remote_port}) via ${ssh_target}"
+echo "TablePlus: host=127.0.0.1 port=${local_port} database=${database} user=${user} ssl=disabled"
+
+exec ssh -N -o ExitOnForwardFailure=yes -L "127.0.0.1:${local_port}:${db_ip}:${remote_port}" "${ssh_target}"

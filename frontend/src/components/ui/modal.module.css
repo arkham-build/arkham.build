@@ -4,20 +4,15 @@
   left: 0;
   height: 100%;
   width: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: color-mix(in srgb, var(--palette-0) 10%, rgba(0, 0, 0, 0.3) 90%);
   width: 100%;
   z-index: 90;
   container-type: inline-size;
-  padding-left: var(--scrollbar-padding);
 
   &.center {
     display: grid;
     place-items: center;
   }
-}
-
-:root[data-theme="light"] .modal {
-  background: rgba(0, 0, 0, 0.5);
 }
 
 .inner {

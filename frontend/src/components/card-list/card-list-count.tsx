@@ -44,7 +44,7 @@ export function CardlistCount(props: { data: ListState | undefined }) {
             tooltip={
               <dl>
                 {filterChanges.map(({ type, change }, i) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: no stable key available.
+                  // oxlint-disable-next-line react/no-array-index-key -- no stable key available.
                   <Fragment key={i}>
                     <dt>
                       <strong>

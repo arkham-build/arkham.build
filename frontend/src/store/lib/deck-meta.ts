@@ -1,18 +1,29 @@
-import type { SealedDeckResponse } from "@arkham-build/shared";
-import type { Deck, Slots } from "@/store/schemas/deck.schema";
+import {
+  CardTagSchema,
+  type Deck,
+  type DeckMeta,
+  type SealedDeckResponse,
+  type Slots,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
+import { z } from "zod";
 import type { AttachmentQuantities } from "@/store/slices/deck-edits.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { range } from "@/utils/range";
+import { parseCardTagNames } from "./card-tags";
 import type {
   Annotations,
   CardWithRelations,
   Customization,
   Customizations,
-  DeckMeta,
-  ResolvedCard,
   Selection,
   Selections,
 } from "./types";
+
+const DeckCardTagsSchema = z.record(
+  z.string().min(1).max(255),
+  z.array(CardTagSchema),
+);
 
 export function decodeDeckMeta(deck: Deck): DeckMeta {
   try {
@@ -27,64 +38,63 @@ export function decodeSelections(
   investigator: CardWithRelations,
   deckMeta: DeckMeta,
 ): Selections | undefined {
-  const selections = investigator.card.deck_options?.reduce<Selections>(
-    (acc, option) => {
-      let selection: Selection | undefined;
-      let key: string | undefined;
+  const selections = [
+    ...(investigator.card.deck_options ?? []),
+    ...(investigator.card.side_deck_options ?? []),
+  ].reduce<Selections>((acc, option) => {
+    let selection: Selection | undefined;
+    let key: string | undefined;
 
-      if (option.deck_size_select) {
-        key = option.id ?? "deck_size_selected";
+    if (option.deck_size_select) {
+      key = option.id ?? "deck_size_selected";
 
-        selection = {
-          options: Array.isArray(option.deck_size_select)
-            ? option.deck_size_select
-            : [option.deck_size_select],
-          type: "deckSize",
-          accessor: key,
-          name: option.name ?? key,
-          value: deckMeta.deck_size_selected
-            ? Number.parseInt(deckMeta.deck_size_selected, 10)
-            : 30,
-        };
-      } else if (option.faction_select) {
-        key = option.id ?? "faction_selected";
+      selection = {
+        options: Array.isArray(option.deck_size_select)
+          ? option.deck_size_select
+          : [option.deck_size_select],
+        type: "deckSize",
+        accessor: key,
+        name: option.name ?? key,
+        value: deckMeta.deck_size_selected
+          ? Number.parseInt(deckMeta.deck_size_selected, 10)
+          : 30,
+      };
+    } else if (option.faction_select) {
+      key = option.id ?? "faction_selected";
 
-        selection = {
-          options: option.faction_select,
-          type: "faction",
-          accessor: key,
-          name: option.name ?? key,
-          value:
-            (option.id
-              ? (deckMeta[
-                  option.id as keyof Omit<
-                    DeckMeta,
-                    "fan_made_content" | "hidden_slots" | "is_draft"
-                  >
-                ] as string | null | undefined)
-              : (deckMeta.faction_selected as string | null | undefined)) ??
-            undefined,
-        };
-      } else if (option.option_select) {
-        key = option.id ?? "option_selected";
+      selection = {
+        options: option.faction_select,
+        type: "faction",
+        accessor: key,
+        name: option.name ?? key,
+        value:
+          (option.id
+            ? deckMeta[
+                option.id as keyof Omit<
+                  DeckMeta,
+                  "fan_made_content" | "hidden_slots" | "is_draft"
+                >
+              ]
+            : deckMeta.faction_selected) ?? undefined,
+      };
+    } else if (option.option_select) {
+      key = option.id ?? "option_selected";
 
-        selection = {
-          options: option.option_select,
-          type: "option",
-          accessor: key,
-          name: option.name ?? key,
-          value: option.option_select.find(
-            (x) => x.id === deckMeta[key as keyof DeckMeta],
-          ),
-        };
-      }
+      selection = {
+        options: option.option_select,
+        type: "option",
+        accessor: key,
+        name: option.name ?? key,
+        value: option.option_select.find(
+          (x) => x.id === deckMeta[key as keyof DeckMeta],
+        ),
+      };
+    }
 
-      if (!key) return acc;
-      if (selection) acc[key] = selection;
-      return acc;
-    },
-    {},
-  );
+    if (!key) return acc;
+    if (selection) acc[key] = selection;
+    return acc;
+  }, {});
 
   return selections;
 }
@@ -204,24 +214,27 @@ export function encodeAttachments(attachments: AttachmentQuantities) {
   );
 }
 
-export function decodeCardPool(
+export function decodeCardPoolFromSlots(
   slots: Slots,
-  cards: Record<string, ResolvedCard>,
+  metadata: Metadata,
   deckMeta: DeckMeta,
 ) {
   const pool = deckMeta.card_pool?.split(",");
   if (!pool?.length) return undefined;
 
-  for (const { card } of Object.values(cards)) {
-    if (!card.card_pool_extension || !slots[card.code]) continue;
+  for (const code of Object.keys(slots)) {
+    const card = metadata.cards[code];
+    if (!card?.card_pool_extension) continue;
 
-    const extension = deckMeta[`card_pool_extension_${card.code}`];
+    const extension = deckMeta[`card_pool_extension_${code}`];
 
     if (extension) {
       pool.push(...extension.split(","));
     } else if (card.card_pool_extension.selections) {
       pool.push(
-        ...card.card_pool_extension.selections.map((code) => `card:${code}`),
+        ...card.card_pool_extension.selections.map(
+          (code: string) => `card:${code}`,
+        ),
       );
     }
   }
@@ -238,11 +251,16 @@ export function decodeSealedDeck(deckMeta: DeckMeta) {
 
   if (!entries?.length) return undefined;
 
-  const cards = entries.reduce<Record<string, number>>((acc, curr) => {
-    const [code, quantity] = curr.split(":");
-    acc[code] = Number.parseInt(quantity, 10);
-    return acc;
-  }, {});
+  const cards = entries.reduce<Record<string, number>>(
+    (acc, curr) => {
+      const [code, quantity] = curr.split(":");
+      acc[code] = Number.parseInt(quantity, 10);
+      return acc;
+    },
+    {
+      [SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS]: 99,
+    },
+  );
 
   return {
     name: deckMeta.sealed_deck_name ?? "Sealed Deck",
@@ -280,4 +298,42 @@ export function encodeAnnotations(annotations: Annotations) {
     },
     {},
   );
+}
+
+export function decodeDeckCardTags(
+  deckMeta: DeckMeta,
+): Record<string, string[]> {
+  if (!deckMeta.deck_card_tags) return {};
+
+  try {
+    const parsed = DeckCardTagsSchema.safeParse(
+      JSON.parse(deckMeta.deck_card_tags),
+    );
+
+    return parsed.success ? normalizeDeckCardTags(parsed.data) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function encodeDeckCardTags(
+  deckCardTags: Record<string, string[]>,
+): string | null {
+  const normalized = normalizeDeckCardTags(deckCardTags);
+  return Object.keys(normalized).length ? JSON.stringify(normalized) : null;
+}
+
+function normalizeDeckCardTags(deckCardTags: Record<string, string[]>) {
+  const result: Record<string, string[]> = {};
+
+  for (const [cardCode, tagNames] of Object.entries(deckCardTags)) {
+    const parsedCardCode = z.string().min(1).max(255).parse(cardCode);
+    const parsedTagNames = parseCardTagNames(tagNames);
+
+    if (parsedTagNames.length) {
+      result[parsedCardCode] = parsedTagNames;
+    }
+  }
+
+  return result;
 }

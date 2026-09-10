@@ -40,12 +40,13 @@ export function FontSizeSetting(props: SettingProps) {
 
   return (
     <Field className={css["field"]} bordered>
-      <FieldLabel htmlFor="font-size">
+      <FieldLabel htmlFor="font-size" id="font-size-label">
         <ALargeSmallIcon />
         {t("settings.display.font_size")}
       </FieldLabel>
       <div className={css["input"]}>
         <Slider
+          aria-labelledby="font-size-label"
           id="font-size"
           onLostPointerCapture={onLostPointerCapture}
           onValueChange={onLiveValueChange}

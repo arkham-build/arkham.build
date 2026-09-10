@@ -5,17 +5,16 @@ import {
   SquarePenIcon,
 } from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDialogContextChecked } from "@/components/ui/dialog.hooks";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { AppLayout } from "@/layouts/app-layout";
-import { useStore } from "@/store";
+import { useUpdateDeckPropertiesMutation } from "@/queries/mutations/decks";
 import type { DeckValidationResult } from "@/store/lib/deck-validation";
 import { deckTags } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { History } from "@/store/selectors/decks";
-import { selectConnectionLockForDeck } from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
 import { useAccentColor } from "@/utils/use-accent-color";
 import DeckDescription from "../deck-description";
@@ -41,17 +40,13 @@ import {
   ModalInner,
 } from "../ui/modal";
 import { Plane } from "../ui/plane";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  useTabUrlState,
-} from "../ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { useTabUrlState } from "../ui/tabs.hooks";
 import { useToast } from "../ui/toast.hooks";
 import { DefaultTooltip } from "../ui/tooltip";
 import css from "./deck-display.module.css";
 import { DeckHistory } from "./deck-history/deck-history";
+import { DecklistPopover } from "./decklist-popover";
 import { Sidebar } from "./sidebar";
 import type { DeckOrigin } from "./types";
 
@@ -157,7 +152,11 @@ export function DeckDisplay(props: DeckDisplayProps) {
           {headerSlot && <div>{headerSlot}</div>}
           {deck.metaParsed?.banner_url && (
             <div className={css["banner"]}>
-              <img alt="Deck banner" src={deck.metaParsed.banner_url} />
+              <img
+                alt="Deck banner"
+                referrerPolicy="no-referrer"
+                src={deck.metaParsed.banner_url}
+              />
             </div>
           )}
           {deck.metaParsed.intro_md && (
@@ -238,7 +237,7 @@ export function DeckDisplay(props: DeckDisplayProps) {
                   defaultOpen={validation.errors.length < 3}
                   validation={validation}
                 />
-                <Decklist deck={deck} />
+                <Decklist deck={deck} enableChecklistMode />
               </div>
             </TabsContent>
             <TabsContent className={css["tab"]} value="tools">
@@ -249,6 +248,7 @@ export function DeckDisplay(props: DeckDisplayProps) {
                 <Plane>
                   <DeckDescription content={deck.description_md} centered />
                 </Plane>
+                <DecklistPopover deck={deck} />
               </TabsContent>
             )}
             {hasHistory && (
@@ -270,56 +270,17 @@ type TitleEditModalProps = {
 function TitleEditModal(props: TitleEditModalProps) {
   const { deck } = props;
 
-  const [loading, setLoading] = useState(false);
-
-  const connectionLock = useStore((state) =>
-    selectConnectionLockForDeck(state, deck),
-  );
-
   const { t } = useTranslation();
-  const toast = useToast();
   const modalContext = useDialogContextChecked();
   const cssVariables = useAccentColor(deck.investigatorBack.card);
-
-  const updateDeckProperties = useStore((state) => state.updateDeckProperties);
 
   const onCloseModal = useCallback(() => {
     modalContext?.setOpen(false);
   }, [modalContext]);
 
-  const handleSubmit = useCallback(
-    async (evt: React.FormEvent) => {
-      evt.preventDefault();
-
-      setLoading(true);
-
-      const toastId = toast.show({
-        children: t("deck_edit.save_loading"),
-        variant: "loading",
-      });
-
-      try {
-        const values = new FormData(evt.target as HTMLFormElement);
-
-        await updateDeckProperties(deck.id, {
-          name: values.get("name")?.toString() || "",
-          tags: values.get("tags")?.toString() || "",
-        });
-
-        onCloseModal();
-      } catch (err) {
-        toast.show({
-          children: t("deck_edit.save_error", {
-            error: (err as Error).message,
-          }),
-          variant: "error",
-        });
-      } finally {
-        toast.dismiss(toastId);
-        setLoading(false);
-      }
-    },
-    [deck.id, updateDeckProperties, onCloseModal, toast, t],
+  const { handleSubmit, isPending } = useUpdateDeckTitleAndTags(
+    deck.id,
+    onCloseModal,
   );
 
   return (
@@ -332,8 +293,8 @@ function TitleEditModal(props: TitleEditModalProps) {
             title={t("deck_edit.config.title_and_tags")}
             style={cssVariables}
           >
-            <form onSubmit={handleSubmit}>
-              <Field full padded>
+            <form className={css["name-modal-form"]} onSubmit={handleSubmit}>
+              <Field full>
                 <FieldLabel>{t("deck_edit.config.name")}</FieldLabel>
                 <input
                   data-testid="name-edit-name"
@@ -344,7 +305,7 @@ function TitleEditModal(props: TitleEditModalProps) {
                   defaultValue={deck.name}
                 />
               </Field>
-              <Field full padded helpText={t("deck_edit.config.tags_help")}>
+              <Field full helpText={t("deck_edit.config.tags_help")}>
                 <FieldLabel>{t("deck_edit.config.tags")}</FieldLabel>
                 <input
                   autoComplete="off"
@@ -356,11 +317,10 @@ function TitleEditModal(props: TitleEditModalProps) {
               </Field>
               <div className={css["name-modal-footer"]}>
                 <Button
-                  disabled={!!connectionLock || loading}
+                  disabled={isPending}
                   variant="primary"
                   type="submit"
                   data-testid="name-edit-submit"
-                  tooltip={connectionLock}
                 >
                   {t("deck_edit.save_short")}
                 </Button>
@@ -374,4 +334,55 @@ function TitleEditModal(props: TitleEditModalProps) {
       </Modal>
     </DialogContent>
   );
+}
+
+function useUpdateDeckTitleAndTags(
+  deckId: ResolvedDeck["id"],
+  onSuccess: () => void,
+) {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const updateDeckPropertiesMutation = useUpdateDeckPropertiesMutation();
+
+  const handleSubmit = useCallback(
+    async (evt: React.SubmitEvent<HTMLFormElement>) => {
+      evt.preventDefault();
+
+      const toastId = toast.show({
+        children: t("deck_edit.save_loading"),
+        variant: "loading",
+      });
+
+      try {
+        const values = new FormData(evt.currentTarget);
+        const name = values.get("name");
+        const tags = values.get("tags");
+
+        await updateDeckPropertiesMutation.mutateAsync({
+          deckId,
+          properties: {
+            name: typeof name === "string" ? name : "",
+            tags: typeof tags === "string" ? tags : "",
+          },
+        });
+
+        onSuccess();
+      } catch (err) {
+        toast.show({
+          children: t("deck_edit.save_error", {
+            error: (err as Error).message,
+          }),
+          variant: "error",
+        });
+      } finally {
+        toast.dismiss(toastId);
+      }
+    },
+    [deckId, onSuccess, t, toast, updateDeckPropertiesMutation],
+  );
+
+  return {
+    handleSubmit,
+    isPending: updateDeckPropertiesMutation.isPending,
+  };
 }

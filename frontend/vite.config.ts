@@ -2,13 +2,13 @@
 import path from "node:path";
 import react from "@vitejs/plugin-react";
 import autoprefixer from "autoprefixer";
-import postcssExtendRule from "postcss-extend-rule";
+import { bundleStats } from "rollup-plugin-bundle-stats";
 import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         assetFileNames: "assets/[name].[hash][extname]",
         chunkFileNames: "assets/[name].[hash].js",
@@ -18,10 +18,16 @@ export default defineConfig({
   },
   css: {
     postcss: {
-      plugins: [autoprefixer(), postcssExtendRule()],
+      plugins: [autoprefixer()],
     },
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    bundleStats({
+      baseline: true,
+      silent: true,
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

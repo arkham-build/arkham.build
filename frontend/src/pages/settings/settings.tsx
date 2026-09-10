@@ -1,38 +1,37 @@
+import type { Settings as SettingsState } from "@arkham-build/shared";
 import { featherText } from "@lucide/lab";
 import {
   DatabaseBackupIcon,
   Icon,
   LibraryIcon,
   SlidersVerticalIcon,
+  UserIcon,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useSearch } from "wouter";
 import { CollectionSettings } from "@/components/collection/collection";
 import { FanMadeContent } from "@/components/fan-made-content/fan-made-content";
 import { Button } from "@/components/ui/button";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  useTabUrlState,
-} from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/toast.hooks";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTabUrlState } from "@/components/ui/tabs.hooks";
 import { AppLayout } from "@/layouts/app-layout";
 import { useStore } from "@/store";
-import type { SettingsState } from "@/store/slices/settings.types";
+import { selectSession } from "@/store/selectors/auth";
 import { useColorThemeManager } from "@/utils/use-color-theme";
 import { useGoBack } from "@/utils/use-go-back";
-import { BackupRestore } from "./backup-restore";
+import { AccountSettings } from "./account-settings";
 import { CardDataSync } from "./card-data-sync";
 import { CardDisplaySettings } from "./card-display";
 import { CardModalPopularDecksSetting } from "./card-modal-popular-decks";
-import { Connections } from "./connections";
+import { DataExport } from "./data-export";
 import { DefaultEnvironmentSetting } from "./default-environment";
+import { DevModeSetting } from "./dev-mode";
 import { FontSizeSetting } from "./font-size";
 import { ListSettings } from "./list-settings";
 import { LocaleSetting } from "./locale-setting";
+import { MetadataRefresh } from "./metadata-refresh";
 import { Section } from "./section";
 import css from "./settings.module.css";
 import { ShowAllCardsSetting } from "./show-all-cards";
@@ -41,231 +40,226 @@ import { ShowPreviewsSetting } from "./show-previews";
 import { SortPunctuationSetting } from "./sort-punctuation-setting";
 import { TabooSetSetting } from "./taboo-set";
 import { ThemeSetting } from "./theme";
+import { useSaveSettings } from "./use-save-settings";
 import { WeaknessPoolSetting } from "./weakness-pool";
 
 function Settings() {
   const settings = useStore((state) => state.settings);
-  const applySettings = useStore((state) => state.applySettings);
-
+  const session = useStore(selectSession);
   const [colorTheme, updateColorTheme] = useColorThemeManager();
+  const { t } = useTranslation();
+  const [tab, onTabChange] = useTabUrlState("general");
+  const search = useSearch();
+  const goBack = useGoBack(search.includes("login_state") ? "/" : undefined);
 
   return (
-    <SettingsInner
-      colorTheme={colorTheme}
-      key={`${settingsKey(settings)}-${colorTheme}`}
-      settings={settings}
-      updateColorTheme={updateColorTheme}
-      updateSettings={applySettings}
-    />
+    <AppLayout title={t("settings.title")} mainClassName={css["main"]}>
+      <header className={css["header"]}>
+        <h1 className={css["title"]}>{t("settings.title")}</h1>
+
+        <div id="settings-header-portal" />
+
+        <div className={css["header-actions"]}>
+          <Button
+            data-testid="settings-back"
+            onClick={goBack}
+            type="button"
+            variant="bare"
+          >
+            {t("common.back")}
+          </Button>
+          <div id="settings-header-action-portal" />
+        </div>
+      </header>
+
+      <div className={css["container"]}>
+        <Tabs value={tab} onValueChange={onTabChange}>
+          <TabsList>
+            {session && (
+              <TabsTrigger data-testid="tab-account" value="account">
+                <UserIcon />
+                <span>{t("settings.account.title")}</span>
+              </TabsTrigger>
+            )}
+            <TabsTrigger data-testid="tab-general" value="general">
+              <SlidersVerticalIcon />
+              <span>{t("settings.general.title")}</span>
+            </TabsTrigger>
+            <TabsTrigger data-testid="tab-collection" value="collection">
+              <LibraryIcon />
+              <span>{t("settings.collection.title")}</span>
+            </TabsTrigger>
+            <TabsTrigger data-testid="tab-fan-made" value="fan-made-content">
+              <Icon iconNode={featherText} />
+              <span>{t("fan_made_content.title")}</span>
+            </TabsTrigger>
+            <TabsTrigger data-testid="tab-support" value="support">
+              <DatabaseBackupIcon />
+              <span>{t("settings.support.title")}</span>
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="account">
+            <AccountSettings
+              key={session?.account.name ?? ""}
+              session={session}
+            />
+          </TabsContent>
+          <ApplicationSettings
+            colorTheme={colorTheme}
+            key={`${settingsKey(settings)}-${colorTheme}`}
+            settings={settings}
+            updateColorTheme={updateColorTheme}
+          />
+        </Tabs>
+      </div>
+    </AppLayout>
   );
 }
 
-function SettingsInner({
+function ApplicationSettings({
   colorTheme: persistedColorTheme,
   settings: persistedSettings,
   updateColorTheme,
-  updateSettings,
 }: {
   colorTheme: string;
   settings: SettingsState;
   updateColorTheme: (theme: string) => void;
-  updateSettings: (settings: SettingsState) => Promise<void>;
 }) {
   const { t } = useTranslation();
-
-  const [tab, onTabChange] = useTabUrlState("general");
-
-  const search = useSearch();
-  const toast = useToast();
-  const goBack = useGoBack(search.includes("login_state") ? "/" : undefined);
-
   const [settings, setSettings] = useState(structuredClone(persistedSettings));
   const [theme, setTheme] = useState<string>(persistedColorTheme);
 
-  const onSubmit = useCallback(
-    async (evt: React.FormEvent) => {
-      evt.preventDefault();
+  const { saveSettings } = useSaveSettings({
+    settings,
+    theme,
+    updateColorTheme,
+  });
 
-      const toastId = toast.show({
-        children: t("settings.saving"),
-        variant: "loading",
-      });
-
-      try {
-        await updateSettings(settings);
-        updateColorTheme(theme);
-        toast.dismiss(toastId);
-      } catch (err) {
-        toast.dismiss(toastId);
-        toast.show({
-          children: t("settings.error", { error: (err as Error).message }),
-          variant: "error",
-        });
-      }
-    },
-    [updateSettings, settings, toast, t, theme, updateColorTheme],
-  );
+  const onSubmit = async (evt: React.SubmitEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    await saveSettings();
+  };
 
   return (
-    <AppLayout title={t("settings.title")} mainClassName={css["main"]}>
-      <form className={css["settings"]} onSubmit={onSubmit}>
-        <header className={css["header"]}>
-          <h1 className={css["title"]}>{t("settings.title")}</h1>
-
-          <div id="settings-header-portal" />
-
-          <div className={css["header-actions"]}>
-            <Button
-              data-testid="settings-back"
-              onClick={goBack}
-              type="button"
-              variant="bare"
-            >
-              {t("common.back")}
-            </Button>
-            <Button data-testid="settings-save" type="submit" variant="primary">
-              {t("settings.save")}
-            </Button>
+    <form id="settings-form" onSubmit={onSubmit}>
+      <TabsContent value="general">
+        <PortaledSaveButton />
+        <Section title={t("settings.general.title")}>
+          <DefaultEnvironmentSetting
+            settings={settings}
+            setSettings={setSettings}
+          />
+          <TabooSetSetting settings={settings} setSettings={setSettings} />
+          <WeaknessPoolSetting settings={settings} setSettings={setSettings} />
+        </Section>
+        <Section title={t("settings.display.title")}>
+          <LocaleSetting settings={settings} setSettings={setSettings} />
+          <ThemeSetting setTheme={setTheme} theme={theme} />
+          <FontSizeSetting settings={settings} setSettings={setSettings} />
+          <CardDisplaySettings settings={settings} setSettings={setSettings} />
+          <SortPunctuationSetting
+            settings={settings}
+            setSettings={setSettings}
+          />
+          <ShowMoveToSideDeckSetting
+            settings={settings}
+            setSettings={setSettings}
+          />
+          <CardModalPopularDecksSetting
+            settings={settings}
+            setSettings={setSettings}
+          />
+        </Section>
+        <Section title={t("settings.lists.title")}>
+          <div className={css["lists"]}>
+            <ListSettings
+              listKey="player"
+              title={t("common.player_cards")}
+              settings={settings}
+              setSettings={setSettings}
+            />
+            <ListSettings
+              listKey="encounter"
+              title={t("common.encounter_cards")}
+              settings={settings}
+              setSettings={setSettings}
+            />
+            <ListSettings
+              listKey="mixed"
+              title={t("lists.all_cards")}
+              settings={settings}
+              setSettings={setSettings}
+            />
+            <ListSettings
+              listKey="investigator"
+              title={t("common.type.investigator", { count: 2 })}
+              settings={settings}
+              setSettings={setSettings}
+            />
+            <ListSettings
+              listKey="deck"
+              title={t("settings.lists.deck_view")}
+              settings={settings}
+              setSettings={setSettings}
+            />
+            <ListSettings
+              listKey="deckScans"
+              title={t("settings.lists.deck_view_scans")}
+              settings={settings}
+              setSettings={setSettings}
+            />
           </div>
-        </header>
-        <div className={css["container"]}>
-          <div className={css["row"]}>
-            <Section title={t("settings.connections.title")}>
-              <Connections />
-            </Section>
-            <Section title={t("settings.card_data.title")}>
-              <CardDataSync showDetails />
-            </Section>
-          </div>
-          <Tabs value={tab} onValueChange={onTabChange}>
-            <TabsList>
-              <TabsTrigger data-testid="tab-general" value="general">
-                <SlidersVerticalIcon />
-                <span>{t("settings.general.title")}</span>
-              </TabsTrigger>
-              <TabsTrigger data-testid="tab-collection" value="collection">
-                <LibraryIcon />
-                <span>{t("settings.collection.title")}</span>
-              </TabsTrigger>
-              <TabsTrigger data-testid="tab-fan-made" value="fan-made-content">
-                <Icon iconNode={featherText} />
-                <span>{t("fan_made_content.title")}</span>
-              </TabsTrigger>
-              <TabsTrigger data-testid="tab-backup" value="backup">
-                <DatabaseBackupIcon />
-                <span>{t("settings.backup.title")}</span>
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="general">
-              <Section title={t("settings.general.title")}>
-                <DefaultEnvironmentSetting
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-                <TabooSetSetting
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-                <WeaknessPoolSetting
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-              </Section>
-              <Section title={t("settings.display.title")}>
-                <LocaleSetting settings={settings} setSettings={setSettings} />
-                <ThemeSetting setTheme={setTheme} theme={theme} />
-                <FontSizeSetting
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-                <CardDisplaySettings
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-                <SortPunctuationSetting
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-                <ShowMoveToSideDeckSetting
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-                <CardModalPopularDecksSetting
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-              </Section>
-              <Section title={t("settings.lists.title")}>
-                <div className={css["lists"]}>
-                  <ListSettings
-                    listKey="player"
-                    title={t("common.player_cards")}
-                    settings={settings}
-                    setSettings={setSettings}
-                  />
-                  <ListSettings
-                    listKey="encounter"
-                    title={t("common.encounter_cards")}
-                    settings={settings}
-                    setSettings={setSettings}
-                  />
-                  <ListSettings
-                    listKey="mixed"
-                    title={t("lists.all_cards")}
-                    settings={settings}
-                    setSettings={setSettings}
-                  />
-                  <ListSettings
-                    listKey="investigator"
-                    title={t("common.type.investigator", { count: 2 })}
-                    settings={settings}
-                    setSettings={setSettings}
-                  />
-                  <ListSettings
-                    listKey="deck"
-                    title={t("settings.lists.deck_view")}
-                    settings={settings}
-                    setSettings={setSettings}
-                  />
-                  <ListSettings
-                    listKey="deckScans"
-                    title={t("settings.lists.deck_view_scans")}
-                    settings={settings}
-                    setSettings={setSettings}
-                  />
-                </div>
-              </Section>
-            </TabsContent>
-            <TabsContent value="collection">
-              <Section title={t("settings.collection.title")}>
-                <ShowPreviewsSetting
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-                <ShowAllCardsSetting
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-                <CollectionSettings
-                  settings={settings}
-                  setSettings={setSettings}
-                />
-              </Section>
-            </TabsContent>
-            <TabsContent value="fan-made-content">
-              <Section title={t("fan_made_content.title")}>
-                <FanMadeContent settings={settings} setSettings={setSettings} />
-              </Section>
-            </TabsContent>
-            <TabsContent value="backup">
-              <Section title={t("settings.backup.title")}>
-                <BackupRestore />
-              </Section>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </form>
-    </AppLayout>
+        </Section>
+      </TabsContent>
+      <TabsContent value="collection">
+        <PortaledSaveButton />
+        <Section title={t("settings.collection.title")}>
+          <ShowPreviewsSetting settings={settings} setSettings={setSettings} />
+          <ShowAllCardsSetting settings={settings} setSettings={setSettings} />
+          <CollectionSettings settings={settings} setSettings={setSettings} />
+        </Section>
+      </TabsContent>
+      <TabsContent value="fan-made-content">
+        <PortaledSaveButton />
+        <Section title={t("fan_made_content.title")}>
+          <FanMadeContent settings={settings} setSettings={setSettings} />
+        </Section>
+      </TabsContent>
+      <TabsContent value="support">
+        <PortaledSaveButton />
+        <Section title={t("settings.support.metadata_title")}>
+          <CardDataSync />
+          <MetadataRefresh />
+        </Section>
+        <Section title={t("settings.developer.title")}>
+          <DevModeSetting settings={settings} setSettings={setSettings} />
+        </Section>
+        <Section title={t("settings.support.data_export_title")}>
+          <DataExport />
+        </Section>
+      </TabsContent>
+    </form>
+  );
+}
+
+function PortaledSaveButton() {
+  const { t } = useTranslation();
+  const target = document.getElementById("settings-header-action-portal");
+
+  if (!target) {
+    return null;
+  }
+
+  return createPortal(
+    <Button
+      data-testid="settings-save"
+      form="settings-form"
+      type="submit"
+      variant="primary"
+    >
+      {t("settings.save")}
+    </Button>,
+    target,
   );
 }
 

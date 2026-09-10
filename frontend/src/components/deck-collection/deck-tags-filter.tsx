@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Combobox } from "@/components/ui/combobox/combobox";
+import { ResultTag } from "@/components/ui/combobox/combobox-results";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
 import {
@@ -52,9 +53,21 @@ export function DeckTagsFilter({ containerClass }: Props) {
     [setFilterValue],
   );
 
-  const renderResult = useCallback(
+  const renderTag = useCallback(
     (tag: Coded) => capitalize(tag.code.trim()),
     [],
+  );
+
+  const renderResult = useCallback(
+    (tag: Coded, onRemove?: () => void) => (
+      <ResultTag
+        data-testid={`combobox-result-${tag.code}`}
+        onRemove={onRemove}
+      >
+        {renderTag(tag)}
+      </ResultTag>
+    ),
+    [renderTag],
   );
 
   return (
@@ -78,7 +91,7 @@ export function DeckTagsFilter({ containerClass }: Props) {
           placeholder={t("deck_collection.tags_filter.placeholder")}
           selectedItems={value.map((code) => ({ code }))}
           renderResult={renderResult}
-          renderItem={renderResult}
+          renderItem={renderTag}
         />
       </FilterContainer>
     )

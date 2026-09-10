@@ -3,14 +3,6 @@ import type { HonoEnv } from "./hono-env.ts";
 
 type LogLevel = "debug" | "info" | "warn" | "error";
 
-export type LogMessage = {
-  level: LogLevel;
-  message: string;
-  details?: {
-    [key: string]: unknown;
-  };
-};
-
 export type Logger = (
   level: LogLevel,
   message: string,
@@ -22,7 +14,7 @@ export const log: Logger = (
   message: string,
   details?: Record<string, unknown>,
 ) => {
-  // biome-ignore lint/suspicious/noConsole: logger utility
+  // oxlint-disable-next-line no-console -- logger utility
   console.log(
     JSON.stringify({
       level,
@@ -36,7 +28,7 @@ export const log: Logger = (
 export function logger() {
   return (c: Context<HonoEnv>, next: Next) => {
     const requestId = c.get("requestId");
-    const clientId = c.header("X-Client-Id");
+    const clientId = c.req.header("X-Client-Id");
 
     const logger: Logger = (level, message, _details) => {
       const details = _details ?? {};
@@ -59,13 +51,40 @@ export function requestLogger() {
 
     // don't log successful health checks
     if (c.req.path !== "/version" || c.res.status !== 200) {
-      c.get("logger")("info", `${c.req.method} ${c.req.path}`, {
+      const details: Record<string, unknown> = {
         level: "info",
         duration_ms: Date.now() - begin,
         method: c.req.method,
         status: c.res.status,
-        url: c.req.url,
-      });
+        url: new URL(c.req.url).pathname,
+      };
+
+      if (isPublicShareRequest(c)) {
+        details["client_ip"] = clientIp(c);
+      }
+
+      c.get("logger")("info", `${c.req.method} ${c.req.path}`, details);
     }
   };
+}
+
+function isPublicShareRequest(c: Context<HonoEnv>) {
+  return c.req.method === "GET" && c.req.path.startsWith("/v1/public/share");
+}
+
+function clientIp(c: Context<HonoEnv>) {
+  return (
+    header(c, "CF-Connecting-IP") ??
+    header(c, "True-Client-IP") ??
+    forwardedFor(c) ??
+    header(c, "X-Real-IP")
+  );
+}
+
+function forwardedFor(c: Context<HonoEnv>) {
+  return c.req.header("X-Forwarded-For")?.split(",")[0]?.trim() || undefined;
+}
+
+function header(c: Context<HonoEnv>, name: string) {
+  return c.req.header(name)?.trim() || undefined;
 }

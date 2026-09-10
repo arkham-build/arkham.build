@@ -1,13 +1,15 @@
 import type {
   Card,
   CustomizationOption,
+  Deck,
+  DeckProblem,
+  Id,
   OptionSelect,
 } from "@arkham-build/shared";
 import {
   type DeckValidationResult,
   validateDeck,
 } from "@/store/lib/deck-validation";
-import type { Deck, DeckProblem, Id } from "@/store/schemas/deck.schema";
 import type { StoreState } from "@/store/slices";
 import { displayAttribute, splitMultiValue } from "@/utils/card-utils";
 import { randomId } from "@/utils/crypto";
@@ -18,6 +20,7 @@ import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
+  selectStaticBuildQlInterpreter,
 } from "../selectors/shared";
 import { getInitialSettings } from "../slices/settings";
 import {
@@ -44,13 +47,13 @@ export function formatDeckImport(
       {
         lookupTables: selectLookupTables(state),
         metadata: selectMetadata(state),
-        sharing: state.sharing,
       },
       selectLocaleSortingCollator(state),
       deck,
     ),
     selectMetadata(state),
     selectLookupTables(state),
+    selectStaticBuildQlInterpreter(state),
   );
 
   const problem = mapValidationToProblem(validation);
@@ -154,6 +157,7 @@ export function formatDeckAsText(state: StoreState, deck: ResolvedDeck) {
       let str = t("common.none");
       if (value) {
         if (selection.type === "faction") {
+          // oxlint-disable-next-line typescript/no-base-to-string typescript/restrict-template-expressions
           str = t(`common.factions.${value}`);
         } else if (selection.type === "option") {
           str = formatDeckOptionString((value as OptionSelect).name);
@@ -282,7 +286,7 @@ function formatCardAsText(
       .split("\n")
       .map((n) => {
         const val = n.split(".")[0].trim();
-        return val.endsWith(":") ? `${val}` : `${val}.`;
+        return val.endsWith(":") ? val : `${val}.`;
       });
 
     const options = card.customization_options as CustomizationOption[];

@@ -1,0 +1,3 @@
+[submodule "test/fullstack/arkhamdb-docker"]
+	path = test/fullstack/arkhamdb-docker
+	url = https://github.com/arkham-build/arkhamdb-docker.git

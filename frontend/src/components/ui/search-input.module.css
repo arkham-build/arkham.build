@@ -6,8 +6,8 @@
   }
 
   &.has-error input {
-    border-color: var(--health);
-    outline-color: var(--health);
+    border-color: var(--color-error);
+    outline-color: var(--color-error);
   }
 }
 
@@ -35,7 +35,7 @@
 
 .icon_search {
   left: 0.5rem;
-  color: var(--palette-three-point-five);
+  color: var(--palette-4);
 }
 
 .icon_clear {

@@ -1,23 +1,28 @@
-import type { Card } from "@arkham-build/shared";
-import { useCallback, useState } from "react";
+import type { Card, Cycle, Pack } from "@arkham-build/shared";
+import { InfoIcon } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
-import type { Cycle } from "@/store/schemas/cycle.schema";
 import {
   type CycleWithPacks,
   selectCampaignCycles,
+  selectCyclesAndPacks,
+  selectLimitedPoolPackOptions,
 } from "@/store/selectors/lists";
 import {
-  CAMPAIGN_PLAYALONG_PROJECT_ID,
-  campaignPlayalongPacks,
-  currentEnvironmentPacks,
-  limitedEnvironmentPacks,
+  environments,
+  type ProgressionTarget,
+  progressionTargets,
 } from "@/utils/environments";
 import { capitalize, displayPackName } from "@/utils/formatting";
 import { useAccentColor } from "@/utils/use-accent-color";
+import PackIcon from "../icons/pack-icon";
 import { PackName } from "../pack-name";
 import { Button } from "../ui/button";
+import { Checkbox } from "../ui/checkbox";
 import { Combobox } from "../ui/combobox/combobox";
+import { ResultTag } from "../ui/combobox/combobox-results";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { Field } from "../ui/field";
 import {
@@ -27,6 +32,7 @@ import {
   ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
+import { Plane } from "../ui/plane";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import css from "./limited-card-pool.module.css";
 
@@ -44,7 +50,15 @@ const packRenderer = (cycle: Cycle) => (
   <PackName pack={cycle} shortenNewFormat />
 );
 
+const packResultRenderer = (cycle: Cycle, onRemove?: () => void) => (
+  <ResultTag data-testid={`combobox-result-${cycle.code}`} onRemove={onRemove}>
+    {packRenderer(cycle)}
+  </ResultTag>
+);
+
 const packToString = (pack: Cycle) => displayPackName(pack).toLowerCase();
+
+const CAMPAIGN_PLAYALONG_PROJECT_ID = "5b6a1f95-73d1-4059-8af2-b9a645efd625";
 
 export function ConfigureEnvironmentModal(props: Props) {
   const { investigator, onValueChange } = props;
@@ -75,11 +89,25 @@ export function ConfigureEnvironmentModal(props: Props) {
           <Tabs value={tab} onValueChange={setTab}>
             <div className={css["container"]}>
               <TabsList className={css["nav"]} vertical>
+                <div className={css["nav-section"]}>
+                  <h4>Grimoire</h4>
+                </div>
                 <EnvironmentsTabTrigger value="legacy" />
                 <EnvironmentsTabTrigger value="current" />
                 <EnvironmentsTabTrigger value="limited" />
+                <div className={css["nav-section"]}>
+                  <h4>Custom</h4>
+                </div>
                 <EnvironmentsTabTrigger value="campaign_playalong" />
                 <EnvironmentsTabTrigger value="collection" />
+                <EnvironmentsTabTrigger value="chapter_1" />
+                <EnvironmentsTabTrigger value="chapter_2" />
+                <EnvironmentsTabTrigger value="progression" />
+                <div className={css["nav-section"]}>
+                  <h4>FAQ 2.5</h4>
+                </div>
+                <EnvironmentsTabTrigger value="current_faq25" />
+                <EnvironmentsTabTrigger value="limited_faq25" />
               </TabsList>
               <div className={css["content"]}>
                 <EnvironmentsTabContent value="legacy">
@@ -94,11 +122,42 @@ export function ConfigureEnvironmentModal(props: Props) {
                 <EnvironmentsTabContent value="campaign_playalong">
                   <CampaignPlayalongTab {...tabProps} />
                 </EnvironmentsTabContent>
+                <EnvironmentsTabContent value="progression">
+                  <ProgressionTab {...tabProps} />
+                </EnvironmentsTabContent>
+                <EnvironmentsTabContent value="chapter_1">
+                  <ChapterTab {...tabProps} chapter={1} />
+                </EnvironmentsTabContent>
+                <EnvironmentsTabContent value="chapter_2">
+                  <ChapterTab {...tabProps} chapter={2} />
+                </EnvironmentsTabContent>
+                <EnvironmentsTabContent
+                  value="current_faq25"
+                  disclaimer={
+                    <Plane className={css["disclaimer"]} size="sm">
+                      <InfoIcon />
+                      {t("deck_edit.config.card_pool.help_chapter_1")}
+                    </Plane>
+                  }
+                >
+                  <CurrentFaq25Tab {...tabProps} />
+                </EnvironmentsTabContent>
+                <EnvironmentsTabContent
+                  value="limited_faq25"
+                  disclaimer={
+                    <Plane className={css["disclaimer"]} size="sm">
+                      <InfoIcon />
+                      {t("deck_edit.config.card_pool.help_chapter_1")}
+                    </Plane>
+                  }
+                >
+                  <Limited25Tab {...tabProps} />
+                </EnvironmentsTabContent>
                 <EnvironmentsTabContent
                   translationProps={{
                     components: {
                       settings_link: (
-                        // biome-ignore lint/a11y/useAnchorContent: interpolation
+                        // oxlint-disable-next-line jsx-a11y/anchor-has-content -- interpolation
                         <a
                           href="/settings?tab=collection"
                           target="_blank"
@@ -133,12 +192,10 @@ function LegacyTab({ dialogCtx, onValueChange }: TabProps) {
 }
 
 function CurrentTab({ dialogCtx, onValueChange }: TabProps) {
-  const cycles = useStore(selectCampaignCycles);
-
   return (
     <EnvironmentsTabConfirm
       onClick={() => {
-        onValueChange(currentEnvironmentPacks(cycles));
+        onValueChange(environments.current());
         dialogCtx.setOpen(false);
       }}
       environment="current"
@@ -151,7 +208,7 @@ function CollectionTab({ dialogCtx, onValueChange }: TabProps) {
   const ignored = cycles.reduce((acc, cycle) => {
     if (cycle.reprintPacks) {
       cycle.reprintPacks.forEach((pack) => {
-        if (pack.reprint?.type === "encounter") {
+        if (pack.reprint_type === "campaign") {
           acc.add(pack.code);
         }
       });
@@ -184,16 +241,86 @@ function LimitedTab(props: TabProps) {
   const { t } = useTranslation();
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const cycles = useStore(selectCampaignCycles);
+  const packs = useStore(
+    useShallow((state) =>
+      selectLimitedPoolPackOptions(
+        state,
+        (c) =>
+          !c.code.includes("core") &&
+          !c.code.includes("investigator_decks") &&
+          !c.code.includes("return"),
+      ),
+    ),
+  );
 
   const applyEnvironment = () => {
     if (!selectedItems.length) return;
 
-    const selectedCycles = selectedItems
-      .map((code) => cycles.find((cycle) => cycle.code === code))
-      .filter(Boolean) as Cycle[];
+    const packs = environments.limited(selectedItems);
 
-    const packs = limitedEnvironmentPacks(selectedCycles);
+    onValueChange(packs);
+    dialogCtx.setOpen(false);
+  };
+
+  const onSelectionChange = useCallback((items: Pack[]) => {
+    setSelectedItems(items.map((cycle) => cycle.code));
+  }, []);
+
+  return (
+    <>
+      <Field full>
+        <Combobox
+          id="cycle-select-combobox"
+          limit={3}
+          locale={locale}
+          placeholder={t("deck_edit.config.card_pool.placeholder")}
+          renderItem={packRenderer}
+          renderResult={packResultRenderer}
+          itemToString={packToString}
+          onValueChange={onSelectionChange}
+          items={packs}
+          label={capitalize(t("common.pack", { count: 3 }))}
+          showLabel
+          selectedItems={selectedItems.map((code) =>
+            packs.find((pack) => pack.code === code),
+          )}
+        />
+      </Field>
+      <EnvironmentsTabConfirm
+        disabled={!selectedItems.length}
+        environment="limited"
+        onClick={applyEnvironment}
+      />
+    </>
+  );
+}
+
+function CampaignPlayalongTab(props: TabProps) {
+  const { dialogCtx, locale, onValueChange } = props;
+
+  const { t } = useTranslation();
+
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedChapter, setSelectedChapter] = useState<string>("2");
+  const cycles = useStore(selectCampaignCycles);
+
+  const campaignPlayalongProject = useStore(
+    (state) => state.fanMadeData.projects[CAMPAIGN_PLAYALONG_PROJECT_ID],
+  );
+
+  const applyEnvironment = () => {
+    if (!selectedItems.length) return;
+    const cycle = selectedItems[0];
+
+    const packs = environments.cpa(cycle, +selectedChapter as 1 | 2);
+
+    if (campaignPlayalongProject) {
+      const packCodes = campaignPlayalongProject.data.packs.map(
+        (pack) => pack.code,
+      );
+
+      packs.push(...packCodes);
+    }
 
     onValueChange(packs);
     dialogCtx.setOpen(false);
@@ -205,15 +332,173 @@ function LimitedTab(props: TabProps) {
 
   return (
     <>
-      <Field full padded bordered>
+      <Field className={css["cpa"]} full>
         <Combobox
-          autoFocus
+          id="cycle-select-combobox"
+          limit={1}
+          locale={locale}
+          placeholder={t("deck_edit.config.card_pool.choose_cycle_placeholder")}
+          renderItem={packRenderer}
+          renderResult={packResultRenderer}
+          itemToString={packToString}
+          onValueChange={onSelectionChange}
+          items={cycles}
+          label={capitalize(t("common.cycle", { count: 1 }))}
+          showLabel
+          selectedItems={
+            selectedItems
+              .map((code) => cycles.find((cycle) => cycle.code === code))
+              .filter(Boolean) as CycleWithPacks[]
+          }
+        />
+        <Checkbox
+          checked={selectedChapter === "1"}
+          data-testid="cpa-use-chapter-1"
+          label={t(
+            "deck_edit.config.card_pool.substitute_chapter_2_with_chapter_1",
+          )}
+          onCheckedChange={(checked) => setSelectedChapter(checked ? "1" : "2")}
+        />
+      </Field>
+      <EnvironmentsTabConfirm
+        disabled={!selectedItems.length}
+        environment="campaign_playalong"
+        onClick={applyEnvironment}
+      />
+    </>
+  );
+}
+
+const progressionTargetRenderer = (target: ProgressionTarget) => (
+  <>
+    <PackIcon code={target.code} />
+    {target.name}
+  </>
+);
+
+const progressionTargetResultRenderer = (
+  target: ProgressionTarget,
+  onRemove?: () => void,
+) => (
+  <ResultTag data-testid={`combobox-result-${target.code}`} onRemove={onRemove}>
+    {progressionTargetRenderer(target)}
+  </ResultTag>
+);
+
+const progressionTargetToString = (target: ProgressionTarget) =>
+  target.name.toLowerCase();
+
+function ProgressionTab(props: TabProps) {
+  const { dialogCtx, locale, onValueChange } = props;
+
+  const { t } = useTranslation();
+
+  const metadata = useStore((state) => state.metadata);
+  const showPreviews = useStore((state) => state.settings.showPreviews);
+  const targets = useMemo(
+    () => progressionTargets(metadata, showPreviews),
+    [metadata, showPreviews],
+  );
+
+  const [selectedCode, setSelectedCode] = useState<string>();
+  const selectedTarget = targets.find((target) => target.code === selectedCode);
+
+  const applyEnvironment = () => {
+    if (!selectedTarget) return;
+
+    onValueChange(
+      environments.progression(metadata, selectedTarget.dateRelease),
+    );
+    dialogCtx.setOpen(false);
+  };
+
+  const valueChangeHandler = useCallback((items: ProgressionTarget[]) => {
+    setSelectedCode(items[0]?.code);
+  }, []);
+
+  const selection = useMemo(
+    () => (selectedTarget ? [selectedTarget] : []),
+    [selectedTarget],
+  );
+
+  return (
+    <>
+      <Field full>
+        <Combobox
+          id="progression-target-combobox"
+          limit={1}
+          locale={locale}
+          placeholder={t(
+            "deck_edit.config.card_pool.choose_progression_target_placeholder",
+          )}
+          renderItem={progressionTargetRenderer}
+          renderResult={progressionTargetResultRenderer}
+          itemToString={progressionTargetToString}
+          onValueChange={valueChangeHandler}
+          items={targets}
+          label={t("deck_edit.config.card_pool.progression_target")}
+          showLabel
+          selectedItems={selection}
+        />
+      </Field>
+      <EnvironmentsTabConfirm
+        disabled={!selectedTarget}
+        environment="progression"
+        onClick={applyEnvironment}
+      />
+    </>
+  );
+}
+
+function CurrentFaq25Tab({ dialogCtx, onValueChange }: TabProps) {
+  const cycles = useStore(selectCampaignCycles);
+
+  return (
+    <EnvironmentsTabConfirm
+      onClick={() => {
+        onValueChange(environments.currentFaq25(cycles));
+        dialogCtx.setOpen(false);
+      }}
+      environment="current"
+    />
+  );
+}
+
+function Limited25Tab(props: TabProps) {
+  const { dialogCtx, locale, onValueChange } = props;
+
+  const { t } = useTranslation();
+
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const cycles = useStore(selectCampaignCycles);
+
+  const applyEnvironment = () => {
+    if (!selectedItems.length) return;
+
+    const selectedCycles = selectedItems
+      .map((code) => cycles.find((cycle) => cycle.code === code))
+      .filter(Boolean) as Cycle[];
+
+    const packs = environments.limitedFaq25(selectedCycles);
+
+    onValueChange(packs);
+    dialogCtx.setOpen(false);
+  };
+
+  const onSelectionChange = useCallback((items: CycleWithPacks[]) => {
+    setSelectedItems(items.map((cycle) => cycle.code));
+  }, []);
+
+  return (
+    <>
+      <Field full>
+        <Combobox
           id="cycle-select-combobox"
           limit={3}
           locale={locale}
           placeholder={t("deck_edit.config.card_pool.choose_cycle_placeholder")}
           renderItem={packRenderer}
-          renderResult={packRenderer}
+          renderResult={packResultRenderer}
           itemToString={packToString}
           onValueChange={onSelectionChange}
           items={cycles}
@@ -235,69 +520,21 @@ function LimitedTab(props: TabProps) {
   );
 }
 
-function CampaignPlayalongTab(props: TabProps) {
-  const { dialogCtx, locale, onValueChange } = props;
+function ChapterTab(props: TabProps & { chapter: 1 | 2 }) {
+  const { chapter, dialogCtx, onValueChange } = props;
 
-  const { t } = useTranslation();
-
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const cycles = useStore(selectCampaignCycles);
-
-  const campaignPlayalongProject = useStore(
-    (state) => state.fanMadeData.projects[CAMPAIGN_PLAYALONG_PROJECT_ID],
-  );
+  const cycles = useStore(selectCyclesAndPacks);
 
   const applyEnvironment = () => {
-    if (!selectedItems.length) return;
-    const cycle = selectedItems[0];
-
-    const packs = campaignPlayalongPacks(cycle);
-
-    if (campaignPlayalongProject) {
-      const packCodes = campaignPlayalongProject.data.packs.map(
-        (pack) => pack.code,
-      );
-
-      packs.push(...packCodes);
-    }
-
-    onValueChange(packs);
+    onValueChange(environments.chapter(cycles, chapter));
     dialogCtx.setOpen(false);
   };
 
-  const onSelectionChange = useCallback((items: CycleWithPacks[]) => {
-    setSelectedItems(items.map((cycle) => cycle.code));
-  }, []);
-
   return (
-    <>
-      <Field full padded bordered>
-        <Combobox
-          autoFocus
-          id="cycle-select-combobox"
-          limit={1}
-          locale={locale}
-          placeholder={t("deck_edit.config.card_pool.choose_cycle_placeholder")}
-          renderItem={packRenderer}
-          renderResult={packRenderer}
-          itemToString={packToString}
-          onValueChange={onSelectionChange}
-          items={cycles}
-          label={capitalize(t("common.cycle", { count: 1 }))}
-          showLabel
-          selectedItems={
-            selectedItems
-              .map((code) => cycles.find((cycle) => cycle.code === code))
-              .filter(Boolean) as CycleWithPacks[]
-          }
-        />
-      </Field>
-      <EnvironmentsTabConfirm
-        disabled={!selectedItems.length}
-        environment="campaign_playalong"
-        onClick={applyEnvironment}
-      />
-    </>
+    <EnvironmentsTabConfirm
+      environment={`chapter_${chapter}`}
+      onClick={applyEnvironment}
+    />
   );
 }
 
@@ -315,10 +552,12 @@ function EnvironmentsTabTrigger({ value }: { value: string }) {
 
 function EnvironmentsTabContent({
   children,
+  disclaimer,
   translationProps,
   value,
 }: {
   children: React.ReactNode;
+  disclaimer?: React.ReactNode;
   value: string;
   translationProps?: Record<string, unknown>;
 }) {
@@ -327,6 +566,7 @@ function EnvironmentsTabContent({
   return (
     <TabsContent value={value}>
       <div className={css["environment-tab"]}>
+        {disclaimer}
         <div className="longform">
           <p>
             {translationProps ? (

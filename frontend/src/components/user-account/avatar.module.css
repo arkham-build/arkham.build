@@ -1,0 +1,30 @@
+.avatar {
+  position: relative;
+  border-radius: 50%;
+  width: var(--avatar-width, 2rem);
+  aspect-ratio: 1 / 1;
+}
+
+.avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  color: transparent;
+  border-radius: inherit;
+}
+
+.placeholder {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--palette-3);
+  color: currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+}

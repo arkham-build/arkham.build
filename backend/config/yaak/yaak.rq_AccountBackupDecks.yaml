@@ -1,0 +1,54 @@
+type: http_request
+model: http_request
+id: rq_AccountBackupDecks
+createdAt: 2026-06-25T09:10:00
+updatedAt: 2026-06-25T08:10:12.550293
+workspaceId: wk_bBoraEVHnK
+folderId: fl_k2Yxg7LqPm
+authentication: {}
+authenticationType: null
+body:
+  text: '{}'
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Authorization
+  value: Bearer ${[ admin_api_key ]}
+  id: Rl2fJ8qXgB
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: Qm9vP3sLkT
+method: POST
+name: Restore account backup
+sortPriority: 5000.004
+url: ${[ base_url ]}/admin/account_backup/restore
+urlParameters:
+- enabled: true
+  name: username
+  value: ''
+  id: y8PqN4vR2s
+- enabled: false
+  name: ''
+  value: ''
+  id: ieGWdtb7m8
+- enabled: true
+  name: ''
+  value: ''
+  id: izrMcV9ahk
+settingSendCookies:
+  enabled: false
+  value: true
+settingStoreCookies:
+  enabled: false
+  value: true
+settingValidateCertificates:
+  enabled: false
+  value: true
+settingFollowRedirects:
+  enabled: false
+  value: true
+settingRequestTimeout:
+  enabled: false
+  value: 0

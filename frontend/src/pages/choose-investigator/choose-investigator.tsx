@@ -1,6 +1,6 @@
 import type { Card } from "@arkham-build/shared";
 import { DicesIcon, PlusIcon } from "lucide-react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
@@ -13,7 +13,6 @@ import { selectCardRelationsResolver } from "@/store/selectors/lists";
 import { selectActiveList } from "@/store/selectors/shared";
 import { displayAttribute } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";
-import { useDocumentTitle } from "@/utils/use-document-title";
 import css from "./choose-investigator.module.css";
 import { SignatureLink } from "./signature-link";
 
@@ -26,8 +25,6 @@ function DeckCreateChooseInvestigator() {
   const cardResolver = useStore(selectCardRelationsResolver);
 
   const activeList = useStore(selectActiveList);
-
-  useDocumentTitle(t("choose_investigator.title"));
 
   useEffect(() => {
     setActiveList("create_deck");
@@ -73,21 +70,15 @@ function ListcardExtra({
   cardResolver: (code: string) => CardWithRelations | undefined;
   code: string;
 }) {
-  const signaturesRef = useRef<HTMLUListElement>(null);
-
   const resolved = cardResolver(code);
   const signatures = resolved?.relations?.requiredCards;
 
   if (!signatures?.length) return null;
 
   return (
-    <ul className={css["signatures"]} ref={signaturesRef}>
+    <ul className={css["signatures"]}>
       {signatures.map(({ card }) => (
-        <SignatureLink
-          card={card}
-          key={card.code}
-          signaturesRef={signaturesRef}
-        />
+        <SignatureLink card={card} key={card.code} />
       ))}
     </ul>
   );

@@ -8,10 +8,10 @@ import {
   selectLookupTables,
   selectMetadata,
 } from "@/store/selectors/shared";
-import { ResolvedDeckProvider } from "@/utils/use-resolved-deck";
 import { DeckDetails } from "../deck-details";
 import { DeckSummary } from "../deck-summary/deck-summary";
 import { Decklist } from "../decklist/decklist";
+import { ResolvedDeckProvider } from "../resolved-deck-context-provider";
 import { Collapsible, CollapsibleContent } from "../ui/collapsible";
 import { ArkhamdbDecklistMeta } from "./arkhamdb-decklist-meta";
 import css from "./arkhamdb-decklist-result.module.css";
@@ -25,15 +25,15 @@ export function ArkhamDBDecklistResult({ result, showDetails }: Props) {
   const { t } = useTranslation();
   const metadata = useStore(selectMetadata);
   const lookupTables = useStore(selectLookupTables);
-  const sharing = useStore((state) => state.sharing);
   const collator = useStore(selectLocaleSortingCollator);
 
   const resolved = useMemo(() => {
-    const deps = { lookupTables, metadata, sharing };
+    const deps = { lookupTables, metadata };
     return resolveDeck(deps, collator, {
       ...result,
+      source: undefined,
     });
-  }, [result, lookupTables, metadata, sharing, collator]);
+  }, [result, lookupTables, metadata, collator]);
 
   return (
     <DeckSummary

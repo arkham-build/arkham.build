@@ -37,6 +37,7 @@ function getEncounterIcon(code?: string | null) {
     case "torch":
       return "the_gathering";
 
+    case "the_midnight_masks":
     case "arkham":
       return "midnight_masks";
 
@@ -91,6 +92,9 @@ function getEncounterIcon(code?: string | null) {
     case "venom":
       return "yigs_venom";
 
+    case "pillars_of_judgment":
+      return "pillars_of_judgement";
+
     case "the_city_of_archives":
       return "city_of_archives";
 
@@ -131,6 +135,9 @@ function getEncounterIcon(code?: string | null) {
 
     case "return_to_the_city_of_archives":
       return "return_to_city_of_archives";
+
+    case "return_to_extracurricular_activity":
+      return "return_to_extracurricular_activities";
 
     case "the_pit_of_despair":
       return "grotto_of_despair";
@@ -180,6 +187,7 @@ function getEncounterIcon(code?: string | null) {
     case "relics_of_the_past":
       return "rop";
 
+    case "the_blob_that_ate_everything_else":
     case "blob_that_ate_everything_else":
       return "blob_that_ate_everything_else";
 
@@ -191,6 +199,27 @@ function getEncounterIcon(code?: string | null) {
 
     case "film_fatale":
       return "film_fatale_encounter";
+
+    case "arkham_sewers":
+      return "sewers";
+
+    case "prelude_1":
+      return "the_first_day";
+
+    case "prelude_2":
+      return "the_second_day";
+
+    case "prelude_3":
+      return "the_final_day";
+
+    case "prelude_4":
+      return "day_of_the_feast";
+
+    case "the_labyrinths_of_lunacy":
+      return "in_the_labyrinths_of_lunacy";
+
+    case "carnevale_of_horrors":
+      return "carnevale";
 
     default:
       return code;

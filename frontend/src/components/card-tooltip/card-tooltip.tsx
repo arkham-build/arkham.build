@@ -1,8 +1,9 @@
 import { useStore } from "@/store";
 import { selectCardWithRelations } from "@/store/selectors/card-view";
-import { useResolvedDeck } from "@/utils/use-resolved-deck";
 import { Annotation } from "../annotations/annotation";
 import { Card } from "../card/card";
+import { CardTagRow } from "../card-tags/card-tag-row";
+import { useResolvedDeck } from "../resolved-deck-context";
 import css from "./card-tooltip.module.css";
 
 type Props = {
@@ -24,6 +25,7 @@ export function CardTooltip(props: Props) {
     <div className={css["tooltip"]} data-testid="card-tooltip">
       <Card resolvedCard={resolvedCard} size="tooltip" />
       {annotation && <Annotation content={annotation} size="sm" />}
+      <CardTagRow card={resolvedCard.card} />
     </div>
   );
 }

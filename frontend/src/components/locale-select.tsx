@@ -5,32 +5,52 @@ import css from "./locale-select.module.css";
 import { CustomSelect } from "./ui/custom-select";
 
 type Props = {
+  className?: string;
   id?: string;
   loading?: boolean;
   onValueChange: (value: string) => void;
   value: string;
   variant?: "compact";
+  fullWidth?: boolean;
+  portal?: boolean;
 };
 
 export function LocaleSelect(props: Props) {
-  const { variant, loading, id, onValueChange, value } = props;
+  const {
+    className,
+    variant,
+    fullWidth,
+    loading,
+    id,
+    onValueChange,
+    value,
+    portal,
+  } = props;
   const options = Object.values(LOCALES);
 
   return (
     <CustomSelect
-      className={cx(css["select"], variant && css[variant])}
+      className={cx(
+        css["select"],
+        variant && css[variant],
+        fullWidth && css["full-width"],
+        className,
+      )}
       id={id}
       items={options}
+      menuClassName={css["menu"]}
+      portal={portal}
       renderControl={(item) => {
         if (!item) return null;
         return (
           <span className={css["control-row"]}>
             {loading && <LoaderCircleIcon className="spin" />}
             {variant === "compact" ? (
-              <LocaleIcon locale={item.value} />
+              <LocaleIcon locale={item.displayValue ?? item.value} />
             ) : (
               <>
-                <LocaleIcon locale={item.value} /> {item.label}
+                <LocaleIcon locale={item.displayValue ?? item.value} />{" "}
+                {item.label}
               </>
             )}
           </span>
@@ -40,7 +60,7 @@ export function LocaleSelect(props: Props) {
         if (!item) return null;
         return (
           <span className={css["control-row"]}>
-            <LocaleIcon locale={item.value} />
+            <LocaleIcon locale={item.displayValue ?? item.value} />
             {item.label}
           </span>
         );

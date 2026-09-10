@@ -72,7 +72,7 @@ Inversion: `!=`
 ### Exact equals (==)
 Works the same as `=` with the following differences:
 * `string`: Filters cards where attribute matches exactly.
-* `text`: Filters cards where attribute contains an exact substring match.
+* `text`: Filters cards where attribute contains an exact substring match. This is useful to match symbol tokens for example.
 ```
 bonded == true
 xp == 3
@@ -173,7 +173,7 @@ The query language is left-associative, meaning that expressions are evaluated f
 
 ## Card backs
 
-When the `[x] Backs` toggle is activated, queries will check both the front- and backside of a card when matching values. All fields can be prefixed with `back:` to query against the backside of a card. This can be used to compare with the frontside:
+When the `[x] Backs` toggle is activated, BuildQL evaluates the complete query against the front and then against the back of a card. Conditions in one query must match the same side. All fields can be prefixed with `back:` to query against the backside of a card. This can be used to compare with the frontside:
 
 ```
 back:subname != null & back:subname != subname
@@ -246,14 +246,22 @@ back:subname != null & back:subname != subname
   - aliases: `ia`
   - legacy alias: `do`
 - **in_deck** (number)
+- **in_side_deck** (number)
+- **is_favorite** (boolean)
+  - aliases: `fav`
+  - matches cards marked as favorites
 - **is_upgrade** (boolean)
   - aliases: `iu`
+- **level** (number)
+  - aliases: `lvl`
+  - legacy alias: `p`
 - **multiclass** (boolean)
   - aliases: `mu`, `multi`
 - **myriad** (boolean)
   - aliases: `my`
 - **name** (string)
   - aliases: `na`
+  - matches printed name and card abbreviation
 - **pack** (string)
   - aliases: `pa`
   - legacy alias: `e`
@@ -282,6 +290,8 @@ back:subname != null & back:subname != subname
   - legacy alias: `b`
 - **taboo_set** (string)
   - aliases: `ts`
+- **tag** (string)
+  - matches combined account and deck-local tags when available
 - **text** (text)
   - aliases: `txt`
   - legacy alias: `x`
@@ -306,5 +316,8 @@ back:subname != null & back:subname != subname
   - aliases: `wp`, `will`, `brain`
   - legacy alias: `w`
 - **xp** (number)
-  - aliases: `level`, `lvl`
-  - legacy alias: `p`
+  - actual cost after chain, unchain and exceptional factored in.
+
+## Additional resources
+
+- A list of all available symbol tokens in text can be [found here](https://github.com/Kamalisk/arkhamdb-json-data/#arkham-lcg-game-symbols).

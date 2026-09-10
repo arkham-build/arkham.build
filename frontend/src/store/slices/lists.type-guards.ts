@@ -31,6 +31,12 @@ export function isCardTypeFilterObject(
   return !!filter && filter.type === "card_type";
 }
 
+export function isCardTagsFilterObject(
+  filter?: FilterObject<FilterKey>,
+): filter is FilterObject<"card_tags"> {
+  return !!filter && filter.type === "card_tags";
+}
+
 export function isCostFilterObject(
   filter?: FilterObject<FilterKey>,
 ): filter is FilterObject<"cost"> {

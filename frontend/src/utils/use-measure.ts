@@ -44,7 +44,7 @@ export function useMeasure<E extends Element = Element>(): UseMeasureResult<E> {
     return () => {
       observer.disconnect();
     };
-  }, [element, observer.disconnect, observer.observe]);
+  }, [element, observer]);
 
   return [ref, rect];
 }

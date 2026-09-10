@@ -1,13 +1,14 @@
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, TriangleAlertIcon } from "lucide-react";
 import { cx } from "@/utils/cx";
 import css from "./notice.module.css";
 
-type Variant = "info";
+type Variant = "info" | "warning";
 
 type Props = {
   as?: React.JSX.ElementType;
   children: React.ReactNode;
-  variant?: "info";
+  className?: string;
+  variant?: Variant;
 };
 
 function getIconForVariant(variant?: Variant) {
@@ -15,19 +16,22 @@ function getIconForVariant(variant?: Variant) {
     case "info":
       return <InfoIcon />;
 
+    case "warning":
+      return <TriangleAlertIcon />;
+
     default:
       return null;
   }
 }
 
 export function Notice(props: Props) {
-  const { as = "div", children, variant } = props;
+  const { as = "div", className, children, variant } = props;
   const Element = as;
 
   const icon = getIconForVariant(variant);
 
   return (
-    <Element className={cx(css["notice"], variant && css[variant])}>
+    <Element className={cx(css["notice"], variant && css[variant], className)}>
       {!!icon && <div className={css["notice-icon"]}>{icon}</div>}
       <div className={css["notice-content"]}>{children}</div>
     </Element>

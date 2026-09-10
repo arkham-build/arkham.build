@@ -1,7 +1,7 @@
+import type { JsonDataType } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import type { Type } from "@/store/schemas/metadata.schema";
 import {
   selectActiveListFilter,
   selectFilterChanges,
@@ -15,8 +15,8 @@ import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import type { FilterProps } from "./filters.types";
 import { MultiselectFilter } from "./primitives/multiselect-filter";
 
-const nameRenderer = (item: Type) => item.name;
-const itemToString = (item: Type) => item.name.toLowerCase();
+const nameRenderer = (item: JsonDataType) => item.name;
+const itemToString = (item: JsonDataType) => item.name.toLowerCase();
 
 export function TypeFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();

@@ -3,8 +3,6 @@ import {
   defaultScreenshotMask,
   importDeck,
   importDeckFromFile,
-  shareDeck,
-  unshareDeck,
   waitForImagesLoaded,
 } from "./actions";
 import { mockApiCalls } from "./mocks";
@@ -75,6 +73,83 @@ test.describe("deck view", () => {
   test("render deck investigator", async ({ page }) => {
     await importStandardDeck(page);
     await expect(page.getByTestId("deck-investigator-front")).toBeVisible();
+  });
+
+  test("checklist (list mode)", async ({ page }) => {
+    await importStandardDeck(page);
+
+    const checklistToggle = page.getByRole("button", {
+      name: "Checklist",
+      exact: true,
+    });
+    await checklistToggle.click();
+
+    const firstCopy = page.getByRole("checkbox", {
+      name: "Mark Gabriel Carillo (1/2) as collected",
+      exact: true,
+    });
+    const secondCopy = page.getByRole("checkbox", {
+      name: "Mark Gabriel Carillo (2/2) as collected",
+      exact: true,
+    });
+
+    await expect(firstCopy).not.toBeChecked();
+    await expect(secondCopy).not.toBeChecked();
+
+    await page.locator("label").filter({ has: secondCopy }).click();
+
+    await expect(firstCopy).toBeChecked();
+    await expect(secondCopy).toBeChecked();
+
+    await page.getByRole("button", { name: "Clear", exact: true }).click();
+
+    await expect(firstCopy).not.toBeChecked();
+    await expect(secondCopy).not.toBeChecked();
+  });
+
+  test("checklist (scans mode)", async ({ page }) => {
+    await importStandardDeck(page);
+
+    await page.getByRole("button", { name: "Scans", exact: true }).click();
+    await page.getByRole("button", { name: "Checklist", exact: true }).click();
+
+    const cardToggle = page.getByRole("button", {
+      name: "Mark Gabriel Carillo as collected",
+      exact: true,
+    });
+
+    await expect(cardToggle).toHaveAttribute("aria-pressed", "false");
+
+    await cardToggle.click();
+    await expect(cardToggle).toHaveAttribute("aria-pressed", "false");
+
+    await cardToggle.click();
+    await expect(cardToggle).toHaveAttribute("aria-pressed", "true");
+
+    await page.getByRole("button", { name: "Clear", exact: true }).click();
+    await expect(cardToggle).toHaveAttribute("aria-pressed", "false");
+  });
+
+  test("checklist includes bonded cards", async ({ page }) => {
+    await importDeckFromFile(page, "bonded.json", {
+      navigate: "view",
+    });
+
+    await page.getByRole("button", { name: "Checklist", exact: true }).click();
+
+    const firstCopy = page.getByRole("checkbox", {
+      name: "Mark Soothing Melody (1/3) as collected",
+      exact: true,
+    });
+    const thirdCopy = page.getByRole("checkbox", {
+      name: "Mark Soothing Melody (3/3) as collected",
+      exact: true,
+    });
+
+    await expect(firstCopy).not.toBeChecked();
+    await page.locator("label").filter({ has: thirdCopy }).click();
+    await expect(firstCopy).toBeChecked();
+    await expect(thirdCopy).toBeChecked();
   });
 
   test("render bonded cards in relations", async ({ page }) => {
@@ -322,58 +397,6 @@ test.describe("deck view", () => {
     expect(fail).toBe(null);
   });
 
-  test("share deck", async ({ page }) => {
-    await importDeck(page);
-    const deckNode = page.getByTestId("collection-deck");
-    await deckNode.click();
-    await expect(page).toHaveURL(/\/deck\/view/);
-    await shareDeck(page);
-
-    await expect(page.getByTestId("view-title")).toContainText(
-      "Kōhaku, Fifty Shades of Blurse|FHV Intro|Deck Guide",
-    );
-
-    await expect(page.getByTestId("deck-details-deck-size")).toContainText(
-      "Deck size30 (37 total)",
-    );
-
-    await expect(page.getByTestId("deck-details-xp")).toContainText(
-      "XP required31",
-    );
-
-    await expect(page.getByTestId("deck-details-taboo")).toContainText(
-      "Taboo list2.1",
-    );
-
-    await expect(page.getByTestId("deck-tags")).toBeVisible();
-
-    await page.goBack();
-    await unshareDeck(page);
-  });
-
-  test("render shared deck list", async ({ page }) => {
-    await importDeck(page);
-    const deckNode = page.getByTestId("collection-deck");
-    await deckNode.click();
-    await expect(page).toHaveURL(/\/deck\/view/);
-    await shareDeck(page);
-
-    await expect(page.getByTestId("view-decklist")).toBeVisible();
-    await waitForImagesLoaded(page);
-    await prepareScreenshot(page);
-    await expect(page.getByTestId("view-decklist")).toHaveScreenshot({
-      mask: defaultScreenshotMask(page),
-    });
-
-    await expect(
-      page.getByTestId("share").getByTestId("deck-details-label"),
-    ).toBeVisible();
-    await expect(page.getByTestId("share-delete")).not.toBeVisible();
-
-    await page.goBack();
-    await unshareDeck(page);
-  });
-
   test("prefill upgrade xp from url", async ({ page }) => {
     await importStandardDeck(page);
     await page.goto(`${page.url()}?upgrade_xp=666`);
@@ -382,11 +405,43 @@ test.describe("deck view", () => {
 
   test("open card modal", async ({ page }) => {
     await importStandardDeck(page);
+
+    const cardTitle = page
+      .getByTestId("listcard-10104")
+      .getByTestId("listcard-title");
+
+    await cardTitle.hover();
+    await expect(page.getByTestId("card-tooltip")).toBeVisible();
+    await cardTitle.click();
+
+    await expect(page.getByTestId("card-modal")).toBeVisible();
+  });
+
+  test("closing card modal via backdrop does not select content", async ({
+    page,
+  }) => {
+    await importStandardDeck(page);
+
     await page
       .getByTestId("listcard-10104")
       .getByTestId("listcard-title")
       .click();
-    await expect(page.getByTestId("card-modal")).toBeVisible();
+
+    const modal = page.getByTestId("card-modal");
+    await expect(modal).toBeVisible();
+
+    const modalBounds = await modal.boundingBox();
+    if (!modalBounds) throw new Error("Card modal has no bounding box");
+
+    await page.evaluate(() => window.getSelection()?.removeAllRanges());
+    await page.mouse.move(modalBounds.x + 1, modalBounds.y + 300);
+    await page.mouse.down({ clickCount: 2 });
+    await page.mouse.up({ clickCount: 2 });
+
+    expect(await page.evaluate(() => window.getSelection()?.toString())).toBe(
+      "",
+    );
+    await expect(modal).not.toBeVisible();
   });
 
   test("open deck investigator modal", async ({ page }) => {
@@ -516,7 +571,7 @@ test.describe("quick edit title and tags", () => {
     await page.getByTestId("name-edit-submit").click();
 
     await expect(page.getByTestId("view-tags")).toContainText(
-      "PrivateLegacySoloMultiplayerThemeAdvanced",
+      "DeviceLegacySoloMultiplayerThemeAdvanced",
     );
   });
 

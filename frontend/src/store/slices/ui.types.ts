@@ -1,6 +1,8 @@
-import type { FanMadeProject } from "@arkham-build/shared";
-import type { Deck } from "@/store/schemas/deck.schema";
-import type { DeckFanMadeContent } from "../lib/types";
+import type {
+  Deck,
+  DeckFanMadeContent,
+  FanMadeProject,
+} from "@arkham-build/shared";
 
 export type CardModalConfig = {
   listOrder?: string[];
@@ -16,7 +18,9 @@ export type UIState = {
     cardModal: CardModalState;
     fanMadeContentCache: Partial<DeckFanMadeContent>;
     initialized: boolean;
+    keyboardShortcutsOpen: boolean;
     navigationHistory: string[];
+    sessionInitialized: boolean;
     showLimitedAccess: boolean;
     showUnusableCards: boolean;
   };
@@ -28,6 +32,8 @@ export type UISlice = UIState & {
   cacheFanMadeContent(decks: Deck[]): undefined;
   cacheFanMadeProject(content: FanMadeProject): void;
   uncacheFanMadeProject(content: FanMadeProject): void;
+
+  toggleKeyboardShortcuts(): void;
 
   pushHistory(path: string): void;
   pruneHistory(index: number): void;

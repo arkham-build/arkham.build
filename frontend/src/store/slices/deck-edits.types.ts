@@ -1,6 +1,10 @@
-import type { Card, DeckOptionSelectType } from "@arkham-build/shared";
-import type { Annotations, DeckMeta, ResolvedDeck } from "../lib/types";
-import type { Id } from "../schemas/deck.schema";
+import type {
+  Card,
+  DeckMeta,
+  DeckOptionSelectType,
+  Id,
+} from "@arkham-build/shared";
+import type { Annotations, ResolvedDeck } from "../lib/types";
 import type { AvailableUpgrades } from "../selectors/lists";
 
 export type Slot =
@@ -53,6 +57,7 @@ export type EditState = {
   };
   attachments?: AttachmentQuantities;
   annotations?: Annotations;
+  deckCardTags?: Record<string, string[] | null>;
   tabooId?: number | null;
   tags?: string | null;
   xpAdjustment?: number | null;
@@ -123,6 +128,8 @@ export type DeckEditsSlice = {
   }): void;
 
   updateAnnotation(deckId: Id, code: string, value: string | null): void;
+
+  updateDeckCardTags(deckId: Id, cardCode: string, tagNames: string[]): void;
 
   upgradeCard(payload: UpgradePayload): void;
 

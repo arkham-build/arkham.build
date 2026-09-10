@@ -7,11 +7,12 @@ type Props = {
   size: "full" | "compact" | "tooltip";
   text?: string;
   typeCode: string;
+  vengeance?: number | null;
   victory?: number | null;
 };
 
 export function CardText(props: Props) {
-  const { flavor, size, text, typeCode, victory } = props;
+  const { flavor, size, text, typeCode, vengeance, victory } = props;
   const { t } = useTranslation();
 
   const swapFlavor = ["agenda", "act", "story"].includes(typeCode);
@@ -20,7 +21,7 @@ export function CardText(props: Props) {
     <div className={css["text"]} data-testid="card-text">
       {text && (
         <p
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is from trusted source.
+          // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
           dangerouslySetInnerHTML={{
             __html: parseCardTextHtml(text, { bullets: true }),
           }}
@@ -33,13 +34,20 @@ export function CardText(props: Props) {
           </b>
         </p>
       )}
+      {vengeance != null && (
+        <p>
+          <b>
+            {t("common.vengeance")} {vengeance}.
+          </b>
+        </p>
+      )}
     </div>
   );
 
   const flavorNode = !!flavor && size !== "tooltip" && (
     <div className={css["flavor"]}>
       <p
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is from trusted source.
+        // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
         dangerouslySetInnerHTML={{
           __html: parseCardTextHtml(flavor, { bullets: false }),
         }}

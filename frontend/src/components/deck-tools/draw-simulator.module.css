@@ -41,10 +41,7 @@
   justify-content: center;
   gap: var(--gap);
   max-width: calc(
-    var(--cols) *
-    var(--card-width) +
-    (var(--cols) - 1) *
-    var(--gap)
+    var(--cols) * var(--card-width) + (var(--cols) - 1) * var(--gap)
   );
 }
 
@@ -63,7 +60,7 @@
       right: 0;
       bottom: 0;
       border-radius: var(--rounded-scan);
-      background-color: var(--focus);
+      background-color: var(--color-focus);
       opacity: 0.2;
       z-index: 1;
     }
@@ -71,7 +68,7 @@
 }
 
 .selected img {
-  outline: 2px solid var(--focus);
+  outline: 2px solid var(--color-focus);
   outline-offset: 1px;
   transform: scale(1.01);
 }

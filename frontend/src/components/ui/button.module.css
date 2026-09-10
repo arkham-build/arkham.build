@@ -27,11 +27,11 @@
 
     &:not([disabled]):active {
       background: var(--palette-3);
-      border-color: var(--palette-three-point-five);
+      border-color: var(--palette-4);
     }
 
     &:focus-visible {
-      outline: 1px solid var(--focus);
+      outline: 1px solid var(--color-focus);
     }
   }
 
@@ -50,12 +50,29 @@
   }
 
   .button.primary {
-    background: var(--accent-color-dark, var(--nord-10));
+    background: var(--accent-color-dark, var(--color-primary));
     border-color: transparent;
-    color: var(--accent-color-contrast, var(--nord-6));
+    color: var(--accent-color-contrast, var(--color-primary-contrast));
 
-    &:hover {
-      background: var(--accent-color, var(--nord-9));
+    &:not([disabled]):hover {
+      background: var(--accent-color, var(--color-primary-hover));
+      border-color: transparent;
+    }
+
+    &:not([disabled]):active {
+      background: var(--accent-color, var(--color-primary-active));
+      border-color: transparent;
+    }
+  }
+
+  .button.danger {
+    background: var(--color-error);
+    border-color: transparent;
+    color: var(--color-inverted);
+
+    &:not([disabled]):hover {
+      background: color-mix(in srgb, var(--color-error) 85%, var(--palette-0));
+      border-color: transparent;
     }
   }
 
@@ -114,7 +131,15 @@
     padding: 0.5rem;
   }
 
-  .button.round {
+  .button.rounded-full {
     border-radius: 100%;
+  }
+
+  .button.rounded-lg {
+    border-radius: var(--rounded-lg);
+  }
+
+  .button.rounded-xl {
+    border-radius: var(--rounded-xl);
   }
 }

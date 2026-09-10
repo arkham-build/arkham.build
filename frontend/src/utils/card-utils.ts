@@ -1,7 +1,8 @@
+import type { Cycle, Pack } from "@arkham-build/shared";
 import { type Card, SKILL_KEYS } from "@arkham-build/shared";
+import DOMPurify from "dompurify";
 import type { TFunction } from "i18next";
-import type { Cycle } from "@/store/schemas/cycle.schema";
-import type { Pack } from "@/store/schemas/pack.schema";
+import { filterPlayerCards } from "@/store/lib/filtering";
 import { assert } from "./assert";
 import {
   CYCLES_WITH_STANDALONE_PACKS,
@@ -75,41 +76,14 @@ export function reversed(card: Card) {
   );
 }
 
-export function countExperience(card: Card, quantity: number) {
-  if (card.customization_xp) return card.customization_xp;
-
-  let xp = card.xp ?? 0;
-  if (card.exceptional) xp *= 2;
-  if (card.taboo_xp) xp += card.taboo_xp;
-
-  return xp * (card.myriad ? Math.min(quantity, 1) : quantity);
-}
-
-export function cardLevel(card: Card) {
-  return card.customization_xp
-    ? Math.round(card.customization_xp / 2)
-    : card.xp;
-}
-
-/**
- * Get the "real" card level after applying taboo.
- * For the sake of deckbuilding, cards keep their original level + an xp change.
- * However, for the sake of XP calculations and interactions such as "Adaptable",
- * cards should be considered their updated level in the spirit of the taboo.
- * This prevents weirdness such as Adaptable being able to swap in Drawing Thin for free.
- */
-export function realCardLevel(card: Card) {
-  const level = cardLevel(card);
-  if (level == null) return level;
-  return level + (card.taboo_xp ?? 0);
-}
-
 export function imageUrl(code: string) {
-  return `${import.meta.env.VITE_CARD_IMAGE_URL}/optimized/${code}.avif`;
+  const extension = code.startsWith("easter_egg") ? "avif" : "webp";
+  return `${import.meta.env.VITE_CARD_IMAGE_URL}/optimized/${code}.${extension}`;
 }
 
 export function thumbnailUrl(code: string) {
-  return `${import.meta.env.VITE_CARD_IMAGE_URL}/thumbnails/${code}.avif`;
+  const extension = code.startsWith("easter_egg") ? "avif" : "webp";
+  return `${import.meta.env.VITE_CARD_IMAGE_URL}/thumbnails/${code}.${extension}`;
 }
 
 export function parseCardTextHtml(
@@ -122,7 +96,10 @@ export function parseCardTextHtml(
   let parsed = cardText;
 
   if (opts?.bullets) {
-    parsed = parsed.replaceAll(/^\s?(-|–)/gm, `<i class="icon-bullet"></i>`);
+    parsed = parsed.replaceAll(
+      /^\s?(-(?!-)|–)/gm,
+      `<i class="icon-bullet"></i>`,
+    );
   }
 
   parsed = parsed
@@ -133,7 +110,9 @@ export function parseCardTextHtml(
     parsed = parsed.replaceAll("\n", "<hr class='break'>");
   }
 
-  return parsed;
+  return DOMPurify.sanitize(parsed, {
+    FORBID_TAGS: ["iframe", "math"],
+  });
 }
 
 export function parseCustomizationTextHtml(customizationText: string) {
@@ -179,7 +158,7 @@ export function isRandomBasicWeaknessLike(card: Card) {
   return (
     card.subtype_code === "basicweakness" ||
     (card.subtype_code === "weakness" &&
-      !card.encounter_code &&
+      filterPlayerCards(card) &&
       !card.restrictions)
   );
 }
@@ -277,7 +256,10 @@ export function canShowCardPoolExtension(card: Card) {
   return card.card_pool_extension && !card.card_pool_extension.selections;
 }
 
-export function doubleSidedBackCard(card: Card, t: TFunction) {
+export function doubleSidedBackCard(
+  card: Card,
+  t: TFunction,
+): Card | undefined {
   if (!card.double_sided) return undefined;
 
   const { clues: _, doom: __, shroud: ___, ...attributes } = card;

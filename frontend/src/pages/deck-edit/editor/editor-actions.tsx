@@ -11,11 +11,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  useDuplicateDeckMutation,
+  useSaveDeckMutation,
+} from "@/queries/mutations/decks";
 import { useStore } from "@/store";
 import { UnsupportedPublishError } from "@/store/lib/errors";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckValid } from "@/store/selectors/decks";
-import { selectConnectionLockForDeck } from "@/store/selectors/shared";
+import { selectDeckHasConflict } from "@/store/selectors/sync";
+import { isDeckConflictError } from "@/store/services/requests/decks";
 import { useHotkey } from "@/utils/use-hotkey";
 import { LatestUpgrade } from "../../../components/deck-display/deck-history/latest-upgrade";
 import css from "./editor.module.css";
@@ -28,94 +33,35 @@ type Props = {
 export function EditorActions(props: Props) {
   const { currentTab, deck } = props;
 
-  const [, navigate] = useLocation();
-  const toast = useToast();
   const { t } = useTranslation();
 
   const hasEdits = useStore((state) => !!state.deckEdits[deck.id]);
-  const connectionLock = useStore((state) =>
-    selectConnectionLockForDeck(state, deck),
+  const hasSyncConflict = useStore((state) =>
+    selectDeckHasConflict(state, deck.id),
   );
-
-  const discardEdits = useStore((state) => state.discardEdits);
-  const saveDeck = useStore((state) => state.saveDeck);
-  const duplicateDeck = useStore((state) => state.duplicateDeck);
 
   const validation = useStore((state) => selectDeckValid(state, deck));
 
-  const onduplicateWithEdits = useCallback(async () => {
-    const id = await duplicateDeck(deck.id, { applyEdits: true });
-    navigate(`~/deck/view/${id}`);
-  }, [duplicateDeck, deck.id, navigate]);
-
-  const onSave = useCallback(
-    async (stayOnPage?: boolean) => {
-      const toastId = toast.show({
-        children: t("deck_edit.save_loading"),
-        variant: "loading",
-      });
-
-      try {
-        const id = await saveDeck(deck.id);
-        toast.dismiss(toastId);
-
-        if (!stayOnPage) navigate(`~/deck/view/${id}`);
-      } catch (err) {
-        toast.dismiss(toastId);
-
-        toast.show({
-          children: (
-            <>
-              <p>
-                {t("deck_edit.save_error", { error: (err as Error).message })}
-              </p>
-              {err instanceof UnsupportedPublishError && (
-                <Button
-                  className={css["error-action"]}
-                  onClick={onduplicateWithEdits}
-                  size="sm"
-                  tooltip={t("deck_edit.create_local_copy_help")}
-                >
-                  {t("deck_edit.create_local_copy")}
-                </Button>
-              )}
-            </>
-          ),
-          variant: "error",
-        });
-      }
-    },
-    [saveDeck, navigate, deck.id, toast, onduplicateWithEdits, t],
+  const { onQuickDiscard, onDiscardClose } = useDiscardDeckEdits(
+    deck.id,
+    hasEdits,
   );
-
-  const onDiscard = useCallback(
-    (stayOnPage?: boolean) => {
-      const confirmed =
-        !hasEdits || window.confirm(t("deck_edit.discard_confirm"));
-      if (confirmed) {
-        discardEdits(deck.id);
-        if (!stayOnPage) navigate(`~/deck/view/${deck.id}`);
-      }
-    },
-    [discardEdits, navigate, deck.id, hasEdits, t],
-  );
-
-  const onQuicksave = useCallback(() => onSave(true), [onSave]);
-  const onQuickDiscard = useCallback(() => onDiscard(true), [onDiscard]);
-
-  const onSaveClose = useCallback(() => onSave(false), [onSave]);
-  const onDiscardClose = useCallback(() => onDiscard(false), [onDiscard]);
+  const { onQuicksave, onSaveClose } = useSaveDeck(deck);
 
   useHotkey("cmd+s", onSaveClose, {
     allowInputFocused: true,
+    disabled: hasSyncConflict,
   });
 
   useHotkey("cmd+shift+s", onQuicksave, {
     allowInputFocused: true,
+    disabled: hasSyncConflict,
   });
 
-  useHotkey("cmd+backspace", onDiscardClose);
-  useHotkey("cmd+shift+backspace", onQuickDiscard);
+  useHotkey("cmd+backspace", onDiscardClose, { disabled: hasSyncConflict });
+  useHotkey("cmd+shift+backspace", onQuickDiscard, {
+    disabled: hasSyncConflict,
+  });
 
   const readonly = !!deck.next_deck;
 
@@ -135,18 +81,20 @@ export function EditorActions(props: Props) {
             </TooltipContent>
           </Tooltip>
         )}
-        <HotkeyTooltip keybind="cmd+s" description={t("deck_edit.save")}>
+        <HotkeyTooltip
+          keybind="cmd+s"
+          description={
+            hasSyncConflict
+              ? t("deck_sync.conflict.edit_locked")
+              : readonly
+                ? t("deck_edit.read_only")
+                : t("deck_edit.save")
+          }
+        >
           <Button
             data-testid="editor-save"
             onClick={onSaveClose}
-            disabled={!!connectionLock || readonly}
-            tooltip={
-              connectionLock
-                ? connectionLock
-                : readonly
-                  ? t("deck_edit.readonly")
-                  : undefined
-            }
+            disabled={hasSyncConflict || readonly}
             variant="primary"
           >
             <SaveIcon />
@@ -159,7 +107,11 @@ export function EditorActions(props: Props) {
         >
           <Button
             data-testid="editor-discard"
+            disabled={hasSyncConflict}
             onClick={onDiscardClose}
+            tooltip={
+              hasSyncConflict ? t("deck_sync.conflict.edit_locked") : undefined
+            }
             variant="bare"
           >
             <Undo2Icon />
@@ -169,4 +121,98 @@ export function EditorActions(props: Props) {
       </div>
     </>
   );
+}
+
+function useSaveDeck(deck: ResolvedDeck) {
+  const [, navigate] = useLocation();
+  const toast = useToast();
+  const { t } = useTranslation();
+
+  const saveDeckMutation = useSaveDeckMutation();
+  const duplicateDeckMutation = useDuplicateDeckMutation();
+
+  const onDuplicateWithEdits = useCallback(async () => {
+    const id = await duplicateDeckMutation.mutateAsync({
+      id: deck.id,
+      options: { applyEdits: true },
+    });
+    navigate(`~/deck/view/${id}`);
+  }, [deck.id, duplicateDeckMutation, navigate]);
+
+  const onSave = useCallback(
+    async (stayOnPage?: boolean) => {
+      const toastId = toast.show({
+        children: t("deck_edit.save_loading"),
+        variant: "loading",
+      });
+
+      try {
+        const id = await saveDeckMutation.mutateAsync(deck.id);
+        toast.dismiss(toastId);
+        if (!stayOnPage) navigate(`~/deck/view/${id}`);
+      } catch (err) {
+        toast.dismiss(toastId);
+
+        if (isDeckConflictError(err)) {
+          return;
+        }
+
+        toast.show({
+          children: (
+            <>
+              <p>
+                {t("deck_edit.save_error", { error: (err as Error).message })}
+              </p>
+              {err instanceof UnsupportedPublishError && (
+                <Button
+                  className={css["error-action"]}
+                  onClick={onDuplicateWithEdits}
+                  size="sm"
+                  tooltip={t("deck_edit.create_local_copy_help")}
+                >
+                  {t("deck_edit.create_local_copy")}
+                </Button>
+              )}
+            </>
+          ),
+          variant: "error",
+        });
+      }
+    },
+    [saveDeckMutation, navigate, deck.id, toast, onDuplicateWithEdits, t],
+  );
+
+  const onQuicksave = useCallback(() => onSave(true), [onSave]);
+  const onSaveClose = useCallback(() => onSave(false), [onSave]);
+
+  return {
+    onQuicksave,
+    onSaveClose,
+  };
+}
+
+function useDiscardDeckEdits(deckId: ResolvedDeck["id"], hasEdits: boolean) {
+  const [, navigate] = useLocation();
+  const { t } = useTranslation();
+  const discardEdits = useStore((state) => state.discardEdits);
+
+  const onDiscard = useCallback(
+    (stayOnPage?: boolean) => {
+      const confirmed =
+        !hasEdits || window.confirm(t("deck_edit.discard_confirm"));
+      if (confirmed) {
+        discardEdits(deckId);
+        if (!stayOnPage) navigate(`~/deck/view/${deckId}`);
+      }
+    },
+    [discardEdits, navigate, deckId, hasEdits, t],
+  );
+
+  const onQuickDiscard = useCallback(() => onDiscard(true), [onDiscard]);
+  const onDiscardClose = useCallback(() => onDiscard(false), [onDiscard]);
+
+  return {
+    onQuickDiscard,
+    onDiscardClose,
+  };
 }

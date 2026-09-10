@@ -104,7 +104,11 @@ export function DraftEditor(props: Props) {
 
       <InvestigatorListcard deck={draftDeckWithStats} />
 
-      <Tabs className={css["editor-tabs"]} value="slots">
+      <Tabs
+        className={css["editor-tabs"]}
+        onValueChange={() => {}}
+        value="slots"
+      >
         <TabsList className={css["editor-tabs-list"]}>
           <TabsTrigger value="slots">
             <span>{t("common.decks.slots")}</span>

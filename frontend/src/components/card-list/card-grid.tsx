@@ -7,13 +7,21 @@ import { cx } from "@/utils/cx";
 import { preventLeftClick } from "@/utils/prevent-links";
 import { useMeasure } from "@/utils/use-measure";
 import { CardScan } from "../card-scan";
+import { CardFavoriteAction } from "../card-tags/card-favorite";
 import { Scroller } from "../ui/scroller";
 import { CardActions } from "./card-actions";
 import css from "./card-grid.module.css";
 import type { CardListImplementationProps } from "./types";
 
-export function CardGrid(props: CardListImplementationProps) {
-  const { data, search, ...rest } = props;
+const SCAN_GRID_GAP = 16;
+
+export function CardGrid(
+  props: CardListImplementationProps & {
+    defaultFlipped: boolean;
+    scanMaxColumns: number;
+  },
+) {
+  const { data, defaultFlipped, scanMaxColumns, search, ...rest } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
@@ -38,7 +46,6 @@ export function CardGrid(props: CardListImplementationProps) {
     };
   }, [scrollParent, onScrollChange]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: a search should reset scroll position.
   useEffect(() => {
     setCurrentTop(-1);
     virtuosoRef.current?.scrollToIndex(0);
@@ -56,13 +63,13 @@ export function CardGrid(props: CardListImplementationProps) {
 
   const cols = useMemo(() => {
     const w = rect?.width ?? 0;
-    if (w >= 1152) return 6;
-    if (w >= 960) return 5;
-    if (w >= 720) return 4;
-    if (w >= 528) return 3;
-    if (w >= 320) return 2;
+    if (w >= 1152) return Math.min(6, scanMaxColumns);
+    if (w >= 960) return Math.min(5, scanMaxColumns);
+    if (w >= 720) return Math.min(4, scanMaxColumns);
+    if (w >= 528) return Math.min(3, scanMaxColumns);
+    if (w >= 320) return Math.min(2, scanMaxColumns);
     return 1;
-  }, [rect]);
+  }, [rect, scanMaxColumns]);
 
   // Determine the default orientation of cards in the list.
   // This prevents lists from becoming jumpy when they overwhelmingly consist of horizontal cards.
@@ -148,7 +155,8 @@ export function CardGrid(props: CardListImplementationProps) {
     <Scroller
       className={css["scroller"]}
       data-testid="card-list-scroller"
-      ref={setScrollParent as unknown as React.RefObject<HTMLDivElement>}
+      padded
+      ref={setScrollParent as unknown as React.RefObject<HTMLDivElement | null>}
       type="always"
     >
       {rect?.width && data && (
@@ -157,7 +165,9 @@ export function CardGrid(props: CardListImplementationProps) {
           ref={virtuosoRef}
           key={orientationModifier}
           defaultItemHeight={
-            16 + (orientationModifier * (rect.width - 16 * (cols - 1))) / cols
+            SCAN_GRID_GAP +
+            (orientationModifier * (rect.width - SCAN_GRID_GAP * (cols - 1))) /
+              cols
           }
           data={rows}
           increaseViewportBy={6}
@@ -171,6 +181,7 @@ export function CardGrid(props: CardListImplementationProps) {
                 <CardGridItem
                   {...rest}
                   card={card}
+                  defaultFlipped={defaultFlipped}
                   key={card.id}
                   highlighted={
                     highlighted !== null &&
@@ -189,13 +200,24 @@ export function CardGrid(props: CardListImplementationProps) {
 export function CardGridItem(
   props: {
     card: Card;
+    className?: string;
+    defaultFlipped?: boolean;
     highlighted?: boolean;
+    omitFavorite?: boolean;
   } & Pick<
     CardListImplementationProps,
     "getListCardProps" | "quantities" | "resolvedDeck"
   >,
 ) {
-  const { card, highlighted, getListCardProps, quantities } = props;
+  const {
+    card,
+    className,
+    defaultFlipped = false,
+    highlighted,
+    omitFavorite,
+    getListCardProps,
+    quantities,
+  } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
@@ -220,11 +242,16 @@ export function CardGridItem(
     [openModal],
   );
 
+  const leftActionSlot = useCallback(
+    () => <CardFavoriteAction card={card} />,
+    [card],
+  );
+
   const quantity = quantities?.[card.code] ?? 0;
 
   return (
     <div
-      className={css["group-item"]}
+      className={cx(css["group-item"], className)}
       key={card.code}
       data-component="card-group-item"
     >
@@ -238,7 +265,12 @@ export function CardGridItem(
         onKeyUp={onPressEnter}
         tabIndex={0}
       >
-        <CardScan card={card} lazy />
+        <CardScan
+          card={card}
+          defaultFlipped={defaultFlipped}
+          lazy
+          leftActionSlot={omitFavorite ? undefined : leftActionSlot}
+        />
       </Link>
       <div className={css["group-item-actions"]}>
         <CardActions

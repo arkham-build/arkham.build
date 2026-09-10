@@ -1,5 +1,7 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useDismissBannerMutation } from "@/queries/mutations/app";
+import { useApplySettingsMutation } from "@/queries/mutations/settings";
 import { useStore } from "@/store";
 import css from "./preview-banner.module.css";
 import { Button } from "./ui/button";
@@ -8,31 +10,12 @@ const BANNER_ID = "preview-core-2026";
 
 export function PreviewBanner() {
   const settings = useStore((state) => state.settings);
-  const { t } = useTranslation();
-
-  const dismissBanner = useStore((state) => state.dismissBanner);
-  const applySettings = useStore((state) => state.applySettings);
-
   const dismissed = useStore((state) =>
     state.app?.bannersDismissed?.includes(BANNER_ID),
   );
-
-  const onDismiss = useCallback(async () => {
-    try {
-      await dismissBanner(BANNER_ID);
-    } catch (err) {
-      console.error(err);
-    }
-  }, [dismissBanner]);
-
-  const onEnablePreviews = useCallback(async () => {
-    try {
-      await applySettings({ ...settings, showPreviews: true });
-      await dismissBanner(BANNER_ID);
-    } catch (err) {
-      console.error(err);
-    }
-  }, [settings, applySettings, dismissBanner]);
+  const { t } = useTranslation();
+  const onDismiss = useDismissPreviewBanner();
+  const onEnablePreviews = useEnablePreviewBanner(settings);
 
   if (settings.showPreviews || dismissed) {
     return null;
@@ -68,4 +51,34 @@ export function PreviewBanner() {
       </div>
     </article>
   );
+}
+
+function useDismissPreviewBanner() {
+  const dismissBannerMutation = useDismissBannerMutation();
+
+  return useCallback(async () => {
+    try {
+      await dismissBannerMutation.mutateAsync(BANNER_ID);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [dismissBannerMutation]);
+}
+
+function useEnablePreviewBanner(
+  settings: ReturnType<typeof useStore.getState>["settings"],
+) {
+  const dismissBannerMutation = useDismissBannerMutation();
+  const applySettingsMutation = useApplySettingsMutation();
+
+  return useCallback(async () => {
+    try {
+      await applySettingsMutation.mutateAsync({
+        settings: { ...settings, showPreviews: true },
+      });
+      await dismissBannerMutation.mutateAsync(BANNER_ID);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [applySettingsMutation, dismissBannerMutation, settings]);
 }

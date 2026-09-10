@@ -1,4 +1,8 @@
-import type { Card } from "@arkham-build/shared";
+import {
+  type Card,
+  type Slots,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
 import {
   DicesIcon,
   ExternalLinkIcon,
@@ -27,12 +31,10 @@ import { useStore } from "@/store";
 import type { LookupTables } from "@/store/lib/lookup-tables.types";
 import { randomBasicWeaknessForDeck } from "@/store/lib/random-basic-weakness";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Slots } from "@/store/schemas/deck.schema";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";
 import { cardLimit, displayAttribute } from "@/utils/card-utils";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
 import { useAccentColor } from "@/utils/use-accent-color";
 import css from "./draft-basic-weakness.module.css";
 
@@ -53,7 +55,13 @@ export function DraftBasicWeakness(props: Props) {
           disabled={!props.quantity || props.targetDeck !== "slots"}
           iconOnly
           size="sm"
-          tooltip={t("deck_edit.actions.draft_random_basic_weakness")}
+          tooltip={
+            <Trans
+              t={t}
+              i18nKey={"deck_edit.actions.draft_random_basic_weakness"}
+              components={{ em: <em /> }}
+            />
+          }
           variant="bare"
         >
           <DicesIcon />
@@ -79,7 +87,7 @@ function DraftBasicWeaknessModal(props: Props) {
     })),
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: should only be computed once on mount
+  // oxlint-disable-next-line react/exhaustive-deps -- should only be computed once on mount
   const weaknesses = useMemo(() => selectDraftWeaknesses(deps, deck), []);
 
   const [selectedWeakness, setSelectedWeakness] = useState<
@@ -93,7 +101,7 @@ function DraftBasicWeaknessModal(props: Props) {
   const dialogContext = useDialogContext();
 
   const handleSubmit = useCallback(
-    (evt: React.FormEvent<HTMLFormElement>) => {
+    (evt: React.SubmitEvent) => {
       evt.preventDefault();
 
       assert(weaknesses, "Submit called before draft initialized.");
@@ -169,7 +177,13 @@ function DraftBasicWeaknessModal(props: Props) {
           {weaknesses ? (
             <form className={css["container"]} onSubmit={handleSubmit}>
               <h3>{t("deck_edit.draft_weakness_modal.explanation_title")}</h3>
-              <p>{t("deck_edit.draft_weakness_modal.explanation_body")}</p>
+              <p>
+                <Trans
+                  t={t}
+                  i18nKey="deck_edit.draft_weakness_modal.explanation_body"
+                  components={{ em: <em /> }}
+                />
+              </p>
               <h3>{t("deck_edit.draft_weakness_modal.choice_title")}</h3>
               <ol className={css["list-container"]}>
                 {weaknesses.map((weakness) => (

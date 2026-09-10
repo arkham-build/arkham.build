@@ -18,8 +18,8 @@ test.describe("settings", () => {
 
     await page.getByTestId("settings-show-all").click();
 
-    await page.getByLabel("The Dunwich Legacy Investigator Expansion").click();
-    await page.getByLabel("The Dunwich Legacy Campaign").click();
+    await page.getByText("The Dunwich Legacy Investigator Expansion").click();
+    await page.getByText("The Dunwich Legacy Campaign").click();
     await page.getByTestId("settings-save").click();
     await page.getByTestId("settings-back").click();
 
@@ -64,7 +64,7 @@ test.describe("settings", () => {
     await page.getByTestId("search-input").focus();
     await page.getByTestId("search-game-text").click();
 
-    await fillSearch(page, "Mutated");
+    await fillSearch(page, 'text == "Mutated"');
 
     await expect(page.getByTestId("cardlist-count").first()).toContainText(
       "0 cards",
@@ -76,8 +76,7 @@ test.describe("settings", () => {
     await page.getByTestId("settings-back").click();
 
     await page.getByTestId("search-input").focus();
-    await page.getByTestId("search-game-text").click();
-    await fillSearch(page, "Mutated");
+    await fillSearch(page, 'text == "Mutated"');
 
     await page
       .getByTestId("listcard-02002")
@@ -163,33 +162,27 @@ test.describe("settings", () => {
     page,
   }) => {
     await page.goto("/settings");
-    await expect(page.locator("html")).toHaveAttribute("class", /theme-dark/);
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await page.getByTestId("settings-select-theme").selectOption("light");
 
     // resets after changing pages as save was not clicked
     await page.goto("/");
-    await expect(page.locator("html")).toHaveAttribute("class", /theme-dark/);
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
-    page.reload();
-    await expect(page.locator("html")).toHaveAttribute("class", /theme-dark/);
+    await page.reload();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
     // now with clicking save
     await page.goto("/settings");
-    await expect(page.locator("html")).toHaveAttribute("class", /theme-dark/);
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await page.getByTestId("settings-select-theme").selectOption("light");
     await page.getByTestId("settings-save").click();
 
     // now it should be persistent
     await page.goto("/");
-    await expect(page.locator("html")).toHaveAttribute("class", /theme-light/);
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 
-    page.reload();
-    await expect(page.locator("html")).toHaveAttribute("class", /theme-light/);
+    await page.reload();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   });
 
@@ -217,7 +210,7 @@ test.describe("settings", () => {
     await page.getByTestId("create-choose-investigator").click();
 
     await expect(page.getByTestId("limited-card-pool-field")).toBeVisible();
-    await expect(page.getByText("Revised Core Set")).toBeVisible();
+    await expect(page.getByText("Core Set (2026)")).toBeVisible();
   });
 
   test("rbw are limited to card pool when configured", async ({ page }) => {

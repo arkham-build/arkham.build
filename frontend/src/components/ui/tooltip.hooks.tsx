@@ -100,7 +100,10 @@ export function useRestingTooltip(
   },
 ) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const restTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const restTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  const suppressUntilLeaveRef = useRef(false);
 
   useEffect(
     () => () => {
@@ -125,13 +128,30 @@ export function useRestingTooltip(
     },
   });
 
+  const closeTooltip = useCallback(() => {
+    suppressUntilLeaveRef.current = true;
+    clearTimeout(restTimeoutRef.current);
+    setTooltipOpen(false);
+  }, []);
+
+  const onPointerDown = useCallback(() => {
+    suppressUntilLeaveRef.current = true;
+    clearTimeout(restTimeoutRef.current);
+
+    // Safari may cancel the subsequent click if pointerdown changes the DOM or
+    // hit testing. Opacity hides the tooltip without affecting either.
+    const floatingElement = refs.floating.current;
+    if (floatingElement) floatingElement.style.opacity = "0";
+  }, [refs.floating]);
+
   const onPointerLeave = useCallback(() => {
+    suppressUntilLeaveRef.current = false;
     clearTimeout(restTimeoutRef.current);
     setTooltipOpen(false);
   }, []);
 
   const onPointerMove = useCallback(() => {
-    if (tooltipOpen) return;
+    if (suppressUntilLeaveRef.current || tooltipOpen) return;
 
     clearTimeout(restTimeoutRef.current);
 
@@ -142,11 +162,12 @@ export function useRestingTooltip(
 
   const referenceProps = useMemo(
     () => ({
+      onPointerDown,
       onPointerLeave,
       onPointerMove,
       onMouseLeave: onPointerLeave,
     }),
-    [onPointerLeave, onPointerMove],
+    [onPointerDown, onPointerLeave, onPointerMove],
   );
 
   const value = useMemo(
@@ -156,8 +177,10 @@ export function useRestingTooltip(
       refs,
       floatingStyles,
       transitionStyles: styles,
+      closeTooltip,
+      setTooltipOpen,
     }),
-    [referenceProps, refs, styles, floatingStyles, isMounted],
+    [referenceProps, refs, styles, floatingStyles, isMounted, closeTooltip],
   );
 
   return value;

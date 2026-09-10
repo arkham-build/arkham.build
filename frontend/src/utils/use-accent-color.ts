@@ -24,6 +24,6 @@ export function getAccentColorsForFaction(card: Card): React.CSSProperties {
   return {
     "--accent-color": `var(--color-${accent})`,
     "--accent-color-dark": `var(--${accent}-dark)`,
-    "--acent-color-contrast": "var(--palette-6)",
+    "--accent-color-contrast": "var(--color-inverted)",
   } as React.CSSProperties;
 }

@@ -18,6 +18,10 @@
     list-style: none;
   }
 
+  .listcard-wrapper.has-tags {
+    container-type: inline-size;
+  }
+
   .listcard-wrapper.has-after {
     grid-template-areas:
       "action card"
@@ -30,6 +34,31 @@
     &:hover {
       opacity: 0.5;
       transition: opacity 0.2s;
+    }
+  }
+
+  .listcard-wrapper.faded {
+    &
+      :is(
+        .listcard-action,
+        .listcard-main,
+        .listcard-tags,
+        .listcard-after,
+        .listcard-text
+      ) {
+      opacity: 0.33;
+      transition: opacity 0.2s;
+    }
+
+    &:hover
+      :is(
+        .listcard-action,
+        .listcard-main,
+        .listcard-tags,
+        .listcard-after,
+        .listcard-text
+      ) {
+      opacity: 0.5;
     }
   }
 
@@ -69,7 +98,6 @@
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
-    justify-content: space-between;
     gap: var(--card-spacing-x);
     grid-area: card;
     min-width: 0;
@@ -82,6 +110,44 @@
     gap: var(--card-spacing-x);
     min-width: 0;
     flex: 1 1 0%;
+  }
+
+  .listcard-tags {
+    flex: 1 1 14rem;
+    max-width: min(30%, 28rem);
+    min-width: 0;
+
+    & > * {
+      justify-content: flex-end;
+    }
+  }
+
+  .listcard-extra {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    z-index: 2;
+  }
+
+  @container (max-width: 30rem) {
+    .listcard {
+      flex-wrap: wrap;
+    }
+
+    .listcard-extra {
+      order: 1;
+    }
+
+    .listcard-tags {
+      order: 2;
+      flex: 1 0 100%;
+      max-width: none;
+
+      & > * {
+        justify-content: flex-start;
+      }
+    }
   }
 
   .content {
@@ -175,7 +241,7 @@
     vertical-align: middle;
   }
 
-  :lang(ko, zh, zh-Hant, zh-Hans) .subname {
+  :is(:lang(ko), :lang(zh)) .subname {
     font-style: normal;
   }
 
@@ -212,19 +278,21 @@
   .ownership {
     color: var(--text);
     font-weight: 700;
+    vertical-align: center;
+
+    & svg {
+      display: inline-block;
+      width: 0.75em;
+    }
   }
 
   .ignored svg {
-    stroke: var(--nord-7);
-    fill: var(--nord-7);
+    stroke: var(--color-primary);
+    fill: var(--color-primary);
   }
 
   .skill-icons {
     flex: 0 0 auto;
-  }
-
-  :root[data-theme="light"] .skill-icons:not(.as_printed) {
-    color: var(--palette-5);
   }
 
   .skill-icons.as_printed {
@@ -252,7 +320,7 @@
   }
 
   .listcard-wrapper.xs {
-    --card-spacing-y: 0.25em;
+    --card-spacing-y: 0.125em;
     --card-spacing-x: 0.25em;
     padding-inline: none;
   }
@@ -279,7 +347,7 @@
   }
 
   .listcard-wrapper.active {
-    outline: 1px solid var(--focus);
+    outline: 1px solid var(--color-focus);
     outline-offset: -1px;
   }
 

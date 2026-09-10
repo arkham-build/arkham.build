@@ -5,6 +5,9 @@ import v3Tov4 from "./migrations/0003-add-lists-setting";
 import v4Tov5 from "./migrations/0004-fix-investigator-default";
 import v5Tov6 from "./migrations/0005-add-view-mode";
 import v6Tov7 from "./migrations/0006-add-folders";
+import v7Tov8 from "./migrations/0007-patch-card-chapter";
+import v8Tov9 from "./migrations/0008-add-auth";
+import v9Tov10 from "./migrations/0009-remove-legacy-sync-sharing";
 
 export function migrate(
   persisted: Partial<StoreState>,
@@ -40,6 +43,21 @@ export function migrate(
   if (version < 7) {
     console.debug("[persist] migrate store: ", 7);
     v6Tov7(state, version);
+  }
+
+  if (version < 8) {
+    console.debug("[persist] migrate store: ", 8);
+    v7Tov8(state, version);
+  }
+
+  if (version < 9) {
+    console.debug("[persist] migrate store: ", 9);
+    v8Tov9(state, version);
+  }
+
+  if (version < 10) {
+    console.debug("[persist] migrate store: ", 10);
+    v9Tov10(state, version);
   }
 
   return state;

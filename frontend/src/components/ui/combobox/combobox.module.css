@@ -1,3 +1,8 @@
+.combobox {
+  min-width: 0;
+  position: relative;
+}
+
 .combobox > :not(:global(.sr-only)) + :not(:global(.sr-only)) {
   margin-top: 0.25rem;
 }
@@ -12,12 +17,15 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  min-width: 0;
   position: relative;
 }
 
 .control-input {
   flex: 1 1 100%;
+  min-width: 0;
   padding-right: 1.25rem;
+  width: 100%;
 }
 
 .control-indicator {
@@ -27,12 +35,12 @@
   width: 0.75rem;
   height: 0.75rem;
   transform: translateY(-50%);
-  color: var(--palette-three-point-five);
+  color: var(--palette-4);
   pointer-events: none;
 }
 
 .control-row:hover .control-indicator {
-  color: var(--palette-4);
+  color: var(--palette-5);
 }
 
 .control-row:focus-within .control-indicator {
@@ -57,6 +65,7 @@
   padding: 0;
   margin: 0;
   overflow: hidden;
+  z-index: 2;
 }
 
 .menu-viewport {
@@ -64,6 +73,12 @@
   grid-template-rows: min-content;
   height: min(min(calc(var(--viewport-item-count) * 3.875rem), 15.5rem), 40dvh);
   overflow-y: auto;
+}
+
+.menu-empty {
+  color: var(--palette-5);
+  font-size: var(--text-sm);
+  padding: 0.75rem;
 }
 
 .menu-item {
@@ -75,6 +90,17 @@
   position: relative;
   font-size: var(--text-sm);
   padding: 0 0 0 2rem;
+  white-space: normal;
+
+  &,
+  & > * {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  & > :where(svg, i) {
+    flex: 0 0 auto;
+  }
 
   &.active {
     background-color: var(--palette-1);
@@ -98,7 +124,19 @@
   align-items: center;
   gap: 0.25rem;
   flex-flow: row wrap;
+  min-width: 0;
   width: 100%;
   list-style: none;
   padding: 0;
+}
+
+.results > * {
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.result-remove {
+  flex: 0 0 auto;
 }

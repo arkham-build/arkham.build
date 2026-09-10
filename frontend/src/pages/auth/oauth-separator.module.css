@@ -1,0 +1,30 @@
+.separator {
+  text-align: center;
+  overflow: hidden;
+  padding-block: 0.5rem;
+}
+
+.separator span {
+  display: inline-block;
+  position: relative;
+  padding-inline: 0.75rem;
+}
+
+.separator span::before,
+.separator span::after {
+  content: "";
+  position: absolute;
+  border-top: 1px solid var(--palette-2);
+  width: 50dvw;
+  z-index: 1;
+}
+
+.separator span::before {
+  top: 50%;
+  right: 100%;
+}
+
+.separator span::after {
+  top: 50%;
+  left: 100%;
+}

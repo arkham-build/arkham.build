@@ -5,11 +5,13 @@ import type { Metadata, MetadataSlice } from "./metadata.types";
 export function getInitialMetadata(): Metadata {
   return {
     dataVersion: undefined,
+    campaigns: {},
     cards: {},
     cycles: {},
     encounterSets: {},
     packs: {},
     factions: {},
+    scenarios: {},
     subtypes: {},
     types: {},
     tabooSets: {},

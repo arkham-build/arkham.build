@@ -28,7 +28,7 @@
 }
 
 .main {
-  max-width: 52rem;
+  max-width: 56rem;
   margin-inline: auto;
   container-type: inline-size;
   padding-bottom: 1rem;
@@ -107,7 +107,28 @@
 
 .card-set-nav-title h3 * {
   margin: 0.5rem;
-  vertical-align: middle;
+  vertical-align: baseline;
+}
+
+.printings-group + .printings-group {
+  border-top: 1px dotted var(--palette-2);
+}
+
+.printings-groups > * + * {
+  margin-top: 0.75rem;
+}
+
+.printings-group > * + * {
+  margin-top: 0.5rem;
+}
+
+.printings-chapter-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 1;
+  font-family: var(--font-family-ui);
+  color: var(--palette-4);
+  margin-block: 0.25rem;
 }
 
 .printings {

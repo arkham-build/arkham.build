@@ -47,8 +47,6 @@ export function CustomizationUpgradeCard(props: Props) {
   );
   const htmlText = customizationText?.[optionIndex] ?? "";
 
-  const sharing = useStore((state) => state.sharing);
-
   // Check if a copy of the card will be added to the deck
   const willAddCardCopy = useMemo(() => {
     if (!draft) return false;
@@ -104,7 +102,6 @@ export function CustomizationUpgradeCard(props: Props) {
       {
         lookupTables,
         metadata,
-        sharing,
       },
       collator,
       tempDeck,
@@ -119,7 +116,6 @@ export function CustomizationUpgradeCard(props: Props) {
     lookupTables,
     metadata,
     collator,
-    sharing,
   ]);
 
   // Use the actual XP for this option (not the max) for checkbox spacing
@@ -184,7 +180,7 @@ export function CustomizationUpgradeCard(props: Props) {
         <div className={css["content"]}>
           {htmlText && (
             <p
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is from trusted source.
+              // oxlint-disable-next-line react/no-danger -- HTML is from trusted source.
               dangerouslySetInnerHTML={{
                 __html: parseCustomizationTextHtml(htmlText),
               }}

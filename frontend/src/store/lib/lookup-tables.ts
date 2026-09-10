@@ -1,4 +1,8 @@
-import type { Card } from "@arkham-build/shared";
+import {
+  type Card,
+  countExperience,
+  type Settings,
+} from "@arkham-build/shared";
 import { applyTaboo } from "@/store/lib/card-edits";
 import { cardUses, splitMultiValue } from "@/utils/card-utils";
 import {
@@ -10,13 +14,12 @@ import {
 import { time, timeEnd } from "@/utils/time";
 import { selectSettingsTabooId } from "../selectors/shared";
 import type { Metadata } from "../slices/metadata.types";
-import type { SettingsState } from "../slices/settings.types";
+import { filterPlayerCards } from "./filtering";
 import type { LookupTable, LookupTables } from "./lookup-tables.types";
 
 function getInitialLookupTables(): LookupTables {
   return {
     actions: {},
-    encounterCode: {},
     level: {},
     packsByCycle: {},
     properties: {
@@ -35,6 +38,7 @@ function getInitialLookupTables(): LookupTables {
       otherVersions: {},
       parallel: {},
       parallelCards: {},
+      sideDeckRequiredCards: {},
       replacement: {},
       reprints: {},
       requiredCards: {},
@@ -42,6 +46,7 @@ function getInitialLookupTables(): LookupTables {
     },
     encounterCodesByPack: {},
     reprintPacksByPack: {},
+    scenarioCodesByEncounterSet: {},
     skillBoosts: {},
     subtypeCode: {},
     traits: {},
@@ -50,10 +55,7 @@ function getInitialLookupTables(): LookupTables {
   };
 }
 
-export function createLookupTables(
-  metadata: Metadata,
-  settings: SettingsState,
-) {
+export function createLookupTables(metadata: Metadata, settings: Settings) {
   time("refresh_lookup_tables");
   const lookupTables = getInitialLookupTables();
 
@@ -68,6 +70,7 @@ export function createLookupTables(
 
   createRelations(metadata, lookupTables);
   addPacksToLookupTables(metadata, lookupTables);
+  addScenariosToLookupTables(metadata, lookupTables);
 
   timeEnd("refresh_lookup_tables");
 
@@ -102,8 +105,6 @@ function addCardToLookupTables(tables: LookupTables, card: Card) {
       indexBySkillBoosts(tables, card);
       indexByUses(tables, card);
     }
-  } else {
-    // TODO: add enemy filters.
   }
 }
 
@@ -115,7 +116,6 @@ function indexByCodes(tables: LookupTables, card: Card) {
   }
 
   if (card.encounter_code) {
-    setInLookupTable(card.code, tables.encounterCode, card.encounter_code);
     setInLookupTable(
       card.encounter_code,
       tables.encounterCodesByPack,
@@ -200,6 +200,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
 
   const investigatorsByName: Record<string, string[]> = {};
   const canonicalInvestigatorCodes = new Set<string>();
+  const requiredCardCodes = new Set<string>();
 
   // first pass: identify target cards.
   for (const card of cards) {
@@ -207,7 +208,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
       const upgrade = {
         code: card.code,
         subname: card.real_subname,
-        xp: card.xp,
+        xp: countExperience(card, 1),
       };
 
       if (!upgrades[card.real_name]) {
@@ -224,6 +225,10 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
       } else {
         bonded[bondedMatch[1]].push(card.code);
       }
+      // Fan-made cards can bond by <bonded_to>
+    } else if (!card.official && card.bonded_to) {
+      bonded[card.bonded_to] ??= [];
+      bonded[card.bonded_to].push(card.code);
     }
 
     if (card.back_link_id) {
@@ -236,11 +241,19 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
       !card.duplicate_of_code &&
       !card.alt_art_investigator &&
       !card.alternate_of_code &&
-      !card.encounter_code
+      filterPlayerCards(card)
     ) {
       investigatorsByName[card.real_name] ??= [];
       investigatorsByName[card.real_name].push(card.code);
       canonicalInvestigatorCodes.add(card.code);
+    }
+
+    for (const code of Object.keys(card.deck_requirements?.card ?? {})) {
+      requiredCardCodes.add(code);
+    }
+
+    for (const code of Object.keys(card.side_deck_requirements?.card ?? {})) {
+      requiredCardCodes.add(code);
     }
   }
 
@@ -249,6 +262,16 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
     if (card.deck_requirements?.card) {
       for (const code of Object.keys(card.deck_requirements.card)) {
         setInLookupTable(code, tables.relations.requiredCards, card.code);
+      }
+    }
+
+    if (card.side_deck_requirements?.card) {
+      for (const code of Object.keys(card.side_deck_requirements.card)) {
+        setInLookupTable(
+          code,
+          tables.relations.sideDeckRequiredCards,
+          card.code,
+        );
       }
     }
 
@@ -273,9 +296,15 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
         } else if (card.real_text?.includes("Replacement.")) {
           setInLookupTable(card.code, tables.relations.replacement, key);
         } else {
-          if (card.parallel) {
+          if (card.parallel && !requiredCardCodes.has(card.code)) {
             setInLookupTable(card.code, tables.relations.parallelCards, key);
+          } else if (
+            !requiredCardCodes.has(card.code) &&
+            !card.duplicate_of_code &&
             // Kate has bonded cards restricted to her, these should not be part of the deck.
+            card.deck_limit
+          ) {
+            setInLookupTable(card.code, tables.relations.requiredCards, key);
           }
         }
       }
@@ -469,7 +498,7 @@ function addPacksToLookupTables(
   const packs = Object.values(metadata.packs);
 
   for (const pack of packs) {
-    if (pack.reprint && pack.reprint.type !== "rcore") {
+    if (pack.reprint_type && pack.reprint_type !== "rcore") {
       reprintsByCycleCode[pack.cycle_code] ??= [];
       reprintsByCycleCode[pack.cycle_code].push(pack.code);
     }
@@ -484,14 +513,14 @@ function addPacksToLookupTables(
       for (const reprintPackCode of reprintsByCycleCode[pack.cycle_code]) {
         const reprintPack = metadata.packs[reprintPackCode];
 
-        if (!pack.reprint && reprintPackCode !== pack.code) {
+        if (!pack.reprint_type && reprintPackCode !== pack.code) {
           setInLookupTable(
             reprintPackCode,
             lookupTables.reprintPacksByPack,
             pack.code,
           );
 
-          if (reprintPack.reprint?.type !== "player") {
+          if (reprintPack.reprint_type !== "player") {
             lookupTables.encounterCodesByPack[reprintPackCode] = {
               ...lookupTables.encounterCodesByPack[reprintPackCode],
               ...lookupTables.encounterCodesByPack[pack.code],
@@ -499,6 +528,21 @@ function addPacksToLookupTables(
           }
         }
       }
+    }
+  }
+}
+
+function addScenariosToLookupTables(
+  metadata: Metadata,
+  lookupTables: LookupTables,
+) {
+  for (const scenario of Object.values(metadata.scenarios)) {
+    for (const { code } of scenario.encounter_sets) {
+      setInLookupTable(
+        scenario.code,
+        lookupTables.scenarioCodesByEncounterSet,
+        code,
+      );
     }
   }
 }

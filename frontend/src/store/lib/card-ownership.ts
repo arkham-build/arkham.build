@@ -1,13 +1,16 @@
-import type { Card } from "@arkham-build/shared";
-import { SPECIAL_CARD_CODES } from "@/utils/constants";
+import {
+  type Card,
+  type Collection,
+  SPECIAL_CARD_CODES,
+} from "@arkham-build/shared";
 import type { Metadata } from "../slices/metadata.types";
 import type { LookupTables } from "./lookup-tables.types";
 
 export type CardOwnershipOptions = {
   card: Card;
-  metadata: Metadata;
+  collection: Collection;
   lookupTables: LookupTables;
-  collection: Record<string, number | boolean>;
+  metadata: Metadata;
   showAllCards?: boolean;
   strict?: boolean;
 };
@@ -59,8 +62,17 @@ export function ownedCardCount(options: CardOwnershipOptions) {
 
   for (const code of Object.keys(duplicates ?? {})) {
     const duplicate = metadata.cards[code];
+
+    if (!duplicate) {
+      continue;
+    }
+
     const packCode = duplicate.pack_code;
-    if (packCode && collection[packCode]) quantityOwned += duplicate.quantity;
+    if (packCode && collection[packCode]) {
+      const packsOwned =
+        typeof collection[packCode] === "number" ? collection[packCode] : 1;
+      quantityOwned += packsOwned * duplicate.quantity;
+    }
   }
 
   return quantityOwned;

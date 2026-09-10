@@ -8,7 +8,7 @@ import {
   sideways,
 } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
-import { CardScan } from "../card-scan";
+import { CardScan, type CardScanActionSlot } from "../card-scan";
 import { CardThumbnail } from "../card-thumbnail";
 import css from "./card.module.css";
 import { CardDetails } from "./card-details";
@@ -21,10 +21,20 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   card: ResolvedCard["card"];
   ignoreTaboo?: boolean;
   size: "compact" | "tooltip" | "full";
+  slotScanActions?: CardScanActionSlot;
+  titleLinks?: "card" | "card-modal" | "dialog";
 }
 
 export function CardBack(props: Props) {
-  const { className, card, ignoreTaboo, size, ...rest } = props;
+  const {
+    className,
+    card,
+    ignoreTaboo,
+    size,
+    slotScanActions,
+    titleLinks,
+    ...rest
+  } = props;
 
   const { t } = useTranslation();
 
@@ -64,7 +74,7 @@ export function CardBack(props: Props) {
       data-testid="card-back"
       {...rest}
     >
-      {hasHeader && <CardHeader card={backCard} />}
+      {hasHeader && <CardHeader card={backCard} titleLinks={titleLinks} />}
 
       {card.type_code !== "investigator" && (
         <div className={css["pre"]}>
@@ -90,6 +100,7 @@ export function CardBack(props: Props) {
               suffix="b"
               onFlip={onFlip}
               ignoreTaboo={ignoreTaboo}
+              leftActionSlot={slotScanActions}
             />
           </div>
         ) : (

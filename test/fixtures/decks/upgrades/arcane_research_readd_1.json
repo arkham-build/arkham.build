@@ -1,0 +1,30 @@
+{
+  "id": "issue331-before",
+  "date_creation": "2025-12-15T07:32:00.000Z",
+  "date_update": "2025-12-15T07:33:16.000Z",
+  "description_md": "",
+  "meta": "{}",
+  "ignoreDeckLimitSlots": {},
+  "sideSlots": {},
+  "next_deck": null,
+  "previous_deck": null,
+  "tags": "",
+  "version": "0.1",
+  "taboo_id": 9,
+  "xp": null,
+  "xp_spent": null,
+  "exile_string": null,
+  "xp_adjustment": null,
+  "investigator_code": "01004",
+  "investigator_name": "Agnes Baker",
+  "name": "Issue 331",
+  "slots": {
+    "08101": 1,
+    "10092": 1,
+    "01000": 1,
+    "01012": 1,
+    "01013": 1,
+    "04109": 2
+  },
+  "problem": "too_few_cards"
+}

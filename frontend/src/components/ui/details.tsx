@@ -5,8 +5,10 @@ import { Button } from "./button";
 import css from "./details.module.css";
 import { Scroller } from "./scroller";
 
-interface Props
-  extends Omit<React.DetailsHTMLAttributes<HTMLDetailsElement>, "title"> {
+interface Props extends Omit<
+  React.DetailsHTMLAttributes<HTMLDetailsElement>,
+  "title"
+> {
   children: React.ReactNode;
   iconClosed: React.ReactNode;
   onOpenChange?: (open: boolean) => void;
@@ -37,13 +39,14 @@ export function Details(props: Props) {
         data-testid="details-toggle"
         as="summary"
         onClick={() => setOpen((p) => !p)}
-        size="full"
+        full
       >
         {open ? <ChevronUpIcon /> : iconClosed} {title}
       </Button>
 
       {scrollHeight ? (
         <Scroller
+          padded
           data-testid="details-content"
           className={cx(css["details-content"], css["scrollable"])}
           style={cssVariables as React.CSSProperties}

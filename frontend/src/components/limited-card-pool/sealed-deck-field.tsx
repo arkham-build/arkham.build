@@ -54,21 +54,20 @@ export function SealedDeckField(props: {
         });
       }
     },
-    [onValueChange, toast.show],
+    [onValueChange, toast],
   );
 
   return (
     <Field
       data-testid="sealed-deck-field"
       full
-      padded
       helpText={
         <Trans
           t={t}
           i18nKey="deck_edit.config.sealed.help"
           components={{
             a: (
-              // biome-ignore lint/a11y/useAnchorContent: interpolation.
+              // oxlint-disable-next-line jsx-a11y/anchor-has-content -- interpolation.
               <a
                 href="https://www.arkhamsealed.com/"
                 target="_blank"

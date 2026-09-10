@@ -1,6 +1,6 @@
 {
   "name": "arkham-build-monorepo",
-  "version": "3.8.0",
+  "version": "4.1.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -11,24 +11,35 @@
     "frontend",
     "shared"
   ],
+  "overrides": {
+    "@reduxjs/toolkit": "2.10.1"
+  },
   "scripts": {
-    "fmt": "biome check --write",
-    "lint": "biome check",
+    "dev:functions": "wrangler pages dev",
+    "fmt": "oxlint --fix . && oxfmt --write .",
+    "lint": "oxlint --deny-warnings --report-unused-disable-directives . && oxfmt --check .",
     "prepare:e2e": "playwright install --with-deps",
     "test:e2e": "playwright test --config test/e2e/playwright.config.ts",
+    "test:fullstack": "playwright test --config test/fullstack/playwright.config.ts",
+    "test:fullstack:docker": "bash -lc 'set -e; compose=\"docker compose -f test/fullstack/docker-compose.yml\"; trap \"$compose down\" EXIT; $compose up --build --wait -d postgres mailcrab arkhamdb || { $compose logs arkhamdb-init; exit 1; }; $compose run --rm runner'",
+    "test:fullstack:ci": "CI=1 playwright test --config test/fullstack/playwright.config.ts",
     "update-snapshots:local": "PW_TEST_HTML_REPORT_OPEN='never' playwright test --config test/e2e/playwright.config.ts --update-snapshots",
-    "update-snapshots:docker": "docker run -it --rm --ipc=host -v .:/work/ mcr.microsoft.com/playwright:v1.57.0 /bin/bash -c 'cd /work && npm i && PW_TEST_HTML_REPORT_OPEN=never npx playwright test --config test/e2e/playwright.config.ts --update-snapshots'"
+    "update-snapshots:docker": "docker run -it --rm --ipc=host -v .:/work/ mcr.microsoft.com/playwright:v1.60.0 /bin/bash -c 'cd /work && npm i && PW_TEST_HTML_REPORT_OPEN=never npx playwright test --config test/e2e/playwright.config.ts --update-snapshots'"
   },
   "dependencies": {
+    "marked": "17.0.3",
     "zod": "4.2.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.10",
-    "@playwright/test": "1.57.0",
-    "@types/node": "24.10.4",
-    "@vitest/coverage-v8": "4.0.16",
-    "lefthook": "2.0.12",
+    "@playwright/test": "1.60.0",
+    "@types/node": "24.10.15",
+    "@vitest/coverage-v8": "4.1.3",
+    "lefthook": "2.1.1",
+    "oxfmt": "0.58.0",
+    "oxlint": "1.73.0",
+    "oxlint-tsgolint": "0.24.0",
     "typescript": "5.9.3",
-    "vitest": "4.0.16"
+    "vitest": "4.1.3",
+    "wrangler": "4.123.0"
   }
 }

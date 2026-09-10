@@ -15,6 +15,7 @@ export type ChartableData<T extends string | number = number> = {
 export function emptyDeckCharts(): DeckCharts {
   return {
     costCurve: new Map(),
+    costs: [],
     skillIcons: new Map(SKILL_KEYS.map((skill) => [`skill_${skill}`, 0])),
     factions: new Map(FACTION_ORDER.map((faction) => [faction, 0] as const)),
     traits: new Map(),
@@ -27,11 +28,17 @@ export function addCardToDeckCharts(
   accumulator: DeckCharts,
 ) {
   // Cost curve
-  if (typeof card.cost === "number" && card.cost >= 0) {
-    // Group very high cost cards together
-    const normalizedCost = card.cost >= 7 ? 7 : card.cost;
-    const entry = accumulator.costCurve.get(normalizedCost) ?? 0;
-    accumulator.costCurve.set(normalizedCost, entry + quantity);
+  if (typeof card.cost === "number") {
+    for (let i = 0; i < quantity; i += 1) {
+      accumulator.costs.push(card.cost);
+    }
+
+    if (card.cost >= 0) {
+      // Group very high cost cards together
+      const normalizedCost = card.cost >= 7 ? 7 : card.cost;
+      const entry = accumulator.costCurve.get(normalizedCost) ?? 0;
+      accumulator.costCurve.set(normalizedCost, entry + quantity);
+    }
   }
 
   // Skill icons

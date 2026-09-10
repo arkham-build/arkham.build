@@ -14,8 +14,12 @@
   gap: 0.375rem;
   width: 100%;
   min-width: 12rem;
+  max-width: 20rem;
   justify-content: flex-start;
+  overflow: hidden;
+}
 
+.dropdown-button {
   & > * {
     text-align: left;
     justify-content: flex-start;

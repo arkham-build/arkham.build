@@ -1,38 +1,58 @@
-import { SettingsIcon } from "lucide-react";
+import {
+  BookOpenTextIcon,
+  BookTextIcon,
+  KeyboardIcon,
+  LogOutIcon,
+  MenuIcon,
+  RefreshCwIcon,
+  SettingsIcon,
+  UserIcon,
+} from "lucide-react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
+import {
+  useAccountSyncMutation,
+  useLogoutMutation,
+} from "@/queries/mutations/auth";
+import { useStore } from "@/store";
+import { selectSession } from "@/store/selectors/auth";
+import { selectAccountSyncStatus } from "@/store/selectors/sync";
+import type { SyncStatus } from "@/store/slices/sync.types";
 import { cx } from "@/utils/cx";
-import { HelpMenu } from "./help-menu";
+import { useMedia } from "@/utils/use-media";
 import { Logo } from "./icons/logo";
 import { LocaleQuickSwitch } from "./locale-quick-switch";
 import css from "./masthead.module.css";
-import { SyncStatus } from "./sync-status";
 import { Button } from "./ui/button";
+import { DropdownButton, DropdownItem, DropdownMenu } from "./ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { StatusBubble } from "./ui/status-bubble";
+import { Avatar } from "./user-account/avatar";
 
 type Props = {
   className?: string;
   children?: React.ReactNode;
   slotRight?: React.ReactNode;
-  hideSyncStatus?: boolean;
+  navSlot?: React.ReactNode;
   hideLocaleSwitch?: boolean;
-  hideSettings?: boolean;
   invert?: boolean;
 };
 
+type MastheadSection = "browse" | "decklists" | "rules" | "settings";
+
 export function Masthead(props: Props) {
-  const {
-    children,
-    className,
-    hideLocaleSwitch,
-    hideSettings,
-    hideSyncStatus,
-    invert,
-    slotRight,
-  } = props;
+  const { children, className, hideLocaleSwitch, invert, navSlot, slotRight } =
+    props;
 
   const { t } = useTranslation();
 
   const [location] = useLocation();
+
+  const session = useStore(selectSession);
+  const collapseNav = useMedia("(max-width: 52rem)");
+  const isAuthPage =
+    location.startsWith("/auth") || location.includes("/account-migration");
 
   return (
     <header
@@ -42,37 +62,376 @@ export function Masthead(props: Props) {
       <div className={css["left"]}>
         <Link className={css["logo"]} href="~/" data-testid="masthead-logo">
           <Logo />
-          <span className={css["logo-name"]}>
-            {import.meta.env.VITE_PAGE_NAME}
-          </span>
+          <span className="sr-only">{import.meta.env.VITE_PAGE_NAME}</span>
         </Link>
+        {!collapseNav && !isAuthPage && (
+          <MastheadNav location={location} navSlot={navSlot} />
+        )}
         {children}
       </div>
       <nav className={css["right"]}>
         {slotRight}
-        {location !== "/settings" && (
+        {!isAuthPage && (
           <>
-            {!hideSyncStatus && <SyncStatus />}
-            {!hideLocaleSwitch && <LocaleQuickSwitch />}
-            {!hideSettings && (
-              <Link asChild href="~/settings">
-                <Button
-                  as="a"
-                  className={css["settings"]}
-                  data-testid="masthead-settings"
-                  iconOnly
-                  size="lg"
-                  tooltip={t("settings.title")}
-                  variant="bare"
-                >
-                  <SettingsIcon />
+            {!session && (
+              <Link asChild href="~/auth/login">
+                <Button as="a" size="sm" variant="primary">
+                  {t("auth.login.action")}
                 </Button>
               </Link>
             )}
+            <NavLink
+              className={css["icon-link"]}
+              href="~/settings"
+              iconOnly
+              location={location}
+              section="settings"
+              testId="masthead-settings"
+              tooltip={t("settings.title")}
+            >
+              <SettingsIcon />
+            </NavLink>
+            <AccountMenu
+              collapseNav={collapseNav}
+              hideLocaleSwitch={hideLocaleSwitch}
+              location={location}
+            />
           </>
         )}
-        <HelpMenu />
       </nav>
     </header>
   );
+}
+
+function MastheadNav(props: { location: string; navSlot?: React.ReactNode }) {
+  const { location, navSlot } = props;
+  const { t } = useTranslation();
+
+  return (
+    <nav className={css["nav"]} aria-label={t("masthead.navigation")}>
+      <NavLink
+        className={css["nav-link"]}
+        href="~/browse"
+        location={location}
+        section="browse"
+        testId="masthead-browse"
+      >
+        <i className="icon-card-outline-bold" />
+        {t("masthead.browse")}
+      </NavLink>
+      <NavLink
+        className={css["nav-link"]}
+        href="~/decklists"
+        location={location}
+        section="decklists"
+        testId="masthead-deck-guides"
+      >
+        <BookTextIcon />
+        {t("decklists.browse.title")}
+      </NavLink>
+      <NavLink
+        className={css["nav-link"]}
+        href="~/rules"
+        location={location}
+        section="rules"
+        testId="masthead-rules"
+      >
+        <BookOpenTextIcon />
+        {t("masthead.rules")}
+      </NavLink>
+      {navSlot}
+    </nav>
+  );
+}
+
+function NavLink(props: {
+  children: React.ReactNode;
+  className?: string;
+  href: string;
+  iconOnly?: boolean;
+  location: string;
+  section: MastheadSection;
+  testId: string;
+  tooltip?: React.ReactNode;
+}) {
+  const {
+    children,
+    className,
+    href,
+    iconOnly,
+    location,
+    section,
+    testId,
+    tooltip,
+  } = props;
+  const active = isMastheadPathActive(location, section);
+
+  return (
+    <Link asChild href={href}>
+      <Button
+        as="a"
+        aria-current={active ? "page" : undefined}
+        className={cx(className, active && css["active"])}
+        data-testid={testId}
+        iconOnly={iconOnly}
+        size={iconOnly ? undefined : "sm"}
+        tooltip={tooltip}
+        variant="bare"
+      >
+        {children}
+      </Button>
+    </Link>
+  );
+}
+
+function NavDropdownLink(props: {
+  children: React.ReactNode;
+  href: string;
+  location: string;
+  section: MastheadSection;
+  testId: string;
+}) {
+  const { children, href, location, section, testId } = props;
+  const active = isMastheadPathActive(location, section);
+
+  return (
+    <Link asChild href={href}>
+      <DropdownButton
+        as="a"
+        aria-current={active ? "page" : undefined}
+        className={active ? css["menu-link-active"] : undefined}
+        data-testid={testId}
+      >
+        {children}
+      </DropdownButton>
+    </Link>
+  );
+}
+
+function AccountMenu(props: {
+  collapseNav: boolean;
+  hideLocaleSwitch?: boolean;
+  location: string;
+}) {
+  const { collapseNav, hideLocaleSwitch, location } = props;
+  const { t } = useTranslation();
+  const session = useStore(selectSession);
+  const toggleKeyboardShortcuts = useStore(
+    (state) => state.toggleKeyboardShortcuts,
+  );
+  const syncStatus = useAccountSyncStatus();
+  const isSyncPending = isPendingSyncStatus(syncStatus);
+  const onSyncAccount = useAccountSyncAction();
+
+  const logoutMutation = useLogoutMutation();
+
+  const actionNodes = (
+    <>
+      {!hideLocaleSwitch && (
+        <>
+          <DropdownItem>
+            <LocaleQuickSwitch fullWidth portal={false} />
+          </DropdownItem>
+          <hr />
+        </>
+      )}
+      {session && (
+        <>
+          <DropdownItem>
+            <p className={css["logged-in-as"]}>
+              {t("auth.menu.logged_in_as", {
+                name: session.account.name,
+              })}
+            </p>
+          </DropdownItem>
+          <Link asChild href="~/settings?tab=account">
+            <DropdownButton as="a" data-testid="masthead-account">
+              <UserIcon />
+              {t("settings.account.title")}
+            </DropdownButton>
+          </Link>
+          <DropdownButton
+            data-testid="masthead-account-sync"
+            disabled={isSyncPending || logoutMutation.isPending}
+            onClick={onSyncAccount}
+          >
+            <RefreshCwIcon />
+            {t("auth.menu.sync_account")}
+          </DropdownButton>
+          {isProblemSyncStatus(syncStatus) && (
+            <DropdownItem>
+              <p className={css["sync-status"]}>
+                {t(`auth.menu.sync_status.${syncStatus}`)}
+              </p>
+            </DropdownItem>
+          )}
+          <hr />
+        </>
+      )}
+      {collapseNav && (
+        <>
+          <NavDropdownLink
+            href="~/browse"
+            location={location}
+            section="browse"
+            testId="masthead-browse"
+          >
+            <i className="icon-card-outline-bold" />
+            {t("masthead.browse")}
+          </NavDropdownLink>
+          <NavDropdownLink
+            href="~/decklists"
+            location={location}
+            section="decklists"
+            testId="masthead-deck-guides"
+          >
+            <BookTextIcon />
+            {t("decklists.browse.title")}
+          </NavDropdownLink>
+          <NavDropdownLink
+            href="~/rules"
+            location={location}
+            section="rules"
+            testId="masthead-rules"
+          >
+            <BookOpenTextIcon />
+            {t("masthead.rules")}
+          </NavDropdownLink>
+          <hr />
+        </>
+      )}
+      <DropdownButton
+        className={css["action-shortcuts"]}
+        hotkey="?"
+        onClick={toggleKeyboardShortcuts}
+      >
+        <KeyboardIcon /> {t("help.shortcuts.title")}
+      </DropdownButton>
+      <hr />
+      <Link asChild href="~/about">
+        <DropdownButton
+          as="a"
+          className={css["about"]}
+          data-testid="masthead-about"
+        >
+          {t("help.about")}
+        </DropdownButton>
+      </Link>
+      <Link asChild href="~/terms">
+        <DropdownButton as="a" data-testid="masthead-terms">
+          {t("footer.terms")}
+        </DropdownButton>
+      </Link>
+      <Link asChild href="~/privacy">
+        <DropdownButton as="a" data-testid="masthead-privacy">
+          {t("footer.privacy")}
+        </DropdownButton>
+      </Link>
+      <Link asChild href="~/legal-notice">
+        <DropdownButton as="a" data-testid="masthead-legal-notice">
+          {t("footer.legal_notice")}
+        </DropdownButton>
+      </Link>
+    </>
+  );
+
+  return (
+    <Popover>
+      {session ? (
+        <PopoverTrigger asChild>
+          <Button
+            data-testid="masthead-account-menu"
+            variant="bare"
+            iconOnly
+            size="none"
+          >
+            <Avatar account={session.account}>
+              <StatusBubble
+                data-sync-status={syncStatus}
+                data-testid="masthead-account-sync-status"
+                variant={syncStatusToBubbleVariant(syncStatus)}
+              />
+            </Avatar>
+          </Button>
+        </PopoverTrigger>
+      ) : (
+        <PopoverTrigger asChild>
+          <Button variant="bare" iconOnly>
+            <MenuIcon />
+          </Button>
+        </PopoverTrigger>
+      )}
+      <PopoverContent>
+        <DropdownMenu>
+          {actionNodes}
+          {session && (
+            <>
+              <hr />
+              <DropdownButton
+                disabled={logoutMutation.isPending}
+                onClick={() => logoutMutation.mutate()}
+              >
+                <LogOutIcon />
+                {t("auth.logout")}
+              </DropdownButton>
+            </>
+          )}
+        </DropdownMenu>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function isMastheadPathActive(
+  location: string,
+  section: "browse" | "decklists" | "rules" | "settings",
+) {
+  switch (section) {
+    case "browse":
+      return location.startsWith("/browse");
+    case "decklists":
+      return location.startsWith("/decklists");
+    case "rules":
+      return location.startsWith("/rules");
+    case "settings":
+      return location.startsWith("/settings");
+  }
+}
+
+function useAccountSyncStatus(): SyncStatus {
+  return useStore(selectAccountSyncStatus);
+}
+
+function isProblemSyncStatus(status: SyncStatus) {
+  return status === "conflict" || status === "error" || status === "partial";
+}
+
+function syncStatusToBubbleVariant(
+  status: SyncStatus,
+): React.ComponentProps<typeof StatusBubble>["variant"] {
+  switch (status) {
+    case "conflict":
+    case "partial":
+      return "warning";
+    case "error":
+      return "error";
+    case "loading":
+    case "saving":
+      return "loading";
+    case "idle":
+    case "synced":
+      return "success";
+  }
+}
+
+function isPendingSyncStatus(status: SyncStatus) {
+  return status === "loading" || status === "saving";
+}
+
+function useAccountSyncAction() {
+  const { mutateAsync } = useAccountSyncMutation();
+
+  return useCallback(() => {
+    void mutateAsync({ forceArkhamdbSync: true }).catch(console.error);
+  }, [mutateAsync]);
 }

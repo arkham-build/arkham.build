@@ -89,6 +89,7 @@ export function DeckCardsFilter({ containerClass }: Props) {
     >
       <CardsCombobox
         autoFocus
+        omitFloatingPortal
         id="cards-deck-filter"
         items={playerCards}
         label={t("deck.cards")}

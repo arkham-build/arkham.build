@@ -8,15 +8,12 @@
   display: block;
 }
 
-.field.padded {
-  padding: 0.25rem;
-}
-
 .field.full > :where(input, select, textarea) {
   width: 100%;
 }
 
 .field.bordered {
+  background: var(--palette-point-five);
   border: 1px solid var(--palette-1);
   padding: 0.5rem;
 }

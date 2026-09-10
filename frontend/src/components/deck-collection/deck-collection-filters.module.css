@@ -26,11 +26,11 @@
 .filters-container {
   background: var(--palette-point-five);
   border: 1px solid var(--palette-1);
-  padding: 0.375rem;
+  padding-block: 0.375rem;
   box-shadow: var(--shadow-lg);
   border-radius: var(--rounded);
   max-height: 95dvh;
-  width: min(18rem, 95dvw);
+  width: min(21rem, 95dvw);
 }
 
 .expand-filters {
@@ -41,13 +41,9 @@
   position: absolute;
   width: 0.5rem;
   height: 0.5rem;
-  fill: var(--nord-8);
+  fill: var(--color-primary);
   stroke: none;
   top: 0.25rem;
   right: 0.25rem;
   z-index: 1;
-}
-
-:root[data-theme="light"] .active {
-  fill: var(--nord-10);
 }

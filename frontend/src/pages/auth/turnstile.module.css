@@ -1,0 +1,8 @@
+.widget {
+  position: relative;
+  background: var(--palette-1);
+}
+
+.widget.loading {
+  min-height: 4rem;
+}

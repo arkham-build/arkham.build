@@ -7,11 +7,12 @@ export function encodeSearch(params: Record<string, unknown>): URLSearchParams {
     if (value) {
       if (Array.isArray(value)) {
         value.forEach((v) => {
-          if (v) {
+          if (v != null) {
             searchParams.append(key, v.toString());
           }
         });
       } else {
+        // oxlint-disable-next-line typescript/no-base-to-string
         searchParams.append(key, String(value));
       }
     }

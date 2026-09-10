@@ -1,0 +1,31 @@
+name: "[Fullstack E2E] Smoke tests"
+
+on:
+  schedule:
+    - cron: "20 4 * * *"
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: Fullstack Smoke Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      E2E_PLAYWRIGHT_GREP: "@smoke"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: "package.json"
+      - run: |
+          if [ ! -d test/fullstack/arkhamdb-docker ]; then
+            git clone --depth 1 --recurse-submodules --shallow-submodules "$(git config --file .gitmodules --get submodule.test/fullstack/arkhamdb-docker.url)" test/fullstack/arkhamdb-docker
+          fi
+      - run: npm run test:fullstack:docker
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: playwright-report-fullstack-smoke
+          path: playwright-report/

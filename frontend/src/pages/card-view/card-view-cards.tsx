@@ -1,4 +1,4 @@
-import type { Card as CardType } from "@arkham-build/shared";
+import type { Card as CardType, Pack } from "@arkham-build/shared";
 import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Link, useSearchParams } from "wouter";
@@ -8,15 +8,16 @@ import {
   SpecialistAccess,
   SpecialistInvestigators,
 } from "@/components/card-modal/specialist";
+import { CardScenarios } from "@/components/card-scenarios/card-scenarios";
 import { CustomizationsEditor } from "@/components/customizations/customizations-editor";
 import PackIcon from "@/components/icons/pack-icon";
+import { OwnershipPartitionedCardList } from "@/components/ownership-partitioned-card-list";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store";
 import { filterBacksides } from "@/store/lib/filtering";
 import { getRelatedCards } from "@/store/lib/resolve-card";
 import { sortByPosition } from "@/store/lib/sorting";
 import type { CardWithRelations } from "@/store/lib/types";
-import type { Pack } from "@/store/schemas/pack.schema";
 import {
   selectLookupTables,
   selectMetadata,
@@ -30,10 +31,12 @@ import {
   oldFormatCardUrl,
   parseCardTitle,
 } from "@/utils/card-utils";
+import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { displayPackName, formatRelationTitle } from "@/utils/formatting";
 import { and } from "@/utils/fp";
 import { isEmpty } from "@/utils/is-empty";
+import { CardFaq } from "./card-faq";
 import css from "./card-view.module.css";
 
 type Props = {
@@ -74,13 +77,13 @@ function CardSetNav(props: { currentCard: CardWithRelations }) {
 
       if (reprintPackCodes) {
         const targetType = currentCard.card.encounter_code
-          ? "encounter"
+          ? "campaign"
           : "player";
 
         const reprint = Object.keys(reprintPackCodes).reduce(
           (acc, curr) => {
             const pack = metadata.packs[curr];
-            return pack.reprint?.type === targetType ? pack : acc;
+            return pack.reprint_type === targetType ? pack : acc;
           },
           undefined as Pack | undefined,
         );
@@ -107,19 +110,21 @@ function CardSetNav(props: { currentCard: CardWithRelations }) {
           and([
             filterBacksides,
             (card) => {
-              if (targetPack.reprint && targetPack.reprint?.type !== "rcore") {
-                const cardPack = metadata.packs[card.pack_code];
-
-                const cycleMatches =
-                  cardPack.cycle_code === targetPack.cycle_code;
-
-                const reprintTypeMatches =
-                  !!card.encounter_code === !!currentCard.card.encounter_code;
-
-                return cycleMatches && reprintTypeMatches;
+              const cardPack = metadata.packs[card.pack_code];
+              if (
+                CYCLES_WITH_STANDALONE_PACKS.includes(targetPack.cycle_code) ||
+                targetPack.reprint_type === "rcore"
+              ) {
+                return card.pack_code === targetPack.code;
               }
 
-              return card.pack_code === targetPack.code;
+              const cycleMatches =
+                cardPack.cycle_code === targetPack.cycle_code;
+
+              const reprintTypeMatches =
+                !!card.encounter_code === !!currentCard.card.encounter_code;
+
+              return cycleMatches && reprintTypeMatches;
             },
           ]),
         )
@@ -140,7 +145,7 @@ function CardSetNav(props: { currentCard: CardWithRelations }) {
     <div>
       <div className={css["card-set-nav-title"]}>
         <h3>
-          {<PackIcon code={targetPack.code} />}
+          <PackIcon code={targetPack.code} />
           {displayPackName(targetPack)}
         </h3>
       </div>
@@ -171,31 +176,30 @@ function CardSetLink(props: {
   const { shift, cardListIndex, filteredCards, oldFormat } = props;
 
   const targetCard = filteredCards[cardListIndex + shift];
+  if (!targetCard) return null;
 
-  if (targetCard) {
-    const url = oldFormat ? oldFormatCardUrl(targetCard) : cardUrl(targetCard);
+  const url = oldFormat ? oldFormatCardUrl(targetCard) : cardUrl(targetCard);
 
-    return (
-      <Link to={url} asChild>
-        <Button
-          className={cx(
-            css["card-set-button"],
-            shift < 0 ? css["prev"] : css["next"],
-          )}
-          as="a"
-        >
-          {shift < 0 && <ChevronsLeftIcon />}
-          <span
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted origin.
-            dangerouslySetInnerHTML={{
-              __html: parseCardTitle(displayAttribute(targetCard, "name")),
-            }}
-          />
-          {shift > 0 && <ChevronsRightIcon />}
-        </Button>
-      </Link>
-    );
-  }
+  return (
+    <Link to={url} asChild>
+      <Button
+        className={cx(
+          css["card-set-button"],
+          shift < 0 ? css["prev"] : css["next"],
+        )}
+        as="a"
+      >
+        {shift < 0 && <ChevronsLeftIcon />}
+        <span
+          // oxlint-disable-next-line react/no-danger -- trusted origin.
+          dangerouslySetInnerHTML={{
+            __html: parseCardTitle(displayAttribute(targetCard, "name")),
+          }}
+        />
+        {shift > 0 && <ChevronsRightIcon />}
+      </Button>
+    </Link>
+  );
 }
 
 export function CardViewCards({
@@ -203,13 +207,17 @@ export function CardViewCards({
 }: {
   cardWithRelations: CardWithRelations;
 }) {
-  const showFanMadeRelations = useStore(selectShowFanMadeRelations);
+  const showAllFanMadeRelations = useStore(selectShowFanMadeRelations);
   const settings = useStore((state) => state.settings);
-  const related = getRelatedCards(
-    cardWithRelations,
-    showFanMadeRelations,
-    settings.showPreviews,
-  );
+  const allowSameFanMadePackRelations = official(cardWithRelations.card)
+    ? undefined
+    : (card: CardType) =>
+        !official(card) && card.pack_code === cardWithRelations.card.pack_code;
+  const related = getRelatedCards(cardWithRelations, {
+    showAllFanMadeRelations,
+    showPreviews: settings.showPreviews,
+    fanMadeCardOverride: allowSameFanMadePackRelations,
+  });
 
   return (
     <>
@@ -222,28 +230,39 @@ export function CardViewCards({
         </Card>
       </div>
 
+      <CardFaq code={cardWithRelations.card.code} />
+
+      {cardWithRelations.card.encounter_code && (
+        <CardScenarios card={cardWithRelations.card} />
+      )}
+
       {official(cardWithRelations.card) && !cardWithRelations.card.preview && (
         <PopularDecks scope={cardWithRelations.card} />
       )}
 
       {!isEmpty(related) &&
-        related.map(([key, value]) => (
-          <CardViewSection key={key} id={key} title={formatRelationTitle(key)}>
-            {typeof value === "object" && !Array.isArray(value) && (
-              <Card resolvedCard={value} titleLinks="card" size="compact" />
-            )}
-            {Array.isArray(value) &&
-              value.map((c) => (
-                <Card
-                  canToggleBackside
-                  key={c.card.code}
-                  titleLinks="card"
-                  resolvedCard={c}
-                  size="compact"
-                />
-              ))}
-          </CardViewSection>
-        ))}
+        related.map(([key, value]) => {
+          return (
+            <CardViewSection
+              key={key}
+              id={key}
+              title={formatRelationTitle(key)}
+            >
+              <OwnershipPartitionedCardList
+                cards={value}
+                cardRenderer={(c) => (
+                  <Card
+                    canToggleBackside
+                    key={c.card.code}
+                    titleLinks="card"
+                    resolvedCard={c}
+                    size="compact"
+                  />
+                )}
+              />
+            </CardViewSection>
+          );
+        })}
 
       {cardWithRelations.card.type_code === "investigator" && (
         <CardViewSection title={formatRelationTitle("specialist")}>

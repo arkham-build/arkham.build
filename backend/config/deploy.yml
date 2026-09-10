@@ -7,31 +7,51 @@ x-postgres_env_clear: &postgres_env_clear
   POSTGRES_USER: postgres
   POSTGRES_PORT: 5432
 
+x-app_options: &app_options
+  read-only: true
+  init: true
+  cap-drop: ALL
+  security-opt:
+    - no-new-privileges:true
+  pids-limit: 256
+
 # Name of the container image.
 image: arkham-build/api.arkham.build
 
 # Deploy to these servers.
 servers:
   web:
-    - 51.222.159.112
-  cron:
     hosts:
-      - 51.222.159.112
-    cmd: sh -c "(env && cat config/crontab) | crontab - && crond -f -l 2"
+      - 159.195.14.203
     options:
-      memory: 1024m
+      <<: *app_options
+      memory: 2g
       cpus: 1
-      user: root
+      tmpfs:
+        - /tmp:rw,noexec,nosuid,nodev,size=64m
+  worker:
+    hosts:
+      - 159.195.14.203
+    cmd: node --experimental-strip-types src/worker.ts
+    options:
+      <<: *app_options
+      memory: 2g
+      cpus: 1
+      tmpfs:
+        - /tmp:rw,noexec,nosuid,nodev,size=1g
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 # Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
 #
-# Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
+# Note: If using Cloudflare, set encryption mode to "Full (strict)" so Cloudflare validates the app certificate.
 proxy:
   ssl: true
-  host: api-v2.arkham.build
+  host: api.arkham.build
   # Proxy connects to your container on port 80 by default.
   app_port: 3000
+  response_timeout: 100
+  healthcheck:
+    path: /admin/up
 
 # Credentials for your image host.
 registry:
@@ -55,20 +75,42 @@ builder:
 env:
   clear:
     <<: *postgres_env_clear
+    ARKHAMDB_BASE_URL: https://arkhamdb.com
+    ARKHAMDB_OAUTH_REDIRECT_URI: https://api.arkham.build/auth/callback
     CORS_ORIGINS: "https://arkham.build,*.arkham-build-prod.pages.dev,http://localhost:3000"
     DBMATE_MIGRATIONS_DIR: /app/backend/src/db/migrations
     DBMATE_SCHEMA_FILE: /app/backend/src/db/schema.sql
-    METADATA_LOCALES: "de,en,es,fr,it,ko,pl,ru,zh"
-    METADATA_VERSION: 8
+    INGEST_METADATA_REPO: arkham-build/arkhamlcg-metadata@main
+    INGEST_JSON_DATA_REPO: Kamalisk/arkhamdb-json-data@master
+    INGEST_TABOO_DATA_REPO: fspoettel/arkham-cards-data@master
+    LEGACY_API_BASE_URL: https://api-cf.arkham.build
+    METADATA_LOCALES: "de,en,es,fr,it,ko,pl,pt,ru,uk,zh,zh-cn"
     NODE_ENV: production
     PORT: 3000
     POSTGRES_HOST: api-arkham-build-db
+    FRONTEND_URL: https://arkham.build
+    FROM_EMAIL: accounts@arkham.build
+    FROM_NAME: arkham.build
+    SMTP_PORT: 465
+    SMTP_SECURE: true
   secret:
     - ADMIN_API_KEY
+    - ARKHAMDB_OAUTH_CLIENT_ID
+    - ARKHAMDB_OAUTH_CLIENT_SECRET
+    - CLOUDFLARE_API_TOKEN
+    - CLOUDFLARE_ZONE_ID
     - DATABASE_URL
     - INGEST_URL_ARKHAMDB_DECKLISTS
-    - INGEST_URL_METADATA
     - POSTGRES_PASSWORD
+    - SCANS_ACCESS_KEY_ID
+    - SCANS_BUCKET
+    - SCANS_ENDPOINT
+    - SCANS_SECRET_ACCESS_KEY
+    - SMTP_HOST
+    - SMTP_PASS
+    - SMTP_USER
+    - SESSION_SECRET
+    - TURNSTILE_SECRET_KEY
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal app logs -r job" will tail logs from the first server in the job section.
@@ -103,8 +145,7 @@ ssh:
 accessories:
   db:
     image: postgres:18-alpine
-    host: 51.222.159.112
-    port: 5432
+    host: 159.195.14.203
     env:
       clear:
         <<: *postgres_env_clear
@@ -120,7 +161,9 @@ logging:
     max-file: "3"
 
 aliases:
+  backup-db: server exec --primary "sudo /usr/local/bin/backup-api-arkham-build-postgres"
   console: app exec --interactive --reuse -r web "sh"
-  ingest: app exec --primary --reuse -r web "npm run ingest -w backend"
+  ingest: app exec --primary --reuse -r worker "npm run ingest"
+  ingest-json-data: app exec --primary --reuse -r worker "npm run ingest:json-data"
   logs: app logs --follow
-  db-console: accessory exec db --interactive --reuse "sh"
+  db-console: accessory exec db --interactive --reuse "psql -d api_arkham_build_production -U postgres"

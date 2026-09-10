@@ -1,20 +1,26 @@
+import type { Deck, Id, StorageProvider } from "@arkham-build/shared";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { useToast } from "@/components/ui/toast.hooks";
+import {
+  useDeleteDeckMutation,
+  useDeleteUpgradeMutation,
+  useDuplicateDeckMutation,
+  useUploadDeckToProviderMutation,
+} from "@/queries/mutations/decks";
 import { useStore } from "@/store";
 import { formatDeckAsText, formatDeckShare } from "@/store/lib/deck-io";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { Deck, Id } from "@/store/schemas/deck.schema";
+import { useHttpClient } from "@/store/services/http-client.context";
 import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import { download } from "@/utils/download";
-import { formatProviderName } from "@/utils/formatting";
 
 export function useDeleteDeck() {
   const toast = useToast();
   const { t } = useTranslation();
   const [, navigate] = useLocation();
-  const deleteDeck = useStore((state) => state.deleteDeck);
+  const deleteDeckMutation = useDeleteDeckMutation();
 
   return useCallback(
     async (deckId: Id) => {
@@ -25,7 +31,10 @@ export function useDeleteDeck() {
         });
 
         try {
-          await deleteDeck(deckId, () => navigate("~/"));
+          await deleteDeckMutation.mutateAsync({
+            deckId,
+            onBeforeTransition: () => navigate("~/"),
+          });
           toast.dismiss(toastId);
         } catch (err) {
           toast.dismiss(toastId);
@@ -38,7 +47,7 @@ export function useDeleteDeck() {
         }
       }
     },
-    [navigate, toast, deleteDeck, t],
+    [deleteDeckMutation, navigate, toast, t],
   );
 }
 
@@ -46,7 +55,7 @@ export function useDeleteUpgrade() {
   const toast = useToast();
   const { t } = useTranslation();
   const [, navigate] = useLocation();
-  const deleteUpgrade = useStore((state) => state.deleteUpgrade);
+  const deleteUpgradeMutation = useDeleteUpgradeMutation();
 
   return useCallback(
     async (deckId: Id) => {
@@ -57,7 +66,10 @@ export function useDeleteUpgrade() {
         });
 
         try {
-          await deleteUpgrade(deckId, (id) => navigate(`/deck/view/${id}`));
+          await deleteUpgradeMutation.mutateAsync({
+            deckId,
+            onBeforeTransition: (id) => navigate(`/deck/view/${id}`),
+          });
           toast.dismiss(toastId);
         } catch (err) {
           toast.dismiss(toastId);
@@ -70,7 +82,49 @@ export function useDeleteUpgrade() {
         }
       }
     },
-    [deleteUpgrade, navigate, toast, t],
+    [deleteUpgradeMutation, navigate, toast, t],
+  );
+}
+
+export function useUploadDeckToProvider() {
+  const toast = useToast();
+  const { t } = useTranslation();
+  const [, navigate] = useLocation();
+
+  const uploadDeckToProviderMutation = useUploadDeckToProviderMutation();
+
+  return useCallback(
+    async (
+      deckId: Id,
+      provider: Extract<StorageProvider, "account" | "arkhamdb">,
+    ) => {
+      const providerLabel = t(`deck_edit.config.storage_provider.${provider}`);
+
+      const toastId = toast.show({
+        children: t("deck.toasts.upload_loading", { provider: providerLabel }),
+        variant: "loading",
+      });
+
+      try {
+        const id = await uploadDeckToProviderMutation.mutateAsync({
+          deckId,
+          provider,
+        });
+        toast.dismiss(toastId);
+        if (id !== deckId) navigate(`/deck/view/${id}`, { replace: true });
+      } catch (err) {
+        toast.dismiss(toastId);
+
+        toast.show({
+          children: t("deck.toasts.upload_error", {
+            provider: providerLabel,
+            error: (err as Error)?.message,
+          }),
+          variant: "error",
+        });
+      }
+    },
+    [navigate, toast, uploadDeckToProviderMutation, t],
   );
 }
 
@@ -79,12 +133,12 @@ export function useDuplicateDeck() {
   const { t } = useTranslation();
 
   const [, navigate] = useLocation();
-  const duplicateDeck = useStore((state) => state.duplicateDeck);
+  const duplicateDeckMutation = useDuplicateDeckMutation();
 
   return useCallback(
     async (deckId: Id) => {
       try {
-        const id = await duplicateDeck(deckId);
+        const id = await duplicateDeckMutation.mutateAsync({ id: deckId });
         navigate(`/deck/view/${id}`);
       } catch (err) {
         toast.show({
@@ -95,7 +149,7 @@ export function useDuplicateDeck() {
         });
       }
     },
-    [duplicateDeck, navigate, toast.show, t],
+    [duplicateDeckMutation, navigate, toast, t],
   );
 }
 
@@ -122,7 +176,7 @@ export function useExportJson() {
         });
       }
     },
-    [toast.show, t],
+    [toast, t],
   );
 }
 
@@ -149,46 +203,13 @@ export function useExportText() {
         });
       }
     },
-    [toast.show, state, t],
-  );
-}
-
-export function useUploadDeck() {
-  const { t } = useTranslation();
-  const toast = useToast();
-  const [, navigate] = useLocation();
-  const uploadDeck = useStore((state) => state.uploadDeck);
-
-  return useCallback(
-    async (deckId: Id) => {
-      const toastId = toast.show({
-        children: t("deck.toasts.upload_loading", {
-          provider: formatProviderName("arkhamdb"),
-        }),
-        variant: "loading",
-      });
-
-      try {
-        const id = await uploadDeck(deckId, "arkhamdb");
-        toast.dismiss(toastId);
-        navigate(`/deck/view/${id}`, { replace: true });
-      } catch (err) {
-        toast.dismiss(toastId);
-        toast.show({
-          children: t("deck.toasts.upload_error", {
-            error: (err as Error)?.message,
-            provider: formatProviderName("arkhamdb"),
-          }),
-          variant: "error",
-        });
-      }
-    },
-    [toast, uploadDeck, navigate, t],
+    [toast, state, t],
   );
 }
 
 export function useChangeArchiveStatus(deckId: Id) {
-  const addDeckToArchive = useStore((state) => state.addDeckToArchive);
+  const client = useHttpClient();
+  const setDeckFolder = useStore((state) => state.setDeckFolder);
   const removeDeckFromFolder = useStore((state) => state.removeDeckFromFolder);
 
   const isArchived = useStore(
@@ -199,9 +220,11 @@ export function useChangeArchiveStatus(deckId: Id) {
     isArchived,
     toggleArchived: () => {
       if (isArchived) {
-        removeDeckFromFolder(deckId);
+        void removeDeckFromFolder(client, deckId).catch(console.error);
       } else {
-        addDeckToArchive(deckId);
+        void setDeckFolder(client, deckId, ARCHIVE_FOLDER_ID).catch(
+          console.error,
+        );
       }
     },
   };

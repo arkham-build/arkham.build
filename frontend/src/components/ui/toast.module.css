@@ -41,19 +41,19 @@
 }
 
 .toast.success {
-  border-color: var(--nord-14);
+  border-color: var(--color-success);
 }
 
 .toast.success .icon {
-  color: var(--nord-14);
+  color: var(--color-success);
 }
 
 .toast.error {
-  border-color: var(--nord-11);
+  border-color: var(--color-error);
 }
 
 .toast.error .icon {
-  color: var(--nord-11);
+  color: var(--color-error);
 }
 
 @keyframes slideIn {

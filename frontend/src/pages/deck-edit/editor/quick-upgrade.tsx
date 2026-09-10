@@ -1,7 +1,7 @@
 import type { Card as CardT } from "@arkham-build/shared";
 import { FloatingPortal } from "@floating-ui/react";
 import { DicesIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { Card } from "@/components/card/card";
@@ -47,8 +47,22 @@ export function QuickUpgrade(props: Props) {
 
   const slots = currentTab === "extraSlots" ? "extraSlots" : "slots";
 
-  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
-    useRestingTooltip();
+  const {
+    refs,
+    referenceProps,
+    isMounted,
+    floatingStyles,
+    closeTooltip,
+    setTooltipOpen,
+    transitionStyles,
+  } = useRestingTooltip();
+
+  // HACK: we should not use an effect here to update state.
+  useEffect(() => {
+    if (hideButton) {
+      setTooltipOpen(false);
+    }
+  }, [hideButton, setTooltipOpen]);
 
   const resolvedUpgrades = useStore(
     useShallow((state) =>
@@ -57,6 +71,8 @@ export function QuickUpgrade(props: Props) {
   );
 
   const onUpgradeCard = useCallback(() => {
+    closeTooltip();
+
     const upgrades = availableUpgrades.upgrades[card.code];
     assert(upgrades.length, "No upgrades available for card");
 
@@ -76,7 +92,7 @@ export function QuickUpgrade(props: Props) {
     } else {
       setDialogOpen(true);
     }
-  }, [availableUpgrades, card, slots, deck, upgradeCard]);
+  }, [availableUpgrades, card, slots, deck, closeTooltip, upgradeCard]);
 
   return (
     <>
@@ -93,7 +109,7 @@ export function QuickUpgrade(props: Props) {
           <i className="icon icon-upgrade" />
         </Button>
       )}
-      {isMounted && (
+      {!hideButton && isMounted && (
         <FloatingPortal id={FLOATING_PORTAL_ID}>
           <div ref={refs.setFloating} style={floatingStyles}>
             <div style={transitionStyles}>
@@ -113,15 +129,13 @@ export function QuickUpgrade(props: Props) {
           </div>
         </FloatingPortal>
       )}
-      {dialogOpen && (
-        <QuickUpgradeDialog
-          {...props}
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-          resolvedUpgrades={resolvedUpgrades}
-          slots={slots}
-        />
-      )}
+      <QuickUpgradeDialog
+        {...props}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        resolvedUpgrades={resolvedUpgrades}
+        slots={slots}
+      />
     </>
   );
 }
