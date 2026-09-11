@@ -261,7 +261,7 @@ back:subname != null & back:subname != subname
   - aliases: `my`
 - **name** (string)
   - aliases: `na`
-  - matches printed name and card abbreviation
+  - matches printed name and card abbreviations
 - **pack** (string)
   - aliases: `pa`
   - legacy alias: `e`

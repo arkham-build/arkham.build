@@ -14,6 +14,7 @@ import {
   displayAttribute,
   doubleSidedBackCard,
   isSpecialist,
+  splitCommaSeparatedValue,
   splitMultiValue,
 } from "@/utils/card-utils";
 import { displayPackName } from "@/utils/formatting";
@@ -374,7 +375,8 @@ const fieldDefinitions: FieldDefinition[] = [
     aliases: ["na"],
     lookup: backResolver((card) => {
       const name = displayAttribute(card, "name");
-      return card.abbreviation ? [name, card.abbreviation] : name;
+      const abbreviations = splitCommaSeparatedValue(card.abbreviation);
+      return abbreviations.length ? [name, ...abbreviations] : name;
     }),
     name: "name",
     type: "string",

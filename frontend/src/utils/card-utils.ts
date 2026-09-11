@@ -12,6 +12,15 @@ import {
 } from "./constants";
 import { isEmpty } from "./is-empty";
 
+export function splitCommaSeparatedValue(s: string | null | undefined) {
+  if (!s) return [];
+  return s.split(",").reduce<string[]>((acc, curr) => {
+    const s = curr.trim();
+    if (s) acc.push(s);
+    return acc;
+  }, []);
+}
+
 export function splitMultiValue(s: string | null | undefined) {
   if (!s) return [];
   return s.split(".").reduce<string[]>((acc, curr) => {

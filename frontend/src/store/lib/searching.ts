@@ -1,5 +1,5 @@
 import type { Card } from "@arkham-build/shared";
-import { displayAttribute } from "@/utils/card-utils";
+import { displayAttribute, splitCommaSeparatedValue } from "@/utils/card-utils";
 import { fuzzyMatch, prepareNeedle, type SearchTextCache } from "@/utils/fuzzy";
 import i18n from "@/utils/i18n";
 import type { Search } from "../slices/lists.types";
@@ -11,7 +11,7 @@ function prepareCardFace(card: Card, search: Search) {
   if (search.includeName) {
     if (card.real_name) needle.push(displayAttribute(card, "name"));
     if (card.real_subname) needle.push(displayAttribute(card, "subname"));
-    if (card.abbreviation) needle.push(card.abbreviation);
+    needle.push(...splitCommaSeparatedValue(card.abbreviation));
   }
 
   if (search.includeGameText) {

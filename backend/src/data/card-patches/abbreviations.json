@@ -30,12 +30,7 @@
     "patch": true
   },
   {
-    "abbreviation": "izzie",
-    "code": "12013",
-    "patch": true
-  },
-  {
-    "abbreviation": "izzy",
+    "abbreviation": "izzie,izzy",
     "code": "12013",
     "patch": true
   },
