@@ -7,6 +7,9 @@
 }
 
 .scenario-icon {
+  display: inline-block;
   padding: 0 0.25rem;
   font-size: var(--icon-3xl);
+  text-decoration: none;
+  color: currentColor;
 }
