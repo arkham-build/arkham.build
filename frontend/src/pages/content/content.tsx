@@ -28,9 +28,9 @@ function Content() {
   const title = t("content.title");
 
   return (
-    <AppLayout title={title} mainClassName={css["main"]}>
+    <AppLayout title={title}>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className={css["page-tabs"]}>
+        <TabsList>
           <TabsTrigger value="campaigns">
             {t("content.tabs.campaigns")}
           </TabsTrigger>

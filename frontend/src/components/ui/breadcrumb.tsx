@@ -16,11 +16,7 @@ type Props = React.ComponentProps<"nav"> & {
 
 export function Breadcrumb({ className, items, ...rest }: Props) {
   return (
-    <nav
-      aria-label="Breadcrumb"
-      {...rest}
-      className={cx(css["breadcrumb"], className)}
-    >
+    <nav {...rest} className={cx(css["breadcrumb"], className)}>
       <ol className={css["list"]}>
         {items.map((item, index) => {
           return (

@@ -83,7 +83,14 @@ export function ListLayoutNoSidebar(props: Props) {
           {...rest}
           slotRight={
             !filtersOpen && (
-              <FilterToggleButton onClick={() => setFiltersOpen(true)} />
+              <Button
+                className={css["toggle-filters"]}
+                onClick={() => setFiltersOpen(true)}
+                iconOnly
+                size="lg"
+              >
+                <FilterIcon />
+              </Button>
             )
           }
           topContent={
@@ -104,18 +111,5 @@ export function ListLayoutNoSidebar(props: Props) {
         <Filters targetDeck={undefined} />
       </nav>
     </div>
-  );
-}
-
-function FilterToggleButton({ onClick }: { onClick: () => void }) {
-  return (
-    <Button
-      className={css["toggle-filters"]}
-      onClick={onClick}
-      iconOnly
-      size="lg"
-    >
-      <FilterIcon />
-    </Button>
   );
 }

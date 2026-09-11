@@ -138,15 +138,13 @@ function ScenarioContent({
 }
 
 function getScenarioListCardProps() {
-  return { renderCardNameExtra: renderCardQuantity };
-}
-
-function renderCardQuantity(card: Card) {
-  return (
-    <span className={css["quantity"]}>
-      <i className="icon-card-outline-bold" />×{card.quantity}
-    </span>
-  );
+  return {
+    renderCardNameExtra: (card: Card) => (
+      <span className={css["quantity"]}>
+        <i className="icon-card-outline-bold" />×{card.quantity}
+      </span>
+    ),
+  };
 }
 
 function isCardUsedInScenario(card: Card, scenario: ScenarioData) {

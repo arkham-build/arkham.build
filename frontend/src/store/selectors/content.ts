@@ -16,25 +16,18 @@ export type CampaignListEntry = CampaignVersion & {
   variants: CampaignVersion[];
 };
 
-export type StandaloneScenarioYearGroup = {
-  releaseYear?: number;
-  scenarios: Scenario[];
-};
-
 export type StandaloneScenarioGroup = {
   cycle: Cycle;
-  yearGroups: StandaloneScenarioYearGroup[];
+  yearGroups: {
+    releaseYear?: number;
+    scenarios: Scenario[];
+  }[];
 };
 
 type StandaloneScenarioEntry = {
   pack: Pack;
   release: number | undefined;
   scenario: Scenario;
-};
-
-type StandaloneScenarioGroupBuilder = {
-  cycle: Cycle;
-  scenarios: StandaloneScenarioEntry[];
 };
 
 export const selectCampaigns = createSelector(
@@ -72,6 +65,7 @@ export const selectCampaigns = createSelector(
           earliestReleases[a.cycle.code],
           earliestReleases[b.cycle.code],
         );
+
         if (dateComparison !== 0) return dateComparison;
 
         return collator.compare(a.campaign.real_name, b.campaign.real_name);
@@ -83,16 +77,21 @@ export function selectScenarioByCode(
   state: StoreState,
   code: string | undefined,
 ): Scenario | undefined {
-  if (code == null) return undefined;
-
-  return selectMetadata(state).scenarios[code];
+  return code == null ? undefined : selectMetadata(state).scenarios[code];
 }
 
 export const selectStandaloneScenarioGroups = createSelector(
   selectMetadata,
   selectLocaleSortingCollator,
   (metadata, collator): StandaloneScenarioGroup[] => {
-    const groups = new Map<string, StandaloneScenarioGroupBuilder>();
+    const groups = new Map<
+      string,
+      {
+        cycle: Cycle;
+        scenarios: StandaloneScenarioEntry[];
+      }
+    >();
+
     const earliestReleases = earliestPackReleasesByCycle(metadata);
 
     for (const scenario of Object.values(metadata.scenarios)) {
@@ -183,6 +182,7 @@ function groupStandaloneScenariosByYear(
   collator: Intl.Collator,
 ) {
   const yearGroups = new Map<number | undefined, Scenario[]>();
+
   const sortedEntries = entries.toSorted((a, b) => {
     const dateComparison = compareReleaseDatesDescending(a.release, b.release);
     if (dateComparison !== 0) return dateComparison;

@@ -43,7 +43,6 @@
 }
 
 .scenario {
-  align-items: center;
   justify-content: flex-start;
   display: flex;
   gap: 0.625rem;
