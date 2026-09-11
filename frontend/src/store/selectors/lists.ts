@@ -925,6 +925,7 @@ export const selectListCards = createSelector(
       makeSortFunction(activeList.display.sorting, metadata, sortingCollator),
       metadata,
       sortingCollator,
+      activeList.groupOrder,
     );
 
     for (const group of groupedCards.data) {

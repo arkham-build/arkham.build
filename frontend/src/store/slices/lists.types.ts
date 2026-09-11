@@ -152,6 +152,11 @@ export type SortingType =
   | "subtype"
   | "type";
 
+export type GroupOrder = {
+  keys: readonly string[];
+  type: GroupingType;
+};
+
 export type ViewMode =
   | "compact"
   | "card-text"
@@ -185,6 +190,7 @@ export type List = {
   filterValues: {
     [id: number]: FilterObject<FilterKey>;
   };
+  groupOrder?: GroupOrder;
   initialState: Omit<List, "initialState">;
   key: string;
   displaySettingsKey?: string;
@@ -211,6 +217,7 @@ export type ListsSlice = {
       displaySettingsKey?: string;
       fanMadeCycleCodes?: string[];
       filters?: FilterKey[];
+      groupOrder?: GroupOrder;
       lockedFilters?: Set<FilterKey>;
       search?: string;
       showInvestigatorFilter?: boolean;

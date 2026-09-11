@@ -77,6 +77,10 @@ function ScenarioContent({
             "encounter_set",
             "illustrator",
           ],
+          groupOrder: {
+            keys: scenario.encounter_sets.map(({ code }) => code),
+            type: "encounter_set",
+          },
           systemFilter: (card) => isCardUsedInScenario(card, scenario),
         },
       );

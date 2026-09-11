@@ -6,7 +6,7 @@ import {
   shortenPackName,
 } from "@/utils/formatting";
 import i18n from "@/utils/i18n";
-import type { GroupingType } from "../slices/lists.types";
+import type { GroupingType, GroupOrder } from "../slices/lists.types";
 import type { Metadata } from "../slices/metadata.types";
 import {
   type SortFunction,
@@ -419,6 +419,7 @@ export function getGroupedCards(
   sortFunction: SortFunction,
   metadata: Metadata,
   collator: Intl.Collator,
+  groupOrder?: GroupOrder,
 ): GroupedCards {
   const groupings = _groupings.length ? _groupings : ["none" as const];
 
@@ -481,11 +482,47 @@ export function getGroupedCards(
     }
   }
 
+  if (groupOrder) {
+    sortGroupsByConfiguredOrder(data, groupOrder);
+  }
+
   for (const group of data) {
     group.cards.sort(sortFunction);
   }
 
   return { data, hierarchy };
+}
+
+function sortGroupsByConfiguredOrder(
+  groups: GroupingResult[],
+  order: GroupOrder,
+) {
+  const positions = new Map<string, number>();
+
+  for (const [index, key] of order.keys.entries()) {
+    if (!positions.has(key)) positions.set(key, index);
+  }
+
+  groups.sort((a, b) => {
+    const aPosition = getConfiguredGroupPosition(a, order.type, positions);
+    const bPosition = getConfiguredGroupPosition(b, order.type, positions);
+
+    if (aPosition == null) return bPosition == null ? 0 : 1;
+    if (bPosition == null) return -1;
+    return aPosition - bPosition;
+  });
+}
+
+function getConfiguredGroupPosition(
+  group: GroupingResult,
+  type: GroupingType,
+  positions: ReadonlyMap<string, number>,
+) {
+  const typeIndex = group.type.split("|").indexOf(type);
+  if (typeIndex === -1) return undefined;
+
+  const key = group.key.split("|")[typeIndex];
+  return key == null ? undefined : positions.get(key);
 }
 
 export function getGroupingKeyLabel(
