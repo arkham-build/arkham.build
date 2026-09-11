@@ -46,24 +46,26 @@ export const selectCampaigns = createSelector(
 
     return Object.values(metadata.campaigns)
       .filter((campaign) => campaign.variant_of_code == null)
-      .map((campaign) => {
+      .flatMap((campaign) => {
         const cycle = metadata.cycles[campaign.cycle_code];
-        assert(cycle, `Campaign ${campaign.code} has no cycle`);
+        if (!cycle) return [];
 
-        return {
-          campaign,
-          cycle,
-          releaseYear: releaseYear(earliestReleases[cycle.code]),
-          scenarios: resolveCampaignScenarios(campaign, metadata),
-          variants: (variantsByCampaign[campaign.code] ?? [])
-            .map((variant) => ({
-              campaign: variant,
-              scenarios: resolveCampaignScenarios(variant, metadata),
-            }))
-            .toSorted((a, b) =>
-              collator.compare(a.campaign.real_name, b.campaign.real_name),
-            ),
-        };
+        return [
+          {
+            campaign,
+            cycle,
+            releaseYear: releaseYear(earliestReleases[cycle.code]),
+            scenarios: resolveCampaignScenarios(campaign, metadata),
+            variants: (variantsByCampaign[campaign.code] ?? [])
+              .map((variant) => ({
+                campaign: variant,
+                scenarios: resolveCampaignScenarios(variant, metadata),
+              }))
+              .toSorted((a, b) =>
+                collator.compare(a.campaign.real_name, b.campaign.real_name),
+              ),
+          },
+        ];
       })
       .toSorted((a, b) => {
         const dateComparison = compareReleaseDatesDescending(
