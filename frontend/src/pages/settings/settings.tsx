@@ -53,7 +53,7 @@ function Settings() {
   const goBack = useGoBack(search.includes("login_state") ? "/" : undefined);
 
   return (
-    <AppLayout title={t("settings.title")} mainClassName={css["main"]}>
+    <AppLayout title={t("settings.title")}>
       <header className={css["header"]}>
         <h1 className={css["title"]}>{t("settings.title")}</h1>
 

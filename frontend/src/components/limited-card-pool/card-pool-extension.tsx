@@ -52,7 +52,6 @@ export function CardPoolExtension(props: Props) {
 
   return (
     <CardsCombobox
-      className={canEdit ? undefined : css["extension-readonly"]}
       data-testid="card-pool-extension"
       id={id}
       items={items}
@@ -87,9 +86,7 @@ export function CardPoolExtensionFields(props: {
     <>
       {cardsWithExtensions.map(({ card }) => (
         <Field className={css["extension"]} key={card.code}>
-          <FieldLabel className={css["extension-name"]}>
-            {displayAttribute(card, "name")}
-          </FieldLabel>
+          <FieldLabel>{displayAttribute(card, "name")}</FieldLabel>
           <CardPoolExtension canEdit card={card} deck={deck} />
         </Field>
       ))}

@@ -128,12 +128,7 @@ export function Filters(props: Props) {
                 {filter === "action" && <ActionFilter {...params} />}
                 {filter === "asset" && <AssetFilter {...params} />}
                 {filter === "card_tags" && <CardTagsFilter {...params} />}
-                {filter === "card_type" && (
-                  <CardTypeFilter
-                    className={css["card-type-filter"]}
-                    {...params}
-                  />
-                )}
+                {filter === "card_type" && <CardTypeFilter {...params} />}
                 {filter === "cost" && <CostFilter {...params} />}
                 {filter === "cycle" && <CycleFilter {...params} />}
                 {filter === "encounter_set" && (

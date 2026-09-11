@@ -17,7 +17,7 @@ export function AppLayout(props: Props) {
   return (
     <div
       {...rest}
-      className={cx(css["layout"], !noFade && "fade-in")}
+      className={cx(!noFade && "fade-in")}
       data-testid="app-layout"
       ref={ref}
     >

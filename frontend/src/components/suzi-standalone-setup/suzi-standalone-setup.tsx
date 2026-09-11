@@ -182,7 +182,7 @@ function SuziStandaloneSetupInner(props: Props) {
             />
             <Button
               type="submit"
-              variant={isEmpty(results) ? "primary" : "secondary"}
+              variant={isEmpty(results) ? "primary" : undefined}
             >
               <DicesIcon /> {t("suzi_standalone_setup.draw_cards")}
             </Button>

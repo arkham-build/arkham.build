@@ -28,7 +28,6 @@ export function CardNames(props: Props) {
     <>
       <CardName
         invert
-        className={css["name-inner"]}
         card={card}
         cardLevelDisplay={settings.cardLevelDisplay}
         cardShowCollectionNumber={settings.cardShowCollectionNumber}

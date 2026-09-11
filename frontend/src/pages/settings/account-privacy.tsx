@@ -62,9 +62,7 @@ export function AccountPrivacy() {
           {deleteAccountMutation.error && (
             <ErrorBox>{deleteAccountMutation.error.message}</ErrorBox>
           )}
-          <p className={css["account-delete-help"]}>
-            {t("settings.account.delete.help")}
-          </p>
+          <p>{t("settings.account.delete.help")}</p>
           <Field
             full
             helpText={t("settings.account.delete.confirm_help", {

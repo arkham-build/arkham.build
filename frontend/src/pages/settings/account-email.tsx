@@ -97,11 +97,7 @@ function CreateEmailIdentityForm() {
           value={password}
         />
       </Field>
-      <Button
-        disabled={createEmailIdentityMutation.isPending}
-        type="submit"
-        variant="secondary"
-      >
+      <Button disabled={createEmailIdentityMutation.isPending} type="submit">
         {t("settings.account.email.add")}
       </Button>
     </form>
@@ -209,7 +205,7 @@ function UpdateCredentialsForm(props: { emailIdentity: EmailIdentity }) {
           value={newPassword}
         />
       </Field>
-      <Button disabled={isSubmitDisabled} type="submit" variant="secondary">
+      <Button disabled={isSubmitDisabled} type="submit">
         {t("settings.account.email.save")}
       </Button>
     </form>

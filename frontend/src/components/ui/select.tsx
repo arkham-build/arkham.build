@@ -17,10 +17,7 @@ export interface Props extends React.ComponentProps<"select"> {
 export function Select(props: Props) {
   const { emptyLabel, options, required, className, variant, ...rest } = props;
   return (
-    <select
-      className={cx(css["select"], variant && css[variant], className)}
-      {...rest}
-    >
+    <select className={cx(variant && css[variant], className)} {...rest}>
       {!required && <option value="">{emptyLabel}</option>}
       {options.map((o) => (
         <option key={o.value} value={o.value}>

@@ -78,10 +78,8 @@ export function DropdownMenuSection(props: {
 
   return (
     <section className={cx(css["section"], className)}>
-      <header className={css["header"]}>
-        {title && <h4 className={css["title"]}>{title}</h4>}
-      </header>
-      <div className={css["content"]}>{children}</div>
+      <header>{title && <h4 className={css["title"]}>{title}</h4>}</header>
+      <div>{children}</div>
     </section>
   );
 }

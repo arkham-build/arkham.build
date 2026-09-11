@@ -50,7 +50,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
 import { Plane } from "../ui/plane";
@@ -255,7 +254,7 @@ function FanMadeSearch({ search, onSearchChange }: SearchProps) {
   useHotkey("/", onFocusSearch);
 
   const searchElement = (
-    <search className={css["fan-made-search"]}>
+    <search>
       <SearchInput
         bindSlashKey
         placeholder={t("fan_made_content.filter_fan_made_content")}
@@ -352,7 +351,7 @@ function Collection({ onAddProject, listingsQuery, filterFn }: RegistryProps) {
       {isEmpty(filteredOwned) && (
         <div className={css["empty"]} data-testid="collection-placeholder">
           <BookDashedIcon className={css["empty-icon"]} />
-          <p className={css["empty-title"]}>{t("fan_made_content.empty")}</p>
+          <p>{t("fan_made_content.empty")}</p>
         </div>
       )}
 
@@ -606,7 +605,7 @@ function ProjectCard(props: {
     >
       <h4>{meta.author}</h4>
 
-      <div className={cx(css["content"], "longform")}>
+      <div className="longform">
         {meta.description && (
           <div
             // oxlint-disable-next-line react/no-danger -- escaped in markdown parser
@@ -667,7 +666,6 @@ function QuickInstallDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <Modal>
-          <ModalBackdrop />
           <ModalInner size="60rem">
             <ModalActions />
             <DefaultModalContent title={t("fan_made_content.actions.install")}>

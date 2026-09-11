@@ -167,15 +167,6 @@ export function ModalInner(props: ModalInnerProps) {
   );
 }
 
-type ModalBackdropProps = {
-  className?: string;
-};
-
-export function ModalBackdrop(props: ModalBackdropProps) {
-  const { className } = props;
-  return <div className={cx(css["backdrop"], className)} />;
-}
-
 type DefaultModalContentProps = {
   children: React.ReactNode;
   mainClassName?: string;
@@ -189,11 +180,11 @@ export function DefaultModalContent(props: DefaultModalContentProps) {
   return (
     <section className={cx(css["content"], className)} {...rest}>
       {title && (
-        <header className={css["content-header"]}>
+        <header>
           <h2 className={css["content-title"]}>{title}</h2>
         </header>
       )}
-      <div className={cx(css["content-main"], mainClassName)}>{children}</div>
+      <div className={mainClassName}>{children}</div>
       {footer && <footer className={css["content-footer"]}>{footer}</footer>}
     </section>
   );

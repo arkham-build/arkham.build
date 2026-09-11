@@ -50,9 +50,7 @@ export function CardName(props: Props) {
         }}
       />
       {!!level && cardLevelDisplay === "dots" && <ExperienceDots xp={level} />}
-      {level != null && cardLevelDisplay === "text" && (
-        <span className={css["xp"]}>({level})</span>
-      )}
+      {level != null && cardLevelDisplay === "text" && <span>({level})</span>}
       {cardShowCollectionNumber &&
         card.code !== SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS && (
           <CardPackDetail card={card} invert={invert} />

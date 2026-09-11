@@ -147,11 +147,7 @@ export function LatestUpgrade(props: Props) {
 
   return (
     <div
-      className={cx(
-        css["container"],
-        overflowScroll && css["scroll"],
-        readonly && css["readonly"],
-      )}
+      className={cx(css["container"], overflowScroll && css["scroll"])}
       style={accentColor}
     >
       <Progress max={xp + xpAdjustment} value={xpSpent} validateInRange />

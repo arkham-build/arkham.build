@@ -89,11 +89,11 @@ export function DeckCollectionFilters(props: Props) {
                   onValueChange={onFactionFilterChange}
                 />
               )}
-              <DeckCardsFilter containerClass={css["filter"]} />
-              <DeckTagsFilter containerClass={css["filter"]} />
-              <DeckXPCostFilter containerClass={css["filter"]} />
-              <DeckProviderFilter containerClass={css["filter"]} />
-              <DeckPropertiesFilter containerClass={css["filter"]} />
+              <DeckCardsFilter />
+              <DeckTagsFilter />
+              <DeckXPCostFilter />
+              <DeckProviderFilter />
+              <DeckPropertiesFilter />
             </Scroller>
           </PopoverContent>
         </Popover>

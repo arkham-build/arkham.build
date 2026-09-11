@@ -44,7 +44,7 @@ import { useResolvedDeck } from "../resolved-deck-context";
 import { Button } from "../ui/button";
 import { useDialogContextChecked } from "../ui/dialog.hooks";
 import { HotkeyTooltip } from "../ui/hotkey";
-import { Modal, ModalActions, ModalBackdrop, ModalInner } from "../ui/modal";
+import { Modal, ModalActions, ModalInner } from "../ui/modal";
 import { CardReviewsLink } from "./card-arkhamdb-links";
 import css from "./card-modal.module.css";
 import { AnnotationEdit } from "./card-modal-annotation-edit";
@@ -289,7 +289,6 @@ export function CardModal(props: Props) {
 
   return (
     <Modal key={cardWithRelations.card.code} data-testid="card-modal">
-      <ModalBackdrop />
       <ModalInner size="64rem">
         <ModalActions>
           <CardPageLink card={cardWithRelations.card} />

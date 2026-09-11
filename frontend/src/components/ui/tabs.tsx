@@ -44,7 +44,6 @@ type TabsProps = HTMLAttributes<HTMLDivElement> & {
 
 export function Tabs({
   children,
-  className,
   onValueChange,
   ref,
   value,
@@ -58,12 +57,7 @@ export function Tabs({
 
   return (
     <TabsContext value={context}>
-      <div
-        data-orientation="horizontal"
-        {...rest}
-        className={cx(css["tabs"], className)}
-        ref={ref}
-      >
+      <div data-orientation="horizontal" {...rest} ref={ref}>
         {children}
       </div>
     </TabsContext>

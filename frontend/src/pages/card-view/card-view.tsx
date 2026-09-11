@@ -170,7 +170,7 @@ function SidebarSection(props: {
 }) {
   return (
     <section className={css["sidebar-section"]}>
-      <header className={css["sidebar-section-header"]}>
+      <header>
         <h2 className={css["sidebar-section-title"]}>{props.title}</h2>
       </header>
       <div className={css["sidebar-section-content"]}>{props.children}</div>

@@ -33,7 +33,7 @@ export function Notice(props: Props) {
   return (
     <Element className={cx(css["notice"], variant && css[variant], className)}>
       {!!icon && <div className={css["notice-icon"]}>{icon}</div>}
-      <div className={css["notice-content"]}>{children}</div>
+      <div>{children}</div>
     </Element>
   );
 }

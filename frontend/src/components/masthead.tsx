@@ -351,20 +351,12 @@ function AccountMenu(props: { collapseNav: boolean; location: string }) {
           <hr />
         </>
       )}
-      <DropdownButton
-        className={css["action-shortcuts"]}
-        hotkey="?"
-        onClick={toggleKeyboardShortcuts}
-      >
+      <DropdownButton hotkey="?" onClick={toggleKeyboardShortcuts}>
         <KeyboardIcon /> {t("help.shortcuts.title")}
       </DropdownButton>
       <hr />
       <Link asChild href="~/about">
-        <DropdownButton
-          as="a"
-          className={css["about"]}
-          data-testid="masthead-about"
-        >
+        <DropdownButton as="a" data-testid="masthead-about">
           {t("help.about")}
         </DropdownButton>
       </Link>

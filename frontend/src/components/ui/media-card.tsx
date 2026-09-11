@@ -41,7 +41,7 @@ export function MediaCard(props: Props) {
         <div className={cx("blurred-background", css["title"])}>{title}</div>
         {headerSlot}
       </header>
-      <div className={cx(css["content"], classNames?.content)}>{children}</div>
+      <div className={classNames?.content}>{children}</div>
       {footerSlot && (
         <footer className={classNames?.footer}>{footerSlot}</footer>
       )}

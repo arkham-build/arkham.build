@@ -159,10 +159,7 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
   ) : null;
 
   return (
-    <div
-      className={cx(css["container"], variant && css[variant], className)}
-      id={id}
-    >
+    <div className={cx(variant && css[variant], className)} id={id}>
       <button
         {...getReferenceProps()}
         className={css["control"]}
@@ -208,11 +205,7 @@ function Option<T extends Item>({
   return (
     <button
       {...rest}
-      className={cx(
-        css["option"],
-        isSelected && css["selected"],
-        isActive && css["active"],
-      )}
+      className={cx(css["option"], isActive && css["active"])}
       ref={ref}
       type="button"
     >

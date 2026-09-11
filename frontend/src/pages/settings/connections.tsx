@@ -116,7 +116,6 @@ export function OAuthConnectionCard(props: {
                   as="a"
                   disabled={disconnectOAuthIdentityMutation.isPending}
                   href={connectHref}
-                  variant="secondary"
                 >
                   {t("settings.account.oauth.reconnect")}
                 </Button>
@@ -125,7 +124,6 @@ export function OAuthConnectionCard(props: {
                     disconnectOAuthIdentityMutation.isPending || !canDisconnect
                   }
                   onClick={onDisconnect}
-                  variant="secondary"
                 >
                   {t("settings.account.oauth.disconnect")}
                 </Button>
@@ -144,7 +142,6 @@ export function OAuthConnectionCard(props: {
                 as="a"
                 disabled={disconnectOAuthIdentityMutation.isPending}
                 href={connectHref}
-                variant="secondary"
               >
                 {t("settings.account.oauth.connect")}
               </Button>
@@ -162,7 +159,7 @@ function ConnectionDetails({ identity }: { identity: Identity }) {
   if (!isArkhamDBIdentity(identity)) return null;
 
   return (
-    <details className={css["details"]}>
+    <details>
       <summary>{t("settings.account.oauth.details")}</summary>
       <dl className={css["details-properties"]}>
         {identity.details.username && (

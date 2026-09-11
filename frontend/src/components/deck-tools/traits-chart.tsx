@@ -12,7 +12,6 @@ import {
   selectMetadata,
 } from "@/store/selectors/shared";
 import { splitMultiValue } from "@/utils/card-utils";
-import { cx } from "@/utils/cx";
 import { ListCard } from "../list-card/list-card";
 import { Scroller } from "../ui/scroller";
 import { DefaultTooltip } from "../ui/tooltip";
@@ -29,7 +28,7 @@ export function TraitsChart(props: Props) {
   const { t } = useTranslation();
 
   return (
-    <div className={cx(css["chart-container"], css["traits"])}>
+    <div className={css["chart-container"]}>
       <h4 className={css["chart-title"]}>{t("common.trait", { count: 2 })}</h4>
       <Scroller className={css["table-container"]} type="auto">
         <table className={css["table"]}>
@@ -75,7 +74,7 @@ function TraitsChartRow({
     .sort(makeSortFunction(["name", "level", "position"], metadata, collator));
 
   return (
-    <tr className={open ? css["open"] : css["closed"]}>
+    <tr className={open ? css["open"] : undefined}>
       <td className={css["trait-chart-column-trait"]}>
         <Root open={open} onOpenChange={setOpen}>
           <DefaultTooltip
@@ -93,7 +92,7 @@ function TraitsChartRow({
               </button>
             </Trigger>
           </DefaultTooltip>
-          <Content className={css["trait-chart-item-details"]}>
+          <Content>
             <ol className={css["trait-chart-item-details-list"]}>
               {cards.map((card) => (
                 <ListCard

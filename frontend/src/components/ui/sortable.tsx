@@ -173,7 +173,7 @@ function Item(props: ItemProps) {
       ref={ref}
       {...rest}
     >
-      <div className={css["item-handle"]}>
+      <div>
         <Button
           className={cx(
             css["item-handle-button"],

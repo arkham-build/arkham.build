@@ -35,7 +35,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
 import { Plane } from "../ui/plane";
@@ -100,7 +99,7 @@ export function DeckDisplay(props: DeckDisplayProps) {
   }, [currentTab]);
 
   const titleNode = (
-    <h1 className={css["title"]} data-testid="view-title">
+    <h1 data-testid="view-title">
       {deck.name} <small>{deck.version}</small>
     </h1>
   );
@@ -284,7 +283,6 @@ function TitleEditModal(props: TitleEditModalProps) {
   return (
     <DialogContent>
       <Modal>
-        <ModalBackdrop />
         <ModalInner size="45rem">
           <ModalActions />
           <DefaultModalContent

@@ -12,7 +12,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "@/components/ui/modal";
 import { QuantityInput } from "@/components/ui/quantity-input";
@@ -210,7 +209,6 @@ function QuickUpgradeDialog(
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <Modal data-testid="quick-upgrade-modal">
-            <ModalBackdrop />
             <ModalInner size="52rem">
               <ModalActions />
               <DefaultModalContent

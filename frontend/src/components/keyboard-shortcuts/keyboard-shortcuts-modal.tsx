@@ -8,7 +8,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
 import css from "./keyboard-shortcuts-modal.module.css";
@@ -231,14 +230,13 @@ export function KeyboardShortcutsModal() {
     <Dialog open={open} onOpenChange={toggle}>
       <DialogContent>
         <Modal>
-          <ModalBackdrop />
           <ModalInner size="52rem">
             <ModalActions />
             <DefaultModalContent title={t("help.shortcuts.title")}>
               <div className={css["groups"]}>
                 {shortcuts.map(([category, categoryShortcuts]) => (
                   <article className={css["group"]} key={category}>
-                    <header className={css["group-header"]}>
+                    <header>
                       <h2 className={css["group-title"]}>{category}</h2>
                     </header>
                     <dl className={css["shortcuts"]}>
@@ -247,9 +245,7 @@ export function KeyboardShortcutsModal() {
                           <dt className={css["shortcut-keybind"]}>
                             <Keybind keybind={keybind} alwaysVisible />
                           </dt>
-                          <dd className={css["shortcut-description"]}>
-                            {description}
-                          </dd>
+                          <dd>{description}</dd>
                         </Fragment>
                       ))}
                     </dl>

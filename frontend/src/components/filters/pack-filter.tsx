@@ -81,13 +81,7 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       value={filter.value.map(packMapper)}
     >
       {showShortcut && !changes && (
-        <Button
-          size="sm"
-          onClick={onApplyCurrentEnvironment}
-          variant="secondary"
-          rounded="xl"
-          full
-        >
+        <Button size="sm" onClick={onApplyCurrentEnvironment} rounded="xl" full>
           {t("deck_edit.config.card_pool.apply_environment", {
             environment: t("deck_edit.config.card_pool.current"),
           })}

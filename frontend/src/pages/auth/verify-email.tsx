@@ -8,7 +8,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast.hooks";
@@ -156,7 +155,6 @@ function ResendVerificationDialog() {
             </DefaultModalContent>
           </ModalInner>
         </Modal>
-        <ModalBackdrop />
       </DialogContent>
     </Dialog>
   );

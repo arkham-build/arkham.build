@@ -54,7 +54,7 @@ export function RecommendationBar(props: RecommendationBarProps) {
           className={cx(css["recommendation-bar"], getCardColor(card))}
           style={cssVariables}
         >
-          <span className={css["recommendation-bar-label"]}>{wholeRec}%</span>
+          <span>{wholeRec}%</span>
         </div>
       </DefaultTooltip>
     </div>

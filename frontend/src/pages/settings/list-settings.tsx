@@ -205,7 +205,7 @@ function ListSettingsList<T extends string>(props: {
       className={css["list-group"]}
       data-testid={`list-settings-${listKey}-${subKey}`}
     >
-      <header className={css["list-group-header"]}>
+      <header>
         <h4 className={css["list-group-title"]}>{title}</h4>
       </header>
       <Sortable

@@ -26,7 +26,6 @@ export function CardScenarios({ card }: Props) {
   return (
     <PlaneContainer
       as="section"
-      className={css["scenarios"]}
       title={
         <Trans
           components={{ em: <em /> }}

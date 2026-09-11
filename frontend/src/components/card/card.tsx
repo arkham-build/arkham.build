@@ -7,7 +7,6 @@ import { reversed } from "@/utils/card-utils";
 import { dataLanguage } from "@/utils/formatting";
 import type { CardScanActionSlot } from "../card-scan";
 import { Button } from "../ui/button";
-import css from "./card.module.css";
 import { CardBack } from "./card-back";
 import { CardContainer } from "./card-container";
 import { CardFace } from "./card-face";
@@ -97,11 +96,7 @@ export function Card(props: Props) {
   }
 
   const backToggle = !!backNode && canToggleBackside && (
-    <Button
-      className={css["card-backtoggle"]}
-      data-testid="card-backtoggle"
-      onClick={() => toggleBack((p) => !p)}
-    >
+    <Button data-testid="card-backtoggle" onClick={() => toggleBack((p) => !p)}>
       {backVisible ? <ChevronUpIcon /> : <ChevronDownIcon />}
       {t("card_view.actions.view_backside")}
     </Button>

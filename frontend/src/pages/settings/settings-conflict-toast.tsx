@@ -104,7 +104,6 @@ export function SettingsConflictToast({
             void runAction("refresh", refresh);
           }}
           size="sm"
-          variant="secondary"
         >
           {t("settings.conflict.refresh")}
         </Button>

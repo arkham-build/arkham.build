@@ -21,7 +21,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "@/components/ui/modal";
 import { Plane } from "@/components/ui/plane";
@@ -163,7 +162,6 @@ function DraftBasicWeaknessModal(props: Props) {
 
   return (
     <Modal>
-      <ModalBackdrop />
       <ModalInner size="52rem">
         <ModalActions />
         <DefaultModalContent
@@ -240,10 +238,7 @@ function WeaknessCard(props: WeaknessCardProps) {
   const isSelected = card.code === selectedCode;
 
   return (
-    <li
-      key={card.code}
-      className={`${css["list-item"]} ${isSelected ? css["selected"] : ""}`}
-    >
+    <li key={card.code} className={css["list-item"]}>
       <button
         className={css["card-container"]}
         data-testid="drafted-weakness"

@@ -243,7 +243,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
 
   return (
     <div className={cx(css["combobox"], className)} data-testid={id}>
-      <div className={cx(css["control"], !showLabel && readonly && "sr-only")}>
+      <div className={cx(!showLabel && readonly && "sr-only")}>
         <label
           className={cx(css["control-label"], !showLabel && "sr-only")}
           htmlFor={id}

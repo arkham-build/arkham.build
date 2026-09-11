@@ -10,7 +10,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "@/components/ui/modal";
 import {
@@ -132,7 +131,7 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
                   description={t("deck_edit.notes.toolbar.card_tooltip")}
                 />
               }
-              variant={popoverOpen === "cards" ? "primary" : "secondary"}
+              variant={popoverOpen === "cards" ? "primary" : undefined}
             >
               <i className="icon-card-outline" />
               {t("deck_edit.notes.toolbar.card")}
@@ -160,7 +159,7 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
                 />
               }
               size="sm"
-              variant={popoverOpen === "symbols" ? "primary" : "secondary"}
+              variant={popoverOpen === "symbols" ? "primary" : undefined}
             >
               <PilcrowIcon />
               {t("deck_edit.notes.toolbar.symbol")}
@@ -190,7 +189,6 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
             </DialogTrigger>
             <DialogContent>
               <Modal>
-                <ModalBackdrop />
                 <ModalInner size="48rem">
                   <ModalActions />
                   <DefaultModalContent

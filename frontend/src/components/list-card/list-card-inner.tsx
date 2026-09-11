@@ -209,7 +209,6 @@ export function ListCardInner(props: Props) {
             {!omitThumbnail && (
               <ListCardLink
                 card={card}
-                className={css["thumbnail-link"]}
                 disableModalOpen={disableModalOpen}
                 openModal={openModal}
                 referenceProps={cardLinkProps}
@@ -294,10 +293,7 @@ export function ListCardInner(props: Props) {
               {!omitDetails && size !== "xs" && (
                 <div className={css["meta"]}>
                   {card.type_code !== "investigator" && !card.subtype_code && (
-                    <MulticlassIcons
-                      card={card}
-                      className={css["multiclass"]}
-                    />
+                    <MulticlassIcons card={card} />
                   )}
 
                   {card.parallel &&

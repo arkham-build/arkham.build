@@ -16,7 +16,7 @@ export type Props<T extends ButtonType> = React.ComponentProps<T> & {
   rounded?: ButtonRounding;
   size?: "xxs" | "xs" | "sm" | "lg" | "xl" | "none";
   tooltip?: React.ReactNode;
-  variant?: "primary" | "secondary" | "danger" | "bare" | "link";
+  variant?: "primary" | "danger" | "bare" | "link";
 };
 
 export function Button<T extends "a" | "button" | "summary" | "label">(

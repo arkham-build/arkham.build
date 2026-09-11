@@ -53,7 +53,7 @@ export function DeckCollectionImport() {
       </PopoverTrigger>
       <PopoverContent>
         <form className={css["import"]} onSubmit={onFormSubmit}>
-          <header className={css["deck-collection-form-header"]}>
+          <header>
             <h3>{t("deck_collection.import_arkhamdb")}</h3>
           </header>
           <Field

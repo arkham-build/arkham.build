@@ -23,7 +23,6 @@ export function CardActions(props: Props) {
       <div className={css["actions-row"]}>
         {onChangeCardQuantity ? (
           <QuantityInput
-            className={css["actions-quantity"]}
             limit={cardLimit(card, listCardProps?.limitOverride)}
             limitOverride={listCardProps?.limitOverride}
             value={quantity}

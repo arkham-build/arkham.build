@@ -67,7 +67,7 @@ function Investigator2026Reveal() {
       <PageTitle>Investigator Starter Decks 2026 Reveal</PageTitle>
 
       <header className={css["header"]}>
-        <div className={css["header-nav"]}>
+        <div>
           <Masthead invert />
         </div>
         <h1>

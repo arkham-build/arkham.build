@@ -177,12 +177,7 @@ export function ListLayout(props: Props) {
               keybind="alt+1"
               description={t("lists.actions.toggle_sidebar")}
             >
-              <Button
-                className={css["toggle-sidebar"]}
-                onClick={toggleSidebar}
-                iconOnly
-                size="lg"
-              >
+              <Button onClick={toggleSidebar} iconOnly size="lg">
                 <i className="icon-deck" />
               </Button>
             </HotkeyTooltip>
@@ -192,12 +187,7 @@ export function ListLayout(props: Props) {
               keybind="alt+2"
               description={t("lists.actions.toggle_filters")}
             >
-              <Button
-                className={css["toggle-filters"]}
-                onClick={toggleFilters}
-                iconOnly
-                size="lg"
-              >
+              <Button onClick={toggleFilters} iconOnly size="lg">
                 <FilterIcon />
               </Button>
             </HotkeyTooltip>

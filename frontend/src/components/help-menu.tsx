@@ -49,11 +49,7 @@ export function HelpMenu() {
             </DropdownButton>
             <hr />
             <Link asChild href="~/about">
-              <DropdownButton
-                as="a"
-                className={css["about"]}
-                data-testid="masthead-about"
-              >
+              <DropdownButton as="a" data-testid="masthead-about">
                 {t("help.about")}
               </DropdownButton>
             </Link>

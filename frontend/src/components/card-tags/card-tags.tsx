@@ -16,7 +16,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
 import { CardTagLabel } from "./card-tag-label";
@@ -228,7 +227,7 @@ export function CardTagManager({ cardCode }: { cardCode: string }) {
                             required
                           />
                         </Field>
-                        <Button type="submit" variant="secondary">
+                        <Button type="submit">
                           {t("card_tags.manage.save")}
                         </Button>
                         <Button
@@ -250,7 +249,6 @@ export function CardTagManager({ cardCode }: { cardCode: string }) {
             </DefaultModalContent>
           </ModalInner>
         </Modal>
-        <ModalBackdrop />
       </DialogContent>
     </Dialog>
   );

@@ -75,7 +75,7 @@ export function EditorActions(props: Props) {
               <TriangleAlertIcon />
             </TooltipTrigger>
             <TooltipContent>
-              <div className={css["actions-invalid-tooltip"]}>
+              <div>
                 <DecklistValidation defaultOpen validation={validation} />
               </div>
             </TooltipContent>

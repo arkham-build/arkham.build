@@ -24,7 +24,7 @@ export function PreviewBanner() {
   return (
     <article className={css["preview"]} data-testid="preview-banner">
       <div className={css["content"]}>
-        <header className={css["header"]}>
+        <header>
           <h3 className={css["title"]}>
             <i className="encounters-core_2026" />
             {t("preview_banner.title")}

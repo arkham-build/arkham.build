@@ -15,7 +15,6 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckGroups } from "@/store/selectors/decks";
 import type { ViewMode } from "@/store/slices/lists.types";
 import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
-import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
 import { AnnotationIndicator } from "../annotation-indicator";
@@ -186,7 +185,7 @@ export function Decklist(props: Props) {
   useHotkey("alt+l", () => onSetViewMode("compact"));
 
   return (
-    <article className={cx(css["decklist-container"], className)}>
+    <article className={className}>
       <nav className={css["decklist-nav"]}>
         <ToggleGroup
           type="single"

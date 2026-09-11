@@ -69,7 +69,7 @@ export function ListLayoutNoSidebar(props: Props) {
       onClick={onContentClick}
     >
       <PageTitle>{titleString}</PageTitle>
-      <Masthead className={css["masthead"]}>
+      <Masthead>
         {!omitBackButton && (
           <Button onClick={goBack} variant="bare" size="sm">
             <ChevronLeftIcon /> {t("common.back")}
@@ -83,12 +83,7 @@ export function ListLayoutNoSidebar(props: Props) {
           {...rest}
           slotRight={
             !filtersOpen && (
-              <Button
-                className={css["toggle-filters"]}
-                onClick={() => setFiltersOpen(true)}
-                iconOnly
-                size="lg"
-              >
+              <Button onClick={() => setFiltersOpen(true)} iconOnly size="lg">
                 <FilterIcon />
               </Button>
             )

@@ -114,9 +114,7 @@ export function DeckHistoryEntry(props: {
         data.xp != null &&
         data.xpAdjustment != null &&
         data.xpSpent != null && (
-          <p className={css["entry-stats"]}>
-            {formatUpgradeXP(data.xp, data.xpAdjustment, data.xpSpent)}
-          </p>
+          <p>{formatUpgradeXP(data.xp, data.xpAdjustment, data.xpSpent)}</p>
         )}
       {children}
       <div className={css["entry-container"]}>

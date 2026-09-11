@@ -29,7 +29,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
 import { Plane } from "../ui/plane";
@@ -80,7 +79,6 @@ export function ConfigureEnvironmentModal(props: Props) {
 
   return (
     <Modal style={accentColor}>
-      <ModalBackdrop />
       <ModalInner size="60rem">
         <ModalActions />
         <DefaultModalContent

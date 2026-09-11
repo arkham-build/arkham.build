@@ -62,7 +62,6 @@ export function ArkhamDBDecklistResult({ result, showDetails }: Props) {
           />
           <Collapsible
             className={css["decklist-container"]}
-            triggerClassName={css["decklist-container-trigger"]}
             title={
               <span className={css["decklist-container-title"]}>
                 <i className="icon-deck" />

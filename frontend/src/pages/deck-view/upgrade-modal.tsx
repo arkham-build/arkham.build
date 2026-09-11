@@ -12,7 +12,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "@/components/ui/modal";
 import { Scroller } from "@/components/ui/scroller";
@@ -157,7 +156,6 @@ export function UpgradeModal(props: Props) {
 
   return (
     <Modal data-testid="upgrade-modal">
-      <ModalBackdrop />
       <ModalInner size="45rem">
         <ModalActions />
         <DefaultModalContent

@@ -101,7 +101,7 @@ function SidebarUpgrade(props: { deck: ResolvedDeck }) {
   if (!deck.previous_deck) return null;
 
   return (
-    <section className={css["details"]} data-testid="view-latest-upgrade">
+    <section data-testid="view-latest-upgrade">
       <DeckDetail
         as="div"
         icon={<i className="icon-upgrade" />}

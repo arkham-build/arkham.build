@@ -35,7 +35,7 @@ export function DecklistSection(props: Props) {
       className={cx(css["decklist-section"], css[columns])}
       style={maxColumns as React.CSSProperties}
     >
-      <header className={css["decklist-section-header"]}>
+      <header>
         <h3
           className={cx(css["decklist-section-title"], !showTitle && "sr-only")}
         >

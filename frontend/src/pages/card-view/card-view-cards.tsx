@@ -49,7 +49,7 @@ function CardViewSection(props: Props) {
   const { title, children, id } = props;
 
   return (
-    <section className={css["view-section"]} id={id} data-testid={id}>
+    <section id={id} data-testid={id}>
       <h2 className={css["view-section-title"]}>{title}</h2>
       <div className={css["view-section-cards"]}>{children}</div>
     </section>
@@ -183,10 +183,7 @@ function CardSetLink(props: {
   return (
     <Link to={url} asChild>
       <Button
-        className={cx(
-          css["card-set-button"],
-          shift < 0 ? css["prev"] : css["next"],
-        )}
+        className={cx(css["card-set-button"], shift > 0 && css["next"])}
         as="a"
       >
         {shift < 0 && <ChevronsLeftIcon />}
