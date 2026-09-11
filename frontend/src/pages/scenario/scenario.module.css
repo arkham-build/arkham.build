@@ -1,0 +1,21 @@
+.quantity {
+  flex: 0 0 auto;
+  font-size: var(--text-xs);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.title {
+  margin-top: 0.375rem;
+  align-items: center;
+  display: inline-flex;
+  gap: 0.375rem;
+}
+
+.title-icon {
+  flex: 0 0 auto;
+  font-size: var(--icon-lg);
+  height: 1.25em;
+  object-fit: contain;
+  width: 1.25em;
+}

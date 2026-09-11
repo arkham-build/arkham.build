@@ -14,6 +14,7 @@ type ScenarioRecord = {
   code: string;
   name: string;
   translations: ScenarioTranslation[];
+  variant_of_code: string | null;
 };
 
 type ScenarioTranslation = {
@@ -40,6 +41,7 @@ function resolveScenarios(scenarios: JsonDataScenario[]): ScenarioRecord[] {
     name: scenario.name,
     translations: [],
     campaign_code: scenario.campaign_code ?? null,
+    variant_of_code: scenario.variant_of_code ?? null,
   }));
 }
 

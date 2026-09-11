@@ -68,7 +68,7 @@ function Investigator2026Reveal() {
 
       <header className={css["header"]}>
         <div className={css["header-nav"]}>
-          <Masthead hideLocaleSwitch invert />
+          <Masthead invert />
         </div>
         <h1>
           <i className="icon-mystic fg-mystic" />

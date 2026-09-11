@@ -10,8 +10,10 @@ export function resolveCampaignRecords(campaigns: JsonDataCampaign[]) {
 
 type CampaignRecord = {
   code: string;
+  cycle_code: string;
   name: string;
   translations: CampaignTranslation[];
+  variant_of_code: string | null;
 };
 
 type CampaignTranslation = {
@@ -28,8 +30,10 @@ type CampaignScenarioRecord = {
 function resolveCampaigns(campaigns: JsonDataCampaign[]): CampaignRecord[] {
   return campaigns.map((campaign) => ({
     code: campaign.code,
+    cycle_code: campaign.cycle_code,
     name: campaign.name,
     translations: [],
+    variant_of_code: campaign.variant_of_code ?? null,
   }));
 }
 

@@ -1,0 +1,51 @@
+@layer ui-components {
+  .breadcrumb {
+    font-size: var(--text-xs);
+  }
+
+  .list {
+    align-items: center;
+    display: flex;
+    flex-flow: row wrap;
+    list-style: none;
+  }
+
+  .item {
+    align-items: center;
+    display: inline-flex;
+  }
+
+  .separator {
+    flex: 0 0 auto;
+    margin-inline: 0.25rem;
+    width: 0.75rem;
+    color: var(--palette-4);
+  }
+
+  .link,
+  .value {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.25rem;
+  }
+
+  .link {
+    color: inherit;
+  }
+
+  .icon {
+    align-items: center;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: var(--icon-sm);
+    height: 1em;
+    justify-content: center;
+    width: 1em;
+  }
+
+  .icon img {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+  }
+}

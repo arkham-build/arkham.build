@@ -40,6 +40,7 @@ import type {
   FanMadeContentFilter,
   FilterKey,
   FilterMapping,
+  GroupOrder,
   LevelFilter,
   List,
   ListDisplay,
@@ -668,11 +669,14 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         display,
         displaySortSelection,
         displaySettingsKey: opts.displaySettingsKey,
-        filters: cardsFilters({
-          additionalFilters: opts.additionalFilters ?? ["illustrator"],
-          showOwnershipFilter: opts.showOwnershipFilter,
-          showInvestigatorsFilter: opts.showOwnershipFilter,
-        }),
+        filters:
+          opts.filters ??
+          cardsFilters({
+            additionalFilters: opts.additionalFilters ?? ["illustrator"],
+            showOwnershipFilter: opts.showOwnershipFilter,
+            showInvestigatorsFilter: opts.showOwnershipFilter,
+          }),
+        groupOrder: opts.groupOrder,
         initialValues: values,
         key,
         systemFilter: and([
@@ -997,6 +1001,7 @@ type MakeListOptions = {
   displaySettingsKey?: string;
   displaySortSelection?: string;
   filters: FilterKey[];
+  groupOrder?: GroupOrder;
   initialValues?: Partial<Record<FilterKey, unknown>>;
   key: string;
   lockedFilters?: Set<FilterKey>;
@@ -1011,6 +1016,7 @@ function makeList({
   display,
   displaySettingsKey,
   displaySortSelection = DEFAULT_LIST_SORT_ID,
+  groupOrder,
   systemFilter,
   initialValues,
   search,
@@ -1027,6 +1033,7 @@ function makeList({
       return acc;
     }, {}),
     filtersEnabled: true,
+    groupOrder,
     display,
     displaySettingsKey,
     displaySortSelection,

@@ -147,6 +147,18 @@
     "browse": {
       "title": "Browse cards"
     },
+    "content": {
+      "empty": {
+        "campaigns": "No campaigns are available.",
+        "standalone_scenarios": "No standalone scenarios are available."
+      },
+      "tabs": {
+        "campaigns": "Campaigns",
+        "standalone_scenarios": "Standalone scenarios"
+      },
+      "title": "Content",
+      "unknown_release_year": "Unknown year"
+    },
     "card_modal": {
       "actions": {
         "complete_task": "Complete task",
@@ -1559,6 +1571,7 @@
     },
     "masthead": {
       "browse": "Browse",
+      "cards": "Cards",
       "navigation": "Primary navigation",
       "rules": "Rules"
     },

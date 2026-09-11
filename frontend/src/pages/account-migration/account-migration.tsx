@@ -31,7 +31,7 @@ function AccountMigration() {
       <PageTitle>{title}</PageTitle>
       <header className={css["header"]}>
         <div className={css["header-nav"]}>
-          <Masthead hideLocaleSwitch invert />
+          <Masthead invert />
         </div>
         <div className={css["header-backdrop"]}>
           <img

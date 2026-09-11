@@ -75,6 +75,7 @@ export type Props = {
   renderCardMetaExtra?: RenderCallback;
   renderCardTags?: RenderCallback;
   renderCardExtra?: RenderCallback;
+  renderCardNameExtra?: RenderCallback;
   size?: "xs" | "sm" | "investigator" | "standard";
   showCardText?: boolean;
   style?: React.CSSProperties;
@@ -117,6 +118,7 @@ export function ListCardInner(props: Props) {
     renderCardBefore,
     renderCardExtra,
     renderCardMetaExtra,
+    renderCardNameExtra,
     renderCardTags,
     showCardText,
     showInvestigatorIcons,
@@ -246,28 +248,31 @@ export function ListCardInner(props: Props) {
                       }
                       cardShowUniqueIcon={cardShowUniqueIcon}
                       slotAfter={
-                        ownedCount != null &&
-                        card.code !==
-                          SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS &&
-                        (!ownedCount ||
-                          (quantity != null && ownedCount < quantity)) && (
-                          <DefaultTooltip
-                            tooltip={
-                              quantity &&
-                              t("deck.stats.unowned", {
-                                count: quantity - ownedCount,
-                                total: quantity,
-                              })
-                            }
-                          >
-                            <span
-                              className={css["ownership"]}
-                              data-testid="ownership"
-                            >
-                              <FileWarningIcon />
-                            </span>
-                          </DefaultTooltip>
-                        )
+                        <>
+                          {renderCardNameExtra?.(card, quantity)}
+                          {ownedCount != null &&
+                            card.code !==
+                              SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS &&
+                            (!ownedCount ||
+                              (quantity != null && ownedCount < quantity)) && (
+                              <DefaultTooltip
+                                tooltip={
+                                  quantity &&
+                                  t("deck.stats.unowned", {
+                                    count: quantity - ownedCount,
+                                    total: quantity,
+                                  })
+                                }
+                              >
+                                <span
+                                  className={css["ownership"]}
+                                  data-testid="ownership"
+                                >
+                                  <FileWarningIcon />
+                                </span>
+                              </DefaultTooltip>
+                            )}
+                        </>
                       }
                     />
                   </ListCardLink>

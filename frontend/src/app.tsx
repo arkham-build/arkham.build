@@ -36,6 +36,10 @@ const AccountMigration = lazy(
 
 const BrowseRoutes = lazy(() => import("./pages/browse/index"));
 
+const Content = lazy(() => import("./pages/content/content"));
+
+const Scenario = lazy(() => import("./pages/scenario/scenario"));
+
 const DeckEdit = lazy(() => import("./pages/deck-edit/deck-edit"));
 
 const ChooseInvestigator = lazy(
@@ -158,6 +162,8 @@ function AppInner() {
                     component={BrowseRoutes}
                     path={/^\/browse(?:\/.*)?$/}
                   />
+                  <Route component={Content} path="/content" />
+                  <Route component={Scenario} path="/scenario/:code" />
                   <Route component={Search} path="/search" />
                   <Route component={CardView} path="/card/:code" />
                   <Route

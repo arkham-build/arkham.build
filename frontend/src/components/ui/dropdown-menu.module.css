@@ -64,3 +64,8 @@
   border-top: 1px solid var(--palette-2);
   margin-top: 0.5rem;
 }
+
+.title {
+  font-size: var(--text-sm);
+  color: var(--palette-4);
+}

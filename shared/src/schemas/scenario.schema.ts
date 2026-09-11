@@ -10,6 +10,7 @@ export const JsonDataScenarioSchema = z.object({
       cards: z.array(z.string()).nullish(),
     }),
   ),
+  variant_of_code: z.string().nullish(),
 });
 
 export type JsonDataScenario = z.infer<typeof JsonDataScenarioSchema>;

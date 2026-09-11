@@ -151,8 +151,10 @@ export interface ArkhamdbUser {
 
 export interface Campaign {
   code: string;
+  cycle_code: string;
   name: string;
   translations: { locale: string; name: string }[];
+  variant_of_code: string | null;
 }
 
 export interface CampaignScenario {
@@ -533,6 +535,7 @@ export interface Scenario {
   code: string;
   name: string;
   translations: { locale: string; name: string }[];
+  variant_of_code: string | null;
 }
 
 export interface ScenarioEncounterSet {
