@@ -16,11 +16,6 @@
   }
 }
 
-.tools-title {
-  line-height: inherit;
-  font-size: var(--text-xl);
-}
-
 .chart-container {
   margin-bottom: 2.5rem;
   display: flex;

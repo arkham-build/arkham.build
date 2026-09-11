@@ -47,10 +47,6 @@
   color: var(--text);
 }
 
-.control-toggle {
-  flex: 0 0 auto;
-}
-
 .menu {
   width: 100%;
   max-width: min(20rem, 50dvw);

@@ -148,10 +148,6 @@
   }
 }
 
-.footer {
-  grid-area: footer;
-}
-
 @starting-style {
   .filters.floating {
     transform: translateX(calc(100% + 1.5rem));

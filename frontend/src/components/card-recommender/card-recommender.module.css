@@ -68,14 +68,6 @@
   padding-inline: var(--scrollbar-padding);
 }
 
-.footer {
-  flex: 0 0 auto;
-
-  @media screen and (max-width: 52rem) {
-    display: none;
-  }
-}
-
 .toggle-decks-count {
   display: none;
   @media screen and (min-width: 36rem) {

@@ -113,10 +113,6 @@
   margin-bottom: 0.25rem;
 }
 
-.footer {
-  grid-area: footer;
-}
-
 .title {
   font-size: var(--text-2xl);
 }

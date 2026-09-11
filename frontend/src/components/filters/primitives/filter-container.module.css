@@ -13,10 +13,6 @@
   stroke: none;
 }
 
-.collapsible {
-  padding: 0.5rem 0;
-}
-
 .locked {
   border: 1px solid var(--palette-3);
 }

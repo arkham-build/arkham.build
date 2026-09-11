@@ -31,10 +31,6 @@
   width: 100%;
 }
 
-.type-filter {
-  padding-top: var(--filters-spacing-y);
-}
-
 .children {
   padding-top: var(--filters-spacing-y);
 }

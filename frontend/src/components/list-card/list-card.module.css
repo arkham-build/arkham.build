@@ -66,10 +66,6 @@
     grid-area: after;
   }
 
-  .listcard-after-inner {
-    display: inline-block;
-  }
-
   .listcard-wrapper.card-text {
     background-color: var(--palette-point-five);
     padding: 0.5em;
@@ -361,11 +357,6 @@
 
   .listcard-text > * + * {
     margin-top: 0.5em;
-  }
-
-  .annotation-icon svg {
-    color: var(--color-link);
-    fill: var(--color-link);
   }
 
   .listcard-wrapper.mythos .caption {

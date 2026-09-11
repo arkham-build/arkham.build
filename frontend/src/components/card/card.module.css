@@ -370,15 +370,6 @@
     height: 1em;
   }
 
-  .errata-content {
-    display: grid;
-    gap: 0.5rem;
-  }
-
-  .errata-content p {
-    margin: 0;
-  }
-
   .flavor {
     font-size: var(--card-text-size-sm);
     max-width: 60ch;

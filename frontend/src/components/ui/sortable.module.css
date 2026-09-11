@@ -26,12 +26,6 @@
   flex: 1 1 auto;
 }
 
-.item-actions {
-  display: inline-flex;
-  gap: 0.125rem;
-  flex: 0 0 auto;
-}
-
 .item-handle-button {
   cursor: grab;
   touch-action: none;

@@ -35,17 +35,8 @@
   }
 }
 
-.folder-icon {
-  font-size: var(--text-base);
-  filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.2));
-}
-
 [data-theme="light"] .folder {
   text-shadow: none;
-}
-
-[data-theme="light"] .folder-icon {
-  filter: none;
 }
 
 .count {

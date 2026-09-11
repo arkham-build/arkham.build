@@ -33,12 +33,6 @@
   width: 100%;
 }
 
-.position {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
 .cycle-subheader {
   display: flex;
   align-items: center;

@@ -8,11 +8,6 @@
   width: 100%;
   z-index: 90;
   container-type: inline-size;
-
-  &.center {
-    display: grid;
-    place-items: center;
-  }
 }
 
 .inner {
