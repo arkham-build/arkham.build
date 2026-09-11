@@ -1,6 +1,5 @@
 import type { Card } from "@arkham-build/shared";
 import { fuzzyMatch, prepareNeedle } from "@/utils/fuzzy";
-import { BackArray } from "./fields";
 import type {
   FieldType,
   FieldValue,
@@ -30,7 +29,16 @@ export class Interpreter {
   }
 
   evaluate(expr: Expr): (card: Card) => boolean {
-    return (card: Card) => this.evaluateExpr(expr, card);
+    if (!this.context.fieldLookupContext.matchBacks) {
+      return (card: Card) => this.evaluateExpr(expr, card);
+    }
+
+    const frontInterpreter = this.forSide("front");
+    const backInterpreter = this.forSide("back");
+
+    return (card: Card) =>
+      frontInterpreter.evaluateExpr(expr, card) ||
+      (this.hasBack(card) && backInterpreter.evaluateExpr(expr, card));
   }
 
   private evaluateExpr(expr: Expr, card: Card): boolean {
@@ -602,18 +610,9 @@ export class Interpreter {
     mode: "strict" | "loose",
     fieldType: FieldType | "unknown",
   ): boolean {
-    // BackArray (front/back values): any element not matching qualifies
-    if (left instanceof BackArray) {
-      return left.some((val) => this.notEquals(val, right, mode, fieldType));
-    }
-
-    // Regular arrays (multi-value fields): all elements must not match
+    // Multi-value fields do not match a negation if any value matches.
     if (Array.isArray(left)) {
       return left.every((val) => !this.equals(val, right, mode, fieldType));
-    }
-
-    if (right instanceof BackArray) {
-      return right.some((val) => this.notEquals(left, val, mode, fieldType));
     }
 
     if (Array.isArray(right)) {
@@ -621,6 +620,23 @@ export class Interpreter {
     }
 
     return !this.equals(left, right, mode, fieldType);
+  }
+
+  private forSide(side: "front" | "back"): Interpreter {
+    return new Interpreter({
+      ...this.context,
+      fieldLookupContext: {
+        ...this.context.fieldLookupContext,
+        matchBacks: false,
+        matchSide: side,
+      },
+    });
+  }
+
+  private hasBack(card: Card): boolean {
+    if (card.double_sided) return true;
+    if (!card.back_link_id) return false;
+    return !!this.context.fieldLookupContext.metadata.cards[card.back_link_id];
   }
 
   private normalizeString(str: string, trim: boolean): string {

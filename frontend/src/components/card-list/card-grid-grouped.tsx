@@ -117,6 +117,7 @@ export function CardGridGrouped(
       padded
       ref={setScrollParent as unknown as React.RefObject<HTMLDivElement | null>}
       type="always"
+      viewportClassName={css["scroll-viewport"]}
     >
       {data && (
         <Virtuoso

@@ -4,6 +4,10 @@
   border-bottom: 1px solid transparent;
 }
 
+.scroll-viewport {
+  isolation: isolate;
+}
+
 .group {
   position: relative;
   padding-top: 1rem;

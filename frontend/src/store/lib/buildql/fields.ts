@@ -24,12 +24,6 @@ import type {
   FieldType,
 } from "./interpreter.types";
 
-export class BackArray<T> extends Array<T> {
-  constructor(items: T[]) {
-    super(...items);
-  }
-}
-
 interface FieldDefinition {
   aliases?: string[];
   legacyAlias?: string;
@@ -593,7 +587,8 @@ const fieldDefinitions: FieldDefinition[] = [
 function backResolver(resolver: FieldLookup) {
   return (onlyReturnBackAttr = false) => {
     return (card: Card, ctx: FieldLookupContext) => {
-      if (!ctx.matchBacks && !onlyReturnBackAttr) return resolver(card, ctx);
+      const returnBackAttr = onlyReturnBackAttr || ctx.matchSide === "back";
+      if (!returnBackAttr) return resolver(card, ctx);
 
       let back: Card | undefined;
       if (card.double_sided) {
@@ -602,11 +597,7 @@ function backResolver(resolver: FieldLookup) {
         back = ctx.metadata.cards[card.back_link_id];
       }
 
-      if (onlyReturnBackAttr) return resolver(back ?? ({} as Card), ctx);
-
-      return back
-        ? new BackArray([resolver(card, ctx), resolver(back, ctx)].flat())
-        : resolver(card, ctx);
+      return resolver(back ?? ({} as Card), ctx);
     };
   };
 }
