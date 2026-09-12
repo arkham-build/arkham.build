@@ -112,6 +112,7 @@ function ScenarioContent({
                 ...(campaign
                   ? [
                       {
+                        href: `/campaign/${campaign.code}`,
                         icon: <PackIcon code={campaign.code} />,
                         label: displayPackName(campaign),
                       },

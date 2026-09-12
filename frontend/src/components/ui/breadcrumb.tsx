@@ -59,7 +59,7 @@ function BreadcrumbItemContent({ item }: { item: BreadcrumbItem }) {
           {item.icon}
         </span>
       )}
-      <span>{item.label}</span>
+      <span className={css["label"]}>{item.label}</span>
     </>
   );
 }

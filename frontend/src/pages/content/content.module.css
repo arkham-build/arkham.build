@@ -17,6 +17,12 @@
   justify-content: space-between;
 }
 
+.campaign-link {
+  inset: 0;
+  position: absolute;
+  z-index: 1;
+}
+
 .release-year {
   flex: 0 0 auto;
   font-size: var(--text-sm);

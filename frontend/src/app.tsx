@@ -38,6 +38,8 @@ const BrowseRoutes = lazy(() => import("./pages/browse/index"));
 
 const Content = lazy(() => import("./pages/content/content"));
 
+const Campaign = lazy(() => import("./pages/campaign/campaign"));
+
 const Scenario = lazy(() => import("./pages/scenario/scenario"));
 
 const DeckEdit = lazy(() => import("./pages/deck-edit/deck-edit"));
@@ -163,6 +165,7 @@ function AppInner() {
                     path={/^\/browse(?:\/.*)?$/}
                   />
                   <Route component={Content} path="/content" />
+                  <Route component={Campaign} path="/campaign/:id" />
                   <Route component={Scenario} path="/scenario/:code" />
                   <Route component={Search} path="/search" />
                   <Route component={CardView} path="/card/:code" />

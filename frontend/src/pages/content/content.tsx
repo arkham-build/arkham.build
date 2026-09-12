@@ -79,6 +79,13 @@ function CampaignCard({ entry }: { entry: CampaignListEntry }) {
       bannerAlt={`${displayPackName(campaign)} backdrop`}
       bannerUrl={`/assets/cycles/${cycle.code}.avif`}
       classNames={{ content: css["campaign-content"] }}
+      headerSlot={
+        <a
+          aria-label={displayPackName(campaign)}
+          className={css["campaign-link"]}
+          href={`/campaign/${campaign.code}`}
+        />
+      }
       title={
         <div className={css["media-card-title"]}>
           <span className={css["media-card-name"]}>

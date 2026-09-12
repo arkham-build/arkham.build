@@ -31,6 +31,12 @@
 
   .link {
     color: inherit;
+    text-decoration: none;
+  }
+
+  .link .label {
+    text-decoration: underline;
+    text-decoration-style: dotted;
   }
 
   .icon {

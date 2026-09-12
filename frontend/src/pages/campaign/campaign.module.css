@@ -6,12 +6,9 @@
 }
 
 .title {
-  margin-top: 0.25rem;
   align-items: center;
   display: inline-flex;
   gap: 0.375rem;
-  line-height: 1;
-  font-size: var(--text-lg);
 }
 
 .title-icon {

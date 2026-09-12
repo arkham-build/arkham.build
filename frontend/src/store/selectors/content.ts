@@ -145,7 +145,10 @@ function groupCampaignVariants(metadata: Metadata) {
   return variants;
 }
 
-function resolveCampaignScenarios(campaign: Campaign, metadata: Metadata) {
+export function resolveCampaignScenarios(
+  campaign: Campaign,
+  metadata: Metadata,
+) {
   return campaign.scenarios.map((scenarioCode) => {
     const scenario = metadata.scenarios[scenarioCode];
     assert(
