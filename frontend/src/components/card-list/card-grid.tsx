@@ -23,31 +23,16 @@ export function CardGrid(
 ) {
   const { data, defaultFlipped, scanMaxColumns, search, ...rest } = props;
 
-  const openCardModal = useStore((state) => state.openCardModal);
-
   const virtuosoRef = useRef<VirtuosoHandle>(null);
 
   const [scrollParent, setScrollParentState] = useState<
     HTMLElement | undefined
   >();
-  const [currentTop, setCurrentTop] = useState<number>(-1);
   const [highlighted, setHighlighted] = useState<number | null>(null);
 
   const [setMeasureRef, rect] = useMeasure();
 
-  const onScrollChange = useCallback(() => {
-    setCurrentTop(-1);
-  }, []);
-
   useEffect(() => {
-    scrollParent?.addEventListener("wheel", onScrollChange, { passive: true });
-    return () => {
-      scrollParent?.removeEventListener("wheel", onScrollChange);
-    };
-  }, [scrollParent, onScrollChange]);
-
-  useEffect(() => {
-    setCurrentTop(-1);
     virtuosoRef.current?.scrollToIndex(0);
   }, [search, data?.cards.length, rest.listDisplay]);
 
@@ -128,28 +113,12 @@ export function CardGrid(
       });
     }
 
-    function onKeyboardNavigate(evt: Event) {
-      const key = (evt as CustomEvent).detail;
-
-      if (!data?.cards.length) return;
-
-      if (key === "Enter" && currentTop > -1) {
-        openCardModal(data.cards[currentTop].code);
-      }
-
-      if (key === "Escape") {
-        setCurrentTop(-1);
-      }
-    }
-
     window.addEventListener("list-select-group", onSelectGroup);
-    window.addEventListener("list-keyboard-navigate", onKeyboardNavigate);
 
     return () => {
       window.removeEventListener("list-select-group", onSelectGroup);
-      window.removeEventListener("list-keyboard-navigate", onKeyboardNavigate);
     };
-  }, [data, openCardModal, currentTop, cols]);
+  }, [data, cols]);
 
   return (
     <Scroller

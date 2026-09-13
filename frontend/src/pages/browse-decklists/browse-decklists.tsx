@@ -1,5 +1,5 @@
 import { ArrowDownWideNarrowIcon, LoaderCircleIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "wouter";
 import { ArkhamDBDecklistResult } from "@/components/arkhamdb-decklists/arkhamdb-decklist-result";
@@ -31,19 +31,17 @@ function BrowseDecklists() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const initialSearchParams = useRef(searchParams);
+  const [initialFilters] = useState(
+    () => parseDeckSearchQuery(searchParams).filters,
+  );
 
-  const [state, setState] = useState(parseDeckSearchQuery(searchParams));
-
-  useEffect(() => {
-    setState(parseDeckSearchQuery(searchParams));
-  }, [searchParams]);
+  const state = parseDeckSearchQuery(searchParams);
 
   const { data, isPending, error, isPlaceholderData } =
     useDecklistsSearchQuery(state);
 
   const onOffsetChange = (offset: number) => {
     const nextState = { ...state, offset };
-    setState(nextState);
     setSearchParams(deckSearchQuery(nextState, 30));
     if (window.scrollY > window.innerHeight) {
       navRef.current?.scrollIntoView({
@@ -55,19 +53,15 @@ function BrowseDecklists() {
 
   const onFiltersChange = (filters: DecklistsFiltersState["filters"]) => {
     const nextState = { ...state, filters, offset: 0 };
-    setState(nextState);
     setSearchParams(deckSearchQuery(nextState, 30));
   };
 
   const onFiltersReset = () => {
-    const initialState = parseDeckSearchQuery(initialSearchParams.current);
-    setState(initialState);
     setSearchParams(initialSearchParams.current);
   };
 
   const onSortByChange = (sort_by: SortType) => {
     const nextState = { ...state, sort_by, offset: 0 };
-    setState(nextState);
     setSearchParams(deckSearchQuery(nextState, 30));
   };
 
@@ -88,6 +82,7 @@ function BrowseDecklists() {
           key={JSON.stringify(state.filters)}
           onFiltersChange={onFiltersChange}
           onFiltersReset={onFiltersReset}
+          resetFilters={initialFilters}
         />
         {data && (
           <>

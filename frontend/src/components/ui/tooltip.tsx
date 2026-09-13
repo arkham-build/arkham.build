@@ -1,5 +1,5 @@
 import { FloatingPortal, useMergeRefs } from "@floating-ui/react";
-import { cloneElement, isValidElement, memo } from "react";
+import { isValidElement, memo } from "react";
 import { cx } from "@/utils/cx";
 import {
   TooltipContext,
@@ -37,18 +37,18 @@ export function TooltipTrigger({
   // `asChild` allows the user to pass any element as the anchor
   if (asChild && isValidElement(children)) {
     // oxlint-disable-next-line typescript/no-explicit-any -- safe.
-    const { ref: _, ...childProps } = (children as React.ReactElement<any>)
-      .props;
-    return cloneElement(
-      children as React.ReactElement,
-      context.getReferenceProps({
-        ref,
-        ...props,
-        ...childProps,
-        className: cx(props.className, childProps.className),
-        "data-tooltip-state": context.open ? "open" : "closed",
-      } as React.HTMLProps<Element>),
-    );
+    const child = children as React.ReactElement<any>;
+    const { ref: _, ...childProps } = child.props;
+    const Child = child.type;
+
+    const referenceProps = context.getReferenceProps({
+      ...props,
+      ...childProps,
+      className: cx(props.className, childProps.className),
+      "data-tooltip-state": context.open ? "open" : "closed",
+    } as React.HTMLProps<Element>);
+
+    return <Child key={child.key ?? undefined} {...referenceProps} ref={ref} />;
   }
 
   return (

@@ -106,7 +106,7 @@ export function CardModal(props: Props) {
 
     const nextCode = completeTask(ctx.resolvedDeck.id, cardWithRelations.card);
     openCardModal(nextCode);
-  }, [completeTask, ctx.resolvedDeck, cardWithRelations?.card, openCardModal]);
+  }, [completeTask, ctx.resolvedDeck, cardWithRelations, openCardModal]);
 
   const canRenderFull = useMedia("(min-width: 45rem)");
   const hasSidebar = useMedia("(min-width: 42rem)");

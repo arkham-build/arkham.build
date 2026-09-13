@@ -47,7 +47,7 @@ export function QuickUpgrade(props: Props) {
   const slots = currentTab === "extraSlots" ? "extraSlots" : "slots";
 
   const {
-    refs,
+    refs: { setFloating, setReference },
     referenceProps,
     isMounted,
     floatingStyles,
@@ -97,7 +97,7 @@ export function QuickUpgrade(props: Props) {
     <>
       {!hideButton && (
         <Button
-          ref={refs.setReference}
+          ref={setReference}
           {...referenceProps}
           iconOnly
           data-testid="quick-upgrade"
@@ -110,7 +110,7 @@ export function QuickUpgrade(props: Props) {
       )}
       {!hideButton && isMounted && (
         <FloatingPortal id={FLOATING_PORTAL_ID}>
-          <div ref={refs.setFloating} style={floatingStyles}>
+          <div ref={setFloating} style={floatingStyles}>
             <div style={transitionStyles}>
               <div className={css["upgrade-tooltip"]}>
                 {resolvedUpgrades.map((upgrade) => {

@@ -64,7 +64,10 @@ type Filterable = {
   meta: FanMadeProject["meta"];
 };
 
-export function FanMadeContent(props: SettingProps) {
+export function FanMadeContent(
+  props: SettingProps & { headerPortalTarget: HTMLElement | null },
+) {
+  const { headerPortalTarget, ...settingProps } = props;
   const [searchParams] = useSearchParams();
 
   // TECH DEBT: the current preview implementation re-uses the card grid.
@@ -107,8 +110,12 @@ export function FanMadeContent(props: SettingProps) {
 
   return (
     <div className={css["container"]}>
-      <DisplaySettings {...props} />
-      <FanMadeSearch search={search} onSearchChange={searchChange} />
+      <DisplaySettings {...settingProps} />
+      <FanMadeSearch
+        portalTarget={headerPortalTarget}
+        search={search}
+        onSearchChange={searchChange}
+      />
       <Collection
         onAddProject={onAddProject}
         listingsQuery={listingsQuery}
@@ -226,24 +233,14 @@ function DisplaySettings(props: SettingProps) {
 }
 
 type SearchProps = {
+  portalTarget: HTMLElement | null;
   search: string;
   onSearchChange: (val: string) => void;
 };
 
-function FanMadeSearch({ search, onSearchChange }: SearchProps) {
+function FanMadeSearch({ portalTarget, search, onSearchChange }: SearchProps) {
   const { t } = useTranslation();
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(
-    document.getElementById("settings-header-portal"),
-  );
-
   const ref = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    if (!portalTarget) {
-      const target = document.getElementById("settings-header-portal");
-      setPortalTarget(target);
-    }
-  }, [portalTarget]);
 
   const onFocusSearch = useCallback(() => {
     if (ref.current) {
@@ -662,11 +659,11 @@ function QuickInstallDialog({
   const validation = data ? FanMadeProjectSchema.safeParse(data) : undefined;
   const project = validation?.success ? validation.data : undefined;
 
-  const onInstall = useCallback(async () => {
+  async function onInstall() {
     if (!project) return;
     await onAddProject(project);
     setOpen(false);
-  }, [onAddProject, project]);
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useStore } from "@/store";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { CardModal } from "./card-modal";
@@ -11,12 +11,11 @@ export function CardModalProvider(props: Props) {
   const cardModal = useStore((state) => state.ui.cardModal);
   const closeCardModal = useStore((state) => state.closeCardModal);
 
-  const [previousCardModal, setPreviousCardModal] = useState(cardModal);
-  const visibleCardModal = cardModal.code ? cardModal : previousCardModal;
+  const [visibleCardModal, setVisibleCardModal] = useState(cardModal);
 
-  useEffect(() => {
-    if (cardModal.code) setPreviousCardModal(cardModal);
-  }, [cardModal]);
+  if (cardModal.code && cardModal !== visibleCardModal) {
+    setVisibleCardModal(cardModal);
+  }
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Redirect, useSearchParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
@@ -39,7 +39,6 @@ function Search() {
   const setSearchFlag = useStore((state) => state.setSearchFlag);
   const setSearchValue = useStore((state) => state.setSearchValue);
   const removeList = useStore((state) => state.removeList);
-  const mounted = useRef(false);
   const syncedCardType = useRef(cardType);
 
   useEffect(() => {
@@ -94,11 +93,27 @@ function Search() {
     return null;
   }
 
-  if (!mounted.current && listCards?.cards.length === 1) {
-    return <Redirect to={`/card/${listCards.cards[0].code}`} />;
-  }
+  const onlyCard =
+    listCards?.cards.length === 1 ? listCards.cards.at(0) : undefined;
 
-  mounted.current = true;
+  const initialRedirectPath = onlyCard ? `/card/${onlyCard.code}` : undefined;
+
+  return (
+    <SearchContent initialRedirectPath={initialRedirectPath} title={title} />
+  );
+}
+
+interface SearchContentProps {
+  initialRedirectPath: string | undefined;
+  title: string;
+}
+
+function SearchContent({ initialRedirectPath, title }: SearchContentProps) {
+  const [redirectPath] = useState(initialRedirectPath);
+
+  if (redirectPath) {
+    return <Redirect to={redirectPath} />;
+  }
 
   return (
     <CardModalProvider>

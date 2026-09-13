@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";
@@ -66,7 +66,9 @@ export function Slider(props: Props) {
   const startValueRef = useRef(value);
   const valueRef = useRef(value);
 
-  valueRef.current = value;
+  useLayoutEffect(() => {
+    valueRef.current = value;
+  }, [value]);
 
   const updateValue = useCallback(
     (nextValue: number, index: number, commit = false) => {

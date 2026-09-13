@@ -104,11 +104,28 @@ export function Combobox<T extends Coded>(props: Props<T>) {
 
   const { t } = useTranslation();
 
-  const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
-  const [isOpen, setOpen] = useState(defaultOpen);
+  const [activeIndex, setActiveIndex] = useState<number | undefined>(
+    defaultOpen ? 0 : undefined,
+  );
+  const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
   const [inputValue, setInputValue] = useState("");
 
-  const { context, refs, floatingStyles } = useFloating({
+  const setOpen = useCallback(
+    (nextOpen: boolean) => {
+      if (nextOpen === isOpen) return;
+
+      setIsOpen(nextOpen);
+      setActiveIndex(nextOpen ? 0 : undefined);
+    },
+    [isOpen],
+  );
+
+  const {
+    context,
+    elements,
+    refs: { setFloating, setReference },
+    floatingStyles,
+  } = useFloating({
     whileElementsMounted: autoUpdate,
     placement: "bottom-start",
     strategy: omitFloatingPortal ? "absolute" : "fixed",
@@ -173,6 +190,13 @@ export function Combobox<T extends Coded>(props: Props<T>) {
     return result;
   }, [creatable, filteredItems, inputValue, itemToString, items]);
 
+  const normalizedActiveIndex =
+    !isOpen || menuItems.length === 0
+      ? undefined
+      : activeIndex == null || activeIndex >= menuItems.length
+        ? 0
+        : activeIndex;
+
   const setSelectedItem = useCallback(
     (item: T) => {
       const next = [...selectedItems] as T[];
@@ -191,16 +215,17 @@ export function Combobox<T extends Coded>(props: Props<T>) {
         setOpen(false);
       }
 
-      const ref = refs.reference.current;
+      const ref = elements.reference;
 
       if (ref instanceof HTMLInputElement) {
         setInputValue("");
+        setActiveIndex(0);
         if (ref && document.activeElement !== ref) {
           ref.focus();
         }
       }
     },
-    [refs.reference, onValueChange, selectedItems, limit],
+    [elements.reference, onValueChange, selectedItems, limit, setOpen],
   );
 
   const setSelectedMenuItem = useCallback(
@@ -212,15 +237,16 @@ export function Combobox<T extends Coded>(props: Props<T>) {
 
       creatable?.onCreate(menuItem.value);
       setInputValue("");
+      setActiveIndex(0);
       setOpen(false);
 
-      const ref = refs.reference.current;
+      const ref = elements.reference;
 
       if (ref instanceof HTMLInputElement && document.activeElement !== ref) {
         ref.focus();
       }
     },
-    [creatable, refs.reference, setSelectedItem],
+    [creatable, elements.reference, setOpen, setSelectedItem],
   );
 
   const removeSelectedItem = useCallback(
@@ -234,16 +260,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
 
   useEffect(() => {
     listRef.current = [];
-    setActiveIndex(menuItems.length > 0 ? 0 : undefined);
   }, [menuItems.length]);
-
-  useEffect(() => {
-    if (isOpen) {
-      setActiveIndex(0);
-    } else {
-      setActiveIndex(undefined);
-    }
-  }, [isOpen]);
 
   return (
     <div className={cx(css["combobox"], className)} data-testid={id}>
@@ -259,7 +276,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
             <input
               autoComplete="off"
               data-testid="combobox-input"
-              ref={refs.setReference}
+              ref={setReference}
               {...getReferenceProps({
                 id,
                 className: css["control-input"],
@@ -279,28 +296,34 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                     setOpen(false);
                     (evt.target as HTMLInputElement)?.blur();
                     onEscapeBlur?.();
-                  } else if (evt.key === "Enter" && activeIndex != null) {
+                  } else if (
+                    evt.key === "Enter" &&
+                    normalizedActiveIndex != null
+                  ) {
                     evt.preventDefault();
-                    const activeItem = menuItems[activeIndex];
+                    const activeItem = menuItems[normalizedActiveIndex];
                     if (activeItem) {
                       setSelectedMenuItem(activeItem);
                       setOpen(false);
                     }
                   } else if (evt.key === "ArrowDown") {
                     evt.preventDefault();
-                    setActiveIndex((prev) => {
-                      if (menuItems.length === 0) return undefined;
-                      if (activeIndex == null || prev == null) return 0;
-                      return prev < menuItems.length - 1 ? prev + 1 : prev;
-                    });
+                    setActiveIndex(
+                      normalizedActiveIndex == null
+                        ? 0
+                        : Math.min(
+                            normalizedActiveIndex + 1,
+                            menuItems.length - 1,
+                          ),
+                    );
                     if (!isOpen) setOpen(true);
                   } else if (evt.key === "ArrowUp") {
                     evt.preventDefault();
-                    setActiveIndex((prev) => {
-                      if (menuItems.length === 0) return undefined;
-                      if (prev == null) return 0;
-                      return prev > 0 ? prev - 1 : prev;
-                    });
+                    setActiveIndex(
+                      normalizedActiveIndex == null
+                        ? 0
+                        : Math.max(normalizedActiveIndex - 1, 0),
+                    );
                     if (!isOpen) setOpen(true);
                   } else if (
                     !isOpen &&
@@ -318,6 +341,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                 onChange(evt: React.ChangeEvent<HTMLInputElement>) {
                   if (evt.target instanceof HTMLInputElement) {
                     setInputValue(evt.target.value);
+                    setActiveIndex(0);
                   }
                 },
                 onPaste() {
@@ -339,14 +363,12 @@ export function Combobox<T extends Coded>(props: Props<T>) {
             <div
               className={css["menu"]}
               data-testid="combobox-menu"
-              ref={refs.setFloating}
+              ref={setFloating}
               style={floatingStyles}
-              {...getFloatingProps({
-                ref: refs.setFloating,
-              })}
+              {...getFloatingProps()}
             >
               <ComboboxMenu
-                activeIndex={activeIndex}
+                activeIndex={normalizedActiveIndex}
                 items={menuItems}
                 listRef={listRef}
                 noResultsLabel={noResultsLabel ?? t("common.no_results")}

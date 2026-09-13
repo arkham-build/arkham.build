@@ -61,11 +61,16 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
 
   const [open, setOpen] = useState(!!initialOpen);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
 
   const selectedIndex = items.findIndex((item) => item.value === value);
   const selectedItem = items[selectedIndex];
 
-  const { refs, floatingStyles, context } = usePopover({
+  const {
+    refs: { setFloating, setReference },
+    floatingStyles,
+    context,
+  } = usePopover({
     placement: "bottom",
     open,
     onOpenChange: setOpen,
@@ -83,7 +88,6 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
 
   const elementsRef = useRef<(HTMLElement | null)[]>([]);
   const labelsRef = useRef(items.map(itemToString));
-  const isTypingRef = useRef(false);
 
   const listNav = useListNavigation(context, {
     listRef: elementsRef,
@@ -103,9 +107,7 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
         onSelectItem(index);
       }
     },
-    onTypingChange(isTyping) {
-      isTypingRef.current = isTyping;
-    },
+    onTypingChange: setIsTyping,
   });
 
   const click = useClick(context);
@@ -118,11 +120,7 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
 
   const menuNode = open ? (
     <FloatingFocusManager context={context} modal={false}>
-      <div
-        ref={refs.setFloating}
-        style={floatingStyles}
-        {...getFloatingProps()}
-      >
+      <div ref={setFloating} style={floatingStyles} {...getFloatingProps()}>
         <div className={cx(css["menu"], menuClassName)}>
           <Scroller>
             <FloatingList elementsRef={elementsRef} labelsRef={labelsRef}>
@@ -136,7 +134,7 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
                         onSelectItem(index);
                       }
 
-                      if (event.key === " " && !isTypingRef.current) {
+                      if (event.key === " " && !isTyping) {
                         event.preventDefault();
                         onSelectItem(index);
                       }
@@ -165,7 +163,7 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
         className={css["control"]}
         data-testid="custom-select-control"
         disabled={disabled}
-        ref={refs.setReference}
+        ref={setReference}
         type="button"
       >
         {(renderControl || renderItem)(selectedItem)}

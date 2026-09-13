@@ -5,7 +5,7 @@ import {
   useMergeRefs,
   useTransitionStyles,
 } from "@floating-ui/react";
-import { cloneElement, isValidElement } from "react";
+import { isValidElement } from "react";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import type { DialogOptions } from "./dialog.hooks";
 import {
@@ -45,17 +45,17 @@ export function DialogTrigger({
   // `asChild` allows the user to pass any element as the anchor
   if (asChild && isValidElement(children)) {
     // oxlint-disable-next-line typescript/no-explicit-any -- safe.
-    const { ref: _, ...childProps } = (children as React.ReactElement<any>)
-      .props;
-    return cloneElement(
-      children as React.ReactElement,
-      context.getReferenceProps({
-        ref,
-        ...props,
-        ...childProps,
-        "data-state": context.open ? "open" : "closed",
-      } as React.HTMLProps<Element>),
-    );
+    const child = children as React.ReactElement<any>;
+    const { ref: _, ...childProps } = child.props;
+    const Child = child.type;
+
+    const referenceProps = context.getReferenceProps({
+      ...props,
+      ...childProps,
+      "data-state": context.open ? "open" : "closed",
+    } as React.HTMLProps<Element>);
+
+    return <Child key={child.key ?? undefined} {...referenceProps} ref={ref} />;
   }
 
   return (
@@ -69,7 +69,11 @@ export function DialogTrigger({
   );
 }
 
-export function DialogContent(props: React.HTMLProps<HTMLElement>) {
+export function DialogContent({
+  children,
+  ref: propRef,
+  ...props
+}: React.HTMLProps<HTMLElement>) {
   const { context: floatingContext, ...context } = useDialogContextChecked();
 
   const { isMounted, styles } = useTransitionStyles(floatingContext, {
@@ -90,7 +94,7 @@ export function DialogContent(props: React.HTMLProps<HTMLElement>) {
 
   const ref = useMergeRefs([
     context.refs.setFloating,
-    props.ref,
+    propRef,
   ] as React.Ref<HTMLDivElement>[]);
 
   if (!isMounted) return null;
@@ -108,7 +112,7 @@ export function DialogContent(props: React.HTMLProps<HTMLElement>) {
             ref={ref}
           >
             <DialogTransitionStylesContext value={styles}>
-              {props.children}
+              {children}
             </DialogTransitionStylesContext>
           </div>
         </FloatingFocusManager>
