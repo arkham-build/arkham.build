@@ -599,8 +599,14 @@ function ProjectCard(props: {
           <nav className={css["actions"]}>{children}</nav>
         </div>
       }
-      bannerAlt={meta.name}
-      bannerUrl={meta.banner_url}
+      banner={
+        meta.banner_url
+          ? {
+              alt: meta.name,
+              src: meta.banner_url,
+            }
+          : undefined
+      }
       title={<h3 data-testid="collection-project-title">{meta.name}</h3>}
     >
       <h4>{meta.author}</h4>

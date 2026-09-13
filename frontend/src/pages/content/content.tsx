@@ -16,7 +16,10 @@ import {
   selectStandaloneScenarioGroups,
 } from "@/store/selectors/content";
 import { displayPackName } from "@/utils/formatting";
-import { shortenCampaignVariantName } from "./content.helpers";
+import {
+  contentBannerConstraints,
+  shortenCampaignVariantName,
+} from "@/utils/content";
 import css from "./content.module.css";
 import { Button } from "@/components/ui/button";
 
@@ -70,14 +73,17 @@ function Content() {
 }
 
 function CampaignCard({ entry }: { entry: CampaignListEntry }) {
-  const { campaign, cycle, releaseYear, scenarios, variants } = entry;
+  const { campaign, releaseYear, scenarios, variants } = entry;
   const versions = [{ campaign, scenarios }, ...variants];
   const [activeVersion, setActiveVersion] = useState(campaign.code);
 
   return (
     <MediaCard
-      bannerAlt={`${displayPackName(campaign)} backdrop`}
-      bannerUrl={`/assets/cycles/${cycle.code}.avif`}
+      banner={{
+        alt: `${displayPackName(campaign)} backdrop`,
+        src: `/assets/content/banners/${campaign.code}.avif`,
+        constraints: contentBannerConstraints(campaign.code),
+      }}
       classNames={{ content: css["campaign-content"] }}
       headerSlot={
         <a
@@ -120,8 +126,11 @@ function StandaloneCard({ group }: { group: StandaloneScenarioGroup }) {
 
   return (
     <MediaCard
-      bannerAlt={`${displayPackName(cycle)} backdrop`}
-      bannerUrl={`/assets/cycles/${cycle.code}.avif`}
+      banner={{
+        alt: `${displayPackName(cycle)} backdrop`,
+        src: `/assets/content/banners/${cycle.code}.avif`,
+        constraints: contentBannerConstraints(cycle.code),
+      }}
       title={
         <div className={css["media-card-title"]}>
           <span className={css["media-card-name"]}>

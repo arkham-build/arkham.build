@@ -16,3 +16,22 @@ export function shortenCampaignVariantName(
 
   return prefix ? `${prefix}...` : variantName;
 }
+
+export function contentBannerConstraints(code: string) {
+  switch (code) {
+    case "cob":
+    case "core_ch2":
+    case "tde":
+    case "tde_b":
+    case "tcu":
+    case "parallel":
+    case "promo":
+    case "return":
+    case "small_campaign_expansions":
+      return { position: "top" };
+    case "side_stories":
+      return { position: "bottom" };
+    default:
+      return undefined;
+  }
+}

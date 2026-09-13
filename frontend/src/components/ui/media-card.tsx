@@ -1,9 +1,16 @@
 import { cx } from "@/utils/cx";
 import css from "./media-card.module.css";
 
+type Banner = {
+  alt: string;
+  src: string;
+  constraints?: {
+    position?: React.CSSProperties["objectPosition"];
+  };
+};
+
 type Props = {
-  bannerAlt?: string;
-  bannerUrl?: string | null;
+  banner?: Banner;
   children: React.ReactNode;
   headerSlot?: React.ReactNode;
   footerSlot?: React.ReactNode;
@@ -17,25 +24,20 @@ type Props = {
 };
 
 export function MediaCard(props: Props) {
-  const {
-    bannerAlt,
-    bannerUrl,
-    children,
-    classNames,
-    footerSlot,
-    headerSlot,
-    title,
-  } = props;
+  const { banner, children, classNames, footerSlot, headerSlot, title } = props;
 
   return (
     <article className={cx(css["card"], classNames?.container)}>
       <header className={cx(css["header"], classNames?.header)}>
-        {bannerUrl && (
+        {banner && (
           <img
-            alt={bannerAlt}
+            alt={banner.alt}
             className={css["backdrop"]}
             loading="lazy"
-            src={bannerUrl}
+            src={banner.src}
+            style={{
+              objectPosition: banner.constraints?.position ?? "auto",
+            }}
           />
         )}
         <div className={cx("blurred-background", css["title"])}>{title}</div>

@@ -22,6 +22,7 @@ import { CollectionChapterActions } from "./collection-chapter-actions";
 import { CollectionCount } from "./collection-count";
 import { CollectionCycleActions } from "./collection-cycle-actions";
 import { CollectionPack } from "./collection-pack";
+import { contentBannerConstraints } from "@/utils/content";
 
 type Props = {
   canShowCounts?: boolean;
@@ -167,8 +168,11 @@ export function CollectionSettings(props: Props) {
               {cycles.map((cycle) => (
                 <MediaCard
                   key={cycle.code}
-                  bannerAlt={`Cycle ${displayPackName(cycle)} backdrop`}
-                  bannerUrl={`/assets/cycles/${cycle.code}.avif`}
+                  banner={{
+                    alt: `Cycle ${displayPackName(cycle)} backdrop`,
+                    src: `/assets/content/banners/${cycle.code}.avif`,
+                    constraints: contentBannerConstraints(cycle.code),
+                  }}
                   title={
                     <div className={css["cycle-header-container"]}>
                       <div className={css["cycle-label"]}>
