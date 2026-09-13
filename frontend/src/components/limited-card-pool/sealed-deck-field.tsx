@@ -23,7 +23,7 @@ export function SealedDeckField(props: {
   const onChangeFile = useCallback(
     async (evt: React.ChangeEvent<HTMLInputElement>) => {
       const { files } = evt.target;
-      if (!files || !files.length) return;
+      if (!files?.length) return;
 
       const file = files[0];
       const fileText = await file.text();

@@ -525,7 +525,7 @@ export class Interpreter {
     }
 
     if (typeof left === "boolean" && typeof right === "boolean") {
-      return !!left === !!right;
+      return left === right;
     }
 
     if (typeof left === "string" && typeof right === "string") {

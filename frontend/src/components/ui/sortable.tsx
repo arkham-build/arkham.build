@@ -194,14 +194,11 @@ function Item(props: ItemProps) {
   );
 }
 
-function readId<T extends SortableData>(data: T) {
+function readId(data: SortableData) {
   return typeof data === "object" ? data.id : (data as SortableId);
 }
 
-function isActive<T extends SortableData>(
-  activeItems: SortableId[] | undefined,
-  item: T,
-) {
+function isActive(activeItems: SortableId[] | undefined, item: SortableData) {
   return activeItems?.includes(readId(item)) ?? false;
 }
 
@@ -209,6 +206,6 @@ function findActiveItem<T extends SortableData>(
   id: SortableId | undefined,
   items: T[],
 ) {
-  if (!id) return;
+  if (!id) return undefined;
   return items.find((item) => readId(item) === id);
 }

@@ -549,7 +549,7 @@ export function filterPackCode(
         const reprint = metadata.packs[reprintCode];
 
         const typeMatches =
-          !!(reprint.reprint_type === "campaign") === !!card.encounter_code;
+          (reprint.reprint_type === "campaign") === !!card.encounter_code;
 
         return typeMatches && value.includes(reprintCode);
       });
@@ -639,7 +639,7 @@ export function filterTag(tag: string, checkUnselectedCustomizations: boolean) {
       return hasTag;
     }
 
-    return !!card.customization_options?.some((o) => o.tags?.includes(tag));
+    return card.customization_options.some((o) => o.tags?.includes(tag));
   };
 }
 
@@ -903,7 +903,7 @@ export function filterTraits(
         return matches;
       }
 
-      return !!card.customization_options?.some((o) => matchesTrait(o, key));
+      return card.customization_options.some((o) => matchesTrait(o, key));
     });
   }
 

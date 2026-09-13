@@ -25,7 +25,7 @@ export function SelectionEditor(props: Props) {
           onChange={onChangeSelection}
           options={value.options.map((v) => ({
             value: v,
-            label: v.toString(),
+            label: v,
           }))}
           required
           value={value.value}

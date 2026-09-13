@@ -19,7 +19,7 @@ export function InvestigatorCardAccessFilter(props: FilterProps) {
   const { id } = props;
   const { t } = useTranslation();
 
-  const { onReset, onChange, onOpenChange, locked } = useFilter<string[]>(id);
+  const { onReset, onChange, onOpenChange, locked } = useFilter(id);
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
 

@@ -7,10 +7,10 @@ export function ShowMoveToSideDeckSetting(props: SettingProps) {
   const { settings, setSettings } = props;
   const { t } = useTranslation();
 
-  const onCheckMoveToSideDeckSetting = (val: boolean | string) => {
+  const onCheckMoveToSideDeckSetting = (val: boolean) => {
     setSettings((settings) => ({
       ...settings,
-      showMoveToSideDeck: !!val,
+      showMoveToSideDeck: val,
     }));
   };
 

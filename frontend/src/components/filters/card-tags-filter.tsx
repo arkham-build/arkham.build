@@ -40,7 +40,7 @@ export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     [],
   );
 
-  const { onChange } = useFilter<string[]>(id);
+  const { onChange } = useFilter(id);
 
   const favoriteOnly =
     filter.value.length === 1 && filter.value[0] === CARD_TAG_FAVORITE_ID;

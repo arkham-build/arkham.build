@@ -37,7 +37,7 @@ export function BrowseWithFilter(props: Props) {
   );
 
   const [chapterTab, setChapterTab] = useTabUrlState<ChapterTab>(
-    initialChapterTab ? (String(initialChapterTab) as ChapterTab) : "all",
+    initialChapterTab ? (initialChapterTab as ChapterTab) : "all",
     "chapter",
   );
 

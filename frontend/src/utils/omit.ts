@@ -1,7 +1,7 @@
-export function omit<O extends Record<string, unknown>>(
-  obj: O,
+export function omit(
+  obj: Record<string, unknown>,
   filter: (key: string) => boolean,
-): { [k: string]: unknown } {
+): Record<string, unknown> {
   return Object.fromEntries(
     Object.entries(obj).filter(([key]) => !filter(key)),
   );

@@ -3078,5 +3078,5 @@ async function countVerificationTokens(
     .where("token_type", "=", tokenType)
     .executeTakeFirstOrThrow();
 
-  return Number(row.count);
+  return row.count;
 }

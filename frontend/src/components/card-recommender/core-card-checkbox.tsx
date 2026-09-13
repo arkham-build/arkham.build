@@ -27,7 +27,7 @@ export function CoreCardCheckbox(props: CoreCardCheckboxProps) {
   const removeCoreCard = useStore((state) => state.removeCoreCard);
 
   const onCheck = useCallback(
-    (val: boolean | string) => {
+    (val: boolean) => {
       if (val) {
         addCoreCard(deck.id, card.code);
       } else {

@@ -161,7 +161,7 @@ function SuziStandaloneSetupInner(props: Props) {
                 id="limit-collection"
                 label={t("suzi_standalone_setup.limit_collection")}
                 name="limit-collection"
-                onCheckedChange={(val) => setCheckOwnership(!!val)}
+                onCheckedChange={(val) => setCheckOwnership(val)}
               />
             )}
             {hasFanMadeContent && (
@@ -170,7 +170,7 @@ function SuziStandaloneSetupInner(props: Props) {
                 id="limit-fan-made"
                 label={t("suzi_standalone_setup.limit_fan_made")}
                 name="limit-fan-made"
-                onCheckedChange={(val) => setIncludeFanmade(!!val)}
+                onCheckedChange={(val) => setIncludeFanmade(val)}
               />
             )}
             <Checkbox
@@ -178,7 +178,7 @@ function SuziStandaloneSetupInner(props: Props) {
               id="limit-exile"
               name="limit-exile"
               label={t("suzi_standalone_setup.limit_exile")}
-              onCheckedChange={(val) => setUltimatumOfExile(!!val)}
+              onCheckedChange={(val) => setUltimatumOfExile(val)}
             />
             <Button
               type="submit"

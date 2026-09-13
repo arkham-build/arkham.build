@@ -62,7 +62,7 @@ export function SubtypeFilter({ id }: FilterProps) {
             key={code}
             label={name}
             onCheckedChange={(val) =>
-              onValueChange(code as keyof SubtypeFilterType, !!val)
+              onValueChange(code as keyof SubtypeFilterType, val)
             }
           />
         ))}

@@ -162,7 +162,7 @@ export function CardDisplaySettings(props: SettingProps) {
                   label={t("settings.display.card_show_thumbnail")}
                   checked={resolve("cardShowThumbnail")}
                   onCheckedChange={(value) => {
-                    setValue({ cardShowThumbnail: !!value });
+                    setValue({ cardShowThumbnail: value });
                   }}
                 />
               </Field>
@@ -173,7 +173,7 @@ export function CardDisplaySettings(props: SettingProps) {
                   label={t("settings.display.card_show_icon")}
                   checked={resolve("cardShowIcon")}
                   onCheckedChange={(value) => {
-                    setValue({ cardShowIcon: !!value });
+                    setValue({ cardShowIcon: value });
                   }}
                 />
               </Field>
@@ -184,7 +184,7 @@ export function CardDisplaySettings(props: SettingProps) {
                   label={t("settings.display.card_show_details")}
                   checked={resolve("cardShowDetails")}
                   onCheckedChange={(value) => {
-                    setValue({ cardShowDetails: !!value });
+                    setValue({ cardShowDetails: value });
                   }}
                 />
               </Field>
@@ -195,7 +195,7 @@ export function CardDisplaySettings(props: SettingProps) {
                   label={t("settings.display.card_show_unique_icon")}
                   checked={resolve("cardShowUniqueIcon")}
                   onCheckedChange={(value) => {
-                    setValue({ cardShowUniqueIcon: !!value });
+                    setValue({ cardShowUniqueIcon: value });
                   }}
                 />
               </Field>
@@ -208,7 +208,7 @@ export function CardDisplaySettings(props: SettingProps) {
                   label={t("settings.display.card_show_collection_number")}
                   checked={resolve("cardShowCollectionNumber")}
                   onCheckedChange={(value) => {
-                    setValue({ cardShowCollectionNumber: !!value });
+                    setValue({ cardShowCollectionNumber: value });
                   }}
                 />
               </Field>
@@ -219,7 +219,7 @@ export function CardDisplaySettings(props: SettingProps) {
                   label={t("settings.display.card_show_tags")}
                   checked={resolve("cardShowTags") ?? true}
                   onCheckedChange={(value) => {
-                    setValue({ cardShowTags: !!value });
+                    setValue({ cardShowTags: value });
                   }}
                 />
               </Field>
@@ -230,7 +230,7 @@ export function CardDisplaySettings(props: SettingProps) {
                   label={t("settings.display.card_show_favorite_highlights")}
                   checked={resolve("cardShowFavoriteHighlights") ?? true}
                   onCheckedChange={(value) => {
-                    setValue({ cardShowFavoriteHighlights: !!value });
+                    setValue({ cardShowFavoriteHighlights: value });
                   }}
                 />
               </Field>

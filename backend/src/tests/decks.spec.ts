@@ -1684,7 +1684,7 @@ async function countArkhamDbSnapshots(db: Database, accountIdentityId: string) {
     .where("account_identity_id", "=", accountIdentityId)
     .executeTakeFirstOrThrow();
 
-  return Number(row.count);
+  return row.count;
 }
 
 async function findArkhamDbSnapshotDecks(

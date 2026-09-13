@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useStore } from "@/store";
 
-export function useFilter<T>(id: number) {
+export function useFilter(id: number) {
   const setFilterValue = useStore((state) => state.setFilterValue);
   const setFilterOpen = useStore((state) => state.setFilterOpen);
   const resetFilter = useStore((state) => state.resetFilter);
@@ -24,7 +24,7 @@ export function useFilter<T>(id: number) {
   );
 
   const onChange = useCallback(
-    (value: T) => {
+    (value: unknown) => {
       setFilterValue(id, value);
     },
     [id, setFilterValue],

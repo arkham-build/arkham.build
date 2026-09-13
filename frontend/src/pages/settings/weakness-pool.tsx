@@ -9,10 +9,10 @@ export function WeaknessPoolSetting(props: SettingProps) {
   const { t } = useTranslation();
 
   const onCheckWeaknessPool = useCallback(
-    (val: boolean | string) => {
+    (val: boolean) => {
       setSettings((settings) => ({
         ...settings,
-        useLimitedPoolForWeaknessDraw: !!val,
+        useLimitedPoolForWeaknessDraw: val,
       }));
     },
     [setSettings],

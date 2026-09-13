@@ -1,4 +1,5 @@
-/* oxlint-disable typescript/no-explicit-any -- not relevant for script. */
+// oxlint-disable typescript/no-unnecessary-type-conversion -- not relevant for script.
+// oxlint-disable typescript/no-explicit-any -- not relevant for script.
 
 import assert from "node:assert";
 import { createReadStream, createWriteStream } from "node:fs";
@@ -306,6 +307,11 @@ type ApiDecklist = {
   canonical_investigator_code: string;
 };
 
+type CsvRowByTable = {
+  arkhamdb_decklist: ApiDecklist;
+  arkhamdb_user: ApiAuthor;
+};
+
 async function downloadCsvFile(
   config: Config,
   tempDir: string,
@@ -325,26 +331,26 @@ async function downloadCsvFile(
   return tempFilePath;
 }
 
-function streamCsvAndInsert<T, U>(
+function streamCsvAndInsert<TableName extends keyof CsvRowByTable>(
   filePath: string,
-  transform: (row: T) => U,
+  transform: (row: CsvRowByTable[TableName]) => Insertable<DB[TableName]>,
   tx: Transaction<DB>,
-  tableName: string,
+  tableName: TableName,
   batchSize: number,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const batch: U[] = [];
+    const batch: Insertable<DB[TableName]>[] = [];
 
     createReadStream(filePath)
       .pipe(parse({ headers: true }))
-      .on("data", async (row: T) => {
+      .on("data", async (row: CsvRowByTable[TableName]) => {
         const transformed = transform(row);
         batch.push(transformed);
 
         if (batch.length >= batchSize) {
           try {
             await tx
-              .insertInto(tableName as keyof DB)
+              .insertInto(tableName)
               .values(batch.splice(0, batchSize))
               .execute();
           } catch (error) {
@@ -356,10 +362,7 @@ function streamCsvAndInsert<T, U>(
       .on("end", async () => {
         try {
           if (batch.length > 0) {
-            await tx
-              .insertInto(tableName as keyof DB)
-              .values(batch)
-              .execute();
+            await tx.insertInto(tableName).values(batch).execute();
           }
           resolve();
         } catch (error) {

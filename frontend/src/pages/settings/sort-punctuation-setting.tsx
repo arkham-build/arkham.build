@@ -7,10 +7,10 @@ export function SortPunctuationSetting(props: SettingProps) {
   const { settings, setSettings } = props;
   const { t } = useTranslation();
 
-  const onCheckedChange = (val: boolean | string) => {
+  const onCheckedChange = (val: boolean) => {
     setSettings((settings) => ({
       ...settings,
-      sortIgnorePunctuation: !!val,
+      sortIgnorePunctuation: val,
     }));
   };
 

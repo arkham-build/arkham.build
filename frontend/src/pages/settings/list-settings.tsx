@@ -219,7 +219,7 @@ function ListSettingsList<T extends string>(props: {
               data-testid={`${listKey}-${subKey}-${type}`}
               id={`${listKey}-${subKey}-${type}`}
               checked={activeItems.includes(type)}
-              onCheckedChange={(checked) => onCheckChange(type, !!checked)}
+              onCheckedChange={(checked) => onCheckChange(type, checked)}
               label={formatGroupingType(type)}
             />
           </>

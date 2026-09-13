@@ -20,7 +20,7 @@ function UsableCards() {
 
   const card = useStore((state) => selectMetadata(state).cards[params.code]);
 
-  if (!card || card.type_code !== "investigator") {
+  if (card?.type_code !== "investigator") {
     return <ErrorStatus statusCode={404} />;
   }
 

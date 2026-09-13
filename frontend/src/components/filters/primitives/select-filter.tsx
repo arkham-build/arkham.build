@@ -21,7 +21,7 @@ export function SelectFilter<T, V extends number | string | undefined>(
     props;
 
   const { t } = useTranslation();
-  const { onReset, onOpenChange, onChange, locked } = useFilter<V>(id);
+  const { onReset, onOpenChange, onChange, locked } = useFilter(id);
 
   const onValueChange = useCallback(
     (evt: React.ChangeEvent<HTMLSelectElement>) => {

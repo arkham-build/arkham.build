@@ -172,7 +172,7 @@ test.describe("signup onboarding", () => {
     await expectDeckInFolder(page, deck.name, "Archive");
 
     const folderState = await getAccountFolderState(email);
-    expect(folderState.deckFolders[String(deck.id)]).toBe(archiveFolderId);
+    expect(folderState.deckFolders[deck.id]).toBe(archiveFolderId);
   });
 
   test("remaps folder membership when an uploaded deck id changes", async ({
@@ -185,21 +185,21 @@ test.describe("signup onboarding", () => {
     });
 
     await toggleArchiveStatus(page);
-    await createConflictingAccountDeck(String(deck.id));
+    await createConflictingAccountDeck(deck.id);
     await signupAndOpenCompleteProfile(page, email);
 
     const response = await completeProfile(page, username);
-    const remappedId = response.uploads?.deckIdMap?.[String(deck.id)];
+    const remappedId = response.uploads?.deckIdMap?.[deck.id];
 
     expect(remappedId).toBeDefined();
-    expect(remappedId).not.toBe(String(deck.id));
+    expect(remappedId).not.toBe(deck.id);
 
     await waitForAccountSync(page);
     await expectDeckInFolder(page, deck.name, "Archive");
 
     const folderState = await getAccountFolderState(email);
     const remappedDeckId = remappedId as string;
-    expect(folderState.deckFolders[String(deck.id)]).toBeUndefined();
+    expect(folderState.deckFolders[deck.id]).toBeUndefined();
     expect(folderState.deckFolders[remappedDeckId]).toBe(archiveFolderId);
   });
 });
@@ -327,7 +327,7 @@ async function findPersistedDeckId(page: Page, deckName: string) {
     (item) => item.name === deckName,
   );
 
-  return deck?.id == null ? null : String(deck.id);
+  return deck?.id == null ? null : deck.id;
 }
 
 async function waitForPersistedDeckChain(
@@ -353,7 +353,7 @@ async function readPersistedDeckChain(page: Page, deckName: string) {
 
       return [
         {
-          id: String(deck.id),
+          id: deck.id,
           name: deck.name,
           next_deck: normalizeDeckReference(deck.next_deck),
           previous_deck: normalizeDeckReference(deck.previous_deck),

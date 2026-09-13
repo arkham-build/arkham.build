@@ -79,8 +79,7 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const slotsMapper = useStore(selectSlotsMapper);
   const usesMapper = useStore(selectUsesMapper);
 
-  const { onReset, onChange, onOpenChange, locked } =
-    useFilter<Partial<AssetFilterType>>(id);
+  const { onReset, onChange, onOpenChange, locked } = useFilter(id);
 
   const onChangeUses = useCallback(
     (value: Coded[]) => {

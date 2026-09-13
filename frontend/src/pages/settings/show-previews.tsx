@@ -9,8 +9,8 @@ export function ShowPreviewsSetting(props: SettingProps) {
   const { t } = useTranslation();
 
   const onCheckedChange = useCallback(
-    (val: boolean | string) => {
-      setSettings((settings) => ({ ...settings, showPreviews: !!val }));
+    (val: boolean) => {
+      setSettings((settings) => ({ ...settings, showPreviews: val }));
     },
     [setSettings],
   );

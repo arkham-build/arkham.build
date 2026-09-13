@@ -127,7 +127,7 @@ export async function countUsableLoginIdentities(
     )
     .executeTakeFirstOrThrow();
 
-  return Number(result.count);
+  return result.count;
 }
 
 export async function updateAccountIdentityPendingEmail(
