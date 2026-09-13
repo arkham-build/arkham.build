@@ -290,6 +290,8 @@ back:subname != null & back:subname != subname
   - legacy alias: `b`
 - **taboo_set** (string)
   - aliases: `ts`
+  - matches cards that belong to the specified taboo set
+  - does not change which taboo set is applied for display
 - **tag** (string)
   - matches combined account and deck-local tags when available
 - **text** (text)

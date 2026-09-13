@@ -229,6 +229,7 @@ export function CardScanInner(
         <img
           alt={alt}
           draggable={draggable}
+          key={url}
           crossOrigin={crossOrigin}
           height={sideways ? 300 : 420}
           loading={lazy ? "lazy" : undefined}

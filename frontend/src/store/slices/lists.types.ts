@@ -223,6 +223,7 @@ export type ListsSlice = {
       showInvestigatorFilter?: boolean;
       showOwnershipFilter?: boolean;
       systemFilter?: Filter;
+      tabooSetOverride?: number | null;
     },
   ): void;
 

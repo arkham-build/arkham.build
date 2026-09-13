@@ -5,9 +5,17 @@ import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
-import { parseSearchFlags } from "@/store/lib/search-url";
+import {
+  parseSearchDisplayMode,
+  parseSearchFlags,
+  parseSearchTabooSetId,
+} from "@/store/lib/search-url";
 import { selectListCards } from "@/store/selectors/lists";
-import { selectIsInitialized } from "@/store/selectors/shared";
+import {
+  selectIsInitialized,
+  selectMetadata,
+  selectSettingsTabooId,
+} from "@/store/selectors/shared";
 
 function Search() {
   const { t } = useTranslation();
@@ -16,6 +24,8 @@ function Search() {
   const query = searchParams.get("q") || "";
 
   const cardTypeParam = searchParams.get("card_type");
+  const displayMode = parseSearchDisplayMode(searchParams);
+  const sharedTabooSetId = parseSearchTabooSetId(searchParams);
   const { includeBacks, includeFlavor, includeGameText, includeName } =
     parseSearchFlags(searchParams);
 
@@ -27,7 +37,24 @@ function Search() {
   const listKey = "search";
 
   const activeListId = useStore((state) => state.activeList);
-  const isInitalized = useStore(selectIsInitialized);
+  const isInitialized = useStore(selectIsInitialized);
+  const metadata = useStore(selectMetadata);
+  const settingsTabooSetId = useStore((state) =>
+    selectSettingsTabooId(state.settings, metadata),
+  );
+
+  const validSharedTabooSetId =
+    sharedTabooSetId === null ||
+    (sharedTabooSetId !== undefined &&
+      metadata.tabooSets[sharedTabooSetId] !== undefined)
+      ? sharedTabooSetId
+      : undefined;
+
+  const tabooSetOverride =
+    validSharedTabooSetId !== undefined &&
+    validSharedTabooSetId !== (settingsTabooSetId ?? null)
+      ? validSharedTabooSetId
+      : undefined;
 
   const title = t("search.title");
 
@@ -42,6 +69,8 @@ function Search() {
   const syncedCardType = useRef(cardType);
 
   useEffect(() => {
+    if (!isInitialized) return;
+
     if (!hasActiveList || syncedCardType.current !== cardType) {
       addList(
         listKey,
@@ -49,9 +78,11 @@ function Search() {
           card_type: cardType,
         },
         {
+          display: displayMode ? { viewMode: displayMode } : undefined,
           search: "",
           showInvestigatorFilter: false,
           showOwnershipFilter: false,
+          tabooSetOverride,
         },
       );
       syncedCardType.current = cardType;
@@ -67,15 +98,18 @@ function Search() {
   }, [
     addList,
     cardType,
+    displayMode,
     hasActiveList,
     includeBacks,
     includeFlavor,
     includeGameText,
     includeName,
+    isInitialized,
     query,
     setActiveList,
     setSearchFlag,
     setSearchValue,
+    tabooSetOverride,
   ]);
 
   useEffect(() => {
@@ -89,7 +123,7 @@ function Search() {
     selectListCards(state, undefined, undefined),
   );
 
-  if (!activeList || !isInitalized || !activeListId?.startsWith(listKey)) {
+  if (!activeList || !isInitialized || !activeListId?.startsWith(listKey)) {
     return null;
   }
 

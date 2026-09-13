@@ -1563,8 +1563,11 @@
         "include_flavor": "Flavor",
         "include_game_text": "Game text",
         "include_name": "Name",
+        "match_display_mode": "Match display mode",
+        "match_visible_taboo": "Match visible taboo",
         "placeholder": "Search cards...",
         "share": "Share query",
+        "share_settings": "Share settings",
         "title": "Search"
       },
       "sort_by": "Sort by"

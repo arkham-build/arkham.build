@@ -499,10 +499,13 @@ const fieldDefinitions: FieldDefinition[] = [
     lookup:
       () =>
       (card, { metadata }) => {
-        if (card.taboo_set_id == null) return null;
-        const taboo = metadata.tabooSets[card.taboo_set_id];
-        if (!taboo) return null;
-        return taboo.name;
+        const tabooSetNames = Object.values(metadata.tabooSets)
+          .filter((tabooSet) =>
+            Boolean(metadata.taboos[`${card.code}-${tabooSet.id}`]),
+          )
+          .map((tabooSet) => tabooSet.name);
+
+        return tabooSetNames.length ? tabooSetNames : null;
       },
     name: "taboo_set",
     type: "string",

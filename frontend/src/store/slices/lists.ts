@@ -689,6 +689,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
           mode: "simple",
           ...DEFAULT_SEARCH_FLAGS,
         },
+        tabooSetOverride: opts.tabooSetOverride,
         lockedFilters: opts.lockedFilters ?? new Set<FilterKey>(),
       });
 
@@ -1007,6 +1008,7 @@ type MakeListOptions = {
   lockedFilters?: Set<FilterKey>;
   search?: Search;
   systemFilter?: Filter;
+  tabooSetOverride?: number | null;
 };
 
 function makeList({
@@ -1020,11 +1022,12 @@ function makeList({
   systemFilter,
   initialValues,
   search,
+  tabooSetOverride,
   lockedFilters = new Set<FilterKey>(),
 }: MakeListOptions): List {
   const list = {
     defaultFlipped: false,
-    tabooSetOverride: undefined,
+    tabooSetOverride,
     fanMadeCycleCodes,
     filters,
     filterValues: filters.reduce<List["filterValues"]>((acc, curr, i) => {
