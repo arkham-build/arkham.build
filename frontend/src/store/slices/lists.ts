@@ -256,11 +256,6 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         }
 
         case "cost": {
-          assert(
-            typeof payload === "object" && payload != null,
-            `filter ${id} value must be a cost object.`,
-          );
-
           const currentValue = filterValues[id].value as CostFilter;
           const value = { ...currentValue, ...payload };
 
@@ -283,11 +278,6 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         }
 
         case "level": {
-          assert(
-            typeof payload === "object" && payload != null,
-            `filter ${id} value must be an level object.`,
-          );
-
           const currentValue = filterValues[id].value as LevelFilter;
           const value = { ...currentValue, ...payload };
 
@@ -327,11 +317,6 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         }
 
         case "subtype": {
-          assert(
-            typeof payload === "object" && payload != null,
-            `filter ${id} value must be a map of booleans.`,
-          );
-
           const currentValue = filterValues[id].value as SubtypeFilter;
           const value = { ...currentValue, ...payload };
 
@@ -345,11 +330,6 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         }
 
         case "properties": {
-          assert(
-            typeof payload === "object" && payload != null,
-            `filter ${id} value must be a map of booleans.`,
-          );
-
           const currentValue = filterValues[id].value as PropertiesFilter;
           const value = { ...currentValue, ...payload };
 
@@ -363,11 +343,6 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         }
 
         case "asset": {
-          assert(
-            typeof payload === "object" && payload != null,
-            `filter ${id} value must be an asset object.`,
-          );
-
           const currentValue = filterValues[id].value as AssetFilter;
           const value = { ...currentValue, ...payload };
           assert(

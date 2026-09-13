@@ -21,7 +21,8 @@ function applyCustomizations(
   customizations: Customizations | undefined,
 ): Card {
   if (
-    !customizations?.[card.code] ||
+    !customizations ||
+    !customizations[card.code] ||
     !card.real_customization_change ||
     !card.real_customization_text ||
     !card.customization_options

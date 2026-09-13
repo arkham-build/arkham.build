@@ -45,27 +45,27 @@ export function CostFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   );
 
   const onSetEven = useCallback(
-    (val: boolean) => {
+    (val: boolean | string) => {
       onChange({
-        even: val,
+        even: !!val,
       });
     },
     [onChange],
   );
 
   const onSetOdd = useCallback(
-    (val: boolean) => {
+    (val: boolean | string) => {
       onChange({
-        odd: val,
+        odd: !!val,
       });
     },
     [onChange],
   );
 
   const onSetX = useCallback(
-    (val: boolean) => {
+    (val: boolean | string) => {
       onChange({
-        x: val,
+        x: !!val,
       });
     },
     [onChange],

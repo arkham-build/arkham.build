@@ -97,8 +97,8 @@ export function UpgradeModal(props: Props) {
 
   const [usurped, setUsurped] = useState(false);
 
-  const onUsurpedChange = useCallback((val: boolean) => {
-    setUsurped(val);
+  const onUsurpedChange = useCallback((val: boolean | string) => {
+    setUsurped(!!val);
   }, []);
 
   const modalContext = useDialogContextChecked();

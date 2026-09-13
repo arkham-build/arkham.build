@@ -134,32 +134,32 @@ export function CardSearch(props: Props) {
   }, []);
 
   const onToggleGameText = useCallback(
-    (val: boolean) => {
-      setSearchFlag("includeGameText", val, resolvedDeck);
+    (val: boolean | string) => {
+      setSearchFlag("includeGameText", !!val, resolvedDeck);
       inputRef.current?.focus();
     },
     [setSearchFlag, resolvedDeck],
   );
 
   const onToggleFlavor = useCallback(
-    (val: boolean) => {
-      setSearchFlag("includeFlavor", val, resolvedDeck);
+    (val: boolean | string) => {
+      setSearchFlag("includeFlavor", !!val, resolvedDeck);
       inputRef.current?.focus();
     },
     [setSearchFlag, resolvedDeck],
   );
 
   const onToggleBacks = useCallback(
-    (val: boolean) => {
-      setSearchFlag("includeBacks", val, resolvedDeck);
+    (val: boolean | string) => {
+      setSearchFlag("includeBacks", !!val, resolvedDeck);
       inputRef.current?.focus();
     },
     [setSearchFlag, resolvedDeck],
   );
 
   const onToggleCardName = useCallback(
-    (val: boolean) => {
-      setSearchFlag("includeName", val, resolvedDeck);
+    (val: boolean | string) => {
+      setSearchFlag("includeName", !!val, resolvedDeck);
       inputRef.current?.focus();
     },
     [setSearchFlag, resolvedDeck],

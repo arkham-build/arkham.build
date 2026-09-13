@@ -23,7 +23,7 @@ export const createDeckCreateSlice: StateCreator<
 
       const investigator = metadata.cards[code];
       assert(
-        investigator?.type_code === "investigator",
+        investigator && investigator.type_code === "investigator",
         "Deck configure must be initialized with an investigator card.",
       );
 
@@ -33,7 +33,7 @@ export const createDeckCreateSlice: StateCreator<
 
       if (initialInvestigatorChoice) {
         assert(
-          choice?.type_code === "investigator",
+          choice && choice.type_code === "investigator",
           "Deck configure must be initialized with an investigator card.",
         );
 

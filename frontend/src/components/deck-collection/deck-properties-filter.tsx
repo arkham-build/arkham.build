@@ -69,7 +69,7 @@ export function DeckPropertiesFilter({ containerClass }: Props) {
             key={key}
             label={properties[key as DeckPropertyName]}
             onCheckedChange={(val) =>
-              onPropertyChange(key as DeckPropertyName, val)
+              onPropertyChange(key as DeckPropertyName, !!val)
             }
           />
         ))}

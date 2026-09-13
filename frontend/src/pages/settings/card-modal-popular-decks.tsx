@@ -9,10 +9,10 @@ export function CardModalPopularDecksSetting(props: SettingProps) {
   const { t } = useTranslation();
 
   const onCheckedChange = useCallback(
-    (val: boolean) => {
+    (val: boolean | string) => {
       setSettings((settings) => ({
         ...settings,
-        showCardModalPopularDecks: val,
+        showCardModalPopularDecks: !!val,
       }));
     },
     [setSettings],

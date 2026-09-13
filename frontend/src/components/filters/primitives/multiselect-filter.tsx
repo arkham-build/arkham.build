@@ -35,7 +35,7 @@ export function MultiselectFilter<T extends Coded>(props: Props<T>) {
     value,
   } = props;
 
-  const { onReset, onOpenChange, onChange, locked } = useFilter(id);
+  const { onReset, onOpenChange, onChange, locked } = useFilter<string[]>(id);
 
   const locale = useStore((state) => state.settings.locale);
 

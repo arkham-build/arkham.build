@@ -213,10 +213,10 @@ function Option<T extends Item>({
   );
 }
 
-function defaultItemToString(item: Item) {
+function defaultItemToString<T extends Item>(item: T) {
   return item ? item.label : "";
 }
 
-function defaultRenderItem(item: Item) {
+function defaultRenderItem<T extends Item>(item: T) {
   return <span>{item.label}</span>;
 }

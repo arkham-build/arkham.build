@@ -18,7 +18,7 @@ export function CustomSelectFilter(props: Props) {
   const { changes, id, options, renderOption, open, title, value, ...rest } =
     props;
 
-  const { onReset, onOpenChange, onChange, locked } = useFilter(id);
+  const { onReset, onOpenChange, onChange, locked } = useFilter<string>(id);
 
   return (
     <FilterContainer

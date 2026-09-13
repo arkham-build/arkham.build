@@ -82,7 +82,7 @@ export function PropertiesFilter({ id }: FilterProps) {
             key={key}
             label={renderProperty(key, label)}
             onCheckedChange={(val) =>
-              onPropertyChange(key as keyof PropertiesFilterType, val)
+              onPropertyChange(key as keyof PropertiesFilterType, !!val)
             }
           />
         ))}

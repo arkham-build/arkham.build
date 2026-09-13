@@ -10,8 +10,8 @@ export function ShowAllCardsSetting(props: SettingProps) {
   const { t } = useTranslation();
 
   const onCheckShowAll = useCallback(
-    (val: boolean) => {
-      setSettings((settings) => ({ ...settings, showAllCards: val }));
+    (val: boolean | string) => {
+      setSettings((settings) => ({ ...settings, showAllCards: !!val }));
     },
     [setSettings],
   );

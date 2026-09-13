@@ -15,8 +15,8 @@ export function DevModeSetting(props: SettingProps) {
         data-testid="dev-mode-enabled"
         id="dev-mode-enabled"
         name="dev-mode-enabled"
-        onCheckedChange={(val: boolean) => {
-          setSettings((s) => ({ ...s, devModeEnabled: val }));
+        onCheckedChange={(val: boolean | string) => {
+          setSettings((s) => ({ ...s, devModeEnabled: !!val }));
         }}
       />
     </Field>

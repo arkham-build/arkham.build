@@ -44,7 +44,7 @@ export type Props = {
   annotation?: string | null;
   as?: "li" | "div";
   card: Card;
-  cardLinkProps?: React.HTMLAttributes<HTMLElement>;
+  cardLinkProps?: React.ComponentProps<"div">;
   cardLevelDisplay?: Settings["cardLevelDisplay"];
   cardShowCollectionNumber?: Settings["cardShowCollectionNumber"];
   cardSkillIconsDisplay?: Settings["cardSkillIconsDisplay"];
@@ -406,7 +406,7 @@ function ListCardLink({
   children: React.ReactNode;
   disableModalOpen?: boolean;
   openModal?: (evt: React.MouseEvent) => void;
-  referenceProps?: React.HTMLAttributes<HTMLElement>;
+  referenceProps?: React.ComponentProps<"div">;
   className?: string;
   "data-testid"?: string;
 }) {

@@ -54,7 +54,7 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     [],
   );
 
-  const { onChange } = useFilter(id);
+  const { onChange } = useFilter<string[]>(id);
 
   const metadata = useStore(selectMetadata);
 

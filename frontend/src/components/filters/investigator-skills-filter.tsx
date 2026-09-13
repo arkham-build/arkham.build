@@ -26,7 +26,8 @@ export function InvestigatorSkillsFilter(props: FilterProps) {
   const { id, resolvedDeck, targetDeck } = props;
   const { t } = useTranslation();
 
-  const { onReset, onChange, onOpenChange, locked } = useFilter(id);
+  const { onReset, onChange, onOpenChange, locked } =
+    useFilter<InvestigatorSkillsFilterType>(id);
 
   const filter = useStore((state) => selectActiveListFilter(state, id));
 

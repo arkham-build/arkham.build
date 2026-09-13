@@ -41,9 +41,9 @@ export type DeckSortPayload = {
 export type DeckCollectionSlice = {
   deckCollection: DeckCollectionState;
 
-  addDecksFilter<F extends DeckFiltersKey>(
+  addDecksFilter<F extends DeckFiltersKey, T extends DeckFiltersValue<F>>(
     type: F,
-    value: DeckFiltersValue<F>,
+    value: T,
   ): void;
   resetDeckFilter(filter: DeckFiltersKey): void;
   setDeckFilterOpen(filter: CollapsibleFilter, status: boolean): void;

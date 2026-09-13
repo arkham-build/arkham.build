@@ -23,11 +23,11 @@ import css from "./combobox.module.css";
 import { ComboboxMenu, type ComboboxMenuItem } from "./combobox-menu";
 import { ComboboxResults, type ResultRenderer } from "./combobox-results";
 
-function defaultItemToString(val: Coded) {
+function defaultItemToString<T extends Coded>(val: T) {
   return val.code.toLowerCase();
 }
 
-function defaultRenderer(val: Coded) {
+function defaultRenderer<T extends Coded>(val: T) {
   return val.code;
 }
 

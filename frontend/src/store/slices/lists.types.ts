@@ -234,7 +234,7 @@ export type ListsSlice = {
   toggleListDefaultFlipped(): void;
   setListSort(value: DecklistConfig | undefined): void;
 
-  setFilterValue(id: number, payload: unknown): void;
+  setFilterValue<T>(id: number, payload: T): void;
   setFilterOpen(id: number, open: boolean): void;
 
   setActiveList(value: string | undefined): void;

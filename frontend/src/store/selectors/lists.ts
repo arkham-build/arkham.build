@@ -547,7 +547,9 @@ const selectDeckInvestigatorFilter = createSelector(
         filterMythosCards,
         (card: Card) =>
           !lookupTables.relations.bonded[card.code] &&
-          (card?.xp != null || card.restrictions?.investigator?.[card.code]),
+          (card?.xp != null ||
+            !card.restrictions ||
+            card.restrictions?.investigator?.[card.code]),
       ]);
     }
 
@@ -2129,7 +2131,7 @@ function selectSkillIconsChanges(value: SkillIconsFilter) {
 
 function selectSubtypeChanges(value: SubtypeFilter) {
   const options = Object.entries(value);
-  const enabled = options.filter(([, value]) => value);
+  const enabled = options.filter(([, value]) => !!value);
   if (enabled.length === options.length) return "";
 
   const labels = subtypeLabels();
