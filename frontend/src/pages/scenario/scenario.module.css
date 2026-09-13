@@ -9,15 +9,13 @@
   margin-top: 0.25rem;
   align-items: center;
   display: inline-flex;
-  gap: 0.375rem;
-  line-height: 1;
-  font-size: var(--text-lg);
+  gap: 0.25rem;
 }
 
 .title-icon {
   flex: 0 0 auto;
-  font-size: var(--icon-lg);
-  height: 1em;
+  font-size: 1.125em;
+  height: 1.125em;
+  width: 1.125em;
   object-fit: contain;
-  width: 1em;
 }
