@@ -5,6 +5,7 @@ import {
   type FloatingPortalProps,
   flip,
   offset,
+  shift,
   size,
   useDismiss,
   useFloating,
@@ -110,17 +111,20 @@ export function Combobox<T extends Coded>(props: Props<T>) {
   const { context, refs, floatingStyles } = useFloating({
     whileElementsMounted: autoUpdate,
     placement: "bottom-start",
+    strategy: omitFloatingPortal ? "absolute" : "fixed",
     open: isOpen,
     middleware: [
-      flip(),
+      offset(5),
+      flip({ padding: 5 }),
+      shift({ padding: 5 }),
       size({
+        padding: 5,
         apply({ rects, elements }) {
           Object.assign(elements.floating.style, {
             minWidth: `${rects.reference.width}px`,
           });
         },
       }),
-      offset(5),
     ],
     onOpenChange(nextOpen, event, reason) {
       if (!nextOpen && reason === "outside-press") {
@@ -334,6 +338,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
           <FloatingFocusManager context={context} initialFocus={-1}>
             <div
               className={css["menu"]}
+              data-testid="combobox-menu"
               ref={refs.setFloating}
               style={floatingStyles}
               {...getFloatingProps({
