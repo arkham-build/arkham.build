@@ -103,7 +103,7 @@ export function useRestingTooltip(
   const restTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
-  const suppressUntilLeaveRef = useRef(false);
+  const [suppressUntilLeave, setSuppressUntilLeave] = useState(false);
 
   useEffect(
     () => () => {
@@ -129,36 +129,38 @@ export function useRestingTooltip(
   });
 
   const closeTooltip = useCallback(() => {
-    suppressUntilLeaveRef.current = true;
+    setSuppressUntilLeave(true);
     clearTimeout(restTimeoutRef.current);
     setTooltipOpen(false);
   }, []);
 
   const onPointerDown = useCallback(() => {
-    suppressUntilLeaveRef.current = true;
+    setSuppressUntilLeave(true);
     clearTimeout(restTimeoutRef.current);
-
-    // Safari may cancel the subsequent click if pointerdown changes the DOM or
-    // hit testing. Opacity hides the tooltip without affecting either.
-    const floatingElement = refs.floating.current;
-    if (floatingElement) floatingElement.style.opacity = "0";
-  }, [refs.floating]);
+  }, []);
 
   const onPointerLeave = useCallback(() => {
-    suppressUntilLeaveRef.current = false;
+    setSuppressUntilLeave(false);
     clearTimeout(restTimeoutRef.current);
     setTooltipOpen(false);
   }, []);
 
   const onPointerMove = useCallback(() => {
-    if (suppressUntilLeaveRef.current || tooltipOpen) return;
+    if (suppressUntilLeave || tooltipOpen) return;
 
     clearTimeout(restTimeoutRef.current);
 
     restTimeoutRef.current = setTimeout(() => {
       setTooltipOpen(true);
     }, options?.delay ?? 25);
-  }, [tooltipOpen, options?.delay]);
+  }, [suppressUntilLeave, tooltipOpen, options?.delay]);
+
+  // Safari may cancel the subsequent click if pointerdown changes the DOM or
+  // hit testing. Opacity hides the tooltip without affecting either.
+  const transitionStyles = useMemo(
+    () => (suppressUntilLeave ? { ...styles, opacity: 0 } : styles),
+    [styles, suppressUntilLeave],
+  );
 
   const referenceProps = useMemo(
     () => ({
@@ -176,11 +178,18 @@ export function useRestingTooltip(
       referenceProps,
       refs,
       floatingStyles,
-      transitionStyles: styles,
+      transitionStyles,
       closeTooltip,
       setTooltipOpen,
     }),
-    [referenceProps, refs, styles, floatingStyles, isMounted, closeTooltip],
+    [
+      referenceProps,
+      refs,
+      transitionStyles,
+      floatingStyles,
+      isMounted,
+      closeTooltip,
+    ],
   );
 
   return value;

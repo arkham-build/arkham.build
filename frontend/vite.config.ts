@@ -20,7 +20,7 @@ export default defineConfig({
       plugins: [autoprefixer()],
     },
   },
-  plugins: [react()],
+  plugins: [react({ compiler: true })],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

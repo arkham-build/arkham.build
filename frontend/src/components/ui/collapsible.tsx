@@ -7,7 +7,6 @@ import {
   useContext,
   useId,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
@@ -50,20 +49,17 @@ export function Root({
 
   const isControlled = controlledOpen != null;
   const open = isControlled ? controlledOpen : uncontrolledOpen;
-  const openRef = useRef(open);
-  openRef.current = open;
 
   const id = useId();
   const contentId = `collapsible-content-${id}`;
   const triggerId = `collapsible-trigger-${id}`;
 
   const onToggle = useCallback(() => {
-    const nextOpen = !openRef.current;
-    openRef.current = nextOpen;
+    const nextOpen = !open;
 
     if (!isControlled) setUncontrolledOpen(nextOpen);
     onOpenChange?.(nextOpen);
-  }, [isControlled, onOpenChange]);
+  }, [isControlled, onOpenChange, open]);
 
   const contextValue = useMemo(
     () => ({ open, onToggle, contentId, triggerId }),

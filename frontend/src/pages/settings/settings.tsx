@@ -49,6 +49,8 @@ function Settings() {
   const [colorTheme, updateColorTheme] = useColorThemeManager();
   const { t } = useTranslation();
   const [tab, onTabChange] = useTabUrlState("general");
+  const [headerPortalTarget, setHeaderPortalTarget] =
+    useState<HTMLDivElement | null>(null);
   const search = useSearch();
   const goBack = useGoBack(search.includes("login_state") ? "/" : undefined);
 
@@ -57,7 +59,7 @@ function Settings() {
       <header className={css["header"]}>
         <h1 className={css["title"]}>{t("settings.title")}</h1>
 
-        <div id="settings-header-portal" />
+        <div id="settings-header-portal" ref={setHeaderPortalTarget} />
 
         <div className={css["header-actions"]}>
           <Button
@@ -106,6 +108,7 @@ function Settings() {
           </TabsContent>
           <ApplicationSettings
             colorTheme={colorTheme}
+            headerPortalTarget={headerPortalTarget}
             key={`${settingsKey(settings)}-${colorTheme}`}
             settings={settings}
             updateColorTheme={updateColorTheme}
@@ -118,10 +121,12 @@ function Settings() {
 
 function ApplicationSettings({
   colorTheme: persistedColorTheme,
+  headerPortalTarget,
   settings: persistedSettings,
   updateColorTheme,
 }: {
   colorTheme: string;
+  headerPortalTarget: HTMLDivElement | null;
   settings: SettingsState;
   updateColorTheme: (theme: string) => void;
 }) {
@@ -222,7 +227,11 @@ function ApplicationSettings({
       <TabsContent value="fan-made-content">
         <PortaledSaveButton />
         <Section title={t("fan_made_content.title")}>
-          <FanMadeContent settings={settings} setSettings={setSettings} />
+          <FanMadeContent
+            headerPortalTarget={headerPortalTarget}
+            settings={settings}
+            setSettings={setSettings}
+          />
         </Section>
       </TabsContent>
       <TabsContent value="support">

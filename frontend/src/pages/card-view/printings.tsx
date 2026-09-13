@@ -75,8 +75,13 @@ function ListPrinting({
   oldFormat?: boolean;
   printing: PrintingT;
 }) {
-  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
-    useRestingTooltip();
+  const {
+    refs: { setFloating, setReference },
+    referenceProps,
+    isMounted,
+    floatingStyles,
+    transitionStyles,
+  } = useRestingTooltip();
 
   const url = oldFormat
     ? oldFormatCardUrl(printing.card)
@@ -87,7 +92,7 @@ function ListPrinting({
       <Link
         {...referenceProps}
         className={cx(css["printings-item"], active && css["active"])}
-        ref={refs.setReference}
+        ref={setReference}
         to={url}
       >
         <Printing printing={printing} linked={false} />
@@ -96,7 +101,7 @@ function ListPrinting({
         <FloatingPortal id={FLOATING_PORTAL_ID}>
           <div
             className={css["preview"]}
-            ref={refs.setFloating}
+            ref={setFloating}
             style={{ ...floatingStyles, ...transitionStyles }}
           >
             <CardScan card={printing.card} preventFlip />

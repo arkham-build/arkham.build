@@ -232,8 +232,13 @@ type WeaknessCardProps = {
 function WeaknessCard(props: WeaknessCardProps) {
   const { card, selectedCode, setSelectedCode } = props;
 
-  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
-    useRestingTooltip();
+  const {
+    refs: { setFloating, setReference },
+    referenceProps,
+    isMounted,
+    floatingStyles,
+    transitionStyles,
+  } = useRestingTooltip();
 
   const isSelected = card.code === selectedCode;
 
@@ -265,7 +270,7 @@ function WeaknessCard(props: WeaknessCardProps) {
 
       <Button
         {...referenceProps}
-        ref={refs.setReference}
+        ref={setReference}
         as="a"
         href={`/card/${card.code}`}
         target="_blank"
@@ -281,7 +286,7 @@ function WeaknessCard(props: WeaknessCardProps) {
       {isMounted && (
         <PortaledCardTooltip
           card={card}
-          ref={refs.setFloating}
+          ref={setFloating}
           floatingStyles={floatingStyles}
           transitionStyles={transitionStyles}
         />

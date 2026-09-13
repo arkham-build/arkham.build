@@ -1,4 +1,4 @@
 import { vi } from "vitest";
 
-global.console.time = vi.fn();
-global.console.timeEnd = vi.fn();
+globalThis.console.time = vi.fn();
+globalThis.console.timeEnd = vi.fn();

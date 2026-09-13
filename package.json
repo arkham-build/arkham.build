@@ -33,13 +33,13 @@
   "devDependencies": {
     "@playwright/test": "1.60.0",
     "@types/node": "24.10.15",
-    "@vitest/coverage-v8": "4.1.11",
+    "@vitest/coverage-v8": "5.0.0",
     "lefthook": "2.1.1",
-    "oxfmt": "0.58.0",
-    "oxlint": "1.73.0",
-    "oxlint-tsgolint": "0.24.0",
-    "typescript": "5.9.3",
-    "vitest": "4.1.11",
+    "oxfmt": "0.67.0",
+    "oxlint": "1.82.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "typescript": "7.0.2",
+    "vitest": "5.0.0",
     "wrangler": "4.131.1"
   }
 }

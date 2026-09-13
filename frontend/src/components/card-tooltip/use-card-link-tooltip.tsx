@@ -25,7 +25,11 @@ export function useCardLinkTooltip() {
     [],
   );
 
-  const { context, refs, floatingStyles } = useFloating({
+  const {
+    context,
+    refs: { setFloating, setPositionReference },
+    floatingStyles,
+  } = useFloating({
     open: !!cardTooltip,
     onOpenChange: () => setCardTooltip(""),
     middleware: [shift(), autoPlacement(), offset(2)],
@@ -64,7 +68,7 @@ export function useCardLinkTooltip() {
           clearTimeout(restTimeoutRef.current);
 
           const rect = anchor.getBoundingClientRect();
-          refs.setPositionReference({
+          setPositionReference({
             getBoundingClientRect: () => rect,
           });
 
@@ -81,7 +85,7 @@ export function useCardLinkTooltip() {
 
       closeTooltip();
     },
-    [refs, closeTooltip, cardTooltip],
+    [setPositionReference, closeTooltip, cardTooltip],
   );
 
   const referenceProps = useMemo(
@@ -96,7 +100,7 @@ export function useCardLinkTooltip() {
   const cardLinkTooltip = isMounted && cardTooltip && (
     <FloatingPortal id={FLOATING_PORTAL_ID}>
       <div
-        ref={refs.setFloating}
+        ref={setFloating}
         style={{
           ...floatingStyles,
           ...transitionStyles,

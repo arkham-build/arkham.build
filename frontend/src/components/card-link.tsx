@@ -21,7 +21,7 @@ export function CardLink({
 
   const {
     closeTooltip,
-    refs,
+    refs: { setFloating, setReference },
     referenceProps,
     isMounted,
     floatingStyles,
@@ -47,7 +47,7 @@ export function CardLink({
         className={css["card-link"]}
         onClick={onClick}
         href={`~/card/${card.code}`}
-        ref={refs.setReference}
+        ref={setReference}
         style={accentColor}
       >
         {card.parallel && <i className="icon-parallel" />}
@@ -56,7 +56,7 @@ export function CardLink({
       {isMounted && (
         <PortaledCardTooltip
           card={card}
-          ref={refs.setFloating}
+          ref={setFloating}
           floatingStyles={floatingStyles}
           transitionStyles={transitionStyles}
         />

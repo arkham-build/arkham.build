@@ -140,14 +140,19 @@ type DrawSimulatorCardProps = {
 function DrawSimulatorCard(props: DrawSimulatorCardProps) {
   const { card, dispatch, index, state } = props;
 
-  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
-    useRestingTooltip({ delay: 350 });
+  const {
+    refs: { setFloating, setReference },
+    referenceProps,
+    isMounted,
+    floatingStyles,
+    transitionStyles,
+  } = useRestingTooltip({ delay: 350 });
 
   return (
     <li>
       <button
         {...referenceProps}
-        ref={refs.setReference}
+        ref={setReference}
         className={cx(
           css["card-toggle"],
           state.selection.includes(index) && css["selected"],
@@ -160,7 +165,7 @@ function DrawSimulatorCard(props: DrawSimulatorCardProps) {
       {isMounted && (
         <PortaledCardTooltip
           card={card}
-          ref={refs.setFloating}
+          ref={setFloating}
           floatingStyles={floatingStyles}
           transitionStyles={transitionStyles}
         />

@@ -66,42 +66,19 @@ function Toast(props: {
   const [location] = useLocation();
   const locationRef = useRef(location);
 
-  const toastRef = useRef<HTMLOutputElement>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
   const removeToast = useCallback(() => {
-    return new Promise<void>((resolve) => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-      if (!toastRef.current) {
-        onRemove(id);
-        return resolve();
-      }
-
-      setIsExiting(true);
-
-      const afterExit = () => {
-        toastRef.current?.removeEventListener("animationend", afterExit);
-        onRemove(id);
-        setIsExiting(false);
-        return resolve();
-      };
-
-      toastRef.current.addEventListener("animationend", afterExit);
-    });
-  }, [id, onRemove]);
+    setIsExiting(true);
+  }, []);
 
   useEffect(() => {
-    if (!toast?.duration) return;
+    if (!toast.duration) return;
 
-    timeoutRef.current = setTimeout(() => {
-      void removeToast().catch(console.error);
-    }, toast.duration);
+    const timeout = setTimeout(removeToast, toast.duration);
 
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      clearTimeout(timeout);
     };
-  }, [toast, removeToast]);
+  }, [toast.duration, removeToast]);
 
   useEffect(() => {
     if (
@@ -109,7 +86,7 @@ function Toast(props: {
       locationRef.current !== location &&
       !toast.persistent
     ) {
-      void removeToast().catch(console.error);
+      removeToast();
     }
   }, [location, removeToast, toast.duration, toast.persistent]);
 
@@ -122,7 +99,9 @@ function Toast(props: {
         !toast.duration && css["closable"],
       )}
       data-testid="toast"
-      ref={toastRef}
+      onAnimationEnd={(event) => {
+        if (event.currentTarget === event.target && isExiting) onRemove(id);
+      }}
     >
       {toast.variant === "success" && (
         <CheckCircleIcon className={css["icon"]} />
