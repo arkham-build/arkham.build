@@ -51,6 +51,8 @@ function Settings() {
   const [tab, onTabChange] = useTabUrlState("general");
   const [headerPortalTarget, setHeaderPortalTarget] =
     useState<HTMLDivElement | null>(null);
+  const [headerActionPortalTarget, setHeaderActionPortalTarget] =
+    useState<HTMLDivElement | null>(null);
   const search = useSearch();
   const goBack = useGoBack(search.includes("login_state") ? "/" : undefined);
 
@@ -70,7 +72,10 @@ function Settings() {
           >
             {t("common.back")}
           </Button>
-          <div id="settings-header-action-portal" />
+          <div
+            id="settings-header-action-portal"
+            ref={setHeaderActionPortalTarget}
+          />
         </div>
       </header>
 
@@ -108,6 +113,7 @@ function Settings() {
           </TabsContent>
           <ApplicationSettings
             colorTheme={colorTheme}
+            headerActionPortalTarget={headerActionPortalTarget}
             headerPortalTarget={headerPortalTarget}
             key={`${settingsKey(settings)}-${colorTheme}`}
             settings={settings}
@@ -121,11 +127,13 @@ function Settings() {
 
 function ApplicationSettings({
   colorTheme: persistedColorTheme,
+  headerActionPortalTarget,
   headerPortalTarget,
   settings: persistedSettings,
   updateColorTheme,
 }: {
   colorTheme: string;
+  headerActionPortalTarget: HTMLDivElement | null;
   headerPortalTarget: HTMLDivElement | null;
   settings: SettingsState;
   updateColorTheme: (theme: string) => void;
@@ -148,7 +156,7 @@ function ApplicationSettings({
   return (
     <form id="settings-form" onSubmit={onSubmit}>
       <TabsContent value="general">
-        <PortaledSaveButton />
+        <PortaledSaveButton target={headerActionPortalTarget} />
         <Section title={t("settings.general.title")}>
           <DefaultEnvironmentSetting
             settings={settings}
@@ -217,7 +225,7 @@ function ApplicationSettings({
         </Section>
       </TabsContent>
       <TabsContent value="collection">
-        <PortaledSaveButton />
+        <PortaledSaveButton target={headerActionPortalTarget} />
         <Section title={t("settings.collection.title")}>
           <ShowPreviewsSetting settings={settings} setSettings={setSettings} />
           <ShowAllCardsSetting settings={settings} setSettings={setSettings} />
@@ -225,7 +233,7 @@ function ApplicationSettings({
         </Section>
       </TabsContent>
       <TabsContent value="fan-made-content">
-        <PortaledSaveButton />
+        <PortaledSaveButton target={headerActionPortalTarget} />
         <Section title={t("fan_made_content.title")}>
           <FanMadeContent
             headerPortalTarget={headerPortalTarget}
@@ -235,7 +243,7 @@ function ApplicationSettings({
         </Section>
       </TabsContent>
       <TabsContent value="support">
-        <PortaledSaveButton />
+        <PortaledSaveButton target={headerActionPortalTarget} />
         <Section title={t("settings.support.metadata_title")}>
           <CardDataSync />
           <MetadataRefresh />
@@ -251,9 +259,8 @@ function ApplicationSettings({
   );
 }
 
-function PortaledSaveButton() {
+function PortaledSaveButton({ target }: { target: HTMLDivElement | null }) {
   const { t } = useTranslation();
-  const target = document.getElementById("settings-header-action-portal");
 
   if (!target) {
     return null;
