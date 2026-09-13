@@ -88,6 +88,7 @@ import {
 } from "../lib/sorting";
 import { isResolvedDeck, type ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";
+import { isFanMadeContentFilterObject } from "../slices/lists.type-guards";
 import type {
   AssetFilter,
   CardTypeFilter,
@@ -1411,15 +1412,21 @@ export const selectInvestigatorOptions = createSelector(
  * Investigator Card Access
  */
 
-// FIXME: consider how to handle fan-made content here
 export const selectCardOptions = createSelector(
   selectMetadata,
+  selectActiveList,
   selectLocaleSortingCollator,
-  (metadata, collator) => {
+  (metadata, activeList, collator) => {
     const sortFn = makeSortFunction(["name", "level"], metadata, collator);
+    const contentType = Object.values(activeList?.filterValues ?? {}).find(
+      isFanMadeContentFilterObject,
+    )?.value;
 
     return Object.values(metadata.cards)
       .filter((card) => {
+        if (contentType === "official" && !official(card)) return false;
+        if (contentType === "fan-made" && official(card)) return false;
+
         return (
           !filterEncounterCards(card) &&
           filterMythosCards(card) &&
