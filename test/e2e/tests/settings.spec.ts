@@ -177,6 +177,7 @@ test.describe("settings", () => {
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await page.getByTestId("settings-select-theme").selectOption("light");
     await page.getByTestId("settings-save").click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 
     // now it should be persistent
     await page.goto("/");
