@@ -39,7 +39,6 @@ void i18n
     // (i18next would otherwise format `zh-cn` -> `zh-CN`, which 404s on case-sensitive hosts).
     lowerCaseLng: true,
     partialBundledLanguages: true,
-    showSupportNotice: false,
     resources: {
       en,
     },
