@@ -147,9 +147,21 @@
     "browse": {
       "title": "Przeglądaj karty"
     },
+    "content": {
+      "empty": {
+        "campaigns": "Brak dostępnych kampanii.",
+        "standalone_scenarios": "Brak dostępnych scenariuszy."
+      },
+      "tabs": {
+        "campaigns": "Kampanie",
+        "standalone_scenarios": "Scenariusze"
+      },
+      "title": "Zawartość",
+      "unknown_release_year": "Nieznany rok"
+    },
     "card_modal": {
       "actions": {
-        "complete_task": "Complete task",
+        "complete_task": "Zakończ zadanie",
         "open_card_page": "Strona karty",
         "reviews": "Recenzje"
       },
@@ -1551,14 +1563,18 @@
         "include_flavor": "Smaczki",
         "include_game_text": "Tekst karty",
         "include_name": "Nazwa",
+        "match_display_mode": "Dopasuj tryb wyświetlania",
+        "match_visible_taboo": "Dopasuj widoczne taboo",
         "placeholder": "Szukaj kart...",
         "share": "Skopiuj zapytanie",
+        "share_settings": "Udostępnij ustawienia",
         "title": "Wyszukaj"
       },
       "sort_by": "Sortuj według"
     },
     "masthead": {
       "browse": "Przeglądaj",
+      "cards": "Karty",
       "navigation": "Nawigacja",
       "rules": "Zasady"
     },
