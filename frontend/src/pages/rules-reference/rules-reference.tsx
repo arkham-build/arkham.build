@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTabUrlState } from "@/components/ui/tabs.hooks";
@@ -11,12 +11,9 @@ function RulesReference() {
   const { t } = useTranslation();
   const [activeTab, onTabChangeUrl] = useTabUrlState("chapter_2");
 
-  const onTabChange = useCallback(
-    (value: string) => {
-      onTabChangeUrl(value);
-    },
-    [onTabChangeUrl],
-  );
+  const onTabChange = (value: string) => {
+    onTabChangeUrl(value);
+  };
 
   useEffect(() => {
     if (window.location.hash.startsWith("#grimoire-")) {

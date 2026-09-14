@@ -1,5 +1,5 @@
 import type { Card } from "@arkham-build/shared";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { type ListRange, Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import { Link } from "wouter";
 import { useStore } from "@/store";
@@ -35,46 +35,46 @@ export function CardGridGrouped(
   const [scrollParent, setScrollParent] = useState<HTMLElement | undefined>();
   const [currentTop, setCurrentTop] = useState<number>(-1);
 
-  const onScrollChange = useCallback(() => {
+  const onScrollChange = useEffectEvent(() => {
     setCurrentTop(-1);
-  }, []);
+  });
+
+  const onSelectGroup = useEffectEvent((evt: Event) => {
+    const key = (evt as CustomEvent).detail;
+    const group = data.groups.findIndex((g) => g.key === key);
+
+    if (group === -1) return;
+
+    virtuosoRef.current?.scrollToIndex({
+      index: group,
+      behavior: "auto",
+    });
+
+    activeGroup.current = key;
+  });
+
+  const onKeyboardNavigate = useEffectEvent((evt: Event) => {
+    const key = (evt as CustomEvent).detail;
+
+    if (!data?.cards.length) return;
+
+    if (key === "Enter" && currentTop > -1) {
+      openCardModal(data.cards[currentTop].code);
+    }
+
+    if (key === "Escape") {
+      setCurrentTop(-1);
+    }
+  });
 
   useEffect(() => {
     scrollParent?.addEventListener("wheel", onScrollChange, { passive: true });
     return () => {
       scrollParent?.removeEventListener("wheel", onScrollChange);
     };
-  }, [scrollParent, onScrollChange]);
+  }, [scrollParent]);
 
   useEffect(() => {
-    function onSelectGroup(evt: Event) {
-      const key = (evt as CustomEvent).detail;
-      const group = data.groups.findIndex((g) => g.key === key);
-
-      if (group === -1) return;
-
-      virtuosoRef.current?.scrollToIndex({
-        index: group,
-        behavior: "auto",
-      });
-
-      activeGroup.current = key;
-    }
-
-    function onKeyboardNavigate(evt: Event) {
-      const key = (evt as CustomEvent).detail;
-
-      if (!data?.cards.length) return;
-
-      if (key === "Enter" && currentTop > -1) {
-        openCardModal(data.cards[currentTop].code);
-      }
-
-      if (key === "Escape") {
-        setCurrentTop(-1);
-      }
-    }
-
     window.addEventListener("list-select-group", onSelectGroup);
     window.addEventListener("list-keyboard-navigate", onKeyboardNavigate);
 
@@ -82,14 +82,11 @@ export function CardGridGrouped(
       window.removeEventListener("list-select-group", onSelectGroup);
       window.removeEventListener("list-keyboard-navigate", onKeyboardNavigate);
     };
-  }, [data, openCardModal, currentTop]);
+  }, []);
 
-  const rangeChanged = useCallback(
-    (range: ListRange) => {
-      activeGroup.current = data.groups[range.startIndex].key;
-    },
-    [data],
-  );
+  const rangeChanged = (range: ListRange) => {
+    activeGroup.current = data.groups[range.startIndex].key;
+  };
 
   useEffect(() => {
     setCurrentTop(-1);
@@ -171,21 +168,15 @@ function CardGridGroup(
       ? groupCounts.slice(0, index).reduce((acc, count) => acc + count, 0)
       : 0;
 
-  const groupCards = useMemo(
-    () => cards.slice(offset, offset + counts),
-    [cards, counts, offset],
-  );
+  const groupCards = cards.slice(offset, offset + counts);
 
-  const cssVariables = useMemo(
-    () => ({
-      "--grid-columns-2": Math.min(2, scanMaxColumns),
-      "--grid-columns-3": Math.min(3, scanMaxColumns),
-      "--grid-columns-4": Math.min(4, scanMaxColumns),
-      "--grid-columns-5": Math.min(5, scanMaxColumns),
-      "--grid-columns-6": Math.min(6, scanMaxColumns),
-    }),
-    [scanMaxColumns],
-  );
+  const cssVariables = {
+    "--grid-columns-2": Math.min(2, scanMaxColumns),
+    "--grid-columns-3": Math.min(3, scanMaxColumns),
+    "--grid-columns-4": Math.min(4, scanMaxColumns),
+    "--grid-columns-5": Math.min(5, scanMaxColumns),
+    "--grid-columns-6": Math.min(6, scanMaxColumns),
+  };
 
   return (
     <div className={css["group"]} key={group.key}>
@@ -224,31 +215,22 @@ function CardGridItem(
 
   const openCardModal = useStore((state) => state.openCardModal);
 
-  const openModal = useCallback(() => {
+  const openModal = () => {
     openCardModal(card.code);
-  }, [openCardModal, card.code]);
+  };
 
-  const onClick = useCallback(
-    (evt: React.MouseEvent) => {
-      const linkPrevented = preventLeftClick(evt);
-      if (linkPrevented) openModal();
-    },
-    [openModal],
-  );
+  const onClick = (evt: React.MouseEvent) => {
+    const linkPrevented = preventLeftClick(evt);
+    if (linkPrevented) openModal();
+  };
 
-  const onPressEnter = useCallback(
-    (evt: React.KeyboardEvent) => {
-      if (evt.key === "Enter" && evt.target === evt.currentTarget) {
-        openModal();
-      }
-    },
-    [openModal],
-  );
+  const onPressEnter = (evt: React.KeyboardEvent) => {
+    if (evt.key === "Enter" && evt.target === evt.currentTarget) {
+      openModal();
+    }
+  };
 
-  const leftActionSlot = useCallback(
-    () => <CardFavoriteAction card={card} />,
-    [card],
-  );
+  const leftActionSlot = () => <CardFavoriteAction card={card} />;
 
   const quantity = quantities?.[card.code] ?? 0;
 

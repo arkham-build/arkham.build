@@ -229,11 +229,9 @@ function PendingEmailIdentity({
       variant: "loading",
     });
 
-    try {
-      await cancelPendingEmailChangeMutation.mutateAsync();
-    } finally {
+    await cancelPendingEmailChangeMutation.mutateAsync().finally(() => {
       toast.dismiss(toastId);
-    }
+    });
   };
   return (
     <Plane className={css["pending-email"]} size="sm">

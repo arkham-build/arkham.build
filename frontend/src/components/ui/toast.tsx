@@ -5,7 +5,7 @@ import {
   LoaderCircleIcon,
   XIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { randomId } from "@/utils/crypto";
@@ -21,20 +21,17 @@ import css from "./toast.module.css";
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastType[]>([]);
 
-  const dismissToast = useCallback((id: string) => {
+  const dismissToast = (id: string) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  }, []);
+  };
 
-  const showToast = useCallback((value: ToastPayload) => {
+  const showToast = (value: ToastPayload) => {
     const id = randomId();
     setToasts((prev) => [...prev, { ...value, id }]);
     return id;
-  }, []);
+  };
 
-  const ctx = useMemo(
-    () => ({ show: showToast, dismiss: dismissToast }),
-    [showToast, dismissToast],
-  );
+  const ctx = { show: showToast, dismiss: dismissToast };
 
   return (
     <ToastContext value={ctx}>
@@ -66,19 +63,19 @@ function Toast(props: {
   const [location] = useLocation();
   const locationRef = useRef(location);
 
-  const removeToast = useCallback(() => {
+  const removeToast = () => {
     setIsExiting(true);
-  }, []);
+  };
 
   useEffect(() => {
     if (!toast.duration) return;
 
-    const timeout = setTimeout(removeToast, toast.duration);
+    const timeout = setTimeout(() => setIsExiting(true), toast.duration);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [toast.duration, removeToast]);
+  }, [toast.duration]);
 
   useEffect(() => {
     if (
@@ -86,9 +83,9 @@ function Toast(props: {
       locationRef.current !== location &&
       !toast.persistent
     ) {
-      removeToast();
+      setIsExiting(true);
     }
-  }, [location, removeToast, toast.duration, toast.persistent]);
+  }, [location, toast.duration, toast.persistent]);
 
   return (
     <output

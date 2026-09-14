@@ -1,6 +1,5 @@
 import type { Id } from "@arkham-build/shared";
 import { CircleQuestionMarkIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -82,7 +81,7 @@ function useResolveDeckConflictAction(
   const discardLocalMutation = useDiscardLocalDeckConflictMutation();
   const refreshMutation = useRefreshDeckConflictMutation();
 
-  const run = useCallback(async () => {
+  const run = async () => {
     if (!conflict) return;
 
     try {
@@ -102,15 +101,7 @@ function useResolveDeckConflictAction(
         variant: "error",
       });
     }
-  }, [
-    conflict,
-    deckId,
-    discardLocalMutation,
-    navigate,
-    refreshMutation,
-    t,
-    toast,
-  ]);
+  };
 
   return {
     actionLabel:

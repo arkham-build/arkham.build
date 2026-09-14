@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import { createContext, useContext, useEffect, useRef } from "react";
 import { cx } from "@/utils/cx";
 import css from "./toggle-group.module.css";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
@@ -82,37 +75,28 @@ export function ToggleGroup(props: ToggleGroupProps) {
     };
   }, []);
 
-  const isSelected = useCallback(
-    (itemValue: string) => {
-      if (type === "single") return value === itemValue;
-      return value.includes(itemValue);
-    },
-    [type, value],
-  );
+  const isSelected = (itemValue: string) => {
+    if (type === "single") return value === itemValue;
+    return value.includes(itemValue);
+  };
 
-  const onItemClick = useCallback(
-    (itemValue: string) => {
-      if (type === "single") {
-        onValueChange(itemValue);
-        return;
-      }
+  const onItemClick = (itemValue: string) => {
+    if (type === "single") {
+      onValueChange(itemValue);
+      return;
+    }
 
-      const current = value;
-      let next = current.includes(itemValue)
-        ? current.filter((value) => value !== itemValue)
-        : [...current, itemValue];
-      if (shiftKeyPressed.current) {
-        next = next.filter((value) => !current.includes(value));
-      }
-      onValueChange(next);
-    },
-    [type, value, onValueChange],
-  );
+    const current = value;
+    let next = current.includes(itemValue)
+      ? current.filter((value) => value !== itemValue)
+      : [...current, itemValue];
+    if (shiftKeyPressed.current) {
+      next = next.filter((value) => !current.includes(value));
+    }
+    onValueChange(next);
+  };
 
-  const ctx = useMemo(
-    () => ({ disabled, isSelected, onItemClick }),
-    [disabled, isSelected, onItemClick],
-  );
+  const ctx = { disabled, isSelected, onItemClick };
 
   return (
     <ToggleGroupContext value={ctx}>
@@ -156,13 +140,10 @@ export function ToggleGroupItem({
   const selected = isSelected(value);
   const disabled = rest.disabled ?? groupDisabled;
 
-  const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      onItemClick(value);
-      onClick?.(e);
-    },
-    [onItemClick, value, onClick],
-  );
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    onItemClick(value);
+    onClick?.(e);
+  };
 
   const element = (
     <button

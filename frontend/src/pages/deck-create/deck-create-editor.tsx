@@ -1,7 +1,6 @@
 import type { Card, StorageProvider } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
 import { ArrowRightLeftIcon, Settings2Icon } from "lucide-react";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { LimitedCardPoolField } from "@/components/limited-card-pool/limited-card-pool-field";
@@ -52,46 +51,34 @@ export function DeckCreateEditor() {
     (state) => state.deckCreateSetInvestigatorCode,
   );
 
-  const onInputChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      if (evt.target instanceof HTMLInputElement) {
-        setTitle(evt.target.value);
-      }
-    },
-    [setTitle],
-  );
+  const onInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target instanceof HTMLInputElement) {
+      setTitle(evt.target.value);
+    }
+  };
 
-  const onTabooSetChange = useCallback(
-    (evt: React.ChangeEvent<HTMLSelectElement>) => {
-      if (evt.target instanceof HTMLSelectElement) {
-        const value = evt.target.value;
-        setTabooSet(value ? Number.parseInt(value, 10) : undefined);
-      }
-    },
-    [setTabooSet],
-  );
+  const onTabooSetChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+    if (evt.target instanceof HTMLSelectElement) {
+      const value = evt.target.value;
+      setTabooSet(value ? Number.parseInt(value, 10) : undefined);
+    }
+  };
 
-  const onInvestigatorChange = useCallback(
-    (evt: React.ChangeEvent<HTMLSelectElement>) => {
-      if (evt.target instanceof HTMLSelectElement) {
-        const side = evt.target.getAttribute("data-side") as "front" | "back";
-        const value = evt.target.value;
-        setInvestigatorCode(value, side);
-      }
-    },
-    [setInvestigatorCode],
-  );
+  const onInvestigatorChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+    if (evt.target instanceof HTMLSelectElement) {
+      const side = evt.target.getAttribute("data-side") as "front" | "back";
+      const value = evt.target.value;
+      setInvestigatorCode(value, side);
+    }
+  };
 
-  const onChangeSelection = useCallback(
-    (evt: React.ChangeEvent<HTMLSelectElement>) => {
-      if (evt.target instanceof HTMLSelectElement) {
-        const key = evt.target.dataset.field;
-        const value = evt.target.value;
-        if (key) setSelection(key, value);
-      }
-    },
-    [setSelection],
-  );
+  const onChangeSelection = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+    if (evt.target instanceof HTMLSelectElement) {
+      const key = evt.target.dataset.field;
+      const value = evt.target.value;
+      if (key) setSelection(key, value);
+    }
+  };
 
   const { isPending: isSavingSettings, saveSettings } = useSaveSettings({
     settings: {
@@ -100,18 +87,15 @@ export function DeckCreateEditor() {
     },
   });
 
-  const onStorageDefaultChange = useCallback(async () => {
+  const onStorageDefaultChange = async () => {
     await saveSettings();
-  }, [saveSettings]);
+  };
 
-  const investigatorActionRenderer = useCallback(
-    (card: Card) => (
-      <Button size="sm" onClick={() => setInvestigatorCode(card.code)}>
-        <ArrowRightLeftIcon />
-        {t("deck_edit.config.version.switch")}
-      </Button>
-    ),
-    [setInvestigatorCode, t],
+  const investigatorActionRenderer = (card: Card) => (
+    <Button size="sm" onClick={() => setInvestigatorCode(card.code)}>
+      <ArrowRightLeftIcon />
+      {t("deck_edit.config.version.switch")}
+    </Button>
   );
 
   const selections = decodeSelections(back, deckCreate.selections);
@@ -255,7 +239,7 @@ function useCreateDeck() {
   const [, navigate] = useLocation();
   const createDeckMutation = useCreateDeckMutation();
 
-  return useCallback(async () => {
+  return async () => {
     const toastId = toast.show({
       children: t("deck_create.loading"),
       variant: "loading",
@@ -272,7 +256,7 @@ function useCreateDeck() {
         variant: "error",
       });
     }
-  }, [createDeckMutation, navigate, t, toast]);
+  };
 }
 
 function getInvestigatorOptions(
@@ -300,25 +284,18 @@ function DeckCreateCardPool({ investigator }: { investigator: Card }) {
 
   const deckCreate = useStore((state) => state.deckCreate);
 
-  const sealedDeck = useMemo(
-    () =>
-      deckCreate?.sealed
-        ? {
-            name: deckCreate.sealed.name,
-            cards: deckCreate.sealed.cards,
-          }
-        : undefined,
-    [deckCreate],
-  );
+  const sealedDeck = deckCreate?.sealed
+    ? {
+        name: deckCreate.sealed.name,
+        cards: deckCreate.sealed.cards,
+      }
+    : undefined;
 
   const selectedPacks = useStore((state) =>
     selectLimitedPoolPacks(state, deckCreate?.cardPool),
   );
 
-  const selectedItems = useMemo(
-    () => selectedPacks.map((p) => p.code),
-    [selectedPacks],
-  );
+  const selectedItems = selectedPacks.map((p) => p.code);
 
   return (
     <Field full>

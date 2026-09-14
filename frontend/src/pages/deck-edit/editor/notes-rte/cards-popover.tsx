@@ -1,6 +1,5 @@
 import type { Card } from "@arkham-build/shared";
 import { Settings2Icon } from "lucide-react";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { CardsCombobox } from "@/components/cards-combobox";
@@ -68,49 +67,38 @@ export function CardsPopover(props: Props) {
     },
   });
 
-  const onUpdateDefaults = useCallback(() => {
+  const onUpdateDefaults = () => {
     void saveSettings();
-  }, [saveSettings]);
+  };
 
   const cards = useStore(
     useShallow((state) => selectCardOptions(state, cardOrigin, deck)),
   );
 
-  const formatOptions = useMemo(
-    () =>
-      Object.keys(CARD_FORMATS).map((id) => ({
-        label: t(`deck_edit.notes.toolbar.formats.${id}`),
-        value: id,
-      })),
-    [t],
-  );
+  const formatOptions = Object.keys(CARD_FORMATS).map((id) => ({
+    label: t(`deck_edit.notes.toolbar.formats.${id}`),
+    value: id,
+  }));
 
-  const originOptions = useMemo(
-    () =>
-      ["deck", "usable", "player", "campaign"].map((id) => ({
-        label: t(`deck_edit.notes.toolbar.origins.${id}`),
-        value: id,
-      })),
-    [t],
-  );
+  const originOptions = ["deck", "usable", "player", "campaign"].map((id) => ({
+    label: t(`deck_edit.notes.toolbar.origins.${id}`),
+    value: id,
+  }));
 
-  const onSelectItem = useCallback(
-    (item: Card[]) => {
-      const card = item[0];
+  const onSelectItem = (item: Card[]) => {
+    const card = item[0];
 
-      if (!card) return;
-      insertTextAtCaret(
-        cardToMarkdown(
-          card,
-          metadata,
-          lookupTables,
-          cardFormatDefinition(cardFormat),
-        ),
-      );
-      onEscapePress();
-    },
-    [insertTextAtCaret, metadata, lookupTables, cardFormat, onEscapePress],
-  );
+    if (!card) return;
+    insertTextAtCaret(
+      cardToMarkdown(
+        card,
+        metadata,
+        lookupTables,
+        cardFormatDefinition(cardFormat),
+      ),
+    );
+    onEscapePress();
+  };
 
   return (
     <div className={css["cards-popover"]}>

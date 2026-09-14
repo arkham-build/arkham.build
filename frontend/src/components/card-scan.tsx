@@ -1,6 +1,6 @@
 import type { Card } from "@arkham-build/shared";
 import { RotateCcwIcon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { selectBackCard } from "@/store/selectors/shared";
@@ -46,13 +46,10 @@ export function CardScan(props: CardScanProps) {
     setFlipped(defaultFlipped);
   }
 
-  const onFlip = useCallback(
-    (value: boolean, sideways: boolean) => {
-      setFlipped(value);
-      onFlipProp?.(value, sideways);
-    },
-    [onFlipProp],
-  );
+  const onFlip = (value: boolean, sideways: boolean) => {
+    setFlipped(value);
+    onFlipProp?.(value, sideways);
+  };
 
   return <CardScanControlled {...rest} flipped={flipped} onFlip={onFlip} />;
 }
@@ -117,16 +114,13 @@ export function CardScanControlled(props: Props) {
       ? card.image_url
       : card.back_image_url;
 
-  const onToggleFlip = useCallback(
-    (evt: React.MouseEvent) => {
-      evt.preventDefault();
-      evt.stopPropagation();
+  const onToggleFlip = (evt: React.MouseEvent) => {
+    evt.preventDefault();
+    evt.stopPropagation();
 
-      const next = !flipped;
-      if (onFlip) onFlip(next, next ? reverseSideways : isSideways);
-    },
-    [flipped, isSideways, reverseSideways, onFlip],
-  );
+    const next = !flipped;
+    if (onFlip) onFlip(next, next ? reverseSideways : isSideways);
+  };
 
   return (
     <div

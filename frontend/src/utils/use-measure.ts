@@ -1,5 +1,5 @@
 // ported with slight changes from react-use
-import { useLayoutEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 
 export type UseMeasureRect = Pick<
   DOMRectReadOnly,
@@ -26,25 +26,22 @@ export function useMeasure<E extends Element = Element>(): UseMeasureResult<E> {
   const [element, ref] = useState<E | null>(null);
   const [rect, setRect] = useState<UseMeasureRect>(defaultState);
 
-  const observer = useMemo(
-    () =>
-      new ResizeObserver((entries) => {
-        if (entries[0]) {
-          const { x, y, width, height, top, left, bottom, right } =
-            entries[0].contentRect;
-          setRect({ x, y, width, height, top, left, bottom, right });
-        }
-      }),
-    [],
-  );
-
   useLayoutEffect(() => {
     if (!element) return;
+
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+
+      const { x, y, width, height, top, left, bottom, right } =
+        entry.contentRect;
+      setRect({ x, y, width, height, top, left, bottom, right });
+    });
+
     observer.observe(element);
     return () => {
       observer.disconnect();
     };
-  }, [element, observer]);
+  }, [element]);
 
   return [ref, rect];
 }

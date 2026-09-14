@@ -1,7 +1,7 @@
 /* oxlint-disable jsx-a11y/click-events-have-key-events -- TODO: implement. */
 /* oxlint-disable jsx-a11y/no-static-element-interactions -- item might nest button elements. */
 import { CheckIcon } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { GroupedVirtuosoHandle } from "react-virtuoso";
 import { Virtuoso } from "react-virtuoso";
 import type { Coded } from "@/store/lib/types";
@@ -65,12 +65,9 @@ export function ComboboxMenu<T extends Coded>(props: Props<T>) {
     }
   }, [activeIndex]);
 
-  const cssVariables = useMemo(
-    () => ({
-      "--viewport-item-count": items.length,
-    }),
-    [items],
-  );
+  const cssVariables = {
+    "--viewport-item-count": items.length,
+  };
 
   if (items.length === 0) {
     return <div className={css["menu-empty"]}>{noResultsLabel}</div>;

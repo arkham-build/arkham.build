@@ -1,7 +1,7 @@
 /* oxlint-disable react/no-danger -- trusted content. */
 import type { GrimoireEntry, GrimoireSection } from "@arkham-build/shared";
 import { ExternalLinkIcon, LoaderCircleIcon } from "lucide-react";
-import { Fragment, useEffect, useMemo } from "react";
+import { Fragment, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useCardLinkTooltip } from "@/components/card-tooltip/use-card-link-tooltip";
 import { Button } from "@/components/ui/button";
@@ -42,10 +42,7 @@ export function RulesChapterTwo() {
   const metadata = useStore(selectMetadata);
 
   const { cardLinkTooltip, referenceProps } = useCardLinkTooltip();
-  const grimoireVersion = useMemo(
-    () => getLatestGrimoireVersion(grimoire.data),
-    [grimoire.data],
-  );
+  const grimoireVersion = getLatestGrimoireVersion(grimoire.data);
 
   useEffect(() => {
     if (grimoire.isPending || grimoire.error || !window.location.hash) return;
@@ -61,7 +58,7 @@ export function RulesChapterTwo() {
     });
   }, [grimoire.error, grimoire.isPending]);
 
-  const entries = useMemo(() => {
+  const entries = (() => {
     if (!grimoire.data) return [];
 
     const cardErrata = grimoire.data.errata
@@ -98,22 +95,13 @@ export function RulesChapterTwo() {
         text: [entry.text, ...additions].filter(Boolean).join("\n\n"),
       };
     });
-  }, [grimoire.data, metadata]);
+  })();
 
-  const sections = useMemo(
-    () => grimoire.data?.sections ?? [],
-    [grimoire.data],
-  );
+  const sections = grimoire.data?.sections ?? [];
 
-  const grimoireMaps = useMemo(
-    () => buildGrimoireMaps(entries, sections),
-    [entries, sections],
-  );
+  const grimoireMaps = buildGrimoireMaps(entries, sections);
 
-  const grimoireHtmlMaps = useMemo(
-    () => buildGrimoireHtmlMaps(entries, sections),
-    [entries, sections],
-  );
+  const grimoireHtmlMaps = buildGrimoireHtmlMaps(entries, sections);
 
   const getFilteredGrimoire = (search: string) =>
     filterGrimoire(entries, sections, grimoireMaps, search);

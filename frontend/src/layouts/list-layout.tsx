@@ -1,7 +1,7 @@
 /* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-element-interactions -- TODO */
 import { FilterIcon } from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CollapseSidebarButton } from "@/components/collapse-sidebar-button";
 import { Masthead } from "@/components/masthead";
@@ -58,31 +58,21 @@ export function ListLayout(props: Props) {
   const filtersRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const onContentClick = useCallback(
-    (evt: React.MouseEvent) => {
-      if (filtersOpen && floatingFilters) {
-        setFiltersOpen(false);
-        evt.preventDefault();
-      }
+  const onContentClick = (evt: React.MouseEvent) => {
+    if (filtersOpen && floatingFilters) {
+      setFiltersOpen(false);
+      evt.preventDefault();
+    }
 
-      if (sidebarOpen && floatingSidebar) {
-        setSidebarOpen(false);
-        evt.preventDefault();
-      }
-    },
-    [
-      filtersOpen,
-      sidebarOpen,
-      setSidebarOpen,
-      setFiltersOpen,
-      floatingFilters,
-      floatingSidebar,
-    ],
-  );
+    if (sidebarOpen && floatingSidebar) {
+      setSidebarOpen(false);
+      evt.preventDefault();
+    }
+  };
 
-  const preventBubble = useCallback((e: React.MouseEvent) => {
+  const preventBubble = (e: React.MouseEvent) => {
     e.stopPropagation();
-  }, []);
+  };
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
@@ -112,21 +102,21 @@ export function ListLayout(props: Props) {
     ((floatingSidebar && sidebarOpen) || (floatingFilters && filtersOpen)) &&
     css["floating-menu-open"];
 
-  const toggleSidebar = useCallback(() => {
+  const toggleSidebar = () => {
     setSidebarOpen((open) => !open);
-  }, [setSidebarOpen]);
+  };
 
-  const toggleFilters = useCallback(() => {
+  const toggleFilters = () => {
     setFiltersOpen((open) => !open);
-  }, [setFiltersOpen]);
+  };
 
-  const closeSidebar = useCallback(() => {
+  const closeSidebar = () => {
     setSidebarOpen(false);
-  }, [setSidebarOpen]);
+  };
 
-  const closeFilters = useCallback(() => {
+  const closeFilters = () => {
     setFiltersOpen(false);
-  }, [setFiltersOpen]);
+  };
 
   useHotkey("alt+1", toggleSidebar);
   useHotkey("alt+2", toggleFilters);

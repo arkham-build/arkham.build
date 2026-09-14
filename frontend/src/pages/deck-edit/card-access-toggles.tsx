@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
@@ -32,20 +31,17 @@ export function CardAccessToggles(props: Props) {
 
   const canShowLimitedAccess = !isEmpty(limitedSlots);
 
-  const onShowUnusableChange = useCallback(
-    (val: boolean) => {
-      setShowUnusable(val);
-    },
-    [setShowUnusable],
-  );
+  const onShowUnusableChange = (val: boolean) => {
+    setShowUnusable(val);
+  };
 
-  const onUnusableHotkey = useCallback(() => {
+  const onUnusableHotkey = () => {
     setShowUnusable(!showUnusable);
-  }, [showUnusable, setShowUnusable]);
+  };
 
-  const onLimitedAccessHotkey = useCallback(() => {
+  const onLimitedAccessHotkey = () => {
     setShowLimitedAccess(!showLimitedAccess);
-  }, [showLimitedAccess, setShowLimitedAccess]);
+  };
 
   useHotkey("alt+u", onUnusableHotkey);
 

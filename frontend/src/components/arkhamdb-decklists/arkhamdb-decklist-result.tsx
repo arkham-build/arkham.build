@@ -1,5 +1,4 @@
 import type { DecklistSearchResult } from "@arkham-build/shared";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { resolveDeck } from "@/store/lib/resolve-deck";
@@ -27,13 +26,13 @@ export function ArkhamDBDecklistResult({ result, showDetails }: Props) {
   const lookupTables = useStore(selectLookupTables);
   const collator = useStore(selectLocaleSortingCollator);
 
-  const resolved = useMemo(() => {
+  const resolved = (() => {
     const deps = { lookupTables, metadata };
     return resolveDeck(deps, collator, {
       ...result,
       source: undefined,
     });
-  }, [result, lookupTables, metadata, collator]);
+  })();
 
   return (
     <DeckSummary

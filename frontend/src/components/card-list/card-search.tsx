@@ -1,5 +1,5 @@
 import { CheckIcon, ClipboardCopyIcon, Share2Icon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { useStore } from "@/store";
@@ -14,7 +14,6 @@ import {
 import { selectActiveList } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
-import { debounce } from "@/utils/debounce";
 import { useAgathaEasterEggTrigger } from "@/utils/easter-egg-agatha";
 import { useCopyToClipboard } from "@/utils/use-copy-to-clipboard";
 import { useHotkey } from "@/utils/use-hotkey";
@@ -79,29 +78,26 @@ export function CardSearch(props: Props) {
   const { matchDisplayMode, matchVisibleTaboo } = sharePreferences;
 
   const pasted = useRef(false);
+  const searchValueTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
-  const cardType = useMemo(() => {
+  const cardType = (() => {
     const id = activeList?.filters.indexOf("card_type");
     if (id == null || id < 0) return "";
     const value = activeList?.filterValues[id]?.value;
     return value === "player" || value === "encounter" ? value : "";
-  }, [activeList]);
+  })();
 
-  const onMatchDisplayModeChange = useCallback(
-    (value: boolean) => {
-      setSharePreferences({ ...sharePreferences, matchDisplayMode: value });
-    },
-    [sharePreferences],
-  );
+  const onMatchDisplayModeChange = (value: boolean) => {
+    setSharePreferences({ ...sharePreferences, matchDisplayMode: value });
+  };
 
-  const onMatchVisibleTabooChange = useCallback(
-    (value: boolean) => {
-      setSharePreferences({ ...sharePreferences, matchVisibleTaboo: value });
-    },
-    [sharePreferences],
-  );
+  const onMatchVisibleTabooChange = (value: boolean) => {
+    setSharePreferences({ ...sharePreferences, matchVisibleTaboo: value });
+  };
 
-  const shareUrl = useMemo(() => {
+  const shareUrl = (() => {
     const url = new URL("/search", window.location.origin);
     url.searchParams.set("q", inputValue);
     if (cardType) url.searchParams.set("card_type", cardType);
@@ -118,18 +114,7 @@ export function CardSearch(props: Props) {
       tabooSetId: visibleTabooSetId,
     });
     return url.toString();
-  }, [
-    activeList.display.viewMode,
-    cardType,
-    includeBacks,
-    includeFlavor,
-    includeGameText,
-    includeName,
-    inputValue,
-    matchDisplayMode,
-    matchVisibleTaboo,
-    visibleTabooSetId,
-  ]);
+  })();
 
   useEffect(() => {
     storeSearchSharePreferences(sharePreferences);
@@ -150,71 +135,65 @@ export function CardSearch(props: Props) {
     return () => resizeObserver.disconnect();
   }, []);
 
-  const onShortcut = useCallback(() => {
+  const onShortcut = () => {
     inputRef.current?.focus();
     inputRef.current?.select();
-  }, []);
+  };
 
   useHotkey("/", onShortcut);
 
-  const debouncedSetSearchValue = useMemo(
-    () => debounce(setSearchValue, 50),
-    [setSearchValue],
-  );
-
-  const onValueChange = useCallback(
-    (val: string) => {
-      const changeOpts = {
-        clearMode: val.length <= 1 || pasted.current,
-      };
-
-      pasted.current = false;
-      setInputValue(val);
-      debouncedSetSearchValue(val, resolvedDeck, changeOpts);
-
-      if (easterEggHandler(val)) {
-        setInputValue("");
-        debouncedSetSearchValue("", resolvedDeck, changeOpts);
-      }
-    },
-    [debouncedSetSearchValue, easterEggHandler, resolvedDeck],
-  );
-
-  const onInputPaste = useCallback(() => {
-    pasted.current = true;
+  useEffect(() => {
+    return () => clearTimeout(searchValueTimerRef.current);
   }, []);
 
-  const onToggleGameText = useCallback(
-    (val: boolean | string) => {
-      setSearchFlag("includeGameText", !!val, resolvedDeck);
-      inputRef.current?.focus();
-    },
-    [setSearchFlag, resolvedDeck],
-  );
+  const debouncedSetSearchValue = (
+    value: string,
+    changeOpts: { clearMode: boolean },
+  ) => {
+    clearTimeout(searchValueTimerRef.current);
+    searchValueTimerRef.current = setTimeout(() => {
+      setSearchValue(value, resolvedDeck, changeOpts);
+    }, 50);
+  };
 
-  const onToggleFlavor = useCallback(
-    (val: boolean | string) => {
-      setSearchFlag("includeFlavor", !!val, resolvedDeck);
-      inputRef.current?.focus();
-    },
-    [setSearchFlag, resolvedDeck],
-  );
+  const onValueChange = (val: string) => {
+    const changeOpts = {
+      clearMode: val.length <= 1 || pasted.current,
+    };
 
-  const onToggleBacks = useCallback(
-    (val: boolean | string) => {
-      setSearchFlag("includeBacks", !!val, resolvedDeck);
-      inputRef.current?.focus();
-    },
-    [setSearchFlag, resolvedDeck],
-  );
+    pasted.current = false;
+    setInputValue(val);
+    debouncedSetSearchValue(val, changeOpts);
 
-  const onToggleCardName = useCallback(
-    (val: boolean | string) => {
-      setSearchFlag("includeName", !!val, resolvedDeck);
-      inputRef.current?.focus();
-    },
-    [setSearchFlag, resolvedDeck],
-  );
+    if (easterEggHandler(val)) {
+      setInputValue("");
+      debouncedSetSearchValue("", changeOpts);
+    }
+  };
+
+  const onInputPaste = () => {
+    pasted.current = true;
+  };
+
+  const onToggleGameText = (val: boolean | string) => {
+    setSearchFlag("includeGameText", !!val, resolvedDeck);
+    inputRef.current?.focus();
+  };
+
+  const onToggleFlavor = (val: boolean | string) => {
+    setSearchFlag("includeFlavor", !!val, resolvedDeck);
+    inputRef.current?.focus();
+  };
+
+  const onToggleBacks = (val: boolean | string) => {
+    setSearchFlag("includeBacks", !!val, resolvedDeck);
+    inputRef.current?.focus();
+  };
+
+  const onToggleCardName = (val: boolean | string) => {
+    setSearchFlag("includeName", !!val, resolvedDeck);
+    inputRef.current?.focus();
+  };
 
   const iconSlotNode = (
     <>
@@ -331,9 +310,9 @@ function SearchShare({
   const { t } = useTranslation();
   const { copyToClipboard, isCopied } = useCopyToClipboard();
 
-  const onCopy = useCallback(() => {
+  const onCopy = () => {
     void copyToClipboard(shareUrl).catch(console.error);
-  }, [copyToClipboard, shareUrl]);
+  };
 
   return (
     <Popover clickStickIfOpen={false} placement="bottom-end">

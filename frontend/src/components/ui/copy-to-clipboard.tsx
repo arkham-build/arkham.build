@@ -1,5 +1,4 @@
 import { CheckIcon, ClipboardCopyIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useCopyToClipboard } from "@/utils/use-copy-to-clipboard";
 import { Button, type Props as ButtonProps } from "./button";
@@ -15,9 +14,9 @@ export function CopyToClipboard(props: Props) {
 
   const { copyToClipboard, isCopied } = useCopyToClipboard();
 
-  const onClick = useCallback(() => {
+  const onClick = () => {
     void copyToClipboard(text).catch(console.error);
-  }, [copyToClipboard, text]);
+  };
 
   return (
     <Button

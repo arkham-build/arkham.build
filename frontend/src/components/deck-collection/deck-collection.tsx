@@ -1,6 +1,6 @@
 import { type DeckId, isArkhamDBIdentity } from "@arkham-build/shared";
 import { EllipsisIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Virtuoso } from "react-virtuoso";
 import { Link, useLocation } from "wouter";
@@ -65,18 +65,15 @@ export function DeckCollection() {
       !!state.auth.session?.identities.some(isArkhamDBIdentity),
   );
 
-  const onAddFiles = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      const files = evt.target.files;
-      if (files?.length) {
-        importDecksMutation.mutate(files);
-        setPopoverOpen(false);
-      }
-    },
-    [importDecksMutation],
-  );
+  const onAddFiles = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const files = evt.target.files;
+    if (files?.length) {
+      importDecksMutation.mutate(files);
+      setPopoverOpen(false);
+    }
+  };
 
-  const onDeleteAll = useCallback(async () => {
+  const onDeleteAll = async () => {
     const confirmed = confirm(t("deck_collection.delete_all_confirm"));
 
     if (confirmed) {
@@ -99,14 +96,14 @@ export function DeckCollection() {
         });
       }
     }
-  }, [deleteAllDecksMutation, toast, t]);
+  };
 
   const deleteDeck = useDeleteDeck();
   const duplicateDeck = useDuplicateDeck();
 
-  const onNewDeck = useCallback(() => {
+  const onNewDeck = () => {
     navigate("/deck/create");
-  }, [navigate]);
+  };
 
   useHotkey("n", onNewDeck);
 

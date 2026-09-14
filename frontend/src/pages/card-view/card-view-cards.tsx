@@ -1,6 +1,5 @@
 import type { Card as CardType, Pack } from "@arkham-build/shared";
 import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
-import { useMemo } from "react";
 import { Link, useSearchParams } from "wouter";
 import { PopularDecks } from "@/components/arkhamdb-decklists/popular-decks";
 import { Card } from "@/components/card/card";
@@ -65,7 +64,7 @@ function CardSetNav(props: { currentCard: CardWithRelations }) {
   const [search] = useSearchParams();
   const oldFormat = search.get("old_format") === "true";
 
-  const targetPack = useMemo(() => {
+  const targetPack = (() => {
     const currentCardPackCode = currentCard.card.pack_code;
 
     const currentPack = metadata.packs[currentCardPackCode];
@@ -95,47 +94,31 @@ function CardSetNav(props: { currentCard: CardWithRelations }) {
     }
 
     return targetPack;
-  }, [
-    currentCard.card.encounter_code,
-    currentCard.card.pack_code,
-    lookupTables.reprintPacksByPack,
-    metadata.packs,
-    oldFormat,
-  ]);
+  })();
 
-  const filteredCards = useMemo(
-    () =>
-      Object.values(metadata.cards)
-        .filter(
-          and([
-            filterBacksides,
-            (card) => {
-              const cardPack = metadata.packs[card.pack_code];
-              if (
-                CYCLES_WITH_STANDALONE_PACKS.includes(targetPack.cycle_code) ||
-                targetPack.reprint_type === "rcore"
-              ) {
-                return card.pack_code === targetPack.code;
-              }
+  const filteredCards = Object.values(metadata.cards)
+    .filter(
+      and([
+        filterBacksides,
+        (card) => {
+          const cardPack = metadata.packs[card.pack_code];
+          if (
+            CYCLES_WITH_STANDALONE_PACKS.includes(targetPack.cycle_code) ||
+            targetPack.reprint_type === "rcore"
+          ) {
+            return card.pack_code === targetPack.code;
+          }
 
-              const cycleMatches =
-                cardPack.cycle_code === targetPack.cycle_code;
+          const cycleMatches = cardPack.cycle_code === targetPack.cycle_code;
 
-              const reprintTypeMatches =
-                !!card.encounter_code === !!currentCard.card.encounter_code;
+          const reprintTypeMatches =
+            !!card.encounter_code === !!currentCard.card.encounter_code;
 
-              return cycleMatches && reprintTypeMatches;
-            },
-          ]),
-        )
-        .sort(sortByPosition),
-    [
-      currentCard.card.encounter_code,
-      metadata.cards,
-      metadata.packs,
-      targetPack,
-    ],
-  );
+          return cycleMatches && reprintTypeMatches;
+        },
+      ]),
+    )
+    .sort(sortByPosition);
 
   const cardListIndex = filteredCards.findIndex(
     (card) => card.code === currentCard.card.code,

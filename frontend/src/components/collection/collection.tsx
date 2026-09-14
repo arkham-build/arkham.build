@@ -1,6 +1,5 @@
 import type { Settings as SettingsState } from "@arkham-build/shared";
 import { BarChart3Icon } from "lucide-react";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import PackIcon from "@/components/icons/pack-icon";
@@ -36,96 +35,78 @@ export function CollectionSettings(props: Props) {
   const { t } = useTranslation();
   const cyclesWithPacks = useStore(selectCyclesAndPacks);
 
-  const collectionCycles = useMemo(() => {
+  const collectionCycles = (() => {
     const officialCycles = cyclesWithPacks.filter((cycle) => official(cycle));
     return officialCycles;
-  }, [cyclesWithPacks]);
+  })();
 
-  const cyclesByChapter = useMemo(
-    () => groupCyclesByChapter(collectionCycles),
-    [collectionCycles],
-  );
+  const cyclesByChapter = groupCyclesByChapter(collectionCycles);
 
   const canEdit = !!setSettings;
 
-  const onCheckPack = useCallback(
-    (packCode: string, val: number) => {
+  const onCheckPack = (packCode: string, val: number) => {
+    setSettings?.((prev) => ({
+      ...prev,
+      collection: {
+        ...prev.collection,
+        [packCode]: val,
+      },
+    }));
+  };
+
+  const onToggleChapter = (evt: React.MouseEvent) => {
+    if (evt.currentTarget instanceof HTMLButtonElement) {
+      const chapter = evt.currentTarget.dataset.chapter;
+
+      const val = Number.parseInt(evt.currentTarget.dataset.val as string, 10);
+
+      const cycles = cyclesByChapter.find(([c]) => c === chapter)?.[1] ?? [];
+
       setSettings?.((prev) => ({
         ...prev,
         collection: {
           ...prev.collection,
-          [packCode]: val,
+          ...cycles.reduce<SettingsState["collection"]>((acc, cycle) => {
+            for (const pack of [...cycle.packs, ...cycle.reprintPacks]) {
+              acc[pack.code] = val;
+            }
+            return acc;
+          }, {}),
         },
       }));
-    },
-    [setSettings],
-  );
+    }
+  };
 
-  const onToggleChapter = useCallback(
-    (evt: React.MouseEvent) => {
-      if (evt.currentTarget instanceof HTMLButtonElement) {
-        const chapter = evt.currentTarget.dataset.chapter;
+  const onToggleCycle = (evt: React.MouseEvent) => {
+    if (evt.currentTarget instanceof HTMLButtonElement) {
+      const code = evt.currentTarget.dataset.cycle;
+      const reprint = evt.currentTarget.dataset.reprint === "true";
 
-        const val = Number.parseInt(
-          evt.currentTarget.dataset.val as string,
-          10,
+      const val = Number.parseInt(evt.currentTarget.dataset.val as string, 10);
+
+      const cycle = collectionCycles.find((c) => c.code === code);
+
+      if (cycle) {
+        const packs = reprint ? cycle.reprintPacks : cycle.packs;
+
+        const update = packs.reduce<SettingsState["collection"]>(
+          (acc, curr) => {
+            acc[curr.code] = val;
+            return acc;
+          },
+          {},
         );
-
-        const cycles = cyclesByChapter.find(([c]) => c === chapter)?.[1] ?? [];
 
         setSettings?.((prev) => ({
           ...prev,
           collection: {
             ...prev.collection,
-            ...cycles.reduce<SettingsState["collection"]>((acc, cycle) => {
-              for (const pack of [...cycle.packs, ...cycle.reprintPacks]) {
-                acc[pack.code] = val;
-              }
-              return acc;
-            }, {}),
+            ...update,
           },
         }));
       }
-    },
-    [cyclesByChapter, setSettings],
-  );
-
-  const onToggleCycle = useCallback(
-    (evt: React.MouseEvent) => {
-      if (evt.currentTarget instanceof HTMLButtonElement) {
-        const code = evt.currentTarget.dataset.cycle;
-        const reprint = evt.currentTarget.dataset.reprint === "true";
-
-        const val = Number.parseInt(
-          evt.currentTarget.dataset.val as string,
-          10,
-        );
-
-        const cycle = collectionCycles.find((c) => c.code === code);
-
-        if (cycle) {
-          const packs = reprint ? cycle.reprintPacks : cycle.packs;
-
-          const update = packs.reduce<SettingsState["collection"]>(
-            (acc, curr) => {
-              acc[curr.code] = val;
-              return acc;
-            },
-            {},
-          );
-
-          setSettings?.((prev) => ({
-            ...prev,
-            collection: {
-              ...prev.collection,
-              ...update,
-            },
-          }));
-        }
-      }
-    },
-    [collectionCycles, setSettings],
-  );
+    }
+  };
 
   const counts = useStore((state) =>
     canShowCounts ? selectCycleCardCounts(state) : undefined,

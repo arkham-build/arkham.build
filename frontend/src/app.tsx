@@ -28,6 +28,8 @@ import { HttpClientProvider } from "./store/services/http-client.provider";
 import { useAgathaEasterEggHint } from "./utils/easter-egg-agatha";
 import { useColorThemeListener } from "./utils/use-color-theme";
 
+const browserLocationHook = useBrowserLocation;
+
 const Index = lazy(() => import("./pages/index"));
 
 const AccountMigration = lazy(
@@ -151,7 +153,7 @@ function AppInner() {
       <Loader message={t("app.init")} show={!storeInitialized} delay={200} />
       <Suspense fallback={<Loader delay={300} show />}>
         {storeInitialized && (
-          <Router hook={useBrowserLocation}>
+          <Router hook={browserLocationHook}>
             <AccountMigrationRouteGuard>
               <ProfileCompletionRouteGuard>
                 <Switch>

@@ -1,5 +1,4 @@
 import type { Card, Attachments as IAttachments } from "@arkham-build/shared";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { Button } from "../ui/button";
@@ -22,10 +21,7 @@ type Props = {
 export function Attachments(props: Props) {
   const { buttonVariant, card, resolvedDeck } = props;
 
-  const matches = useMemo(
-    () => getMatchingAttachables(card, resolvedDeck),
-    [resolvedDeck, card],
-  );
+  const matches = getMatchingAttachables(card, resolvedDeck);
 
   if (!matches.length) return null;
 

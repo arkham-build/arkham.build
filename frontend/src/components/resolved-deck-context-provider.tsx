@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { DeckContext, type DeckContextType } from "./resolved-deck-context";
 
 interface Props extends DeckContextType {
@@ -8,13 +7,10 @@ interface Props extends DeckContextType {
 export function ResolvedDeckProvider(props: Props) {
   const { resolvedDeck, canEdit, children } = props;
 
-  const value = useMemo(
-    () => ({
-      resolvedDeck,
-      canEdit,
-    }),
-    [resolvedDeck, canEdit],
-  );
+  const value = {
+    resolvedDeck,
+    canEdit,
+  };
 
   return <DeckContext value={value}>{children}</DeckContext>;
 }

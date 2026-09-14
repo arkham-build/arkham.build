@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Combobox } from "@/components/ui/combobox/combobox";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -47,14 +46,10 @@ const availableSymbols = [
 function useAvailableSymbols(): SymbolsPopoverItem[] {
   const { t } = useTranslation();
 
-  const symbols = useMemo(
-    () =>
-      availableSymbols.map((symbol) => ({
-        code: symbol,
-        label: t(`common.symbols.${symbol}`),
-      })),
-    [t],
-  );
+  const symbols = availableSymbols.map((symbol) => ({
+    code: symbol,
+    label: t(`common.symbols.${symbol}`),
+  }));
 
   return symbols;
 }
@@ -83,14 +78,11 @@ export function SymbolsPopover(props: Props) {
 
   const { insertTextAtCaret } = useNotesRichTextEditorContext();
 
-  const onSelectItem = useCallback(
-    (values: SymbolsPopoverItem[]) => {
-      const symbol = values[0];
-      insertTextAtCaret(`<span class="icon-${symbol.code}"></span>`);
-      onEscapePress();
-    },
-    [insertTextAtCaret, onEscapePress],
-  );
+  const onSelectItem = (values: SymbolsPopoverItem[]) => {
+    const symbol = values[0];
+    insertTextAtCaret(`<span class="icon-${symbol.code}"></span>`);
+    onEscapePress();
+  };
 
   return (
     <Field>

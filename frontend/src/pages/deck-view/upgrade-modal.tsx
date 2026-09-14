@@ -1,5 +1,5 @@
 import { type Card, SPECIAL_CARD_CODES } from "@arkham-build/shared";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearch } from "wouter";
 import { ListCard } from "@/components/list-card/list-card";
@@ -97,15 +97,15 @@ export function UpgradeModal(props: Props) {
 
   const [usurped, setUsurped] = useState(false);
 
-  const onUsurpedChange = useCallback((val: boolean | string) => {
+  const onUsurpedChange = (val: boolean | string) => {
     setUsurped(!!val);
-  }, []);
+  };
 
   const modalContext = useDialogContextChecked();
 
-  const onCloseModal = useCallback(() => {
+  const onCloseModal = () => {
     modalContext?.setOpen(false);
-  }, [modalContext]);
+  };
 
   const { onSave, onSaveClose } = useUpgradeDeck({
     deck,
@@ -117,31 +117,25 @@ export function UpgradeModal(props: Props) {
     xp,
   });
 
-  const onXpChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
+  const onXpChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setXp(evt.target.value);
-  }, []);
+  };
 
-  const exiledQuantities = useMemo(
-    () => decodeExileSlots(exileString),
-    [exileString],
-  );
+  const exiledQuantities = decodeExileSlots(exileString);
 
-  const onExileChange = useCallback(
-    (card: Card, quantity: number, limit: number) => {
-      const cardQuantity = (exiledQuantities[card.code] ?? 0) + quantity;
+  const onExileChange = (card: Card, quantity: number, limit: number) => {
+    const cardQuantity = (exiledQuantities[card.code] ?? 0) + quantity;
 
-      if (cardQuantity <= limit) {
-        setExileString((prev) =>
-          prev
-            .split(",")
-            .filter((x) => x && x !== card.code)
-            .concat(range(0, cardQuantity).map(() => card.code))
-            .join(","),
-        );
-      }
-    },
-    [exiledQuantities],
-  );
+    if (cardQuantity <= limit) {
+      setExileString((prev) =>
+        prev
+          .split(",")
+          .filter((x) => x && x !== card.code)
+          .concat(range(0, cardQuantity).map(() => card.code))
+          .join(","),
+      );
+    }
+  };
 
   const cssVariables = useAccentColor(deck.cards.investigator.card);
 
@@ -340,60 +334,45 @@ function useUpgradeDeck({
   const { t } = useTranslation();
   const upgradeDeckMutation = useUpgradeDeckMutation();
 
-  const onUpgrade = useCallback(
-    async (path: "edit" | "view") => {
-      const toastId = toast.show({
-        children: t("deck_view.upgrade_modal.loading"),
-        variant: "loading",
+  const onUpgrade = async (path: "edit" | "view") => {
+    const toastId = toast.show({
+      children: t("deck_view.upgrade_modal.loading"),
+      variant: "loading",
+    });
+
+    let upgradeXp = xp ? +xp : 0;
+    if (hasCharonsObol) upgradeXp += 2;
+    if (hasGreatWork && !usurped) upgradeXp += 1;
+
+    try {
+      const newDeck = await upgradeDeckMutation.mutateAsync({
+        id: deck.id,
+        xp: upgradeXp,
+        exileString,
+        usurped: hasGreatWork ? usurped : undefined,
       });
 
-      let upgradeXp = xp ? +xp : 0;
-      if (hasCharonsObol) upgradeXp += 2;
-      if (hasGreatWork && !usurped) upgradeXp += 1;
+      toast.dismiss(toastId);
+      onCloseModal();
+      navigate(`/deck/${path}/${newDeck.id}`);
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.show({
+        children: t("deck_view.upgrade_modal.error", {
+          error: (err as Error).message,
+        }),
+        variant: "error",
+      });
+    }
+  };
 
-      try {
-        const newDeck = await upgradeDeckMutation.mutateAsync({
-          id: deck.id,
-          xp: upgradeXp,
-          exileString,
-          usurped: hasGreatWork ? usurped : undefined,
-        });
-
-        toast.dismiss(toastId);
-        onCloseModal();
-        navigate(`/deck/${path}/${newDeck.id}`);
-      } catch (err) {
-        toast.dismiss(toastId);
-        toast.show({
-          children: t("deck_view.upgrade_modal.error", {
-            error: (err as Error).message,
-          }),
-          variant: "error",
-        });
-      }
-    },
-    [
-      deck.id,
-      exileString,
-      hasCharonsObol,
-      hasGreatWork,
-      navigate,
-      onCloseModal,
-      t,
-      toast,
-      upgradeDeckMutation,
-      usurped,
-      xp,
-    ],
-  );
-
-  const onSave = useCallback(() => {
+  const onSave = () => {
     void onUpgrade("edit");
-  }, [onUpgrade]);
+  };
 
-  const onSaveClose = useCallback(() => {
+  const onSaveClose = () => {
     void onUpgrade("view");
-  }, [onUpgrade]);
+  };
 
   return {
     onSave,

@@ -5,13 +5,7 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useContext, useState } from "react";
 
 export interface DialogOptions {
   initialOpen?: boolean;
@@ -62,13 +56,10 @@ export function useDialog({
 
   const open = controlledOpen ?? uncontrolledOpen;
 
-  const setOpen = useCallback(
-    (value: boolean) => {
-      if (controlledOpen == null) setUncontrolledOpen(value);
-      onOpenChange?.(value);
-    },
-    [controlledOpen, onOpenChange],
-  );
+  const setOpen = (value: boolean) => {
+    if (controlledOpen == null) setUncontrolledOpen(value);
+    onOpenChange?.(value);
+  };
 
   const data = useFloating({
     open,
@@ -83,17 +74,14 @@ export function useDialog({
 
   const interactions = useInteractions([click, dismiss, role]);
 
-  return useMemo(
-    () => ({
-      open,
-      setOpen,
-      ...interactions,
-      ...data,
-      labelId,
-      descriptionId,
-      setLabelId,
-      setDescriptionId,
-    }),
-    [open, setOpen, interactions, data, labelId, descriptionId],
-  );
+  return {
+    open,
+    setOpen,
+    ...interactions,
+    ...data,
+    labelId,
+    descriptionId,
+    setLabelId,
+    setDescriptionId,
+  };
 }

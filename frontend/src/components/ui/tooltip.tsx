@@ -1,5 +1,5 @@
 import { FloatingPortal, useMergeRefs } from "@floating-ui/react";
-import { isValidElement, memo } from "react";
+import { isValidElement } from "react";
 import { cx } from "@/utils/cx";
 import {
   TooltipContext,
@@ -9,7 +9,7 @@ import {
 } from "./tooltip.hooks";
 import css from "./tooltip.module.css";
 
-export const Tooltip = memo(function Tooltip({
+export const Tooltip = function Tooltip({
   children,
   ...options
 }: { children: React.ReactNode } & TooltipOptions) {
@@ -18,7 +18,7 @@ export const Tooltip = memo(function Tooltip({
   const tooltip = useTooltip(options);
 
   return <TooltipContext value={tooltip}>{children}</TooltipContext>;
-});
+};
 
 export function TooltipTrigger({
   children,
@@ -100,7 +100,7 @@ export type DefaultTooltipProps = {
   paused?: boolean;
 };
 
-export const DefaultTooltip = memo(function DefaultTooltip(
+export const DefaultTooltip = function DefaultTooltip(
   props: DefaultTooltipProps,
 ) {
   const { children, className, options, paused, tooltip } = props;
@@ -121,4 +121,4 @@ export const DefaultTooltip = memo(function DefaultTooltip(
       <TooltipContent className={className}>{tooltip}</TooltipContent>
     </Tooltip>
   );
-});
+};

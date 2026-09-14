@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import i18n from "@/utils/i18n";
 import { useMedia } from "./use-media";
 
@@ -35,15 +35,12 @@ export function useColorThemeManager() {
 
   const prefersDarkMode = useMedia("(prefers-color-scheme: dark)");
 
-  const updateColorScheme = useCallback(
-    (value: string) => {
-      const nextTheme = value || DEFAULT_THEME;
-      setCurrentTheme(nextTheme);
-      persistColorTheme(nextTheme);
-      applyColorTheme(nextTheme, prefersDarkMode);
-    },
-    [prefersDarkMode],
-  );
+  const updateColorScheme = (value: string) => {
+    const nextTheme = value || DEFAULT_THEME;
+    setCurrentTheme(nextTheme);
+    persistColorTheme(nextTheme);
+    applyColorTheme(nextTheme, prefersDarkMode);
+  };
 
   return [currentTheme, updateColorScheme] as const;
 }

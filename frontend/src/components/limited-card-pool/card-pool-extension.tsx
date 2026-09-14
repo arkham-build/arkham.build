@@ -1,6 +1,5 @@
 import type { Card } from "@arkham-build/shared";
 import { PlusSquareIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -33,16 +32,13 @@ export function CardPoolExtension(props: Props) {
 
   const updateMetaProperty = useStore((state) => state.updateMetaProperty);
 
-  const onCardPoolChange = useCallback(
-    (selectedItems: Card[]) => {
-      updateMetaProperty(
-        deck.id,
-        id,
-        selectedItems.map(({ code }) => `card:${code}`).join(","),
-      );
-    },
-    [updateMetaProperty, deck.id, id],
-  );
+  const onCardPoolChange = (selectedItems: Card[]) => {
+    updateMetaProperty(
+      deck.id,
+      id,
+      selectedItems.map(({ code }) => `card:${code}`).join(","),
+    );
+  };
 
   if (card.card_pool_extension?.type !== "card") {
     return null;

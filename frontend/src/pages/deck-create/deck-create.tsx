@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useSearch } from "wouter";
 import { CardBack } from "@/components/card/card-back";
@@ -146,12 +146,9 @@ function DeckCreateCardSets() {
 
   const cardSets = useStore(selectDeckCreateCardSets);
 
-  const onCheckedChange = useCallback(
-    (id: string) => {
-      toggleConfigureCardSet(id);
-    },
-    [toggleConfigureCardSet],
-  );
+  const onCheckedChange = (id: string) => {
+    toggleConfigureCardSet(id);
+  };
 
   const { investigator } = useStore(selectDeckCreateInvestigators);
   const cssVariables = useAccentColor(investigator.card);

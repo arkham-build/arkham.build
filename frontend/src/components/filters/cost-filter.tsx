@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -35,58 +34,40 @@ export function CostFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
 
   const { onReset, onChange, onOpenChange, locked } = useFilter(id);
 
-  const onValueCommit = useCallback(
-    (val: number[]) => {
+  const onValueCommit = (val: number[]) => {
+    onChange({
+      range: [val[0], val[1]],
+    });
+  };
+
+  const onSetEven = (val: boolean | string) => {
+    onChange({
+      even: !!val,
+    });
+  };
+
+  const onSetOdd = (val: boolean | string) => {
+    onChange({
+      odd: !!val,
+    });
+  };
+
+  const onSetX = (val: boolean | string) => {
+    onChange({
+      x: !!val,
+    });
+  };
+
+  const onToggleOpen = (val: boolean) => {
+    if (val && !filter.value.range) {
       onChange({
-        range: [val[0], val[1]],
+        range: [-1, max],
       });
-    },
-    [onChange],
-  );
+    }
+    onOpenChange(val);
+  };
 
-  const onSetEven = useCallback(
-    (val: boolean | string) => {
-      onChange({
-        even: !!val,
-      });
-    },
-    [onChange],
-  );
-
-  const onSetOdd = useCallback(
-    (val: boolean | string) => {
-      onChange({
-        odd: !!val,
-      });
-    },
-    [onChange],
-  );
-
-  const onSetX = useCallback(
-    (val: boolean | string) => {
-      onChange({
-        x: !!val,
-      });
-    },
-    [onChange],
-  );
-
-  const onToggleOpen = useCallback(
-    (val: boolean) => {
-      if (val && !filter.value.range) {
-        onChange({
-          range: [-1, max],
-        });
-      }
-      onOpenChange(val);
-    },
-    [max, filter.value.range, onOpenChange, onChange],
-  );
-
-  const rangeValue = useMemo(
-    () => (filter.value.range as [number, number]) ?? [min, max],
-    [filter.value.range, min, max],
-  );
+  const rangeValue = (filter.value.range as [number, number]) ?? [min, max];
 
   return (
     <FilterContainer

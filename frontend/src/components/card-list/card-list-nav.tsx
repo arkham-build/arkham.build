@@ -1,5 +1,4 @@
 import { SlidersVerticalIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CardlistCount } from "@/components/card-list/card-list-count";
 import { useStore } from "@/store";
@@ -60,7 +59,7 @@ export function CardListNav(props: Props) {
 
   const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
 
-  const onExport = useCallback(() => {
+  const onExport = () => {
     if (!data) return;
 
     const metadata = selectMetadata(useStore.getState());
@@ -83,37 +82,33 @@ export function CardListNav(props: Props) {
       "cards.json",
       "application/json",
     );
-  }, [data]);
+  };
 
   const hasAssetGroup = data?.groups.some((group) =>
     group.key.includes("asset"),
   );
 
-  const jumpToOptions = useMemo(
-    () =>
-      data?.groups.map((group, i) => {
-        const count = data.groupCounts[i];
+  const jumpToOptions = data?.groups.map((group, i) => {
+    const count = data.groupCounts[i];
 
-        const keys = group.key.split("|");
-        const types = group.type.split("|");
-        const isAsset = group.key.includes("asset");
+    const keys = group.key.split("|");
+    const types = group.type.split("|");
+    const isAsset = group.key.includes("asset");
 
-        const groupLabel = keys
-          .map((key, i) => {
-            if (hasAssetGroup && !isAsset && key === NONE) return null;
-            const label = getGroupingKeyLabel(types[i], key, metadata);
-            return label;
-          })
-          .filter(Boolean)
-          .join(" · ");
+    const groupLabel = keys
+      .map((key, i) => {
+        if (hasAssetGroup && !isAsset && key === NONE) return null;
+        const label = getGroupingKeyLabel(types[i], key, metadata);
+        return label;
+      })
+      .filter(Boolean)
+      .join(" · ");
 
-        return {
-          label: `${groupLabel} (${count})`,
-          value: group.key,
-        };
-      }),
-    [data, metadata, hasAssetGroup],
-  );
+    return {
+      label: `${groupLabel} (${count})`,
+      value: group.key,
+    };
+  });
 
   if (data == null) return null;
 
@@ -191,41 +186,35 @@ function DisplaySettings({
     (state) => state.setListTabooSetOverride,
   );
 
-  const onTabooSetChange = useCallback(
-    (evt: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = evt.target.value;
-      setListTabooSetOverride(value ? Number.parseInt(value, 10) : null);
-    },
-    [setListTabooSetOverride],
-  );
+  const onTabooSetChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = evt.target.value;
+    setListTabooSetOverride(value ? Number.parseInt(value, 10) : null);
+  };
 
-  const onScanMaxColumnsCommit = useCallback(
-    (value: number[]) => {
-      onScanMaxColumnsChange(value[0]);
-    },
-    [onScanMaxColumnsChange],
-  );
+  const onScanMaxColumnsCommit = (value: number[]) => {
+    onScanMaxColumnsChange(value[0]);
+  };
 
   // TECH DEBT: option names and display names have diverted, reconcile.
-  const onToggleList = useCallback(() => {
+  const onToggleList = () => {
     setListViewMode("compact");
-  }, [setListViewMode]);
+  };
 
-  const onToggleCardText = useCallback(() => {
+  const onToggleCardText = () => {
     setListViewMode("card-text");
-  }, [setListViewMode]);
+  };
 
-  const onToggleFullCards = useCallback(() => {
+  const onToggleFullCards = () => {
     setListViewMode("full-cards");
-  }, [setListViewMode]);
+  };
 
-  const onToggleScans = useCallback(() => {
+  const onToggleScans = () => {
     setListViewMode("scans");
-  }, [setListViewMode]);
+  };
 
-  const onToggleScansGrouped = useCallback(() => {
+  const onToggleScansGrouped = () => {
     setListViewMode("scans-grouped");
-  }, [setListViewMode]);
+  };
 
   useHotkey("alt+l", onToggleList);
   useHotkey("alt+shift+l", onToggleCardText);

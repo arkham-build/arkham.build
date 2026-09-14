@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -33,15 +32,12 @@ export function SkillIconsFilter({ id }: FilterProps) {
 
   const { onReset, onOpenChange, onChange, locked } = useFilter(id);
 
-  const onToggleChange = useCallback(
-    (key: keyof SkillIconsFilterType, value: string) => {
-      const currentValue = filter.value[key]?.toString();
-      onChange({
-        [key]: value === currentValue ? undefined : +value,
-      });
-    },
-    [filter.value, onChange],
-  );
+  const onToggleChange = (key: keyof SkillIconsFilterType, value: string) => {
+    const currentValue = filter.value[key]?.toString();
+    onChange({
+      [key]: value === currentValue ? undefined : +value,
+    });
+  };
 
   return (
     <FilterContainer

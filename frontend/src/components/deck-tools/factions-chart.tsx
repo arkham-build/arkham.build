@@ -1,6 +1,5 @@
 import type { FactionName } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { PieSectorShapeProps } from "recharts";
 import { Pie, PieChart, Sector, Tooltip } from "recharts";
@@ -16,9 +15,7 @@ type Props = {
 export function FactionsChart({ data }: Props) {
   const { t } = useTranslation();
 
-  const normalizedData = useMemo(() => {
-    return data.filter((tick) => tick.y !== 0);
-  }, [data]);
+  const normalizedData = data.filter((tick) => tick.y !== 0);
 
   return (
     <div className={css["chart-container"]}>

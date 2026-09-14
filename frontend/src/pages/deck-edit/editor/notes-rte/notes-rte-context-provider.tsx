@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useStore } from "@/store";
 import type { CardFormat } from "./cards-to-markdown";
 import {
@@ -24,7 +24,7 @@ export function NotesRichTextEditorContextProvider({
     undefined,
   );
 
-  const insertTextAtCaret = useCallback((text: string) => {
+  const insertTextAtCaret = (text: string) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
@@ -46,25 +46,22 @@ export function NotesRichTextEditorContextProvider({
         textarea.focus();
       }
     });
-  }, []);
+  };
 
   const settingsChanged =
     defaultFormat !== cardFormat || defaultOrigin !== cardOrigin;
 
-  const contextValue = useMemo(
-    () => ({
-      textareaRef,
-      insertTextAtCaret,
-      cardOrigin,
-      cardFormat,
-      popoverOpen,
-      settingsChanged,
-      setCardOrigin,
-      setCardFormat,
-      setPopoverOpen,
-    }),
-    [insertTextAtCaret, cardOrigin, cardFormat, popoverOpen, settingsChanged],
-  );
+  const contextValue = {
+    textareaRef,
+    insertTextAtCaret,
+    cardOrigin,
+    cardFormat,
+    popoverOpen,
+    settingsChanged,
+    setCardOrigin,
+    setCardFormat,
+    setPopoverOpen,
+  };
 
   return (
     <NotesRichTextEditorContext value={contextValue}>

@@ -5,7 +5,6 @@ import {
   CheckCircleIcon,
   DownloadIcon,
 } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { useStore } from "@/store";
@@ -67,19 +66,16 @@ export function CardModal(props: Props) {
 
   const modalContext = useDialogContextChecked();
 
-  const onCloseModal = useCallback(() => {
+  const onCloseModal = () => {
     modalContext?.setOpen(false);
-  }, [modalContext]);
+  };
 
-  const onPointerDownBackdrop = useCallback(
-    (evt: React.PointerEvent) => {
-      if (evt.target !== evt.currentTarget) return;
+  const onPointerDownBackdrop = (evt: React.PointerEvent) => {
+    if (evt.target !== evt.currentTarget) return;
 
-      evt.preventDefault();
-      onCloseModal();
-    },
-    [onCloseModal],
-  );
+    evt.preventDefault();
+    onCloseModal();
+  };
 
   const cardWithRelations = useStore((state) =>
     selectCardWithRelations(state, props.code, true, ctx.resolvedDeck),
@@ -101,35 +97,29 @@ export function CardModal(props: Props) {
 
   const completeTask = useStore((state) => state.completeTask);
 
-  const onCompleteTask = useCallback(() => {
+  const onCompleteTask = () => {
     if (!ctx.resolvedDeck || !cardWithRelations?.card) return;
 
     const nextCode = completeTask(ctx.resolvedDeck.id, cardWithRelations.card);
     openCardModal(nextCode);
-  }, [completeTask, ctx.resolvedDeck, cardWithRelations, openCardModal]);
+  };
 
   const canRenderFull = useMedia("(min-width: 45rem)");
   const hasSidebar = useMedia("(min-width: 42rem)");
 
-  const handlePrintingSelect = useCallback(
-    (card: CardT) => {
-      openCardModal(card.code);
-    },
-    [openCardModal],
-  );
+  const handlePrintingSelect = (card: CardT) => {
+    openCardModal(card.code);
+  };
 
-  const renderScanDownloadAction = useCallback(
-    (scanId: string) => (
-      <Button
-        as="a"
-        href={`${import.meta.env.VITE_API_URL}/v2/account/scans/${encodeURIComponent(scanId)}/download`}
-        size="sm"
-      >
-        <DownloadIcon />
-        Download
-      </Button>
-    ),
-    [],
+  const renderScanDownloadAction = (scanId: string) => (
+    <Button
+      as="a"
+      href={`${import.meta.env.VITE_API_URL}/v2/account/scans/${encodeURIComponent(scanId)}/download`}
+      size="sm"
+    >
+      <DownloadIcon />
+      Download
+    </Button>
   );
 
   if (!cardWithRelations) return null;
@@ -404,17 +394,17 @@ function CardModalArrowNavigation(props: {
   const nextCardCode = listOrder?.[cardPosition + 1];
   const previousCardCode = listOrder?.[cardPosition - 1];
 
-  const onNextCard = useCallback(() => {
+  const onNextCard = () => {
     if (nextCardCode) {
       openCardModal(nextCardCode);
     }
-  }, [openCardModal, nextCardCode]);
+  };
 
-  const onPreviousCard = useCallback(() => {
+  const onPreviousCard = () => {
     if (previousCardCode) {
       openCardModal(previousCardCode);
     }
-  }, [openCardModal, previousCardCode]);
+  };
 
   useHotkey("arrowdown", onNextCard, { disabled: !nextCardCode });
   useHotkey("arrowup", onPreviousCard, { disabled: !previousCardCode });

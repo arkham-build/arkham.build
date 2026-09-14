@@ -1,5 +1,4 @@
 import { CheckIcon } from "lucide-react";
-import { useCallback } from "react";
 import { cx } from "@/utils/cx";
 import css from "./checkbox.module.css";
 
@@ -28,12 +27,9 @@ export function Checkbox(props: Props) {
     ...rest
   } = props;
 
-  const handleChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      onCheckedChange?.(evt.target.checked);
-    },
-    [onCheckedChange],
-  );
+  const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    onCheckedChange?.(evt.target.checked);
+  };
 
   return (
     <label className={cx(css["checkbox"], className)} ref={ref}>

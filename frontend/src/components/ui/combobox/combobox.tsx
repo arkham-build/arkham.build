@@ -12,7 +12,7 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Coded } from "@/store/lib/types";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
@@ -110,15 +110,12 @@ export function Combobox<T extends Coded>(props: Props<T>) {
   const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
   const [inputValue, setInputValue] = useState("");
 
-  const setOpen = useCallback(
-    (nextOpen: boolean) => {
-      if (nextOpen === isOpen) return;
+  const setOpen = (nextOpen: boolean) => {
+    if (nextOpen === isOpen) return;
 
-      setIsOpen(nextOpen);
-      setActiveIndex(nextOpen ? 0 : undefined);
-    },
-    [isOpen],
-  );
+    setIsOpen(nextOpen);
+    setActiveIndex(nextOpen ? 0 : undefined);
+  };
 
   const {
     context,
@@ -158,12 +155,9 @@ export function Combobox<T extends Coded>(props: Props<T>) {
 
   const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
 
-  const filteredItems = useMemo(
-    () => fuzzy(inputValue, items, itemToString),
-    [items, inputValue, itemToString],
-  );
+  const filteredItems = fuzzy(inputValue, items, itemToString);
 
-  const menuItems = useMemo(() => {
+  const menuItems = (() => {
     const result = filteredItems.map<ComboboxMenuItem<T>>((item) => ({
       code: item.code,
       item,
@@ -188,7 +182,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
     }
 
     return result;
-  }, [creatable, filteredItems, inputValue, itemToString, items]);
+  })();
 
   const normalizedActiveIndex =
     !isOpen || menuItems.length === 0
@@ -197,66 +191,57 @@ export function Combobox<T extends Coded>(props: Props<T>) {
         ? 0
         : activeIndex;
 
-  const setSelectedItem = useCallback(
-    (item: T) => {
-      const next = [...selectedItems] as T[];
+  const setSelectedItem = (item: T) => {
+    const next = [...selectedItems] as T[];
 
-      const idx = next.findIndex((s) => s.code === item.code);
+    const idx = next.findIndex((s) => s.code === item.code);
 
-      if (idx === -1) {
-        next.push(item);
-      } else {
-        next.splice(idx, 1);
-      }
+    if (idx === -1) {
+      next.push(item);
+    } else {
+      next.splice(idx, 1);
+    }
 
-      onValueChange?.(next);
+    onValueChange?.(next);
 
-      if (limit && next.length >= limit) {
-        setOpen(false);
-      }
+    if (limit && next.length >= limit) {
+      setOpen(false);
+    }
 
-      const ref = elements.reference;
+    const ref = elements.reference;
 
-      if (ref instanceof HTMLInputElement) {
-        setInputValue("");
-        setActiveIndex(0);
-        if (ref && document.activeElement !== ref) {
-          ref.focus();
-        }
-      }
-    },
-    [elements.reference, onValueChange, selectedItems, limit, setOpen],
-  );
-
-  const setSelectedMenuItem = useCallback(
-    (menuItem: ComboboxMenuItem<T>) => {
-      if (menuItem.type === "item") {
-        setSelectedItem(menuItem.item);
-        return;
-      }
-
-      creatable?.onCreate(menuItem.value);
+    if (ref instanceof HTMLInputElement) {
       setInputValue("");
       setActiveIndex(0);
-      setOpen(false);
-
-      const ref = elements.reference;
-
-      if (ref instanceof HTMLInputElement && document.activeElement !== ref) {
+      if (ref && document.activeElement !== ref) {
         ref.focus();
       }
-    },
-    [creatable, elements.reference, setOpen, setSelectedItem],
-  );
+    }
+  };
 
-  const removeSelectedItem = useCallback(
-    (index: number) => {
-      const next = [...selectedItems] as T[];
-      next.splice(index, 1);
-      onValueChange?.(next);
-    },
-    [selectedItems, onValueChange],
-  );
+  const setSelectedMenuItem = (menuItem: ComboboxMenuItem<T>) => {
+    if (menuItem.type === "item") {
+      setSelectedItem(menuItem.item);
+      return;
+    }
+
+    creatable?.onCreate(menuItem.value);
+    setInputValue("");
+    setActiveIndex(0);
+    setOpen(false);
+
+    const ref = elements.reference;
+
+    if (ref instanceof HTMLInputElement && document.activeElement !== ref) {
+      ref.focus();
+    }
+  };
+
+  const removeSelectedItem = (index: number) => {
+    const next = [...selectedItems] as T[];
+    next.splice(index, 1);
+    onValueChange?.(next);
+  };
 
   useEffect(() => {
     listRef.current = [];

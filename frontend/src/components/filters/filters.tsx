@@ -1,5 +1,4 @@
 import { FilterXIcon } from "lucide-react";
-import { useCallback } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
@@ -60,9 +59,9 @@ export function Filters(props: Props) {
 
   const filtersEnabled = activeList?.filtersEnabled ?? true;
 
-  const toggleFiltersEnabled = useCallback(() => {
+  const toggleFiltersEnabled = () => {
     updateFiltersEnabled(!filtersEnabled);
-  }, [filtersEnabled, updateFiltersEnabled]);
+  };
 
   useHotkey("alt+f", toggleFiltersEnabled, {
     allowInputFocused: true,

@@ -1,6 +1,6 @@
 import { type Card, cardLevel, countExperience } from "@arkham-build/shared";
 import { CheckIcon, DicesIcon, EyeIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { useStore } from "@/store";
@@ -58,43 +58,40 @@ function SuziStandaloneSetupInner(props: Props) {
     [],
   );
 
-  const drawResults = useCallback(
-    (evt: React.SubmitEvent) => {
-      evt.preventDefault();
+  const drawResults = (evt: React.SubmitEvent) => {
+    evt.preventDefault();
 
-      const state = useStore.getState();
-      const availableUpgrades = shuffle(
-        selectAvailableUpgrades(state, deck, {
-          checkOwnership,
-          ultimatumOfExile,
-          includeFanMade,
-        }),
-      );
+    const state = useStore.getState();
+    const availableUpgrades = shuffle(
+      selectAvailableUpgrades(state, deck, {
+        checkOwnership,
+        ultimatumOfExile,
+        includeFanMade,
+      }),
+    );
 
-      let targetXp = +xp;
-      const drawn: Card[] = [];
+    let targetXp = +xp;
+    const drawn: Card[] = [];
 
-      for (const card of availableUpgrades) {
-        const cost = countExperience(card, 1);
-        if (cost <= targetXp) {
-          targetXp -= cost;
-          drawn.push(card);
-        }
-
-        if (targetXp <= 0) break;
+    for (const card of availableUpgrades) {
+      const cost = countExperience(card, 1);
+      if (cost <= targetXp) {
+        targetXp -= cost;
+        drawn.push(card);
       }
 
-      setResults(drawn);
-      setRevealed({});
-    },
-    [deck, xp, checkOwnership, includeFanMade, ultimatumOfExile],
-  );
+      if (targetXp <= 0) break;
+    }
 
-  const closeModal = useCallback(() => {
+    setResults(drawn);
+    setRevealed({});
+  };
+
+  const closeModal = () => {
     dialogContext.setOpen(false);
-  }, [dialogContext]);
+  };
 
-  const applyResultsToDeck = useCallback(() => {
+  const applyResultsToDeck = () => {
     createEdit(deck.id, {
       quantities: {
         slots: {
@@ -111,9 +108,9 @@ function SuziStandaloneSetupInner(props: Props) {
     });
 
     navigate(`~/deck/edit/${deck.id}`);
-  }, [createEdit, navigate, deck, results]);
+  };
 
-  const revealAll = useCallback(() => {
+  const revealAll = () => {
     setRevealed(() => {
       const newRevealed: Record<number, boolean> = {};
       results.forEach((_, idx) => {
@@ -121,7 +118,7 @@ function SuziStandaloneSetupInner(props: Props) {
       });
       return newRevealed;
     });
-  }, [results]);
+  };
 
   return (
     <Modal className={css["modal"]}>

@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
@@ -8,15 +7,12 @@ export function WeaknessPoolSetting(props: SettingProps) {
   const { settings, setSettings } = props;
   const { t } = useTranslation();
 
-  const onCheckWeaknessPool = useCallback(
-    (val: boolean | string) => {
-      setSettings((settings) => ({
-        ...settings,
-        useLimitedPoolForWeaknessDraw: !!val,
-      }));
-    },
-    [setSettings],
-  );
+  const onCheckWeaknessPool = (val: boolean) => {
+    setSettings((settings) => ({
+      ...settings,
+      useLimitedPoolForWeaknessDraw: val,
+    }));
+  };
 
   return (
     <Field

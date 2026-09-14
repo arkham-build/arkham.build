@@ -1,11 +1,7 @@
 import type { Card } from "@arkham-build/shared";
-import { useMemo } from "react";
 
 export function useAccentColor(card?: Card) {
-  const cssVariables = useMemo(
-    () => (card ? getAccentColorsForFaction(card) : {}),
-    [card],
-  );
+  const cssVariables = card ? getAccentColorsForFaction(card) : {};
 
   return cssVariables;
 }

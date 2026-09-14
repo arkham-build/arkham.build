@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
@@ -32,10 +31,7 @@ export function ActionFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
 
   const actionMapper = useStore(selectActionMapper);
 
-  const nameRenderer = useCallback(
-    (item: Coded & { name: string }) => item.name,
-    [],
-  );
+  const nameRenderer = (item: Coded & { name: string }) => item.name;
 
   return (
     <MultiselectFilter

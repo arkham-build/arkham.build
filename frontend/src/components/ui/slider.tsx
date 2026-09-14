@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";
@@ -70,142 +70,124 @@ export function Slider(props: Props) {
     valueRef.current = value;
   }, [value]);
 
-  const updateValue = useCallback(
-    (nextValue: number, index: number, commit = false) => {
-      const result = getNextValues(
-        valueRef.current,
-        nextValue,
-        index,
-        min,
-        max,
-        step,
-      );
-      if (valuesEqual(valueRef.current, result.values)) return;
+  const updateValue = (nextValue: number, index: number, commit = false) => {
+    const result = getNextValues(
+      valueRef.current,
+      nextValue,
+      index,
+      min,
+      max,
+      step,
+    );
+    if (valuesEqual(valueRef.current, result.values)) return;
 
-      activeIndexRef.current = result.activeIndex;
-      valueRef.current = result.values;
-      onValueChange?.(result.values);
-      thumbRefs.current[result.activeIndex]?.focus();
+    activeIndexRef.current = result.activeIndex;
+    valueRef.current = result.values;
+    onValueChange?.(result.values);
+    thumbRefs.current[result.activeIndex]?.focus();
 
-      if (commit) onValueCommit?.(result.values);
-    },
-    [max, min, onValueChange, onValueCommit, step],
-  );
+    if (commit) onValueCommit?.(result.values);
+  };
 
-  const handlePointerDown = useCallback(
-    (event: React.PointerEvent<HTMLElement>, thumbIndex: number | null) => {
-      onPointerDown?.(event as React.PointerEvent<HTMLSpanElement>);
-      if (event.defaultPrevented || disabled || event.button !== 0) return;
+  const handlePointerDown = (
+    event: React.PointerEvent<HTMLElement>,
+    thumbIndex: number | null,
+  ) => {
+    onPointerDown?.(event as React.PointerEvent<HTMLSpanElement>);
+    if (event.defaultPrevented || disabled || event.button !== 0) return;
 
-      const pointerValue = getPointerValue(
-        rootRef.current,
-        event.clientX,
-        min,
-        max,
-      );
-      const index =
-        thumbIndex ?? getClosestValueIndex(valueRef.current, pointerValue);
+    const pointerValue = getPointerValue(
+      rootRef.current,
+      event.clientX,
+      min,
+      max,
+    );
+    const index =
+      thumbIndex ?? getClosestValueIndex(valueRef.current, pointerValue);
 
-      activeIndexRef.current = index;
-      activePointerIdRef.current = event.pointerId;
-      startValueRef.current = valueRef.current;
+    activeIndexRef.current = index;
+    activePointerIdRef.current = event.pointerId;
+    startValueRef.current = valueRef.current;
 
-      event.currentTarget.setPointerCapture(event.pointerId);
-      event.preventDefault();
-      thumbRefs.current[index]?.focus();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.preventDefault();
+    thumbRefs.current[index]?.focus();
 
-      if (thumbIndex == null) updateValue(pointerValue, index);
-    },
-    [disabled, max, min, onPointerDown, updateValue],
-  );
+    if (thumbIndex == null) updateValue(pointerValue, index);
+  };
 
-  const handlePointerMove = useCallback(
-    (event: React.PointerEvent<HTMLElement>) => {
-      onPointerMove?.(event as React.PointerEvent<HTMLSpanElement>);
-      if (event.defaultPrevented || disabled) return;
-      if (activePointerIdRef.current !== event.pointerId) return;
-      if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+  const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
+    onPointerMove?.(event as React.PointerEvent<HTMLSpanElement>);
+    if (event.defaultPrevented || disabled) return;
+    if (activePointerIdRef.current !== event.pointerId) return;
+    if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
 
-      updateValue(
-        getPointerValue(rootRef.current, event.clientX, min, max),
-        activeIndexRef.current,
-      );
-    },
-    [disabled, max, min, onPointerMove, updateValue],
-  );
+    updateValue(
+      getPointerValue(rootRef.current, event.clientX, min, max),
+      activeIndexRef.current,
+    );
+  };
 
-  const handlePointerUp = useCallback(
-    (event: React.PointerEvent<HTMLElement>) => {
-      onPointerUp?.(event as React.PointerEvent<HTMLSpanElement>);
-      if (activePointerIdRef.current !== event.pointerId) return;
+  const handlePointerUp = (event: React.PointerEvent<HTMLElement>) => {
+    onPointerUp?.(event as React.PointerEvent<HTMLSpanElement>);
+    if (activePointerIdRef.current !== event.pointerId) return;
 
-      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-        event.currentTarget.releasePointerCapture(event.pointerId);
-      }
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
 
+    activePointerIdRef.current = null;
+
+    if (!valuesEqual(startValueRef.current, valueRef.current)) {
+      onValueCommit?.(valueRef.current);
+    }
+  };
+
+  const handlePointerCancel = (event: React.PointerEvent<HTMLElement>) => {
+    onPointerCancel?.(event as React.PointerEvent<HTMLSpanElement>);
+    if (activePointerIdRef.current === event.pointerId) {
       activePointerIdRef.current = null;
+    }
+  };
 
-      if (!valuesEqual(startValueRef.current, valueRef.current)) {
-        onValueCommit?.(valueRef.current);
-      }
-    },
-    [onPointerUp, onValueCommit],
-  );
+  const handleLostPointerCapture = (event: React.PointerEvent<HTMLElement>) => {
+    onLostPointerCapture?.(event);
+    if (activePointerIdRef.current === event.pointerId) {
+      activePointerIdRef.current = null;
+    }
+  };
 
-  const handlePointerCancel = useCallback(
-    (event: React.PointerEvent<HTMLElement>) => {
-      onPointerCancel?.(event as React.PointerEvent<HTMLSpanElement>);
-      if (activePointerIdRef.current === event.pointerId) {
-        activePointerIdRef.current = null;
-      }
-    },
-    [onPointerCancel],
-  );
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLSpanElement>) => {
+    onKeyDown?.(event);
+    if (event.defaultPrevented || disabled) return;
 
-  const handleLostPointerCapture = useCallback(
-    (event: React.PointerEvent<HTMLElement>) => {
-      onLostPointerCapture?.(event);
-      if (activePointerIdRef.current === event.pointerId) {
-        activePointerIdRef.current = null;
-      }
-    },
-    [onLostPointerCapture],
-  );
+    const thumbIndex = getThumbIndex(event.currentTarget);
+    if (thumbIndex != null) activeIndexRef.current = thumbIndex;
 
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLSpanElement>) => {
-      onKeyDown?.(event);
-      if (event.defaultPrevented || disabled) return;
-
-      const thumbIndex = getThumbIndex(event.currentTarget);
-      if (thumbIndex != null) activeIndexRef.current = thumbIndex;
-
-      if (event.key === "Home") {
-        event.preventDefault();
-        updateValue(min, 0, true);
-        return;
-      }
-
-      if (event.key === "End") {
-        event.preventDefault();
-        updateValue(max, valueRef.current.length - 1, true);
-        return;
-      }
-
-      const direction = getStepDirection(event);
-      if (direction == null) return;
-
+    if (event.key === "Home") {
       event.preventDefault();
-      const multiplier = getStepMultiplier(event);
-      const index = activeIndexRef.current;
-      updateValue(
-        valueRef.current[index] + step * multiplier * direction,
-        index,
-        true,
-      );
-    },
-    [disabled, max, min, onKeyDown, step, updateValue],
-  );
+      updateValue(min, 0, true);
+      return;
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      updateValue(max, valueRef.current.length - 1, true);
+      return;
+    }
+
+    const direction = getStepDirection(event);
+    if (direction == null) return;
+
+    event.preventDefault();
+    const multiplier = getStepMultiplier(event);
+    const index = activeIndexRef.current;
+    updateValue(
+      valueRef.current[index] + step * multiplier * direction,
+      index,
+      true,
+    );
+  };
 
   const percentages = value.map((item) => valueToPercentage(item, min, max));
   const rangeStyle: SliderStyle = {

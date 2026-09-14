@@ -1,7 +1,7 @@
 import type { Card as CardT } from "@arkham-build/shared";
 import { FloatingPortal } from "@floating-ui/react";
 import { DicesIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { Card } from "@/components/card/card";
@@ -69,7 +69,7 @@ export function QuickUpgrade(props: Props) {
     ),
   );
 
-  const onUpgradeCard = useCallback(() => {
+  const onUpgradeCard = () => {
     closeTooltip();
 
     const upgrades = availableUpgrades.upgrades[card.code];
@@ -91,7 +91,7 @@ export function QuickUpgrade(props: Props) {
     } else {
       setDialogOpen(true);
     }
-  }, [availableUpgrades, card, slots, deck, closeTooltip, upgradeCard]);
+  };
 
   return (
     <>
@@ -167,21 +167,18 @@ function QuickUpgradeDialog(
   const upgradeCard = useStore((state) => state.upgradeCard);
   const applyShrewdAnalysis = useStore((state) => state.applyShrewdAnalysis);
 
-  const onChangeUpgradeQuantity = useCallback(
-    (upgradeCode: string, delta: number) => {
-      upgradeCard({
-        availableUpgrades,
-        deckId: deck.id,
-        code: card.code,
-        upgradeCode,
-        delta,
-        slots,
-      });
-    },
-    [availableUpgrades, deck.id, card.code, slots, upgradeCard],
-  );
+  const onChangeUpgradeQuantity = (upgradeCode: string, delta: number) => {
+    upgradeCard({
+      availableUpgrades,
+      deckId: deck.id,
+      code: card.code,
+      upgradeCode,
+      delta,
+      slots,
+    });
+  };
 
-  const onUseShrewdAnalysis = useCallback(() => {
+  const onUseShrewdAnalysis = () => {
     applyShrewdAnalysis({
       availableUpgrades,
       deckId: deck.id,
@@ -190,14 +187,7 @@ function QuickUpgradeDialog(
     });
 
     onOpenChange(false);
-  }, [
-    applyShrewdAnalysis,
-    availableUpgrades,
-    deck.id,
-    card.code,
-    onOpenChange,
-    slots,
-  ]);
+  };
 
   const shrewdAnalysisPossible =
     slots === "slots" && isShrewdAnalysisUpgrade(availableUpgrades, card, deck);

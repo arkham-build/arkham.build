@@ -1,5 +1,4 @@
 import type { EncounterSet } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -38,15 +37,10 @@ export function EncounterSetFilter({
     selectEncounterSetOptions(state, resolvedDeck, targetDeck),
   );
 
-  const nameRenderer = useCallback(
-    (set: EncounterSet) => <EncounterSetName set={set} />,
-    [],
-  );
+  const nameRenderer = (set: EncounterSet) => <EncounterSetName set={set} />;
 
-  const itemToString = useCallback(
-    (set: EncounterSet) => displayPackName(set).toLowerCase(),
-    [],
-  );
+  const itemToString = (set: EncounterSet) =>
+    displayPackName(set).toLowerCase();
 
   const encounterSetMapper = useStore(selectEncounterSetMapper);
 

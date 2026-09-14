@@ -1,5 +1,4 @@
 import { EyeIcon, PilcrowIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import DeckDescription from "@/components/deck-description";
@@ -41,27 +40,21 @@ export function NotesRichTextEditor({ deck }: { deck: ResolvedDeck }) {
 
   const updateDescription = useStore(selectUpdateDescription);
 
-  const onDescriptionChange = useCallback(
-    (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-      if (evt.target instanceof HTMLTextAreaElement) {
-        updateDescription(deck.id, evt.target.value);
-      }
-    },
-    [updateDescription, deck.id],
-  );
+  const onDescriptionChange = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (evt.target instanceof HTMLTextAreaElement) {
+      updateDescription(deck.id, evt.target.value);
+    }
+  };
 
-  const handleShortcuts = useCallback(
-    (evt: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (evt.key === "Tab" && evt.shiftKey) {
-        evt.preventDefault();
-        setPopoverOpen("symbols");
-      } else if (evt.key === "Tab") {
-        evt.preventDefault();
-        setPopoverOpen("cards");
-      }
-    },
-    [setPopoverOpen],
-  );
+  const handleShortcuts = (evt: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (evt.key === "Tab" && evt.shiftKey) {
+      evt.preventDefault();
+      setPopoverOpen("symbols");
+    } else if (evt.key === "Tab") {
+      evt.preventDefault();
+      setPopoverOpen("cards");
+    }
+  };
 
   return (
     <div className={css["rich-text-editor"]} style={accentColorStyles}>
@@ -91,26 +84,20 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
   const { popoverOpen, setPopoverOpen, textareaRef } =
     useNotesRichTextEditorContext();
 
-  const onCardsOpenChange = useCallback(
-    (open: boolean) => {
-      setPopoverOpen(open ? "cards" : undefined);
-      textareaRef.current?.focus();
-    },
-    [setPopoverOpen, textareaRef.current],
-  );
+  const onCardsOpenChange = (open: boolean) => {
+    setPopoverOpen(open ? "cards" : undefined);
+    textareaRef.current?.focus();
+  };
 
-  const onSymbolsOpenChange = useCallback(
-    (open: boolean) => {
-      setPopoverOpen(open ? "symbols" : undefined);
-      textareaRef.current?.focus();
-    },
-    [setPopoverOpen, textareaRef.current],
-  );
+  const onSymbolsOpenChange = (open: boolean) => {
+    setPopoverOpen(open ? "symbols" : undefined);
+    textareaRef.current?.focus();
+  };
 
-  const onBlurPopover = useCallback(() => {
+  const onBlurPopover = () => {
     setPopoverOpen(undefined);
     textareaRef.current?.focus();
-  }, [setPopoverOpen, textareaRef.current]);
+  };
 
   return (
     <nav className={css["toolbar"]}>

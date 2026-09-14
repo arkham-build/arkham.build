@@ -2,7 +2,7 @@ import type {
   SettingsResponse,
   Settings as SettingsState,
 } from "@arkham-build/shared";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast.hooks";
@@ -11,7 +11,7 @@ import {
   useLoadRemoteSettingsMutation,
   useSaveSettingsMutation,
 } from "@/queries/mutations/settings";
-import { useStore } from "@/store";
+import { getStoreState } from "@/store";
 import { isSettingsConflictError } from "@/store/services/requests/settings";
 import css from "./settings.module.css";
 
@@ -38,54 +38,57 @@ export function SettingsConflictToast({
     "refresh" | "overwrite" | null
   >(null);
 
-  const runAction = useCallback(
-    async (action: "refresh" | "overwrite", handler: () => Promise<void>) => {
-      setPendingAction(action);
+  const runAction = async (
+    action: "refresh" | "overwrite",
+    handler: () => Promise<void>,
+  ) => {
+    setPendingAction(action);
 
-      try {
-        await handler();
-        onClose();
-      } catch (error) {
-        if (isSettingsConflictError(error)) {
-          setActiveConflict(
-            error.remote ?? useStore.getState().sync.settings.conflict,
-          );
-        } else {
-          toast.show({
-            children: t("settings.error", {
-              error: (error as Error).message,
-            }),
-            variant: "error",
-          });
-        }
-      } finally {
-        setPendingAction(null);
+    try {
+      await handler();
+      onClose();
+    } catch (error) {
+      setPendingAction(null);
+
+      if (isSettingsConflictError(error)) {
+        setActiveConflict(
+          error.remote ?? getStoreState().sync.settings.conflict,
+        );
+      } else {
+        toast.show({
+          children: t("settings.error", {
+            error: (error as Error).message,
+          }),
+          variant: "error",
+        });
       }
-    },
-    [onClose, t, toast],
-  );
+      return;
+    }
 
-  const refresh = useCallback(async () => {
+    setPendingAction(null);
+  };
+
+  const refresh = async () => {
     if (activeConflict) {
       await applyRemoteSettingsMutation.mutateAsync(activeConflict);
       return;
     }
 
     await loadRemoteSettingsMutation.mutateAsync();
-  }, [activeConflict, applyRemoteSettingsMutation, loadRemoteSettingsMutation]);
+  };
 
-  const overwrite = useCallback(async () => {
+  const overwrite = async () => {
     await saveSettingsMutation.mutateAsync({
       settings,
       opts: {
         expectedRevision:
-          useStore.getState().sync.settings.conflict?.revision ??
+          getStoreState().sync.settings.conflict?.revision ??
           activeConflict?.revision ??
           null,
       },
     });
     updateColorTheme(theme);
-  }, [activeConflict, saveSettingsMutation, settings, theme, updateColorTheme]);
+  };
 
   return (
     <div className={css["sync-toast"]}>

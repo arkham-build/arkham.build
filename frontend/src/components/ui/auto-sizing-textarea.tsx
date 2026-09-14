@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { cx } from "@/utils/cx";
 import { mergeRefs } from "@/utils/merge-refs";
 import { getScrollParent } from "@/utils/scroll-parent";
@@ -24,25 +24,22 @@ export function AutoSizingTextarea(props: TextareaProps) {
     };
   }, []);
 
-  const onValueChange = useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const target = event.target;
+  const onValueChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const target = event.target;
 
-      const scrollParent = getScrollParent(target);
+    const scrollParent = getScrollParent(target);
 
-      const scrollPosition =
-        scrollParent instanceof Element ? scrollParent.scrollTop : undefined;
+    const scrollPosition =
+      scrollParent instanceof Element ? scrollParent.scrollTop : undefined;
 
-      target.style.height = "auto";
-      target.style.height = `${target.scrollHeight}px`;
-      onChange?.(event);
+    target.style.height = "auto";
+    target.style.height = `${target.scrollHeight}px`;
+    onChange?.(event);
 
-      if (scrollParent instanceof Element) {
-        scrollParent.scrollTop = scrollPosition ?? 0;
-      }
-    },
-    [onChange],
-  );
+    if (scrollParent instanceof Element) {
+      scrollParent.scrollTop = scrollPosition ?? 0;
+    }
+  };
 
   return (
     <textarea

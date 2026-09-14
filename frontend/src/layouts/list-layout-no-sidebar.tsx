@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-element-interactions -- TODO */
 import { ChevronLeftIcon, FilterIcon } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { CardListContainer } from "@/components/card-list/card-list-container";
 import { Filters } from "@/components/filters/filters";
@@ -34,19 +34,16 @@ export function ListLayoutNoSidebar(props: Props) {
 
   const goBack = useGoBack();
 
-  const preventBubble = useCallback((e: React.MouseEvent) => {
+  const preventBubble = (e: React.MouseEvent) => {
     e.stopPropagation();
-  }, []);
+  };
 
-  const onContentClick = useCallback(
-    (evt: React.MouseEvent) => {
-      if (filtersOpen && floatingFilters) {
-        evt.preventDefault();
-        setFiltersOpen(false);
-      }
-    },
-    [filtersOpen, floatingFilters, setFiltersOpen],
-  );
+  const onContentClick = (evt: React.MouseEvent) => {
+    if (filtersOpen && floatingFilters) {
+      evt.preventDefault();
+      setFiltersOpen(false);
+    }
+  };
 
   const floatingMenuOpen =
     floatingFilters && filtersOpen && css["floating-menu-open"];

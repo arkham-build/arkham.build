@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import type { GroupedVirtuosoHandle, ListRange } from "react-virtuoso";
 import { GroupedVirtuoso, Virtuoso } from "react-virtuoso";
 import { useStore } from "@/store";
@@ -45,68 +45,62 @@ export function CardList(props: CardListImplementationProps) {
   const cardOwnedCount = useStore(selectCardOwnedCount);
   const lookupTables = useStore(selectLookupTables);
 
-  const onScrollChange = useCallback(() => {
+  const onScrollChange = useEffectEvent(() => {
     setCurrentTop(-1);
-  }, []);
+  });
+
+  const onSelectGroup = useEffectEvent((evt: Event) => {
+    const offset = findGroupOffset(data, (evt as CustomEvent).detail);
+
+    if (offset != null) {
+      virtuosoRef.current?.scrollToIndex(offset);
+    } else {
+      virtuosoRef.current?.scrollToIndex(0);
+    }
+  });
+
+  const onKeyboardNavigate = useEffectEvent((evt: Event) => {
+    const key = (evt as CustomEvent).detail;
+
+    if (!data?.cards.length) return;
+
+    if (key === "ArrowUp" || key === "ArrowDown") {
+      const keyboardIdx = activeRange.current?.startIndex
+        ? Math.max(activeRange.current?.startIndex, currentTop)
+        : currentTop;
+
+      const idx =
+        key === "ArrowUp"
+          ? Math.max(keyboardIdx - 1, 0)
+          : Math.min(keyboardIdx + 1, data.cards.length - 1);
+
+      setCurrentTop(idx);
+
+      if (
+        !activeRange.current ||
+        (activeRange.current &&
+          (idx >= activeRange.current.endIndex ||
+            idx <= activeRange.current.startIndex))
+      ) {
+        virtuosoRef.current?.scrollToIndex(idx);
+      }
+    }
+
+    if (key === "Enter" && currentTop > -1) {
+      openCardModal(data.cards[currentTop].code);
+    }
+
+    if (key === "Escape") {
+      setCurrentTop(-1);
+    }
+  });
 
   useEffect(() => {
     scrollParent?.addEventListener("wheel", onScrollChange, { passive: true });
     return () => {
       scrollParent?.removeEventListener("wheel", onScrollChange);
     };
-  }, [scrollParent, onScrollChange]);
-
-  const onSelectGroup = useCallback(
-    (evt: Event) => {
-      const offset = findGroupOffset(data, (evt as CustomEvent).detail);
-
-      if (offset != null) {
-        virtuosoRef.current?.scrollToIndex(offset);
-      } else {
-        virtuosoRef.current?.scrollToIndex(0);
-      }
-    },
-    [data],
-  );
-
-  const onKeyboardNavigate = useCallback(
-    (evt: Event) => {
-      const key = (evt as CustomEvent).detail;
-
-      if (!data?.cards.length) return;
-
-      if (key === "ArrowUp" || key === "ArrowDown") {
-        const keyboardIdx = activeRange.current?.startIndex
-          ? Math.max(activeRange.current?.startIndex, currentTop)
-          : currentTop;
-
-        const idx =
-          key === "ArrowUp"
-            ? Math.max(keyboardIdx - 1, 0)
-            : Math.min(keyboardIdx + 1, data.cards.length - 1);
-
-        setCurrentTop(idx);
-
-        if (
-          !activeRange.current ||
-          (activeRange.current &&
-            (idx >= activeRange.current.endIndex ||
-              idx <= activeRange.current.startIndex))
-        ) {
-          virtuosoRef.current?.scrollToIndex(idx);
-        }
-      }
-
-      if (key === "Enter" && currentTop > -1) {
-        openCardModal(data.cards[currentTop].code);
-      }
-
-      if (key === "Escape") {
-        setCurrentTop(-1);
-      }
-    },
-    [currentTop, data, openCardModal],
-  );
+  }, [scrollParent]);
 
   useEffect(() => {
     window.addEventListener("list-keyboard-navigate", onKeyboardNavigate);
@@ -116,22 +110,19 @@ export function CardList(props: CardListImplementationProps) {
       window.removeEventListener("list-keyboard-navigate", onKeyboardNavigate);
       window.removeEventListener("list-select-group", onSelectGroup);
     };
-  }, [onKeyboardNavigate, onSelectGroup]);
-
-  const onScrollStop = useCallback(
-    (scrolling: boolean) => {
-      if (!scrolling) {
-        virtuosoRef.current?.getState(() => {
-          activeGroup.current = findActiveGroup(activeRange.current, data);
-        });
-      }
-    },
-    [data],
-  );
-
-  const rangeChanged = useCallback((range: ListRange) => {
-    activeRange.current = range;
   }, []);
+
+  const onScrollStop = (scrolling: boolean) => {
+    if (!scrolling) {
+      virtuosoRef.current?.getState(() => {
+        activeGroup.current = findActiveGroup(activeRange.current, data);
+      });
+    }
+  };
+
+  const rangeChanged = (range: ListRange) => {
+    activeRange.current = range;
+  };
 
   useEffect(() => {
     setCurrentTop(-1);

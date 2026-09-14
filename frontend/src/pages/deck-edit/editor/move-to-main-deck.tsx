@@ -1,6 +1,5 @@
 import type { Card } from "@arkham-build/shared";
 import { ArrowLeftToLineIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store";
@@ -16,9 +15,9 @@ export function MoveToMainDeck(props: Props) {
   const swapDeck = useStore((state) => state.swapDeck);
   const { t } = useTranslation();
 
-  const onButtonClick = useCallback(() => {
+  const onButtonClick = () => {
     swapDeck(card, deck.id, "slots");
-  }, [card, deck.id, swapDeck]);
+  };
 
   return (
     <Button

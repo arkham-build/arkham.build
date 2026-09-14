@@ -20,7 +20,14 @@ export default defineConfig({
       plugins: [autoprefixer()],
     },
   },
-  plugins: [react({ compiler: true })],
+  plugins: [
+    react({
+      compiler: {
+        target: "19",
+        logDiagnostics: true,
+      },
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

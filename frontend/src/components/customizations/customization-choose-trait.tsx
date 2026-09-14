@@ -1,5 +1,4 @@
 import { PlusIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { Combobox } from "@/components/ui/combobox/combobox";
@@ -44,42 +43,33 @@ export function CustomizationChooseTraits(props: Props) {
 
   const mapper = useStore(selectTraitMapper);
 
-  const nameRenderer = useCallback(
-    (trait: { code: string; name: string }) => trait.name,
-    [],
+  const nameRenderer = (trait: { code: string; name: string }) => trait.name;
+
+  const resultRenderer = (
+    trait: { code: string; name: string },
+    onRemove?: () => void,
+  ) => (
+    <ResultTag
+      data-testid={`combobox-result-${trait.code}`}
+      onRemove={onRemove}
+    >
+      {nameRenderer(trait)}
+    </ResultTag>
   );
 
-  const resultRenderer = useCallback(
-    (trait: { code: string; name: string }, onRemove?: () => void) => (
-      <ResultTag
-        data-testid={`combobox-result-${trait.code}`}
-        onRemove={onRemove}
-      >
-        {nameRenderer(trait)}
-      </ResultTag>
+  const onValueChange = (newSelections: Coded[]) => {
+    onChange(newSelections.map((card) => card.code));
+  };
+
+  const creatable = {
+    label: (name: string) => (
+      <>
+        <PlusIcon />
+        {t("common.create_named", { name })}
+      </>
     ),
-    [nameRenderer],
-  );
-
-  const onValueChange = useCallback(
-    (newSelections: Coded[]) => {
-      onChange(newSelections.map((card) => card.code));
-    },
-    [onChange],
-  );
-
-  const creatable = useMemo(
-    () => ({
-      label: (name: string) => (
-        <>
-          <PlusIcon />
-          {t("common.create_named", { name })}
-        </>
-      ),
-      onCreate: (name: string) => onChange([...selections, name]),
-    }),
-    [onChange, selections, t],
-  );
+    onCreate: (name: string) => onChange([...selections, name]),
+  };
 
   return (
     <Combobox

@@ -5,7 +5,6 @@ import {
 } from "@arkham-build/shared";
 import type { ReferenceType } from "@floating-ui/react";
 import { FileWarningIcon, StarIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { useStore } from "@/store";
@@ -137,28 +136,22 @@ export function ListCardInner(props: Props) {
   const colorCls = getCardColor(card);
   const Element = as as React.JSX.ElementType;
 
-  const onQuantityChange = useCallback(
-    (val: number, limit: number) => {
-      onChangeCardQuantity?.(card, val, limit);
-    },
-    [onChangeCardQuantity, card],
-  );
+  const onQuantityChange = (val: number, limit: number) => {
+    onChangeCardQuantity?.(card, val, limit);
+  };
 
-  const openModal = useCallback(
-    (evt: React.MouseEvent) => {
-      const linkPrevented = preventLeftClick(evt);
-      closeCardTooltip?.();
+  const openModal = (evt: React.MouseEvent) => {
+    const linkPrevented = preventLeftClick(evt);
+    closeCardTooltip?.();
 
-      if (linkPrevented) {
-        if (titleOpens === "dialog" && dialogContext) {
-          dialogContext.setOpen(true);
-        } else {
-          openCardModal(card.code);
-        }
+    if (linkPrevented) {
+      if (titleOpens === "dialog" && dialogContext) {
+        dialogContext.setOpen(true);
+      } else {
+        openCardModal(card.code);
       }
-    },
-    [card.code, closeCardTooltip, dialogContext, openCardModal, titleOpens],
-  );
+    }
+  };
 
   const limit = cardLimit(card, limitOverride);
   const cardTags = renderCardTags?.(card, quantity);

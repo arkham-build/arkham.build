@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterContainer } from "./filter-container";
 import { useFilter } from "./filter-hooks";
@@ -23,16 +22,13 @@ export function SelectFilter<T, V extends number | string | undefined>(
   const { t } = useTranslation();
   const { onReset, onOpenChange, onChange, locked } = useFilter<V>(id);
 
-  const onValueChange = useCallback(
-    (evt: React.ChangeEvent<HTMLSelectElement>) => {
-      if (evt.target instanceof HTMLSelectElement) {
-        const val = evt.target.value;
-        const mapped = mapValue ? mapValue(val) : (val as V);
-        onChange(mapped);
-      }
-    },
-    [mapValue, onChange],
-  );
+  const onValueChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+    if (evt.target instanceof HTMLSelectElement) {
+      const val = evt.target.value;
+      const mapped = mapValue ? mapValue(val) : (val as V);
+      onChange(mapped);
+    }
+  };
 
   return (
     <FilterContainer

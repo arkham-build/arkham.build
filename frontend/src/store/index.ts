@@ -37,3 +37,7 @@ const stateCreator = (...args: [any, any, any]) => ({
 export const useStore = create<StoreState>()(
   import.meta.env.MODE === "test" ? stateCreator : devtools(stateCreator),
 );
+
+export function getStoreState() {
+  return useStore.getState();
+}

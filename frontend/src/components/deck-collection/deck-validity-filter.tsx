@@ -1,7 +1,6 @@
 // Currently unused, functionality preserved for 'My Decks' dedicated page.
 
 import { TicketCheckIcon, TicketsIcon, TicketXIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useStore } from "@/store";
 import { selectDeckFilterValue } from "@/store/selectors/deck-collection";
 import type { DeckValidity } from "@/store/slices/deck-collection.types";
@@ -26,23 +25,17 @@ export function DeckValidityFilter({ containerClass }: Props) {
   const setFilterOpen = useStore((state) => state.setDeckFilterOpen);
   const resetFilter = useStore((state) => state.resetDeckFilter);
 
-  const onReset = useCallback(() => {
+  const onReset = () => {
     resetFilter("validity");
-  }, [resetFilter]);
+  };
 
-  const onOpenChange = useCallback(
-    (val: boolean) => {
-      setFilterOpen("validity", val);
-    },
-    [setFilterOpen],
-  );
+  const onOpenChange = (val: boolean) => {
+    setFilterOpen("validity", val);
+  };
 
-  const onChange = useCallback(
-    (value: DeckValidity) => {
-      setFilterValue("validity", value);
-    },
-    [setFilterValue],
-  );
+  const onChange = (value: DeckValidity) => {
+    setFilterValue("validity", value);
+  };
 
   return (
     <FilterContainer

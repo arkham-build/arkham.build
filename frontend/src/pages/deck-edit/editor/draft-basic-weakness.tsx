@@ -9,7 +9,7 @@ import {
   TriangleAlertIcon,
   XIcon,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { CardScan } from "@/components/card-scan";
@@ -86,8 +86,7 @@ function DraftBasicWeaknessModal(props: Props) {
     })),
   );
 
-  // oxlint-disable-next-line react/exhaustive-deps -- should only be computed once on mount
-  const weaknesses = useMemo(() => selectDraftWeaknesses(deps, deck), []);
+  const [weaknesses] = useState(() => selectDraftWeaknesses(deps, deck));
 
   const [selectedWeakness, setSelectedWeakness] = useState<
     string | undefined
@@ -99,66 +98,52 @@ function DraftBasicWeaknessModal(props: Props) {
 
   const dialogContext = useDialogContext();
 
-  const handleSubmit = useCallback(
-    (evt: React.SubmitEvent) => {
-      evt.preventDefault();
+  const handleSubmit = (evt: React.SubmitEvent) => {
+    evt.preventDefault();
 
-      assert(weaknesses, "Submit called before draft initialized.");
+    assert(weaknesses, "Submit called before draft initialized.");
 
-      const remainingWeaknesses = weaknesses.filter(
-        (w) => w.code !== selectedWeakness,
-      );
+    const remainingWeaknesses = weaknesses.filter(
+      (w) => w.code !== selectedWeakness,
+    );
 
-      const chosenWeakness =
-        remainingWeaknesses[
-          Math.floor(Math.random() * remainingWeaknesses.length)
-        ];
+    const chosenWeakness =
+      remainingWeaknesses[
+        Math.floor(Math.random() * remainingWeaknesses.length)
+      ];
 
-      assert(chosenWeakness, "Could not determine which weakness to add.");
+    assert(chosenWeakness, "Could not determine which weakness to add.");
 
-      dialogContext?.setOpen(false);
+    dialogContext?.setOpen(false);
 
-      updateCardQuantity(
-        deck.id,
-        chosenWeakness.code,
-        1,
-        cardLimit(deps.metadata.cards[chosenWeakness.code]),
-      );
-
-      updateCardQuantity(
-        deck.id,
-        SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS,
-        -1,
-        cardLimit(
-          deps.metadata.cards[SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS],
-        ),
-      );
-
-      toast.show({
-        variant: "success",
-        duration: 3000,
-        children: (
-          <Trans
-            defaults="<strong>{{name}}</strong> was added to your deck."
-            i18nKey="deck_edit.actions.draft_random_basic_weakness_success"
-            t={t}
-            values={{ name: displayAttribute(chosenWeakness, "name") }}
-            components={{ strong: <strong /> }}
-          />
-        ),
-      });
-    },
-    [
-      weaknesses,
-      selectedWeakness,
-      updateCardQuantity,
+    updateCardQuantity(
       deck.id,
-      deps.metadata.cards,
-      dialogContext,
-      toast,
-      t,
-    ],
-  );
+      chosenWeakness.code,
+      1,
+      cardLimit(deps.metadata.cards[chosenWeakness.code]),
+    );
+
+    updateCardQuantity(
+      deck.id,
+      SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS,
+      -1,
+      cardLimit(deps.metadata.cards[SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS]),
+    );
+
+    toast.show({
+      variant: "success",
+      duration: 3000,
+      children: (
+        <Trans
+          defaults="<strong>{{name}}</strong> was added to your deck."
+          i18nKey="deck_edit.actions.draft_random_basic_weakness_success"
+          t={t}
+          values={{ name: displayAttribute(chosenWeakness, "name") }}
+          components={{ strong: <strong /> }}
+        />
+      ),
+    });
+  };
 
   return (
     <Modal>

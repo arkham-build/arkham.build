@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -33,16 +32,16 @@ export function PropertiesFilter({ id }: FilterProps) {
 
   const properties = useStore(selectPropertyOptions);
 
-  const onPropertyChange = useCallback(
-    (key: keyof PropertiesFilterType, value: boolean) => {
-      onChange({
-        [key]: value,
-      });
-    },
-    [onChange],
-  );
+  const onPropertyChange = (
+    key: keyof PropertiesFilterType,
+    value: boolean,
+  ) => {
+    onChange({
+      [key]: value,
+    });
+  };
 
-  const renderProperty = useCallback((key: string, label: string) => {
+  const renderProperty = (key: string, label: string) => {
     if (key === "unique") {
       return (
         <>
@@ -61,7 +60,7 @@ export function PropertiesFilter({ id }: FilterProps) {
     }
 
     return label;
-  }, []);
+  };
 
   return (
     <FilterContainer

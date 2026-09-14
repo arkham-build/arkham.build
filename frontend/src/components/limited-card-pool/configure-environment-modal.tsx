@@ -1,6 +1,6 @@
 import type { Card, Cycle, Pack } from "@arkham-build/shared";
 import { InfoIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
@@ -260,9 +260,9 @@ function LimitedTab(props: TabProps) {
     dialogCtx.setOpen(false);
   };
 
-  const onSelectionChange = useCallback((items: Pack[]) => {
+  const onSelectionChange = (items: Pack[]) => {
     setSelectedItems(items.map((cycle) => cycle.code));
-  }, []);
+  };
 
   return (
     <>
@@ -324,9 +324,9 @@ function CampaignPlayalongTab(props: TabProps) {
     dialogCtx.setOpen(false);
   };
 
-  const onSelectionChange = useCallback((items: CycleWithPacks[]) => {
+  const onSelectionChange = (items: CycleWithPacks[]) => {
     setSelectedItems(items.map((cycle) => cycle.code));
-  }, []);
+  };
 
   return (
     <>
@@ -393,10 +393,7 @@ function ProgressionTab(props: TabProps) {
 
   const metadata = useStore((state) => state.metadata);
   const showPreviews = useStore((state) => state.settings.showPreviews);
-  const targets = useMemo(
-    () => progressionTargets(metadata, showPreviews),
-    [metadata, showPreviews],
-  );
+  const targets = progressionTargets(metadata, showPreviews);
 
   const [selectedCode, setSelectedCode] = useState<string>();
   const selectedTarget = targets.find((target) => target.code === selectedCode);
@@ -410,14 +407,11 @@ function ProgressionTab(props: TabProps) {
     dialogCtx.setOpen(false);
   };
 
-  const valueChangeHandler = useCallback((items: ProgressionTarget[]) => {
+  const valueChangeHandler = (items: ProgressionTarget[]) => {
     setSelectedCode(items[0]?.code);
-  }, []);
+  };
 
-  const selection = useMemo(
-    () => (selectedTarget ? [selectedTarget] : []),
-    [selectedTarget],
-  );
+  const selection = selectedTarget ? [selectedTarget] : [];
 
   return (
     <>
@@ -483,9 +477,9 @@ function Limited25Tab(props: TabProps) {
     dialogCtx.setOpen(false);
   };
 
-  const onSelectionChange = useCallback((items: CycleWithPacks[]) => {
+  const onSelectionChange = (items: CycleWithPacks[]) => {
     setSelectedItems(items.map((cycle) => cycle.code));
-  }, []);
+  };
 
   return (
     <>
