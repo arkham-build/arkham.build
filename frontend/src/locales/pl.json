@@ -147,9 +147,21 @@
     "browse": {
       "title": "Przeglądaj karty"
     },
+    "content": {
+      "empty": {
+        "campaigns": "Brak dostępnych kampanii.",
+        "standalone_scenarios": "Brak dostępnych scenariuszy samodzielnych."
+      },
+      "tabs": {
+        "campaigns": "Kampanie",
+        "standalone_scenarios": "Scenariusze samodzielne"
+      },
+      "title": "Zawartość",
+      "unknown_release_year": "Nieznany rok"
+    },
     "card_modal": {
       "actions": {
-        "complete_task": "Complete task",
+        "complete_task": "Zakończ zadanie",
         "open_card_page": "Strona karty",
         "reviews": "Recenzje"
       },
@@ -1030,7 +1042,7 @@
           "chapter_2": "Chapter 2",
           "chapter_2_help": "Stwórz pulę kart ze wszystkich zestawów z Chapteru 2.",
           "choose_cycle_placeholder": "Wybierz cykle...",
-          "choose_progression_target_placeholder": "Wybierz kampanię lub scenariusz...",
+          "choose_progression_target_placeholder": "Wybierz kampanię lub scenariusz...",          
           "collection": "Kolekcja",
           "collection_help": "Ustaw swoją aktualną <settings_link>Kolekcję</settings_link> kart jako pula tej talii. Może to być przydatne w celu zamrożenia puli kart talii lub udostępnienia „ustawień wstępnych” dla osób dzielących tę samą fizyczną kolekcję kart.",
           "configure_environment": "Skonfiguruj środowisko gry",
@@ -1551,14 +1563,18 @@
         "include_flavor": "Smaczki",
         "include_game_text": "Tekst karty",
         "include_name": "Nazwa",
+        "match_display_mode": "Dopasuj tryb wyświetlania",
+        "match_visible_taboo": "Dopasuj widoczne taboo",
         "placeholder": "Szukaj kart...",
         "share": "Skopiuj zapytanie",
+        "share_settings": "Udostępnij ustawienia",
         "title": "Wyszukaj"
       },
       "sort_by": "Sortuj według"
     },
     "masthead": {
       "browse": "Przeglądaj",
+      "cards": "Karty",
       "navigation": "Nawigacja",
       "rules": "Zasady"
     },
