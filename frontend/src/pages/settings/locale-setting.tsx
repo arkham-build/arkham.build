@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { LocaleSelect } from "@/components/locale-select";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -9,15 +8,12 @@ export function LocaleSetting(props: SettingProps) {
 
   const { t } = useTranslation();
 
-  const onSelectChange = useCallback(
-    (locale: string) => {
-      setSettings((settings) => ({
-        ...settings,
-        locale: locale,
-      }));
-    },
-    [setSettings],
-  );
+  const onSelectChange = (locale: string) => {
+    setSettings((settings) => ({
+      ...settings,
+      locale: locale,
+    }));
+  };
 
   return (
     <Field bordered helpText={t("settings.locale.help")}>

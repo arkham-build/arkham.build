@@ -11,7 +11,7 @@ import {
   useTypeahead,
 } from "@floating-ui/react";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import css from "./custom-select.module.css";
@@ -76,15 +76,12 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
     onOpenChange: setOpen,
   });
 
-  const onSelectItem = useCallback(
-    (index: number) => {
-      setOpen(false);
-      setActiveIndex(null);
-      const item = items[index];
-      if (item) onValueChange(item.value);
-    },
-    [onValueChange, items],
-  );
+  const onSelectItem = (index: number) => {
+    setOpen(false);
+    setActiveIndex(null);
+    const item = items[index];
+    if (item) onValueChange(item.value);
+  };
 
   const elementsRef = useRef<(HTMLElement | null)[]>([]);
   const labelsRef = useRef(items.map(itemToString));

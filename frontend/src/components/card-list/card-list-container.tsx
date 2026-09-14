@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { CenterLayout } from "@/layouts/center-layout";
 import { useStore } from "@/store";
 import {
@@ -71,23 +71,20 @@ export function CardListContainer(props: Props) {
     getInitialScanMaxColumns,
   );
 
-  const onScanMaxColumnsChange = useCallback((value: number) => {
+  const onScanMaxColumnsChange = (value: number) => {
     const clamped = clampScanMaxColumns(value);
     setScanMaxColumns(clamped);
     localStorage.setItem(LIST_SCAN_MAX_COLUMNS_KEY, String(clamped));
-  }, []);
+  };
 
-  const onSelectGroup = useCallback(
-    (evt: React.ChangeEvent<HTMLSelectElement>) => {
-      const customEvent = new CustomEvent("list-select-group", {
-        detail: evt.target.value,
-      });
-      window.dispatchEvent(customEvent);
-    },
-    [],
-  );
+  const onSelectGroup = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+    const customEvent = new CustomEvent("list-select-group", {
+      detail: evt.target.value,
+    });
+    window.dispatchEvent(customEvent);
+  };
 
-  const onKeyboardNavigate = useCallback((evt: React.KeyboardEvent) => {
+  const onKeyboardNavigate = (evt: React.KeyboardEvent) => {
     if (
       evt.key === "ArrowDown" ||
       evt.key === "ArrowUp" ||
@@ -106,7 +103,7 @@ export function CardListContainer(props: Props) {
         evt.target.blur();
       }
     }
-  }, []);
+  };
 
   return (
     <CenterLayout

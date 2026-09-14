@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useStore } from "@/store";
 
 const AGATHA_TRIGGER = "agathaallalong";
@@ -12,24 +12,21 @@ export function useAgathaEasterEggTrigger() {
   const toggleFlag = useStore((state) => state.toggleFlag);
   const flag = useStore((state) => !!state.settings.flags?.[AGATHA_FLAG]);
 
-  const callback = useCallback(
-    (val: string) => {
-      const match = val === AGATHA_TRIGGER;
+  const callback = (val: string) => {
+    const match = val === AGATHA_TRIGGER;
 
-      if (match) {
-        const confirmed = flag
-          ? true
-          : confirm(
-              "You are about to transform Agatha into her true self. If you ever want to return her to her original form, cast this incantation again.",
-            );
+    if (match) {
+      const confirmed = flag
+        ? true
+        : confirm(
+            "You are about to transform Agatha into her true self. If you ever want to return her to her original form, cast this incantation again.",
+          );
 
-        if (confirmed) toggleFlag(AGATHA_FLAG).catch(console.error);
-      }
+      if (confirmed) toggleFlag(AGATHA_FLAG).catch(console.error);
+    }
 
-      return match;
-    },
-    [toggleFlag, flag],
-  );
+    return match;
+  };
 
   return callback;
 }

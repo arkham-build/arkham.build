@@ -13,15 +13,7 @@ import {
   useRole,
   useTransitionStyles,
 } from "@floating-ui/react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 export interface TooltipOptions {
   delay?: number;
@@ -44,13 +36,10 @@ export function useTooltip({
 
   const open = !paused && (controlledOpen ?? uncontrolledOpen);
 
-  const setOpen = useCallback(
-    (value: boolean) => {
-      if (controlledOpen == null) setUncontrolledOpen(value);
-      onOpenChange?.(value);
-    },
-    [controlledOpen, onOpenChange],
-  );
+  const setOpen = (value: boolean) => {
+    if (controlledOpen == null) setUncontrolledOpen(value);
+    onOpenChange?.(value);
+  };
 
   const data = useFloating({
     placement,
@@ -83,15 +72,12 @@ export function useTooltip({
 
   const interactions = useInteractions([hover, dismiss, role]);
 
-  return useMemo(
-    () => ({
-      open,
-      setOpen,
-      ...interactions,
-      ...data,
-    }),
-    [open, setOpen, interactions, data],
-  );
+  return {
+    open,
+    setOpen,
+    ...interactions,
+    ...data,
+  };
 }
 
 export function useRestingTooltip(
@@ -128,24 +114,24 @@ export function useRestingTooltip(
     },
   });
 
-  const closeTooltip = useCallback(() => {
+  const closeTooltip = () => {
     setSuppressUntilLeave(true);
     clearTimeout(restTimeoutRef.current);
     setTooltipOpen(false);
-  }, []);
+  };
 
-  const onPointerDown = useCallback(() => {
+  const onPointerDown = () => {
     setSuppressUntilLeave(true);
     clearTimeout(restTimeoutRef.current);
-  }, []);
+  };
 
-  const onPointerLeave = useCallback(() => {
+  const onPointerLeave = () => {
     setSuppressUntilLeave(false);
     clearTimeout(restTimeoutRef.current);
     setTooltipOpen(false);
-  }, []);
+  };
 
-  const onPointerMove = useCallback(() => {
+  const onPointerMove = () => {
     if (suppressUntilLeave || tooltipOpen) return;
 
     clearTimeout(restTimeoutRef.current);
@@ -153,44 +139,30 @@ export function useRestingTooltip(
     restTimeoutRef.current = setTimeout(() => {
       setTooltipOpen(true);
     }, options?.delay ?? 25);
-  }, [suppressUntilLeave, tooltipOpen, options?.delay]);
+  };
 
   // Safari may cancel the subsequent click if pointerdown changes the DOM or
   // hit testing. Opacity hides the tooltip without affecting either.
-  const transitionStyles = useMemo(
-    () => (suppressUntilLeave ? { ...styles, opacity: 0 } : styles),
-    [styles, suppressUntilLeave],
-  );
+  const transitionStyles = suppressUntilLeave
+    ? { ...styles, opacity: 0 }
+    : styles;
 
-  const referenceProps = useMemo(
-    () => ({
-      onPointerDown,
-      onPointerLeave,
-      onPointerMove,
-      onMouseLeave: onPointerLeave,
-    }),
-    [onPointerDown, onPointerLeave, onPointerMove],
-  );
+  const referenceProps = {
+    onPointerDown,
+    onPointerLeave,
+    onPointerMove,
+    onMouseLeave: onPointerLeave,
+  };
 
-  const value = useMemo(
-    () => ({
-      isMounted,
-      referenceProps,
-      refs,
-      floatingStyles,
-      transitionStyles,
-      closeTooltip,
-      setTooltipOpen,
-    }),
-    [
-      referenceProps,
-      refs,
-      transitionStyles,
-      floatingStyles,
-      isMounted,
-      closeTooltip,
-    ],
-  );
+  const value = {
+    isMounted,
+    referenceProps,
+    refs,
+    floatingStyles,
+    transitionStyles,
+    closeTooltip,
+    setTooltipOpen,
+  };
 
   return value;
 }

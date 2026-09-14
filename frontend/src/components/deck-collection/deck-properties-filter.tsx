@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
@@ -33,23 +32,17 @@ export function DeckPropertiesFilter({ containerClass }: Props) {
   const setFilterOpen = useStore((state) => state.setDeckFilterOpen);
   const resetFilter = useStore((state) => state.resetDeckFilter);
 
-  const onReset = useCallback(() => {
+  const onReset = () => {
     resetFilter("properties");
-  }, [resetFilter]);
+  };
 
-  const onOpenChange = useCallback(
-    (val: boolean) => {
-      setFilterOpen("properties", val);
-    },
-    [setFilterOpen],
-  );
+  const onOpenChange = (val: boolean) => {
+    setFilterOpen("properties", val);
+  };
 
-  const onPropertyChange = useCallback(
-    (property: DeckPropertyName, value: boolean) => {
-      setFilterValue("properties", { ...values, [property]: value });
-    },
-    [setFilterValue, values],
-  );
+  const onPropertyChange = (property: DeckPropertyName, value: boolean) => {
+    setFilterValue("properties", { ...values, [property]: value });
+  };
 
   return (
     <FilterContainer

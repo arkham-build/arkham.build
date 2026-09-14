@@ -12,7 +12,7 @@ import {
   Trash2Icon,
   UploadIcon,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useLocation, useSearch } from "wouter";
 import { DeckConflictPanel } from "@/components/deck-conflict/deck-conflict-panel";
@@ -141,75 +141,63 @@ function SidebarActions(props: {
 
   const deleteDeck = useDeleteDeck();
 
-  const onDelete = useCallback(
-    () => deleteDeck(deck.id),
-    [deck.id, deleteDeck],
-  );
+  const onDelete = () => deleteDeck(deck.id);
 
   const deleteUpgrade = useDeleteUpgrade();
 
-  const onDeleteUpgrade = useCallback(
-    () => deleteUpgrade(deck.id),
-    [deleteUpgrade, deck.id],
-  );
+  const onDeleteUpgrade = () => deleteUpgrade(deck.id);
 
-  const onDeleteLatest = useCallback(() => {
+  const onDeleteLatest = () => {
     if (deck.previous_deck) {
       void deleteUpgrade(deck.id).catch(console.error);
     } else {
       void onDelete().catch(console.error);
     }
-  }, [deleteUpgrade, onDelete, deck]);
+  };
 
   const exportJson = useExportJson();
 
-  const onExportJson = useCallback(
-    () => exportJson(deck.originalDeck),
-    [deck, exportJson],
-  );
+  const onExportJson = () => exportJson(deck.originalDeck);
 
   const exportText = useExportText();
 
-  const onExportText = useCallback(() => exportText(deck), [deck, exportText]);
+  const onExportText = () => exportText(deck);
 
   const duplicateDeck = useDuplicateDeck();
 
-  const onDuplicate = useCallback(() => {
+  const onDuplicate = () => {
     setActionsOpen(false);
     void duplicateDeck(deck.id).catch(console.error);
-  }, [deck.id, duplicateDeck]);
+  };
 
   const uploadDeckToProvider = useUploadDeckToProvider();
 
-  const onUpload = useCallback(
-    (provider: UploadProvider) => {
-      setActionsOpen(false);
-      void uploadDeckToProvider(deck.id, provider);
-    },
-    [deck.id, uploadDeckToProvider],
-  );
+  const onUpload = (provider: UploadProvider) => {
+    setActionsOpen(false);
+    void uploadDeckToProvider(deck.id, provider);
+  };
 
-  const onUpgradeModalOpenChange = useCallback((val: boolean) => {
+  const onUpgradeModalOpenChange = (val: boolean) => {
     setUpgradeModalOpen(val);
     if (!val && window.location.hash.includes("upgrade")) {
       window.history.replaceState(null, "", " ");
     }
-  }, []);
+  };
 
-  const onOpenUpgradeModal = useCallback(() => {
+  const onOpenUpgradeModal = () => {
     if (hasSyncConflict) return;
     setUpgradeModalOpen(true);
-  }, [hasSyncConflict]);
+  };
 
-  const onEdit = useCallback(() => {
+  const onEdit = () => {
     navigate(`/deck/edit/${deck.id}`);
-  }, [deck.id, navigate]);
+  };
 
   const importSharedDeckMutation = useImportSharedDeckMutation();
 
   const { isArchived, toggleArchived } = useChangeArchiveStatus(deck.id);
 
-  const onImport = useCallback(async () => {
+  const onImport = async () => {
     try {
       const id = await importSharedDeckMutation.mutateAsync({ deck, type });
 
@@ -222,7 +210,7 @@ function SidebarActions(props: {
         variant: "error",
       });
     }
-  }, [deck, importSharedDeckMutation, toast, navigate, t, type]);
+  };
 
   const isReadOnly = !!deck.next_deck;
   const isLocal = origin === "local";
@@ -494,19 +482,16 @@ function Sharing(props: { deck: ResolvedDeck; type: DeckDisplayType }) {
 
   const uploadDeckToProvider = useUploadDeckToProvider();
 
-  const onUpload = useCallback(
-    (provider: UploadProvider) => {
-      void uploadDeckToProvider(deck.id, provider);
-    },
-    [deck.id, uploadDeckToProvider],
-  );
+  const onUpload = (provider: UploadProvider) => {
+    void uploadDeckToProvider(deck.id, provider);
+  };
 
-  const onAccountDeckArkhamDBUpload = useCallback(() => {
+  const onAccountDeckArkhamDBUpload = () => {
     toast.show({
       children: t("deck.toasts.upload_requires_duplicate"),
       variant: "error",
     });
-  }, [t, toast]);
+  };
 
   const canUploadAccountDeckToArkhamDB =
     deck.source === "account" && availableUploadProviders.includes("arkhamdb");

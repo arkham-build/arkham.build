@@ -1,5 +1,4 @@
 import { CircleIcon, LockIcon, XIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { cx } from "@/utils/cx";
 import { Button } from "../../ui/button";
@@ -39,14 +38,11 @@ export function FilterContainer(props: Props) {
 
   const { t } = useTranslation();
 
-  const onFilterReset = useCallback(
-    (evt: React.MouseEvent) => {
-      evt.preventDefault();
-      evt.stopPropagation();
-      if (onReset) onReset();
-    },
-    [onReset],
-  );
+  const onFilterReset = (evt: React.MouseEvent) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    if (onReset) onReset();
+  };
 
   const active = !!changes;
 

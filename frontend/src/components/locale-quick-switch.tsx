@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useSaveSettingsMutation } from "@/queries/mutations/settings";
 import { useStore } from "@/store";
@@ -33,25 +32,22 @@ function useApplyLocaleSetting(
   const toast = useToast();
   const saveSettingsMutation = useSaveSettingsMutation();
 
-  const onLocaleChange = useCallback(
-    async (locale: string) => {
-      try {
-        await saveSettingsMutation.mutateAsync({
-          settings: {
-            ...settings,
-            locale,
-          },
-          opts: { keepListState: true },
-        });
-      } catch (err) {
-        toast.show({
-          children: t("settings.error", { error: (err as Error).message }),
-          variant: "error",
-        });
-      }
-    },
-    [saveSettingsMutation, settings, t, toast],
-  );
+  const onLocaleChange = async (locale: string) => {
+    try {
+      await saveSettingsMutation.mutateAsync({
+        settings: {
+          ...settings,
+          locale,
+        },
+        opts: { keepListState: true },
+      });
+    } catch (err) {
+      toast.show({
+        children: t("settings.error", { error: (err as Error).message }),
+        variant: "error",
+      });
+    }
+  };
 
   return {
     isPending: saveSettingsMutation.isPending,

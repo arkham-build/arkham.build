@@ -1,6 +1,5 @@
 import type { Attachments, Card } from "@arkham-build/shared";
 import type { i18n, TFunction } from "i18next";
-import { useCallback } from "react";
 import { useStore } from "@/store";
 import { filterAttribute } from "@/store/lib/filtering";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -63,26 +62,27 @@ export function useAttachmentsChangeHandler() {
 
   const updateAttachment = useStore((state) => state.updateAttachment);
 
-  const changeHandler = useCallback(
-    (definition: Attachments, card: Card, delta: number) => {
-      const quantity = resolvedDeck.slots[card.code] ?? 0;
+  const changeHandler = (
+    definition: Attachments,
+    card: Card,
+    delta: number,
+  ) => {
+    const quantity = resolvedDeck.slots[card.code] ?? 0;
 
-      const attached =
-        resolvedDeck.attachments?.[definition.code]?.[card.code] ?? 0;
-      const limit = attachmentDefinitionLimit(card, quantity, definition.limit);
+    const attached =
+      resolvedDeck.attachments?.[definition.code]?.[card.code] ?? 0;
+    const limit = attachmentDefinitionLimit(card, quantity, definition.limit);
 
-      const nextQuantity = attached + delta;
+    const nextQuantity = attached + delta;
 
-      return updateAttachment({
-        deck: resolvedDeck,
-        targetCode: definition.code,
-        code: card.code,
-        quantity: nextQuantity > limit ? 0 : nextQuantity,
-        limit: attachmentLimit(card, quantity),
-      });
-    },
-    [resolvedDeck, updateAttachment],
-  );
+    return updateAttachment({
+      deck: resolvedDeck,
+      targetCode: definition.code,
+      code: card.code,
+      quantity: nextQuantity > limit ? 0 : nextQuantity,
+      limit: attachmentLimit(card, quantity),
+    });
+  };
 
   return canEdit ? changeHandler : undefined;
 }

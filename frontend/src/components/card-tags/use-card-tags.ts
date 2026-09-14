@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useSaveCardTagsMutation } from "@/queries/mutations/card-tags";
 import { useStore } from "@/store";
@@ -27,9 +26,9 @@ export function useCardFavorite(cardCode: string) {
   const persist = usePersistCardTags();
   const run = useCardTagAction();
 
-  const onToggleFavorite = useCallback(() => {
+  const onToggleFavorite = () => {
     run(() => persist(() => toggleFavorite(cardCode)));
-  }, [cardCode, persist, run, toggleFavorite]);
+  };
 
   return {
     isFavorite,
@@ -48,32 +47,21 @@ export function useCardTags(cardCode: string) {
   const persist = usePersistCardTags();
   const run = useCardTagAction();
 
-  const onRenameTag = useCallback(
-    (name: string, nextName: string) =>
-      run(() => persist(() => renameCardTag(name, nextName))),
-    [persist, renameCardTag, run],
-  );
+  const onRenameTag = (name: string, nextName: string) =>
+    run(() => persist(() => renameCardTag(name, nextName)));
 
-  const onDeleteTag = useCallback(
-    (name: string) => run(() => persist(() => deleteCardTag(name))),
-    [deleteCardTag, persist, run],
-  );
+  const onDeleteTag = (name: string) =>
+    run(() => persist(() => deleteCardTag(name)));
 
-  const onTagsChange = useCallback(
-    (nextItems: TagItem[]) => {
-      const nextTagNames = nextItems.map((item) => item.tag);
+  const onTagsChange = (nextItems: TagItem[]) => {
+    const nextTagNames = nextItems.map((item) => item.tag);
 
-      run(() => persist(() => setCardTagsForCard(cardCode, nextTagNames)));
-    },
-    [cardCode, persist, run, setCardTagsForCard],
-  );
+    run(() => persist(() => setCardTagsForCard(cardCode, nextTagNames)));
+  };
 
-  const onCreateTag = useCallback(
-    (name: string) => {
-      run(() => persist(() => createCardTagForCard(cardCode, name)));
-    },
-    [cardCode, createCardTagForCard, persist, run],
-  );
+  const onCreateTag = (name: string) => {
+    run(() => persist(() => createCardTagForCard(cardCode, name)));
+  };
 
   return {
     onCreateTag,
@@ -94,41 +82,27 @@ export function useDeckCardTags(cardCode: string, deck: ResolvedDeck) {
   );
   const run = useCardTagAction();
 
-  const onTagsChange = useCallback(
-    (nextItems: TagItem[]) => {
-      run(() =>
-        updateDeckCardTags(
-          deck.id,
-          cardCode,
-          nextItems.map((item) => item.tag),
-        ),
-      );
-    },
-    [cardCode, deck.id, run, updateDeckCardTags],
-  );
+  const onTagsChange = (nextItems: TagItem[]) => {
+    run(() =>
+      updateDeckCardTags(
+        deck.id,
+        cardCode,
+        nextItems.map((item) => item.tag),
+      ),
+    );
+  };
 
-  const onCreateTag = useCallback(
-    (name: string) => {
-      run(() =>
-        persist(async () => {
-          const tagName = await createCardTag(name);
-          updateDeckCardTags(deck.id, cardCode, [
-            ...selectedItems.map((item) => item.tag),
-            tagName,
-          ]);
-        }),
-      );
-    },
-    [
-      cardCode,
-      createCardTag,
-      deck.id,
-      persist,
-      run,
-      selectedItems,
-      updateDeckCardTags,
-    ],
-  );
+  const onCreateTag = (name: string) => {
+    run(() =>
+      persist(async () => {
+        const tagName = await createCardTag(name);
+        updateDeckCardTags(deck.id, cardCode, [
+          ...selectedItems.map((item) => item.tag),
+          tagName,
+        ]);
+      }),
+    );
+  };
 
   return {
     onCreateTag,
@@ -141,16 +115,13 @@ export function useDeckCardTags(cardCode: string, deck: ResolvedDeck) {
 function useCardTagAction() {
   const onError = useCardTagsError();
 
-  return useCallback(
-    (action: () => unknown) => {
-      try {
-        void Promise.resolve(action()).catch(onError);
-      } catch (err) {
-        onError(err);
-      }
-    },
-    [onError],
-  );
+  return (action: () => unknown) => {
+    try {
+      void Promise.resolve(action()).catch(onError);
+    } catch (err) {
+      onError(err);
+    }
+  };
 }
 
 function usePersistCardTags() {
@@ -159,34 +130,28 @@ function usePersistCardTags() {
     (state) => state.auth.status === "authenticated",
   );
 
-  return useCallback(
-    async (action: () => Promise<unknown>) => {
-      await action();
-      if (authenticated) {
-        await saveCardTags.mutateAsync(undefined);
-      }
-    },
-    [authenticated, saveCardTags],
-  );
+  return async (action: () => Promise<unknown>) => {
+    await action();
+    if (authenticated) {
+      await saveCardTags.mutateAsync(undefined);
+    }
+  };
 }
 
 function useCardTagsError() {
   const { t } = useTranslation();
   const toast = useToast();
 
-  return useCallback(
-    (err: unknown) => {
-      console.error(err);
-      toast.show({
-        children: t("card_tags.manage.error", {
-          error:
-            err instanceof Error
-              ? err.message
-              : t("card_tags.manage.unknown_error"),
-        }),
-        variant: "error",
-      });
-    },
-    [t, toast],
-  );
+  return (err: unknown) => {
+    console.error(err);
+    toast.show({
+      children: t("card_tags.manage.error", {
+        error:
+          err instanceof Error
+            ? err.message
+            : t("card_tags.manage.unknown_error"),
+      }),
+      variant: "error",
+    });
+  };
 }

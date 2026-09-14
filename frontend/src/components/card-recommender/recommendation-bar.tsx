@@ -1,5 +1,4 @@
 import type { Card, Recommendation } from "@arkham-build/shared";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { displayAttribute, getCardColor } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
@@ -22,13 +21,9 @@ export function RecommendationBar(props: RecommendationBarProps) {
   const recommendation = data.recommendation;
   const wholeRec = Math.round(recommendation);
 
-  const cssVariables = useMemo(
-    () =>
-      ({
-        "--width": `${Math.max(0, recommendation)}%`,
-      }) as React.CSSProperties,
-    [recommendation],
-  );
+  const cssVariables = {
+    "--width": `${Math.max(0, recommendation)}%`,
+  } as React.CSSProperties;
 
   return (
     <div className={cx(css["recommendation-bar-container"])}>

@@ -20,7 +20,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripHorizontalIcon } from "lucide-react";
 import type React from "react";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { cx } from "@/utils/cx";
 import { Button } from "./button";
 import css from "./sortable.module.css";
@@ -55,37 +55,31 @@ export function Sortable<T extends SortableData>(props: Props<T>) {
     }),
   );
 
-  const handleDragStart = useCallback((evt: DragStartEvent) => {
+  const handleDragStart = (evt: DragStartEvent) => {
     const { active } = evt;
     setActiveId(active.id);
-  }, []);
+  };
 
-  const handleDragEnd = useCallback(
-    (evt: DragEndEvent) => {
-      const { active, over } = evt;
+  const handleDragEnd = (evt: DragEndEvent) => {
+    const { active, over } = evt;
 
-      if (over && active.id !== over.id) {
-        const oldIndex = items.findIndex((x) => readId(x) === active.id);
-        const newIndex = items.findIndex((x) => readId(x) === over.id);
+    if (over && active.id !== over.id) {
+      const oldIndex = items.findIndex((x) => readId(x) === active.id);
+      const newIndex = items.findIndex((x) => readId(x) === over.id);
 
-        if (oldIndex === -1 || newIndex === -1) return;
+      if (oldIndex === -1 || newIndex === -1) return;
 
-        const sorted = arrayMove(items, oldIndex, newIndex);
-        onSort(sorted);
-      }
+      const sorted = arrayMove(items, oldIndex, newIndex);
+      onSort(sorted);
+    }
 
-      setActiveId(undefined);
-    },
-    [onSort, items],
-  );
+    setActiveId(undefined);
+  };
 
-  const dropAnimation = useMemo(
-    () => ({
-      duration: 250,
-      easing: "ease-out",
-    }),
-    [],
-  );
+  const dropAnimation = {
+    duration: 250,
+    easing: "ease-out",
+  };
 
   const activeItem = findActiveItem(activeId, items);
 
@@ -139,10 +133,7 @@ function SortableItem(props: {
     transition,
   };
 
-  const dragHandleProps = useMemo(
-    () => ({ ...attributes, ...listeners }),
-    [attributes, listeners],
-  );
+  const dragHandleProps = { ...attributes, ...listeners };
 
   return (
     <Item

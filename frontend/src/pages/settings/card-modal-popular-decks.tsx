@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
@@ -8,15 +7,12 @@ export function CardModalPopularDecksSetting(props: SettingProps) {
   const { settings, setSettings } = props;
   const { t } = useTranslation();
 
-  const onCheckedChange = useCallback(
-    (val: boolean | string) => {
-      setSettings((settings) => ({
-        ...settings,
-        showCardModalPopularDecks: !!val,
-      }));
-    },
-    [setSettings],
-  );
+  const onCheckedChange = (val: boolean) => {
+    setSettings((settings) => ({
+      ...settings,
+      showCardModalPopularDecks: val,
+    }));
+  };
 
   return (
     <Field

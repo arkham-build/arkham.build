@@ -1,5 +1,5 @@
 import type { Card } from "@arkham-build/shared";
-import { useCallback, useId } from "react";
+import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -26,16 +26,13 @@ export function CoreCardCheckbox(props: CoreCardCheckboxProps) {
   const addCoreCard = useStore((state) => state.addCoreCard);
   const removeCoreCard = useStore((state) => state.removeCoreCard);
 
-  const onCheck = useCallback(
-    (val: boolean | string) => {
-      if (val) {
-        addCoreCard(deck.id, card.code);
-      } else {
-        removeCoreCard(deck.id, card.code);
-      }
-    },
-    [addCoreCard, removeCoreCard, card.code, deck.id],
-  );
+  const onCheck = (val: boolean) => {
+    if (val) {
+      addCoreCard(deck.id, card.code);
+    } else {
+      removeCoreCard(deck.id, card.code);
+    }
+  };
 
   return (
     <DefaultTooltip tooltip={t("deck_edit.recommendations.core_help")}>

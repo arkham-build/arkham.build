@@ -1,6 +1,6 @@
 import type { Settings } from "@arkham-build/shared";
 import type React from "react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -89,7 +89,7 @@ export function ListSettings(props: Props) {
   const { t } = useTranslation();
   const [version, setVersion] = useState(0);
 
-  const resetToDefaults = useCallback(() => {
+  const resetToDefaults = () => {
     setSettings((settings) => ({
       ...settings,
       lists: {
@@ -99,7 +99,7 @@ export function ListSettings(props: Props) {
     }));
 
     setVersion((v) => v + 1);
-  }, [listKey, setSettings]);
+  };
 
   return (
     <section className={css["list"]}>
@@ -160,45 +160,36 @@ function ListSettingsList<T extends string>(props: {
 
   const [listItems, setListItems] = useState(sortListItems(items, activeItems));
 
-  const updateOrder = useCallback(
-    (active: T[]) => {
-      setSettings((settings) => ({
-        ...settings,
-        lists: {
-          ...settings.lists,
-          [listKey]: {
-            ...settings.lists[listKey],
-            [subKey]: active,
-          },
+  const updateOrder = (active: T[]) => {
+    setSettings((settings) => ({
+      ...settings,
+      lists: {
+        ...settings.lists,
+        [listKey]: {
+          ...settings.lists[listKey],
+          [subKey]: active,
         },
-      }));
-    },
-    [setSettings, listKey, subKey],
-  );
+      },
+    }));
+  };
 
-  const onSort = useCallback(
-    (sorted: T[]) => {
-      setListItems(sorted);
-      updateOrder(sorted.filter((g) => activeItems.includes(g)));
-    },
-    [updateOrder, activeItems],
-  );
+  const onSort = (sorted: T[]) => {
+    setListItems(sorted);
+    updateOrder(sorted.filter((g) => activeItems.includes(g)));
+  };
 
-  const onCheckChange = useCallback(
-    (type: T, checked: boolean) => {
-      const active = items
-        .filter((item) => {
-          if (item !== type) return activeItems.includes(item);
-          return checked;
-        })
-        .sort((a, b) => {
-          return listItems.indexOf(a) - listItems.indexOf(b);
-        });
+  const onCheckChange = (type: T, checked: boolean) => {
+    const active = items
+      .filter((item) => {
+        if (item !== type) return activeItems.includes(item);
+        return checked;
+      })
+      .sort((a, b) => {
+        return listItems.indexOf(a) - listItems.indexOf(b);
+      });
 
-      updateOrder(active);
-    },
-    [items, activeItems, updateOrder, listItems],
-  );
+    updateOrder(active);
+  };
 
   return (
     <article

@@ -2,7 +2,7 @@ import type {
   Card,
   CustomizationOption as CustomizationOptionType,
 } from "@arkham-build/shared";
-import { useCallback, useId, useMemo } from "react";
+import { useId } from "react";
 import type { Customization } from "@/store/lib/types";
 import type { CustomizationEdit } from "@/store/slices/deck-edits.types";
 import { parseCustomizationTextHtml } from "@/utils/card-utils";
@@ -46,21 +46,15 @@ export function CustomizationOption(props: Props) {
 
   const selections = choice?.selections?.split("^").filter((x) => x) ?? [];
 
-  const cssVariables = useMemo(
-    () => ({
-      "--customization-xp-max": xpMax,
-    }),
-    [xpMax],
-  );
+  const cssVariables = {
+    "--customization-xp-max": xpMax,
+  };
 
   const unlocked = xpSpent >= option.xp;
 
-  const onChangeSelection = useCallback(
-    (selections: string[]) => {
-      if (onChange) onChange(index, { selections });
-    },
-    [onChange, index],
-  );
+  const onChangeSelection = (selections: string[]) => {
+    if (onChange) onChange(index, { selections });
+  };
 
   const htmlText = omitOptionText
     ? (/(<b>.*<\/b>)/.exec(text[index])?.[1] ?? "")

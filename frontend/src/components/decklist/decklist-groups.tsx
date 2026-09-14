@@ -1,5 +1,5 @@
 import type { Card, Slots } from "@arkham-build/shared";
-import { Fragment, useMemo } from "react";
+import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -285,15 +285,11 @@ function Scans(props: {
     onCardCheckedQuantityChange,
   } = props;
 
-  const styles = useMemo(
-    () =>
-      ({
-        "--scan-levels": Math.max(
-          ...group.cards.map((card) => grouping.quantities[card.code] ?? 0),
-        ),
-      }) as React.CSSProperties,
-    [grouping.quantities, group.cards],
-  );
+  const styles = {
+    "--scan-levels": Math.max(
+      ...group.cards.map((card) => grouping.quantities[card.code] ?? 0),
+    ),
+  } as React.CSSProperties;
 
   return (
     <ol className={css["grid"]} style={styles}>

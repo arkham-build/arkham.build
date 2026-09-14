@@ -1,5 +1,5 @@
 import { ChevronUpIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { cx } from "@/utils/cx";
 import { Button } from "./button";
 import css from "./details.module.css";
@@ -26,12 +26,9 @@ export function Details(props: Props) {
     onOpenChange?.(open);
   }, [open, onOpenChange]);
 
-  const cssVariables = useMemo(
-    () => ({
-      "--scroll-height": scrollHeight,
-    }),
-    [scrollHeight],
-  );
+  const cssVariables = {
+    "--scroll-height": scrollHeight,
+  };
 
   return (
     <details {...rest} className={css["details"]}>

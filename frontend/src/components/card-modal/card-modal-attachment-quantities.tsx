@@ -1,5 +1,4 @@
 import type { Attachments, Card } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
 import {
@@ -51,10 +50,8 @@ function AttachmentQuantity(
 
   const onAttachmentChange = useAttachmentsChangeHandler();
 
-  const onValueChange = useCallback(
-    (value: number) => onAttachmentChange?.(definition, card, value),
-    [onAttachmentChange, definition, card],
-  );
+  const onValueChange = (value: number) =>
+    onAttachmentChange?.(definition, card, value);
 
   if (!canAttach(card, definition)) return null;
 

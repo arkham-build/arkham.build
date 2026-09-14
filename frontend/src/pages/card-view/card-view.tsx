@@ -1,5 +1,4 @@
 import { DownloadIcon, GlobeIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "wouter";
 import {
@@ -39,7 +38,7 @@ function CardView() {
   );
   const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
 
-  const onExport = useCallback(() => {
+  const onExport = () => {
     if (!cardWithRelations) return;
 
     const cards = [
@@ -52,7 +51,7 @@ function CardView() {
       `${cardWithRelations.card.code}.json`,
       "application/json",
     );
-  }, [cardWithRelations]);
+  };
 
   if (!cardWithRelations) {
     return <ErrorStatus statusCode={404} />;

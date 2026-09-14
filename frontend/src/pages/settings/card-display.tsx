@@ -1,5 +1,5 @@
 import type { Settings } from "@arkham-build/shared";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CardTagList } from "@/components/card-tags/card-tag-list";
 import { ListCardInner } from "@/components/list-card/list-card-inner";
@@ -52,13 +52,10 @@ export function CardDisplaySettings(props: SettingProps) {
 
   const [liveValue, setLiveValue] = useState<Partial<Settings>>(settings);
 
-  const setValue = useCallback(
-    (value: Partial<Settings>) => {
-      setLiveValue((prev) => ({ ...prev, ...value }));
-      setSettings((prev) => ({ ...prev, ...value }));
-    },
-    [setSettings],
-  );
+  const setValue = (value: Partial<Settings>) => {
+    setLiveValue((prev) => ({ ...prev, ...value }));
+    setSettings((prev) => ({ ...prev, ...value }));
+  };
 
   const resolve = resolver(liveValue, settings);
 

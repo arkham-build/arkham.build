@@ -5,7 +5,7 @@ import {
   SquarePenIcon,
 } from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDialogContextChecked } from "@/components/ui/dialog.hooks";
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -77,16 +77,13 @@ export function DeckDisplay(props: DeckDisplayProps) {
   const cssVariables = useAccentColor(deck.investigatorBack.card);
   const hasHistory = history && history?.length > 1;
 
-  const onTabChange = useCallback(
-    (val: string) => {
-      if (contentRef.current) {
-        scrollState.current[currentTab] = window.scrollY;
-      }
+  const onTabChange = (val: string) => {
+    if (contentRef.current) {
+      scrollState.current[currentTab] = window.scrollY;
+    }
 
-      setCurrentTab(val);
-    },
-    [setCurrentTab, currentTab],
-  );
+    setCurrentTab(val);
+  };
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -271,9 +268,9 @@ function TitleEditModal(props: TitleEditModalProps) {
   const modalContext = useDialogContextChecked();
   const cssVariables = useAccentColor(deck.investigatorBack.card);
 
-  const onCloseModal = useCallback(() => {
+  const onCloseModal = () => {
     modalContext?.setOpen(false);
-  }, [modalContext]);
+  };
 
   const { handleSubmit, isPending } = useUpdateDeckTitleAndTags(
     deck.id,
@@ -340,42 +337,39 @@ function useUpdateDeckTitleAndTags(
   const toast = useToast();
   const updateDeckPropertiesMutation = useUpdateDeckPropertiesMutation();
 
-  const handleSubmit = useCallback(
-    async (evt: React.SubmitEvent<HTMLFormElement>) => {
-      evt.preventDefault();
+  const handleSubmit = async (evt: React.SubmitEvent<HTMLFormElement>) => {
+    evt.preventDefault();
 
-      const toastId = toast.show({
-        children: t("deck_edit.save_loading"),
-        variant: "loading",
+    const toastId = toast.show({
+      children: t("deck_edit.save_loading"),
+      variant: "loading",
+    });
+
+    try {
+      const values = new FormData(evt.currentTarget);
+      const name = values.get("name");
+      const tags = values.get("tags");
+
+      await updateDeckPropertiesMutation.mutateAsync({
+        deckId,
+        properties: {
+          name: typeof name === "string" ? name : "",
+          tags: typeof tags === "string" ? tags : "",
+        },
       });
 
-      try {
-        const values = new FormData(evt.currentTarget);
-        const name = values.get("name");
-        const tags = values.get("tags");
+      onSuccess();
+    } catch (err) {
+      toast.show({
+        children: t("deck_edit.save_error", {
+          error: (err as Error).message,
+        }),
+        variant: "error",
+      });
+    }
 
-        await updateDeckPropertiesMutation.mutateAsync({
-          deckId,
-          properties: {
-            name: typeof name === "string" ? name : "",
-            tags: typeof tags === "string" ? tags : "",
-          },
-        });
-
-        onSuccess();
-      } catch (err) {
-        toast.show({
-          children: t("deck_edit.save_error", {
-            error: (err as Error).message,
-          }),
-          variant: "error",
-        });
-      } finally {
-        toast.dismiss(toastId);
-      }
-    },
-    [deckId, onSuccess, t, toast, updateDeckPropertiesMutation],
-  );
+    toast.dismiss(toastId);
+  };
 
   return {
     handleSubmit,

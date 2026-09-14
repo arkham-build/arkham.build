@@ -1,6 +1,6 @@
 import { type Card, type Id, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { ShuffleIcon } from "lucide-react";
-import { useCallback, useEffect, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { cx } from "@/utils/cx";
@@ -27,32 +27,29 @@ export function DrawSimulator(props: Props) {
 
   const [state, dispatch] = useReducer(drawReducer, initialState(deck));
 
-  const drawAmount = useCallback(
-    (count: number) => {
-      dispatch({ type: "draw", amount: count, deck });
-    },
-    [deck],
-  );
+  const drawAmount = (count: number) => {
+    dispatch({ type: "draw", amount: count, deck });
+  };
 
-  const reset = useCallback(() => {
+  const reset = () => {
     dispatch({ type: "reset", deck });
-  }, [deck]);
+  };
 
-  const reshuffle = useCallback(() => {
+  const reshuffle = () => {
     dispatch({ type: "reshuffle" });
-  }, []);
+  };
 
-  const redraw = useCallback(() => {
+  const redraw = () => {
     dispatch({ type: "redraw", deck });
-  }, [deck]);
+  };
 
-  const toggleMulligan = useCallback(() => {
+  const toggleMulligan = () => {
     dispatch({ type: "toggleMulligan" });
-  }, []);
+  };
 
   useEffect(() => {
-    reset();
-  }, [deck, reset]);
+    dispatch({ type: "reset", deck });
+  }, [deck]);
 
   return (
     <Plane className={css["container"]} as="article">

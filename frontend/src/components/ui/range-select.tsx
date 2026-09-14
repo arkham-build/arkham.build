@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { cx } from "@/utils/cx";
 import css from "./range-select.module.css";
 import type { Props as SliderProps } from "./slider";
@@ -42,9 +42,9 @@ export function RangeSelect(props: Props) {
     setLiveValue(value);
   }
 
-  const onValueChange = useCallback((value: number[]) => {
+  const onValueChange = (value: number[]) => {
     setLiveValue([value[0], value[1]]);
-  }, []);
+  };
 
   return (
     <div className={cx(css["field"], className)}>

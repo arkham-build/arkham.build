@@ -1,7 +1,7 @@
 import type { FanMadeProject } from "@arkham-build/shared";
 import { useMutation } from "@tanstack/react-query";
 import { LoaderCircleIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CardScan } from "@/components/card-scan";
 import { Masthead } from "@/components/masthead";
 import { Button } from "@/components/ui/button";
@@ -34,26 +34,23 @@ function Core2026Reveal() {
 
   const mutation = useCreateSouvenirMutation();
 
-  const onSubmit = useCallback(
-    async (evt: React.SubmitEvent) => {
-      evt.preventDefault();
-      try {
-        const res = await mutation.mutateAsync(name);
-        const pack = parseFanMadeProject(res);
-        await addFanMadeProjectMutation.mutateAsync(res);
-        setPack(pack);
-      } catch (err) {
-        toast.show({
-          children: (err as Error).message,
-          duration: 5000,
-          variant: "error",
-        });
-      }
-    },
-    [addFanMadeProjectMutation, name, mutation, toast],
-  );
+  const onSubmit = async (evt: React.SubmitEvent) => {
+    evt.preventDefault();
+    try {
+      const res = await mutation.mutateAsync(name);
+      const pack = parseFanMadeProject(res);
+      await addFanMadeProjectMutation.mutateAsync(res);
+      setPack(pack);
+    } catch (err) {
+      toast.show({
+        children: (err as Error).message,
+        duration: 5000,
+        variant: "error",
+      });
+    }
+  };
 
-  const downloadPack = useCallback(() => {
+  const downloadPack = () => {
     if (pack) {
       const dataStr =
         "data:text/json;charset=utf-8," +
@@ -71,7 +68,7 @@ function Core2026Reveal() {
       downloadAnchorNode.click();
       downloadAnchorNode.remove();
     }
-  }, [pack]);
+  };
 
   const metadata = useStore(selectMetadata);
 

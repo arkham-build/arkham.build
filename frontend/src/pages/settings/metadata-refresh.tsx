@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast.hooks";
@@ -9,7 +8,7 @@ export function MetadataRefresh() {
   const toast = useToast();
   const refreshMetadataMutation = useRefreshMetadataMutation();
 
-  const onRefresh = useCallback(async () => {
+  const onRefresh = async () => {
     const toastId = toast.show({
       children: t("settings.card_data.loading"),
       variant: "loading",
@@ -31,7 +30,7 @@ export function MetadataRefresh() {
         variant: "error",
       });
     }
-  }, [refreshMetadataMutation, t, toast]);
+  };
 
   return (
     <Button

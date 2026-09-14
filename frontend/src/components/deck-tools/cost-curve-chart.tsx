@@ -1,5 +1,4 @@
 import type { TFunction } from "i18next";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Bar,
@@ -24,14 +23,13 @@ type Props = {
 export function CostCurveChart({ costs, data }: Props) {
   const { i18n, t } = useTranslation();
 
-  const normalizedData = useMemo(() => {
-    const max = Math.max(...data.filter((x) => x).map((tick) => tick?.x ?? 0));
-    return range(0, max + 1).map((cost) => {
-      return data.find(({ x }) => x === cost) ?? { x: cost, y: 0 };
-    });
-  }, [data]);
+  const max = Math.max(...data.filter((x) => x).map((tick) => tick?.x ?? 0));
 
-  const costStats = useMemo(() => calculateCostStats(costs), [costs]);
+  const normalizedData = range(0, max + 1).map((cost) => {
+    return data.find(({ x }) => x === cost) ?? { x: cost, y: 0 };
+  });
+
+  const costStats = calculateCostStats(costs);
 
   return (
     <div className={css["chart-container"]}>

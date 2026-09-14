@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
@@ -9,12 +8,9 @@ export function ShowAllCardsSetting(props: SettingProps) {
 
   const { t } = useTranslation();
 
-  const onCheckShowAll = useCallback(
-    (val: boolean | string) => {
-      setSettings((settings) => ({ ...settings, showAllCards: !!val }));
-    },
-    [setSettings],
-  );
+  const onCheckShowAll = (val: boolean | string) => {
+    setSettings((settings) => ({ ...settings, showAllCards: !!val }));
+  };
 
   return (
     <Field

@@ -1,5 +1,4 @@
 import type { Settings as SettingsState } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/components/ui/toast.hooks";
 import { useSaveSettingsMutation } from "@/queries/mutations/settings";
@@ -19,44 +18,41 @@ export function useSaveSettings(props: Props) {
   const toast = useToast();
   const saveSettingsMutation = useSaveSettingsMutation();
 
-  const saveSettings = useCallback(
-    async (opts?: { expectedRevision?: string | null }) => {
-      const toastId = toast.show({
-        children: t("settings.saving"),
-        variant: "loading",
-      });
+  const saveSettings = async (opts?: { expectedRevision?: string | null }) => {
+    const toastId = toast.show({
+      children: t("settings.saving"),
+      variant: "loading",
+    });
 
-      try {
-        await saveSettingsMutation.mutateAsync({ settings, opts });
-        updateColorTheme(theme);
-        toast.dismiss(toastId);
-      } catch (err) {
-        toast.dismiss(toastId);
+    try {
+      await saveSettingsMutation.mutateAsync({ settings, opts });
+      updateColorTheme(theme);
+      toast.dismiss(toastId);
+    } catch (err) {
+      toast.dismiss(toastId);
 
-        if (isSettingsConflictError(err)) {
-          toast.show({
-            children: ({ onClose }) => (
-              <SettingsConflictToast
-                conflict={err.remote}
-                onClose={onClose}
-                settings={settings}
-                theme={theme}
-                updateColorTheme={updateColorTheme}
-              />
-            ),
-            variant: "error",
-          });
-          return;
-        }
-
+      if (isSettingsConflictError(err)) {
         toast.show({
-          children: t("settings.error", { error: (err as Error).message }),
+          children: ({ onClose }) => (
+            <SettingsConflictToast
+              conflict={err.remote}
+              onClose={onClose}
+              settings={settings}
+              theme={theme}
+              updateColorTheme={updateColorTheme}
+            />
+          ),
           variant: "error",
         });
+        return;
       }
-    },
-    [saveSettingsMutation, settings, t, theme, toast, updateColorTheme],
-  );
+
+      toast.show({
+        children: t("settings.error", { error: (err as Error).message }),
+        variant: "error",
+      });
+    }
+  };
 
   return {
     isPending: saveSettingsMutation.isPending,

@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { cx } from "@/utils/cx";
 import { RangeSelect } from "../ui/range-select";
@@ -15,22 +14,16 @@ export function DecklistsDateRangeInput(props: Props) {
 
   const { t } = useTranslation();
 
-  const onValueCommit = useCallback(
-    (value: [number, number]) => {
-      onValueChange([deckTickToString(value[0]), deckTickToString(value[1])]);
-    },
-    [onValueChange],
-  );
+  const onValueCommit = (value: [number, number]) => {
+    onValueChange([deckTickToString(value[0]), deckTickToString(value[1])]);
+  };
 
   const [min, max] = deckDateTickRange();
 
-  const transformed: [number, number] = useMemo(
-    () => [
-      value ? stringToDeckTick(value[0]) : min,
-      value ? stringToDeckTick(value[1]) : max,
-    ],
-    [value, min, max],
-  );
+  const transformed: [number, number] = [
+    value ? stringToDeckTick(value[0]) : min,
+    value ? stringToDeckTick(value[1]) : max,
+  ];
 
   return (
     <RangeSelect

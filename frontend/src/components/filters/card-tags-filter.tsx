@@ -1,6 +1,5 @@
 import { CARD_TAG_FAVORITE_ID } from "@arkham-build/shared";
 import { HeartIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
@@ -35,10 +34,7 @@ export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   );
   const tagMapper = useStore(selectCardTagMapper);
 
-  const nameRenderer = useCallback(
-    (tag: Coded & { name: string }) => tag.name,
-    [],
-  );
+  const nameRenderer = (tag: Coded & { name: string }) => tag.name;
 
   const { onChange } = useFilter<string[]>(id);
 
@@ -57,12 +53,9 @@ export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     options.some((option) => option.code === CARD_TAG_FAVORITE_ID);
   const favoriteToggleValue = favoriteOnly ? CARD_TAG_FAVORITE_ID : undefined;
 
-  const onToggleFavoriteOnly = useCallback(
-    (value: string) => {
-      onChange(value === favoriteToggleValue ? [] : [CARD_TAG_FAVORITE_ID]);
-    },
-    [favoriteToggleValue, onChange],
-  );
+  const onToggleFavoriteOnly = (value: string) => {
+    onChange(value === favoriteToggleValue ? [] : [CARD_TAG_FAVORITE_ID]);
+  };
 
   return (
     <MultiselectFilter

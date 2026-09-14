@@ -9,7 +9,6 @@ import {
   SettingsIcon,
   UserIcon,
 } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
 import {
@@ -481,7 +480,7 @@ function isPendingSyncStatus(status: SyncStatus) {
 function useAccountSyncAction() {
   const { mutateAsync } = useAccountSyncMutation();
 
-  return useCallback(() => {
+  return () => {
     void mutateAsync({ forceArkhamdbSync: true }).catch(console.error);
-  }, [mutateAsync]);
+  };
 }

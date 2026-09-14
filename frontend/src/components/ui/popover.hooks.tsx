@@ -12,13 +12,7 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useContext, useState } from "react";
 
 export interface PopoverOptions {
   clickStickIfOpen?: boolean;
@@ -47,13 +41,10 @@ export function usePopover({
 
   const open = controlledOpen ?? uncontrolledOpen;
 
-  const setOpen = useCallback(
-    (value: boolean) => {
-      if (controlledOpen == null) setUncontrolledOpen(value);
-      onOpenChange?.(value);
-    },
-    [controlledOpen, onOpenChange],
-  );
+  const setOpen = (value: boolean) => {
+    if (controlledOpen == null) setUncontrolledOpen(value);
+    onOpenChange?.(value);
+  };
 
   const data = useFloating({
     placement,
@@ -91,20 +82,17 @@ export function usePopover({
 
   const interactions = useInteractions([click, dismiss, role, hover]);
 
-  return useMemo(
-    () => ({
-      open,
-      setOpen,
-      ...interactions,
-      ...data,
-      modal,
-      labelId,
-      descriptionId,
-      setLabelId,
-      setDescriptionId,
-    }),
-    [open, setOpen, interactions, data, modal, labelId, descriptionId],
-  );
+  return {
+    open,
+    setOpen,
+    ...interactions,
+    ...data,
+    modal,
+    labelId,
+    descriptionId,
+    setLabelId,
+    setDescriptionId,
+  };
 }
 
 type ContextType =

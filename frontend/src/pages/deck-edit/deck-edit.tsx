@@ -7,7 +7,7 @@ import {
   UndoIcon,
   WandSparklesIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { ListLayout } from "@//layouts/list-layout";
@@ -94,7 +94,7 @@ function DeckEditInner() {
     "tool",
   );
 
-  const tabs = useMemo(() => {
+  const tabs = (() => {
     const tabs = [
       {
         label: t("common.decks.slots"),
@@ -131,7 +131,7 @@ function DeckEditInner() {
     });
 
     return tabs;
-  }, [deck.hasExtraDeck, t]);
+  })();
 
   const updateCardQuantity = useStore((state) => state.updateCardQuantity);
   const validation = useStore((state) => selectDeckValid(state, deck));
@@ -145,7 +145,7 @@ function DeckEditInner() {
   const targetDeck =
     mapTabToSlot(currentTab) === "extraSlots" ? "extraSlots" : "slots";
 
-  const onChangeCardQuantity = useMemo(() => {
+  const onChangeCardQuantity = (() => {
     return (card: Card, quantity: number, limit: number) => {
       updateCardQuantity(
         deck.id,
@@ -155,68 +155,51 @@ function DeckEditInner() {
         mapTabToSlot(currentTab),
       );
     };
-  }, [updateCardQuantity, currentTab, deck.id]);
+  })();
 
-  const onCycleDeck = useCallback(() => {
+  const onCycleDeck = () => {
     const deckTabs = tabs.filter((tab) => tab.type === "deck");
     const currentIndex = deckTabs.findIndex((tab) => tab.value === currentTab);
     const nextIndex = (currentIndex + 1) % deckTabs.length;
     setCurrentTab(deckTabs[nextIndex].value);
-  }, [currentTab, tabs, setCurrentTab]);
+  };
 
-  const onSetMeta = useCallback(() => {
+  const onSetMeta = () => {
     setCurrentTab("config");
-  }, [setCurrentTab]);
+  };
 
   useHotkey("d", onCycleDeck, { disabled: hasSyncConflict });
   useHotkey("c", onSetMeta, { disabled: hasSyncConflict });
 
-  const renderCoreCardCheckbox = useCallback(
-    (card: Card, quantity?: number) => {
-      if (card.xp == null || !quantity) return null;
-      return <CoreCardCheckbox card={card} deck={deck} />;
-    },
-    [deck],
-  );
+  const renderCoreCardCheckbox = (card: Card, quantity?: number) => {
+    if (card.xp == null || !quantity) return null;
+    return <CoreCardCheckbox card={card} deck={deck} />;
+  };
 
-  const renderCardExtra = useCallback(
-    (card: Card, quantity?: number) => {
-      return (
-        <CardExtras
-          canEdit={canEdit}
-          card={card}
-          deck={deck}
-          quantity={quantity}
-          currentTab={currentTab}
-          currentTool={currentTool}
-        />
-      );
-    },
-    [canEdit, currentTab, currentTool, deck],
-  );
+  const renderCardExtra = (card: Card, quantity?: number) => {
+    return (
+      <CardExtras
+        canEdit={canEdit}
+        card={card}
+        deck={deck}
+        quantity={quantity}
+        currentTab={currentTab}
+        currentTool={currentTool}
+      />
+    );
+  };
 
-  const getListCardProps = useCallback(
-    (card: Card) => ({
-      onChangeCardQuantity:
-        // always allow removing weaknesses and campaign cards
-        canEdit || card.encounter_code || card.subtype_code
-          ? onChangeCardQuantity
-          : undefined,
-      renderCardBefore:
-        currentTool === "recommendations" ? renderCoreCardCheckbox : undefined,
-      renderCardExtra,
-      limitOverride: getDeckLimitOverride(lookupTables, deck, card),
-    }),
-    [
-      canEdit,
-      deck,
-      lookupTables,
-      onChangeCardQuantity,
-      currentTool,
-      renderCardExtra,
-      renderCoreCardCheckbox,
-    ],
-  );
+  const getListCardProps = (card: Card) => ({
+    onChangeCardQuantity:
+      // always allow removing weaknesses and campaign cards
+      canEdit || card.encounter_code || card.subtype_code
+        ? onChangeCardQuantity
+        : undefined,
+    renderCardBefore:
+      currentTool === "recommendations" ? renderCoreCardCheckbox : undefined,
+    renderCardExtra,
+    limitOverride: getDeckLimitOverride(lookupTables, deck, card),
+  });
 
   const tabHasFilters =
     currentTool === "card-list" || currentTool === "recommendations";

@@ -1,5 +1,5 @@
 import { PATTERN_VALID_PASSWORD } from "@arkham-build/shared";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -27,9 +27,9 @@ function Signup() {
 
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
-  const onTurnstileChange = useCallback((token: string | null) => {
+  const onTurnstileChange = (token: string | null) => {
     setCaptchaToken(token);
-  }, []);
+  };
 
   const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();

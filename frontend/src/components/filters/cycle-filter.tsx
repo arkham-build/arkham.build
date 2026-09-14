@@ -1,5 +1,4 @@
 import type { Cycle } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -33,12 +32,10 @@ export function CycleFilter({ id }: FilterProps) {
 
   const cycleOptions = useStore(selectCycleOptions);
 
-  const itemToString = useCallback(
-    (cycle: Cycle | undefined) => (cycle ? displayPackName(cycle) : ""),
-    [],
-  );
+  const itemToString = (cycle: Cycle | undefined) =>
+    cycle ? displayPackName(cycle) : "";
 
-  const nameRenderer = useCallback((cycle: Cycle | undefined) => {
+  const nameRenderer = (cycle: Cycle | undefined) => {
     if (!cycle) return undefined;
 
     return (
@@ -47,7 +44,7 @@ export function CycleFilter({ id }: FilterProps) {
         {displayPackName(cycle)}
       </>
     );
-  }, []);
+  };
 
   return (
     <MultiselectFilter

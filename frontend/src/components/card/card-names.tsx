@@ -1,5 +1,4 @@
 import type { Card } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { Link } from "wouter";
 import { useStore } from "@/store";
 import { selectLookupTables } from "@/store/selectors/shared";
@@ -52,19 +51,16 @@ export function CardNames(props: Props) {
       card.code)
     : card.code;
 
-  const onCardTitleClick = useCallback(
-    (evt: React.MouseEvent<HTMLAnchorElement>) => {
-      const linkPrevented = preventLeftClick(evt);
-      if (linkPrevented) {
-        if (titleLinks === "card-modal") {
-          openCardModal(cardLinkCode);
-        } else if (dialogContext) {
-          dialogContext.setOpen(true);
-        }
+  const onCardTitleClick = (evt: React.MouseEvent<HTMLAnchorElement>) => {
+    const linkPrevented = preventLeftClick(evt);
+    if (linkPrevented) {
+      if (titleLinks === "card-modal") {
+        openCardModal(cardLinkCode);
+      } else if (dialogContext) {
+        dialogContext.setOpen(true);
       }
-    },
-    [cardLinkCode, openCardModal, dialogContext, titleLinks],
-  );
+    }
+  };
 
   return (
     <div className={css["name-row"]}>

@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -46,42 +45,33 @@ export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
 
   const { onReset, onChange, onOpenChange, locked } = useFilter(id);
 
-  const onChangeRange = useCallback(
-    (val: [number, number] | undefined) => {
-      onChange({
-        range: val,
-      });
-    },
-    [onChange],
-  );
+  const onChangeRange = (val: [number, number] | undefined) => {
+    onChange({
+      range: val,
+    });
+  };
 
-  const onToggleOpen = useCallback(
-    (val: boolean) => {
-      if (val && !filter.value.range) {
-        onChangeRange([-1, 5]);
-      }
-      onOpenChange(val);
-    },
-    [onChangeRange, filter.value.range, onOpenChange],
-  );
+  const onToggleOpen = (val: boolean) => {
+    if (val && !filter.value.range) {
+      onChangeRange([-1, 5]);
+    }
+    onOpenChange(val);
+  };
 
   const levelShortcut = getToggleValue(filter.value.range);
 
-  const onApplyLevelShortcut = useCallback(
-    (value: LevelShortcut) => {
-      if (value === levelShortcut) {
-        onChange({
-          range: undefined,
-        });
-        return;
-      }
-
+  const onApplyLevelShortcut = (value: LevelShortcut) => {
+    if (value === levelShortcut) {
       onChange({
-        range: value === "0" ? [0, 0] : [1, 5],
+        range: undefined,
       });
-    },
-    [levelShortcut, onChange],
-  );
+      return;
+    }
+
+    onChange({
+      range: value === "0" ? [0, 0] : [1, 5],
+    });
+  };
 
   return (
     <FilterContainer

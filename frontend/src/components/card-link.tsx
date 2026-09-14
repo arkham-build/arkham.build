@@ -1,5 +1,4 @@
 import type { Card } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { Link } from "wouter";
 import { PortaledCardTooltip } from "@/components/card-tooltip/card-tooltip-portaled";
 import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
@@ -28,17 +27,14 @@ export function CardLink({
     transitionStyles,
   } = useRestingTooltip();
 
-  const onClick = useCallback(
-    (evt: React.MouseEvent) => {
-      const linkPrevented = preventLeftClick(evt);
-      closeTooltip();
+  const onClick = (evt: React.MouseEvent) => {
+    const linkPrevented = preventLeftClick(evt);
+    closeTooltip();
 
-      if (linkPrevented) {
-        openCardModal(card.code);
-      }
-    },
-    [card.code, closeTooltip, openCardModal],
-  );
+    if (linkPrevented) {
+      openCardModal(card.code);
+    }
+  };
 
   return (
     <>

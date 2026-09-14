@@ -1,5 +1,4 @@
 import type { JsonDataType } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -41,12 +40,9 @@ export function TypeFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     selectTypeOptions(state, resolvedDeck, targetDeck),
   );
 
-  const onApplyShortcut = useCallback(
-    (value: string[]) => {
-      setFilterValue(id, value);
-    },
-    [id, setFilterValue],
-  );
+  const onApplyShortcut = (value: string[]) => {
+    setFilterValue(id, value);
+  };
 
   const typeMapper = useStore(selectTypeMapper);
 

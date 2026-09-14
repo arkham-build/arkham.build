@@ -7,7 +7,7 @@ import {
   useFloating,
   useTransitionStyles,
 } from "@floating-ui/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { CardTooltip } from "./card-tooltip";
 
@@ -40,62 +40,56 @@ export function useCardLinkTooltip() {
 
   const { isMounted, styles: transitionStyles } = useTransitionStyles(context);
 
-  const closeTooltip = useCallback(() => {
+  const closeTooltip = () => {
     clearTimeout(restTimeoutRef.current);
     setCardTooltip("");
-  }, []);
+  };
 
-  const onPointerDown = useCallback(() => {
+  const onPointerDown = () => {
     suppressUntilLeaveRef.current = true;
     closeTooltip();
-  }, [closeTooltip]);
+  };
 
-  const onPointerLeave = useCallback(() => {
+  const onPointerLeave = () => {
     suppressUntilLeaveRef.current = false;
     closeTooltip();
-  }, [closeTooltip]);
+  };
 
-  const onPointerMove = useCallback(
-    (evt: React.PointerEvent) => {
-      if (suppressUntilLeaveRef.current) return;
+  const onPointerMove = (evt: React.PointerEvent) => {
+    if (suppressUntilLeaveRef.current) return;
 
-      const anchor = (evt.target as HTMLElement)?.closest("a");
+    const anchor = (evt.target as HTMLElement)?.closest("a");
 
-      if (anchor instanceof HTMLAnchorElement) {
-        const code = /\/card\/(.*)$/.exec(anchor.href)?.[1];
+    if (anchor instanceof HTMLAnchorElement) {
+      const code = /\/card\/(.*)$/.exec(anchor.href)?.[1];
 
-        if (code) {
-          clearTimeout(restTimeoutRef.current);
+      if (code) {
+        clearTimeout(restTimeoutRef.current);
 
-          const rect = anchor.getBoundingClientRect();
-          setPositionReference({
-            getBoundingClientRect: () => rect,
-          });
+        const rect = anchor.getBoundingClientRect();
+        setPositionReference({
+          getBoundingClientRect: () => rect,
+        });
 
-          if (cardTooltip) {
+        if (cardTooltip) {
+          setCardTooltip(code);
+        } else {
+          restTimeoutRef.current = setTimeout(() => {
             setCardTooltip(code);
-          } else {
-            restTimeoutRef.current = setTimeout(() => {
-              setCardTooltip(code);
-            }, 25);
-          }
-          return;
+          }, 25);
         }
+        return;
       }
+    }
 
-      closeTooltip();
-    },
-    [setPositionReference, closeTooltip, cardTooltip],
-  );
+    closeTooltip();
+  };
 
-  const referenceProps = useMemo(
-    () => ({
-      onPointerDown,
-      onPointerMove,
-      onPointerLeave,
-    }),
-    [onPointerDown, onPointerMove, onPointerLeave],
-  );
+  const referenceProps = {
+    onPointerDown,
+    onPointerMove,
+    onPointerLeave,
+  };
 
   const cardLinkTooltip = isMounted && cardTooltip && (
     <FloatingPortal id={FLOATING_PORTAL_ID}>

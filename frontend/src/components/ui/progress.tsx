@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { cx } from "@/utils/cx";
 import css from "./progress.module.css";
 
@@ -16,13 +15,9 @@ export function Progress(props: Props) {
 
   const invalid = validateInRange ? value > max : false;
 
-  const cssVariables = useMemo(
-    () =>
-      ({
-        "--progress-value": `${(Math.max(0, Math.min(value, max)) / max) * 100}%`,
-      }) as React.CSSProperties,
-    [value, max],
-  );
+  const cssVariables = {
+    "--progress-value": `${(Math.max(0, Math.min(value, max)) / max) * 100}%`,
+  } as React.CSSProperties;
 
   return (
     <div className={cx(css["progress"], className, invalid && css["invalid"])}>

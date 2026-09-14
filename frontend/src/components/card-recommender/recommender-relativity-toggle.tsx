@@ -1,5 +1,4 @@
 import type { Card } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { displayAttribute } from "@/utils/card-utils";
@@ -17,12 +16,9 @@ export function RecommenderRelativityToggle(
   const isRelative = useStore((state) => state.recommender.isRelative);
   const setIsRelative = useStore((state) => state.setIsRelative);
 
-  const onToggleChange = useCallback(
-    (value: string) => {
-      setIsRelative(value === "true");
-    },
-    [setIsRelative],
-  );
+  const onToggleChange = (value: string) => {
+    setIsRelative(value === "true");
+  };
   return (
     <ToggleGroup
       type="single"

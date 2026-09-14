@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { selectTabooSetOptions } from "@/store/selectors/lists";
@@ -18,7 +17,7 @@ export function TabooSelect(props: Props) {
 
   const tabooSets = useStore(selectTabooSetOptions);
 
-  const tabooSetOptions = useMemo(() => {
+  const tabooSetOptions = (() => {
     const sets = tabooSets.map((set) => {
       return { label: formatTabooSet(set), value: set.id };
     });
@@ -29,7 +28,7 @@ export function TabooSelect(props: Props) {
       { label: t("settings.general.latest_taboo"), value: "latest" },
       ...sets,
     ];
-  }, [tabooSets, t, includeLatest]);
+  })();
 
   return (
     <Select
