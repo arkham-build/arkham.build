@@ -11,8 +11,10 @@ export function resolveScenarioRecords(scenarios: JsonDataScenario[]) {
 
 type ScenarioRecord = {
   campaign_code: string | null;
+  campaign_guide_location: number | null;
   code: string;
   name: string;
+  rules_insert_url: string | null;
   translations: ScenarioTranslation[];
   variant_of_code: string | null;
 };
@@ -41,6 +43,8 @@ function resolveScenarios(scenarios: JsonDataScenario[]): ScenarioRecord[] {
     name: scenario.name,
     translations: [],
     campaign_code: scenario.campaign_code ?? null,
+    campaign_guide_location: scenario.campaign_guide_location ?? null,
+    rules_insert_url: scenario.rules_insert_url ?? null,
     variant_of_code: scenario.variant_of_code ?? null,
   }));
 }

@@ -152,6 +152,11 @@
         "campaigns": "No campaigns are available.",
         "standalone_scenarios": "No standalone scenarios are available."
       },
+      "guide": {
+        "campaign_pdf": "Campaign guide",
+        "return_to_pdf": "Return to",
+        "rules_insert_pdf": "Rules insert"
+      },
       "tabs": {
         "campaigns": "Campaigns",
         "standalone_scenarios": "Standalone scenarios"

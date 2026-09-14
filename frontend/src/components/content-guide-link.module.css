@@ -1,0 +1,9 @@
+.pdf-icon {
+  background-color: var(--palette-point-five);
+  border: 1px solid var(--palette-2);
+  border-radius: var(--rounded);
+  color: var(--palette-5);
+  font-size: var(--text-2xs);
+  padding: 0.125rem 0.25rem;
+  vertical-align: baseline;
+}

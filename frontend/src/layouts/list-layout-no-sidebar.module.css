@@ -113,8 +113,27 @@
   margin-bottom: 0.25rem;
 }
 
+.title-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
 .title {
+  flex: 1 1 15rem;
   font-size: var(--text-lg);
+  min-width: 0;
+}
+
+.header-actions {
+  align-items: flex-end;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  margin-left: auto;
+  white-space: nowrap;
 }
 
 @starting-style {

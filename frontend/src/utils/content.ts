@@ -17,6 +17,17 @@ export function shortenCampaignVariantName(
   return prefix ? `${prefix}...` : variantName;
 }
 
+export function pdfUrlAtPage(url: string, page: number | null | undefined) {
+  if (page == null) return url;
+
+  const pdfUrl = new URL(url);
+  const fragment = new URLSearchParams(pdfUrl.hash.slice(1));
+  fragment.set("page", String(page));
+  pdfUrl.hash = fragment.toString();
+
+  return pdfUrl.toString();
+}
+
 export function contentBannerConstraints(code: string) {
   switch (code) {
     case "cob":

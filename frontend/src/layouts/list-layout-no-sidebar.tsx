@@ -14,6 +14,7 @@ import { useListLayoutContext } from "./list-layout-context";
 import css from "./list-layout-no-sidebar.module.css";
 
 interface Props extends React.ComponentProps<typeof CardListContainer> {
+  headerActions?: React.ReactNode;
   headerTop?: React.ReactNode;
   omitBackButton?: boolean;
   titleString: string;
@@ -25,7 +26,14 @@ interface Props extends React.ComponentProps<typeof CardListContainer> {
  * This component should be removed and folded into a refactored ListLayout component.
  */
 export function ListLayoutNoSidebar(props: Props) {
-  const { headerTop, omitBackButton, title, titleString, ...rest } = props;
+  const {
+    headerActions,
+    headerTop,
+    omitBackButton,
+    title,
+    titleString,
+    ...rest
+  } = props;
   const { t } = useTranslation();
 
   const { filtersOpen, setFiltersOpen } = useListLayoutContext();
@@ -90,7 +98,12 @@ export function ListLayoutNoSidebar(props: Props) {
               {headerTop && (
                 <div className={css["header-top"]}>{headerTop}</div>
               )}
-              <h1 className={css["title"]}>{title ?? titleString}</h1>
+              <div className={css["title-row"]}>
+                <h1 className={css["title"]}>{title ?? titleString}</h1>
+                {headerActions && (
+                  <div className={css["header-actions"]}>{headerActions}</div>
+                )}
+              </div>
             </header>
           }
         />

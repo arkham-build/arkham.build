@@ -150,6 +150,7 @@ export interface ArkhamdbUser {
 }
 
 export interface Campaign {
+  campaign_guide_url: string | null;
   code: string;
   cycle_code: string;
   name: string;
@@ -532,8 +533,10 @@ export interface RulesVersion {
 
 export interface Scenario {
   campaign_code: string | null;
+  campaign_guide_location: number | null;
   code: string;
   name: string;
+  rules_insert_url: string | null;
   translations: { locale: string; name: string }[];
   variant_of_code: string | null;
 }

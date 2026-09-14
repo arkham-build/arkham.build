@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const JsonDataCampaignSchema = z.object({
+  campaign_guide_url: z.url().nullish(),
   code: z.string(),
   cycle_code: z.string(),
   name: z.string(),

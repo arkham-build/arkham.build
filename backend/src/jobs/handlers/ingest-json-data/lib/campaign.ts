@@ -9,6 +9,7 @@ export function resolveCampaignRecords(campaigns: JsonDataCampaign[]) {
 }
 
 type CampaignRecord = {
+  campaign_guide_url: string | null;
   code: string;
   cycle_code: string;
   name: string;
@@ -29,6 +30,7 @@ type CampaignScenarioRecord = {
 
 function resolveCampaigns(campaigns: JsonDataCampaign[]): CampaignRecord[] {
   return campaigns.map((campaign) => ({
+    campaign_guide_url: campaign.campaign_guide_url ?? null,
     code: campaign.code,
     cycle_code: campaign.cycle_code,
     name: campaign.name,

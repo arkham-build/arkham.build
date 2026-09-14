@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
+import { ContentGuideLink } from "@/components/content-guide-link";
 import PackIcon from "@/components/icons/pack-icon";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
@@ -26,6 +27,15 @@ function Campaign() {
     return <ErrorStatus statusCode={404} />;
   }
 
+  const originalCampaign = campaign.variant_of_code
+    ? metadata.campaigns[campaign.variant_of_code]
+    : undefined;
+
+  assert(
+    campaign.variant_of_code == null || originalCampaign,
+    `Campaign ${campaign.code} references missing campaign ${campaign.variant_of_code}`,
+  );
+
   const scenarios = resolveCampaignScenarios(campaign, metadata);
   const { cardCodes, encounterSetOrder } = resolveCampaignCards(
     scenarios,
@@ -40,6 +50,7 @@ function Campaign() {
       campaign={campaign}
       cardCodes={cardCodes}
       encounterSetOrder={encounterSetOrder}
+      originalCampaign={originalCampaign}
     />
   );
 }
@@ -48,11 +59,14 @@ function CampaignCards({
   campaign,
   cardCodes,
   encounterSetOrder,
+  originalCampaign,
 }: {
   campaign: CampaignData;
   cardCodes: ReadonlySet<string>;
   encounterSetOrder: readonly string[];
+  originalCampaign: CampaignData | undefined;
 }) {
+  const { t } = useTranslation();
   const activeListId = useStore((state) => state.activeList);
   const addList = useStore((state) => state.addList);
   const removeList = useStore((state) => state.removeList);
@@ -117,6 +131,25 @@ function CampaignCards({
       <ListLayoutContextProvider>
         <ListLayoutNoSidebar
           getListCardProps={getCampaignListCardProps}
+          headerActions={
+            (originalCampaign?.campaign_guide_url ||
+              campaign.campaign_guide_url) && (
+              <>
+                {originalCampaign?.campaign_guide_url && (
+                  <ContentGuideLink url={originalCampaign.campaign_guide_url}>
+                    {t("content.guide.campaign_pdf")}
+                  </ContentGuideLink>
+                )}
+                {campaign.campaign_guide_url && (
+                  <ContentGuideLink url={campaign.campaign_guide_url}>
+                    {originalCampaign
+                      ? t("content.guide.return_to_pdf")
+                      : t("content.guide.campaign_pdf")}
+                  </ContentGuideLink>
+                )}
+              </>
+            )
+          }
           headerTop={<CampaignBreadcrumb />}
           omitBackButton
           title={<CampaignTitle campaign={campaign} />}

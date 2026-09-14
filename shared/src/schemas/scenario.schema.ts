@@ -4,12 +4,14 @@ export const JsonDataScenarioSchema = z.object({
   name: z.string(),
   code: z.string(),
   campaign_code: z.string().nullish(),
+  campaign_guide_location: z.number().int().positive().nullish(),
   encounter_sets: z.array(
     z.object({
       code: z.string(),
       cards: z.array(z.string()).nullish(),
     }),
   ),
+  rules_insert_url: z.url().nullish(),
   variant_of_code: z.string().nullish(),
 });
 

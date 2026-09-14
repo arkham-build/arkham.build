@@ -7,13 +7,13 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
+import { ContentGuideLink } from "@/components/content-guide-link";
 import EncounterIcon from "@/components/icons/encounter-icon";
 import PackIcon from "@/components/icons/pack-icon";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
-import { selectScenarioByCode } from "@/store/selectors/content";
 import { selectMetadata } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
 import { displayPackName } from "@/utils/formatting";
@@ -22,30 +22,58 @@ import css from "./scenario.module.css";
 
 function Scenario() {
   const { code } = useParams();
-  const scenario = useStore((state) => selectScenarioByCode(state, code));
-  const campaign = useStore((state) =>
-    scenario?.campaign_code
-      ? selectMetadata(state).campaigns[scenario.campaign_code]
-      : undefined,
-  );
+  const metadata = useStore(selectMetadata);
+  const scenario = code ? metadata.scenarios[code] : undefined;
 
   if (!scenario) {
     return <ErrorStatus statusCode={404} />;
   }
 
+  const campaign = scenario.campaign_code
+    ? metadata.campaigns[scenario.campaign_code]
+    : undefined;
   assert(
     scenario.campaign_code == null || campaign,
     `Scenario ${scenario.code} references missing campaign ${scenario.campaign_code}`,
   );
 
-  return <ScenarioContent campaign={campaign} scenario={scenario} />;
+  const originalScenario = scenario.variant_of_code
+    ? metadata.scenarios[scenario.variant_of_code]
+    : undefined;
+
+  assert(
+    scenario.variant_of_code == null || originalScenario,
+    `Scenario ${scenario.code} references missing scenario ${scenario.variant_of_code}`,
+  );
+
+  const originalCampaign = originalScenario?.campaign_code
+    ? metadata.campaigns[originalScenario.campaign_code]
+    : undefined;
+
+  assert(
+    originalScenario?.campaign_code == null || originalCampaign,
+    `Scenario ${originalScenario?.code} references missing campaign ${originalScenario?.campaign_code}`,
+  );
+
+  return (
+    <ScenarioContent
+      campaign={campaign}
+      originalCampaign={originalCampaign}
+      originalScenario={originalScenario}
+      scenario={scenario}
+    />
+  );
 }
 
 function ScenarioContent({
   campaign,
+  originalCampaign,
+  originalScenario,
   scenario,
 }: {
   campaign: Campaign | undefined;
+  originalCampaign: Campaign | undefined;
+  originalScenario: ScenarioData | undefined;
   scenario: ScenarioData;
 }) {
   const { t } = useTranslation();
@@ -99,12 +127,53 @@ function ScenarioContent({
   if (!listExists || activeListId !== listKey) return null;
 
   const title = displayPackName(scenario);
+  const guideUrl = campaign
+    ? campaign.campaign_guide_url
+    : scenario.rules_insert_url;
+
+  const originalGuideUrl = originalCampaign
+    ? originalCampaign.campaign_guide_url
+    : originalScenario?.rules_insert_url;
 
   return (
     <CardModalProvider>
       <ListLayoutContextProvider>
         <ListLayoutNoSidebar
           getListCardProps={getScenarioListCardProps}
+          headerActions={
+            (originalGuideUrl || guideUrl) && (
+              <>
+                {originalGuideUrl && (
+                  <ContentGuideLink
+                    page={
+                      originalCampaign
+                        ? originalScenario?.campaign_guide_location
+                        : undefined
+                    }
+                    url={originalGuideUrl}
+                  >
+                    {originalCampaign
+                      ? t("content.guide.campaign_pdf")
+                      : t("content.guide.rules_insert_pdf")}
+                  </ContentGuideLink>
+                )}
+                {guideUrl && (
+                  <ContentGuideLink
+                    page={
+                      campaign ? scenario.campaign_guide_location : undefined
+                    }
+                    url={guideUrl}
+                  >
+                    {originalScenario
+                      ? t("content.guide.return_to_pdf")
+                      : campaign
+                        ? t("content.guide.campaign_pdf")
+                        : t("content.guide.rules_insert_pdf")}
+                  </ContentGuideLink>
+                )}
+              </>
+            )
+          }
           headerTop={
             <Breadcrumb
               items={[
