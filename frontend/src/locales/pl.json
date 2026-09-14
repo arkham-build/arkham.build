@@ -150,11 +150,11 @@
     "content": {
       "empty": {
         "campaigns": "Brak dostępnych kampanii.",
-        "standalone_scenarios": "Brak dostępnych scenariuszy samodzielnych."
+        "standalone_scenarios": "Brak dostępnych scenariuszy."
       },
       "tabs": {
         "campaigns": "Kampanie",
-        "standalone_scenarios": "Scenariusze samodzielne"
+        "standalone_scenarios": "Scenariusze"
       },
       "title": "Zawartość",
       "unknown_release_year": "Nieznany rok"
