@@ -245,6 +245,7 @@ function NavDropdownLink(props: {
         aria-current={active ? "page" : undefined}
         className={active ? css["menu-link-active"] : undefined}
         data-testid={testId}
+        size="sm"
       >
         {children}
       </DropdownButton>

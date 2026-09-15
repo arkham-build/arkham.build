@@ -19,6 +19,7 @@ export function ContentGuideLink({
       rel="noreferrer"
       size="sm"
       target="_blank"
+      variant="bare"
     >
       <span className={css["label"]}>{children}</span>
       <span className={css["pdf-icon"]}>PDF</span>
