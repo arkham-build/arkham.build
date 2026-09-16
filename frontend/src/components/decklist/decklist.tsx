@@ -92,7 +92,9 @@ export function Decklist(props: Props) {
             buttonVariant={viewMode === "scans" ? "bare" : undefined}
           />
         )}
-        {viewMode === "scans" && annotation && <AnnotationIndicator />}
+        {viewMode === "scans" && annotation && (
+          <AnnotationIndicator hideTooltip />
+        )}
       </>
     ) : null;
   };

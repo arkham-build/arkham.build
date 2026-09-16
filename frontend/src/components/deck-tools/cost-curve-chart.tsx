@@ -85,6 +85,7 @@ export function CostCurveChart({ costs, data }: Props) {
           />
           <Tooltip
             content={<ChartTooltip formatter={(d) => formatTooltip(t, d)} />}
+            isAnimationActive={false}
             cursor={{
               fill: chartTheme.colors.cursorFill,
               opacity: chartTheme.cursorOpacity,

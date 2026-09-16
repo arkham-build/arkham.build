@@ -57,6 +57,7 @@ export function SkillIconsChart({ data }: Props) {
           isAnimationActive={false}
         />
         <Tooltip
+          isAnimationActive={false}
           content={<ChartTooltip formatter={(d) => formatTooltip(t, d)} />}
         />
       </RadarChart>

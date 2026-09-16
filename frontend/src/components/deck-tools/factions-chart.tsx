@@ -37,6 +37,7 @@ export function FactionsChart({ data }: Props) {
         />
         <Tooltip
           content={<ChartTooltip formatter={(d) => formatTooltip(t, d)} />}
+          isAnimationActive={false}
         />
       </PieChart>
     </div>
