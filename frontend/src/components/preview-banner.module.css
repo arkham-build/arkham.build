@@ -14,7 +14,7 @@
 .content {
   padding: 0.5rem;
   background-color: rgba(0, 0, 0, 0.5);
-  border-radius: var(--rounded);
+  border-radius: calc(var(--rounded) - 1px);
 }
 
 .content > * + * {
