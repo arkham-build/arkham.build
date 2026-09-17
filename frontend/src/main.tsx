@@ -8,7 +8,7 @@ import "./styles/icons-icon.css";
 
 import React from "react";
 import ReactDOM from "react-dom/client";
-import i18n from "@/utils/i18n";
+import i18n, { changeLanguage } from "@/utils/i18n";
 import App from "./app";
 import { useStore } from "./store";
 import { tabSync } from "./store/persist";
@@ -59,8 +59,19 @@ async function init() {
   );
   await store.initSession(httpClient);
 
+  let pendingTabSync = Promise.resolve();
+
   const tabSyncListener = (evt: TabSyncEvent) => {
-    useStore.setState(evt.state);
+    pendingTabSync = pendingTabSync
+      .then(async () => {
+        const locale = evt.state.settings?.locale;
+        if (locale) await changeLanguage(locale);
+
+        useStore.setState(evt.state);
+      })
+      .catch((error: unknown) => {
+        console.error("[tab-sync] failed to apply state:", error);
+      });
   };
 
   tabSync.addListener(tabSyncListener);
