@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import versionsResponse from "../../fixtures/stubs/data_version.json" with { type: "json" };
+import metadataResponse from "../../fixtures/stubs/metadata.json" with { type: "json" };
 import { fillSearch, importDeckFromFile } from "./actions";
 import { mockApiCalls } from "./mocks";
 
@@ -7,6 +9,66 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("settings", () => {
+  test("restores the language when the card data request times out", async ({
+    page,
+  }) => {
+    const apiUrl = process.env.VITE_API_URL ?? "https://api.arkham.build";
+    const version = structuredClone(versionsResponse);
+    version.data.all_card_updated[0].locale = "de";
+
+    let timeoutCardRequest: (value: void | PromiseLike<void>) => void = () => {
+      throw new Error("Card request did not start.");
+    };
+    let markCardRequestStarted = () => {};
+
+    const cardRequestStarted = new Promise<void>((resolve) => {
+      markCardRequestStarted = resolve;
+    });
+    const cardRequestCanTimeout = new Promise<void>((resolve) => {
+      timeoutCardRequest = resolve;
+    });
+
+    await Promise.all([
+      page.route(`${apiUrl}/v1/cache/version/de`, async (route) => {
+        await route.fulfill({ json: version });
+      }),
+      page.route(`${apiUrl}/v1/cache/metadata/de*`, async (route) => {
+        await route.fulfill({ json: metadataResponse });
+      }),
+      page.route(`${apiUrl}/v1/cache/cards/de*`, async (route) => {
+        markCardRequestStarted();
+        await cardRequestCanTimeout;
+        await route.abort("timedout");
+      }),
+    ]);
+
+    await page.goto("/settings");
+    await page
+      .locator("#locale-select")
+      .getByTestId("custom-select-control")
+      .click();
+    await page.getByTestId("custom-select-option-de").click();
+    await page.getByTestId("settings-save").click();
+    await cardRequestStarted;
+
+    await expect(page.locator("html")).toHaveAttribute("lang", "de");
+    await expect(page.getByText("Saving settings...")).toBeVisible();
+
+    timeoutCardRequest();
+
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await expect(page.getByText(/^Failed to save settings:/)).toBeVisible();
+    await expect
+      .poll(() => page.evaluate(() => localStorage.getItem("i18nextLng")))
+      .toBe("en");
+
+    await page.goto("/card/09501");
+    await expect(page.getByTestId("masthead-rules")).toContainText("Rules");
+    await expect(page.getByTestId("card-name").first()).toContainText(
+      "Riddles and Rain",
+    );
+  });
+
   test("update collection settings", async ({ page }) => {
     await page.goto("/");
     await expect(
