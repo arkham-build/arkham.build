@@ -10,6 +10,10 @@
   margin-top: 1rem;
 }
 
+.title {
+  font-size: var(--text-2xl);
+}
+
 .results {
   list-style: none;
 }

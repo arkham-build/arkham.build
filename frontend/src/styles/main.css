@@ -123,6 +123,8 @@
     --color-multiclass: var(--multiclass);
     --color-neutral: var(--neutral);
 
+    --accent-interaction-target: var(--color-inverted);
+
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow: 0 2px 3px 0 rgb(0 0 0 / 0.125), 0 1px 2px -1px rgb(0 0 0 / 0.125);
     --shadow-md:
@@ -211,6 +213,8 @@
     --color-survivor: var(--survivor-dark);
     --color-multiclass: var(--multiclass-dark);
     --color-neutral: var(--neutral-dark);
+
+    --accent-interaction-target: var(--one-light-foreground);
 
     --text: var(--one-light-strong);
     --text-mythos: var(--mythos-dark);

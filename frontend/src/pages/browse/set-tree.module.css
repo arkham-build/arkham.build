@@ -4,6 +4,8 @@
   z-index: 1;
   margin-bottom: 0.75rem;
   background-color: var(--palette-0);
+  border-top-left-radius: var(--rounded);
+  border-top-right-radius: var(--rounded);
 }
 
 .chapter-tabs-item {

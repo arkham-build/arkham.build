@@ -20,6 +20,8 @@ export function getAccentColorsForFaction(card: Card): React.CSSProperties {
   return {
     "--accent-color": `var(--color-${accent})`,
     "--accent-color-dark": `var(--${accent}-dark)`,
+    "--accent-color-interaction":
+      "color-mix(in srgb, var(--accent-color-dark) 85%, var(--accent-interaction-target))",
     "--accent-color-contrast": "var(--color-inverted)",
   } as React.CSSProperties;
 }

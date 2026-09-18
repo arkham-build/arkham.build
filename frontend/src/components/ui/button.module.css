@@ -55,12 +55,18 @@
     color: var(--accent-color-contrast, var(--color-primary-contrast));
 
     &:not([disabled]):hover {
-      background: var(--accent-color, var(--color-primary-hover));
+      background: var(
+        --accent-color-interaction,
+        var(--accent-color, var(--color-primary-hover))
+      );
       border-color: transparent;
     }
 
     &:not([disabled]):active {
-      background: var(--accent-color, var(--color-primary-active));
+      background: var(
+        --accent-color-interaction,
+        var(--accent-color, var(--color-primary-active))
+      );
       border-color: transparent;
     }
   }

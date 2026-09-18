@@ -71,7 +71,7 @@ function BrowseDecklists() {
         mainClassName={css["layout"]}
         title={t("decklists.browse.title")}
       >
-        <h1>{t("decklists.browse.title")}</h1>
+        <h1 className={css["title"]}>{t("decklists.browse.title")}</h1>
         {searchParams.size > 0 && (
           <Head>
             <meta name="robots" content="noindex" />
