@@ -89,6 +89,7 @@ export function Masthead(props: Props) {
                 </Button>
               </Link>
             )}
+            {!collapseNav && <LocaleQuickSwitch variant="compact" />}
             <NavLink
               className={css["icon-link"]}
               href="~/settings"
@@ -268,12 +269,14 @@ function AccountMenu(props: { collapseNav: boolean; location: string }) {
 
   const actionNodes = (
     <>
-      <>
-        <DropdownItem>
-          <LocaleQuickSwitch fullWidth portal={false} />
-        </DropdownItem>
-        <hr />
-      </>
+      {collapseNav && (
+        <>
+          <DropdownItem>
+            <LocaleQuickSwitch fullWidth portal={false} />
+          </DropdownItem>
+          <hr />
+        </>
+      )}
       {session && (
         <>
           <DropdownItem>

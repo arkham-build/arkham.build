@@ -235,10 +235,7 @@ export function DeckCollection() {
                   </Button>
                 </Link>
                 <Link href="/auth/login" asChild>
-                  <Button variant="bare">
-                    <i className="icon-elder_sign" />
-                    {t("auth.login.action")}
-                  </Button>
+                  <Button variant="bare">{t("auth.login.action")}</Button>
                 </Link>
               </nav>
             </figcaption>
