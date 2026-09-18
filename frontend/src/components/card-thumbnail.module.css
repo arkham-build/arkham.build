@@ -5,7 +5,7 @@
     height: auto;
     aspect-ratio: 1 / 1;
     overflow: hidden;
-    border: 1px solid currentColor;
+    border: 1px solid color-mix(in srgb, currentColor 75%, transparent);
     border-radius: var(--rounded);
     backface-visibility: hidden;
   }
