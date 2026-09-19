@@ -47,6 +47,8 @@
       "eligible": "Kompatibel mit {{name}}"
     },
     "auth": {
+      "arkhamdb_login_banner": "Die ArkhamDB-API ist derzeit langsam. Wenn du Probleme hast, melde dich mit deiner E-Mail-Adresse an.",
+      "arkhamdb_signup_banner": "Die ArkhamDB-API ist derzeit langsam. Wenn du Probleme hast, melde dich mit deiner E-Mail-Adresse an.",
       "email": "E-Mail",
       "email_or_username": "E-Mail oder Nutzername",
       "errors": {
@@ -68,10 +70,10 @@
         "title": "Passwort vergessen"
       },
       "login": {
+        "action": "Anmelden",
         "forgot_password": "Passwort vergessen",
         "no_account": "Noch kein Konto?",
         "title": "Anmeldung",
-        "action": "Anmelden",
         "with_arkhamdb": "Mit ArkhamDB anmelden"
       },
       "logout": "Ausloggen",
@@ -107,6 +109,7 @@
         "title": "Passwort zurücksetzen"
       },
       "signup": {
+        "action": "Registrieren",
         "complete_profile": {
           "description": "Wähle einen Nutzernamen. Dieser wird auf deinem Profil und deinen Beiträgen angezeigt.",
           "title": "Profil vervollständigen",
@@ -125,7 +128,6 @@
         "has_account": "Konto vorhanden?",
         "legal_acceptance": "Mit dem Anlegen eines Kontos stimmst du unseren <terms>Nutzungsbedingungen</terms> zu und nimmst unsere <privacy>Datenschutzerklärung</privacy> zur Kenntnis.",
         "success": "Registrierung erfolgreich! Bitte bestätige deine E-Mail, bevor du dich einloggst. Deinen Nutzernamen kannst du nach dem Anmelden auswählen.",
-        "action": "Registrieren",
         "title": "Registrierung",
         "verifying": "Bestätigen...",
         "with_arkhamdb": "Mit ArkhamDB registrieren"
@@ -163,6 +165,23 @@
       "title": "Szenarien mit <em>{{name}}</em>",
       "tooltip": "{{name}} <em>({{campaignName}})</em>"
     },
+    "card_tags": {
+      "account_title": "Account-Tags",
+      "deck_placeholder": "Deck-Tag hinzufügen...",
+      "deck_title": "Deck-Tags",
+      "favorite": "Favorit",
+      "manage": {
+        "action": "Tags verwalten",
+        "delete": "Löschen",
+        "error": "Karten-Tags konnten nicht aktualisiert werden: {{error}}",
+        "name": "Tag-Name",
+        "save": "Tag aktualisieren",
+        "title": "Tags verwalten",
+        "unknown_error": "Unbekannter Fehler"
+      },
+      "placeholder": "Account-Tag hinzufügen...",
+      "title": "Tags"
+    },
     "card_view": {
       "actions": {
         "open_on_arkhamdb": "In ArkhamDB öffnen",
@@ -179,6 +198,9 @@
         "empty": "Keine FAQ-Einträge vorhanden.",
         "error": "FAQ-Einträge konnten nicht geladen werden.",
         "title": "FAQ"
+      },
+      "ratings": {
+        "title": "Bewertungen"
       },
       "scan": "Scan von {{code}}",
       "section_actions": "Aktionen",
@@ -221,11 +243,13 @@
         "value": "Kosten {{cost}}",
         "x": "Kosten X"
       },
+      "create_named": "\"{{name}}\" anlegen",
       "customizable": "Individualisierbar",
       "customizations": "Individualisierungen",
       "cycle_one": "Zyklus",
       "cycle_other": "Zyklen",
       "deck_options": {
+        "A deck cannot include more than one reward card with the permanent keyword.": "Das Deck darf nicht mehr als eine Belohnungskarte mit dem Schlüsselwort \"Permanent\" enthalten.",
         "Atleast constraint violated.": "Eine \"mindestens\" Deckregel wurde verletzt.",
         "Blessed": "Gesegnet",
         "Blessed and Cursed": "Gesegnet und Verflucht",
@@ -303,6 +327,7 @@
       "more_actions": "Weitere Aktionen",
       "myriad": "Unzählig",
       "no_entries": "Keine Einträge",
+      "no_results": "Keine Resultate",
       "non_collection_cards": "{{count}} nicht im Besitz",
       "none": "Keine Auswahl",
       "ok": "OK",
@@ -818,8 +843,26 @@
         "whistles": "Pfeifen",
         "wishes": "Wünsche"
       },
+      "vengeance": "Vergeltung",
       "victory": "Sieg",
       "xp": "EP"
+    },
+    "content": {
+      "empty": {
+        "campaigns": "Keine Kampagnen verfügbar.",
+        "standalone_scenarios": "Keine Einzelspielszenarien verfügbar."
+      },
+      "guide": {
+        "campaign_pdf": "Kampagnenleitfaden",
+        "return_to_pdf": "Rückkehr zu",
+        "rules_insert_pdf": "Regelbeilage"
+      },
+      "tabs": {
+        "campaigns": "Kampagnen",
+        "standalone_scenarios": "Einzelspielszenarien"
+      },
+      "title": "Inhalte",
+      "unknown_release_year": "Unbekanntes Jahr"
     },
     "deck": {
       "actions": {
@@ -890,7 +933,8 @@
         "duplicate_error": "Duplizieren des Decks fehlgeschlagen: {{error}}",
         "export_error": "Export fehlgeschlagen: {{error}}",
         "upload_error": "Hochladen des Decks zu {{provider}} fehlgeschlagen: {{error}}",
-        "upload_loading": "Deck wird zu {{provider}} hochgeladen..."
+        "upload_loading": "Deck wird zu {{provider}} hochgeladen...",
+        "upload_requires_duplicate": "Bevor du dieses Deck zu ArkhamDB hochladen kannst, musst du eine Kopie erstellen."
       },
       "tools": {
         "average_cost": "Durchschnitt: {{cost}}",
@@ -919,6 +963,7 @@
     },
     "deck_collection": {
       "archive": "Archiv",
+      "arkhamdb_response_time_banner": "Die ArkhamDB-API ist derzeit langsam. Wenn du Probleme hast, lade Decks stattdessen direkt auf arkham.build hoch.",
       "collection_empty": "Keine Decks",
       "connect_arkhamdb": "ArkhamDB verbinden",
       "count": "{{count}} Decks",
@@ -997,7 +1042,12 @@
           "apply_environment": "{{environment}} Umgebung anwenden",
           "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "\"Campaign Play-Along\" ist ein regelmäßiges Event, das auf dem Mythos Busters Discord-Server stattfindet. Während des jeweiligen Events wird eine Kampagne zusammen, mit einem eingeschränkten Kartenpool, gespielt.",
+          "chapter_1": "Kapitel 1",
+          "chapter_1_help": "Kartenpool auf alle Packs in Kapitel 1 setzen.",
+          "chapter_2": "Kapitel 2",
+          "chapter_2_help": "Kartenpool auf alle Packs in Kapitel 2 setzen.",
           "choose_cycle_placeholder": "Zyklus auswählen...",
+          "choose_progression_target_placeholder": "Kampagne oder Einzelspielszenario auswählen...",
           "collection": "Sammlung",
           "collection_help": "Setze deine aktuelle <settings_link>Sammlung</settings_link> als Kartenpool für dieses Deck. Dies kann praktisch sein während du deine Sammlung aufbaust - oder wenn mehrere Spieler eine Sammlung teilen.",
           "configure_environment": "Umgebung auswählen",
@@ -1015,6 +1065,9 @@
           "limited_faq25_help": "In der \"limitierten\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und bis zu drei weiteren Ermittlererweiterungen verwenden.",
           "limited_help": "In der \"limitierten\" Umgebung dürfen Decks Karten der folgenden Produkte enthalten: Grundspiel (2026), 5 Ermittlerdecks, 3 verschiedene Spielerkarten-Erweiterungen deiner Wahl.",
           "placeholder": "Packs auswählen...",
+          "progression": "Progression",
+          "progression_help": "Kartenpool auf den Stand bei Veröffentlichung der ausgewählten Kampagne oder des eigenständigen Szenarios setzen.",
+          "progression_target": "Kampagne oder Einzelspielszenario",
           "section_title": "Kartenpooleinstellungen",
           "selected_cards": "Ausgewählte Karten",
           "substitute_chapter_2_with_chapter_1": "Ersetze Karten aus Kapitel 2 mit Kapitel 1-Äquivalenten.",
@@ -1153,6 +1206,7 @@
     },
     "deck_view": {
       "actions": {
+        "check_card": "{{card}} abhaken",
         "display_as_list": "Als Liste anzeigen",
         "display_as_scans": "Als Scans anzeigen",
         "import": "Deck importieren",
@@ -1163,6 +1217,7 @@
         "upload": "Zu {{provider}} hochladen",
         "upload_account": "Hochladen"
       },
+      "checklist": "Checkliste",
       "discounts": {
         "adaptable": "Anpassungsfähig",
         "arcaneResearch": "Arkane Forschung",
@@ -1330,6 +1385,11 @@
       "asset": {
         "title": "Vorteil"
       },
+      "card_tags": {
+        "favorites": "Favoriten",
+        "placeholder": "Tags auswählen...",
+        "title": "Tags"
+      },
       "cost": {
         "even": "Gerade",
         "nocost": "Keine Kosten",
@@ -1453,6 +1513,7 @@
         "display_as_list": "Als Liste anzeigen",
         "display_as_list_text": "Als Liste mit Kartentext anzeigen",
         "display_as_scans": "Als Scans anzeigen",
+        "flip_all_scans": "Alle Scans umdrehen",
         "focus_search": "Suche fokussieren",
         "move_down": "Vorherige Karte",
         "move_up": "Nächste Karte",
@@ -1498,7 +1559,8 @@
         "list_settings": "Listenoptionen",
         "max_columns": "Max. Scans pro Spalte",
         "sort": "Sortierung",
-        "sort_default": "Nutzereinstellung"
+        "sort_default": "Nutzereinstellung",
+        "taboo_filter_override": "Vom \"Tabuliste\"-Filter überschrieben"
       },
       "reset": "Zurücksetzen",
       "search": {
@@ -1506,14 +1568,18 @@
         "include_flavor": "Flavourtext",
         "include_game_text": "Spieltext",
         "include_name": "Name",
+        "match_display_mode": "Darstellung übernehmen",
+        "match_visible_taboo": "Tabulisteneinstellung übernehmen",
         "placeholder": "Karten durchsuchen...",
         "share": "Suche teilen",
+        "share_settings": "Link-Optionen",
         "title": "Suche"
       },
       "sort_by": "Sortierung"
     },
     "masthead": {
-      "browse": "Karten",
+      "browse": "Browse",
+      "cards": "Karten",
       "navigation": "Navigation",
       "rules": "Regeln"
     },
@@ -1657,7 +1723,9 @@
         "card_level_icon_only": "In Icon",
         "card_show_collection_number": "Kollektionsnummer anzeigen",
         "card_show_details": "Details anzeigen",
+        "card_show_favorite_highlights": "Favoriten hervorheben",
         "card_show_icon": "Kostensymbol anzeigen",
+        "card_show_tags": "Tags anzeigen",
         "card_show_thumbnail": "Thumbnail anzeigen",
         "card_show_unique_icon": "Einzigartigskeitssymbol anzeigen",
         "card_size": "Anzeigegröße",
@@ -1738,13 +1806,13 @@
       },
       "copy_to_clipboard": "In die Zwischenablage kopieren",
       "copy_to_clipboard_success": "Kopiert.",
-      "password_input": {
-        "hide_password": "Passwort ausblenden",
-        "show_password": "Passwort anzeigen"
-      },
       "pagination": {
         "next": "Weiter",
         "previous": "Zurück"
+      },
+      "password_input": {
+        "hide_password": "Passwort ausblenden",
+        "show_password": "Passwort anzeigen"
       }
     }
   }

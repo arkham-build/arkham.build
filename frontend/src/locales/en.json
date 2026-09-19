@@ -147,23 +147,6 @@
     "browse": {
       "title": "Browse cards"
     },
-    "content": {
-      "empty": {
-        "campaigns": "No campaigns are available.",
-        "standalone_scenarios": "No standalone scenarios are available."
-      },
-      "guide": {
-        "campaign_pdf": "Campaign guide",
-        "return_to_pdf": "Return to",
-        "rules_insert_pdf": "Rules insert"
-      },
-      "tabs": {
-        "campaigns": "Campaigns",
-        "standalone_scenarios": "Standalone scenarios"
-      },
-      "title": "Content",
-      "unknown_release_year": "Unknown year"
-    },
     "card_modal": {
       "actions": {
         "complete_task": "Complete task",
@@ -863,6 +846,23 @@
       "vengeance": "Vengeance",
       "victory": "Victory",
       "xp": "XP"
+    },
+    "content": {
+      "empty": {
+        "campaigns": "No campaigns are available.",
+        "standalone_scenarios": "No standalone scenarios are available."
+      },
+      "guide": {
+        "campaign_pdf": "Campaign guide",
+        "return_to_pdf": "Return to",
+        "rules_insert_pdf": "Rules insert"
+      },
+      "tabs": {
+        "campaigns": "Campaigns",
+        "standalone_scenarios": "Standalone scenarios"
+      },
+      "title": "Content",
+      "unknown_release_year": "Unknown year"
     },
     "deck": {
       "actions": {
@@ -1806,13 +1806,13 @@
       },
       "copy_to_clipboard": "Copy to clipboard",
       "copy_to_clipboard_success": "Copied.",
-      "password_input": {
-        "hide_password": "Hide password",
-        "show_password": "Show password"
-      },
       "pagination": {
         "next": "Next",
         "previous": "Previous"
+      },
+      "password_input": {
+        "hide_password": "Hide password",
+        "show_password": "Show password"
       }
     }
   }
