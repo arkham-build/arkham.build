@@ -7,6 +7,8 @@ export const SPECIAL_CARD_CODES = {
   ACE_OF_RODS: "05040",
   /** Changes XP calculation for upgrades. */
   ADAPTABLE: "02110",
+  /** Has special draw simulator setup. */
+  ANCESTRAL_KNOWLEDGE: "07303",
   /** Changes XP calculation for upgrades. */
   ARCANE_RESEARCH: "04109",
   /** Quantity scales with signature count. */

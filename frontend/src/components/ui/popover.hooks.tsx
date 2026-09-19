@@ -15,6 +15,7 @@ import {
 import { createContext, useContext, useState } from "react";
 
 export interface PopoverOptions {
+  clickDisabled?: boolean;
   clickStickIfOpen?: boolean;
   hoverDisabled?: boolean;
   initialOpen?: boolean;
@@ -26,6 +27,7 @@ export interface PopoverOptions {
 }
 
 export function usePopover({
+  clickDisabled,
   clickStickIfOpen,
   hoverDisabled,
   initialOpen = false,
@@ -66,6 +68,7 @@ export function usePopover({
   const context = data.context;
 
   const click = useClick(context, {
+    enabled: !clickDisabled,
     stickIfOpen: clickStickIfOpen,
   });
 

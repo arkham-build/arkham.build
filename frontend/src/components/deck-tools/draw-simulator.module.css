@@ -68,7 +68,35 @@
 }
 
 .selected img {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 1px;
-  transform: scale(1.01);
+  outline: 1.5px solid var(--color-focus);
+  outline-offset: 1.5px;
+}
+
+.ancestral-knowledge-popover {
+  width: min(24rem, calc(100dvw - 1rem));
+  box-shadow: var(--shadow-lg);
+}
+
+.ancestral-knowledge-cards {
+  list-style: none;
+}
+
+.ancestral-knowledge-empty {
+  color: var(--palette-4);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+.ancestral-knowledge-count {
+  font-variant-numeric: normal;
+  font-size: var(--text-2xs);
+  padding: 0.125rem 0.25rem;
+  line-height: 1;
+  border-radius: var(--rounded);
+  border: 1px solid var(--palette-2);
+}
+
+.ancestral-knowledge-icon {
+  color: var(--palette-4);
+  font-size: var(--text-2xs);
 }
