@@ -1,13 +1,25 @@
-import type { JsonDataScenario } from "@arkham-build/shared";
+import type {
+  JsonDataScenario,
+  JsonDataScenarioTranslation,
+} from "@arkham-build/shared";
+import type {
+  ItemTranslation,
+  WithItemTranslations,
+} from "../../../../lib/json-data.types.ts";
 import { uniqueStrings } from "./helpers.ts";
 
-export function resolveScenarioRecords(scenarios: JsonDataScenario[]) {
+export function resolveScenarioRecords(scenarios: ScenarioWithTranslations[]) {
   return {
     scenarios: resolveScenarios(scenarios),
     scenarioEncounterSets: resolveScenarioEncounterSets(scenarios),
     scenarioEncounterSetCards: resolveScenarioEncounterSetCards(scenarios),
   };
 }
+
+type ScenarioWithTranslations = WithItemTranslations<
+  JsonDataScenario,
+  JsonDataScenarioTranslation
+>;
 
 type ScenarioRecord = {
   campaign_code: string | null;
@@ -19,10 +31,7 @@ type ScenarioRecord = {
   variant_of_code: string | null;
 };
 
-type ScenarioTranslation = {
-  locale: string;
-  name?: string;
-};
+type ScenarioTranslation = ItemTranslation<JsonDataScenarioTranslation>;
 
 type ScenarioEncounterSetRecord = {
   encounter_code: string;
@@ -37,11 +46,13 @@ type ScenarioEncounterSetCardRecord = {
   scenario_code: string;
 };
 
-function resolveScenarios(scenarios: JsonDataScenario[]): ScenarioRecord[] {
+function resolveScenarios(
+  scenarios: ScenarioWithTranslations[],
+): ScenarioRecord[] {
   return scenarios.map((scenario) => ({
     code: scenario.code,
     name: scenario.name,
-    translations: [],
+    translations: scenario.translations,
     campaign_code: scenario.campaign_code ?? null,
     campaign_guide_location: scenario.campaign_guide_location ?? null,
     rules_insert_url: scenario.rules_insert_url ?? null,

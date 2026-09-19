@@ -166,6 +166,8 @@ function CampaignVersions({
   setActiveVersion: (value: string) => void;
   versions: CampaignVersion[];
 }) {
+  const { i18n } = useTranslation();
+
   return (
     <Tabs value={activeVersion} onValueChange={setActiveVersion}>
       <TabsList className={css["variant-tabs"]}>
@@ -177,6 +179,7 @@ function CampaignVersions({
                 ? shortenCampaignVariantName(
                     displayPackName(campaign),
                     campaignName,
+                    i18n.language,
                   )
                 : displayPackName(campaign)}
             </span>

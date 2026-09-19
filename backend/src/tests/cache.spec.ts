@@ -4,8 +4,13 @@ import { test } from "./test-utils.ts";
 type MetadataResponse = {
   data: {
     campaign: {
+      campaign_guide_url?: string;
       code: string;
       cycle_code: string;
+      name?: string;
+      real_campaign_guide_url: string | null;
+      real_name: string;
+      translations?: unknown[];
       variant_of_code: string | null;
     }[];
     pack: {
@@ -13,7 +18,14 @@ type MetadataResponse = {
       real_name: string;
     }[];
     scenario: {
+      campaign_guide_location?: number | null;
       code: string;
+      name?: string;
+      real_campaign_guide_location: number | null;
+      real_name: string;
+      real_rules_insert_url: string | null;
+      rules_insert_url?: string;
+      translations?: unknown[];
       variant_of_code: string | null;
     }[];
   };
@@ -89,6 +101,169 @@ describe("GET /v1/cache", () => {
     expect(packName(refreshedJson, "core")).toBe("Changed Core Set");
   });
 
+  test("returns source guide metadata for English", async ({
+    dependencies,
+  }) => {
+    await dependencies.db
+      .insertInto("campaign")
+      .values({
+        campaign_guide_url: "https://example.com/source-guide.pdf",
+        code: "cache_english",
+        cycle_code: "core",
+        name: "Source Campaign",
+        translations: [
+          {
+            campaign_guide_url: "https://example.com/de-guide.pdf",
+            locale: "de",
+            name: "Translated Campaign",
+          },
+        ],
+      })
+      .execute();
+    await dependencies.db
+      .insertInto("scenario")
+      .values({
+        campaign_code: "cache_english",
+        campaign_guide_location: 4,
+        code: "cache_english_1",
+        name: "Source Scenario",
+        rules_insert_url: "https://example.com/source-rules.pdf",
+        translations: [
+          {
+            campaign_guide_location: 6,
+            locale: "de",
+            name: "Translated Scenario",
+            rules_insert_url: "https://example.com/de-rules.pdf",
+          },
+        ],
+      })
+      .execute();
+
+    const res = await dependencies.app.request("/v1/cache/metadata");
+    const json = (await res.json()) as MetadataResponse;
+    const campaign = findCampaign(json, "cache_english");
+    const scenario = findScenario(json, "cache_english_1");
+
+    expect(campaign).toMatchObject({
+      real_campaign_guide_url: "https://example.com/source-guide.pdf",
+      real_name: "Source Campaign",
+    });
+    expect(campaign).not.toHaveProperty("campaign_guide_url");
+    expect(campaign).not.toHaveProperty("name");
+    expect(campaign).not.toHaveProperty("translations");
+
+    expect(scenario).toMatchObject({
+      real_campaign_guide_location: 4,
+      real_name: "Source Scenario",
+      real_rules_insert_url: "https://example.com/source-rules.pdf",
+    });
+    expect(scenario).not.toHaveProperty("campaign_guide_location");
+    expect(scenario).not.toHaveProperty("name");
+    expect(scenario).not.toHaveProperty("rules_insert_url");
+    expect(scenario).not.toHaveProperty("translations");
+  });
+
+  test("returns localized guide metadata with source fallbacks", async ({
+    dependencies,
+  }) => {
+    await dependencies.db
+      .insertInto("campaign")
+      .values([
+        {
+          campaign_guide_url: "https://example.com/source-full-guide.pdf",
+          code: "cache_full",
+          cycle_code: "core",
+          name: "Full Source Campaign",
+          translations: [
+            {
+              campaign_guide_url: "https://example.com/de-full-guide.pdf",
+              locale: "de",
+              name: "Full Translated Campaign",
+            },
+          ],
+        },
+        {
+          campaign_guide_url: "https://example.com/source-partial-guide.pdf",
+          code: "cache_partial",
+          cycle_code: "core",
+          name: "Partial Source Campaign",
+          translations: [{ locale: "de", name: "Partial Translation" }],
+        },
+      ])
+      .execute();
+    await dependencies.db
+      .insertInto("scenario")
+      .values([
+        {
+          campaign_code: "cache_full",
+          campaign_guide_location: 4,
+          code: "cache_full_1",
+          name: "Full Source Scenario",
+          rules_insert_url: "https://example.com/source-full-rules.pdf",
+          translations: [
+            {
+              campaign_guide_location: 6,
+              locale: "de",
+              name: "Full Translated Scenario",
+              rules_insert_url: "https://example.com/de-full-rules.pdf",
+            },
+          ],
+        },
+        {
+          campaign_code: "cache_partial",
+          campaign_guide_location: 8,
+          code: "cache_partial_1",
+          name: "Partial Source Scenario",
+          rules_insert_url: "https://example.com/source-partial-rules.pdf",
+          translations: [{ campaign_guide_location: null, locale: "de" }],
+        },
+      ])
+      .execute();
+
+    const res = await dependencies.app.request("/v1/cache/metadata/de");
+    const json = (await res.json()) as MetadataResponse;
+    const fullCampaign = findCampaign(json, "cache_full");
+    const partialCampaign = findCampaign(json, "cache_partial");
+    const fullScenario = findScenario(json, "cache_full_1");
+    const partialScenario = findScenario(json, "cache_partial_1");
+
+    expect(fullCampaign).toMatchObject({
+      campaign_guide_url: "https://example.com/de-full-guide.pdf",
+      name: "Full Translated Campaign",
+      real_campaign_guide_url: "https://example.com/source-full-guide.pdf",
+      real_name: "Full Source Campaign",
+    });
+    expect(fullCampaign).not.toHaveProperty("translations");
+
+    expect(partialCampaign).toMatchObject({
+      name: "Partial Translation",
+      real_campaign_guide_url: "https://example.com/source-partial-guide.pdf",
+      real_name: "Partial Source Campaign",
+    });
+    expect(partialCampaign).not.toHaveProperty("campaign_guide_url");
+    expect(partialCampaign).not.toHaveProperty("translations");
+
+    expect(fullScenario).toMatchObject({
+      campaign_guide_location: 6,
+      name: "Full Translated Scenario",
+      real_campaign_guide_location: 4,
+      real_name: "Full Source Scenario",
+      real_rules_insert_url: "https://example.com/source-full-rules.pdf",
+      rules_insert_url: "https://example.com/de-full-rules.pdf",
+    });
+    expect(fullScenario).not.toHaveProperty("translations");
+
+    expect(partialScenario).toMatchObject({
+      campaign_guide_location: null,
+      real_campaign_guide_location: 8,
+      real_name: "Partial Source Scenario",
+      real_rules_insert_url: "https://example.com/source-partial-rules.pdf",
+    });
+    expect(partialScenario).not.toHaveProperty("name");
+    expect(partialScenario).not.toHaveProperty("rules_insert_url");
+    expect(partialScenario).not.toHaveProperty("translations");
+  });
+
   test("returns compact taboo set cards", async ({ dependencies }) => {
     const res = await dependencies.app.request(
       "/v1/cache/taboo_sets_with_cards",
@@ -105,4 +280,20 @@ function packName(response: MetadataResponse, code: string) {
   const pack = response.data.pack.find((pack) => pack.code === code);
   if (!pack) throw new Error(`Pack not found: ${code}`);
   return pack.real_name;
+}
+
+function findCampaign(response: MetadataResponse, code: string) {
+  const campaign = response.data.campaign.find(
+    (campaign) => campaign.code === code,
+  );
+  if (!campaign) throw new Error(`Campaign not found: ${code}`);
+  return campaign;
+}
+
+function findScenario(response: MetadataResponse, code: string) {
+  const scenario = response.data.scenario.find(
+    (scenario) => scenario.code === code,
+  );
+  if (!scenario) throw new Error(`Scenario not found: ${code}`);
+  return scenario;
 }

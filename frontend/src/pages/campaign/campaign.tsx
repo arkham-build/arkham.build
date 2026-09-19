@@ -13,6 +13,7 @@ import { resolveCampaignScenarios } from "@/store/selectors/content";
 import { selectMetadata } from "@/store/selectors/shared";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { assert } from "@/utils/assert";
+import { resolveCampaignGuide } from "@/utils/content";
 import { displayPackName } from "@/utils/formatting";
 import { ErrorStatus } from "../errors/404";
 import { resolveCampaignCards } from "./campaign.helpers";
@@ -125,6 +126,10 @@ function CampaignCards({
   if (!listExists || activeListId !== listKey) return null;
 
   const title = displayPackName(campaign);
+  const guide = resolveCampaignGuide(campaign);
+  const originalGuide = originalCampaign
+    ? resolveCampaignGuide(originalCampaign)
+    : undefined;
 
   return (
     <CardModalProvider>
@@ -132,16 +137,15 @@ function CampaignCards({
         <ListLayoutNoSidebar
           getListCardProps={getCampaignListCardProps}
           headerActions={
-            (originalCampaign?.campaign_guide_url ||
-              campaign.campaign_guide_url) && (
+            (originalGuide || guide) && (
               <>
-                {originalCampaign?.campaign_guide_url && (
-                  <ContentGuideLink url={originalCampaign.campaign_guide_url}>
+                {originalGuide && (
+                  <ContentGuideLink {...originalGuide}>
                     {t("content.guide.campaign_pdf")}
                   </ContentGuideLink>
                 )}
-                {campaign.campaign_guide_url && (
-                  <ContentGuideLink url={campaign.campaign_guide_url}>
+                {guide && (
+                  <ContentGuideLink {...guide}>
                     {originalCampaign
                       ? t("content.guide.return_to_pdf")
                       : t("content.guide.campaign_pdf")}

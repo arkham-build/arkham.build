@@ -154,7 +154,11 @@ export interface Campaign {
   code: string;
   cycle_code: string;
   name: string;
-  translations: { locale: string; name: string }[];
+  translations: {
+    locale: string;
+    name?: string;
+    campaign_guide_url?: string;
+  }[];
   variant_of_code: string | null;
 }
 
@@ -537,7 +541,12 @@ export interface Scenario {
   code: string;
   name: string;
   rules_insert_url: string | null;
-  translations: { locale: string; name: string }[];
+  translations: {
+    locale: string;
+    name?: string;
+    rules_insert_url?: string;
+    campaign_guide_location?: number | null;
+  }[];
   variant_of_code: string | null;
 }
 

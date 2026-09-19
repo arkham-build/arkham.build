@@ -3,7 +3,10 @@ import path from "node:path";
 import {
   GrimoireEntrySchema,
   GrimoireSectionSchema,
+  type JsonDataCampaign,
   JsonDataCampaignSchema,
+  type JsonDataCampaignTranslation,
+  JsonDataCampaignTranslationSchema,
   type JsonDataCard,
   type JsonDataCycle,
   type JsonDataEncounterSet,
@@ -12,7 +15,10 @@ import {
   JsonDataFaqSchema,
   type JsonDataPack,
   JsonDataRulesVersionSchema,
+  type JsonDataScenario,
   JsonDataScenarioSchema,
+  type JsonDataScenarioTranslation,
+  JsonDataScenarioTranslationSchema,
   type JsonDataSubtype,
   type JsonDataType,
 } from "@arkham-build/shared";
@@ -144,16 +150,26 @@ export async function runIngestJsonData() {
         locales: config.METADATA_LOCALES,
         file: "taboos.json",
       }),
-      getJsonData(
-        metadataDir,
-        "campaigns/campaigns.json",
-        JsonDataCampaignSchema.array(),
-      ),
-      getJsonData(
-        metadataDir,
-        "scenarios/scenarios.json",
-        JsonDataScenarioSchema.array(),
-      ),
+      getMetadataWithTranslations<
+        JsonDataCampaign,
+        JsonDataCampaignTranslation
+      >(metadataDir, {
+        file: "campaigns/campaigns.json",
+        locales: config.METADATA_LOCALES,
+        schema: JsonDataCampaignSchema.array(),
+        translationFile: "campaigns.json",
+        translationSchema: JsonDataCampaignTranslationSchema.array(),
+      }),
+      getMetadataWithTranslations<
+        JsonDataScenario,
+        JsonDataScenarioTranslation
+      >(metadataDir, {
+        file: "scenarios/scenarios.json",
+        locales: config.METADATA_LOCALES,
+        schema: JsonDataScenarioSchema.array(),
+        translationFile: "scenarios.json",
+        translationSchema: JsonDataScenarioTranslationSchema.array(),
+      }),
       Promise.all([
         getJsonData(
           metadataDir,
@@ -267,7 +283,11 @@ export async function runIngestJsonData() {
             ),
           ),
           packs: resolvePacks(data.packs),
-          campaignRecords: resolveCampaignRecords(campaigns),
+          campaignRecords: resolveCampaignRecords(
+            campaigns.data.map((campaign) =>
+              withTranslations(campaign, campaigns.translations),
+            ),
+          ),
           errataRecords: resolveErrataRecords(errata),
           faqRecords: resolveFaqRecords(faq),
           grimoireEntries: resolveGrimoireEntries(sourceGrimoireEntries),
@@ -276,7 +296,11 @@ export async function runIngestJsonData() {
           ),
           grimoireSections: resolveGrimoireSections(sourceGrimoireSections),
           rulesVersions: resolveRulesVersions(rulesVersions),
-          scenarioRecords: resolveScenarioRecords(scenarios),
+          scenarioRecords: resolveScenarioRecords(
+            scenarios.data.map((scenario) =>
+              withTranslations(scenario, scenarios.translations),
+            ),
+          ),
           sourceErrata: errata,
           sourceFaq: faq,
           subtypes: subtypes.data.map((s) =>

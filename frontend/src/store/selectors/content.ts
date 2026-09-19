@@ -55,7 +55,10 @@ export const selectCampaigns = createSelector(
                 scenarios: resolveCampaignScenarios(variant, metadata),
               }))
               .toSorted((a, b) =>
-                collator.compare(a.campaign.real_name, b.campaign.real_name),
+                collator.compare(
+                  displayedName(a.campaign),
+                  displayedName(b.campaign),
+                ),
               ),
           },
         ];
@@ -194,7 +197,10 @@ function groupStandaloneScenariosByYear(
       return b.pack.position - a.pack.position;
     }
 
-    return collator.compare(b.scenario.real_name, a.scenario.real_name);
+    return collator.compare(
+      displayedName(b.scenario),
+      displayedName(a.scenario),
+    );
   });
 
   for (const entry of sortedEntries) {
@@ -246,4 +252,8 @@ function compareReleaseDatesDescending(a?: number, b?: number) {
   if (a == null) return 1;
   if (b == null) return -1;
   return b - a;
+}
+
+function displayedName(content: { name?: string | null; real_name: string }) {
+  return content.name ?? content.real_name;
 }

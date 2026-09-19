@@ -14,12 +14,18 @@ import {
   requestHasMatchingEtag,
 } from "../../lib/cache-headers.ts";
 import type { HonoEnv } from "../../lib/hono-env.ts";
-import { applyLocaleTranslations, mapCardRowToV1Card } from "./mapping.ts";
+import {
+  applyCampaignLocaleTranslations,
+  applyCardLocaleTranslations,
+  applyNameLocaleTranslations,
+  applyScenarioLocaleTranslations,
+  mapCardRowToV1Card,
+} from "./mapping.ts";
 import { getDataVersionByLocale } from "./queries.ts";
 
 const router = new Hono<HonoEnv>();
 
-const METADATA_VERSION = 2;
+const METADATA_VERSION = 3;
 
 const responseCaches = new WeakMap<Database, Map<string, ResponseCacheEntry>>();
 
@@ -141,7 +147,7 @@ async function cardsResponse(db: Database, locale: string) {
   const cards = await db.selectFrom("card").selectAll().execute();
 
   const all_card = cards.map((c) =>
-    applyLocaleTranslations(mapCardRowToV1Card(c), locale),
+    applyCardLocaleTranslations(mapCardRowToV1Card(c), locale),
   );
 
   return { data: { all_card } };
@@ -186,10 +192,10 @@ async function metadataResponse(db: Database, locale: string) {
 
   return {
     data: {
-      pack: packs.map((p) => applyLocaleTranslations(p, locale)),
-      cycle: cycles.map((c) => applyLocaleTranslations(c, locale)),
-      card_encounter_set: encounterSets.map((es) =>
-        applyLocaleTranslations(es, locale),
+      pack: packs.map((pack) => applyNameLocaleTranslations(pack, locale)),
+      cycle: cycles.map((cycle) => applyNameLocaleTranslations(cycle, locale)),
+      card_encounter_set: encounterSets.map((encounterSet) =>
+        applyNameLocaleTranslations(encounterSet, locale),
       ),
       taboo_set: tabooSets.map((t) => ({
         id: t.id,
@@ -198,7 +204,7 @@ async function metadataResponse(db: Database, locale: string) {
         date: t.date_start,
       })),
       campaign: campaigns.map((campaign) =>
-        applyLocaleTranslations(
+        applyCampaignLocaleTranslations(
           {
             ...campaign,
             scenarios: scenarioCodesByCampaign[campaign.code] ?? [],
@@ -207,7 +213,7 @@ async function metadataResponse(db: Database, locale: string) {
         ),
       ),
       scenario: scenarios.map((scenario) =>
-        applyLocaleTranslations(
+        applyScenarioLocaleTranslations(
           {
             ...scenario,
             encounter_sets: encounterSetsByScenario[scenario.code] ?? [],

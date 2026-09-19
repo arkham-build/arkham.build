@@ -16,6 +16,7 @@ import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
 import { selectMetadata } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
+import { resolveScenarioGuide } from "@/utils/content";
 import { displayPackName } from "@/utils/formatting";
 import { ErrorStatus } from "../errors/404";
 import css from "./scenario.module.css";
@@ -127,13 +128,10 @@ function ScenarioContent({
   if (!listExists || activeListId !== listKey) return null;
 
   const title = displayPackName(scenario);
-  const guideUrl = campaign
-    ? campaign.campaign_guide_url
-    : scenario.rules_insert_url;
-
-  const originalGuideUrl = originalCampaign
-    ? originalCampaign.campaign_guide_url
-    : originalScenario?.rules_insert_url;
+  const guide = resolveScenarioGuide(campaign, scenario);
+  const originalGuide = originalScenario
+    ? resolveScenarioGuide(originalCampaign, originalScenario)
+    : undefined;
 
   return (
     <CardModalProvider>
@@ -141,29 +139,17 @@ function ScenarioContent({
         <ListLayoutNoSidebar
           getListCardProps={getScenarioListCardProps}
           headerActions={
-            (originalGuideUrl || guideUrl) && (
+            (originalGuide || guide) && (
               <>
-                {originalGuideUrl && (
-                  <ContentGuideLink
-                    page={
-                      originalCampaign
-                        ? originalScenario?.campaign_guide_location
-                        : undefined
-                    }
-                    url={originalGuideUrl}
-                  >
+                {originalGuide && (
+                  <ContentGuideLink {...originalGuide}>
                     {originalCampaign
                       ? t("content.guide.campaign_pdf")
                       : t("content.guide.rules_insert_pdf")}
                   </ContentGuideLink>
                 )}
-                {guideUrl && (
-                  <ContentGuideLink
-                    page={
-                      campaign ? scenario.campaign_guide_location : undefined
-                    }
-                    url={guideUrl}
-                  >
+                {guide && (
+                  <ContentGuideLink {...guide}>
                     {originalScenario
                       ? t("content.guide.return_to_pdf")
                       : campaign
