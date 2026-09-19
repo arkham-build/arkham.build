@@ -1,4 +1,5 @@
 import { describe, expect } from "vitest";
+import { serializeRecords } from "../db/db.helpers.ts";
 import { test } from "./test-utils.ts";
 
 type MetadataResponse = {
@@ -106,37 +107,45 @@ describe("GET /v1/cache", () => {
   }) => {
     await dependencies.db
       .insertInto("campaign")
-      .values({
-        campaign_guide_url: "https://example.com/source-guide.pdf",
-        code: "cache_english",
-        cycle_code: "core",
-        name: "Source Campaign",
-        translations: [
+      .values(
+        serializeRecords([
           {
-            campaign_guide_url: "https://example.com/de-guide.pdf",
-            locale: "de",
-            name: "Translated Campaign",
+            campaign_guide_url: "https://example.com/source-guide.pdf",
+            code: "cache_english",
+            cycle_code: "core",
+            name: "Source Campaign",
+            translations: [
+              {
+                campaign_guide_url: "https://example.com/de-guide.pdf",
+                locale: "de",
+                name: "Translated Campaign",
+              },
+            ],
           },
-        ],
-      })
+        ]),
+      )
       .execute();
     await dependencies.db
       .insertInto("scenario")
-      .values({
-        campaign_code: "cache_english",
-        campaign_guide_location: 4,
-        code: "cache_english_1",
-        name: "Source Scenario",
-        rules_insert_url: "https://example.com/source-rules.pdf",
-        translations: [
+      .values(
+        serializeRecords([
           {
-            campaign_guide_location: 6,
-            locale: "de",
-            name: "Translated Scenario",
-            rules_insert_url: "https://example.com/de-rules.pdf",
+            campaign_code: "cache_english",
+            campaign_guide_location: 4,
+            code: "cache_english_1",
+            name: "Source Scenario",
+            rules_insert_url: "https://example.com/source-rules.pdf",
+            translations: [
+              {
+                campaign_guide_location: 6,
+                locale: "de",
+                name: "Translated Scenario",
+                rules_insert_url: "https://example.com/de-rules.pdf",
+              },
+            ],
           },
-        ],
-      })
+        ]),
+      )
       .execute();
 
     const res = await dependencies.app.request("/v1/cache/metadata");
@@ -168,56 +177,60 @@ describe("GET /v1/cache", () => {
   }) => {
     await dependencies.db
       .insertInto("campaign")
-      .values([
-        {
-          campaign_guide_url: "https://example.com/source-full-guide.pdf",
-          code: "cache_full",
-          cycle_code: "core",
-          name: "Full Source Campaign",
-          translations: [
-            {
-              campaign_guide_url: "https://example.com/de-full-guide.pdf",
-              locale: "de",
-              name: "Full Translated Campaign",
-            },
-          ],
-        },
-        {
-          campaign_guide_url: "https://example.com/source-partial-guide.pdf",
-          code: "cache_partial",
-          cycle_code: "core",
-          name: "Partial Source Campaign",
-          translations: [{ locale: "de", name: "Partial Translation" }],
-        },
-      ])
+      .values(
+        serializeRecords([
+          {
+            campaign_guide_url: "https://example.com/source-full-guide.pdf",
+            code: "cache_full",
+            cycle_code: "core",
+            name: "Full Source Campaign",
+            translations: [
+              {
+                campaign_guide_url: "https://example.com/de-full-guide.pdf",
+                locale: "de",
+                name: "Full Translated Campaign",
+              },
+            ],
+          },
+          {
+            campaign_guide_url: "https://example.com/source-partial-guide.pdf",
+            code: "cache_partial",
+            cycle_code: "core",
+            name: "Partial Source Campaign",
+            translations: [{ locale: "de", name: "Partial Translation" }],
+          },
+        ]),
+      )
       .execute();
     await dependencies.db
       .insertInto("scenario")
-      .values([
-        {
-          campaign_code: "cache_full",
-          campaign_guide_location: 4,
-          code: "cache_full_1",
-          name: "Full Source Scenario",
-          rules_insert_url: "https://example.com/source-full-rules.pdf",
-          translations: [
-            {
-              campaign_guide_location: 6,
-              locale: "de",
-              name: "Full Translated Scenario",
-              rules_insert_url: "https://example.com/de-full-rules.pdf",
-            },
-          ],
-        },
-        {
-          campaign_code: "cache_partial",
-          campaign_guide_location: 8,
-          code: "cache_partial_1",
-          name: "Partial Source Scenario",
-          rules_insert_url: "https://example.com/source-partial-rules.pdf",
-          translations: [{ campaign_guide_location: null, locale: "de" }],
-        },
-      ])
+      .values(
+        serializeRecords([
+          {
+            campaign_code: "cache_full",
+            campaign_guide_location: 4,
+            code: "cache_full_1",
+            name: "Full Source Scenario",
+            rules_insert_url: "https://example.com/source-full-rules.pdf",
+            translations: [
+              {
+                campaign_guide_location: 6,
+                locale: "de",
+                name: "Full Translated Scenario",
+                rules_insert_url: "https://example.com/de-full-rules.pdf",
+              },
+            ],
+          },
+          {
+            campaign_code: "cache_partial",
+            campaign_guide_location: 8,
+            code: "cache_partial_1",
+            name: "Partial Source Scenario",
+            rules_insert_url: "https://example.com/source-partial-rules.pdf",
+            translations: [{ campaign_guide_location: null, locale: "de" }],
+          },
+        ]),
+      )
       .execute();
 
     const res = await dependencies.app.request("/v1/cache/metadata/de");
