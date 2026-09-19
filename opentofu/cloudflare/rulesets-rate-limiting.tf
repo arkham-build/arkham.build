@@ -31,8 +31,8 @@ resource "cloudflare_ruleset" "rate_limiting" {
     },
     {
       action      = "block"
-      expression  = "(http.host eq \"api.arkham.build\" and http.request.uri.path contains \"/v2/auth\")"
-      description = "Rate limit API login"
+      expression  = "(http.host eq \"api.arkham.build\" and (http.request.uri.path contains \"/v2/auth\" or (http.request.method in {\"GET\" \"HEAD\"} and http.request.uri.path eq \"/v2/oauth/authorize\") or (http.request.method eq \"POST\" and http.request.uri.path in {\"/v2/oauth/token\" \"/v2/oauth/revoke\"})))"
+      description = "Rate limit authentication and OAuth"
       enabled     = true
       ref         = "97036468535242ba95d423826fa4e508"
 
@@ -46,7 +46,7 @@ resource "cloudflare_ruleset" "rate_limiting" {
 
       ratelimit = {
         characteristics     = ["ip.src", "cf.colo.id"]
-        mitigation_timeout  = 600
+        mitigation_timeout  = 60
         period              = 60
         requests_per_period = 10
         requests_to_origin  = false
