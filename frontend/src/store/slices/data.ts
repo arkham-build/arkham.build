@@ -51,11 +51,7 @@ export const createDataSlice: StateCreator<StoreState, [], [], DataSlice> = (
     await dehydrate(get(), "app");
   },
 
-  async importFromFiles(files) {
-    const decks: Deck[] = await Promise.all(
-      Array.from(files).map((file) => file.text().then(JSON.parse)),
-    ).then((res) => res.filter(isDeck));
-
+  async importDecks(decks) {
     get().cacheFanMadeContent(decks);
 
     const formatted = decks.map((deck) =>
@@ -83,6 +79,14 @@ export const createDataSlice: StateCreator<StoreState, [], [], DataSlice> = (
     }));
 
     await dehydrate(get(), "app");
+  },
+
+  async importFromFiles(files) {
+    const decks: Deck[] = await Promise.all(
+      Array.from(files).map((file) => file.text().then(JSON.parse)),
+    ).then((res) => res.filter(isDeck));
+
+    await get().importDecks(decks);
   },
 
   async duplicateDeck(id, options) {
