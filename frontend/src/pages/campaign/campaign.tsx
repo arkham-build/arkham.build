@@ -1,9 +1,15 @@
-import type { Campaign as CampaignData, Card } from "@arkham-build/shared";
+import type {
+  Campaign as CampaignData,
+  Card,
+  Scenario,
+} from "@arkham-build/shared";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { ContentGuideLink } from "@/components/content-guide-link";
+import { ContentNavigation } from "@/components/content-navigation/content-navigation";
+import EncounterIcon from "@/components/icons/encounter-icon";
 import PackIcon from "@/components/icons/pack-icon";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
@@ -51,6 +57,7 @@ function Campaign() {
       campaign={campaign}
       cardCodes={cardCodes}
       encounterSetOrder={encounterSetOrder}
+      firstScenario={scenarios.at(0)}
       originalCampaign={originalCampaign}
     />
   );
@@ -60,11 +67,13 @@ function CampaignCards({
   campaign,
   cardCodes,
   encounterSetOrder,
+  firstScenario,
   originalCampaign,
 }: {
   campaign: CampaignData;
   cardCodes: ReadonlySet<string>;
   encounterSetOrder: readonly string[];
+  firstScenario: Scenario | undefined;
   originalCampaign: CampaignData | undefined;
 }) {
   const { t } = useTranslation();
@@ -152,6 +161,17 @@ function CampaignCards({
                   </ContentGuideLink>
                 )}
               </>
+            )
+          }
+          headerNavigation={
+            firstScenario && (
+              <ContentNavigation
+                next={{
+                  href: `/scenario/${firstScenario.code}`,
+                  icon: <EncounterIcon code={firstScenario.code} />,
+                  name: displayPackName(firstScenario),
+                }}
+              />
             )
           }
           headerTop={<CampaignBreadcrumb />}

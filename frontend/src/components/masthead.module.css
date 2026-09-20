@@ -53,6 +53,10 @@
   white-space: nowrap;
 }
 
+.nav-link-arrow {
+  font-size: var(--text-2xs);
+}
+
 .icon-link {
   flex: 0 0 auto;
 }

@@ -1,6 +1,7 @@
 import {
   BookOpenTextIcon,
   BookTextIcon,
+  ChevronDownIcon,
   KeyboardIcon,
   LogOutIcon,
   MapIcon,
@@ -160,6 +161,7 @@ function BrowseMenu(props: { location: string }) {
           >
             <i className="icon-card-outline-bold" />
             {t("masthead.browse")}
+            <ChevronDownIcon className={css["nav-link-arrow"]} aria-hidden />
           </Button>
         </PopoverTrigger>
       </Link>

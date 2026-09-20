@@ -24,6 +24,11 @@ export type StandaloneScenarioGroup = {
   }[];
 };
 
+export type ScenarioNavigation = {
+  next?: Scenario;
+  previous?: Scenario;
+};
+
 type StandaloneScenarioEntry = {
   pack: Pack;
   release: number | undefined;
@@ -128,6 +133,70 @@ export const selectStandaloneScenarioGroups = createSelector(
   },
 );
 
+export function resolveScenarioNavigation(
+  scenario: Scenario,
+  metadata: Metadata,
+  standaloneGroups: StandaloneScenarioGroup[],
+): ScenarioNavigation {
+  if (scenario.campaign_code != null) {
+    const campaign = metadata.campaigns[scenario.campaign_code];
+    assert(
+      campaign,
+      `Scenario ${scenario.code} references missing campaign ${scenario.campaign_code}`,
+    );
+
+    return adjacentScenarios(
+      resolveCampaignScenarios(campaign, metadata),
+      scenario,
+      `Campaign ${campaign.code}`,
+    );
+  }
+
+  const group = standaloneGroups.find(({ yearGroups }) =>
+    yearGroups.some(({ scenarios }) =>
+      scenarios.some(({ code }) => code === scenario.code),
+    ),
+  );
+  assert(group, `Standalone scenario ${scenario.code} has no cycle group`);
+
+  return adjacentScenarios(
+    group.yearGroups.flatMap(({ scenarios }) => scenarios),
+    scenario,
+    `Standalone cycle ${group.cycle.code}`,
+  );
+}
+
+export function resolveCampaignScenarios(
+  campaign: Campaign,
+  metadata: Metadata,
+) {
+  return campaign.scenarios.map((scenarioCode) => {
+    const scenario = metadata.scenarios[scenarioCode];
+    assert(
+      scenario,
+      `Campaign ${campaign.code} references missing scenario ${scenarioCode}`,
+    );
+    return scenario;
+  });
+}
+
+function adjacentScenarios(
+  scenarios: Scenario[],
+  scenario: Scenario,
+  sequenceName: string,
+): ScenarioNavigation {
+  const index = scenarios.findIndex(({ code }) => code === scenario.code);
+  assert(
+    index >= 0,
+    `${sequenceName} does not reference scenario ${scenario.code}`,
+  );
+
+  return {
+    previous: index > 0 ? scenarios.at(index - 1) : undefined,
+    next: scenarios.at(index + 1),
+  };
+}
+
 function groupCampaignVariants(metadata: Metadata) {
   const variants: Record<string, Campaign[]> = {};
 
@@ -146,20 +215,6 @@ function groupCampaignVariants(metadata: Metadata) {
   }
 
   return variants;
-}
-
-export function resolveCampaignScenarios(
-  campaign: Campaign,
-  metadata: Metadata,
-) {
-  return campaign.scenarios.map((scenarioCode) => {
-    const scenario = metadata.scenarios[scenarioCode];
-    assert(
-      scenario,
-      `Campaign ${campaign.code} references missing scenario ${scenarioCode}`,
-    );
-    return scenario;
-  });
 }
 
 function resolvePackCycle(pack: Pack, scenario: Scenario, metadata: Metadata) {

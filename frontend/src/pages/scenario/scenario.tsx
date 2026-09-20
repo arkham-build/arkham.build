@@ -8,12 +8,21 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
 import { ContentGuideLink } from "@/components/content-guide-link";
+import {
+  ContentNavigation,
+  type ContentNavigationTarget,
+} from "@/components/content-navigation/content-navigation";
 import EncounterIcon from "@/components/icons/encounter-icon";
 import PackIcon from "@/components/icons/pack-icon";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
+import {
+  resolveScenarioNavigation,
+  type ScenarioNavigation,
+  selectStandaloneScenarioGroups,
+} from "@/store/selectors/content";
 import { selectMetadata } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
 import { resolveScenarioGuide } from "@/utils/content";
@@ -24,6 +33,7 @@ import css from "./scenario.module.css";
 function Scenario() {
   const { code } = useParams();
   const metadata = useStore(selectMetadata);
+  const standaloneGroups = useStore(selectStandaloneScenarioGroups);
   const scenario = code ? metadata.scenarios[code] : undefined;
 
   if (!scenario) {
@@ -56,9 +66,16 @@ function Scenario() {
     `Scenario ${originalScenario?.code} references missing campaign ${originalScenario?.campaign_code}`,
   );
 
+  const navigation = resolveScenarioNavigation(
+    scenario,
+    metadata,
+    standaloneGroups,
+  );
+
   return (
     <ScenarioContent
       campaign={campaign}
+      navigation={navigation}
       originalCampaign={originalCampaign}
       originalScenario={originalScenario}
       scenario={scenario}
@@ -68,11 +85,13 @@ function Scenario() {
 
 function ScenarioContent({
   campaign,
+  navigation,
   originalCampaign,
   originalScenario,
   scenario,
 }: {
   campaign: Campaign | undefined;
+  navigation: ScenarioNavigation;
   originalCampaign: Campaign | undefined;
   originalScenario: ScenarioData | undefined;
   scenario: ScenarioData;
@@ -160,6 +179,14 @@ function ScenarioContent({
               </>
             )
           }
+          headerNavigation={
+            (navigation.previous || navigation.next) && (
+              <ContentNavigation
+                next={toNavigationTarget(navigation.next)}
+                previous={toNavigationTarget(navigation.previous)}
+              />
+            )
+          }
           headerTop={
             <Breadcrumb
               items={[
@@ -191,6 +218,18 @@ function ScenarioContent({
       </ListLayoutContextProvider>
     </CardModalProvider>
   );
+}
+
+function toNavigationTarget(
+  scenario: ScenarioData | undefined,
+): ContentNavigationTarget | undefined {
+  if (!scenario) return undefined;
+
+  return {
+    href: `/scenario/${scenario.code}`,
+    icon: <EncounterIcon code={scenario.code} />,
+    name: displayPackName(scenario),
+  };
 }
 
 function getScenarioListCardProps() {

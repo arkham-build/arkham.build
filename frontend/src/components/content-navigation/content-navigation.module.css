@@ -1,0 +1,70 @@
+@layer ui-components {
+  .navigation {
+    align-items: stretch;
+    border: 1px solid var(--palette-2);
+    border-radius: var(--rounded);
+    display: flex;
+    flex: 0 1 auto;
+    font-size: var(--text-xs);
+    line-height: 1;
+    margin-left: auto;
+    overflow: hidden;
+  }
+
+  .link {
+    align-items: center;
+    background: var(--palette-point-five);
+    color: inherit;
+    display: inline-flex;
+    flex: 0 1 auto;
+    gap: 0.375rem;
+    justify-content: center;
+    min-width: 1.25rem;
+    padding: 0.25rem;
+    text-decoration: none;
+  }
+
+  .link + .link {
+    border-left: 1px solid var(--palette-2);
+  }
+
+  .link:not(.disabled):hover {
+    background: var(--palette-1);
+  }
+
+  .link:not(.disabled):active {
+    background: var(--palette-2);
+  }
+
+  .link:focus-visible {
+    outline: 1px solid var(--color-focus);
+    outline-offset: -2px;
+  }
+
+  .link > svg {
+    flex: 0 0 auto;
+    height: 0.625rem;
+    width: 0.625rem;
+  }
+
+  .disabled {
+    background: transparent;
+    color: var(--palette-3);
+  }
+
+  .icon {
+    align-items: center;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 1rem;
+    height: 1rem;
+    justify-content: center;
+    width: 1rem;
+  }
+
+  .icon img {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+  }
+}

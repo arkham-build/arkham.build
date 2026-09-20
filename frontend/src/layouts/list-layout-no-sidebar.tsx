@@ -15,6 +15,7 @@ import css from "./list-layout-no-sidebar.module.css";
 
 interface Props extends React.ComponentProps<typeof CardListContainer> {
   headerActions?: React.ReactNode;
+  headerNavigation?: React.ReactNode;
   headerTop?: React.ReactNode;
   omitBackButton?: boolean;
   titleString: string;
@@ -28,6 +29,7 @@ interface Props extends React.ComponentProps<typeof CardListContainer> {
 export function ListLayoutNoSidebar(props: Props) {
   const {
     headerActions,
+    headerNavigation,
     headerTop,
     omitBackButton,
     title,
@@ -95,8 +97,13 @@ export function ListLayoutNoSidebar(props: Props) {
           }
           topContent={
             <header className={css["header"]}>
-              {headerTop && (
-                <div className={css["header-top"]}>{headerTop}</div>
+              {(headerTop || headerNavigation) && (
+                <div className={css["header-top"]}>
+                  {headerTop && (
+                    <div className={css["header-top-content"]}>{headerTop}</div>
+                  )}
+                  {headerNavigation}
+                </div>
               )}
               <div className={css["title-row"]}>
                 <h1 className={css["title"]}>{title ?? titleString}</h1>
