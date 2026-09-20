@@ -18,6 +18,7 @@
     "dev:functions": "wrangler pages dev",
     "fmt": "oxlint --fix . && oxfmt --write .",
     "lint": "oxlint --deny-warnings --report-unused-disable-directives . && oxfmt --check .",
+    "pdfjs:update": "bin/update-pdfjs",
     "prepare:e2e": "playwright install --with-deps",
     "test:e2e": "playwright test --config test/e2e/playwright.config.ts",
     "test:fullstack": "playwright test --config test/fullstack/playwright.config.ts",
@@ -38,6 +39,7 @@
     "oxfmt": "0.67.0",
     "oxlint": "1.82.0",
     "oxlint-tsgolint": "7.0.2001",
+    "pdfjs-dist": "6.3.289",
     "typescript": "7.0.2",
     "vitest": "5.0.0",
     "wrangler": "4.131.1"

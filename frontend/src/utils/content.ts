@@ -57,15 +57,18 @@ function sourceCampaignGuideLocation(
     : scenario.campaign_guide_location;
 }
 
-export function pdfUrlAtPage(url: string, page: number | null | undefined) {
-  if (page == null) return url;
+export function pdfViewerUrlAtPage(
+  url: string,
+  page: number | null | undefined,
+) {
+  const viewerUrl = new URL(import.meta.env.VITE_PDFJS_VIEWER_URL);
+  viewerUrl.searchParams.set("file", url);
 
-  const pdfUrl = new URL(url);
-  const fragment = new URLSearchParams(pdfUrl.hash.slice(1));
-  fragment.set("page", String(page));
-  pdfUrl.hash = fragment.toString();
+  if (page != null) {
+    viewerUrl.hash = `page=${page}`;
+  }
 
-  return pdfUrl.toString();
+  return viewerUrl.toString();
 }
 
 export function contentBannerConstraints(code: string) {

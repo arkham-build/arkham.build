@@ -1,4 +1,4 @@
-import { pdfUrlAtPage } from "@/utils/content";
+import { pdfViewerUrlAtPage } from "@/utils/content";
 import { Button } from "./ui/button";
 import css from "./content-guide-link.module.css";
 
@@ -15,7 +15,7 @@ export function ContentGuideLink({
     <Button
       as="a"
       className={css["button"]}
-      href={pdfUrlAtPage(url, page)}
+      href={pdfViewerUrlAtPage(url, page)}
       rel="noreferrer"
       size="sm"
       target="_blank"

@@ -168,5 +168,25 @@ resource "cloudflare_ruleset" "cache" {
         }
       }
     },
+    {
+      action      = "set_cache_settings"
+      expression  = "(http.host eq \"guides.arkham.build\")"
+      description = "[Guides] One-year cache"
+      enabled     = true
+      ref         = "0cb744e1210e4a30937c267dd0051283"
+
+      action_parameters = {
+        cache = true
+        browser_ttl = {
+          default = 31536000
+          mode    = "override_origin"
+        }
+        edge_ttl = {
+          default         = 31536000
+          mode            = "override_origin"
+          status_code_ttl = local.cache_non_success_status_ttl
+        }
+      }
+    },
   ]
 }
