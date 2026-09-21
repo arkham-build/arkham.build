@@ -13,7 +13,6 @@ import { CardActions } from "./card-actions";
 import css from "./card-grid.module.css";
 import type { CardListImplementationProps } from "./types";
 
-const HIGHLIGHT_HOLD_MS = 180;
 const SCAN_GRID_GAP = 16;
 
 export function CardGrid(
@@ -30,22 +29,12 @@ export function CardGrid(
     HTMLElement | undefined
   >();
   const [highlighted, setHighlighted] = useState<number | null>(null);
-  const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined,
-  );
 
   const [setMeasureRef, rect] = useMeasure();
 
   useEffect(() => {
     virtuosoRef.current?.scrollToIndex(0);
   }, [search, data?.cards.length, rest.listDisplay]);
-
-  useEffect(
-    () => () => {
-      clearTimeout(highlightTimeoutRef.current);
-    },
-    [],
-  );
 
   const setScrollParent = (el: HTMLDivElement | null) => {
     if (el) {
@@ -111,14 +100,7 @@ export function CardGrid(
         .slice(0, group)
         .reduce((acc, _, idx) => acc + data.groupCounts[idx], 0);
 
-      clearTimeout(highlightTimeoutRef.current);
       setHighlighted(cardAtOffset);
-      highlightTimeoutRef.current = setTimeout(() => {
-        setHighlighted((current) =>
-          current === cardAtOffset ? null : current,
-        );
-        highlightTimeoutRef.current = undefined;
-      }, HIGHLIGHT_HOLD_MS);
 
       virtuosoRef.current?.scrollToIndex({
         index: cardAtOffset / cols - 1,
