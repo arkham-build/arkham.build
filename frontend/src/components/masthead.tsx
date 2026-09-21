@@ -145,26 +145,21 @@ function MastheadNav(props: { location: string; navSlot?: React.ReactNode }) {
 function BrowseMenu(props: { location: string }) {
   const { location } = props;
   const { t } = useTranslation();
-  const active = isMastheadPathActive(location, "browse");
 
   return (
     <Popover placement="bottom-start">
-      <Link asChild href="~/browse">
-        <PopoverTrigger asChild>
-          <Button
-            as="a"
-            aria-current={active ? "page" : undefined}
-            className={cx(css["nav-link"], active && css["active"])}
-            data-testid="masthead-browse"
-            size="sm"
-            variant="bare"
-          >
-            <i className="icon-card-outline-bold" />
-            {t("masthead.browse")}
-            <ChevronDownIcon className={css["nav-link-arrow"]} aria-hidden />
-          </Button>
-        </PopoverTrigger>
-      </Link>
+      <PopoverTrigger asChild>
+        <Button
+          className={css["nav-link"]}
+          data-testid="masthead-browse"
+          size="sm"
+          variant="bare"
+        >
+          <i className="icon-card-outline-bold" />
+          {t("masthead.browse")}
+          <ChevronDownIcon className={css["nav-link-arrow"]} aria-hidden />
+        </Button>
+      </PopoverTrigger>
       <PopoverContent>
         <DropdownMenu aria-label={t("masthead.browse")}>
           <NavDropdownLink
