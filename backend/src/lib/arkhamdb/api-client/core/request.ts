@@ -50,6 +50,7 @@ export async function request<T, E extends HonoEnv = HonoEnv>(
       throw new ApiError("Failed to connect to ArkhamDB", 500);
     }
 
+    console.error(err);
     throw err;
   }
 

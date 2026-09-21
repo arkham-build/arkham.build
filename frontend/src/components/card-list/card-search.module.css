@@ -55,6 +55,10 @@
   visibility: visible;
 }
 
+.flags-slot {
+  font-size: var(--text-sm);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .container:hover .flags {
     opacity: 1;
