@@ -1,3 +1,8 @@
+.positioner {
+  max-width: min(calc(100vw - 0.625rem), 20rem);
+  width: max-content;
+}
+
 .content {
   background-color: var(--palette-1);
   padding: 0.1875rem 0.3125rem;
@@ -5,7 +10,7 @@
   border: 1px solid var(--palette-2);
   border-radius: var(--rounded);
   box-shadow: var(--shadow);
-  max-width: min(100%, 20rem);
+  width: 100%;
 }
 
 .content * {

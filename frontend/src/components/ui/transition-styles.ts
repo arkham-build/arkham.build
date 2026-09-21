@@ -27,10 +27,13 @@ export function floatingTransitionStyles(
 
 export function tooltipTransitionStyles(): UseTransitionStylesProps {
   return {
-    duration: { open: 120, close: 60 },
-    common: { transitionTimingFunction: MOTION_EASE_OUT },
-    initial: { opacity: 0 },
-    open: { opacity: 1 },
+    duration: { open: 150, close: 80 },
+    common: ({ placement }: { placement: Placement }) => ({
+      transformOrigin: transformOriginForPlacement(placement),
+      transitionTimingFunction: MOTION_EASE_OUT,
+    }),
+    initial: { opacity: 0, transform: "scale(0.96)" },
+    open: { opacity: 1, transform: "scale(1)" },
   };
 }
 

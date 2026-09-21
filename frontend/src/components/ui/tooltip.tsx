@@ -89,6 +89,7 @@ export function TooltipContent({
     <FloatingPortal>
       <div
         {...context.getFloatingProps()}
+        className={css["positioner"]}
         ref={ref}
         style={{
           ...context.floatingStyles,

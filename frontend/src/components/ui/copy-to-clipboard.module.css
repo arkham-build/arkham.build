@@ -8,8 +8,8 @@
     opacity: 0;
     transform: scale(0.8);
     transition:
-      opacity 150ms ease-in-out,
-      transform 150ms ease-in-out;
+      opacity 125ms ease-in-out,
+      transform 125ms ease-in-out;
   }
 
   .icon-swap:not([data-copied="true"]) .copy,

@@ -65,6 +65,7 @@ export function useTooltip({
       close: 0,
     },
     move: false,
+    mouseOnly: true,
     enabled: !paused && controlledOpen == null,
   });
 
@@ -131,8 +132,9 @@ export function useRestingTooltip(
   };
 
   const onPointerMove = (evt: React.PointerEvent) => {
-    if (evt.pointerType === "touch" || suppressUntilLeave || tooltipOpen)
+    if (evt.pointerType === "touch" || suppressUntilLeave || tooltipOpen) {
       return;
+    }
 
     clearTimeout(restTimeoutRef.current);
 

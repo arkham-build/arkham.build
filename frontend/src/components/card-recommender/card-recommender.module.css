@@ -78,17 +78,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .recommendation-bar {
-    animation: recommendation-fade-in 100ms linear both;
-  }
-}
-
-@keyframes recommendation-fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
+    animation: none;
   }
 }
 

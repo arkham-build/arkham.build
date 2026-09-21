@@ -26,21 +26,11 @@
 
   @media (prefers-reduced-motion: reduce) {
     .reveal {
-      transition:
-        opacity 125ms ease-in,
-        display 125ms ease-in;
-      transition-behavior: allow-discrete;
+      transition: none;
     }
 
     .reveal[data-state] {
       transform: none;
-    }
-
-    @starting-style {
-      .reveal[data-state="open"] {
-        opacity: 0;
-        transform: none;
-      }
     }
   }
 }
