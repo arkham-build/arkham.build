@@ -175,6 +175,10 @@ export function CardSearch(props: Props) {
     pasted.current = true;
   };
 
+  const onFlagsPointerDown = (evt: React.PointerEvent) => {
+    if (evt.pointerType === "touch") evt.preventDefault();
+  };
+
   const onToggleGameText = (val: boolean | string) => {
     setSearchFlag("includeGameText", !!val, resolvedDeck);
     inputRef.current?.focus();
@@ -255,7 +259,7 @@ export function CardSearch(props: Props) {
         </div>
         {slotRight}
       </div>
-      <div className={css["flags"]}>
+      <div className={css["flags"]} onPointerDown={onFlagsPointerDown}>
         <div className={css["buildql-flags-tag"]}>{iconSlotNode}</div>
         <div className={css["flags-slot"]}>{slotFlags}</div>
         {}
