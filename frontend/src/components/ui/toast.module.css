@@ -1,51 +1,36 @@
 .toast-container {
-  position: fixed;
-  bottom: calc(1rem + var(--safe-area-bottom));
-  right: calc(1rem + var(--safe-area-right));
-  z-index: 100;
-  display: flex;
-  gap: 1rem;
-  flex-flow: column nowrap;
-  max-width: min(90%, 45ch);
-  min-width: min(75%, 30ch);
-  scrollbar-gutter: stable;
+  max-width: min(90%, 36ch, var(--width));
 }
 
 .toast {
   display: flex;
   gap: 0.75rem;
+  box-sizing: border-box;
   width: 100%;
-  background: var(--palette-point-five);
-  color: var(--palette-5);
-  padding: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  border-radius: var(--rounded);
-  opacity: 1;
-  transform: translateX(0);
-  transition:
-    opacity 180ms var(--motion-ease-out),
-    transform 180ms var(--motion-ease-out);
-  border: 1px solid var(--palette-2);
-  text-align: left;
-  position: relative;
   max-height: 70dvh;
+  padding: 0.75rem;
+  color: var(--palette-5);
+  text-align: left;
+  background: var(--palette-point-five);
+  border: 1px solid var(--palette-2);
+  border-radius: var(--rounded);
+  box-shadow: var(--shadow-lg);
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  max-height: calc(70dvh - 1.5rem);
   overflow: auto;
   overscroll-behavior: contain;
 }
 
-.toast.closable {
-  padding: 1rem;
-}
-
-.toast.exiting {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(calc(100% + 1rem));
-  transition-duration: 100ms;
-}
-
 .icon {
+  display: flex;
   flex: 0 0 auto;
+  align-items: center;
+  width: var(--icon-base);
+  height: var(--icon-base);
 }
 
 .toast.success {
@@ -64,33 +49,24 @@
   color: var(--color-error);
 }
 
-@starting-style {
-  .toast {
-    opacity: 0;
-    transform: translateX(calc(100% + 1rem));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .toast {
-    transform: none;
-    transition: opacity 100ms linear;
-  }
-
-  .toast.exiting {
-    transform: none;
-  }
-
-  @starting-style {
-    .toast {
-      opacity: 0;
-      transform: none;
-    }
-  }
-}
-
 .toast-dismiss {
   position: absolute;
   top: 0.125rem;
   right: 0.125rem;
+  display: flex;
+  padding: 0.25rem;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--rounded);
+}
+
+.toast-dismiss:hover {
+  background: var(--palette-1);
+}
+
+.toast-dismiss:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
 }

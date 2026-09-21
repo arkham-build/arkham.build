@@ -13,7 +13,7 @@ import { useBrowserLocation } from "wouter/use-browser-location";
 import { ErrorBoundary } from "./components/error-boundary";
 import { KeyboardShortcutsModal } from "./components/keyboard-shortcuts/keyboard-shortcuts-modal";
 import { Loader } from "./components/ui/loader";
-import { ToastProvider } from "./components/ui/toast";
+import { Toaster } from "./components/ui/toast";
 import { useToast } from "./components/ui/toast.hooks";
 import { ErrorStatus } from "./pages/errors/404";
 import {
@@ -127,9 +127,8 @@ function Providers(props: {
     <HttpClientProvider client={props.httpClient}>
       <QueryClientProvider client={queryClient}>
         <ErrorBoundary>
-          <Suspense>
-            <ToastProvider>{props.children}</ToastProvider>
-          </Suspense>
+          <Suspense>{props.children}</Suspense>
+          <Toaster />
         </ErrorBoundary>
       </QueryClientProvider>
     </HttpClientProvider>
