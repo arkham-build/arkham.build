@@ -82,7 +82,6 @@ export function Browse() {
     <>
       <PageTitle>{t("browse.title")}</PageTitle>
       <ListLayout
-        noFade
         filters={<Filters targetDeck={undefined} />}
         sidebar={
           <SetTree

@@ -71,7 +71,6 @@ export function ListLayoutNoSidebar(props: Props) {
       className={cx(
         css["layout"],
         floatingMenuOpen && css["floating-menu-open"],
-        "fade-in",
       )}
       onClick={onContentClick}
     >

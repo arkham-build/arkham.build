@@ -33,22 +33,21 @@
 .result-trigger {
   display: block;
   width: 100%;
-  transition: transform 0.125s ease;
-  will-change: transform;
   border-radius: var(--rounded-scan);
   background: none;
   user-select: none;
 
-  &:hover {
-    cursor: pointer;
-    transform: translateY(-0.25rem);
-    transition: transform 0.125s ease;
+  &:focus-visible {
+    border: 2px solid var(--color-focus);
   }
 
-  &:focus-visible {
-    transform: translateY(-0.25rem);
-    transition: transform 0.125s ease;
-    border: 2px solid var(--color-focus);
+  @media (hover: hover) and (pointer: fine) {
+    transition: transform 125ms var(--motion-ease-out);
+
+    &:hover {
+      cursor: pointer;
+      transform: translateY(-0.25rem);
+    }
   }
 }
 
@@ -73,15 +72,28 @@
   position: relative;
   border-radius: var(--rounded-scan);
   background: var(--palette-0);
-  transition:
-    box-shadow 0.3s ease,
-    transform 0.3s ease;
 
-  &:focus-visible,
-  &:hover {
+  &:focus-visible {
     box-shadow: 0 0 calc(var(--level) * 0.4rem) var(--accent-color);
-    transform: scale(1.02);
     z-index: 3;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    transition: transform 150ms var(--motion-ease-out);
+
+    &:hover {
+      box-shadow: 0 0 calc(var(--level) * 0.4rem) var(--accent-color);
+      transform: scale(1.02);
+      z-index: 3;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-trigger,
+  .result img {
+    transform: none;
+    transition: none;
   }
 }
 

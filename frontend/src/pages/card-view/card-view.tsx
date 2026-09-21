@@ -22,7 +22,6 @@ import {
   displayAttribute,
   isStaticInvestigator,
 } from "@/utils/card-utils";
-import { cx } from "@/utils/cx";
 import { download } from "@/utils/download";
 import { ErrorStatus } from "../errors/404";
 import css from "./card-view.module.css";
@@ -70,7 +69,7 @@ function CardView() {
   return (
     <CardModalProvider>
       <PageTitle>{displayAttribute(cardWithRelations.card, "name")}</PageTitle>
-      <div className={cx(css["layout"], "fade-in")}>
+      <div className={css["layout"]}>
         <Masthead className={css["header"]} />
         <main className={css["main"]}>
           <CardViewCards

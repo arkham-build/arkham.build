@@ -1,5 +1,4 @@
 .deck-tools {
-  animation: fadeIn 0.5s;
   min-height: 32rem;
 }
 
@@ -156,14 +155,5 @@ td.trait-chart-column-trait {
   .deck-tools {
     grid-column: sidebar / filters;
     height: calc(100% - 0.5rem);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }

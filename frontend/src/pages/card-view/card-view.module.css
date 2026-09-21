@@ -186,6 +186,7 @@ a.printings-item:not(.active):focus-visible {
   width: min(18rem, 75%);
 }
 
-.preview {
+.preview-inner {
   box-shadow: var(--shadow);
+  width: 100%;
 }

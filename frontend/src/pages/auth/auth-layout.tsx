@@ -22,7 +22,7 @@ export function AuthLayout(props: Props) {
   }, []);
 
   return (
-    <AppLayout noFade title={title}>
+    <AppLayout title={title}>
       <div className={css["container"]}>
         <Plane className={css["plane"]} as="section" size="none">
           <header className={css["header"]}>

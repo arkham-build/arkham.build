@@ -41,10 +41,6 @@
 .layout.floating-menu-open::before {
   display: block;
   opacity: 1;
-  transition:
-    opacity 0.2s ease-in,
-    display 0.2s;
-  transition-behavior: allow-discrete;
 }
 
 .filters {
@@ -85,11 +81,6 @@
   z-index: 3;
   background: var(--palette-0);
   box-shadow: var(--shadow-md);
-  transition:
-    transform 0.2s ease-in,
-    display 0.2s;
-  transition-behavior: allow-discrete;
-
   &[data-state="open"] {
     transform: translateX(0);
   }
@@ -143,14 +134,4 @@
   flex-direction: column;
   margin-left: auto;
   white-space: nowrap;
-}
-
-@starting-style {
-  .filters.floating {
-    transform: translateX(calc(100% + 1.5rem));
-  }
-
-  .layout.floating-menu-open::before {
-    opacity: 0;
-  }
 }

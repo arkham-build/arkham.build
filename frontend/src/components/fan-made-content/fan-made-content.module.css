@@ -131,13 +131,23 @@
   padding: 0.25rem 0.375rem;
   border-radius: var(--rounded);
   font-size: var(--text-xs);
-  opacity: 0;
-  transition: opacity 0.125s ease-in-out;
 }
 
-.project-header:hover .banner-credit {
-  opacity: 1;
-  transition: opacity 0.125s ease-in-out;
+@media (hover: hover) and (pointer: fine) {
+  .banner-credit {
+    opacity: 0;
+    transition: opacity 125ms var(--motion-ease-out);
+  }
+
+  .project-header:hover .banner-credit {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner-credit {
+    transition: none;
+  }
 }
 
 .quick-install {

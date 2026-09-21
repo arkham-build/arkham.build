@@ -30,15 +30,48 @@
 
   .listcard-wrapper.removed {
     opacity: 0.33;
+  }
 
-    &:hover {
+  .listcard-wrapper.faded
+    :is(
+      .listcard-action,
+      .listcard-main,
+      .listcard-tags,
+      .listcard-after,
+      .listcard-text
+    ) {
+    opacity: 0.33;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .listcard-wrapper.removed,
+    .listcard-wrapper.faded
+      :is(
+        .listcard-action,
+        .listcard-main,
+        .listcard-tags,
+        .listcard-after,
+        .listcard-text
+      ) {
+      transition: opacity 125ms var(--motion-ease-out);
+    }
+
+    .listcard-wrapper.removed:hover,
+    .listcard-wrapper.faded:hover
+      :is(
+        .listcard-action,
+        .listcard-main,
+        .listcard-tags,
+        .listcard-after,
+        .listcard-text
+      ) {
       opacity: 0.5;
-      transition: opacity 0.2s;
     }
   }
 
-  .listcard-wrapper.faded {
-    &
+  @media (prefers-reduced-motion: reduce) {
+    .listcard-wrapper.removed,
+    .listcard-wrapper.faded
       :is(
         .listcard-action,
         .listcard-main,
@@ -46,19 +79,7 @@
         .listcard-after,
         .listcard-text
       ) {
-      opacity: 0.33;
-      transition: opacity 0.2s;
-    }
-
-    &:hover
-      :is(
-        .listcard-action,
-        .listcard-main,
-        .listcard-tags,
-        .listcard-after,
-        .listcard-text
-      ) {
-      opacity: 0.5;
+      transition: none;
     }
   }
 

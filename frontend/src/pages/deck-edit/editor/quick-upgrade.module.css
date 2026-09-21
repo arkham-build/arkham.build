@@ -47,8 +47,15 @@
   text-shadow: none;
   opacity: 0.85;
 
-  &:hover {
-    opacity: 1;
-    transition: opacity 0.2s;
+  @media (hover: hover) and (pointer: fine) {
+    transition: opacity 125ms var(--motion-ease-out);
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }

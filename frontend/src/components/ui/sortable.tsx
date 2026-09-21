@@ -21,8 +21,11 @@ import { CSS } from "@dnd-kit/utilities";
 import { GripHorizontalIcon } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+import { MQ_REDUCED_MOTION } from "@/utils/constants";
 import { cx } from "@/utils/cx";
+import { useMedia } from "@/utils/use-media";
 import { Button } from "./button";
+import { MOTION_EASE_OUT } from "./transition-styles";
 import css from "./sortable.module.css";
 
 type SortableId = string | number;
@@ -47,6 +50,7 @@ export function Sortable<T extends SortableData>(props: Props<T>) {
     props;
 
   const [activeId, setActiveId] = useState<SortableId | undefined>();
+  const reducedMotion = useMedia(MQ_REDUCED_MOTION);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -77,8 +81,8 @@ export function Sortable<T extends SortableData>(props: Props<T>) {
   };
 
   const dropAnimation = {
-    duration: 250,
-    easing: "ease-out",
+    duration: reducedMotion ? 0 : 200,
+    easing: MOTION_EASE_OUT,
   };
 
   const activeItem = findActiveItem(activeId, items);
@@ -97,6 +101,7 @@ export function Sortable<T extends SortableData>(props: Props<T>) {
               id={readId(item)}
               key={readId(item)}
               active={isActive(activeItems, item)}
+              reducedMotion={reducedMotion}
             >
               {renderItemContent(item)}
             </SortableItem>
@@ -122,15 +127,16 @@ function SortableItem(props: {
   active?: boolean;
   children: React.ReactNode;
   id: SortableId;
+  reducedMotion: boolean;
 }) {
-  const { active, children, id } = props;
+  const { active, children, id, reducedMotion } = props;
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: reducedMotion ? undefined : transition,
   };
 
   const dragHandleProps = { ...attributes, ...listeners };

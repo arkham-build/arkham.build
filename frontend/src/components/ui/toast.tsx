@@ -96,8 +96,14 @@ function Toast(props: {
         !toast.duration && css["closable"],
       )}
       data-testid="toast"
-      onAnimationEnd={(event) => {
-        if (event.currentTarget === event.target && isExiting) onRemove(id);
+      onTransitionEnd={(event) => {
+        if (
+          event.currentTarget === event.target &&
+          event.propertyName === "opacity" &&
+          isExiting
+        ) {
+          onRemove(id);
+        }
       }}
     >
       {toast.variant === "success" && (

@@ -5,14 +5,16 @@ import {
   useTransitionStyles,
 } from "@floating-ui/react";
 import { isValidElement } from "react";
-import { FLOATING_PORTAL_ID } from "@/utils/constants";
+import { FLOATING_PORTAL_ID, MQ_REDUCED_MOTION } from "@/utils/constants";
 import { cx } from "@/utils/cx";
+import { useMedia } from "@/utils/use-media";
 import type { PopoverOptions } from "./popover.hooks";
 import {
   PopoverContext,
   usePopover,
   usePopoverContextChecked,
 } from "./popover.hooks";
+import { floatingTransitionStyles } from "./transition-styles";
 
 export function Popover({
   children,
@@ -80,10 +82,12 @@ export function PopoverContent({
   ...props
 }: React.HTMLProps<HTMLElement>) {
   const { context: floatingContext, ...context } = usePopoverContextChecked();
+  const reducedMotion = useMedia(MQ_REDUCED_MOTION);
 
-  const { isMounted, styles } = useTransitionStyles(floatingContext, {
-    duration: 150,
-  });
+  const { isMounted, styles } = useTransitionStyles(
+    floatingContext,
+    floatingTransitionStyles(reducedMotion),
+  );
 
   const ref = useMergeRefs([
     context.refs.setFloating,

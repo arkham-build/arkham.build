@@ -20,7 +20,11 @@
   padding: 0.75rem;
   box-shadow: var(--shadow-lg);
   border-radius: var(--rounded);
-  animation: slideIn both 150ms ease-in-out;
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    opacity 180ms var(--motion-ease-out),
+    transform 180ms var(--motion-ease-out);
   border: 1px solid var(--palette-2);
   text-align: left;
   position: relative;
@@ -33,7 +37,10 @@
 }
 
 .toast.exiting {
-  animation: slideOut both 150ms ease-in-out;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(calc(100% + 1rem));
+  transition-duration: 100ms;
 }
 
 .icon {
@@ -56,23 +63,28 @@
   color: var(--color-error);
 }
 
-@keyframes slideIn {
-  from {
+@starting-style {
+  .toast {
+    opacity: 0;
     transform: translateX(calc(100% + 1rem));
-  }
-
-  to {
-    transform: translateX(0);
   }
 }
 
-@keyframes slideOut {
-  from {
-    transform: translateX(0);
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transform: none;
+    transition: opacity 100ms linear;
   }
 
-  to {
-    transform: translateX(calc(100% + 1rem));
+  .toast.exiting {
+    transform: none;
+  }
+
+  @starting-style {
+    .toast {
+      opacity: 0;
+      transform: none;
+    }
   }
 }
 

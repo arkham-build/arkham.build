@@ -6,18 +6,8 @@
   border-radius: var(--rounded);
   box-shadow: var(--shadow);
   max-width: min(100%, 20rem);
-  animation: fadeIn 0.15s ease-in-out;
 }
 
 .content * {
   list-style: none;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }

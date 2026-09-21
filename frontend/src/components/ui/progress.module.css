@@ -19,3 +19,9 @@
 .progress.invalid .progress-value {
   background: var(--color-error);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-value {
+    transition: none;
+  }
+}

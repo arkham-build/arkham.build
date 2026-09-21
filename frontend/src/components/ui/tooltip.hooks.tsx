@@ -14,6 +14,7 @@ import {
   useTransitionStyles,
 } from "@floating-ui/react";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { tooltipTransitionStyles } from "./transition-styles";
 
 export interface TooltipOptions {
   delay?: number;
@@ -107,12 +108,10 @@ export function useRestingTooltip(
     ...options,
   });
 
-  const { isMounted, styles } = useTransitionStyles(context, {
-    duration: {
-      open: 250,
-      close: 50,
-    },
-  });
+  const { isMounted, styles } = useTransitionStyles(
+    context,
+    tooltipTransitionStyles(),
+  );
 
   const closeTooltip = () => {
     setSuppressUntilLeave(true);
@@ -131,8 +130,9 @@ export function useRestingTooltip(
     setTooltipOpen(false);
   };
 
-  const onPointerMove = () => {
-    if (suppressUntilLeave || tooltipOpen) return;
+  const onPointerMove = (evt: React.PointerEvent) => {
+    if (evt.pointerType === "touch" || suppressUntilLeave || tooltipOpen)
+      return;
 
     clearTimeout(restTimeoutRef.current);
 
