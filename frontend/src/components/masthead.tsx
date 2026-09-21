@@ -399,7 +399,7 @@ function AccountMenu(props: { collapseNav: boolean; location: string }) {
         </PopoverTrigger>
       ) : (
         <PopoverTrigger asChild>
-          <Button variant="bare" iconOnly>
+          <Button data-testid="masthead-account-menu" variant="bare" iconOnly>
             <MenuIcon />
           </Button>
         </PopoverTrigger>
