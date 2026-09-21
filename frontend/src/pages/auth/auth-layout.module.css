@@ -14,7 +14,7 @@ body.auth-background {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 10rem);
+  min-height: calc(100svh - 10rem);
   padding: var(--layout-padding);
 }
 
@@ -93,7 +93,9 @@ body.auth-background {
   color: currentColor;
 }
 
-.footer a:hover {
-  color: var(--focus);
-  text-decoration: underline;
+@media (hover: hover) and (pointer: fine) {
+  .footer a:hover {
+    color: var(--focus);
+    text-decoration: underline;
+  }
 }

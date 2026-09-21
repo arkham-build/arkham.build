@@ -12,12 +12,14 @@
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
   width: 100%;
 
-  &:hover {
-    background: color-mix(
-      in srgb,
-      var(--folder-color) 90%,
-      var(--palette-6) 10%
-    );
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: color-mix(
+        in srgb,
+        var(--folder-color) 90%,
+        var(--palette-6) 10%
+      );
+    }
   }
 }
 

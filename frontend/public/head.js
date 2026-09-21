@@ -1,16 +1,16 @@
 const DEFAULT_THEME = "dark";
+const THEME_COLORS = {
+  dark: "#2e3440",
+  light: "#fafafa",
+};
 
 function init() {
   const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
   const theme = getColorThemePreference();
+  const resolvedTheme =
+    theme === "system" ? (prefersDarkMode.matches ? "dark" : "light") : theme;
 
-  if (theme === "system") {
-    document.documentElement.dataset.theme = prefersDarkMode.matches
-      ? "dark"
-      : "light";
-  } else {
-    document.documentElement.dataset.theme = theme;
-  }
+  applyColorTheme(resolvedTheme);
 
   // see: https://vite.dev/guide/build.html#load-error-handling
   window.addEventListener("vite:preloadError", () => {
@@ -22,6 +22,13 @@ function getColorThemePreference() {
   const pref = localStorage.getItem("color-scheme-preference");
   if (pref && ["dark", "light", "system"].includes(pref)) return pref;
   return DEFAULT_THEME;
+}
+
+function applyColorTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  if (themeColor) themeColor.content = THEME_COLORS[theme];
 }
 
 function retryFailedDynamicImport() {

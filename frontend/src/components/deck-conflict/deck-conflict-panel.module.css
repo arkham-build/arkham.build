@@ -33,7 +33,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding-top: max(1rem, var(--safe-area-top));
+  padding-right: max(1rem, var(--safe-area-right));
+  padding-bottom: max(1rem, var(--safe-area-bottom));
+  padding-left: max(1rem, var(--safe-area-left));
   background: color-mix(in srgb, var(--palette-1) 55%, transparent);
   backdrop-filter: blur(2px);
 }

@@ -36,8 +36,10 @@
 .error a {
   color: currentColor;
 
-  &:hover {
-    text-decoration: underline;
-    color: var(--color-inverted);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration: underline;
+      color: var(--color-inverted);
+    }
   }
 }

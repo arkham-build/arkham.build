@@ -28,8 +28,10 @@
     border-left: 1px solid var(--palette-2);
   }
 
-  .link:not(.disabled):hover {
-    background: var(--palette-1);
+  @media (hover: hover) and (pointer: fine) {
+    .link:not(.disabled):hover {
+      background: var(--palette-1);
+    }
   }
 
   .link:not(.disabled):active {

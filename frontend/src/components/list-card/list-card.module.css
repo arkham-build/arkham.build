@@ -208,20 +208,31 @@
     text-decoration: none;
     color: currentColor;
 
-    &:hover,
     &:focus-visible,
     &:active {
       outline: none;
       background: none;
     }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        outline: none;
+        background: none;
+      }
+    }
   }
 
   .name :where(a) {
-    &:hover,
     &:focus-visible,
     &:active {
       text-decoration: underline;
       text-decoration-color: currentColor;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        text-decoration: underline;
+        text-decoration-color: currentColor;
+      }
     }
   }
 
@@ -327,8 +338,10 @@
 
   .listcard-wrapper.forbidden,
   .listcard-wrapper.card-not-in-limited-pool {
-    & .name :where(button, span):not(:hover) {
-      text-decoration: line-through;
+    @media (hover: hover) and (pointer: fine) {
+      & .name :where(button, span):not(:hover) {
+        text-decoration: line-through;
+      }
     }
   }
 

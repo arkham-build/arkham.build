@@ -87,8 +87,10 @@
   border-bottom: 1px solid var(--palette-2);
 }
 
-.table :where(tr:not(.open):hover) {
-  background-color: var(--palette-1);
+@media (hover: hover) and (pointer: fine) {
+  .table :where(tr:not(.open):hover) {
+    background-color: var(--palette-1);
+  }
 }
 
 .table :where(th, td):not(:last-child) {

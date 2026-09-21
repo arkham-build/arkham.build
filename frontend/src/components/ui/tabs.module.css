@@ -62,10 +62,16 @@
     border-bottom: 0.125rem solid var(--accent-color-dark, var(--color-primary));
   }
 
-  .trigger:not([data-state="active"]):hover,
   .trigger:not([data-state="active"]):focus-visible {
     border-color: var(--accent-color, var(--color-primary-hover));
     z-index: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .trigger:not([data-state="active"]):hover {
+      border-color: var(--accent-color, var(--color-primary-hover));
+      z-index: 1;
+    }
   }
 
   .content.mounted {

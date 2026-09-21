@@ -152,26 +152,34 @@
 }
 
 .summary.interactive {
-  &:not(:hover):not(:focus-within) {
-    border-color: var(--palette-1);
+  @media (hover: hover) and (pointer: fine) {
+    &:not(:hover):not(:focus-within) {
+      border-color: var(--palette-1);
+    }
   }
 
-  &:not(:hover) .header {
-    background: var(--palette-1);
-    color: var(--text);
-    text-shadow: none;
-    border-bottom: 1px solid var(--palette-2);
+  @media (hover: hover) and (pointer: fine) {
+    &:not(:hover) .header {
+      background: var(--palette-1);
+      color: var(--text);
+      text-shadow: none;
+      border-bottom: 1px solid var(--palette-2);
+    }
   }
 }
 
 .summary.interactive.elevated {
-  &:not(:hover):not(:focus-within) {
-    border-color: var(--palette-2);
+  @media (hover: hover) and (pointer: fine) {
+    &:not(:hover):not(:focus-within) {
+      border-color: var(--palette-2);
+    }
   }
 
-  &:not(:hover) .header {
-    background: var(--palette-1);
-    border-bottom: 1px solid var(--palette-2);
+  @media (hover: hover) and (pointer: fine) {
+    &:not(:hover) .header {
+      background: var(--palette-1);
+      border-bottom: 1px solid var(--palette-2);
+    }
   }
 }
 

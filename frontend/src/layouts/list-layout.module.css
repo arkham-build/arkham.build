@@ -8,7 +8,10 @@
   height: 100dvh;
   margin-inline: auto;
   max-width: var(--layout-max-width);
-  padding-inline: var(--layout-padding);
+  padding-top: var(--safe-area-top);
+  padding-right: max(var(--layout-padding), var(--safe-area-right));
+  padding-bottom: var(--safe-area-bottom);
+  padding-left: max(var(--layout-padding), var(--safe-area-left));
 
   overflow: hidden;
   will-change: contents;
@@ -20,7 +23,7 @@
   grid-template-rows: auto minmax(0, 1fr);
 
   @media screen and (min-width: 52rem) {
-    padding-bottom: 0.25rem;
+    padding-bottom: calc(0.25rem + var(--safe-area-bottom));
     grid-template-columns: var(--sidebar-width-one-col) 1fr;
   }
 
@@ -79,7 +82,7 @@
   width: var(--sidebar-width-one-col);
 
   &.floating {
-    left: 0.25rem;
+    left: calc(0.25rem + var(--safe-area-left));
   }
 
   &[data-state="closed"] {
@@ -98,7 +101,7 @@
   width: var(--filters-width);
 
   &.floating {
-    right: 0.25rem;
+    right: calc(0.25rem + var(--safe-area-right));
   }
 
   &[data-state="closed"] {
@@ -110,9 +113,9 @@
 
 .floating {
   position: fixed;
-  height: calc(100% - 0.5rem);
+  height: calc(100% - 0.5rem - var(--safe-area-top) - var(--safe-area-bottom));
   max-width: 86.25%;
-  top: 0.25rem;
+  top: calc(0.25rem + var(--safe-area-top));
   z-index: 3;
   background: var(--palette-0);
   box-shadow: var(--shadow-md);

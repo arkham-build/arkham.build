@@ -1,7 +1,7 @@
 .toast-container {
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
+  bottom: calc(1rem + var(--safe-area-bottom));
+  right: calc(1rem + var(--safe-area-right));
   z-index: 100;
   display: flex;
   gap: 1rem;
@@ -30,6 +30,7 @@
   position: relative;
   max-height: 70dvh;
   overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .toast.closable {

@@ -9,8 +9,10 @@
   column-gap: 1rem;
   margin-inline: auto;
   max-width: var(--layout-max-width);
-  padding-inline: var(--layout-padding);
-  padding-bottom: 0.5rem;
+  padding-top: var(--safe-area-top);
+  padding-right: max(var(--layout-padding), var(--safe-area-right));
+  padding-bottom: calc(0.5rem + var(--safe-area-bottom));
+  padding-left: max(var(--layout-padding), var(--safe-area-left));
 
   grid-template-columns: 1fr;
   grid-template-rows: auto auto auto auto auto;
@@ -53,17 +55,20 @@
   border: 1px solid var(--palette-1);
   border-radius: var(--rounded);
   overflow-y: auto;
+  overscroll-behavior: contain;
   height: 100%;
 }
 
 .layout-content {
   grid-area: content;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .layout-selections {
   grid-area: selections;
   overflow-y: auto;
+  overscroll-behavior: contain;
   height: 100%;
 }
 

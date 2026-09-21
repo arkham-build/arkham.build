@@ -86,8 +86,10 @@
   text-decoration: none;
   vertical-align: center;
 
-  &:hover {
-    opacity: 1;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: 1;
+    }
   }
 
   &.active {

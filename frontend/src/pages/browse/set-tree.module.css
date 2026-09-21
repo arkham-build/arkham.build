@@ -66,14 +66,23 @@
   background-color: var(--palette-1);
 }
 
-.node-link:hover:not(:has(.node:hover)) {
-  background-color: var(--palette-point-five);
+@media (hover: hover) and (pointer: fine) {
+  .node-link:hover:not(:has(.node:hover)) {
+    background-color: var(--palette-point-five);
+  }
 }
 
-.node-link:hover:not(:has(.node:hover)),
 .node.active {
   & .node-icon {
     color: var(--text);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .node-link:hover:not(:has(.node:hover)) {
+    & .node-icon {
+      color: var(--text);
+    }
   }
 }
 
