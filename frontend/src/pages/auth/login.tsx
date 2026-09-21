@@ -86,12 +86,6 @@ function Login() {
           />
         </Field>
 
-        <div className={css["forgot-link"]}>
-          <Link href="/auth/forgot-password">
-            {t("auth.login.forgot_password")}
-          </Link>
-        </div>
-
         <Button
           disabled={loginMutation.isPending}
           type="submit"
@@ -100,6 +94,12 @@ function Login() {
         >
           {t("auth.login.action")}
         </Button>
+
+        <div className={css["forgot-link"]}>
+          <Link href="/auth/forgot-password">
+            {t("auth.login.forgot_password")}
+          </Link>
+        </div>
 
         <OAuthSeparator />
         {ARKHAMDB_WARNING_VISIBLE && (

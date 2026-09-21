@@ -217,7 +217,7 @@ function DrawSimulatorCard(props: DrawSimulatorCardProps) {
   } = useRestingTooltip({ delay: 350 });
 
   return (
-    <li>
+    <li className={css["drawn-card"]}>
       <button
         {...referenceProps}
         ref={setReference}

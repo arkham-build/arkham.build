@@ -14,6 +14,7 @@ import { formatRelationTitle } from "@/utils/formatting";
 import { CardBack } from "../card/card-back";
 import { CardContainer } from "../card/card-container";
 import { CardFace } from "../card/card-face";
+import { CardReveal } from "../card/card-reveal";
 import { SpecialistAccess } from "../card-modal/specialist";
 import { CardSet } from "../cardset";
 import { AttachableCards } from "../deck-tools/attachable-cards";
@@ -50,7 +51,8 @@ export function DeckInvestigator(props: Props) {
     titleLinks,
   } = props;
 
-  const [backToggled, toggleBack] = useState(false);
+  const [backToggled, setBackToggled] = useState(false);
+  const [backMounted, setBackMounted] = useState(false);
   const { t } = useTranslation();
 
   const showAllFanMadeRelations = useStore(selectShowFanMadeRelations);
@@ -64,6 +66,11 @@ export function DeckInvestigator(props: Props) {
   const hasBack =
     deck.investigatorBack.card.double_sided ||
     deck.investigatorBack.card.back_link_id;
+
+  const onToggleBack = () => {
+    setBackMounted(true);
+    setBackToggled((previous) => !previous);
+  };
 
   const children = canToggleBack ? (
     <>
@@ -79,7 +86,7 @@ export function DeckInvestigator(props: Props) {
           className={cx(css["back-toggle"], backToggled && css["open"])}
           data-testid="deck-investigator-back-toggle"
         >
-          <Button onClick={() => toggleBack((p) => !p)}>
+          <Button onClick={onToggleBack}>
             {backToggled ? <ChevronUpIcon /> : <ChevronDownIcon />}
             {t("card_view.actions.view_backside")}{" "}
             {deck.investigatorBack.card.parallel && (
@@ -90,12 +97,14 @@ export function DeckInvestigator(props: Props) {
           </Button>
         </div>
       )}
-      {hasBack && backToggled && (
-        <CardBack
-          card={deck.investigatorBack.card}
-          data-testid="deck-investigator-back"
-          size={size}
-        />
+      {hasBack && backMounted && (
+        <CardReveal open={backToggled}>
+          <CardBack
+            card={deck.investigatorBack.card}
+            data-testid="deck-investigator-back"
+            size={size}
+          />
+        </CardReveal>
       )}
     </>
   ) : (

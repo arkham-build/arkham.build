@@ -1,0 +1,32 @@
+@layer ui-components {
+  .icon-swap {
+    display: inline-grid;
+  }
+
+  .icon {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: scale(0.8);
+    transition:
+      opacity 150ms ease-in-out,
+      transform 150ms ease-in-out;
+  }
+
+  .icon-swap:not([data-copied="true"]) .copy,
+  .icon-swap[data-copied="true"] .check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .icon {
+      transform: none;
+      transition: opacity 125ms ease-in;
+    }
+
+    .icon-swap:not([data-copied="true"]) .copy,
+    .icon-swap[data-copied="true"] .check {
+      transform: none;
+    }
+  }
+}

@@ -30,6 +30,35 @@ body.auth-background {
   margin-top: 1rem;
 }
 
+.plane.animate-entry {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 200ms ease-in,
+    transform 200ms ease-in;
+}
+
+@starting-style {
+  .plane.animate-entry {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plane.animate-entry {
+    transform: none;
+    transition: opacity 125ms ease-in;
+  }
+
+  @starting-style {
+    .plane.animate-entry {
+      opacity: 0;
+      transform: none;
+    }
+  }
+}
+
 .header {
   text-align: center;
 }
