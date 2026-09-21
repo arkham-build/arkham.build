@@ -65,9 +65,11 @@ test.describe("account settings", () => {
     await expect(
       page2.getByTestId("masthead-account-sync-status"),
     ).toHaveAttribute("data-sync-status", "conflict");
-    await expect(page2.getByTestId("toast")).toContainText(
-      "Your account settings changed somewhere else.",
-    );
+    await expect(
+      page2.getByTestId("toast").filter({
+        hasText: "Your account settings changed somewhere else.",
+      }),
+    ).toBeVisible();
 
     await page2.getByRole("button", { name: "Reload page" }).click();
     await waitForAccountSync(page2);
@@ -100,9 +102,11 @@ test.describe("account settings", () => {
     await expect(
       page2.getByTestId("masthead-account-sync-status"),
     ).toHaveAttribute("data-sync-status", "conflict");
-    await expect(page2.getByTestId("toast")).toContainText(
-      "Your account settings changed somewhere else.",
-    );
+    await expect(
+      page2.getByTestId("toast").filter({
+        hasText: "Your account settings changed somewhere else.",
+      }),
+    ).toBeVisible();
 
     await page2.getByRole("button", { name: "Overwrite" }).click();
     await waitForAccountSync(page2);
