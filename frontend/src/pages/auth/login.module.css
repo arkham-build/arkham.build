@@ -7,6 +7,8 @@
   color: var(--focus);
 }
 
-.forgot-link a:hover {
-  text-decoration: underline;
+@media (hover: hover) and (pointer: fine) {
+  .forgot-link a:hover {
+    text-decoration: underline;
+  }
 }

@@ -7,7 +7,7 @@ import {
   UndoIcon,
   WandSparklesIcon,
 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { ListLayout } from "@//layouts/list-layout";
@@ -332,13 +332,11 @@ function RestoreDeckChanges({ id }: { id: string }) {
   const toast = useToast();
   const discardEdits = useStore((state) => state.discardEdits);
   const changes = useStore((state) => state.deckEdits[id]);
+  const hadChangesOnMount = useRef(Boolean(changes));
 
-  /* oxlint-disable react/exhaustive-deps -- should only fire on initial changes present. */
   useEffect(() => {
-    let toastId: string | null = null;
-
-    if (changes) {
-      toastId = toast.show({
+    if (hadChangesOnMount.current) {
+      toast.show({
         children({ onClose }) {
           return (
             <>
@@ -366,17 +364,11 @@ function RestoreDeckChanges({ id }: { id: string }) {
             </>
           );
         },
+        id: `deck-changes-restored-${id}`,
         variant: "success",
       });
     }
-
-    return () => {
-      if (toastId) {
-        toast.dismiss(toastId);
-      }
-    };
   }, [discardEdits, id, toast, t]);
-  /* oxlint-enable react/exhaustive-deps */
 
   return null;
 }

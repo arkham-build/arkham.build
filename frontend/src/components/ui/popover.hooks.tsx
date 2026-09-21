@@ -13,6 +13,8 @@ import {
   useRole,
 } from "@floating-ui/react";
 import { createContext, useContext, useState } from "react";
+import { MQ_HOVER } from "@/utils/constants";
+import { useMedia } from "@/utils/use-media";
 
 export interface PopoverOptions {
   clickDisabled?: boolean;
@@ -38,6 +40,7 @@ export function usePopover({
   ...rest
 }: PopoverOptions = {}) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(initialOpen);
+  const canHover = useMedia(MQ_HOVER);
   const [labelId, setLabelId] = useState<string | undefined>();
   const [descriptionId, setDescriptionId] = useState<string | undefined>();
 
@@ -73,7 +76,7 @@ export function usePopover({
   });
 
   const hover = useHover(context, {
-    enabled: !hoverDisabled,
+    enabled: canHover && !hoverDisabled,
     restMs: 50,
     handleClose: safePolygon({
       blockPointerEvents: false,

@@ -1,4 +1,8 @@
-import { FloatingPortal, useMergeRefs } from "@floating-ui/react";
+import {
+  FloatingPortal,
+  useMergeRefs,
+  useTransitionStyles,
+} from "@floating-ui/react";
 import { isValidElement } from "react";
 import { cx } from "@/utils/cx";
 import {
@@ -7,6 +11,7 @@ import {
   useTooltip,
   useTooltipContext,
 } from "./tooltip.hooks";
+import { tooltipTransitionStyles } from "./transition-styles";
 import css from "./tooltip.module.css";
 
 export const Tooltip = function Tooltip({
@@ -68,25 +73,35 @@ export function TooltipContent({
   ...props
 }: React.HTMLProps<HTMLElement>) {
   const context = useTooltipContext();
+  const { isMounted, styles } = useTransitionStyles(
+    context.context,
+    tooltipTransitionStyles(),
+  );
 
   const ref = useMergeRefs([
     context.refs.setFloating,
     propRef,
   ] as React.Ref<HTMLDivElement>[]);
 
-  if (!context.open) return null;
+  if (!isMounted) return null;
 
   return (
     <FloatingPortal>
       <div
-        {...context.getFloatingProps(props)}
-        className={cx(css["content"], props.className)}
+        {...context.getFloatingProps()}
+        className={css["positioner"]}
         ref={ref}
         style={{
           ...context.floatingStyles,
-          ...(style as React.CSSProperties),
+          pointerEvents: context.open ? undefined : "none",
         }}
-      />
+      >
+        <div
+          {...props}
+          className={cx(css["content"], props.className)}
+          style={{ ...styles, ...(style as React.CSSProperties) }}
+        />
+      </div>
     </FloatingPortal>
   );
 }

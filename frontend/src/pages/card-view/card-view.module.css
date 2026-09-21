@@ -7,8 +7,10 @@
   grid-template-areas: "header" "main" "sidebar" "footer";
   margin-inline: auto;
   max-width: var(--layout-max-width);
-  padding-inline: var(--layout-padding);
-  padding-bottom: 0.5rem;
+  padding-top: var(--safe-area-top);
+  padding-right: max(var(--layout-padding), var(--safe-area-right));
+  padding-bottom: calc(0.5rem + var(--safe-area-bottom));
+  padding-left: max(var(--layout-padding), var(--safe-area-left));
 
   @media screen and (min-width: 45rem) {
     grid-template-columns: 1fr 20rem;
@@ -177,15 +179,21 @@
   border-radius: var(--rounded);
 }
 
-a.printings-item:not(.active):hover,
 a.printings-item:not(.active):focus-visible {
   background-color: var(--palette-1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.printings-item:not(.active):hover {
+    background-color: var(--palette-1);
+  }
 }
 
 .preview {
   width: min(18rem, 75%);
 }
 
-.preview {
+.preview-inner {
   box-shadow: var(--shadow);
+  width: 100%;
 }

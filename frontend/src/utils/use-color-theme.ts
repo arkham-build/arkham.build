@@ -11,6 +11,10 @@ export function getAvailableThemes(): Record<string, string> {
 }
 
 const DEFAULT_THEME = "dark";
+const THEME_COLORS = {
+  dark: "#2e3440",
+  light: "#fafafa",
+} as const;
 
 export function getColorThemePreference() {
   const pref = localStorage.getItem("color-scheme-preference");
@@ -23,10 +27,16 @@ function persistColorTheme(theme: string | null | undefined) {
 }
 
 export function applyColorTheme(theme: string, prefersDarkMode: boolean) {
-  if (theme === "system") {
-    document.documentElement.dataset.theme = prefersDarkMode ? "dark" : "light";
-  } else {
-    document.documentElement.dataset.theme = theme;
+  const resolvedTheme =
+    theme === "system" ? (prefersDarkMode ? "dark" : "light") : theme;
+
+  document.documentElement.dataset.theme = resolvedTheme;
+
+  const themeColor = document.querySelector<HTMLMetaElement>(
+    'meta[name="theme-color"]',
+  );
+  if (themeColor && (resolvedTheme === "dark" || resolvedTheme === "light")) {
+    themeColor.content = THEME_COLORS[resolvedTheme];
   }
 }
 

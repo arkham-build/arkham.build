@@ -35,6 +35,7 @@ export function PasswordInput(props: Props) {
         iconOnly
         onClick={togglePasswordVisibility}
         size="xs"
+        tabIndex={-1}
         variant="bare"
       >
         {passwordVisible ? <EyeOffIcon /> : <EyeIcon />}

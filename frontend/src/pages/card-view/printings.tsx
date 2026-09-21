@@ -102,9 +102,11 @@ function ListPrinting({
           <div
             className={css["preview"]}
             ref={setFloating}
-            style={{ ...floatingStyles, ...transitionStyles }}
+            style={floatingStyles}
           >
-            <CardScan card={printing.card} preventFlip />
+            <div className={css["preview-inner"]} style={transitionStyles}>
+              <CardScan card={printing.card} preventFlip />
+            </div>
           </div>
         </FloatingPortal>
       )}

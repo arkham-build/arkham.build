@@ -43,8 +43,10 @@ function Signup() {
   if (signupMutation.isSuccess) {
     return (
       <AuthLayout
-        title={t("auth.signup.title")}
+        animateEntry
         description={t("auth.signup.success")}
+        key="success"
+        title={t("auth.signup.title")}
       />
     );
   }

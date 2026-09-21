@@ -5,7 +5,8 @@
   height: 100%;
   width: 100%;
   background: color-mix(in srgb, var(--palette-0) 10%, rgba(0, 0, 0, 0.3) 90%);
-  width: 100%;
+  padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom)
+    var(--safe-area-left);
   z-index: 90;
   container-type: inline-size;
 }

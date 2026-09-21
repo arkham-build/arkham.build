@@ -23,6 +23,7 @@ import type React from "react";
 import { useState } from "react";
 import { cx } from "@/utils/cx";
 import { Button } from "./button";
+import { MOTION_EASE_OUT } from "./transition-styles";
 import css from "./sortable.module.css";
 
 type SortableId = string | number;
@@ -77,8 +78,8 @@ export function Sortable<T extends SortableData>(props: Props<T>) {
   };
 
   const dropAnimation = {
-    duration: 250,
-    easing: "ease-out",
+    duration: 200,
+    easing: MOTION_EASE_OUT,
   };
 
   const activeItem = findActiveItem(activeId, items);

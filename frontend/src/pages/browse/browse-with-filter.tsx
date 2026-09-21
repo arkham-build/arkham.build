@@ -80,7 +80,6 @@ export function BrowseWithFilter(props: Props) {
     <>
       <PageTitle>{title}</PageTitle>
       <ListLayout
-        noFade
         filters={<Filters targetDeck={undefined} />}
         sidebar={
           <SetTree

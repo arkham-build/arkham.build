@@ -5,8 +5,10 @@
   margin-block: 0.5rem;
 }
 
-.decklist-container:hover {
-  border-color: var(--palette-2);
+@media (hover: hover) and (pointer: fine) {
+  .decklist-container:hover {
+    border-color: var(--palette-2);
+  }
 }
 
 .decklist-container > * + * {

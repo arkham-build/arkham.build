@@ -17,8 +17,8 @@
 .toc-toggle {
   display: flex;
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
+  bottom: calc(1rem + var(--safe-area-bottom));
+  right: calc(1rem + var(--safe-area-right));
   z-index: 3;
   box-shadow: var(--shadow-lg);
 
@@ -33,14 +33,14 @@
   border: 1px solid var(--palette-2);
   position: fixed;
   padding-block: 0.625rem;
-  top: 0.25rem;
-  right: 0.25rem;
+  top: calc(0.25rem + var(--safe-area-top));
+  right: calc(0.25rem + var(--safe-area-right));
   flex-flow: column nowrap;
   height: 100%;
   z-index: 2;
-  max-height: 90dvh;
+  max-height: calc(90dvh - var(--safe-area-top) - var(--safe-area-bottom));
   max-width: 26rem;
-  width: calc(100% - 0.5rem);
+  width: calc(100% - 0.5rem - var(--safe-area-left) - var(--safe-area-right));
   box-shadow: var(--shadow);
   display: none;
 

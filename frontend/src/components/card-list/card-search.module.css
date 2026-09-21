@@ -40,37 +40,40 @@
   gap: 0.5rem;
   left: 0;
   padding: 0.5rem 0.375rem;
+  opacity: 0;
+  pointer-events: none;
   position: absolute;
   top: 100%;
-  transform-origin: top;
-  transform: scaleY(0%);
-  transition-behavior: allow-discrete;
-  transition:
-    0.125s transform ease-in,
-    0.125s visibility;
   visibility: hidden;
   width: 100%;
   z-index: 1;
 }
 
 .container:focus-within .flags {
+  opacity: 1;
+  pointer-events: auto;
   visibility: visible;
-  transform: scaleY(100%);
+}
+
+.flags-slot {
+  font-size: var(--text-sm);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .container:hover .flags {
+    opacity: 1;
+    pointer-events: auto;
     visibility: visible;
-    transform: scaleY(100%);
   }
 }
 
 @media screen and (min-height: 50rem) {
   .container:not(.force-hover) .flags {
     background: inherit;
+    opacity: 1;
+    pointer-events: auto;
     position: initial;
     visibility: visible;
-    transform: none;
     top: unset;
     left: unset;
     padding: 0.375rem 0.125rem 0;
@@ -87,8 +90,10 @@
   text-decoration: none;
   vertical-align: center;
 
-  &:hover {
-    opacity: 1;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: 1;
+    }
   }
 
   &.active {
@@ -117,10 +122,4 @@
   flex-flow: column nowrap;
   gap: 0.375rem;
   min-width: 15rem;
-}
-
-@starting-style {
-  .flags {
-    transform: scaleY(0%);
-  }
 }

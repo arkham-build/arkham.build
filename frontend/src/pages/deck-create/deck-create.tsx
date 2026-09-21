@@ -16,7 +16,6 @@ import {
 } from "@/store/selectors/deck-create";
 import { useHttpClient } from "@/store/services/http-client.context";
 import { querySealedDeck } from "@/store/services/requests/sealed-decks";
-import { cx } from "@/utils/cx";
 import { useAccentColor } from "@/utils/use-accent-color";
 import css from "./deck-create.module.css";
 import { DeckCreateEditor } from "./deck-create-editor";
@@ -92,7 +91,7 @@ function DeckCreate() {
 
 function DeckCreateInner() {
   return (
-    <div className={cx(css["layout"], "fade-in")}>
+    <div className={css["layout"]}>
       <Masthead className={css["layout-header"]} />
       <div className={css["layout-sidebar"]}>
         <DeckCreateEditor />

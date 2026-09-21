@@ -21,12 +21,12 @@ async function importStandardDeck(page: Page) {
 
 function prepareScreenshot(page: Page) {
   return page.evaluate(() => {
-    [
-      document.querySelector("[data-testid='toast']"),
-      document.querySelector("[data-testid=tabs-list]"),
-    ].forEach((el) => {
-      if (el instanceof HTMLElement) el.style.display = "none";
+    document.querySelectorAll("[data-testid='toast']").forEach((element) => {
+      if (element instanceof HTMLElement) element.style.display = "none";
     });
+
+    const tabsList = document.querySelector("[data-testid=tabs-list]");
+    if (tabsList instanceof HTMLElement) tabsList.style.display = "none";
 
     const layout = document.querySelector("[data-testid='app-layout']");
     if (layout instanceof HTMLElement) {
@@ -589,6 +589,10 @@ test.describe("quick edit title and tags", () => {
     await page.getByTestId("name-edit-name").fill("Kōhaku");
     await page.getByTestId("name-edit-submit").click();
     await page.getByTestId("view-edit").click();
+    await expect(page.getByTestId("toast")).toHaveCount(1);
+    await expect(page.getByTestId("toast")).toContainText(
+      "Unsaved changes were restored.",
+    );
     await expect(
       page
         .getByTestId("editor-tabs-slots")

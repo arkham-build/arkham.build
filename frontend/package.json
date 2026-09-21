@@ -43,6 +43,7 @@
     "react-virtuoso": "4.18.13",
     "recharts": "3.7.0",
     "reselect": "5.1.1",
+    "sonner": "2.0.8",
     "wouter": "3.9.0",
     "zustand": "5.0.11"
   },

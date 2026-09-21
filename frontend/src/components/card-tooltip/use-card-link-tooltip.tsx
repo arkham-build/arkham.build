@@ -9,6 +9,7 @@ import {
 } from "@floating-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
+import { tooltipTransitionStyles } from "../ui/transition-styles";
 import { CardTooltip } from "./card-tooltip";
 
 export function useCardLinkTooltip() {
@@ -38,7 +39,10 @@ export function useCardLinkTooltip() {
     placement: "bottom-start",
   });
 
-  const { isMounted, styles: transitionStyles } = useTransitionStyles(context);
+  const { isMounted, styles: transitionStyles } = useTransitionStyles(
+    context,
+    tooltipTransitionStyles(),
+  );
 
   const closeTooltip = () => {
     clearTimeout(restTimeoutRef.current);
@@ -56,7 +60,7 @@ export function useCardLinkTooltip() {
   };
 
   const onPointerMove = (evt: React.PointerEvent) => {
-    if (suppressUntilLeaveRef.current) return;
+    if (evt.pointerType === "touch" || suppressUntilLeaveRef.current) return;
 
     const anchor = (evt.target as HTMLElement)?.closest("a");
 
@@ -95,13 +99,11 @@ export function useCardLinkTooltip() {
     <FloatingPortal id={FLOATING_PORTAL_ID}>
       <div
         ref={setFloating}
-        style={{
-          ...floatingStyles,
-          ...transitionStyles,
-          pointerEvents: "none",
-        }}
+        style={{ ...floatingStyles, pointerEvents: "none" }}
       >
-        <CardTooltip code={cardTooltip} />
+        <div style={transitionStyles}>
+          <CardTooltip code={cardTooltip} />
+        </div>
       </div>
     </FloatingPortal>
   );

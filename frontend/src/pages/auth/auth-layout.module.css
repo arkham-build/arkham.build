@@ -14,7 +14,7 @@ body.auth-background {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 10rem);
+  min-height: calc(100svh - 10rem);
   padding: var(--layout-padding);
 }
 
@@ -28,6 +28,35 @@ body.auth-background {
 
 .plane > * + * {
   margin-top: 1rem;
+}
+
+.plane.animate-entry {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 200ms ease-in,
+    transform 200ms ease-in;
+}
+
+@starting-style {
+  .plane.animate-entry {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plane.animate-entry {
+    transform: none;
+    transition: opacity 125ms ease-in;
+  }
+
+  @starting-style {
+    .plane.animate-entry {
+      opacity: 0;
+      transform: none;
+    }
+  }
 }
 
 .header {
@@ -64,7 +93,9 @@ body.auth-background {
   color: currentColor;
 }
 
-.footer a:hover {
-  color: var(--focus);
-  text-decoration: underline;
+@media (hover: hover) and (pointer: fine) {
+  .footer a:hover {
+    color: var(--focus);
+    text-decoration: underline;
+  }
 }

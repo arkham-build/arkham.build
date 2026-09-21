@@ -53,8 +53,10 @@
   align-items: center;
   gap: 0.125rem;
 
-  & button:hover {
-    color: var(--palette-5);
+  @media (hover: hover) and (pointer: fine) {
+    & button:hover {
+      color: var(--palette-5);
+    }
   }
 }
 

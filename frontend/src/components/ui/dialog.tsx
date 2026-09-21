@@ -6,7 +6,8 @@ import {
   useTransitionStyles,
 } from "@floating-ui/react";
 import { isValidElement } from "react";
-import { FLOATING_PORTAL_ID } from "@/utils/constants";
+import { FLOATING_PORTAL_ID, MQ_REDUCED_MOTION } from "@/utils/constants";
+import { useMedia } from "@/utils/use-media";
 import type { DialogOptions } from "./dialog.hooks";
 import {
   DialogContext,
@@ -14,6 +15,7 @@ import {
   useDialog,
   useDialogContextChecked,
 } from "./dialog.hooks";
+import { dialogTransitionStyles } from "./transition-styles";
 
 export function Dialog({
   children,
@@ -75,22 +77,12 @@ export function DialogContent({
   ...props
 }: React.HTMLProps<HTMLElement>) {
   const { context: floatingContext, ...context } = useDialogContextChecked();
+  const reducedMotion = useMedia(MQ_REDUCED_MOTION);
 
-  const { isMounted, styles } = useTransitionStyles(floatingContext, {
-    duration: 250,
-    common: {
-      transitionProperty: "opacity, backdrop-filter",
-      willChange: "opacity, backdrop-filter",
-    },
-    initial: {
-      opacity: 0,
-      backdropFilter: "blur(0px)",
-    },
-    open: {
-      opacity: 1,
-      backdropFilter: "blur(1.25px)",
-    },
-  });
+  const { isMounted, styles } = useTransitionStyles(
+    floatingContext,
+    dialogTransitionStyles(reducedMotion),
+  );
 
   const ref = useMergeRefs([
     context.refs.setFloating,

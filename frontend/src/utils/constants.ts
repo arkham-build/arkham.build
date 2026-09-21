@@ -96,7 +96,9 @@ export const CARD_SET_ORDER = [
 
 export const MQ_FLOATING_SIDEBAR = "(max-width: 52rem)";
 export const MQ_FLOATING_FILTERS = "(max-width: 75rem)";
+export const MQ_HOVER = "(hover: hover) and (pointer: fine)";
 export const MQ_MOBILE = "(pointer: coarse)";
+export const MQ_REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 export const MQ_WIDE_PREVIEW = "(min-width: 85rem)";
 
 export const NO_SLOT_STRING = "none";

@@ -1,5 +1,4 @@
 .deck-tools {
-  animation: fadeIn 0.5s;
   min-height: 32rem;
 }
 
@@ -88,8 +87,10 @@
   border-bottom: 1px solid var(--palette-2);
 }
 
-.table :where(tr:not(.open):hover) {
-  background-color: var(--palette-1);
+@media (hover: hover) and (pointer: fine) {
+  .table :where(tr:not(.open):hover) {
+    background-color: var(--palette-1);
+  }
 }
 
 .table :where(th, td):not(:last-child) {
@@ -156,14 +157,5 @@ td.trait-chart-column-trait {
   .deck-tools {
     grid-column: sidebar / filters;
     height: calc(100% - 0.5rem);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }

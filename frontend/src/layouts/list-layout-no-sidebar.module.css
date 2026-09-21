@@ -6,7 +6,10 @@
   height: 100dvh;
   margin-inline: auto;
   max-width: var(--layout-max-width);
-  padding-inline: var(--layout-padding);
+  padding-top: var(--safe-area-top);
+  padding-right: max(var(--layout-padding), var(--safe-area-right));
+  padding-bottom: var(--safe-area-bottom);
+  padding-left: max(var(--layout-padding), var(--safe-area-left));
 
   overflow: hidden;
   will-change: contents;
@@ -20,7 +23,7 @@
 
   @media screen and (min-width: 52rem) {
     column-gap: 1rem;
-    padding-bottom: 0.25rem;
+    padding-bottom: calc(0.25rem + var(--safe-area-bottom));
     grid-template-columns: 1fr var(--filters-width);
   }
 }
@@ -41,10 +44,6 @@
 .layout.floating-menu-open::before {
   display: block;
   opacity: 1;
-  transition:
-    opacity 0.2s ease-in,
-    display 0.2s;
-  transition-behavior: allow-discrete;
 }
 
 .filters {
@@ -67,7 +66,7 @@
   width: var(--filters-width);
 
   &.floating {
-    right: 0.25rem;
+    right: calc(0.25rem + var(--safe-area-right));
   }
 
   &[data-state="closed"] {
@@ -79,17 +78,12 @@
 
 .floating {
   position: fixed;
-  height: calc(100% - 0.5rem);
+  height: calc(100% - 0.5rem - var(--safe-area-top) - var(--safe-area-bottom));
   max-width: 86.25%;
-  top: 0.25rem;
+  top: calc(0.25rem + var(--safe-area-top));
   z-index: 3;
   background: var(--palette-0);
   box-shadow: var(--shadow-md);
-  transition:
-    transform 0.2s ease-in,
-    display 0.2s;
-  transition-behavior: allow-discrete;
-
   &[data-state="open"] {
     transform: translateX(0);
   }
@@ -143,14 +137,4 @@
   flex-direction: column;
   margin-left: auto;
   white-space: nowrap;
-}
-
-@starting-style {
-  .filters.floating {
-    transform: translateX(calc(100% + 1.5rem));
-  }
-
-  .layout.floating-menu-open::before {
-    opacity: 0;
-  }
 }

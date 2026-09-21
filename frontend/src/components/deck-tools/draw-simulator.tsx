@@ -217,7 +217,7 @@ function DrawSimulatorCard(props: DrawSimulatorCardProps) {
   } = useRestingTooltip({ delay: 350 });
 
   return (
-    <li>
+    <li className={css["drawn-card"]}>
       <button
         {...referenceProps}
         ref={setReference}
@@ -435,18 +435,21 @@ function drawReducer(state: State, action: Action): State {
       );
 
       const bag = [...state.bag, ...shuffle(codes)];
-
-      const drawn = state.drawn.filter(
-        (_, index) => !state.selection.includes(index),
-      );
+      const replacements = [];
 
       if (!state.mulliganMode) {
-        for (const _ of range(0, codes.length)) {
-          // oxlint-disable-next-line typescript/no-non-null-assertion -- we extend the bag for each draw, so this is safe.
-          drawn.push(bag.shift()!);
-        }
+        replacements.push(...bag.splice(0, codes.length));
 
-        return { ...state, bag, drawn, selection: [] };
+        return {
+          ...state,
+          bag,
+          drawn: replaceSelectedCards(
+            state.drawn,
+            state.selection,
+            replacements,
+          ),
+          selection: [],
+        };
       }
 
       let drawsRemaining = codes.length;
@@ -462,7 +465,7 @@ function drawReducer(state: State, action: Action): State {
         if (card && shouldAutoRedrawInMulligan(card)) {
           toReturn.push(code);
         } else {
-          drawn.push(code);
+          replacements.push(code);
           drawsRemaining--;
         }
       }
@@ -472,7 +475,7 @@ function drawReducer(state: State, action: Action): State {
       return {
         ...state,
         bag,
-        drawn,
+        drawn: replaceSelectedCards(state.drawn, state.selection, replacements),
         selection: [],
       };
     }
@@ -508,6 +511,24 @@ function drawReducer(state: State, action: Action): State {
       };
     }
   }
+}
+
+function replaceSelectedCards(
+  drawn: string[],
+  selection: number[],
+  replacements: string[],
+) {
+  const selectedIndices = new Set(selection);
+  let replacementIndex = 0;
+
+  return drawn.flatMap((code, index) => {
+    if (!selectedIndices.has(index)) return [code];
+
+    const replacement = replacements.at(replacementIndex);
+    replacementIndex++;
+
+    return replacement ? [replacement] : [];
+  });
 }
 
 function prepareBag(deck: ResolvedDeck) {

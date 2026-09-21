@@ -3,9 +3,11 @@
   flex-flow: column nowrap;
   min-height: 100dvh;
   margin-inline: auto;
-  padding-inline: var(--layout-padding);
   max-width: var(--layout-max-width);
-  padding-bottom: 0.5rem;
+  padding-top: var(--safe-area-top);
+  padding-right: max(var(--layout-padding), var(--safe-area-right));
+  padding-bottom: calc(0.5rem + var(--safe-area-bottom));
+  padding-left: max(var(--layout-padding), var(--safe-area-left));
 }
 
 .header {

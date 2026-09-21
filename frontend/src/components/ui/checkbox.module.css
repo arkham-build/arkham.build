@@ -54,8 +54,10 @@
   }
 }
 
-.checkbox:hover .input:not(:disabled):not(:checked) + .box {
-  background-color: var(--palette-2);
+@media (hover: hover) and (pointer: fine) {
+  .checkbox:hover .input:not(:disabled):not(:checked) + .box {
+    background-color: var(--palette-2);
+  }
 }
 
 .input:focus-visible + .box {

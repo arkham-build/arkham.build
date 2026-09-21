@@ -39,8 +39,10 @@
   pointer-events: none;
 }
 
-.control-row:hover .control-indicator {
-  color: var(--palette-5);
+@media (hover: hover) and (pointer: fine) {
+  .control-row:hover .control-indicator {
+    color: var(--palette-5);
+  }
 }
 
 .control-row:focus-within .control-indicator {
@@ -69,6 +71,7 @@
   grid-template-rows: min-content;
   height: min(min(calc(var(--viewport-item-count) * 3.875rem), 15.5rem), 40dvh);
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .menu-empty {
