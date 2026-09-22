@@ -4,6 +4,10 @@
   gap: 0.25rem;
 }
 
+.pool {
+  list-style: none;
+}
+
 .pack {
   display: flex;
   gap: 0.375rem;

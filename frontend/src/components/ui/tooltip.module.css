@@ -12,7 +12,3 @@
   box-shadow: var(--shadow);
   width: 100%;
 }
-
-.content * {
-  list-style: none;
-}
