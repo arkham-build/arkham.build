@@ -71,7 +71,7 @@ export function usePopover({
   const context = data.context;
 
   const click = useClick(context, {
-    enabled: !clickDisabled,
+    ignoreMouse: clickDisabled,
     stickIfOpen: clickStickIfOpen,
   });
 
