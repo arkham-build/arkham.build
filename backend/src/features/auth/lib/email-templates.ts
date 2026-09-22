@@ -35,9 +35,6 @@ export function verificationEmailTemplate(
 Please verify your email address by clicking the link below:
 ${params.verificationUrl}
 
-Or copy and paste this verification token:
-${params.token}
-
-This link and token will expire in 24 hours.`,
+This link will expire in 24 hours.`,
   };
 }
