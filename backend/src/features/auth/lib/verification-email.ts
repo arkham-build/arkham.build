@@ -31,7 +31,6 @@ export async function sendVerificationEmail(
   });
 
   const template = verificationEmailTemplate({
-    token,
     verificationUrl: `${params.config.FRONTEND_URL}/auth/verify-email?token=${token}`,
   });
 

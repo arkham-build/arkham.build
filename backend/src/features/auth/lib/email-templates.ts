@@ -21,7 +21,6 @@ If you didn't request a password reset, you can safely ignore this email.`,
 }
 
 type VerificationEmailParams = {
-  token: string;
   verificationUrl: string;
 };
 

@@ -1249,7 +1249,7 @@ describe("Auth routes", () => {
     test("creates a new incomplete account and sends verification email", async ({
       dependencies,
     }) => {
-      const { app, db, mailer } = dependencies;
+      const { app, config, db, mailer } = dependencies;
 
       const res = await signup(app, {
         email: "test@example.com",
@@ -1271,9 +1271,8 @@ describe("Auth routes", () => {
       const token = extractToken(mailer.sentEmails[0]?.body);
       expect(token).toBeTruthy();
       expect(mailer.sentEmails[0]?.body).toContain(
-        "Or copy and paste this verification token:",
+        `${config.FRONTEND_URL}/auth/verify-email?token=${token}`,
       );
-      expect(mailer.sentEmails[0]?.body).toContain(`\n${token}\n`);
       expect(mailer.sentEmails[0]?.to).toEqual("test@example.com");
     });
 
