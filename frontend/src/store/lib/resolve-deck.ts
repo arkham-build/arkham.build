@@ -292,7 +292,7 @@ export function getDeckLimitOverride(
   if (!sealed) return undefined;
 
   if (card.xp == null && code !== SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS) {
-    return deckLimit;
+    return card.deck_limit ?? card.quantity ?? undefined;
   }
 
   let sealedTotal = sealed[code] ?? 0;
