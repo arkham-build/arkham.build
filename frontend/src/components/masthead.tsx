@@ -1,7 +1,6 @@
 import {
   BookOpenTextIcon,
   BookTextIcon,
-  ChevronDownIcon,
   KeyboardIcon,
   LogOutIcon,
   MapIcon,
@@ -44,13 +43,7 @@ type Props = {
   invert?: boolean;
 };
 
-type MastheadSection =
-  | "browse"
-  | "cards"
-  | "content"
-  | "decklists"
-  | "rules"
-  | "settings";
+type MastheadSection = "cards" | "content" | "decklists" | "rules" | "settings";
 
 export function Masthead(props: Props) {
   const { children, className, invert, navSlot, slotRight } = props;
@@ -116,7 +109,26 @@ function MastheadNav(props: { location: string; navSlot?: React.ReactNode }) {
 
   return (
     <nav className={css["nav"]} aria-label={t("masthead.navigation")}>
-      <BrowseMenu location={location} />
+      <NavLink
+        className={css["nav-link"]}
+        href="~/browse"
+        location={location}
+        section="cards"
+        testId="masthead-browse-cards"
+      >
+        <i className="icon-card-outline-bold" />
+        {t("masthead.cards")}
+      </NavLink>
+      <NavLink
+        className={css["nav-link"]}
+        href="~/content"
+        location={location}
+        section="content"
+        testId="masthead-browse-content"
+      >
+        <MapIcon />
+        {t("content.title")}
+      </NavLink>
       <NavLink
         className={css["nav-link"]}
         href="~/decklists"
@@ -139,50 +151,6 @@ function MastheadNav(props: { location: string; navSlot?: React.ReactNode }) {
       </NavLink>
       {navSlot}
     </nav>
-  );
-}
-
-function BrowseMenu(props: { location: string }) {
-  const { location } = props;
-  const { t } = useTranslation();
-
-  return (
-    <Popover placement="bottom-start">
-      <PopoverTrigger asChild>
-        <Button
-          className={css["nav-link"]}
-          data-testid="masthead-browse"
-
-          variant="bare"
-        >
-          <i className="icon-card-outline-bold" />
-          {t("masthead.browse")}
-          <ChevronDownIcon className={css["nav-link-arrow"]} aria-hidden />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent>
-        <DropdownMenu aria-label={t("masthead.browse")}>
-          <NavDropdownLink
-            href="~/browse"
-            location={location}
-            section="cards"
-            testId="masthead-browse-cards"
-          >
-            <i className="icon-card-outline-bold" />
-            {t("masthead.cards")}
-          </NavDropdownLink>
-          <NavDropdownLink
-            href="~/content"
-            location={location}
-            section="content"
-            testId="masthead-browse-content"
-          >
-            <MapIcon />
-            {t("content.title")}
-          </NavDropdownLink>
-        </DropdownMenu>
-      </PopoverContent>
-    </Popover>
   );
 }
 
@@ -425,11 +393,6 @@ function isMastheadPathActive(
   section: MastheadSection,
 ): boolean {
   switch (section) {
-    case "browse":
-      return (
-        isMastheadPathActive(location, "cards") ||
-        isMastheadPathActive(location, "content")
-      );
     case "cards":
       return location.startsWith("/browse");
     case "content":

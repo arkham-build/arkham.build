@@ -150,10 +150,6 @@ async function expectFavoriteSelected(page: Page, selected: boolean) {
 }
 
 async function goToBrowse(page: Page) {
-  const currentUrl = page.url();
-
-  await page.getByTestId("masthead-browse").click();
-  await expect(page).toHaveURL(currentUrl);
   await page.getByTestId("masthead-browse-cards").click();
   await expect(page).toHaveURL(/\/browse/);
 }
