@@ -126,7 +126,7 @@ export function useImportFromFilesMutation() {
 
   return useMutation({
     mutationKey: ["decks", "import-files"],
-    mutationFn: (files: FileList) => importFromFiles(files),
+    mutationFn: (files: readonly File[]) => importFromFiles(files),
   });
 }
 

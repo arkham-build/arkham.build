@@ -1,10 +1,10 @@
-import { type Deck, type Id, isDeck } from "@arkham-build/shared";
+import type { Deck, Id } from "@arkham-build/shared";
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import { ARCHIVE_FOLDER_ID } from "@/utils/constants";
 import i18n from "@/utils/i18n";
 import { duplicateAdapter } from "../lib/deck-crud";
-import { formatDeckImport } from "../lib/deck-io";
+import { formatDeckImport, parseDeckJson } from "../lib/deck-io";
 import { dehydrate } from "../persist";
 import type { HttpClient } from "../services/http-client";
 import { importDeck } from "../services/requests/public-decks";
@@ -82,10 +82,7 @@ export const createDataSlice: StateCreator<StoreState, [], [], DataSlice> = (
   },
 
   async importFromFiles(files) {
-    const decks: Deck[] = await Promise.all(
-      Array.from(files).map((file) => file.text().then(JSON.parse)),
-    ).then((res) => res.filter(isDeck));
-
+    const decks = await Promise.all(files.map(parseDeckFile));
     await get().importDecks(decks);
   },
 
@@ -182,4 +179,15 @@ async function persistFolderState(
 
   assert(client, "Cannot sync folders without a client.");
   await state.saveFolders(client);
+}
+
+async function parseDeckFile(file: File): Promise<Deck> {
+  try {
+    return parseDeckJson(await file.text());
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "Unknown error";
+    throw new Error(`Could not import "${file.name}": ${reason}`, {
+      cause: error,
+    });
+  }
 }

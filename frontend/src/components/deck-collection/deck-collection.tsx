@@ -34,7 +34,6 @@ import type { DeckSummary as DeckSummaryType } from "@/store/lib/types";
 import { selectDecksDisplayList } from "@/store/selectors/deck-collection";
 import { ARKHAMDB_WARNING_VISIBLE } from "@/utils/constants";
 import { useHotkey } from "@/utils/use-hotkey";
-import { FileInput } from "../ui/file-input";
 import { Notice } from "../ui/notice";
 import css from "./deck-collection.module.css";
 import { DeckCollectionFilters } from "./deck-collection-filters";
@@ -65,11 +64,29 @@ export function DeckCollection() {
       !!state.auth.session?.identities.some(isArkhamDBIdentity),
   );
 
-  const onAddFiles = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const files = evt.target.files;
-    if (files?.length) {
-      importDecksMutation.mutate(files);
+  const onAddFiles = async (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const input = evt.currentTarget;
+    const files = Array.from(input.files ?? []);
+    if (!files.length) return;
+
+    const toastId = toast.show({
+      children: t("deck_collection.import_loading"),
+      variant: "loading",
+    });
+
+    try {
+      await importDecksMutation.mutateAsync(files);
+    } catch (error) {
+      toast.show({
+        children: t("deck_collection.import_error", {
+          error: error instanceof Error ? error.message : "Unknown error",
+        }),
+        variant: "error",
+      });
+    } finally {
+      input.value = "";
       setPopoverOpen(false);
+      toast.dismiss(toastId);
     }
   };
 
@@ -109,6 +126,14 @@ export function DeckCollection() {
 
   return (
     <div className={css["container"]}>
+      <input
+        className="sr-only"
+        accept="application/json"
+        id="collection-import"
+        type="file"
+        multiple
+        onChange={onAddFiles}
+      />
       {ARKHAMDB_WARNING_VISIBLE && hasArkhamDBConnection && (
         <Notice className={css["banner"]} variant="warning">
           {t("deck_collection.arkhamdb_response_time_banner")}
@@ -135,16 +160,15 @@ export function DeckCollection() {
             <PopoverContent>
               <DropdownMenu>
                 <DropdownItem>
-                  <FileInput
-                    accept="application/json"
-                    id="collection-import"
-                    multiple
-                    onChange={onAddFiles}
+                  <Button
+                    as="label"
+                    data-testid="collection-import-button"
+                    htmlFor="collection-import"
                     full
                     variant="bare"
                   >
                     <UploadIcon /> {t("deck_collection.import_json")}
-                  </FileInput>
+                  </Button>
                 </DropdownItem>
                 <DropdownButton
                   data-testid="collection-delete-all"

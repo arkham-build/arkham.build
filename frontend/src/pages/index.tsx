@@ -1,4 +1,4 @@
-import { DeckSchema, type Deck } from "@arkham-build/shared";
+import type { Deck } from "@arkham-build/shared";
 import { MegaphoneIcon, XIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -13,6 +13,7 @@ import { ListLayout } from "@/layouts/list-layout";
 import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
 import { useImportDecksMutation } from "@/queries/mutations/decks";
 import { useStore } from "@/store";
+import { parseDeckJson } from "@/store/lib/deck-io";
 import { selectIsInitialized } from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
 import { RandomCardButton } from "./index/random-card-button";
@@ -95,9 +96,7 @@ function pasteTargetIsEditable(event: ClipboardEvent) {
 
 function parsePastedDeck(text: string): Deck | undefined {
   try {
-    const parsed: unknown = JSON.parse(text);
-    const result = DeckSchema.safeParse(parsed);
-    return result.success ? result.data : undefined;
+    return parseDeckJson(text);
   } catch {
     return undefined;
   }
