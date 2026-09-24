@@ -74,6 +74,7 @@ export function CardScanControlled(props: Props) {
 
   const backCard = useStore((state) => selectBackCard(state, card.code));
   const backType = backCard ? "card" : cardBackType(card);
+  const hasDefaultBack = backType === "player" || backType === "encounter";
 
   const code = card.code;
 
@@ -170,7 +171,10 @@ export function CardScanControlled(props: Props) {
           </div>
           {!preventFlip && !hideFlipButton && (
             <Button
-              className={css["scan-flip-trigger"]}
+              className={cx(
+                css["scan-flip-trigger"],
+                hasDefaultBack && css["default-back"],
+              )}
               onClick={onToggleFlip}
               iconOnly
               rounded="full"

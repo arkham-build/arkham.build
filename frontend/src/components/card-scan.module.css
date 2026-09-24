@@ -34,6 +34,11 @@
     right: 0.25rem;
   }
 
+  .default-back {
+    opacity: 0;
+    visibility: hidden;
+  }
+
   .scan-left-action-slot {
     bottom: 0.25rem;
     left: 0.25rem;
