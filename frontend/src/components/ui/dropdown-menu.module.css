@@ -51,11 +51,12 @@
   justify-content: flex-start;
 }
 
-.section {
+.section .title {
   padding-inline: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
-.section > * + * {
+.section > :not(:first-child) + :not(:first-child) {
   margin-top: 0.375rem;
 }
 
