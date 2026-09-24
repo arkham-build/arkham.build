@@ -55,20 +55,17 @@
   border: 1px solid var(--palette-1);
   border-radius: var(--rounded);
   overflow-y: auto;
-  overscroll-behavior: contain;
   height: 100%;
 }
 
 .layout-content {
   grid-area: content;
   overflow-y: auto;
-  overscroll-behavior: contain;
 }
 
 .layout-selections {
   grid-area: selections;
   overflow-y: auto;
-  overscroll-behavior: contain;
   height: 100%;
 }
 

@@ -42,7 +42,6 @@
   & .expander-content {
     max-height: unset;
     overflow: auto;
-    overscroll-behavior: contain;
   }
 }
 
