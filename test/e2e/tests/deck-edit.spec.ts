@@ -416,18 +416,11 @@ test.describe("deck edit", () => {
 
     await page.getByTestId("search-input").focus();
 
-    await page.getByTestId("search-game-text").click();
+    await page.getByText("Game text", { exact: true }).click();
     await fillSearch(page, "Advanced.");
 
-    await page
-      .getByTestId("listcard-90009")
-      .getByTestId("quantity-increment")
-      .click();
-
-    await page
-      .getByTestId("listcard-90010")
-      .getByTestId("quantity-increment")
-      .click();
+    await adjustListCardQuantity(page, "90009", "increment");
+    await adjustListCardQuantity(page, "90010", "increment");
 
     await expect(
       page

@@ -57,6 +57,7 @@
 .sidebar-section-title {
   font-size: var(--text-xl);
   line-height: 1;
+  margin-bottom: 1rem;
 }
 
 .sidebar-section-content > * + * {
@@ -100,7 +101,7 @@
 }
 
 .card-set-nav-title {
-  margin-bottom: 0.375rem;
+  margin-bottom: 1rem;
 }
 
 .card-set-nav-title h3 {
@@ -112,12 +113,8 @@
   vertical-align: baseline;
 }
 
-.printings-group + .printings-group {
-  border-top: 1px dotted var(--palette-2);
-}
-
 .printings-groups > * + * {
-  margin-top: 0.75rem;
+  margin-top: 1rem;
 }
 
 .printings-group > * + * {
@@ -130,7 +127,7 @@
   line-height: 1;
   font-family: var(--font-family-ui);
   color: var(--palette-4);
-  margin-block: 0.25rem;
+  margin-block: 1rem;
 }
 
 .printings {

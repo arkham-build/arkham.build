@@ -38,13 +38,12 @@
 
 .manager-trigger {
   justify-self: end;
+  margin-left: 0.25rem;
 }
 
 .tag-result {
-  align-items: flex-start;
   box-sizing: border-box;
   justify-content: space-between;
-  line-height: 1.25;
   max-width: 100%;
   overflow-wrap: anywhere;
   white-space: normal;
