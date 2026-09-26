@@ -39,7 +39,12 @@ export function DeckCollectionImport() {
   if (session) return null;
 
   return (
-    <Popover onOpenChange={setOpen} open={open} placement="bottom-start">
+    <Popover
+      onOpenChange={setOpen}
+      open={open}
+      placement="bottom-start"
+      strategy="fixed"
+    >
       <PopoverTrigger asChild>
         <Button
           data-testid="import-trigger"

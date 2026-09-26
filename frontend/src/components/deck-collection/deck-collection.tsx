@@ -83,11 +83,11 @@ export function DeckCollection() {
         }),
         variant: "error",
       });
-    } finally {
-      input.value = "";
-      setPopoverOpen(false);
-      toast.dismiss(toastId);
     }
+
+    input.value = "";
+    setPopoverOpen(false);
+    toast.dismiss(toastId);
   };
 
   const onDeleteAll = async () => {
@@ -142,11 +142,7 @@ export function DeckCollection() {
       <header className={css["header"]}>
         <h2 className={css["title"]}>{t("deck_collection.title")}</h2>
         <div className={css["actions"]}>
-          {!hasConnections && (
-            <Popover>
-              <DeckCollectionImport />
-            </Popover>
-          )}
+          {!hasConnections && <DeckCollectionImport />}
           <Popover onOpenChange={setPopoverOpen} open={popoverOpen}>
             <PopoverTrigger asChild>
               <Button

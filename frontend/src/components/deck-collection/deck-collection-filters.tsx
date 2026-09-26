@@ -63,7 +63,7 @@ export function DeckCollectionFilters(props: Props) {
           value={searchValue}
           className={css["search-outer"]}
         />
-        <Popover placement="right-start" modal>
+        <Popover placement="right-start" modal strategy="fixed">
           <PopoverTrigger asChild>
             <Button
               className={css["expand-filters"]}

@@ -296,7 +296,7 @@ function Collection({ onAddProject, listingsQuery, filterFn }: RegistryProps) {
         >
           <FileJson2Icon /> {t("fan_made_content.actions.import_file")}
         </FileInput>
-        <Popover>
+        <Popover strategy="fixed">
           <PopoverTrigger asChild>
             <Button data-testid="collection-import-url">
               <LinkIcon /> {t("fan_made_content.actions.import_url")}

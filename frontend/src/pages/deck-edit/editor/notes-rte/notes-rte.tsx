@@ -105,6 +105,7 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
         <Popover
           hoverDisabled
           onOpenChange={onCardsOpenChange}
+          strategy="fixed"
           open={popoverOpen === "cards"}
           placement="bottom-start"
         >
@@ -133,6 +134,7 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
         <Popover
           hoverDisabled
           onOpenChange={onSymbolsOpenChange}
+          strategy="fixed"
           open={popoverOpen === "symbols"}
           placement="bottom-start"
         >
