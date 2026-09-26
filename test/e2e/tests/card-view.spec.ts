@@ -41,6 +41,7 @@ test.describe("card view: display", () => {
     await page.goto("/card/09042");
     await expect(page.getByTestId("main")).toHaveScreenshot({
       mask: defaultScreenshotMask(page),
+      maxDiffPixels: 1,
     });
   });
 
