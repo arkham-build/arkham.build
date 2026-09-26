@@ -305,6 +305,11 @@ export function getDeckLimitOverride(
     }
   }
 
+  // customizable cards can alter their own deck_limit
+  if (!!card.customization_options && deckLimit > 2) {
+    return deckLimit;
+  }
+
   return Math.min(sealedTotal, deckLimit);
 }
 
