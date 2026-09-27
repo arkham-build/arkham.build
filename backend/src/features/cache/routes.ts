@@ -22,10 +22,11 @@ import {
   mapCardRowToV1Card,
 } from "./mapping.ts";
 import { getDataVersionByLocale } from "./queries.ts";
+import { STARTER_DECKS_ARRAY } from "../../lib/starter-decks.ts";
 
 const router = new Hono<HonoEnv>();
 
-const METADATA_VERSION = 3;
+const METADATA_VERSION = 4;
 
 const responseCaches = new WeakMap<Database, Map<string, ResponseCacheEntry>>();
 
@@ -225,6 +226,7 @@ async function metadataResponse(db: Database, locale: string) {
         citation: version.citation,
         date: new Date(version.date).toISOString().slice(0, 10),
       })),
+      starter_decks: STARTER_DECKS_ARRAY,
     },
   };
 }
