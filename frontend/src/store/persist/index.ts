@@ -22,6 +22,7 @@ const metadataStorage = makeStorageAdapter<MetadataState>(
   "deckbuilder-metadata",
   (state) => ({
     metadata: state.metadata,
+    starterDecks: state.starterDecks,
   }),
 );
 

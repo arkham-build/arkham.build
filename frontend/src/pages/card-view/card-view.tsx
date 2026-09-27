@@ -27,6 +27,7 @@ import { ErrorStatus } from "../errors/404";
 import css from "./card-view.module.css";
 import { Printings } from "./printings";
 import { UsableBy } from "./usable-by";
+import { selectStarterDeckForInvestigator } from "@/store/selectors/starter-decks";
 
 function CardView() {
   const { code } = useParams();
@@ -36,6 +37,17 @@ function CardView() {
     selectCardWithRelations(state, code, true, undefined),
   );
   const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
+
+  const isInvestigator = cardWithRelations?.card.type_code === "investigator";
+
+  const isBuildableInvestigator =
+    isInvestigator && !isStaticInvestigator(cardWithRelations.card);
+
+  const starterDeck = useStore((state) =>
+    isBuildableInvestigator
+      ? selectStarterDeckForInvestigator(state, cardWithRelations.card.code)
+      : undefined,
+  );
 
   const onExport = () => {
     if (!cardWithRelations) return;
@@ -55,10 +67,6 @@ function CardView() {
   if (!cardWithRelations) {
     return <ErrorStatus statusCode={404} />;
   }
-
-  const isInvestigator = cardWithRelations.card.type_code === "investigator";
-  const isBuildableInvestigator =
-    isInvestigator && !isStaticInvestigator(cardWithRelations.card);
 
   const deckbuildable =
     filterPlayerCards(cardWithRelations.card) && !isInvestigator;
@@ -117,6 +125,14 @@ function CardView() {
               <SidebarSection title={t("card_view.section_deckbuilding")}>
                 {isBuildableInvestigator && (
                   <>
+                    {starterDeck && (
+                      <Link asChild href={`/deck/view/${starterDeck.id}`}>
+                        <Button full data-testid="usable-cards" as="a">
+                          <i className="icon-deck" />
+                          {t("card_view.actions.starter_deck")}
+                        </Button>
+                      </Link>
+                    )}
                     <Link
                       asChild
                       href={`/card/${cardWithRelations.card.code}/usable_cards`}

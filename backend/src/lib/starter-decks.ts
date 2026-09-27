@@ -14,3 +14,5 @@ export const STARTER_DECKS = z
   );
 
 export const STARTER_DECKS_ARRAY = Object.values(STARTER_DECKS);
+
+export const STARTER_DECKS_VERSION = STARTER_DECKS_ARRAY.length;

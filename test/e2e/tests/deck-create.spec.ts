@@ -31,6 +31,21 @@ test.describe("deck create", () => {
     await expect(page.getByTestId("listcard-90024")).toBeVisible();
   });
 
+  test("use official starter deck", async ({ page }) => {
+    await page.goto("/deck/create/03005");
+    await expect(
+      page.getByTestId("create-apply-starter-deck"),
+    ).not.toBeVisible();
+
+    await page.goto("/deck/create/01001");
+    await page.getByTestId("create-apply-starter-deck").click();
+    await page.getByTestId("create-save").click();
+
+    await expect(locateCardInSlots(page, "01016")).toBeVisible();
+    await expect(locateCardInSlots(page, "01097")).toBeVisible();
+    await expect(locateCardInSlots(page, "01000")).not.toBeVisible();
+  });
+
   test("choose investigator via modal", async ({ page }) => {
     await page.goto("/deck/create");
 

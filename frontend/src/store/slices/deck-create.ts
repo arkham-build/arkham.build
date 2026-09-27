@@ -64,6 +64,7 @@ export const createDeckCreateSlice: StateCreator<
           selections: {},
           sets: ["requiredCards"],
           tabooSetId: selectSettingsTabooId(settings, metadata),
+          applyStarterDeck: false,
           title: getDefaultDeckName(
             displayAttribute(investigator, "name"),
             investigator.faction_code,
@@ -93,6 +94,19 @@ export const createDeckCreateSlice: StateCreator<
     });
   },
 
+  deckCreateSetApplyStarterDeck(value: boolean) {
+    set((state) => {
+      assert(state.deckCreate, "DeckCreate slice must be initialized.");
+
+      return {
+        deckCreate: {
+          ...state.deckCreate,
+          applyStarterDeck: value,
+        },
+      };
+    });
+  },
+
   deckCreateSetTabooSet(value: number | undefined) {
     set((state) => {
       assert(state.deckCreate, "DeckCreate slice must be initialized.");
@@ -117,6 +131,7 @@ export const createDeckCreateSlice: StateCreator<
             investigatorCode: value,
             investigatorFrontCode: value,
             investigatorBackCode: value,
+            applyStarterDeck: false,
           },
         };
       }

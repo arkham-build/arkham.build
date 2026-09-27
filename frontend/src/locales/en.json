@@ -188,6 +188,7 @@
         "reviews": "View reviews",
         "show_original_image": "Show original card image",
         "show_taboo_image": "Show taboo card image",
+        "starter_deck": "Official starter deck",
         "usable_by": "Card pool: {{prefix}}{{name}}",
         "usable_by_interpolated": "Card pool: <tooltip>{{name}}</tooltip>",
         "view_backside": "Backside",
@@ -1013,7 +1014,8 @@
         "error": "Failed to fetch sealed deck: {{error}}",
         "loading": "Fetching sealed deck..."
       },
-      "title": "Create {{name}} deck"
+      "title": "Create {{name}} deck",
+      "use_starter_deck": "Use official starter deck"
     },
     "deck_edit": {
       "actions": {

@@ -8,6 +8,7 @@ import { SealedDeckField } from "@/components/limited-card-pool/sealed-deck-fiel
 import { ListCard } from "@/components/list-card/list-card";
 import { TabooSelect } from "@/components/taboo-select";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { PageTitle } from "@/components/ui/page-title";
 import type { SelectOption } from "@/components/ui/select";
@@ -23,6 +24,7 @@ import {
   selectDeckCreateStorageProviderOptions,
 } from "@/store/selectors/deck-create";
 import { selectLimitedPoolPacks } from "@/store/selectors/lists";
+import { selectStarterDeckForInvestigator } from "@/store/selectors/starter-decks";
 import { isEmpty } from "@/utils/is-empty";
 import { useGoBack } from "@/utils/use-go-back";
 import { useAccentColor } from "../../utils/use-accent-color";
@@ -42,6 +44,13 @@ export function DeckCreateEditor() {
   const setTabooSet = useStore((state) => state.deckCreateSetTabooSet);
   const setSelection = useStore((state) => state.deckCreateSetSelection);
   const setProvider = useStore((state) => state.deckCreateSetProvider);
+  const setApplyStarterDeck = useStore(
+    (state) => state.deckCreateSetApplyStarterDeck,
+  );
+
+  const starterDeck = useStore((state) =>
+    selectStarterDeckForInvestigator(state, deckCreate.investigatorCode),
+  );
 
   const onDeckCreate = useCreateDeck();
 
@@ -164,7 +173,7 @@ export function DeckCreateEditor() {
       </Field>
 
       {investigator.relations?.parallel && (
-        <>
+        <div className={css["parallel-selections"]}>
           <Field full>
             <FieldLabel htmlFor="investigator-front">
               {t("deck_edit.config.sides.investigator_front")}
@@ -193,7 +202,7 @@ export function DeckCreateEditor() {
               value={deckCreate.investigatorBackCode}
             />
           </Field>
-        </>
+        </div>
       )}
 
       {selections && (
@@ -216,6 +225,17 @@ export function DeckCreateEditor() {
       )}
 
       <DeckCreateCardPool investigator={investigator.card} />
+
+      {starterDeck && (
+        <div className={css["starter-deck"]}>
+          <Checkbox
+            checked={deckCreate.applyStarterDeck}
+            data-testid="create-apply-starter-deck"
+            label={t("deck_create.use_starter_deck")}
+            onCheckedChange={setApplyStarterDeck}
+          />
+        </div>
+      )}
 
       <nav className={css["editor-nav"]}>
         <Button
@@ -298,7 +318,7 @@ function DeckCreateCardPool({ investigator }: { investigator: Card }) {
   const selectedItems = selectedPacks.map((p) => p.code);
 
   return (
-    <Field full>
+    <Field className={css["card-pool"]} full>
       <FieldLabel>{t("deck_edit.config.card_pool.section_title")}</FieldLabel>
       <LimitedCardPoolField
         investigator={investigator}

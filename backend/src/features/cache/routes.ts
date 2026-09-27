@@ -22,7 +22,10 @@ import {
   mapCardRowToV1Card,
 } from "./mapping.ts";
 import { getDataVersionByLocale } from "./queries.ts";
-import { STARTER_DECKS_ARRAY } from "../../lib/starter-decks.ts";
+import {
+  STARTER_DECKS_ARRAY,
+  STARTER_DECKS_VERSION,
+} from "../../lib/starter-decks.ts";
 
 const router = new Hono<HonoEnv>();
 
@@ -125,6 +128,7 @@ async function cachedResponse<T>(
 
   if (options.resource !== "cards") {
     etagParts.push(METADATA_VERSION);
+    etagParts.push(STARTER_DECKS_VERSION);
   }
 
   const etag = etagParts.join(":");
