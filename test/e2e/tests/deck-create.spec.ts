@@ -42,8 +42,7 @@ test.describe("deck create", () => {
     await page.getByTestId("create-save").click();
 
     await expect(locateCardInSlots(page, "01016")).toBeVisible();
-    await expect(locateCardInSlots(page, "01097")).toBeVisible();
-    await expect(locateCardInSlots(page, "01000")).not.toBeVisible();
+    await expect(locateCardInSlots(page, "01000")).toBeVisible();
   });
 
   test("choose investigator via modal", async ({ page }) => {

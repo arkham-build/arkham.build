@@ -127,7 +127,7 @@ function CardView() {
                   <>
                     {starterDeck && (
                       <Link asChild href={`/deck/view/${starterDeck.id}`}>
-                        <Button full data-testid="usable-cards" as="a">
+                        <Button full data-testid="starter-deck" as="a">
                           <i className="icon-deck" />
                           {t("card_view.actions.starter_deck")}
                         </Button>
