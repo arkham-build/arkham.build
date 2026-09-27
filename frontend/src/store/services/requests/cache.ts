@@ -3,6 +3,7 @@ import type {
   Campaign,
   Cycle,
   DataVersion,
+  Deck,
   EncounterSet,
   JsonDataRulesVersion,
   Pack,
@@ -17,12 +18,13 @@ export type MetadataApiResponse = {
 
 export type MetadataResponse = {
   campaign: Campaign[];
+  card_encounter_set: EncounterSet[];
   cycle: Cycle[];
   pack: Pack[];
-  card_encounter_set: EncounterSet[];
-  scenario: Scenario[];
-  taboo_set: TabooSet[];
   rules_versions: JsonDataRulesVersion[];
+  scenario: Scenario[];
+  starter_decks: Deck[];
+  taboo_set: TabooSet[];
 };
 
 export async function queryMetadata(

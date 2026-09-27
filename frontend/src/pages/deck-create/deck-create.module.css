@@ -91,10 +91,22 @@
   margin-top: 0.5rem;
 }
 
+.card-pool,
+.parallel-selections,
+.starter-deck {
+  margin-top: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--palette-1);
+}
+
+.parallel-selections > * + * {
+  margin-top: 0.5rem;
+}
+
 .editor-nav {
-  padding: 0.25rem;
   display: flex;
   gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .card-selections > * + * {

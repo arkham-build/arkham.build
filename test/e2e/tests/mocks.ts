@@ -1,5 +1,6 @@
 /* oxlint-disable typescript/no-explicit-any -- test code */
 import type { Page } from "@playwright/test";
+import starterDecks from "../../../backend/src/data/starter_decks.json" with { type: "json" };
 import allCardsResponse from "../../fixtures/stubs/all_card.json" with { type: "json" };
 
 import versionsResponse from "../../fixtures/stubs/data_version.json" with { type: "json" };
@@ -33,7 +34,13 @@ export async function mockApiCalls(page: Page) {
       await route.fulfill({ json });
     }),
     page.route(`${baseUrl}/cache/metadata/en*`, async (route) => {
-      const json = metadataResponse;
+      const json = {
+        ...metadataResponse,
+        data: {
+          ...metadataResponse.data,
+          starter_decks: [starterDecks["2624931"]],
+        },
+      };
       await route.fulfill({ json });
     }),
     page.route(`${baseUrl}/cache/version/en`, async (route) => {

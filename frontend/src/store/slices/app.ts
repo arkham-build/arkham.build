@@ -177,6 +177,7 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
       return {
         ...merged,
         metadata,
+        starterDecks: metadataResponse.starter_decks ?? [],
         ui: {
           ...merged.ui,
           fanMadeContentCache: buildCacheFromDecks(
@@ -519,6 +520,10 @@ function mergeInitialState(
         ...overrides?.settings?.lists,
       },
     },
+    starterDecks:
+      overrides?.starterDecks ??
+      persistedState?.starterDecks ??
+      initialState.starterDecks,
     sync: {
       ...initialState.sync,
       ...persistedState?.sync,

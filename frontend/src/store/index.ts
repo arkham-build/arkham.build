@@ -13,6 +13,7 @@ import { createListsSlice } from "./slices/lists";
 import { createMetadataSlice } from "./slices/metadata";
 import { createRecommenderSlice } from "./slices/recommender";
 import { createSettingsSlice } from "./slices/settings";
+import { createStarterDecksSlice } from "./slices/starter-decks";
 import { createSyncSlice } from "./slices/sync";
 import { createUISlice } from "./slices/ui";
 
@@ -32,6 +33,7 @@ const stateCreator = (...args: [any, any, any]) => ({
   ...createDeckCreateSlice(...args),
   ...createDeckCollectionSlice(...args),
   ...createRecommenderSlice(...args),
+  ...createStarterDecksSlice(...args),
 });
 
 export const useStore = create<StoreState>()(
