@@ -12,6 +12,7 @@ export type CardListProps = {
   className?: string;
   getListCardProps?: FilteredListCardPropsGetter;
   quantities?: Slots;
+  showPackQuantities?: boolean;
   slotLeft?: React.ReactNode;
   slotRight?: React.ReactNode;
   targetDeck?: TargetDeck;
@@ -19,7 +20,7 @@ export type CardListProps = {
 
 export type CardListImplementationProps = Omit<
   CardListProps,
-  "className" | "targetDeck" | "slotLeft" | "slotRight"
+  "className" | "showPackQuantities" | "targetDeck" | "slotLeft" | "slotRight"
 > & {
   data: ListState;
   listMode?: "single" | "grouped";

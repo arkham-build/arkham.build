@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
+import { CardPackQuantity } from "@/components/card-pack-quantity";
 import { ContentGuideLink } from "@/components/content-guide-link";
 import {
   ContentNavigation,
@@ -235,9 +236,7 @@ function toNavigationTarget(
 function getScenarioListCardProps() {
   return {
     renderCardNameExtra: (card: Card) => (
-      <span className={css["quantity"]}>
-        <i className="icon-card-outline-bold" />×{card.quantity}
-      </span>
+      <CardPackQuantity quantity={card.quantity} />
     ),
   };
 }

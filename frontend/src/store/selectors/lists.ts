@@ -1,4 +1,10 @@
-import type { Card, CardTagsState, Cycle, Pack } from "@arkham-build/shared";
+import type {
+  Card,
+  CardTagsState,
+  Cycle,
+  Pack,
+  Slots,
+} from "@arkham-build/shared";
 import {
   ASSET_SLOT_ORDER,
   CARD_TAG_FAVORITE_ID,
@@ -131,6 +137,7 @@ export type ListState = {
   groupCounts: number[];
   groups: CardGroup[];
   key: string;
+  packQuantities?: Slots;
   totalCardCount: number;
 };
 
@@ -831,6 +838,12 @@ export const selectListCards = createSelector(
   (state: StoreState) => state.ui.showUnusableCards,
   (state: StoreState) => state.settings.collection,
   (
+    _: StoreState,
+    __: ResolvedDeck | undefined,
+    ___: TargetDeck | undefined,
+    includePackQuantities = false,
+  ) => includePackQuantities,
+  (
     metadata,
     lookupTables,
     activeList,
@@ -843,6 +856,7 @@ export const selectListCards = createSelector(
     targetDeck,
     showUnusableCards,
     collection,
+    includePackQuantities,
   ) => {
     if (!baseFilterResult || !activeList) return undefined;
 
@@ -850,25 +864,27 @@ export const selectListCards = createSelector(
     let filteredCards = baseFilterResult.filteredCards;
     let totalCardCount = baseFilterResult.totalCardCount;
 
-    // filter duplicates, taking into account the deck and list context.
-    const currentTotal = filteredCards.length;
-
-    if (!showUnusableCards) {
-      filteredCards = filteredCards.filter(
-        filterDuplicatesFromContext(
+    const duplicateFilter = showUnusableCards
+      ? undefined
+      : filterDuplicatesFromContext(
           filteredCards,
           activeList,
           metadata,
           lookupTables,
           deck,
           collection,
-        ),
-      );
+        );
 
-      totalCardCount -= currentTotal - filteredCards.length;
+    if (duplicateFilter) {
+      let visibleCardCount = 0;
+
+      for (const card of filteredCards) {
+        if (duplicateFilter(card)) visibleCardCount += 1;
+      }
+
+      totalCardCount -= filteredCards.length - visibleCardCount;
     }
 
-    // apply search after initial filtering to cut down on search operations.
     const search = activeList.search;
 
     if (search.value) {
@@ -907,13 +923,21 @@ export const selectListCards = createSelector(
 
     if (userFilter) {
       filteredCards = filteredCards.filter(
-        (card) =>
+        (card: Card) =>
           userFilter(card) ||
           // surface cards where the backside matches the filter
           (!!card.back_link_id &&
             metadata.cards[card.back_link_id] &&
             userFilter(metadata.cards[card.back_link_id])),
       );
+    }
+
+    const matchingQuantityCardsByCode = includePackQuantities
+      ? indexCardsByCode(filteredCards)
+      : undefined;
+
+    if (duplicateFilter) {
+      filteredCards = filteredCards.filter(duplicateFilter);
     }
 
     const cards: Card[] = [];
@@ -947,10 +971,51 @@ export const selectListCards = createSelector(
       groups,
       cards,
       groupCounts,
+      packQuantities: matchingQuantityCardsByCode
+        ? resolvePackQuantities(
+            cards,
+            matchingQuantityCardsByCode,
+            lookupTables,
+          )
+        : undefined,
       totalCardCount,
     } as ListState;
   },
 );
+
+function indexCardsByCode(cards: Card[]): Map<string, Card> {
+  const cardsByCode = new Map<string, Card>();
+
+  for (const card of cards) {
+    cardsByCode.set(card.code, card);
+  }
+
+  return cardsByCode;
+}
+
+function resolvePackQuantities(
+  cards: Card[],
+  matchingCardsByCode: Map<string, Card>,
+  lookupTables: LookupTables,
+): Slots {
+  return cards.reduce<Slots>((quantities, card) => {
+    const duplicateCodes = Object.keys(
+      lookupTables.relations.duplicates[card.code] ?? {},
+    );
+
+    quantities[card.code] = [card.code, ...duplicateCodes].reduce(
+      (highest, code) => {
+        const matchingCard = matchingCardsByCode.get(code);
+        return matchingCard
+          ? Math.max(highest, matchingCard.quantity)
+          : highest;
+      },
+      card.quantity,
+    );
+
+    return quantities;
+  }, {});
+}
 
 export const selectCardRelationsResolver = createSelector(
   selectMetadata,

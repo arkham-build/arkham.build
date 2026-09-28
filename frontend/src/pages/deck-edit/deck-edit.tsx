@@ -54,6 +54,7 @@ function DeckEdit() {
   const activeListId = useStore((state) => state.activeList);
   const resetFilters = useStore((state) => state.resetFilters);
   const setActiveList = useStore((state) => state.setActiveList);
+  const setShowUnusableCards = useStore((state) => state.setShowUnusableCards);
 
   const deck = useStore((state) => selectResolvedDeckById(state, id, true));
 
@@ -62,8 +63,9 @@ function DeckEdit() {
 
     return () => {
       resetFilters();
+      setShowUnusableCards(false);
     };
-  }, [setActiveList, resetFilters]);
+  }, [resetFilters, setActiveList, setShowUnusableCards]);
 
   if (id && !deck) {
     return <ErrorStatus statusCode={404} />;

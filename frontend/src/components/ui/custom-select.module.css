@@ -69,6 +69,12 @@
     background: var(--palette-1);
   }
 
+  @media (hover: hover) and (pointer: fine) {
+    .option:hover {
+      background: var(--palette-1);
+    }
+  }
+
   .option-indicator {
     width: var(--text-xs);
     position: absolute;

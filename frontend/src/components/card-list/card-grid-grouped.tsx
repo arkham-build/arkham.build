@@ -1,7 +1,5 @@
-import type { Card } from "@arkham-build/shared";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { type ListRange, Virtuoso, type VirtuosoHandle } from "react-virtuoso";
-import { Link } from "wouter";
 import { useStore } from "@/store";
 import type {
   CardGroup as CardGroupType,
@@ -9,11 +7,8 @@ import type {
 } from "@/store/selectors/lists";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { cx } from "@/utils/cx";
-import { preventLeftClick } from "@/utils/prevent-links";
-import { CardScan } from "../card-scan";
-import { CardFavoriteAction } from "../card-tags/card-favorite";
 import { Scroller } from "../ui/scroller";
-import { CardActions } from "./card-actions";
+import { CardGridItem } from "./card-grid";
 import css from "./card-grid.module.css";
 import { Grouphead } from "./grouphead";
 import type { CardListImplementationProps } from "./types";
@@ -195,71 +190,9 @@ function CardGridGroup(
             card={card}
             defaultFlipped={defaultFlipped}
             key={card.code}
+            packQuantity={data.packQuantities?.[card.code]}
           />
         ))}
-      </div>
-    </div>
-  );
-}
-
-function CardGridItem(
-  props: {
-    card: Card;
-    defaultFlipped: boolean;
-  } & Pick<
-    CardListImplementationProps,
-    "getListCardProps" | "quantities" | "resolvedDeck"
-  >,
-) {
-  const { card, defaultFlipped, getListCardProps, quantities } = props;
-
-  const openCardModal = useStore((state) => state.openCardModal);
-
-  const openModal = () => {
-    openCardModal(card.code);
-  };
-
-  const onClick = (evt: React.MouseEvent) => {
-    const linkPrevented = preventLeftClick(evt);
-    if (linkPrevented) openModal();
-  };
-
-  const onPressEnter = (evt: React.KeyboardEvent) => {
-    if (evt.key === "Enter" && evt.target === evt.currentTarget) {
-      openModal();
-    }
-  };
-
-  const leftActionSlot = () => <CardFavoriteAction card={card} />;
-
-  const quantity = quantities?.[card.code] ?? 0;
-
-  return (
-    <div
-      className={css["group-item"]}
-      key={card.code}
-      data-component="card-group-item"
-    >
-      <Link
-        href={`~/card/${card.code}`}
-        className={css["group-item-scan"]}
-        onClick={onClick}
-        onKeyUp={onPressEnter}
-        tabIndex={0}
-      >
-        <CardScan
-          card={card}
-          defaultFlipped={defaultFlipped}
-          lazy
-          leftActionSlot={leftActionSlot}
-        />
-      </Link>
-      <div className={css["group-item-actions"]}>
-        <CardActions
-          card={card}
-          quantity={quantities ? quantity : undefined}
-          listCardProps={getListCardProps?.(card)}
-        />
       </div>
     </div>
   );

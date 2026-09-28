@@ -91,7 +91,7 @@ export function Browse() {
         }
         sidebarWidthMax="var(--sidebar-width-one-col)"
       >
-        {(props) => <CardListContainer {...props} />}
+        {(props) => <CardListContainer {...props} showPackQuantities />}
       </ListLayout>
     </>
   );

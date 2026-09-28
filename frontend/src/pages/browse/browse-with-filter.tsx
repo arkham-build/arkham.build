@@ -91,7 +91,7 @@ export function BrowseWithFilter(props: Props) {
         }
         sidebarWidthMax="var(--sidebar-width-one-col)"
       >
-        {(props) => <CardListContainer {...props} />}
+        {(props) => <CardListContainer {...props} showPackQuantities />}
       </ListLayout>
     </>
   );

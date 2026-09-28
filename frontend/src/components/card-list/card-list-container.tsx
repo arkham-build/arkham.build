@@ -1,3 +1,4 @@
+import type { Card } from "@arkham-build/shared";
 import { useEffect, useState } from "react";
 import { CenterLayout } from "@/layouts/center-layout";
 import { useStore } from "@/store";
@@ -8,6 +9,7 @@ import {
 import { selectActiveList, selectMetadata } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
 import { useHotkey } from "@/utils/use-hotkey";
+import { CardPackQuantity } from "../card-pack-quantity";
 import { Footer } from "../footer";
 import { useResolvedDeck } from "../resolved-deck-context";
 import { CardGrid } from "./card-grid";
@@ -32,6 +34,7 @@ interface Props extends CardListProps {
 export function CardListContainer(props: Props) {
   const {
     className,
+    showPackQuantities,
     slotLeft,
     slotRight,
     targetDeck,
@@ -45,7 +48,7 @@ export function CardListContainer(props: Props) {
   const search = useStore(selectActiveListSearch);
   const metadata = useStore(selectMetadata);
   const data = useStore((state) =>
-    selectListCards(state, ctx.resolvedDeck, targetDeck),
+    selectListCards(state, ctx.resolvedDeck, targetDeck, showPackQuantities),
   );
 
   const setCardModalConfig = useStore((state) => state.setCardModalConfig);
@@ -61,6 +64,23 @@ export function CardListContainer(props: Props) {
   const list = useStore(selectActiveList);
   assert(list, "No active list found");
   const listDisplay = list.display;
+  const getListCardProps = showPackQuantities
+    ? (card: Card) => {
+        const listCardProps = rest.getListCardProps?.(card);
+        const renderCardNameExtra = listCardProps?.renderCardNameExtra;
+        const quantity = data?.packQuantities?.[card.code] ?? card.quantity;
+
+        return {
+          ...listCardProps,
+          renderCardNameExtra: (card: Card, deckQuantity?: number) => (
+            <>
+              {renderCardNameExtra?.(card, deckQuantity)}
+              <CardPackQuantity quantity={quantity} />
+            </>
+          ),
+        };
+      }
+    : rest.getListCardProps;
 
   const toggleListDefaultFlipped = useStore(
     (state) => state.toggleListDefaultFlipped,
@@ -139,6 +159,7 @@ export function CardListContainer(props: Props) {
                 {...rest}
                 data={data}
                 defaultFlipped={list.defaultFlipped}
+                getListCardProps={getListCardProps}
                 listDisplay={listDisplay}
                 metadata={metadata}
                 resolvedDeck={ctx.resolvedDeck}
@@ -151,6 +172,7 @@ export function CardListContainer(props: Props) {
                 {...rest}
                 data={data}
                 defaultFlipped={list.defaultFlipped}
+                getListCardProps={getListCardProps}
                 listDisplay={listDisplay}
                 metadata={metadata}
                 resolvedDeck={ctx.resolvedDeck}
@@ -163,6 +185,7 @@ export function CardListContainer(props: Props) {
                 <CardList
                   {...rest}
                   data={data}
+                  getListCardProps={getListCardProps}
                   listDisplay={listDisplay}
                   metadata={metadata}
                   resolvedDeck={ctx.resolvedDeck}

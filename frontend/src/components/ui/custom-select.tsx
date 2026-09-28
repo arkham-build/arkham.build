@@ -90,6 +90,7 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
     listRef: elementsRef,
     activeIndex,
     selectedIndex,
+    focusItemOnHover: false,
     onNavigate: setActiveIndex,
   });
 
@@ -116,7 +117,7 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
   );
 
   const menuNode = open ? (
-    <FloatingFocusManager context={context} modal={false}>
+    <FloatingFocusManager context={context} initialFocus={-1} modal={false}>
       <div ref={setFloating} style={floatingStyles} {...getFloatingProps()}>
         <div className={cx(css["menu"], menuClassName)}>
           <Scroller>

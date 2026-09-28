@@ -151,6 +151,7 @@ export function CardGrid(
                     highlighted !== null &&
                     data.cards.indexOf(card) === highlighted
                   }
+                  packQuantity={data.packQuantities?.[card.code]}
                 />
               ))}
             </div>
@@ -168,6 +169,7 @@ export function CardGridItem(
     defaultFlipped?: boolean;
     highlighted?: boolean;
     omitFavorite?: boolean;
+    packQuantity?: number;
   } & Pick<
     CardListImplementationProps,
     "getListCardProps" | "quantities" | "resolvedDeck"
@@ -181,6 +183,7 @@ export function CardGridItem(
     omitFavorite,
     getListCardProps,
     quantities,
+    packQuantity,
   } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
@@ -202,7 +205,7 @@ export function CardGridItem(
 
   const leftActionSlot = () => <CardFavoriteAction card={card} />;
 
-  const quantity = quantities?.[card.code] ?? 0;
+  const quantity = quantities?.[card.code] ?? packQuantity ?? 0;
 
   return (
     <div
@@ -230,7 +233,9 @@ export function CardGridItem(
       <div className={css["group-item-actions"]}>
         <CardActions
           card={card}
-          quantity={quantities ? quantity : undefined}
+          quantity={
+            quantities != null || packQuantity != null ? quantity : undefined
+          }
           listCardProps={getListCardProps?.(card)}
         />
       </div>
