@@ -22,7 +22,6 @@
   min-width: 0;
   max-height: calc(70dvh - 1.5rem);
   overflow: auto;
-  overscroll-behavior: contain;
 }
 
 .icon {

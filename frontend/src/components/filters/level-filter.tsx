@@ -80,6 +80,7 @@ export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       locked={locked}
       nonCollapsibleContent={
         !filter.open &&
+        listProperties.cardTypes.has("player") &&
         listProperties.levels.size > 1 && (
           <ToggleGroup
             disabled={locked}

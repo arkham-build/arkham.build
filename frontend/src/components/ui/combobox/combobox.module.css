@@ -71,7 +71,6 @@
   grid-template-rows: min-content;
   height: min(min(calc(var(--viewport-item-count) * 3.875rem), 15.5rem), 40dvh);
   overflow-y: auto;
-  overscroll-behavior: contain;
 }
 
 .menu-empty {

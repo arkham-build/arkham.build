@@ -17,6 +17,9 @@ import { MultiselectFilter } from "./primitives/multiselect-filter";
 const nameRenderer = (item: JsonDataType) => item.name;
 const itemToString = (item: JsonDataType) => item.name.toLowerCase();
 
+const PLAYER_TYPE_SHORTCUTS = ["asset", "event", "skill"] as const;
+const CAMPAIGN_TYPE_SHORTCUTS = ["location", "enemy", "treachery"] as const;
+
 export function TypeFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
 
@@ -46,6 +49,10 @@ export function TypeFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
 
   const typeMapper = useStore(selectTypeMapper);
 
+  const shortcutTypes = !listProperties.cardTypes.has("player")
+    ? CAMPAIGN_TYPE_SHORTCUTS
+    : PLAYER_TYPE_SHORTCUTS;
+
   return (
     <MultiselectFilter
       changes={changes}
@@ -66,20 +73,13 @@ export function TypeFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
           type="multiple"
           value={filter.value}
         >
-          {listProperties.types.has("asset") && (
-            <ToggleGroupItem value="asset">
-              {t("common.type.asset")}
-            </ToggleGroupItem>
-          )}
-          {listProperties.types.has("event") && (
-            <ToggleGroupItem value="event">
-              {t("common.type.event")}
-            </ToggleGroupItem>
-          )}
-          {listProperties.types.has("skill") && (
-            <ToggleGroupItem value="skill">
-              {t("common.type.skill")}
-            </ToggleGroupItem>
+          {shortcutTypes.map(
+            (type) =>
+              listProperties.types.has(type) && (
+                <ToggleGroupItem key={type} value={type}>
+                  {t(`common.type.${type}`)}
+                </ToggleGroupItem>
+              ),
           )}
         </ToggleGroup>
       )}

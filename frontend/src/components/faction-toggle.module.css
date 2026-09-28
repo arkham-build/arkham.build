@@ -1,5 +1,5 @@
 .toggle {
-  padding-block: 0.5rem;
+  padding-top: 0.5rem;
 }
 
 .toggle .color-active-guardian[data-state="on"] {

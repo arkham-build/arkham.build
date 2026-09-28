@@ -10,7 +10,6 @@
   height: 100%;
   border-radius: inherit;
   overflow-y: auto;
-  overscroll-behavior: contain;
 }
 
 @supports selector(::-webkit-scrollbar-thumb) {
