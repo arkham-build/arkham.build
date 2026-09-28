@@ -208,6 +208,7 @@ export function DeckCollection() {
           <Virtuoso
             customScrollParent={scrollParent}
             data={deckCollection.entries}
+            defaultItemHeight={97}
             overscan={5}
             totalCount={deckCollection.total}
             skipAnimationFrameInResizeObserver
