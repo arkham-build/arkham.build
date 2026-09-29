@@ -1,13 +1,8 @@
-import type {
-  Campaign as CampaignData,
-  Card,
-  Scenario,
-} from "@arkham-build/shared";
+import type { Campaign as CampaignData, Scenario } from "@arkham-build/shared";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
-import { CardPackQuantity } from "@/components/card-pack-quantity";
 import { ContentGuideLink } from "@/components/content-guide-link";
 import { ContentNavigation } from "@/components/content-navigation/content-navigation";
 import EncounterIcon from "@/components/icons/encounter-icon";
@@ -145,7 +140,7 @@ function CampaignCards({
     <CardModalProvider>
       <ListLayoutContextProvider>
         <ListLayoutNoSidebar
-          getListCardProps={getCampaignListCardProps}
+          showPackQuantities
           headerActions={
             (originalGuide || guide) && (
               <>
@@ -199,14 +194,6 @@ function CampaignTitle({ campaign }: { campaign: CampaignData }) {
       <span>{displayPackName(campaign)}</span>
     </span>
   );
-}
-
-function getCampaignListCardProps() {
-  return {
-    renderCardNameExtra: (card: Card) => (
-      <CardPackQuantity quantity={card.quantity} />
-    ),
-  };
 }
 
 function resolveEncounterSetCycleCode(

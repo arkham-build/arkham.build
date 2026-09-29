@@ -7,7 +7,6 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
-import { CardPackQuantity } from "@/components/card-pack-quantity";
 import { ContentGuideLink } from "@/components/content-guide-link";
 import {
   ContentNavigation,
@@ -157,7 +156,7 @@ function ScenarioContent({
     <CardModalProvider>
       <ListLayoutContextProvider>
         <ListLayoutNoSidebar
-          getListCardProps={getScenarioListCardProps}
+          showPackQuantities
           headerActions={
             (originalGuide || guide) && (
               <>
@@ -230,14 +229,6 @@ function toNavigationTarget(
     href: `/scenario/${scenario.code}`,
     icon: <EncounterIcon code={scenario.code} />,
     name: displayPackName(scenario),
-  };
-}
-
-function getScenarioListCardProps() {
-  return {
-    renderCardNameExtra: (card: Card) => (
-      <CardPackQuantity quantity={card.quantity} />
-    ),
   };
 }
 
