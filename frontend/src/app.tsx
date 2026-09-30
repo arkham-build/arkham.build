@@ -72,6 +72,8 @@ const Share = lazy(() => import("./pages/share/share"));
 
 const Search = lazy(() => import("./pages/search/search"));
 
+const SealedDeck = lazy(() => import("./pages/sealed-deck/sealed-deck"));
+
 const CollectionStats = lazy(
   () => import("./pages/collection-stats/collection-stats"),
 );
@@ -169,6 +171,7 @@ function AppInner() {
                   <Route component={Campaign} path="/campaign/:id" />
                   <Route component={Scenario} path="/scenario/:code" />
                   <Route component={Search} path="/search" />
+                  <Route component={SealedDeck} path="/sealed-deck/:id" />
                   <Route component={CardView} path="/card/:code" />
                   <Route
                     component={CardViewUsable}

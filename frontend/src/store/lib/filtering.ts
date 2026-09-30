@@ -1344,19 +1344,36 @@ export function filterInvestigatorWeaknessAccess(
   ]);
 }
 
+export function getSealedCardQuantity(
+  sealedDeck: SealedDeckResponse["cards"],
+  lookupTables: LookupTables,
+  code: string,
+) {
+  const duplicateCodes = Object.keys(
+    lookupTables.relations.duplicates[code] ?? {},
+  );
+
+  return [code, ...duplicateCodes].reduce(
+    (quantity, cardCode) => Math.max(quantity, sealedDeck[cardCode] ?? 0),
+    0,
+  );
+}
+
+export function filterSealedPool(
+  sealedDeck: SealedDeckResponse["cards"],
+  lookupTables: LookupTables,
+) {
+  return (card: Card) =>
+    getSealedCardQuantity(sealedDeck, lookupTables, card.code) > 0;
+}
+
 export function filterSealed(
   sealedDeck: SealedDeckResponse["cards"],
   lookupTables: LookupTables,
 ) {
-  return (c: Card) => {
-    if (c.xp == null) return true;
-    if (sealedDeck[c.code]) return true;
+  const poolFilter = filterSealedPool(sealedDeck, lookupTables);
 
-    const duplicates = lookupTables.relations.duplicates[c.code];
-    if (!duplicates) return false;
-
-    return Object.keys(duplicates).some((code) => !!sealedDeck[code]);
-  };
+  return (card: Card) => card.xp == null || poolFilter(card);
 }
 
 export function filterDuplicatesFromContext(

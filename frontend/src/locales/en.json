@@ -1615,6 +1615,11 @@
       "title": "Rules reference",
       "toc": "Table of contents"
     },
+    "sealed_deck": {
+      "empty": "This sealed card pool does not contain any cards.",
+      "loading": "Fetching sealed card pool...",
+      "title": "Sealed card pool: {{name}}"
+    },
     "search": {
       "title": "Search results"
     },
