@@ -18,7 +18,10 @@ import { assert } from "@/utils/assert";
 import { resolveCampaignGuide } from "@/utils/content";
 import { displayPackName } from "@/utils/formatting";
 import { ErrorStatus } from "../errors/404";
-import { resolveCampaignCards } from "./campaign.helpers";
+import {
+  resolveCampaignCards,
+  resolveCampaignEncounterSets,
+} from "./campaign.helpers";
 import css from "./campaign.module.css";
 
 function Campaign() {
@@ -40,8 +43,13 @@ function Campaign() {
   );
 
   const scenarios = resolveCampaignScenarios(campaign, metadata);
+  const campaignEncounterSets = resolveCampaignEncounterSets(
+    campaign,
+    metadata,
+  );
   const { cardCodes, encounterSetOrder } = resolveCampaignCards(
     scenarios,
+    campaignEncounterSets,
     Object.values(metadata.cards),
     campaign.cycle_code,
     (encounterSetCode) =>
