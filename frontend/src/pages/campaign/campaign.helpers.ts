@@ -1,4 +1,10 @@
-import type { Card, Scenario } from "@arkham-build/shared";
+import type {
+  Card,
+  Scenario,
+  EncounterSet,
+  Campaign,
+} from "@arkham-build/shared";
+import type { Metadata } from "@/store/slices/metadata.types";
 
 type EncounterCard = Pick<Card, "code" | "encounter_code" | "position">;
 type ScenarioWithEncounterSets = Pick<Scenario, "encounter_sets">;
@@ -10,6 +16,7 @@ type ResolvedCampaignCards = {
 
 export function resolveCampaignCards(
   scenarios: readonly ScenarioWithEncounterSets[],
+  encounterSets: readonly EncounterSet[],
   cards: readonly EncounterCard[],
   campaignCycleCode: string,
   getEncounterSetCycleCode: (encounterSetCode: string) => string,
@@ -28,6 +35,10 @@ export function resolveCampaignCards(
         cardCodes.add(cardCode);
       }
     }
+  }
+
+  for (const encounterSet of encounterSets) {
+    completeEncounterSets.add(encounterSet.code);
   }
 
   const firstPositions = new Map<string, number>();
@@ -61,6 +72,30 @@ export function resolveCampaignCards(
   );
 
   return { cardCodes, encounterSetOrder };
+}
+
+export function resolveCampaignEncounterSets(
+  campaign: Campaign,
+  metadata: Metadata,
+) {
+  const campaignExpansionPacks: string[] = Object.values(metadata.packs)
+    .filter((v) => {
+      return (
+        v.cycle_code === campaign.cycle_code && v.type === "campaign_expansion"
+      );
+    })
+    .map((v) => {
+      return v.code;
+    });
+  const campaignEncounterSets: EncounterSet[] = Object.values(
+    metadata.encounterSets,
+  ).filter((v) => {
+    return (
+      v.pack_code === campaign.code ||
+      campaignExpansionPacks.includes(v.pack_code)
+    );
+  });
+  return campaignEncounterSets;
 }
 
 function updateFirstPosition(
