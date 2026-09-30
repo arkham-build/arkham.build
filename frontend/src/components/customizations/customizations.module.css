@@ -53,7 +53,8 @@
 }
 
 .content {
-  min-width: 18rem;
+  flex: 0 1 18rem;
+  min-width: 0;
 }
 
 .content > * + * {
