@@ -65,8 +65,13 @@ function SealedDeckBrowser(props: {
           code,
         );
 
+        const card = metadata.cards[code];
+
         if (quantity > 0) {
-          result[code] = quantity;
+          result[code] = Math.min(
+            quantity,
+            card?.deck_limit ?? Number.MAX_SAFE_INTEGER,
+          );
         }
 
         return result;
