@@ -37,6 +37,7 @@ export function Details(props: Props) {
         as="summary"
         onClick={() => setOpen((p) => !p)}
         full
+        variant="bare"
       >
         {open ? <ChevronUpIcon /> : iconClosed} {title}
       </Button>
