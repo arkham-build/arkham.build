@@ -188,7 +188,7 @@ export function DeckCollection() {
         </Link>
       </div>
 
-      {deckCollection.total >= 1 && (
+      {deckCollection.total > 1 && (
         <div className={css["filters"]}>
           <DeckCollectionFilters
             filteredCount={deckCollection.deckCount}
