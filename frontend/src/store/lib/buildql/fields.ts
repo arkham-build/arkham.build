@@ -132,6 +132,11 @@ const fieldDefinitions: FieldDefinition[] = [
     type: "string",
   },
   {
+    lookup: () => (card) => card.errata_date != null,
+    name: "errata",
+    type: "boolean",
+  },
+  {
     aliases: ["ev"],
     lookup: backResolver((card) => card.enemy_evade ?? null),
     name: "evade",

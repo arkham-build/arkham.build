@@ -119,6 +119,16 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ is_unique: true }))).toBe(false);
     });
 
+    test("errata is true when the errata date is non-nullish", () => {
+      const expr = parse("errata == true");
+      const filter = compile(expr, ctx);
+
+      expect(filter(createMockCard({ errata_date: "2025-07-11" }))).toBe(true);
+      expect(filter(createMockCard({ errata_date: "" }))).toBe(true);
+      expect(filter(createMockCard({ errata_date: null }))).toBe(false);
+      expect(filter(createMockCard({ errata_date: undefined }))).toBe(false);
+    });
+
     test("loose equals (=) with strings", () => {
       const expr = parse('name = "test"');
       const filter = compile(expr, ctx);

@@ -209,6 +209,8 @@ back:subname != null & back:subname != subname
   - aliases: `do`
 - **encounter_set** (string)
   - aliases: `en`, `encounter`, `set`
+- **errata** (boolean)
+  - matches cards with a non-nullish errata date
 - **evade** (number)
   - aliases: `ev`
 - **exceptional** (boolean)
