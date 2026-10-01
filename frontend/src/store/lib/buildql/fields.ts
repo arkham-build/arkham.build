@@ -329,7 +329,7 @@ const fieldDefinitions: FieldDefinition[] = [
 
         return cardTags.favorites?.[canonicalCode] ?? false;
       },
-    name: "is_favorite",
+    name: "favorite",
     type: "boolean",
   },
   {

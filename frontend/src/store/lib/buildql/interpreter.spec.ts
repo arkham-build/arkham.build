@@ -358,8 +358,8 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ code: "01018" }))).toBe(false);
     });
 
-    test("is_favorite matches favorited cards", () => {
-      const expr = parse("is_favorite = true");
+    test("favorite matches favorited cards", () => {
+      const expr = parse("favorite = true");
       const aliasExpr = parse("fav = true");
       const favoriteCtx: InterpreterContext = {
         ...ctx,
