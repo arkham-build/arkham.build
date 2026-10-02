@@ -81,6 +81,7 @@ export function resolveCards(
       const expanded = {
         ...source,
         ...card,
+        errata_date: card.errata_date,
         id,
       } as Out;
 
