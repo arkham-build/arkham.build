@@ -60,3 +60,9 @@
 .content > * + * {
   margin-top: 0.25rem;
 }
+
+@layer app {
+  .highlighted {
+    border: 1px solid var(--palette-5);
+  }
+}

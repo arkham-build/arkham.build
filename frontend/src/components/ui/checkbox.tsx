@@ -6,6 +6,7 @@ interface Props extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   "label" | "onChange"
 > {
+  boxClassName?: string;
   className?: string;
   "data-testid"?: string;
   hideLabel?: boolean;
@@ -17,6 +18,7 @@ interface Props extends Omit<
 
 export function Checkbox(props: Props) {
   const {
+    boxClassName,
     className,
     "data-testid": testid,
     id,
@@ -41,7 +43,7 @@ export function Checkbox(props: Props) {
           className={cx(css["input"], "sr-only")}
           onChange={handleChange}
         />
-        <span data-testid={testid} className={css["box"]}>
+        <span data-testid={testid} className={cx(css["box"], boxClassName)}>
           <CheckIcon />
         </span>
       </span>

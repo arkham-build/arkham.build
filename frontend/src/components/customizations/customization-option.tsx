@@ -13,6 +13,7 @@ import { CustomizationChooseSkill } from "./customization-choose-skill";
 import { CustomizationChooseTraits } from "./customization-choose-trait";
 import { CustomizationRemoveSlot } from "./customization-remove-slot";
 import css from "./customizations.module.css";
+import { cx } from "@/utils/cx";
 
 type Props = {
   card: Card;
@@ -25,6 +26,7 @@ type Props = {
   readonly?: boolean;
   text: string[];
   xpMax?: number;
+  xpNew?: number;
 };
 
 export function CustomizationOption(props: Props) {
@@ -39,6 +41,7 @@ export function CustomizationOption(props: Props) {
     readonly,
     text,
     xpMax,
+    xpNew,
   } = props;
 
   const id = useId();
@@ -70,6 +73,12 @@ export function CustomizationOption(props: Props) {
         {!!option.xp &&
           range(0, option.xp).map((i) => (
             <Checkbox
+              boxClassName={cx(
+                xpNew != null &&
+                  i < xpSpent &&
+                  i >= xpSpent - xpNew &&
+                  css["highlighted"],
+              )}
               checked={i < xpSpent}
               data-testid={`customization-${index}-xp-${i}`}
               disabled={disabled}
