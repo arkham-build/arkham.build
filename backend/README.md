@@ -4,28 +4,22 @@ Backend for [arkham.build](https://arkham.build).
 
 ## Overview
 
-- This is a Node.js HTTP API written in [Typescript](https://www.typescriptlang.org/) using the [Hono](https://hono.dev/) framework.
-- Data is ingested from several upstream sources with a daily cron job, stored in a [Postgres](https://www.postgresql.org/) database and accessed via [kysely](https://kysely.dev/). Database migrations are handled with [dbmate](https://github.com/amacneil/dbmate).
-- [Kamal](https://kamal-deploy.org/) is used to deploy the app to a [Digital Ocean](https://www.digitalocean.com/) droplet previously prepared with an [Ansible](https://docs.ansible.com/) playbook.
-- Integration tests use [Vitest](https://vitest.dev/), and [Testcontainers](https://testcontainers.com/) to work against a real database.
+The Node.js service uses Hono, PostgreSQL, and Kysely. It serves public card data, manages accounts and synced data, and mediates ArkhamDB access. A pg-boss worker runs email, ingestion, and cache maintenance jobs. Dbmate manages migrations, Vitest and Testcontainers run integration tests, and Kamal deploys the API and worker.
 
 ## Develop
 
+Run these commands from the repository root:
+
 ```sh
-# install tooling dependencies
-npm i
+npm install
+cp backend/.env.example backend/.env
+npm run compose:up --workspace backend
+npm run dbmate --workspace backend -- up
+npm run ingest --workspace backend
+npm run dev --workspace backend
 
-# start docker compose databases
-npm run db:up
-
-# run migrations
-npm run dbmate up
-
-# ingest data
-npm run ingest
-
-# start service
-npm run dev
+# Run in another terminal when background jobs are needed.
+npm run dev:worker --workspace backend
 ```
 
 You can find a pre-configured [Yaak](https://yaak.app/) workspace in `./config/yaak`.

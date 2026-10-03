@@ -4,48 +4,38 @@
 
 ![Screenshot](./.github/screenshot.png)
 
-## Project structure
+## Repository structure
 
-The project is an `npm` workspace consisting of three packages:
+The Node.js 24 `npm` workspace contains:
 
-- `frontend` (`./frontend`): React frontend
-- `backend` (`./backend`): Node.js backend
-- `shared` (`./shared`): Types, schemas and utilities shared between frontend and backend
+- `frontend`: React SPA, hosted on Cloudflare Pages
+- `backend`: Hono API and background worker
+- `shared`: Shared Zod schemas, types, and utilities
 
-## Command overview
+Cloudflare Pages functions are in `functions`, end-to-end tests are in `test`, and infrastructure is in `opentofu`.
+
+## Commands
 
 ```sh
-# Install
-npm i
-
-# Lint
+npm install
 npm run lint
-
-# Format
 npm run fmt
+npm run check --workspaces
+npm test --workspaces
 
-# Test (workspace)
-npm run test -w {workspace}
+npm run dev --workspace frontend
+npm run dev --workspace backend
+npm run dev:worker --workspace backend
 
-# Typecheck (workspace)
-npm run check -w {workspace}
-
-# Develop (workspace)
-npm run dev -w {workspace}
-
-# E2E test
 npm run test:e2e
 
-# Fullstack E2E tests
-# Requires submodules: git submodule update --init --recursive
+# Requires: git submodule update --init --recursive
 npm run test:fullstack
-
 ```
 
-Individual workspaces may contain additional commands in their `package.json` file.
+See each workspace `package.json` for additional commands.
 
 ## Further reading
 
-- see [docs/architecture.md](./docs/architecture.md) for a short overview of the app architecture.
-- see [docs/metadata.md](./docs/metadata.md) for details about the metadata we use and how we extend it.
-- see [docs/translations.md](./docs/translations.md) for instructions how to translate the app.
+- [Metadata](./docs/metadata.md)
+- [Translations](./docs/translations.md)
