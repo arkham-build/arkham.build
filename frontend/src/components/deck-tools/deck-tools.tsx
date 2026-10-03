@@ -4,6 +4,7 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { cx } from "@/utils/cx";
 import { Loader } from "../ui/loader";
 import { Scroller } from "../ui/scroller";
+import { AddRandomBasicWeakness } from "./add-random-basic-weakness";
 import { AllAttachables } from "./all-attachables";
 import css from "./deck-tools.module.css";
 import { DrawSimulator } from "./draw-simulator";
@@ -33,6 +34,7 @@ export function DeckTools(props: Props) {
         <LazyChartContainer deck={deck} />
         <LimitedSlots deck={deck} />
         <AllAttachables deck={deck} readonly={readonly} />
+        {!readonly && <AddRandomBasicWeakness deck={deck} />}
       </Suspense>
     </article>
   );

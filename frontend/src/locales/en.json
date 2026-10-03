@@ -945,6 +945,16 @@
         "factions_tooltip": "{{count}} {{faction}} {{cards}}",
         "loading": "Loading deck tools...",
         "median_cost": "Median cost: {{cost}}",
+        "random_basic_weakness": {
+          "add": "Add random basic weakness",
+          "draft": "Draft random basic weakness",
+          "equal_probability": "Use equal probability for each weakness",
+          "ignore_deck_card_pool": "Ignore deck card pool",
+          "replace_random_basic_weakness": "Replace random basic weakness placeholder",
+          "require_trait": "Require trait",
+          "title": "Add Random Basic Weakness",
+          "trait_placeholder": "Choose trait"
+        },
         "resource_cost": "Resource cost",
         "resource_cost_tooltip": "{{count}} {{cards}} of cost {{cost}}",
         "resource_costs": "Resource costs",

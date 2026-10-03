@@ -1,5 +1,6 @@
 .deck-tools {
   min-height: 32rem;
+  margin-top: 0.375rem;
 }
 
 .deck-tools > * + * {

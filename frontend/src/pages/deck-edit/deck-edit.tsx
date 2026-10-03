@@ -244,6 +244,7 @@ function DeckEditInner() {
             >
               <TabsList className={css["tabs-list"]} style={accentColor}>
                 <TabsTrigger
+                  data-testid="editor-card-list"
                   hotkey="l"
                   onTabChange={setCurrentTool}
                   tooltip={t("deck_edit.tab_card_list")}
@@ -272,6 +273,7 @@ function DeckEditInner() {
                   <span>{t("deck_edit.tab_notes")}</span>
                 </TabsTrigger>
                 <TabsTrigger
+                  data-testid="editor-tools"
                   hotkey="t"
                   onTabChange={setCurrentTool}
                   tooltip={t("deck_edit.tab_tools")}

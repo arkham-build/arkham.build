@@ -1,5 +1,7 @@
 import { type Card, SPECIAL_CARD_CODES } from "@arkham-build/shared";
 import { Attachments } from "@/components/attachments/attachments";
+import { DraftBasicWeakness } from "@/components/deck-tools/draft-basic-weakness";
+import { useAddBasicWeakness } from "@/components/deck-tools/use-add-basic-weakness";
 import { getMatchingAttachables } from "@/components/attachments/attachments.helpers";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -8,7 +10,6 @@ import { mapTabToSlot } from "@/store/slices/deck-edits.types";
 import { isEmpty } from "@/utils/is-empty";
 import css from "./deck-edit.module.css";
 import { AddToNotes } from "./editor/add-to-notes";
-import { DraftBasicWeakness } from "./editor/draft-basic-weakness";
 import { DrawBasicWeakness } from "./editor/draw-basic-weakness";
 import { MoveToMainDeck } from "./editor/move-to-main-deck";
 import { MoveToSideDeck } from "./editor/move-to-side-deck";
@@ -58,10 +59,9 @@ export function CardExtras(props: Props) {
           quantity={quantity}
           targetDeck={mapTabToSlot(currentTab)}
         />
-        <DraftBasicWeakness
+        <DraftRandomBasicWeakness
           deck={deck}
-          quantity={quantity}
-          targetDeck={mapTabToSlot(currentTab)}
+          disabled={!quantity || mapTabToSlot(currentTab) !== "slots"}
         />
       </div>
     );
@@ -98,5 +98,20 @@ export function CardExtras(props: Props) {
         )}
       {hasAttachable && <Attachments card={card} resolvedDeck={deck} />}
     </div>
+  );
+}
+
+function DraftRandomBasicWeakness(props: {
+  deck: ResolvedDeck;
+  disabled: boolean;
+}) {
+  const addBasicWeakness = useAddBasicWeakness(props.deck);
+
+  return (
+    <DraftBasicWeakness
+      deck={props.deck}
+      disabled={props.disabled}
+      onWeaknessSelect={addBasicWeakness}
+    />
   );
 }

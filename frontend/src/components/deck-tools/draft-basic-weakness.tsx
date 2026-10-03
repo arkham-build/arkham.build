@@ -1,8 +1,4 @@
-import {
-  type Card,
-  type Slots,
-  SPECIAL_CARD_CODES,
-} from "@arkham-build/shared";
+import { type Card, type Slots } from "@arkham-build/shared";
 import {
   DicesIcon,
   ExternalLinkIcon,
@@ -24,47 +20,64 @@ import {
   ModalInner,
 } from "@/components/ui/modal";
 import { Plane } from "@/components/ui/plane";
-import { useToast } from "@/components/ui/toast.hooks";
 import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
 import { useStore } from "@/store";
 import type { LookupTables } from "@/store/lib/lookup-tables.types";
-import { randomBasicWeaknessForDeck } from "@/store/lib/random-basic-weakness";
+import {
+  randomBasicWeaknessForDeck,
+  type RandomBasicWeaknessOptions,
+} from "@/store/lib/random-basic-weakness";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";
-import { cardLimit, displayAttribute } from "@/utils/card-utils";
+import { displayAttribute } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";
 import css from "./draft-basic-weakness.module.css";
 
 type Props = {
   deck: ResolvedDeck;
-  quantity?: number;
-  targetDeck: string;
+  disabled?: boolean;
+  onWeaknessSelect: (weakness: Card) => void;
+  options?: RandomBasicWeaknessOptions;
+  triggerType?: "button" | "icon";
 };
 
 export function DraftBasicWeakness(props: Props) {
   const { t } = useTranslation();
+  const label = (
+    <Trans
+      t={t}
+      i18nKey="deck_edit.actions.draft_random_basic_weakness"
+      components={{ em: <em /> }}
+    />
+  );
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          data-testid="draft-basic-weakness"
-          disabled={!props.quantity || props.targetDeck !== "slots"}
-          iconOnly
-          size="sm"
-          tooltip={
-            <Trans
-              t={t}
-              i18nKey={"deck_edit.actions.draft_random_basic_weakness"}
-              components={{ em: <em /> }}
-            />
-          }
-          variant="bare"
-        >
-          <DicesIcon />
-        </Button>
+        {props.triggerType === "button" ? (
+          <Button
+            data-testid="draft-basic-weakness-tool"
+            disabled={props.disabled}
+            size="sm"
+            tooltip={label}
+          >
+            <DicesIcon />
+            {t("deck.tools.random_basic_weakness.draft")}
+          </Button>
+        ) : (
+          <Button
+            data-testid="draft-basic-weakness"
+            disabled={props.disabled}
+            iconOnly
+            size="sm"
+            tooltip={label}
+            variant="bare"
+          >
+            <DicesIcon />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DraftBasicWeaknessModal {...props} />
@@ -75,8 +88,7 @@ export function DraftBasicWeakness(props: Props) {
 
 function DraftBasicWeaknessModal(props: Props) {
   const { t } = useTranslation();
-  const toast = useToast();
-  const { deck } = props;
+  const { deck, onWeaknessSelect, options } = props;
 
   const deps = useStore(
     useShallow((state) => ({
@@ -86,13 +98,13 @@ function DraftBasicWeaknessModal(props: Props) {
     })),
   );
 
-  const [weaknesses] = useState(() => selectDraftWeaknesses(deps, deck));
+  const [weaknesses] = useState(() =>
+    selectDraftWeaknesses(deps, deck, options),
+  );
 
   const [selectedWeakness, setSelectedWeakness] = useState<
     string | undefined
   >();
-
-  const updateCardQuantity = useStore((state) => state.updateCardQuantity);
 
   const accentColor = useAccentColor(deck.investigatorBack.card);
 
@@ -116,33 +128,7 @@ function DraftBasicWeaknessModal(props: Props) {
 
     dialogContext?.setOpen(false);
 
-    updateCardQuantity(
-      deck.id,
-      chosenWeakness.code,
-      1,
-      cardLimit(deps.metadata.cards[chosenWeakness.code]),
-    );
-
-    updateCardQuantity(
-      deck.id,
-      SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS,
-      -1,
-      cardLimit(deps.metadata.cards[SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS]),
-    );
-
-    toast.show({
-      variant: "success",
-      duration: 3000,
-      children: (
-        <Trans
-          defaults="<strong>{{name}}</strong> was added to your deck."
-          i18nKey="deck_edit.actions.draft_random_basic_weakness_success"
-          t={t}
-          values={{ name: displayAttribute(chosenWeakness, "name") }}
-          components={{ strong: <strong /> }}
-        />
-      ),
-    });
+    onWeaknessSelect(chosenWeakness);
   };
 
   return (
@@ -287,6 +273,7 @@ function selectDraftWeaknesses(
     settings: StoreState["settings"];
   },
   deck: ResolvedDeck,
+  options?: RandomBasicWeaknessOptions,
 ) {
   const { lookupTables, metadata, settings } = deps;
 
@@ -308,6 +295,7 @@ function selectDraftWeaknesses(
           }, {} as Slots),
         },
       },
+      options,
     );
 
     if (weaknessCode) {

@@ -292,6 +292,18 @@ test.describe("deck edit", () => {
     expect(await sumCardCounts(page)).toEqual(9);
   });
 
+  test("add random basic weakness from deck tools", async ({ page }) => {
+    await page.goto("/deck/create/01001");
+    await page.getByTestId("create-save").click();
+    await assertEditorDeckQuantity(page, "01000", 1);
+
+    await page.getByTestId("editor-tools").click();
+    await page.getByTestId("add-random-basic-weakness").click();
+    await expect(page.getByTestId("toast")).toContainText(
+      "was added to your deck",
+    );
+  });
+
   test("draft random basic weakness", async ({ page }) => {
     await page.goto("/deck/create/01001");
     await page.getByTestId("create-save").click();
