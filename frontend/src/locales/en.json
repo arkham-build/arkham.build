@@ -145,6 +145,7 @@
       }
     },
     "browse": {
+      "sets": "Sets",
       "title": "Browse cards"
     },
     "card_modal": {

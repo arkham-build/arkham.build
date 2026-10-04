@@ -1,14 +1,15 @@
 import type { Cycle, EncounterSet, Pack } from "@arkham-build/shared";
-import { useEffect } from "react";
+import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { Link } from "wouter";
 import EncounterIcon from "@/components/icons/encounter-icon";
 import PackIcon from "@/components/icons/pack-icon";
 import { Scroller } from "@/components/ui/scroller";
+import { Select } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTabUrlState } from "@/components/ui/tabs.hooks";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useStore } from "@/store";
 import { sortByEncounterSet } from "@/store/lib/sorting";
 import {
@@ -21,6 +22,7 @@ import {
   selectMetadata,
 } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
+import { assert } from "@/utils/assert";
 import { official } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { displayPackName } from "@/utils/formatting";
@@ -88,12 +90,18 @@ export function SetTree({
 
   const activeKey = activeType ? `${activeType}-${activeCode}` : "none-all";
 
+  const onFormatChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    assert(value === "new" || value === "old", "Invalid pack format");
+    setFormatSelection(value);
+  };
+
   useEffect(() => {
     const activeElement = document.getElementById(activeKey);
     if (activeElement) {
       activeElement.scrollIntoView({ block: "center" });
     }
-  });
+  }, [activeKey]);
 
   return (
     <Scroller className={css["tree"]}>
@@ -119,23 +127,36 @@ export function SetTree({
           )}
         </TabsList>
       </Tabs>
-      {(chapterTab === "all" || chapterTab === "1") && (
-        <div className={css["format-toggle"]}>
-          <ToggleGroup
-            value={formatSelection}
-            onValueChange={setFormatSelection}
-            type="single"
-          >
-            <ToggleGroupItem value="new">
-              {t("settings.collection.new_format")}
-            </ToggleGroupItem>
-            <ToggleGroupItem value="old">
-              {t("settings.collection.old_format")}
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </div>
-      )}
-      <SetTreeNode activeKey={activeKey} item={cardSetTree} depth={0} />
+      <SetTreeNode
+        key={activeKey}
+        activeKey={activeKey}
+        item={cardSetTree}
+        depth={0}
+        rootHeader={
+          <div className={css["sets-header"]}>
+            <span className={css["sets-label"]}>{t("browse.sets")}</span>
+            {(chapterTab === "all" || chapterTab === "1") && (
+              <Select
+                aria-label={t("browse.sets")}
+                onChange={onFormatChange}
+                options={[
+                  {
+                    label: t("settings.collection.new_format"),
+                    value: "new",
+                  },
+                  {
+                    label: t("settings.collection.old_format"),
+                    value: "old",
+                  },
+                ]}
+                required
+                value={formatSelection}
+                variant="compressed"
+              />
+            )}
+          </div>
+        }
+      />
     </Scroller>
   );
 }
@@ -144,23 +165,26 @@ function SetTreeNode({
   activeKey,
   item,
   depth,
+  rootHeader,
 }: {
   activeKey: string;
   item: TreeItem;
   depth: number;
+  rootHeader?: React.ReactNode;
 }) {
   const id = `${item.type}-${item.data.code}`;
 
-  const isActive = activeKey === `${item.type}-${item.data.code}`;
-
-  const expanded =
-    isActive ||
-    depth < 2 ||
+  const isActive = activeKey === id;
+  const [packExpanded, setPackExpanded] = useState(false);
+  const hasChildren = !isEmpty(item.children);
+  const hasActiveChild =
     item.children?.some(
       (child) => `${child.type}-${child.data.code}` === activeKey,
-    );
-
-  const hasChildren = !isEmpty(item.children);
+    ) ?? false;
+  const expanded =
+    depth < 2 ||
+    hasActiveChild ||
+    (item.type === "pack" && isActive && packExpanded);
 
   return (
     <div
@@ -169,11 +193,24 @@ function SetTreeNode({
         isActive && css["active"],
         css[`depth-${depth}`],
       )}
-      style={{ "--depth": depth } as React.CSSProperties}
     >
       <Link
+        aria-current={isActive ? "page" : undefined}
+        aria-expanded={
+          item.type === "pack" && hasChildren && (isActive || hasActiveChild)
+            ? expanded
+            : undefined
+        }
         className={css["node-link"]}
         id={id}
+        onClick={
+          item.type === "pack" && hasChildren && isActive
+            ? (event: React.MouseEvent<HTMLAnchorElement>) => {
+                event.preventDefault();
+                setPackExpanded((open) => !open);
+              }
+            : undefined
+        }
         to={
           item.type === "none"
             ? `/browse${window.location.search}`
@@ -186,10 +223,25 @@ function SetTreeNode({
             {item.data.name}
           </>
         )}
-        {(item.type === "cycle" || item.type === "pack") && (
+        {item.type === "cycle" && (
           <>
             <PackIcon className={css["node-icon"]} code={item.data.code} />
             {displayPackName(item.data)}
+          </>
+        )}
+        {item.type === "pack" && (
+          <>
+            <PackIcon className={css["node-icon"]} code={item.data.code} />
+            <span className={css["pack-label"]}>
+              {displayPackName(item.data)}
+            </span>
+            {hasChildren &&
+              (isActive || hasActiveChild) &&
+              (expanded ? (
+                <ChevronDownIcon className={css["pack-expander"]} />
+              ) : (
+                <ChevronRightIcon className={css["pack-expander"]} />
+              ))}
           </>
         )}
         {item.type === "encounter_set" && (
@@ -199,6 +251,7 @@ function SetTreeNode({
           </>
         )}
       </Link>
+      {rootHeader}
       {expanded && hasChildren && (
         <SetTreeChildren
           activeKey={activeKey}
