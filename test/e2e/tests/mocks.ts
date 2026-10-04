@@ -17,6 +17,27 @@ export async function mockApiCalls(page: Page) {
   const baseUrl = `${apiUrl}/v1`;
 
   await Promise.all([
+    page.route(`${apiUrl}/v2/account/auth/me`, async (route) => {
+      await route.fulfill({ status: 401, json: { message: "Unauthorized" } });
+    }),
+    page.route(`${apiUrl}/v2/public/faq/card/*`, async (route) => {
+      await route.fulfill({ json: [] });
+    }),
+    page.route(
+      `${apiUrl}/v2/public/arkhamdb-decklists/search?*`,
+      async (route) => {
+        await route.fulfill({
+          json: { data: [], meta: { limit: 10, offset: 0, total: 0 } },
+        });
+      },
+    ),
+    // Keep the errata notice fallback fixed. Do not use live errata data.
+    page.route(`${apiUrl}/v2/public/errata/card/*`, async (route) => {
+      await route.fulfill({
+        status: 503,
+        json: { message: "Errata unavailable" },
+      });
+    }),
     page.route(`${baseUrl}/cache/cards/en*`, async (route) => {
       const json: any = structuredClone(allCardsResponse);
       json.data.all_card.push({

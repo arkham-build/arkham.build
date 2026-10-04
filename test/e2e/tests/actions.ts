@@ -17,6 +17,9 @@ export async function importDeck(page: Page) {
 
   await page.getByTestId("import-submit").click();
 
+  // The form closes after the deck write completes, not when the deck appears.
+  await expect(page.getByTestId("import-input")).not.toBeVisible();
+
   await expect(
     page.getByTestId("collection-deck").getByTestId("deck-summary-title"),
   ).toContainText("Kōhaku, Fifty Shades of Blurse|FHV Intro|Deck Guide");

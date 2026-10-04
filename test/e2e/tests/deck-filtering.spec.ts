@@ -18,6 +18,7 @@ test.describe("deck filtering", () => {
     await page.getByTestId("create-save").click();
     await expect(page).toHaveURL(/\/deck\/edit\//);
     await page.goto("/");
+    await expect(page.getByTestId("collection-deck")).toHaveCount(2);
 
     // Only show filters if there are enough decks for filters to be meaningful
     await expect(page.getByTestId("deck-filters-container")).toBeVisible();
