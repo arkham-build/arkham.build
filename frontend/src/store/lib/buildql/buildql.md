@@ -14,7 +14,9 @@ Example: If the filters are set to only show player cards, queries will only ret
 - Multi-value fields such as `slot` and `traits` are split, and then each value is checked individually. If one one the values matches, the whole field is considered a match. Example: `trait = "practiced"` would match a card that is `Practiced. Fortune.`.
 - All string operations work on the raw ArkhamDB representation. HTML and icons are not interpolated.
 - All string and text operations are case-insensitive.
-- A localized application matches on the localized text by default.
+- When the display language is not English, string and regex comparisons check
+  both the displayed text and the English text. A negative comparison matches
+  only if neither language matches.
 
 ## Parameter types
 

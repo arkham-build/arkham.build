@@ -13,6 +13,7 @@ import {
   cardBackType,
   displayAttribute,
   doubleSidedBackCard,
+  matchingAttribute,
   isSpecialist,
   splitCommaSeparatedValue,
   splitMultiValue,
@@ -86,14 +87,18 @@ const fieldDefinitions: FieldDefinition[] = [
     legacyAlias: "y",
     lookup:
       () =>
-      (card, { metadata }) => {
+      (card, { metadata, i18n }) => {
         const pack = metadata.packs[card.pack_code];
         if (!pack) return null;
 
         const cycle = metadata.cycles[pack.cycle_code];
         if (!cycle) return null;
 
-        return [pack.cycle_code, displayPackName(cycle)];
+        return [
+          pack.cycle_code,
+          displayPackName(cycle),
+          ...(i18n.language === "en" ? [] : [cycle.real_name]),
+        ];
       },
     name: "cycle",
     type: "string",
@@ -120,13 +125,17 @@ const fieldDefinitions: FieldDefinition[] = [
     aliases: ["en", "encounter", "set"],
     lookup:
       () =>
-      (card, { metadata }) => {
+      (card, { metadata, i18n }) => {
         if (!card.encounter_code) return null;
 
         const encounterSet = metadata.encounterSets[card.encounter_code];
         if (!encounterSet) return null;
 
-        return [card.encounter_code, displayPackName(encounterSet)];
+        return [
+          card.encounter_code,
+          displayPackName(encounterSet),
+          ...(i18n.language === "en" ? [] : [encounterSet.real_name]),
+        ];
       },
     name: "encounter_set",
     type: "string",
@@ -186,7 +195,9 @@ const fieldDefinitions: FieldDefinition[] = [
   {
     aliases: ["fl"],
     legacyAlias: "v",
-    lookup: backResolver((card) => displayAttribute(card, "flavor")),
+    lookup: backResolver((card, { i18n }) =>
+      matchingAttribute(card, "flavor", i18n.language),
+    ),
     name: "flavor",
     type: "text",
   },
@@ -378,10 +389,10 @@ const fieldDefinitions: FieldDefinition[] = [
   },
   {
     aliases: ["na"],
-    lookup: backResolver((card) => {
-      const name = displayAttribute(card, "name");
+    lookup: backResolver((card, { i18n }) => {
+      const name = matchingAttribute(card, "name", i18n.language);
       const abbreviations = splitCommaSeparatedValue(card.abbreviation);
-      return abbreviations.length ? [name, ...abbreviations] : name;
+      return abbreviations.length ? [name, ...abbreviations].flat() : name;
     }),
     name: "name",
     type: "string",
@@ -391,11 +402,15 @@ const fieldDefinitions: FieldDefinition[] = [
     legacyAlias: "e",
     lookup:
       () =>
-      (card, { metadata }) => {
+      (card, { metadata, i18n }) => {
         const pack = metadata.packs[card.pack_code];
         if (!pack) return null;
 
-        return [card.pack_code, displayPackName(pack)];
+        return [
+          card.pack_code,
+          displayPackName(pack),
+          ...(i18n.language === "en" ? [] : [pack.real_name]),
+        ];
       },
     name: "pack",
     type: "string",
@@ -464,7 +479,9 @@ const fieldDefinitions: FieldDefinition[] = [
   },
   {
     aliases: ["sn"],
-    lookup: backResolver((card) => displayAttribute(card, "subname")),
+    lookup: backResolver((card, { i18n }) =>
+      matchingAttribute(card, "subname", i18n.language),
+    ),
     name: "subname",
     type: "string",
   },
@@ -518,7 +535,9 @@ const fieldDefinitions: FieldDefinition[] = [
   {
     aliases: ["txt"],
     legacyAlias: "x",
-    lookup: backResolver((card) => displayAttribute(card, "text")),
+    lookup: backResolver((card, { i18n }) =>
+      matchingAttribute(card, "text", i18n.language),
+    ),
     name: "text",
     type: "text",
   },
@@ -534,6 +553,7 @@ const fieldDefinitions: FieldDefinition[] = [
 
       return [
         ...traits,
+        ...splitMultiValue(card.real_traits),
         ...traits.map((trait) => i18n.t(`common.traits.${trait}`)),
       ];
     }),

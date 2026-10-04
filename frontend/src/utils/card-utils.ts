@@ -219,6 +219,21 @@ export function displayAttribute(
   return card?.[key] ?? card?.[`real_${key}`] ?? "";
 }
 
+export function matchingAttribute(
+  card: Card | undefined,
+  key: Parameters<typeof displayAttribute>[1],
+  language: string,
+): string | string[] {
+  const displayed = displayAttribute(card, key);
+  const base = card?.[`real_${key}`];
+
+  if (language === "en" || base == null || base === displayed) {
+    return displayed;
+  }
+
+  return [displayed, base];
+}
+
 export function cycleOrPack(cycle: Cycle, pack: Pack) {
   if (
     !official(pack) ||

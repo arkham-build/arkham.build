@@ -1,5 +1,5 @@
 import type { Card } from "@arkham-build/shared";
-import type { i18n, TFunction } from "i18next";
+import { createInstance, type i18n, type TFunction } from "i18next";
 import { beforeAll, describe, expect, test } from "vitest";
 import {
   selectLocaleSortingCollator,
@@ -556,6 +556,24 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ name: "健康卡" }))).toBe(true);
       expect(filter(createMockCard({ name: "Another Card" }))).toBe(false);
     });
+  });
+
+  test("matches displayed and English names with strings and regex", async () => {
+    const localizedI18n = createInstance();
+    await localizedI18n.init({ lng: "de", resources: {} });
+    const localizedCtx: InterpreterContext = {
+      ...ctx,
+      fieldLookupContext: { ...ctx.fieldLookupContext, i18n: localizedI18n },
+    };
+    const card = createMockCard({ name: "Klinge", real_name: "Blade" });
+
+    for (const value of ['"Klinge"', '"Blade"', "/^Klinge$/", "/^Blade$/"]) {
+      expect(compile(parse(`name = ${value}`), localizedCtx)(card)).toBe(true);
+      expect(compile(parse(`name != ${value}`), localizedCtx)(card)).toBe(
+        false,
+      );
+    }
+    expect(compile(parse('name = "Blade"'), ctx)(card)).toBe(false);
   });
 
   describe("Bidirectional comparison context", () => {
