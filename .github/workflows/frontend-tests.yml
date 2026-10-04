@@ -6,10 +6,14 @@ on:
       - main
     paths:
       - "frontend/**"
+      - "test/e2e/**"
+      - "test/fixtures/**"
       - ".github/workflows/frontend-tests.yml"
   pull_request:
     paths:
       - "frontend/**"
+      - "test/e2e/**"
+      - "test/fixtures/**"
       - ".github/workflows/frontend-tests.yml"
 
 jobs:
