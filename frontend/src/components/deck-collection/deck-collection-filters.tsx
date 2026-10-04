@@ -8,6 +8,7 @@ import {
   selectDeckSearchTerm,
   selectFactionsInLocalDecks,
 } from "@/store/selectors/deck-collection";
+import { useMedia } from "@/utils/use-media";
 import { FactionToggle } from "../faction-toggle";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -33,6 +34,8 @@ export function DeckCollectionFilters(props: Props) {
   const hasChanges = useStore(selectDeckFilterChanges);
 
   const addFilter = useStore((state) => state.addDecksFilter);
+
+  const isNarrow = useMedia("(max-width: 42rem)");
 
   const onSearchChange = (value: string) => {
     addFilter("search", value);
@@ -63,7 +66,11 @@ export function DeckCollectionFilters(props: Props) {
           value={searchValue}
           className={css["search-outer"]}
         />
-        <Popover placement="right-start" modal strategy="fixed">
+        <Popover
+          placement={isNarrow ? "bottom-end" : "right-start"}
+          modal
+          strategy="fixed"
+        >
           <PopoverTrigger asChild>
             <Button
               className={css["expand-filters"]}
