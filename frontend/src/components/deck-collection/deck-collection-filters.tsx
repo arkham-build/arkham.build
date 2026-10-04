@@ -21,6 +21,7 @@ import { DeckProviderFilter } from "./deck-provider-filter";
 import { DeckSortingOptions } from "./deck-sorting-options";
 import { DeckTagsFilter } from "./deck-tags-filter";
 import { DeckXPCostFilter } from "./deck-xp-cost-filter";
+import { MQ_FLOATING_SIDEBAR } from "@/utils/constants";
 
 type Props = {
   filteredCount: number;
@@ -35,7 +36,7 @@ export function DeckCollectionFilters(props: Props) {
 
   const addFilter = useStore((state) => state.addDecksFilter);
 
-  const isNarrow = useMedia("(max-width: 42rem)");
+  const isNarrow = useMedia(MQ_FLOATING_SIDEBAR);
 
   const onSearchChange = (value: string) => {
     addFilter("search", value);

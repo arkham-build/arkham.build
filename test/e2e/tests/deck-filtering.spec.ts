@@ -16,6 +16,7 @@ test.describe("deck filtering", () => {
     await page.goto("deck/create/01001");
     await page.getByTestId("create-title").fill("GUNS GUNS GUNS");
     await page.getByTestId("create-save").click();
+    await expect(page).toHaveURL(/\/deck\/edit\//);
     await page.goto("/");
 
     // Only show filters if there are enough decks for filters to be meaningful
