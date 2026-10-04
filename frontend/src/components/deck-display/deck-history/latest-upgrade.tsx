@@ -108,22 +108,27 @@ export function LatestUpgrade(props: Props) {
             title={t("common.decks.slots")}
             differences={differences.slots}
             listCardProps={diffCardProps}
+            deck={deck}
           />
+
           <SlotDiff
             title={t("common.decks.extraSlots")}
             differences={differences.extraSlots}
             listCardProps={diffCardProps}
+            deck={deck}
           />
           <SlotDiff
             title={t("common.exiled_cards")}
             differences={differences.exileSlots}
             omitHeadings
             listCardProps={diffCardProps}
+            deck={deck}
           />
           <CustomizableDiff
             title={t("common.customizations")}
             differences={differences.customizations}
             listCardProps={diffCardProps}
+            deck={deck}
           />
         </>
       ) : (

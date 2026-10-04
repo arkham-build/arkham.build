@@ -11,7 +11,7 @@ import css from "./diffs.module.css";
 export function SlotDiff(props: {
   listCardProps?: Partial<ListcardProps>;
   differences: SlotUpgrade[];
-  deck?: ResolvedDeck;
+  deck: ResolvedDeck;
   omitHeadings?: boolean;
   size?: "sm";
   title: React.ReactNode;

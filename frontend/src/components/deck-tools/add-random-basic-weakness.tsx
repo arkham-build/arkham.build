@@ -24,6 +24,7 @@ import { useToast } from "../ui/toast.hooks";
 import css from "./add-random-basic-weakness.module.css";
 import { DraftBasicWeakness } from "./draft-basic-weakness";
 import { useAddBasicWeakness } from "./use-add-basic-weakness";
+import { useAccentColor } from "@/utils/use-accent-color";
 
 type Props = {
   deck: ResolvedDeck;
@@ -33,6 +34,8 @@ export function AddRandomBasicWeakness(props: Props) {
   const { deck } = props;
   const { t } = useTranslation();
   const toast = useToast();
+
+  const accentColor = useAccentColor(deck.investigatorBack.card);
 
   const deps = useStore(
     useShallow((state) => ({
@@ -156,6 +159,7 @@ export function AddRandomBasicWeakness(props: Props) {
         <Button
           data-testid="add-random-basic-weakness"
           onClick={addRandomBasicWeakness}
+          style={accentColor}
           variant="primary"
         >
           <DicesIcon />

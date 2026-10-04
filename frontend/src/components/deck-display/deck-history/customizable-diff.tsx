@@ -10,7 +10,7 @@ import { cx } from "@/utils/cx";
 import css from "./diffs.module.css";
 
 type Props = {
-  deck?: ResolvedDeck;
+  deck: ResolvedDeck;
   differences: CustomizationUpgrade[];
   listCardProps?: Partial<ListCardProps>;
   title: React.ReactNode;
