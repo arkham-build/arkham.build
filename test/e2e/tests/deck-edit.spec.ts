@@ -412,7 +412,7 @@ test.describe("deck edit", () => {
     const code = await reveal.getAttribute("data-code");
     assert(code, "The reveal must show the selected card.");
     await expect(page.getByRole("dialog")).toHaveAccessibleName(
-      "Something stirs in the dark...",
+      "Do not break the seal.",
     );
     await page.getByTestId("weakness-draw-skip").click();
     await expect(reveal).toHaveAttribute("data-phase", "revealed");

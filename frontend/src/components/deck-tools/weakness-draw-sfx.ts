@@ -20,6 +20,11 @@ export function createWeaknessDrawSound(
   const master = context.createGain();
   master.gain.value = muted ? 0 : 0.48;
   const compressor = context.createDynamicsCompressor();
+  compressor.threshold.value = -16;
+  compressor.knee.value = 4;
+  compressor.ratio.value = 12;
+  compressor.attack.value = 0.003;
+  compressor.release.value = 0.2;
   master.connect(compressor);
   compressor.connect(context.destination);
 
@@ -55,6 +60,11 @@ export function createWeaknessDrawSound(
   reverb.connect(wet);
   wet.connect(master);
 
+  const distortionCurve = Float32Array.from({ length: 1024 }, (_, index) => {
+    const sample = (index / 1023) * 2 - 1;
+    return Math.tanh(sample * 5) / Math.tanh(5);
+  });
+
   let disposed = false;
 
   function tone(
@@ -68,12 +78,19 @@ export function createWeaknessDrawSound(
       attack?: number;
       pan?: number;
       echo?: boolean;
+      grit?: boolean;
+      cutoff?: number;
     } = {},
   ) {
     const start = context.currentTime + delay;
     const oscillator = context.createOscillator();
     const envelope = context.createGain();
     const panner = context.createStereoPanner();
+    const filter = context.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = options.cutoff ?? 6000;
+    const distortion = options.grit ? context.createWaveShaper() : undefined;
+    if (distortion) distortion.curve = distortionCurve;
     panner.pan.value = options.pan ?? 0;
     oscillator.type = options.type ?? "sine";
     oscillator.frequency.setValueAtTime(frequency, start);
@@ -87,7 +104,13 @@ export function createWeaknessDrawSound(
       start + (options.attack ?? 0.025),
     );
     envelope.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-    oscillator.connect(envelope);
+    if (distortion) {
+      oscillator.connect(distortion);
+      distortion.connect(filter);
+    } else {
+      oscillator.connect(filter);
+    }
+    filter.connect(envelope);
     envelope.connect(panner);
     panner.connect(master);
     if (options.echo) panner.connect(reverb);
@@ -95,6 +118,8 @@ export function createWeaknessDrawSound(
     oscillator.stop(start + duration);
     oscillator.onended = () => {
       oscillator.disconnect();
+      distortion?.disconnect();
+      filter.disconnect();
       envelope.disconnect();
       panner.disconnect();
     };
@@ -141,41 +166,53 @@ export function createWeaknessDrawSound(
       console.warn("[weakness-draw] audio playback unavailable", error);
   });
 
-  tone(0, 1.8, 55, 85, 0.5);
-  tone(0, 1.95, 110, 880, 0.18, { type: "triangle", attack: 1.75, echo: true });
-  rush(0.1, 1.9, 180, 4800, 0.6, 1.65);
-  for (let index = 0; index < 12; index++) {
-    const delay = 0.18 + 1.65 * (1 - (1 - index / 12) ** 2);
-    const frequency = 146.83 * 2 ** (index / 6);
-    tone(delay, 0.14, frequency, frequency / 2, 0.14, {
-      type: "triangle",
-      pan: index % 2 === 0 ? -0.35 : 0.35,
-      echo: true,
-    });
+  tone(0, 1.72, 41, 27, 0.62, { attack: 0.45 });
+  tone(0.08, 1.62, 104, 57, 0.12, {
+    type: "sawtooth",
+    attack: 1.2,
+    grit: true,
+    cutoff: 400,
+    pan: -0.25,
+  });
+  tone(0.12, 1.55, 109, 61, 0.1, {
+    type: "sawtooth",
+    attack: 1.15,
+    grit: true,
+    cutoff: 400,
+    pan: 0.25,
+  });
+  rush(0.2, 1.5, 350, 2100, 0.3, 1.2);
+  for (const delay of [0.12, 0.62, 1.04, 1.37]) {
+    tone(delay, 0.16, 76, 35, 0.38, { type: "triangle", cutoff: 160 });
+    tone(delay + 0.09, 0.13, 62, 30, 0.24, { cutoff: 140 });
+  }
+  for (const delay of [0.4, 0.95, 1.33, 1.55]) {
+    rush(delay, 0.08, 3500, 900, 0.12, 0.005);
   }
 
   return {
     reveal() {
       if (disposed) return;
-      tone(0, 1.2, 160, 32, 0.9);
-      tone(0, 0.35, 75, 28, 0.6, { type: "triangle" });
-      rush(0, 0.65, 6000, 160, 0.9, 0.008);
-      rush(0.04, 0.22, 8000, 2200, 0.3, 0.005);
-      for (const [index, frequency] of [
-        261.63, 392, 523.25, 783.99, 1046.5,
-      ].entries()) {
-        const pan = index % 2 === 0 ? -0.5 : 0.5;
-        tone(index * 0.055, 1.5, frequency, frequency * 0.995, 0.1, {
-          type: "triangle",
-          pan,
-          echo: true,
-        });
-        tone(index * 0.055, 1.2, frequency * 2, frequency * 2, 0.035, {
-          pan: -pan,
+      tone(0, 1.6, 98, 23, 0.95, { attack: 0.01 });
+      tone(0.02, 0.9, 67, 31, 0.35, { type: "triangle", cutoff: 350 });
+      tone(0, 0.8, 165, 46, 0.3, {
+        type: "sawtooth",
+        cutoff: 900,
+        grit: true,
+        echo: true,
+      });
+      rush(0, 0.8, 4100, 180, 0.7, 0.008);
+      rush(0.04, 0.18, 8000, 900, 0.2, 0.005);
+      for (const [index, frequency] of [311, 329, 466, 497].entries()) {
+        tone(index * 0.025, 0.65, frequency, frequency * 0.52, 0.075, {
+          type: "sawtooth",
+          grit: true,
+          cutoff: 1600,
+          pan: index % 2 === 0 ? -0.6 : 0.6,
           echo: true,
         });
       }
-      rush(0.25, 1.5, 2400, 600, 0.12);
+      rush(0.25, 1.4, 2100, 240, 0.25, 0.12);
     },
     setMuted(value) {
       if (disposed) return;

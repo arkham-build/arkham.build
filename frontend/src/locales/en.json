@@ -1049,15 +1049,15 @@
         "set_side_quantity": "Set side deck quantity"
       },
       "weakness_draw": {
-        "added": "Added to your deck. Good luck, investigator.",
-        "charging": "Something stirs in the dark...",
+        "added": "Added to your deck. It follows you now.",
+        "charging": "Do not break the seal.",
         "close": "Close weakness reveal",
-        "continue": "Face your fate",
+        "continue": "Carry the curse",
         "eyebrow": "Random basic weakness",
-        "hint": "The seal is breaking. Your fate awaits.",
+        "hint": "There is no taking it back.",
         "mute": "Mute sound effects",
-        "revealed": "Your fate is sealed",
-        "sealed": "An unwelcome discovery",
+        "revealed": "It found you.",
+        "sealed": "Something is trying to get out.",
         "skip": "Skip animation"
       },
       "changes_restored": "Unsaved changes were restored.",

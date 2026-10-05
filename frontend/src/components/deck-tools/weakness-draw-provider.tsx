@@ -88,6 +88,15 @@ export function WeaknessDrawProvider({
               data-code={card.code}
             >
               <div className={css["ambient"]} aria-hidden="true" />
+              <HorrorPresence />
+              <svg
+                className={css["fracture"]}
+                viewBox="0 0 1000 1000"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path d="M500 440 352 342 365 286 224 207 194 104 76 18 M535 457 670 337 645 291 804 208 827 117 967 32 M544 536 690 612 662 671 841 741 893 865 999 919 M468 539 333 654 351 698 180 786 104 921 2 983 M450 494 292 470 237 528 130 459 84 483 0 399 M520 557 565 746 511 804 586 906 570 1000" />
+              </svg>
               <nav className={css["controls"]}>
                 <Button
                   aria-label={t("deck_edit.weakness_draw.mute")}
@@ -125,6 +134,13 @@ export function WeaknessDrawProvider({
                 <div className={css["stage"]}>
                   <div className={css["vortex"]} aria-hidden="true" />
                   <div className={css["sigil"]} aria-hidden="true" />
+                  <svg
+                    className={css["tendrils"]}
+                    viewBox="0 0 600 600"
+                    aria-hidden="true"
+                  >
+                    <path d="M0 536C181 611 50 222 197 329S259 181 226 145 M600 589C410 432 585 310 409 356S347 189 378 119 M47 0C252 151 91 161 203 201S275 300 218 339 M554 0C377 186 524 152 402 230S354 345 393 384 M0 204C182 77 104 409 213 412 M600 235C489 110 523 503 390 437" />
+                  </svg>
                   <div className={css["shockwave"]} aria-hidden="true" />
                   <div className={css["burst"]} aria-hidden="true" />
                   <svg
@@ -197,6 +213,60 @@ export function WeaknessDrawProvider({
   );
 }
 
+function HorrorPresence() {
+  const textureId = useId();
+  const irisId = useId();
+
+  return (
+    <svg className={css["apparition"]} viewBox="0 0 600 400" aria-hidden="true">
+      <defs>
+        <filter id={textureId} x="-20%" y="-30%" width="140%" height="160%">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.035 0.065"
+            numOctaves="2"
+            seed="7"
+            result="noise"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="12"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+        <radialGradient id={irisId}>
+          <stop offset="0" stopColor="#130303" />
+          <stop offset="0.5" stopColor="#c5554a" />
+          <stop offset="0.75" stopColor="#4a070a" />
+          <stop offset="1" stopColor="#080202" />
+        </radialGradient>
+      </defs>
+      <g filter={`url(#${textureId})`}>
+        <g fill="#380407" stroke="#7a2327" strokeWidth="1.2">
+          <path d="M78 166C110 122 139 118 172 145C190 159 211 166 229 166C206 190 185 204 157 197C133 189 106 180 78 166Z" />
+          <path d="M378 171C402 145 423 129 452 132C483 134 503 151 524 162C504 176 478 197 450 198C415 202 396 191 378 171Z" />
+        </g>
+        <g fill={`url(#${irisId})`}>
+          <ellipse cx="154" cy="164" rx="23" ry="30" />
+          <ellipse cx="451" cy="165" rx="24" ry="31" />
+        </g>
+        <g fill="#020202">
+          <path d="M149 135Q163 160 157 191Q144 175 149 135 M449 134Q461 162 454 196Q442 177 449 134" />
+        </g>
+        <g stroke="#5c171b" fill="none">
+          <path
+            d="M69 144C113 92 155 106 188 132M76 191C120 228 191 233 239 182 M374 141C419 99 490 110 539 148M370 193C425 244 491 225 529 190"
+            strokeWidth="2"
+          />
+          <path d="M95 120Q76 96 85 66M120 108Q112 82 126 61M198 140Q220 121 217 97 M394 123Q372 100 388 73M491 126Q519 99 514 69M481 205Q501 247 536 264M126 214Q94 245 98 271M172 221Q181 254 163 280" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
 function OccultSeal() {
   return (
     <svg
@@ -226,7 +296,7 @@ function OccultSeal() {
         ))}
       </g>
       <g className={css["eye"]} stroke="currentColor" strokeWidth="1.5">
-        <path d="M91 210Q150 154 209 210Q150 266 91 210Z" fill="#160d25" />
+        <path d="M91 210Q150 154 209 210Q150 266 91 210Z" fill="#070303" />
         <circle cx="150" cy="210" r="22" />
         <circle cx="150" cy="210" r="15" strokeDasharray="1 3" />
         <path d="M150 191 156 210 150 229 144 210Z" fill="currentColor" />
