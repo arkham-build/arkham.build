@@ -17,6 +17,15 @@ import type { Metadata } from "../slices/metadata.types";
 import { decodeDeckMeta } from "./deck-meta";
 
 export function parseFanMadeProject(data: unknown): FanMadeProject {
+  // oxlint-disable typescript/no-explicit-any
+  const generator = (data as any)?.meta?.generator;
+
+  if (generator.toLowerCase().includes("shoggoth")) {
+    throw new Error(
+      `Shoggoth's arkham.build export is incomplete and produces broken files. Files create with Shoggoth cannot be imported.`,
+    );
+  }
+
   return z.parse(FanMadeProjectSchema, data);
 }
 
