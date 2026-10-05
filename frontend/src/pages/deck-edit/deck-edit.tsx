@@ -17,6 +17,7 @@ import { CardRecommender } from "@/components/card-recommender/card-recommender"
 import { CoreCardCheckbox } from "@/components/card-recommender/core-card-checkbox";
 import { DeckConflictOverlay } from "@/components/deck-conflict/deck-conflict-panel";
 import { DeckTools } from "@/components/deck-tools/deck-tools";
+import { WeaknessDrawProvider } from "@/components/deck-tools/weakness-draw-provider";
 import { DecklistValidation } from "@/components/decklist/decklist-validation";
 import { Filters } from "@/components/filters/filters";
 import { useResolvedDeckChecked } from "@/components/resolved-deck-context";
@@ -79,9 +80,11 @@ function DeckEdit() {
       resolvedDeck={deck}
     >
       <RestoreDeckChanges id={id} />
-      <CardModalProvider>
-        <DeckEditInner />
-      </CardModalProvider>
+      <WeaknessDrawProvider key={deck.id}>
+        <CardModalProvider>
+          <DeckEditInner />
+        </CardModalProvider>
+      </WeaknessDrawProvider>
     </ResolvedDeckProvider>
   );
 }

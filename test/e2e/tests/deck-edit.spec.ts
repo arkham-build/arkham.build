@@ -10,6 +10,12 @@ import {
 import { assert } from "./assert";
 import { mockApiCalls } from "./mocks";
 
+declare global {
+  interface Window {
+    weaknessDrawAudioProbe: () => { state: AudioContextState; peak: number }[];
+  }
+}
+
 test.beforeEach(async ({ page }) => {
   await mockApiCalls(page);
 });
@@ -276,6 +282,15 @@ test.describe("deck edit", () => {
     expect(await sumCardCounts(page)).toEqual(9);
 
     await page.getByTestId("draw-basic-weakness").click();
+    const reveal = page.getByTestId("weakness-draw");
+    await expect(reveal).toHaveAttribute("data-phase", "charging");
+    await expect(reveal).toHaveAttribute("data-phase", "revealed");
+    const firstCode = await reveal.getAttribute("data-code");
+    assert(firstCode, "The reveal must show the selected card.");
+    await expect(reveal).toContainText("Added to your deck");
+    await page.getByTestId("weakness-draw-continue").click();
+    await expect(reveal).not.toBeVisible();
+    await assertEditorDeckQuantity(page, firstCode, 1);
 
     await expect(
       page.getByTestId("listcard-01000").getByTestId("quantity-value"),
@@ -284,6 +299,11 @@ test.describe("deck edit", () => {
     expect(await sumCardCounts(page)).toEqual(9);
 
     await page.getByTestId("draw-basic-weakness").click();
+    const secondCode = await reveal.getAttribute("data-code");
+    await page.getByTestId("weakness-draw-skip").click();
+    await expect(reveal).toHaveAttribute("data-skipped", "true");
+    await expect(reveal).toHaveAttribute("data-code", secondCode ?? "");
+    await page.getByTestId("weakness-draw-close").click();
 
     await expect(
       page.getByTestId("listcard-01000").getByTestId("quantity-value"),
@@ -299,9 +319,114 @@ test.describe("deck edit", () => {
 
     await page.getByTestId("editor-tools").click();
     await page.getByTestId("add-random-basic-weakness").click();
-    await expect(page.getByTestId("toast")).toContainText(
-      "was added to your deck",
+    const reveal = page.getByTestId("weakness-draw");
+    await expect(reveal).toBeVisible();
+    const code = await reveal.getAttribute("data-code");
+    assert(code, "The reveal must show the selected card.");
+    await page.getByTestId("weakness-draw-skip").click();
+    await expect(reveal).toContainText("Added to your deck");
+    await page.getByTestId("weakness-draw-continue").click();
+    await page.getByTestId("editor-card-list").click();
+    await assertEditorDeckQuantity(page, code, 1);
+    await assertEditorDeckQuantity(page, "01000", 0, false);
+  });
+
+  test("weakness draw SFX can be muted and cleaned up", async ({ page }) => {
+    await page.addInitScript(() => {
+      const contexts: { context: AudioContext; analyser: AnalyserNode }[] = [];
+      const NativeAudioContext = window.AudioContext;
+      window.AudioContext = class extends NativeAudioContext {
+        createDynamicsCompressor() {
+          const compressor = super.createDynamicsCompressor();
+          const analyser = this.createAnalyser();
+          compressor.connect(analyser);
+          contexts.push({ context: this, analyser });
+          return compressor;
+        }
+      };
+      window.weaknessDrawAudioProbe = () =>
+        contexts.map(({ context, analyser }) => {
+          const samples = new Float32Array(analyser.fftSize);
+          analyser.getFloatTimeDomainData(samples);
+          return {
+            state: context.state,
+            peak: Math.max(...samples.map(Math.abs)),
+          };
+        });
+    });
+
+    await page.goto("/deck/create/89001");
+    await page.getByTestId("create-save").click();
+    await page.getByTestId("draw-basic-weakness").click();
+    const probe = () => page.evaluate(() => window.weaknessDrawAudioProbe());
+    await expect
+      .poll(async () => (await probe())[0]?.peak ?? 0)
+      .toBeGreaterThan(0.001);
+
+    await expect(page.getByTestId("weakness-draw")).toHaveAttribute(
+      "data-phase",
+      "revealed",
     );
+    await expect
+      .poll(async () => (await probe())[0]?.peak ?? 0)
+      .toBeGreaterThan(0.001);
+    await page.getByTestId("weakness-draw-mute").click();
+    await expect(page.getByTestId("weakness-draw-mute")).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await expect
+      .poll(async () => (await probe())[0]?.peak ?? 1)
+      .toBeLessThan(0.0001);
+    await page.getByTestId("weakness-draw-continue").click();
+    await expect.poll(async () => (await probe())[0]?.state).toBe("closed");
+
+    await page.getByTestId("draw-basic-weakness").click();
+    await expect(page.getByTestId("weakness-draw-mute")).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await page.getByTestId("weakness-draw-mute").click();
+    await expect
+      .poll(async () => (await probe())[1]?.peak ?? 0)
+      .toBeGreaterThan(0.001);
+    await page.getByTestId("weakness-draw-skip").click();
+    await expect.poll(async () => (await probe())[1]?.state).toBe("closed");
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("weakness-draw")).not.toBeVisible();
+    expect(await sumCardCounts(page)).toEqual(9);
+  });
+
+  test("weakness draw fits mobile and dismissal keeps the result", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/deck/create/89001");
+    await page.getByTestId("create-save").click();
+    await page
+      .locator("button")
+      .filter({ has: page.locator(".icon-deck") })
+      .click();
+    await page.getByTestId("draw-basic-weakness").click();
+    const reveal = page.getByTestId("weakness-draw");
+    const code = await reveal.getAttribute("data-code");
+    assert(code, "The reveal must show the selected card.");
+    await expect(page.getByRole("dialog")).toHaveAccessibleName(
+      "Something stirs in the dark...",
+    );
+    await page.getByTestId("weakness-draw-skip").click();
+    await expect(reveal).toHaveAttribute("data-phase", "revealed");
+    await expect(page.getByTestId("weakness-draw-continue")).toBeInViewport();
+    await expect(page.getByTestId("weakness-draw-close")).toBeInViewport();
+    const animationCount = await reveal.evaluate(
+      (element) => element.getAnimations({ subtree: true }).length,
+    );
+    expect(animationCount).toBe(0);
+    await page.getByTestId("weakness-draw-close").click();
+    await expect(reveal).not.toBeVisible();
+    await assertEditorDeckQuantity(page, code, 1);
+    await assertEditorDeckQuantity(page, "01000", 1);
+    expect(await sumCardCounts(page)).toEqual(9);
   });
 
   test("draft random basic weakness", async ({ page }) => {
@@ -323,6 +448,8 @@ test.describe("deck edit", () => {
     await weaknesses[0].click();
 
     await page.getByTestId("draft-basic-weakness-confirm").click();
+    await page.getByTestId("weakness-draw-skip").click();
+    await page.getByTestId("weakness-draw-continue").click();
 
     await assertEditorDeckQuantity(page, "01000", 0, false);
     await assertEditorDeckQuantity(page, codes[0] as string, 0, true);

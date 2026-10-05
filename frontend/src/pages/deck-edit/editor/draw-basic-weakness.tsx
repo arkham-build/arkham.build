@@ -1,10 +1,9 @@
 import type { Id } from "@arkham-build/shared";
 import { ShuffleIcon } from "lucide-react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { useWeaknessDraw } from "@/components/deck-tools/weakness-draw-context";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/toast.hooks";
 import { useStore } from "@/store";
-import { displayAttribute } from "@/utils/card-utils";
 
 type Props = {
   deckId: Id;
@@ -14,9 +13,7 @@ type Props = {
 
 export function DrawBasicWeakness(props: Props) {
   const { t } = useTranslation();
-
-  const toast = useToast();
-
+  const { drawWeakness } = useWeaknessDraw();
   const drawRandomBasicWeakness = useStore(
     (state) => state.drawRandomBasicWeakness,
   );
@@ -25,22 +22,7 @@ export function DrawBasicWeakness(props: Props) {
     <Button
       disabled={!props.quantity || props.targetDeck !== "slots"}
       iconOnly
-      onClick={() => {
-        const weakness = drawRandomBasicWeakness(props.deckId);
-        toast.show({
-          variant: "success",
-          duration: 3000,
-          children: (
-            <Trans
-              defaults="<strong>{{name}}</strong> is your random basic weakness."
-              i18nKey="deck_edit.actions.draw_random_basic_weakness_success"
-              t={t}
-              values={{ name: displayAttribute(weakness, "name") }}
-              components={{ strong: <strong /> }}
-            />
-          ),
-        });
-      }}
+      onClick={() => drawWeakness(() => drawRandomBasicWeakness(props.deckId))}
       size="sm"
       data-testid="draw-basic-weakness"
       tooltip={t("deck_edit.actions.draw_random_basic_weakness")}

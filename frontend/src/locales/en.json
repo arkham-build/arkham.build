@@ -1048,6 +1048,18 @@
         "set_quantity": "Set deck quantity",
         "set_side_quantity": "Set side deck quantity"
       },
+      "weakness_draw": {
+        "added": "Added to your deck. Good luck, investigator.",
+        "charging": "Something stirs in the dark...",
+        "close": "Close weakness reveal",
+        "continue": "Face your fate",
+        "eyebrow": "Random basic weakness",
+        "hint": "The seal is breaking. Your fate awaits.",
+        "mute": "Mute sound effects",
+        "revealed": "Your fate is sealed",
+        "sealed": "An unwelcome discovery",
+        "skip": "Skip animation"
+      },
       "changes_restored": "Unsaved changes were restored.",
       "config": {
         "buildql_deck_option": "BuildQL deckbuilding override",

@@ -1,0 +1,571 @@
+.ritual {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  overflow-x: hidden;
+  overflow-y: auto;
+  isolation: isolate;
+  color: #f5e9d4;
+  background: #090611;
+  padding: max(1rem, var(--safe-area-top)) max(1rem, var(--safe-area-right))
+    max(1rem, var(--safe-area-bottom)) max(1rem, var(--safe-area-left));
+}
+
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 45%, #713daa55, transparent 55%),
+    radial-gradient(ellipse at 50% 100%, #b36d1920, transparent 60%);
+}
+
+.controls {
+  position: absolute;
+  top: max(1rem, var(--safe-area-top));
+  right: max(1rem, var(--safe-area-right));
+  display: flex;
+  gap: 0.5rem;
+  z-index: 5;
+}
+
+.control {
+  color: #f5e9d4;
+  background: #211a2d;
+  border: 1px solid #a97eda66;
+}
+
+.content {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 3rem;
+  text-align: center;
+}
+
+.heading,
+.result {
+  position: relative;
+  z-index: 3;
+}
+
+.eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #c49bea;
+  margin-bottom: 0.5rem;
+}
+
+.heading h2 {
+  font-family: var(--font-family-content);
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  text-shadow: 0 0 30px #b26aff88;
+}
+
+.stage {
+  position: relative;
+  width: min(90vw, 32rem);
+  height: clamp(16rem, 56dvh, 32rem);
+  flex-shrink: 0;
+  perspective: 1100px;
+}
+
+.vortex,
+.sigil,
+.shockwave,
+.burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  aspect-ratio: 1;
+  width: min(85vw, 28rem);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.vortex {
+  background: repeating-conic-gradient(
+    from 0deg,
+    transparent 0deg 12deg,
+    #9d50ef88 18deg,
+    #f4c57699 20deg,
+    transparent 26deg 40deg
+  );
+  mask-image: radial-gradient(transparent 15%, black 45%, transparent 70%);
+  opacity: 0.65;
+  animation: vortex-spin 2s cubic-bezier(0.55, 0, 1, 1) both;
+}
+
+.sigil {
+  width: min(76vw, 24rem);
+  border: 1px solid #d7b46c99;
+  outline: 1px dashed #aa78cf88;
+  outline-offset: 0.75rem;
+  box-shadow:
+    0 0 35px #a548eb66,
+    inset 0 0 35px #a548eb44;
+  animation: sigil-charge 2s ease-in both;
+}
+
+.sigil::before,
+.sigil::after {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border: 1px solid #c399e799;
+  transform: rotate(45deg);
+}
+
+.sigil::after {
+  transform: rotate(15deg);
+}
+
+.card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(9rem, 29dvh, 16rem);
+  aspect-ratio: 300 / 420;
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+  animation: card-charge 2s ease-in both;
+}
+
+.card-back,
+.card-front {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--rounded-scan);
+  backface-visibility: hidden;
+  box-shadow:
+    0 0 20px #ac6ae666,
+    0 20px 50px #0009;
+}
+
+.card-back {
+  overflow: hidden;
+  color: #eac87c;
+  border: 2px solid #be9755;
+  outline: 1px solid #eac87c66;
+  outline-offset: -0.7rem;
+  background: radial-gradient(ellipse at center, #362144, #160e20 75%);
+}
+
+.card-back::after {
+  content: "";
+  position: absolute;
+  inset: -100%;
+  background: linear-gradient(
+    110deg,
+    transparent 40%,
+    #eab55c33 50%,
+    transparent 60%
+  );
+  animation: seal-shine 2s ease-in both;
+}
+
+.engraving {
+  width: 100%;
+  height: 100%;
+}
+
+.eye {
+  filter: drop-shadow(0 0 6px #ffc86f);
+  animation: eye-awaken 2s ease-in both;
+}
+
+.lightning {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #ffe8ac;
+  stroke-width: 2;
+  stroke-dasharray: 800;
+  opacity: 0;
+  filter: drop-shadow(0 0 5px #be7bff);
+  pointer-events: none;
+  animation: lightning-charge 650ms 1350ms ease-in both;
+}
+
+.shards {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.shards i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--size) * 3);
+  height: calc(var(--size) * 10);
+  clip-path: polygon(45% 0, 100% 100%, 0 75%);
+  background: linear-gradient(120deg, #fff2c5, #ab703b 45%, #42285b);
+  opacity: 0;
+}
+
+.card-front {
+  transform: rotateY(180deg);
+  background: #21152e;
+}
+
+.particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particles i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: #ffdc8a;
+  box-shadow:
+    0 0 10px #e998ff,
+    0 0 3px #fff;
+  animation: spark-gather 1s var(--delay) ease-in infinite;
+}
+
+.shockwave,
+.burst {
+  opacity: 0;
+}
+
+.shockwave {
+  border: 2px solid #ffd992;
+  box-shadow:
+    0 0 35px #bc71ff,
+    inset 0 0 25px #eab55c;
+}
+
+.burst {
+  width: min(100vw, 38rem);
+  background: radial-gradient(
+    #ffefbf 0%,
+    #e4a96399 15%,
+    #a74de988 35%,
+    transparent 65%
+  );
+}
+
+.result {
+  width: min(100%, 36rem);
+  min-height: 9rem;
+}
+
+.result h3 {
+  font-family: var(--font-family-content);
+  font-size: clamp(1.375rem, 4vw, 2rem);
+  margin-bottom: 0.375rem;
+}
+
+.result p {
+  color: #c8b7d8;
+  font-size: var(--text-sm);
+}
+
+.continue {
+  margin-top: 1.25rem;
+  min-width: 11rem;
+  color: #fbe8bd;
+  border: 1px solid #b88a45;
+  background: linear-gradient(#4b3156, #21162e);
+  box-shadow: 0 0 20px #ba792c22;
+}
+
+.continue:hover {
+  background: #533563;
+  box-shadow: 0 0 24px #e7b96755;
+}
+
+.ritual[data-phase="revealed"] .content {
+  animation: ritual-impact 400ms ease-out both;
+}
+
+.ritual[data-skipped="true"][data-phase] .content,
+.ritual[data-skipped="true"][data-phase] .card,
+.ritual[data-skipped="true"][data-phase] .result > div {
+  animation: none;
+}
+
+.ritual[data-skipped="true"] .card {
+  transform: translate(-50%, -50%) rotateY(180deg);
+}
+
+.ritual[data-skipped="true"]
+  :is(
+    .vortex,
+    .sigil,
+    .shockwave,
+    .burst,
+    .particles,
+    .shards,
+    .lightning,
+    .card-back
+  ) {
+  display: none;
+}
+
+.ritual[data-phase="revealed"] .card {
+  animation: card-reveal 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ritual[data-phase="revealed"] .card-front {
+  box-shadow:
+    0 0 35px #dda54e88,
+    0 0 80px #a159df55;
+}
+
+.ritual[data-phase="revealed"] .result > div {
+  animation: name-reveal 600ms 200ms ease-out both;
+}
+
+.ritual[data-phase="revealed"] .lightning {
+  animation: lightning-strike 500ms ease-out both;
+}
+
+.ritual[data-phase="revealed"] .shards i {
+  animation: shard-shatter 950ms var(--delay) cubic-bezier(0.1, 0.6, 0.3, 1)
+    both;
+}
+
+.ritual[data-phase="revealed"] .shockwave {
+  animation: shockwave 850ms ease-out both;
+}
+
+.ritual[data-phase="revealed"] .burst {
+  animation: impact 750ms ease-out both;
+}
+
+.ritual[data-phase="revealed"] .particles i {
+  animation: spark-burst 1s var(--delay) ease-out both;
+}
+
+.ritual[data-phase="revealed"] .vortex {
+  animation: vortex-settle 1s ease-out both;
+}
+
+.ritual[data-phase="revealed"] .sigil {
+  animation: sigil-break 900ms ease-out both;
+}
+
+@keyframes eye-awaken {
+  from {
+    opacity: 0.5;
+  }
+  70% {
+    opacity: 1;
+  }
+  to {
+    filter: drop-shadow(0 0 12px #ffe3a1);
+  }
+}
+
+@keyframes lightning-charge {
+  from {
+    stroke-dashoffset: 800;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 0.8;
+  }
+}
+
+@keyframes lightning-strike {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+@keyframes shard-shatter {
+  from {
+    transform: rotate(var(--angle)) translateY(35px) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: rotate(var(--angle)) translateY(var(--distance)) rotate(160deg);
+    opacity: 0;
+  }
+}
+
+@keyframes name-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ritual-impact {
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-4px, 3px);
+  }
+  40% {
+    transform: translate(4px, -2px);
+  }
+  60% {
+    transform: translate(-2px, 1px);
+  }
+  80% {
+    transform: translate(1px, -1px);
+  }
+}
+
+@keyframes vortex-spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg) scale(0.6);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(540deg) scale(1.15);
+  }
+}
+
+@keyframes vortex-settle {
+  from {
+    transform: translate(-50%, -50%) rotate(180deg) scale(1.15);
+    opacity: 0.8;
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg) scale(1.4);
+    opacity: 0.12;
+  }
+}
+
+@keyframes sigil-charge {
+  from {
+    transform: translate(-50%, -50%) rotate(-40deg) scale(0.8);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.7;
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(30deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes sigil-break {
+  from {
+    transform: translate(-50%, -50%) rotate(30deg) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(90deg) scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes card-charge {
+  0% {
+    transform: translate(-50%, -40%) rotateY(-20deg) scale(0.75);
+  }
+  35% {
+    transform: translate(-50%, -50%) rotateY(12deg) scale(1);
+  }
+  60% {
+    transform: translate(-50%, -50%) rotateY(-8deg) scale(1.02);
+  }
+  75%,
+  85%,
+  95% {
+    transform: translate(-51%, -50%) rotateZ(-2deg) scale(1.04);
+  }
+  80%,
+  90%,
+  100% {
+    transform: translate(-49%, -50%) rotateZ(2deg) scale(1.06);
+  }
+}
+
+@keyframes card-reveal {
+  0% {
+    transform: translate(-50%, -50%) rotateY(0deg) scale(1.06);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotateY(190deg) scale(1.14);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotateY(180deg) scale(1);
+  }
+}
+
+@keyframes seal-shine {
+  from {
+    transform: translateX(-40%);
+  }
+  to {
+    transform: translateX(40%);
+  }
+}
+
+@keyframes shockwave {
+  from {
+    transform: translate(-50%, -50%) scale(0.25);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes impact {
+  from {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0.95;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes spark-gather {
+  from {
+    transform: rotate(var(--angle)) translateX(var(--distance)) scale(0);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  to {
+    transform: rotate(calc(var(--angle) + 50deg)) translateX(40px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes spark-burst {
+  from {
+    transform: rotate(var(--angle)) translateX(20px) scale(1.6);
+    opacity: 1;
+  }
+  to {
+    transform: rotate(calc(var(--angle) + 25deg)) translateX(var(--distance))
+      scale(0);
+    opacity: 0;
+  }
+}
