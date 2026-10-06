@@ -1961,6 +1961,9 @@ export const selectAvailableUpgrades = createSelector(
           availableUpgrades.upgrades[card.code].every(
             (c) =>
               c.xp !== upgrade.xp ||
+              c.faction_code !== upgrade.faction_code ||
+              c.faction2_code !== upgrade.faction2_code ||
+              c.faction3_code !== upgrade.faction3_code ||
               displayAttribute(c, "subname") !==
                 displayAttribute(upgrade, "subname"),
           );
