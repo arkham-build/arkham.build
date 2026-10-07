@@ -85,8 +85,8 @@ const NEW_FORMAT_POSTFIXES = {
     investigator: " Investigator Expansion",
   },
   es: {
-    campaign: " Expansión de Investigadores",
-    investigator: " Expansión de Campaña",
+    campaign: " Expansión de Campaña",
+    investigator: " Expansión de Investigadores",
   },
   fr: {
     campaign: " – Extension Campagne",
