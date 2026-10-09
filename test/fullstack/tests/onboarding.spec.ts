@@ -64,7 +64,7 @@ test.describe("signup onboarding", () => {
     await page.getByRole("link", { name: "Connect" }).click();
     await authorizeArkhamDbOAuth(page, arkhamDbUser);
 
-    await expect(page).toHaveURL(/\/auth\/signup\/complete$/);
+    await expect(page).toHaveURL(/\/auth\/signup\/complete\?redirect=%2F$/);
     await completeProfile(page, username);
 
     await openAccountSettings(page);
@@ -226,7 +226,7 @@ async function signupAndOpenCompleteProfile(page: Page, email: string) {
   await expect(page).toHaveURL(/\/auth\/login$/);
 
   await login(page, email, password);
-  await expect(page).toHaveURL(/\/auth\/signup\/complete$/);
+  await expect(page).toHaveURL(/\/auth\/signup\/complete\?redirect=%2F$/);
 }
 
 async function completeProfile(page: Page, username: string) {

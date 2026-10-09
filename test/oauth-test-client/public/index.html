@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arkham.build OAuth test client</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" type="module"></script>
+  </head>
+  <body>
+    <header>
+      <div>
+        <p class="eyebrow">Local protocol workbench</p>
+        <h1>arkham.build OAuth test client</h1>
+        <p class="lede">
+          Connect a user, inspect protocol responses, synchronize decks, and
+          exercise deck CRUD operations.
+        </p>
+      </div>
+      <span id="connection-badge" class="badge">Not connected</span>
+    </header>
+
+    <main>
+      <section class="panel span-2" aria-labelledby="settings-heading">
+        <div class="panel-heading">
+          <div>
+            <p class="step">1 · Client configuration</p>
+            <h2 id="settings-heading">Connection settings</h2>
+          </div>
+          <p class="hint">Saved in server memory for this browser session.</p>
+        </div>
+        <form id="config-form" class="form-grid">
+          <label>
+            API base URL
+            <input id="api-base" name="apiBase" type="url" required />
+          </label>
+          <label>
+            Redirect URI
+            <input id="redirect-uri" name="redirectUri" readonly />
+          </label>
+          <label>
+            Client ID
+            <input id="client-id" name="clientId" autocomplete="off" required />
+          </label>
+          <label>
+            Client secret
+            <input
+              id="client-secret"
+              name="clientSecret"
+              type="password"
+              autocomplete="off"
+              required
+            />
+          </label>
+          <div class="actions form-actions">
+            <button type="submit">Save settings</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="oauth-heading">
+        <p class="step">2 · Authorization</p>
+        <h2 id="oauth-heading">Connect flow</h2>
+        <fieldset id="scopes">
+          <legend>Requested scopes</legend>
+          <label class="check">
+            <input type="checkbox" value="profile:read" checked disabled />
+            profile:read
+          </label>
+          <label class="check">
+            <input type="checkbox" value="decks:read" checked />
+            decks:read
+          </label>
+          <label class="check">
+            <input type="checkbox" value="decks:write" checked />
+            decks:write
+          </label>
+          <label class="check">
+            <input type="checkbox" value="decks:delete" checked />
+            decks:delete
+          </label>
+        </fieldset>
+        <div class="actions vertical-actions">
+          <button id="connect" type="button">Connect to arkham.build</button>
+          <button id="profile" type="button" class="secondary">
+            Read profile
+          </button>
+          <button id="refresh" type="button" class="secondary">
+            Rotate refresh token
+          </button>
+        </div>
+        <div class="split-actions">
+          <button id="revoke-access" type="button" class="quiet danger">
+            Revoke access
+          </button>
+          <button id="revoke-refresh" type="button" class="quiet danger">
+            Revoke refresh
+          </button>
+          <button id="clear-auth" type="button" class="quiet">
+            Clear local tokens
+          </button>
+        </div>
+        <details id="token-details">
+          <summary>Current token response</summary>
+          <pre id="tokens">No tokens</pre>
+        </details>
+      </section>
+
+      <section class="panel" aria-labelledby="sync-heading">
+        <p class="step">3 · Synchronization</p>
+        <h2 id="sync-heading">Deck sync</h2>
+        <label>
+          Provider
+          <select id="sync-source">
+            <option value="">Account and ArkhamDB</option>
+            <option value="account">Account only</option>
+            <option value="arkhamdb">ArkhamDB only</option>
+          </select>
+        </label>
+        <div class="actions vertical-actions">
+          <button id="manifest" type="button">Get manifest</button>
+          <button id="sync" type="button" class="secondary">
+            Sync all decks
+          </button>
+        </div>
+        <dl class="metrics">
+          <div>
+            <dt>Manifest decks</dt>
+            <dd id="manifest-count">—</dd>
+          </div>
+          <div>
+            <dt>Downloaded decks</dt>
+            <dd id="sync-count">—</dd>
+          </div>
+          <div>
+            <dt>Manifest version</dt>
+            <dd id="manifest-version">—</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="panel span-2" aria-labelledby="deck-heading">
+        <div class="panel-heading">
+          <div>
+            <p class="step">4 · Deck operations</p>
+            <h2 id="deck-heading">CRUD and history</h2>
+          </div>
+          <p class="hint">
+            Read and write responses replace the editor contents.
+          </p>
+        </div>
+        <div class="target-grid">
+          <label>
+            Provider
+            <select id="deck-source">
+              <option value="account">Account</option>
+              <option value="arkhamdb">ArkhamDB</option>
+            </select>
+          </label>
+          <label>
+            Deck ID
+            <input id="deck-id" placeholder="Required except for create" />
+          </label>
+          <label class="check history-option">
+            <input id="delete-history" type="checkbox" />
+            Delete previous history chain
+          </label>
+        </div>
+        <label>
+          Deck JSON
+          <textarea id="deck-json" rows="21" spellcheck="false"></textarea>
+        </label>
+        <div class="actions deck-actions">
+          <button id="deck-read" type="button" class="secondary">Read</button>
+          <button id="deck-create" type="button">Create</button>
+          <button id="deck-replace" type="button" class="secondary">
+            Replace
+          </button>
+          <button id="deck-upgrade" type="button" class="secondary">
+            Upgrade
+          </button>
+          <button id="deck-delete" type="button" class="danger">Delete</button>
+        </div>
+      </section>
+
+      <section class="panel span-2" aria-labelledby="inspector-heading">
+        <div class="panel-heading">
+          <div>
+            <p class="step">Protocol inspector</p>
+            <h2 id="inspector-heading">Last operation</h2>
+          </div>
+          <span id="operation-status" class="badge neutral">No request</span>
+        </div>
+        <p id="notice" class="notice" role="status" aria-live="polite"></p>
+        <pre id="operation">Run an operation to see its request and response.</pre>
+      </section>
+    </main>
+
+    <footer>
+      Local-only test software. Credentials and tokens are intentionally kept
+      in process memory and shown in this interface.
+    </footer>
+  </body>
+</html>

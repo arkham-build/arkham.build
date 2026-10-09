@@ -1,8 +1,8 @@
 type: http_request
 model: http_request
 id: rq_CreateOAuthClient
-createdAt: 2026-07-21T22:35:01.000000
-updatedAt: 2026-07-21T22:35:01.000000
+createdAt: 2026-07-21T22:35:01
+updatedAt: 2026-10-09T19:23:06.068551
 workspaceId: wk_bBoraEVHnK
 folderId: fl_OAuthClients
 authentication: {}
@@ -12,8 +12,7 @@ body:
     {
       "name": "Example application",
       "redirectUris": [
-        "https://example.com/oauth/callback",
-        "com.example.app:/oauth/callback"
+        "http://localhost:4567/oauth/callback"
       ]
     }
 bodyType: application/json
@@ -47,3 +46,6 @@ settingFollowRedirects:
 settingRequestTimeout:
   enabled: false
   value: 0
+settingHttpVersion:
+  enabled: false
+  value: auto
