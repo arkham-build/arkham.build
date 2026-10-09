@@ -78,7 +78,7 @@ function FanMadeContentPreviewInner({ project }: { project: FanMadeProject }) {
         display: {
           viewMode: "scans",
         },
-        fanMadeCycleCodes: [project.meta.code],
+        fanMadeCardCodes: new Set(project.data.cards.map((card) => card.code)),
         lockedFilters: new Set(["cycle"]),
         showInvestigatorFilter: true,
         showOwnershipFilter: false,

@@ -1,5 +1,7 @@
+import fanMadeProject from "@test/fixtures/stubs/fan_made_investigator_project.json" with { type: "json" };
 import { beforeEach, describe, expect, it } from "vitest";
 import type { StoreApi } from "zustand";
+import { selectMetadata } from "@/store/selectors/shared";
 import { getMockStore } from "@/test/get-mock-store";
 import type { StoreState } from "../slices";
 import {
@@ -40,6 +42,45 @@ describe("selectListCards", () => {
     const result = selectListCards(store.getState(), undefined, undefined);
 
     expect(result?.cards.map((card) => card.code)).toContain("01001");
+  });
+
+  it("hides cached cards that are no longer in an installed project", async () => {
+    await store.getState().addFanMadeProject(fanMadeProject);
+
+    const state = store.getState();
+    const projectCard = fanMadeProject.data.cards.at(0);
+    if (!projectCard) throw new Error("expected fan-made project card");
+    const installedCode = projectCard.code;
+    const installedCard = selectMetadata(state).cards[installedCode];
+    if (!installedCard) throw new Error("expected installed fan-made card");
+    const deletedCode = `${installedCode}-deleted`;
+
+    store.setState((current) => ({
+      ui: {
+        ...current.ui,
+        fanMadeContentCache: {
+          ...current.ui.fanMadeContentCache,
+          cards: {
+            ...current.ui.fanMadeContentCache.cards,
+            [deletedCode]: {
+              ...installedCard,
+              code: deletedCode,
+              id: deletedCode,
+            },
+          },
+        },
+      },
+    }));
+    store.getState().setActiveList("index");
+
+    const cardCodes = selectListCards(
+      store.getState(),
+      undefined,
+      undefined,
+    )?.cards.map((card) => card.code);
+
+    expect(cardCodes).toContain(installedCode);
+    expect(cardCodes).not.toContain(deletedCode);
   });
 
   it("applies a taboo override only to the active list", () => {

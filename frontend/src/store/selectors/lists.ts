@@ -689,13 +689,24 @@ const selectDeckFanMadeData = createSelector(
   (resolvedDeck) => resolvedDeck?.fanMadeData,
 );
 
+const selectInstalledFanMadeCardCodes = createSelector(
+  (state: StoreState) => state.fanMadeData.projects,
+  (projects) => {
+    const codes = new Set<string>();
+    for (const project of Object.values(projects)) {
+      for (const card of project.data.cards) codes.add(card.code);
+    }
+    return codes;
+  },
+);
+
 const selectBaseListCards = createSelector(
   selectMetadata,
   selectLookupTables,
-  (state: StoreState) => state.fanMadeData.projects,
+  selectInstalledFanMadeCardCodes,
   (state: StoreState) => selectActiveList(state)?.systemFilter,
   (state: StoreState) => selectActiveList(state)?.filterValues,
-  (state: StoreState) => selectActiveList(state)?.fanMadeCycleCodes,
+  (state: StoreState) => selectActiveList(state)?.fanMadeCardCodes,
   selectDeckInvestigatorFilter,
   selectCanonicalTabooSetId,
   selectDeckCustomizations,
@@ -704,10 +715,10 @@ const selectBaseListCards = createSelector(
   (
     metadata,
     lookupTables,
-    fanMadeProjects,
+    installedFanMadeCardCodes,
     systemFilter,
     filterValues,
-    fanMadeCycleCodes,
+    fanMadeCardCodes,
     deckInvestigatorFilter,
     tabooSetId,
     customizations,
@@ -739,13 +750,10 @@ const selectBaseListCards = createSelector(
     filters.push((card: Card) => {
       if (card.official) return true;
 
-      const pack = metadata.packs[card.pack_code];
-      if (!pack?.cycle_code) return false;
-
       return Boolean(
         fanMadeData?.cards?.[card.code] ||
-        fanMadeProjects?.[pack.cycle_code] ||
-        fanMadeCycleCodes?.includes(pack.cycle_code),
+        installedFanMadeCardCodes.has(card.code) ||
+        fanMadeCardCodes?.has(card.code),
       );
     });
 

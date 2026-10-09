@@ -635,7 +635,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
     initialValues,
     opts = {
       display: undefined,
-      fanMadeCycleCodes: undefined,
+      fanMadeCardCodes: undefined,
       search: "",
       showOwnershipFilter: true,
       showInvestigatorFilter: true,
@@ -665,7 +665,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       }
 
       lists[key] = makeList({
-        fanMadeCycleCodes: opts.fanMadeCycleCodes,
+        fanMadeCardCodes: opts.fanMadeCardCodes,
         display,
         displaySortSelection,
         displaySettingsKey: opts.displaySettingsKey,
@@ -997,7 +997,7 @@ function makeFilterValue(
 }
 
 type MakeListOptions = {
-  fanMadeCycleCodes?: string[];
+  fanMadeCardCodes?: ReadonlySet<string>;
   display: ListDisplay;
   displaySettingsKey?: string;
   displaySortSelection?: string;
@@ -1012,7 +1012,7 @@ type MakeListOptions = {
 };
 
 function makeList({
-  fanMadeCycleCodes,
+  fanMadeCardCodes,
   key,
   filters,
   display,
@@ -1028,7 +1028,7 @@ function makeList({
   const list = {
     defaultFlipped: false,
     tabooSetOverride,
-    fanMadeCycleCodes,
+    fanMadeCardCodes,
     filters,
     filterValues: filters.reduce<List["filterValues"]>((acc, curr, i) => {
       const locked = lockedFilters.has(curr);
