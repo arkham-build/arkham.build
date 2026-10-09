@@ -354,7 +354,9 @@ describe("POST /v2/oauth/token", () => {
     ).toHaveLength(1);
   });
 
-  test("rotates each refresh token once", async ({ dependencies }) => {
+  test("rotates once and revokes the grant tokens on replay", async ({
+    dependencies,
+  }) => {
     const { app, db, sessionCookie } = dependencies;
     const issuedAt = new Date("2026-07-22T13:00:00.000Z");
     vi.useFakeTimers();
@@ -443,7 +445,14 @@ describe("POST /v2/oauth/token", () => {
       client,
       refreshedTokens.refresh_token,
     );
-    expect(descendantResponse.status).toBe(200);
+    await expectOAuthError(descendantResponse, 400, "invalid_grant");
+
+    const descendantAccessResponse = await app.request("/v2/user/me", {
+      headers: {
+        Authorization: `Bearer ${refreshedTokens.access_token}`,
+      },
+    });
+    expect(descendantAccessResponse.status).toBe(401);
   });
 
   test("rejects unusable or cross-client refresh tokens", async ({

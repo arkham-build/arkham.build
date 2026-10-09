@@ -180,7 +180,7 @@ describe("authenticated OAuth profile lifecycle", () => {
     expect((await profileRequest(app, sibling.rawToken)).status).toBe(200);
   });
 
-  test("revokes a refresh token and every access token issued from it", async ({
+  test("revokes all grant tokens when given a refresh token", async ({
     dependencies,
   }) => {
     const { app, db } = dependencies;
@@ -191,7 +191,7 @@ describe("authenticated OAuth profile lifecycle", () => {
       credentials.refreshTokenId,
     );
     const otherRefresh = await insertRefreshToken(db, credentials.grantId);
-    const unrelatedAccess = await insertAccessToken(
+    const otherRefreshAccess = await insertAccessToken(
       db,
       credentials.grantId,
       otherRefresh.id,
@@ -204,30 +204,23 @@ describe("authenticated OAuth profile lifecycle", () => {
     expect(response.status).toBe(200);
     expectNoStoreHeaders(response);
 
-    const revokedRefresh = await db
+    const refreshTokens = await db
       .selectFrom("oauth_refresh_token")
-      .select("revoked_at")
-      .where("id", "=", credentials.refreshTokenId)
-      .executeTakeFirstOrThrow();
-    expect(revokedRefresh.revoked_at).toEqual(expect.any(Date));
+      .select(["id", "revoked_at"])
+      .where("id", "in", [credentials.refreshTokenId, otherRefresh.id])
+      .execute();
+    expect(refreshTokens.every((token) => token.revoked_at != null)).toBe(true);
 
-    const linkedTokens = await db
+    const accessTokens = await db
       .selectFrom("oauth_access_token")
       .select(["id", "revoked_at"])
       .where("id", "in", [
         credentials.accessTokenId,
         sibling.id,
-        unrelatedAccess.id,
+        otherRefreshAccess.id,
       ])
       .execute();
-    expect(
-      linkedTokens
-        .filter((token) => token.id !== unrelatedAccess.id)
-        .every((token) => token.revoked_at != null),
-    ).toBe(true);
-    expect(
-      linkedTokens.find((token) => token.id === unrelatedAccess.id)?.revoked_at,
-    ).toBeNull();
+    expect(accessTokens.every((token) => token.revoked_at != null)).toBe(true);
   });
 
   test("keeps unknown and cross-client tokens private", async ({

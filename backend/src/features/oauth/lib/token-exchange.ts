@@ -9,6 +9,7 @@ import {
   verifyOAuthClientCredentials,
 } from "./client-authentication.ts";
 import { OAuthTokenError } from "./errors.ts";
+import { revokeOAuthGrantTokens } from "./revocation.ts";
 import { canonicalizeOAuthScopes } from "./scopes.ts";
 
 export const OAUTH_ACCESS_TOKEN_EXPIRES_IN_SECONDS = 60 * 60;
@@ -149,7 +150,7 @@ export async function exchangeOAuthRefreshToken(
 ): Promise<OAuthTokenResult> {
   const verifiedSecretHash = await verifyOAuthClientCredentials(db, input);
 
-  return await db.transaction().execute(async (tx) => {
+  const token = await db.transaction().execute(async (tx) => {
     await lockActiveOAuthClient(tx, input.clientId, verifiedSecretHash);
 
     const refreshTokenHash = hashOAuthCredential(input.refreshToken);
@@ -179,16 +180,17 @@ export async function exchangeOAuthRefreshToken(
       .select(["expires_at", "id", "revoked_at", "rotated_at", "scopes"])
       .where("token_hash", "=", refreshTokenHash)
       .where("oauth_grant_id", "=", grant.id)
-      .forUpdate()
       .executeTakeFirst();
     const now = new Date();
 
-    if (
-      !refreshToken ||
-      refreshToken.revoked_at != null ||
-      refreshToken.rotated_at != null ||
-      refreshToken.expires_at <= now
-    ) {
+    if (!refreshToken) throw invalidRefreshToken();
+
+    if (refreshToken.rotated_at != null) {
+      await revokeOAuthGrantTokens(tx, grant.id, now);
+      return undefined;
+    }
+
+    if (refreshToken.revoked_at != null || refreshToken.expires_at <= now) {
       throw invalidRefreshToken();
     }
 
@@ -241,6 +243,9 @@ export async function exchangeOAuthRefreshToken(
       scopes,
     };
   });
+
+  if (!token) throw invalidRefreshToken();
+  return token;
 }
 
 function invalidAuthorizationCode() {

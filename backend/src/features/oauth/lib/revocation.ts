@@ -1,4 +1,6 @@
+import type { Transaction } from "kysely";
 import type { Database } from "../../../db/db.ts";
+import type { DB } from "../../../db/schema.types.ts";
 import { hashOAuthCredential } from "../../../lib/oauth/crypto.ts";
 import {
   lockActiveOAuthClient,
@@ -10,6 +12,26 @@ type OAuthRevocationInput = {
   clientSecret: string;
   token: string;
 };
+
+export async function revokeOAuthGrantTokens(
+  tx: Transaction<DB>,
+  grantId: string,
+  revokedAt: Date,
+) {
+  await tx
+    .updateTable("oauth_access_token")
+    .set({ revoked_at: revokedAt, updated_at: revokedAt })
+    .where("oauth_grant_id", "=", grantId)
+    .where("revoked_at", "is", null)
+    .execute();
+
+  await tx
+    .updateTable("oauth_refresh_token")
+    .set({ revoked_at: revokedAt, updated_at: revokedAt })
+    .where("oauth_grant_id", "=", grantId)
+    .where("revoked_at", "is", null)
+    .execute();
+}
 
 export async function revokeOAuthToken(
   db: Database,
@@ -58,31 +80,16 @@ export async function revokeOAuthToken(
         "oauth_refresh_token.oauth_grant_id",
       )
       .select([
-        "oauth_refresh_token.id",
+        "oauth_refresh_token.oauth_grant_id",
         "oauth_grant.oauth_client_id",
-        "oauth_refresh_token.revoked_at",
       ])
       .where("oauth_refresh_token.token_hash", "=", tokenHash)
-      .forUpdate("oauth_refresh_token")
+      .forUpdate("oauth_grant")
       .executeTakeFirst();
 
-    if (refreshToken?.oauth_client_id !== input.clientId) return;
+    if (!refreshToken || refreshToken.oauth_client_id !== input.clientId)
+      return;
 
-    const now = new Date();
-    if (refreshToken.revoked_at == null) {
-      await tx
-        .updateTable("oauth_refresh_token")
-        .set({ revoked_at: now, updated_at: now })
-        .where("id", "=", refreshToken.id)
-        .where("revoked_at", "is", null)
-        .executeTakeFirstOrThrow();
-    }
-
-    await tx
-      .updateTable("oauth_access_token")
-      .set({ revoked_at: now, updated_at: now })
-      .where("oauth_refresh_token_id", "=", refreshToken.id)
-      .where("revoked_at", "is", null)
-      .execute();
+    await revokeOAuthGrantTokens(tx, refreshToken.oauth_grant_id, new Date());
   });
 }
