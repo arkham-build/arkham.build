@@ -16,7 +16,9 @@
   },
   "scripts": {
     "dev:functions": "wrangler pages dev",
+    "dev:oauth-client": "npm --prefix oauth-test-client run dev",
     "fmt": "oxlint --fix . && oxfmt --write .",
+    "generate:openapi": "npm run generate:openapi --workspace backend",
     "lint": "oxlint --deny-warnings --report-unused-disable-directives . && oxfmt --check .",
     "pdfjs:update": "bin/update-pdfjs",
     "prepare:e2e": "playwright install --with-deps",

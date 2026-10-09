@@ -6,7 +6,7 @@ export const frontendPort = process.env.E2E_FRONTEND_PORT ?? "3100";
 export const frontendUrl =
   process.env.E2E_FRONTEND_URL ?? `http://localhost:${frontendPort}`;
 
-export const apiPort = process.env.E2E_API_PORT ?? "8788";
+const apiPort = process.env.E2E_API_PORT ?? "8788";
 export const apiUrl = process.env.E2E_API_URL ?? `http://localhost:${apiPort}`;
 
 export const dbName = process.env.E2E_DB_NAME ?? `arkham_build_e2e_${runId}`;

@@ -82,7 +82,7 @@ export async function fetchDecksForOAuthUser(
   };
 }
 
-export const OAuthAccessTokenSchema = z.object({
+const OAuthAccessTokenSchema = z.object({
   access_token: z.string(),
   expires_in: z.number(),
   token_type: z.string(),
@@ -92,7 +92,7 @@ export const OAuthAccessTokenSchema = z.object({
 
 export type OAuthAccessToken = z.infer<typeof OAuthAccessTokenSchema>;
 
-export function isOAuthAccessToken(value: unknown): value is OAuthAccessToken {
+function isOAuthAccessToken(value: unknown): value is OAuthAccessToken {
   return OAuthAccessTokenSchema.safeParse(value).success;
 }
 

@@ -15,6 +15,11 @@ import { KeyboardShortcutsModal } from "./components/keyboard-shortcuts/keyboard
 import { Loader } from "./components/ui/loader";
 import { Toaster } from "./components/ui/toast";
 import { useToast } from "./components/ui/toast.hooks";
+import {
+  createAuthRedirectPath,
+  getCurrentLocalPath,
+  getLocalReturnPath,
+} from "./pages/auth/return-to";
 import { ErrorStatus } from "./pages/errors/404";
 import {
   useDataVersionQuery,
@@ -103,6 +108,7 @@ const CompleteSignup = lazy(() => import("./pages/auth/complete-signup"));
 const ForgotPassword = lazy(() => import("./pages/auth/forgot-password"));
 const VerifyEmail = lazy(() => import("./pages/auth/verify-email"));
 const ResetPassword = lazy(() => import("./pages/auth/reset-password"));
+const OAuthConsent = lazy(() => import("./pages/oauth-consent/oauth-consent"));
 
 function App(props: { httpClient: HttpClient }) {
   return (
@@ -207,6 +213,7 @@ function AppInner() {
                     component={InstallFanMadeContent}
                     path="/install-fan-made-content"
                   />
+                  <Route component={OAuthConsent} path="/oauth/consent" />
                   <Route component={Login} path="/auth/login" />
                   <Route component={Signup} path="/auth/signup" />
                   <Route
@@ -256,6 +263,7 @@ function ProfileCompletionRouteGuard(props: { children: React.ReactNode }) {
   const authStatus = useStore((state) => state.auth.status);
   const session = useStore(selectSession);
   const [pathname] = useLocation();
+  const search = useSearch();
 
   if (
     authStatus === "authenticated" &&
@@ -264,7 +272,20 @@ function ProfileCompletionRouteGuard(props: { children: React.ReactNode }) {
     pathname !== "/auth/signup/complete" &&
     pathname !== "/account-migration"
   ) {
-    return <Redirect to="/auth/signup/complete" />;
+    const currentPath = getCurrentLocalPath();
+    const returnTo =
+      pathname === "/auth/login"
+        ? getLocalReturnPath(
+            new URLSearchParams(search).get("redirect"),
+            currentPath,
+          )
+        : currentPath;
+
+    return (
+      <Redirect
+        to={createAuthRedirectPath("/auth/signup/complete", returnTo)}
+      />
+    );
   }
 
   return props.children;

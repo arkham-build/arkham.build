@@ -16,7 +16,7 @@ import {
   findArkhamDbIdentityWithTokenByAccountId,
   upsertOAuthToken,
 } from "../../../auth/oauth-tokens.ts";
-import type { SessionAuthHonoEnv } from "../../../hono-env.ts";
+import type { HonoEnv } from "../../../hono-env.ts";
 import type { OAuthAccessToken } from "../../../oauth.ts";
 import { refreshAccessToken } from "../api-oauth.ts";
 import { ApiError } from "./errors.ts";
@@ -34,19 +34,19 @@ export type ArkhamDbExecutor = {
   connection: NonNullable<
     Awaited<ReturnType<typeof findArkhamDbIdentityWithTokenByAccountId>>
   >;
-  context: Context<SessionAuthHonoEnv>;
   db: Database;
+  legacyApiBaseUrl: string;
   patchIdentityFailure(error: unknown): Promise<void>;
   patchIdentityState(patch: Partial<ArkhamDbIdentityState>): Promise<void>;
   request: ArkhamDbRequest;
 };
 
-export async function withArkhamDbExecutor<T>(
-  c: Context<SessionAuthHonoEnv>,
+export async function withArkhamDbExecutor<T, E extends HonoEnv>(
+  c: Context<E>,
+  accountId: string,
   run: (executor: ArkhamDbExecutor) => Promise<T>,
 ): Promise<T> {
   const db = c.get("db");
-  const accountId = c.get("account").id;
   const initialConnection = await findArkhamDbIdentityWithTokenByAccountId(
     db,
     accountId,
@@ -68,8 +68,8 @@ export async function withArkhamDbExecutor<T>(
 
     const executor: ArkhamDbExecutor = {
       connection,
-      context: c,
       db,
+      legacyApiBaseUrl: c.get("config").LEGACY_API_BASE_URL,
       patchIdentityFailure(error) {
         return patchArkhamDbIdentityFailure(executor, error);
       },
@@ -78,6 +78,7 @@ export async function withArkhamDbExecutor<T>(
       },
       request(path, schema, options, handleApiError) {
         return executeArkhamDbRequest(
+          c,
           executor,
           path,
           schema,
@@ -93,7 +94,12 @@ export async function withArkhamDbExecutor<T>(
 
 const arkhamDbUserLocks = new Map<string, Mutex>();
 
-async function executeArkhamDbRequest<T, R = never>(
+async function executeArkhamDbRequest<
+  T,
+  R = never,
+  E extends HonoEnv = HonoEnv,
+>(
+  c: Context<E>,
   executor: ArkhamDbExecutor,
   path: string,
   schema: z.ZodType<T>,
@@ -102,16 +108,12 @@ async function executeArkhamDbRequest<T, R = never>(
 ): Promise<WrappedResponse<T | R>> {
   const executeRequest = async (accessToken: string) =>
     parseWrappedResponse(
-      await request<unknown, SessionAuthHonoEnv>(
-        executor.context,
-        `/api/oauth2${path}`,
-        {
-          ...options,
-          headers: mergeHeaders(options.headers, {
-            Authorization: `Bearer ${accessToken}`,
-          }),
-        },
-      ),
+      await request<unknown, E>(c, `/api/oauth2${path}`, {
+        ...options,
+        headers: mergeHeaders(options.headers, {
+          Authorization: `Bearer ${accessToken}`,
+        }),
+      }),
       schema,
     );
 
@@ -132,7 +134,10 @@ async function executeArkhamDbRequest<T, R = never>(
     }
   }
 
-  const accessToken = await refreshArkhamDbAccessTokenForConnection(executor);
+  const accessToken = await refreshArkhamDbAccessTokenForConnection(
+    c,
+    executor,
+  );
 
   try {
     return await executeRequest(accessToken.access_token);
@@ -150,7 +155,8 @@ async function executeArkhamDbRequest<T, R = never>(
   }
 }
 
-async function refreshArkhamDbAccessTokenForConnection(
+async function refreshArkhamDbAccessTokenForConnection<E extends HonoEnv>(
+  c: Context<E>,
   executor: ArkhamDbExecutor,
 ): Promise<OAuthAccessToken> {
   const refreshToken = executor.connection.token.refresh_token;
@@ -158,7 +164,7 @@ async function refreshArkhamDbAccessTokenForConnection(
   assert(refreshToken, "Missing OAuth refresh token for ArkhamDB account.");
 
   try {
-    const token = await refreshAccessToken(executor.context, refreshToken);
+    const token = await refreshAccessToken(c, refreshToken);
     await upsertOAuthToken(executor.db, executor.connection.identity.id, token);
 
     executor.connection.token.access_token = token.access_token;

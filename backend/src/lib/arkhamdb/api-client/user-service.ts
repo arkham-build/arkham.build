@@ -4,12 +4,12 @@ import {
   type Deck,
   type DeckId,
   type DeckManifestItem,
-  type DeckWritePayload,
+  type DeckMutablePayload,
 } from "@arkham-build/shared";
 import type { Context } from "hono";
 import { z } from "zod";
 import { getAccountIdentityByAccountIdAndProvider } from "../../auth/account-identities.ts";
-import type { SessionAuthHonoEnv } from "../../hono-env.ts";
+import type { HonoEnv } from "../../hono-env.ts";
 import { log } from "../../logger.ts";
 import { mergeAdditionalMeta } from "../additional-metadata.ts";
 import {
@@ -25,6 +25,7 @@ import {
   ArkhamDbRemoteDeckSchema,
   ArkhamDbRemoteDecksSchema,
 } from "./core/dtos.ts";
+import { ApiError } from "./core/errors.ts";
 import {
   type ArkhamDbExecutor,
   withArkhamDbExecutor,
@@ -38,70 +39,86 @@ import {
 } from "./deck-snapshots.ts";
 import { mapArkhamDbDeckToDto } from "./mapping.ts";
 
-export async function fetchArkhamDbDeck(
-  c: Context<SessionAuthHonoEnv>,
+export class ArkhamDbDeckSnapshotUnavailableError extends ApiError {
+  constructor() {
+    super("ArkhamDB deck snapshot is unavailable; request a new manifest", 409);
+    this.name = "ArkhamDbDeckSnapshotUnavailableError";
+  }
+}
+
+export async function fetchArkhamDbDeck<E extends HonoEnv>(
+  c: Context<E>,
+  accountId: string,
   id: string | number,
 ) {
-  const response = await fetchDeck(c, id);
+  const response = await withArkhamDbExecutor(c, accountId, (executor) =>
+    fetchDeck(executor, id),
+  );
   return mapArkhamDbDeckToDto(response.data);
 }
 
-export async function fetchArkhamDbDeckBatch(
-  c: Context<SessionAuthHonoEnv>,
+export async function fetchArkhamDbDeckBatch<E extends HonoEnv>(
+  c: Context<E>,
+  accountId: string,
   ids: DeckId[],
   arkhamdbSyncToken?: string,
 ) {
-  const snapshot = arkhamdbSyncToken
-    ? await findArkhamDbDeckSnapshotByAccountIdAndId(
-        c.get("db"),
-        c.get("account").id,
-        arkhamdbSyncToken,
-      )
-    : undefined;
+  if (!ids.length) return [];
 
-  if (!arkhamdbSyncToken) {
-    const decks: Deck[] = [];
-
-    for (const id of ids) {
-      decks.push(await fetchArkhamDbDeck(c, id));
-    }
-
-    return decks;
+  const syncToken = arkhamdbSyncToken
+    ? arkhamdbSyncToken
+    : (await fetchArkhamDbDeckManifest(c, accountId, { force: true }))
+        .arkhamdbSyncToken;
+  const snapshot = await findArkhamDbDeckSnapshotByAccountIdAndId(
+    c.get("db"),
+    accountId,
+    syncToken,
+  );
+  if (!snapshot) {
+    throw new ArkhamDbDeckSnapshotUnavailableError();
   }
 
-  const snapshotDecks = ArkhamDbRemoteDecksSchema.parse(snapshot?.decks ?? []);
+  const snapshotDecks = ArkhamDbRemoteDecksSchema.parse(snapshot.decks);
 
   const snapshotDecksById = new Map(
     snapshotDecks.map((deck) => [String(deck.id), deck]),
   );
 
   const decks: Deck[] = [];
+  const mappedDecksById = new Map<string, Deck>();
 
   for (const id of ids) {
-    const snapshotDeck = snapshotDecksById.get(String(id));
+    const key = String(id);
+    const mappedDeck = mappedDecksById.get(key);
 
-    if (!snapshotDeck) {
-      throw new Error(`Deck ${id} not found in snapshot.`);
+    if (mappedDeck) {
+      decks.push(mappedDeck);
+      continue;
     }
 
-    decks.push(
-      mapArkhamDbDeckToDto(
-        await mergeAdditionalMeta(c.get("db"), snapshotDeck, {
-          legacyApiBaseUrl: c.get("config").LEGACY_API_BASE_URL,
-        }),
-      ),
+    const snapshotDeck = snapshotDecksById.get(key);
+    if (!snapshotDeck) {
+      throw new ApiError(`Deck ${id} not found in snapshot.`, 404);
+    }
+
+    const deck = mapArkhamDbDeckToDto(
+      await mergeAdditionalMeta(c.get("db"), snapshotDeck, {
+        legacyApiBaseUrl: c.get("config").LEGACY_API_BASE_URL,
+      }),
     );
+    mappedDecksById.set(key, deck);
+    decks.push(deck);
   }
 
   return decks;
 }
 
-export async function fetchArkhamDbDeckManifest(
-  c: Context<SessionAuthHonoEnv>,
+export async function fetchArkhamDbDeckManifest<E extends HonoEnv>(
+  c: Context<E>,
+  accountId: string,
   opts: { force?: boolean } = {},
 ): Promise<{ arkhamdbSyncToken: string; decks: DeckManifestItem[] }> {
   const db = c.get("db");
-  const accountId = c.get("account").id;
 
   const identity = await getAccountIdentityByAccountIdAndProvider(
     db,
@@ -109,7 +126,12 @@ export async function fetchArkhamDbDeckManifest(
     "arkhamdb",
   );
 
-  assert(identity, "Missing ArkhamDB identity for account.");
+  if (!identity) {
+    throw new ApiError(
+      "Missing ArkhamDB identity or OAuth token for account.",
+      503,
+    );
+  }
 
   const snapshot = await findLatestArkhamDbDeckSnapshotByAccountIdentityId(
     db,
@@ -128,10 +150,8 @@ export async function fetchArkhamDbDeckManifest(
 
   log("info", "arkhamdb_sync_start");
 
-  const response = await syncDecks(
-    c,
-    syncedAt,
-    snapshot?.last_modified ?? null,
+  const response = await withArkhamDbExecutor(c, accountId, (executor) =>
+    syncDecks(executor, syncedAt, snapshot?.last_modified ?? null),
   );
 
   log("info", "arkhamdb_sync_success", {
@@ -158,12 +178,13 @@ export async function fetchArkhamDbDeckManifest(
   return getArkhamDbManifestFromSnapshot(snapshot);
 }
 
-export async function saveArkhamDbDeck(
-  c: Context<SessionAuthHonoEnv>,
+export async function saveArkhamDbDeck<E extends HonoEnv>(
+  c: Context<E>,
+  accountId: string,
   id: string | number,
-  deck: DeckWritePayload,
+  deck: DeckMutablePayload,
 ): Promise<Deck> {
-  return await withArkhamDbExecutor(c, async (executor) => {
+  return await withArkhamDbExecutor(c, accountId, async (executor) => {
     const response = await saveDeck(executor, id, deck);
     await upsertArkhamDbSnapshotDeck(executor, response.data);
     return {
@@ -173,11 +194,12 @@ export async function saveArkhamDbDeck(
   });
 }
 
-export async function createArkhamDbDeck(
-  c: Context<SessionAuthHonoEnv>,
-  deck: DeckWritePayload,
+export async function createArkhamDbDeck<E extends HonoEnv>(
+  c: Context<E>,
+  accountId: string,
+  deck: DeckMutablePayload,
 ): Promise<Deck> {
-  return await withArkhamDbExecutor(c, async (executor) => {
+  return await withArkhamDbExecutor(c, accountId, async (executor) => {
     const response = await createDeck(executor, deck);
     await upsertArkhamDbSnapshotDeck(executor, response.data);
     return {
@@ -187,12 +209,13 @@ export async function createArkhamDbDeck(
   });
 }
 
-export async function upgradeArkhamDbDeck(
-  c: Context<SessionAuthHonoEnv>,
+export async function upgradeArkhamDbDeck<E extends HonoEnv>(
+  c: Context<E>,
+  accountId: string,
   id: string | number,
-  deck: DeckWritePayload,
+  deck: DeckMutablePayload,
 ): Promise<Deck> {
-  return await withArkhamDbExecutor(c, async (executor) => {
+  return await withArkhamDbExecutor(c, accountId, async (executor) => {
     const response = await upgradeDeck(executor, id, deck);
     await upsertArkhamDbSnapshotDeck(executor, response.data);
     return {
@@ -202,12 +225,13 @@ export async function upgradeArkhamDbDeck(
   });
 }
 
-export async function deleteArkhamDbDeck(
-  c: Context<SessionAuthHonoEnv>,
+export async function deleteArkhamDbDeck<E extends HonoEnv>(
+  c: Context<E>,
+  accountId: string,
   deckId: string | number,
   all?: boolean,
 ) {
-  await withArkhamDbExecutor(c, async (executor) => {
+  await withArkhamDbExecutor(c, accountId, async (executor) => {
     await deleteDeck(executor, deckId, all);
     await deleteArkhamDbSnapshotDeck(executor, deckId, all ?? false);
   });
@@ -283,7 +307,7 @@ function toArkhamDbDeckTimestamp(
   primary: string | null | undefined,
   fallback: string | null | undefined,
 ) {
-  return primary ?? fallback ?? new Date().toISOString();
+  return primary ?? fallback ?? new Date(0).toISOString();
 }
 
 async function upsertArkhamDbSnapshotDeck(

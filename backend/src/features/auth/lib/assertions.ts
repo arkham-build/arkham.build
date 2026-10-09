@@ -36,7 +36,7 @@ export async function assertVerificationTokenCooldown(
   }
 }
 
-export function assertEmailCooldown(
+function assertEmailCooldown(
   tokenCreatedAt: Date,
   cooldownMs = 5 * 60 * 1000,
 ): void {

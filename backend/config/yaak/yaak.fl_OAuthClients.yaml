@@ -1,0 +1,28 @@
+type: folder
+model: folder
+id: fl_OAuthClients
+createdAt: 2026-07-21T22:35:00.000000
+updatedAt: 2026-07-21T22:35:00.000000
+workspaceId: wk_bBoraEVHnK
+folderId: fl_k2Yxg7LqPm
+authentication: {}
+authenticationType: null
+description: Confidential OAuth client administration.
+headers: []
+name: OAuth clients
+sortPriority: 5000.006
+settingSendCookies:
+  enabled: false
+  value: true
+settingStoreCookies:
+  enabled: false
+  value: true
+settingValidateCertificates:
+  enabled: false
+  value: true
+settingFollowRedirects:
+  enabled: false
+  value: true
+settingRequestTimeout:
+  enabled: false
+  value: 0

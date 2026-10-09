@@ -12,7 +12,9 @@ The Node.js 24 `npm` workspace contains:
 - `backend`: Hono API and background worker
 - `shared`: Shared Zod schemas, types, and utilities
 
-Cloudflare Pages functions are in `functions`, end-to-end tests are in `test`, and infrastructure is in `opentofu`.
+Cloudflare Pages functions are in `functions`, end-to-end tests are in `test`,
+the local OAuth protocol client is in `oauth-test-client`, and infrastructure
+is in `opentofu`.
 
 ## Commands
 
@@ -26,6 +28,7 @@ npm test --workspaces
 npm run dev --workspace frontend
 npm run dev --workspace backend
 npm run dev:worker --workspace backend
+npm run dev:oauth-client
 
 npm run test:e2e
 
@@ -37,5 +40,6 @@ See each workspace `package.json` for additional commands.
 
 ## Further reading
 
+- [OAuth integration](./docs/oauth-integration.md)
 - [Metadata](./docs/metadata.md)
 - [Translations](./docs/translations.md)

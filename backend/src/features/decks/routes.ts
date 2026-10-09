@@ -18,11 +18,9 @@ import {
   type Deck as SharedDeck,
   type SyncedDeckProvider,
 } from "@arkham-build/shared";
-import { Hono } from "hono";
+import { type Context, Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import type { Transaction } from "kysely";
 import type { Database } from "../../db/db.ts";
-import type { DB } from "../../db/schema.types.ts";
 import { ApiError } from "../../lib/arkhamdb/api-client/core/errors.ts";
 import { ARKHAMDB_PROVIDER_TYPE } from "../../lib/arkhamdb/api-client/mapping.ts";
 import {
@@ -41,12 +39,14 @@ import {
   mapDeckRowToDto,
   mapDeckWriteDtoToInsert,
 } from "../../lib/deck-mapping.ts";
-import type { HonoEnv } from "../../lib/hono-env.ts";
+import type { HonoEnv, SessionAuthHonoEnv } from "../../lib/hono-env.ts";
 import { zodValidator } from "../../lib/validation.ts";
 import {
+  collectAccountDeckHistoryIds,
   findAccountDeckById,
   listAccountDecksByIds,
   listAccountDecksForManifest,
+  lockAccountDeckById,
 } from "./queries.ts";
 
 const routes = new Hono<HonoEnv>();
@@ -68,7 +68,7 @@ routes.get("/manifest", sessionAuth(), async (c) => {
 
   if (arkhamdbIdentity) {
     try {
-      const remoteManifest = await fetchArkhamDbDeckManifest(c, {
+      const remoteManifest = await fetchArkhamDbDeckManifest(c, accountId, {
         force: forceArkhamdbSync,
       });
       arkhamdbDeckManifest = remoteManifest.decks;
@@ -93,7 +93,7 @@ routes.get("/manifest", sessionAuth(), async (c) => {
     provider: ACCOUNT_PROVIDER_TYPE,
     id: deck.id,
     updatedAt: deck.updated_at.toISOString(),
-    version: deck.version ?? "",
+    version: deck.version,
   }));
 
   const decks = [...accountDeckManifest, ...arkhamdbDeckManifest];
@@ -117,6 +117,7 @@ routes.post(
   zodValidator("json", DeckBatchRequestSchema),
   async (c) => {
     const { arkhamdbSyncToken, targets } = c.req.valid("json");
+    const accountId = c.get("account").id;
 
     const accountIds = targets
       .filter((target) => target.provider === ACCOUNT_PROVIDER_TYPE)
@@ -128,7 +129,7 @@ routes.post(
 
     const accountDecks = await listAccountDecksByIds(
       c.get("db"),
-      c.get("account").id,
+      accountId,
       accountIds,
     );
 
@@ -142,6 +143,7 @@ routes.post(
     if (arkhamdbIds.length) {
       const arkhamdbDecks = await fetchArkhamDbDeckBatch(
         c,
+        accountId,
         arkhamdbIds,
         arkhamdbSyncToken ?? undefined,
       );
@@ -249,7 +251,7 @@ routes.post(
 
 export default routes;
 
-type DeckContext = Parameters<typeof fetchArkhamDbDeck>[0];
+type DeckContext = Context<SessionAuthHonoEnv>;
 
 function getDeckTargetKey(target: DeckSyncTarget) {
   return `${target.provider}:${String(target.id)}`;
@@ -365,11 +367,7 @@ const localCrud = {
       .where("account_id", "=", accountId)
       .where("id", "=", deckId)
       .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
-      .where((eb) =>
-        payload.expectedVersion === ""
-          ? eb.or([eb("version", "is", null), eb("version", "=", "")])
-          : eb("version", "=", payload.expectedVersion),
-      )
+      .where("version", "=", payload.expectedVersion)
       .returningAll()
       .executeTakeFirst();
 
@@ -385,28 +383,17 @@ const localCrud = {
     const accountId = c.get("account").id;
 
     await db.transaction().execute(async (tx) => {
-      const lockedCurrent = await tx
-        .selectFrom("deck")
-        .selectAll()
-        .where("account_id", "=", accountId)
-        .where("id", "=", deckId)
-        .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
-        .forUpdate()
-        .executeTakeFirst();
+      const lockedCurrent = await lockAccountDeckById(tx, accountId, deckId);
 
       if (!lockedCurrent) {
         throwDeckConflict(null, null);
       }
 
       const current = mapDeckRowToDto(lockedCurrent);
-      assertExpectedDeckVersion(
-        current,
-        payload.expectedVersion,
-        lockedCurrent.version ?? null,
-      );
+      assertExpectedDeckVersion(current, payload.expectedVersion);
 
       const deleteIds = payload.all
-        ? await collectLocalDeckHistoryIds(tx, accountId, lockedCurrent)
+        ? await collectAccountDeckHistoryIds(tx, accountId, lockedCurrent)
         : [lockedCurrent.id];
 
       await tx
@@ -428,23 +415,19 @@ const localCrud = {
     const { deck, expectedVersion } = payload;
 
     const nextDeck = await db.transaction().execute(async (tx) => {
-      const lockedCurrent = await tx
-        .selectFrom("deck")
-        .selectAll()
-        .where("account_id", "=", accountId)
-        .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
-        .where("id", "=", previousDeckId)
-        .forUpdate()
-        .executeTakeFirst();
+      const lockedCurrent = await lockAccountDeckById(
+        tx,
+        accountId,
+        previousDeckId,
+      );
 
       if (!lockedCurrent) {
         throwDeckConflict(null, null);
       }
 
       const current = mapDeckRowToDto(lockedCurrent);
-      const currentVersion = lockedCurrent.version ?? null;
-      assertExpectedDeckVersion(current, expectedVersion, currentVersion);
-      assertDeckHasNoUpgrade(current, currentVersion);
+      assertExpectedDeckVersion(current, expectedVersion);
+      assertDeckHasNoUpgrade(current);
 
       const { id, source: _, version, ...deckPayload } = deck;
       const createdDeckId = String(id);
@@ -480,17 +463,17 @@ const localCrud = {
 
 const arkhamdbCrud = {
   create(c: DeckContext, payload: SharedDeck) {
-    return createArkhamDbDeck(c, payload);
+    return createArkhamDbDeck(c, c.get("account").id, payload);
   },
 
   async update(c: DeckContext, deckId: string, payload: DeckUpdateRequest) {
     await fetchMatchingArkhamDbDeck(c, deckId, payload.expectedVersion);
-    return await saveArkhamDbDeck(c, deckId, payload);
+    return await saveArkhamDbDeck(c, c.get("account").id, deckId, payload);
   },
 
   async delete(c: DeckContext, deckId: string, payload: DeckDeleteRequest) {
     await fetchMatchingArkhamDbDeck(c, deckId, payload.expectedVersion);
-    await deleteArkhamDbDeck(c, deckId, payload.all);
+    await deleteArkhamDbDeck(c, c.get("account").id, deckId, payload.all);
   },
 
   async upgrade(
@@ -513,7 +496,7 @@ const arkhamdbCrud = {
 
     const upgradeXp = Math.max((payload.deck.xp ?? 0) - currentCarryoverXp, 0);
 
-    return await upgradeArkhamDbDeck(c, previousDeckId, {
+    return await upgradeArkhamDbDeck(c, c.get("account").id, previousDeckId, {
       ...payload.deck,
       exile_string: payload.deck.exile_string,
       meta: payload.deck.meta,
@@ -568,59 +551,21 @@ async function fetchMatchingArkhamDbDeck(
   return current;
 }
 
-async function collectLocalDeckHistoryIds(
-  tx: Transaction<DB>,
-  accountId: string,
-  deck: { id: string; prev_deck: string | null },
-) {
-  const ids = [deck.id];
-  const seen = new Set(ids);
-  let previousId = deck.prev_deck;
-
-  while (previousId) {
-    const previous = await tx
-      .selectFrom("deck")
-      .select(["id", "prev_deck"])
-      .where("account_id", "=", accountId)
-      .where("id", "=", previousId)
-      .where("provider_type", "=", ACCOUNT_PROVIDER_TYPE)
-      .forUpdate()
-      .executeTakeFirst();
-
-    if (!previous) break;
-
-    assert(!seen.has(previous.id), "Deck history contains a cycle.");
-
-    ids.push(previous.id);
-    seen.add(previous.id);
-    previousId = previous.prev_deck;
-  }
-
-  return ids;
-}
-
-function assertExpectedDeckVersion(
-  deck: SharedDeck,
-  expectedVersion: string,
-  remoteVersion: string | null = deck.version,
-) {
+function assertExpectedDeckVersion(deck: SharedDeck, expectedVersion: string) {
   if (deck.version !== expectedVersion) {
-    throwDeckConflict(deck, remoteVersion);
+    throwDeckConflict(deck, deck.version);
   }
 }
 
-function assertDeckHasNoUpgrade(
-  deck: SharedDeck,
-  remoteVersion: string | null = deck.version,
-) {
+function assertDeckHasNoUpgrade(deck: SharedDeck) {
   if (deck.next_deck) {
-    throwDeckConflict(deck, remoteVersion, "Deck already has an upgrade");
+    throwDeckConflict(deck, deck.version, "Deck already has an upgrade");
   }
 }
 
 async function fetchArkhamDbDeckOrNull(c: DeckContext, id: string) {
   try {
-    return await fetchArkhamDbDeck(c, id);
+    return await fetchArkhamDbDeck(c, c.get("account").id, id);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       return null;

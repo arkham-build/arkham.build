@@ -52,13 +52,6 @@ export async function getSession(db: Database, token: string) {
     .executeTakeFirst();
 }
 
-export async function cleanupExpiredSessions(db: Database) {
-  return await db
-    .deleteFrom("session")
-    .where("expires_at", "<", new Date())
-    .executeTakeFirst();
-}
-
 export async function updateSessionActivity(
   db: Database,
   token: string,

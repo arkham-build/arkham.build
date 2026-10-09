@@ -11,6 +11,10 @@
   margin-top: 0.5rem;
 }
 
+.apps > * + * {
+  margin-top: 1rem;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -47,6 +51,12 @@
 .details-properties dd {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.scopes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
 }
 
 .title {

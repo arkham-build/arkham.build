@@ -8,8 +8,8 @@ resource "cloudflare_ruleset" "rate_limiting" {
   rules = [
     {
       action      = "block"
-      expression  = "(http.host eq \"api.arkham.build\" and (starts_with(http.request.uri.path, \"/v1/public\") or starts_with(http.request.uri.path, \"/v2/public\")))"
-      description = "Default public rate limit"
+      expression  = "(http.host eq \"api.arkham.build\" and (starts_with(http.request.uri.path, \"/v1/public\") or starts_with(http.request.uri.path, \"/v2/public\") or (http.request.method eq \"POST\" and http.request.uri.path in {\"/v2/oauth/token\" \"/v2/oauth/revoke\"})))"
+      description = "Default public and server OAuth rate limit"
       enabled     = true
       ref         = "ddf302a7b2d94ced9c4ec807aa65da5e"
 
@@ -31,7 +31,7 @@ resource "cloudflare_ruleset" "rate_limiting" {
     },
     {
       action      = "block"
-      expression  = "(http.host eq \"api.arkham.build\" and (http.request.uri.path contains \"/v2/auth\" or (http.request.method in {\"GET\" \"HEAD\"} and http.request.uri.path eq \"/v2/oauth/authorize\") or (http.request.method eq \"POST\" and http.request.uri.path in {\"/v2/oauth/token\" \"/v2/oauth/revoke\"})))"
+      expression  = "(http.host eq \"api.arkham.build\" and ((http.request.method eq \"POST\" and starts_with(http.request.uri.path, \"/v2/account/auth/\")) or (http.request.method in {\"GET\" \"HEAD\"} and http.request.uri.path eq \"/v2/oauth/authorize\")))"
       description = "Rate limit authentication and OAuth"
       enabled     = true
       ref         = "97036468535242ba95d423826fa4e508"

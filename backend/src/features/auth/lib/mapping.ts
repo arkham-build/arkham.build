@@ -68,7 +68,7 @@ export function mapAccountSessionToResponse(
   });
 }
 
-export function mapArkhamDbAccountIdentityToIdentity(
+function mapArkhamDbAccountIdentityToIdentity(
   identity: AccountIdentitySummary,
   canDisconnect: boolean,
 ): ArkhamDBIdentity | null {

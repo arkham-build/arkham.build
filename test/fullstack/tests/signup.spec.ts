@@ -32,7 +32,7 @@ test.describe("signup", () => {
     await expect(page).toHaveURL(/\/auth\/login$/);
 
     await login(page, email, password);
-    await expect(page).toHaveURL(/\/auth\/signup\/complete$/);
+    await expect(page).toHaveURL(/\/auth\/signup\/complete\?redirect=%2F$/);
     await page.locator("#username").fill(name);
     await page.getByRole("button", { name: "Complete your profile" }).click();
     await expect(page).toHaveURL(/\/$/);

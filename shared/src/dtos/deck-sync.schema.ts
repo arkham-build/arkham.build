@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { DeckIdSchema, DeckSchema } from "../schemas/deck.schema.ts";
+import {
+  DeckIdSchema,
+  DeckSchema,
+  DeckVersionSchema,
+} from "../schemas/deck.schema.ts";
 
 export const SyncedDeckProviderSchema = z.enum(["account", "arkhamdb"]);
 export type SyncedDeckProvider = z.infer<typeof SyncedDeckProviderSchema>;
@@ -10,6 +14,18 @@ export const DeckSyncTargetSchema = z.object({
 });
 export type DeckSyncTarget = z.infer<typeof DeckSyncTargetSchema>;
 
+export const DeckMutablePayloadSchema = DeckSchema.omit({
+  date_creation: true,
+  date_update: true,
+  id: true,
+  next_deck: true,
+  previous_deck: true,
+  source: true,
+  user_id: true,
+  version: true,
+});
+export type DeckMutablePayload = z.infer<typeof DeckMutablePayloadSchema>;
+
 export const DeckWritePayloadSchema = DeckSchema.omit({
   date_creation: true,
   date_update: true,
@@ -19,7 +35,7 @@ export const DeckWritePayloadSchema = DeckSchema.omit({
 export type DeckWritePayload = z.infer<typeof DeckWritePayloadSchema>;
 
 export const DeckManifestItemSchema = DeckSyncTargetSchema.extend({
-  version: z.string(),
+  version: DeckVersionSchema,
   updatedAt: z.string(),
 });
 export type DeckManifestItem = z.infer<typeof DeckManifestItemSchema>;
@@ -48,21 +64,21 @@ export const DeckBatchRequestSchema = z.object({
 export type DeckBatchRequest = z.infer<typeof DeckBatchRequestSchema>;
 
 export const DeckUpdateRequestSchema = DeckWritePayloadSchema.extend({
-  expectedVersion: z.string(),
+  expectedVersion: DeckVersionSchema,
   source: SyncedDeckProviderSchema,
 });
 export type DeckUpdateRequest = z.infer<typeof DeckUpdateRequestSchema>;
 
 export const DeckDeleteRequestSchema = z.object({
   all: z.boolean().optional(),
-  expectedVersion: z.string(),
+  expectedVersion: DeckVersionSchema,
   provider: SyncedDeckProviderSchema,
 });
 export type DeckDeleteRequest = z.infer<typeof DeckDeleteRequestSchema>;
 
 export const DeckUpgradeRequestSchema = z.object({
   deck: DeckSchema,
-  expectedVersion: z.string(),
+  expectedVersion: DeckVersionSchema,
   provider: SyncedDeckProviderSchema,
 });
 export type DeckUpgradeRequest = z.infer<typeof DeckUpgradeRequestSchema>;

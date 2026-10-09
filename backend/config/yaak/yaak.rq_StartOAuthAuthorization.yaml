@@ -1,0 +1,41 @@
+type: http_request
+model: http_request
+id: rq_StartOAuthAuthorization
+createdAt: 2026-07-22T00:00:01.000000
+updatedAt: 2026-07-22T00:00:01.000000
+workspaceId: wk_bBoraEVHnK
+folderId: fl_OAuth
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: Returns a Location header for the arkham.build consent page.
+headers: []
+method: GET
+name: Start authorization
+sortPriority: 0.0
+url: ${[ base_url ]}/v2/oauth/authorize
+urlParameters:
+- enabled: true
+  name: response_type
+  value: code
+  id: OAuthAuthorizeResponseType
+- enabled: true
+  name: client_id
+  value: ${[ oauth_client_id ]}
+  id: OAuthAuthorizeClientId
+- enabled: true
+  name: redirect_uri
+  value: https://example.com/oauth/callback
+  id: OAuthAuthorizeRedirectUri
+- enabled: true
+  name: scope
+  value: profile:read decks:read
+  id: OAuthAuthorizeScope
+- enabled: true
+  name: state
+  value: yaak-test-state
+  id: OAuthAuthorizeState
+settingFollowRedirects:
+  enabled: true
+  value: false

@@ -8,6 +8,7 @@ import type { Coded } from "@/store/lib/types";
 import { cx } from "@/utils/cx";
 import { Scroller } from "../scroller";
 import css from "./combobox.module.css";
+import { isEmpty } from "@/utils/is-empty";
 
 export type ComboboxMenuItem<T extends Coded> =
   | {
@@ -69,7 +70,7 @@ export function ComboboxMenu<T extends Coded>(props: Props<T>) {
     "--viewport-item-count": items.length,
   };
 
-  if (items.length === 0) {
+  if (isEmpty(items)) {
     return <div className={css["menu-empty"]}>{noResultsLabel}</div>;
   }
 

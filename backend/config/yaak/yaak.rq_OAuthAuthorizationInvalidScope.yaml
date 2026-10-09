@@ -1,0 +1,41 @@
+type: http_request
+model: http_request
+id: rq_OAuthAuthorizationInvalidScope
+createdAt: 2026-07-22T00:00:02.000000
+updatedAt: 2026-07-22T00:00:02.000000
+workspaceId: wk_bBoraEVHnK
+folderId: fl_OAuth
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: Returns an invalid_scope callback while preserving state.
+headers: []
+method: GET
+name: Authorization error - invalid scope
+sortPriority: 1000.0
+url: ${[ base_url ]}/v2/oauth/authorize
+urlParameters:
+- enabled: true
+  name: response_type
+  value: code
+  id: OAuthInvalidScopeResponseType
+- enabled: true
+  name: client_id
+  value: ${[ oauth_client_id ]}
+  id: OAuthInvalidScopeClientId
+- enabled: true
+  name: redirect_uri
+  value: https://example.com/oauth/callback
+  id: OAuthInvalidScopeRedirectUri
+- enabled: true
+  name: scope
+  value: profile:read unknown:scope
+  id: OAuthInvalidScopeScope
+- enabled: true
+  name: state
+  value: yaak-invalid-scope-state
+  id: OAuthInvalidScopeState
+settingFollowRedirects:
+  enabled: true
+  value: false

@@ -1,0 +1,53 @@
+type: http_request
+model: http_request
+id: rq_UpdateOAuthClient
+createdAt: 2026-07-21T22:35:04.000000
+updatedAt: 2026-07-21T22:35:04.000000
+workspaceId: wk_bBoraEVHnK
+folderId: fl_OAuthClients
+authentication: {}
+authenticationType: null
+body:
+  text: |
+    {
+      "name": "Renamed example application",
+      "redirectUris": [
+        "https://example.com/oauth/callback",
+        "com.example.app:/oauth/callback"
+      ]
+    }
+bodyType: application/json
+description: redirectUris replaces the complete registered redirect URI set.
+headers:
+- enabled: true
+  name: Authorization
+  value: Bearer ${[ admin_api_key ]}
+  id: OAuthUpdateAuth
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: OAuthUpdateContentType
+method: PATCH
+name: Update OAuth client
+sortPriority: 3000.0
+url: ${[ base_url ]}/admin/oauth/clients/:clientId
+urlParameters:
+- enabled: true
+  name: :clientId
+  value: ${[ oauth_client_id ]}
+  id: OAuthUpdateClientId
+settingSendCookies:
+  enabled: false
+  value: true
+settingStoreCookies:
+  enabled: false
+  value: true
+settingValidateCertificates:
+  enabled: false
+  value: true
+settingFollowRedirects:
+  enabled: false
+  value: true
+settingRequestTimeout:
+  enabled: false
+  value: 0

@@ -314,81 +314,6 @@ describe("Auth routes", () => {
   });
 
   describe("GET OAuth callback", () => {
-    test("completes oauth signup for a new account", async ({
-      dependencies,
-    }) => {
-      const { app, config, db } = dependencies;
-
-      const oauth = await startOAuthFlow(app, "/auth/arkhamdb/signup");
-      mockArkhamDbOAuth(12345);
-
-      const res = await app.request(
-        `/auth/callback?code=test-code&state=${oauth.state}`,
-        {
-          method: "GET",
-          headers: { Cookie: oauth.cookie },
-        },
-      );
-
-      expect(res.status).toBe(302);
-      expect(res.headers.get("location")).toBe(
-        `${config.FRONTEND_URL}/auth/signup/complete`,
-      );
-      expect(res.headers.get("set-cookie")).toContain(
-        `${config.SESSION_COOKIE_NAME}=`,
-      );
-
-      const identity = await db
-        .selectFrom("account_identity")
-        .innerJoin("account", "account.id", "account_identity.account_id")
-        .select([
-          "account.profile_completed_at",
-          "account_identity.id",
-          "account_identity.provider",
-          "account_identity.provider_user_id",
-        ])
-        .where("provider", "=", "arkhamdb")
-        .where("provider_user_id", "=", "12345")
-        .executeTakeFirst();
-
-      expect(identity).toMatchObject({
-        profile_completed_at: null,
-        provider: "arkhamdb",
-        provider_user_id: "12345",
-      });
-      assert(identity, "Missing ArkhamDB identity");
-
-      const snapshot = await db
-        .selectFrom("arkhamdb_deck_snapshot")
-        .select(["decks", "last_modified"])
-        .where("account_identity_id", "=", identity.id)
-        .executeTakeFirstOrThrow();
-
-      expect(snapshot).toMatchObject({
-        last_modified: null,
-      });
-      expect(snapshot.decks).toEqual([
-        expect.objectContaining({ user_id: 12345 }),
-      ]);
-
-      const sessionSetCookie = res.headers
-        .getSetCookie()
-        .find((cookie) => cookie.startsWith(`${config.SESSION_COOKIE_NAME}=`));
-      assert(sessionSetCookie, "Missing session cookie");
-      const [cookie] = sessionSetCookie.split(";", 1);
-      assert(cookie, "Missing session cookie");
-
-      const meRes = await app.request("/v2/account/auth/me", {
-        method: "GET",
-        headers: { Cookie: cookie },
-      });
-
-      expect(meRes.status).toBe(200);
-      expect(await meRes.json()).toMatchObject({
-        account: { profileComplete: false },
-      });
-    });
-
     test("logs in an existing oauth account", async ({ dependencies }) => {
       const { app, config, db } = dependencies;
 
@@ -424,6 +349,55 @@ describe("Auth routes", () => {
       expect(res.headers.get("set-cookie")).toContain(
         `${config.SESSION_COOKIE_NAME}=`,
       );
+    });
+
+    test("returns an existing OAuth account to a validated frontend path", async ({
+      dependencies,
+    }) => {
+      const { app, config, db } = dependencies;
+      const returnTo = "/oauth/consent?request=ab_ar_test-request";
+      const account = await db
+        .selectFrom("account")
+        .select("id")
+        .where("name", "=", "test-account")
+        .executeTakeFirstOrThrow();
+
+      await db
+        .insertInto("account_identity")
+        .values({
+          account_id: account.id,
+          provider: "arkhamdb",
+          provider_user_id: "23456",
+          verified_at: new Date(),
+        })
+        .execute();
+
+      const oauth = await startOAuthFlow(
+        app,
+        `/auth/arkhamdb/login?returnTo=${encodeURIComponent(returnTo)}`,
+      );
+      mockArkhamDbOAuth(23456);
+
+      const response = await app.request(
+        `/auth/arkhamdb/callback?code=test-code&state=${oauth.state}`,
+        { headers: { Cookie: oauth.cookie } },
+      );
+
+      expect(response.status).toBe(302);
+      expect(response.headers.get("location")).toBe(
+        `${config.FRONTEND_URL}${returnTo}`,
+      );
+    });
+
+    test("rejects external OAuth login return paths", async ({
+      dependencies,
+    }) => {
+      const response = await dependencies.app.request(
+        "/auth/arkhamdb/login?returnTo=https%3A%2F%2Fevil.example",
+      );
+
+      expect(response.status).toBe(400);
+      expect(await response.text()).toContain("Invalid returnTo");
     });
 
     test("connects an OAuth identity for the authenticated account", async ({

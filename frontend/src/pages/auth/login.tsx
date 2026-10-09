@@ -13,6 +13,7 @@ import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
 import { errorMapper } from "./helpers";
 import css from "./login.module.css";
+import { getLocalReturnPath } from "./return-to";
 import { OAuthSeparator } from "./oauth-separator";
 
 function Login() {
@@ -22,6 +23,9 @@ function Login() {
   const { t } = useTranslation();
 
   const loginMutation = useLoginMutation();
+  const returnTo = getLocalReturnPath(
+    new URLSearchParams(search).get("redirect"),
+  );
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,9 +33,7 @@ function Login() {
   const onSubmit = async (evt: React.SubmitEvent) => {
     evt.preventDefault();
     await loginMutation.mutateAsync({ email, password });
-    const params = new URLSearchParams(search);
-    const redirect = params.get("redirect") || "/";
-    navigate(redirect);
+    navigate(returnTo);
   };
 
   return (
@@ -105,17 +107,19 @@ function Login() {
         {ARKHAMDB_WARNING_VISIBLE && (
           <Notice variant="warning">{t("auth.arkhamdb_login_banner")}</Notice>
         )}
-        <Button
-          as="a"
-          href={`${import.meta.env.VITE_API_URL}/auth/arkhamdb/login`}
-          full
-        >
+        <Button as="a" href={getArkhamDbLoginHref(returnTo)} full>
           <i className="icon-elder_sign" />
           {t("auth.login.with_arkhamdb")}
         </Button>
       </AuthForm>
     </AuthLayout>
   );
+}
+
+function getArkhamDbLoginHref(returnTo: string) {
+  const url = new URL("/auth/arkhamdb/login", import.meta.env.VITE_API_URL);
+  url.searchParams.set("returnTo", returnTo);
+  return url.toString();
 }
 
 export default Login;

@@ -1,9 +1,7 @@
 import { ApiError, requestApi } from "./requests/shared";
 
-export type UnauthorizedBehavior = "handle" | "ignore";
-
-export type HttpRequestOptions = RequestInit & {
-  unauthorizedBehavior?: UnauthorizedBehavior;
+type HttpRequestOptions = RequestInit & {
+  unauthorizedBehavior?: "handle" | "ignore";
 };
 
 export type HttpClient = {
