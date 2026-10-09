@@ -263,12 +263,22 @@ describe("OAuth client admin routes", () => {
     expect(codeById.get(keptCodeId)?.revoked_at).toBeNull();
   });
 
-  test("disables and enables clients idempotently", async ({
+  test("disabling invalidates credentials that enabling does not restore", async ({
     dependencies,
   }) => {
     const { app, config, db } = dependencies;
     const { body: created } = await createClient(app, config.ADMIN_API_KEY);
     const grantId = await seedGrant(db, created.clientId);
+    const requestId = await seedAuthorizationRequest(
+      db,
+      created.clientId,
+      DEFAULT_REDIRECT_URI,
+    );
+    const codeId = await seedAuthorizationCode(
+      db,
+      grantId,
+      DEFAULT_REDIRECT_URI,
+    );
     const { accessTokenId, refreshTokenId } = await seedTokens(db, grantId);
 
     const firstDisable = await postClientAction(
@@ -308,6 +318,16 @@ describe("OAuth client admin routes", () => {
       .select("disabled_at")
       .where("id", "=", created.clientId)
       .executeTakeFirstOrThrow();
+    const request = await db
+      .selectFrom("oauth_authorization_request")
+      .select("consumed_at")
+      .where("id", "=", requestId)
+      .executeTakeFirstOrThrow();
+    const code = await db
+      .selectFrom("oauth_authorization_code")
+      .select("revoked_at")
+      .where("id", "=", codeId)
+      .executeTakeFirstOrThrow();
     const refreshToken = await db
       .selectFrom("oauth_refresh_token")
       .select("revoked_at")
@@ -318,10 +338,18 @@ describe("OAuth client admin routes", () => {
       .select("revoked_at")
       .where("id", "=", accessTokenId)
       .executeTakeFirstOrThrow();
+    const grant = await db
+      .selectFrom("oauth_grant")
+      .select("id")
+      .where("id", "=", grantId)
+      .executeTakeFirst();
 
     expect(client.disabled_at).toBeNull();
-    expect(refreshToken.revoked_at).toBeNull();
-    expect(accessToken.revoked_at).toBeNull();
+    expect(request.consumed_at).not.toBeNull();
+    expect(code.revoked_at).not.toBeNull();
+    expect(refreshToken.revoked_at).not.toBeNull();
+    expect(accessToken.revoked_at).not.toBeNull();
+    expect(grant).toEqual({ id: grantId });
   });
 
   test("rotates the secret and invalidates dependent credentials but retains grants", async ({

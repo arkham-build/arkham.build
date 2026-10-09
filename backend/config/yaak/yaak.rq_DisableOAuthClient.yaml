@@ -9,7 +9,7 @@ authentication: {}
 authenticationType: null
 body: {}
 bodyType: null
-description: Disabling is idempotent and does not revoke grants or tokens.
+description: Disabling retains grants but invalidates pending authorization work and all issued tokens. Enabling the client does not restore invalidated credentials.
 headers:
 - enabled: true
   name: Authorization

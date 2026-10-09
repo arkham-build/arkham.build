@@ -180,6 +180,10 @@ export async function setOAuthClientDisabled(
       .returning(SAFE_CLIENT_COLUMNS)
       .executeTakeFirstOrThrow();
 
+    if (disabled) {
+      await invalidateOAuthClientCredentials(tx, clientId, now);
+    }
+
     return withRedirectUris(
       updatedClient,
       await listRedirectUris(tx, clientId),
@@ -203,36 +207,7 @@ export async function rotateOAuthClientSecret(
       .where("id", "=", clientId)
       .returning(SAFE_CLIENT_COLUMNS)
       .executeTakeFirstOrThrow();
-    const grantIds = tx
-      .selectFrom("oauth_grant")
-      .select("id")
-      .where("oauth_client_id", "=", clientId);
-
-    await tx
-      .updateTable("oauth_access_token")
-      .set({ revoked_at: now, updated_at: now })
-      .where("oauth_grant_id", "in", grantIds)
-      .where("revoked_at", "is", null)
-      .execute();
-    await tx
-      .updateTable("oauth_refresh_token")
-      .set({ revoked_at: now, updated_at: now })
-      .where("oauth_grant_id", "in", grantIds)
-      .where("revoked_at", "is", null)
-      .execute();
-    await tx
-      .updateTable("oauth_authorization_code")
-      .set({ revoked_at: now, updated_at: now })
-      .where("oauth_grant_id", "in", grantIds)
-      .where("used_at", "is", null)
-      .where("revoked_at", "is", null)
-      .execute();
-    await tx
-      .updateTable("oauth_authorization_request")
-      .set({ consumed_at: now, updated_at: now })
-      .where("oauth_client_id", "=", clientId)
-      .where("consumed_at", "is", null)
-      .execute();
+    await invalidateOAuthClientCredentials(tx, clientId, now);
 
     return withRedirectUris(
       updatedClient,
@@ -262,6 +237,43 @@ async function listRedirectUris(
     .execute();
 
   return redirectUris.map((row) => row.redirect_uri);
+}
+
+async function invalidateOAuthClientCredentials(
+  tx: Transaction<DB>,
+  clientId: string,
+  now: Date,
+) {
+  const grantIds = tx
+    .selectFrom("oauth_grant")
+    .select("id")
+    .where("oauth_client_id", "=", clientId);
+
+  await tx
+    .updateTable("oauth_access_token")
+    .set({ revoked_at: now, updated_at: now })
+    .where("oauth_grant_id", "in", grantIds)
+    .where("revoked_at", "is", null)
+    .execute();
+  await tx
+    .updateTable("oauth_refresh_token")
+    .set({ revoked_at: now, updated_at: now })
+    .where("oauth_grant_id", "in", grantIds)
+    .where("revoked_at", "is", null)
+    .execute();
+  await tx
+    .updateTable("oauth_authorization_code")
+    .set({ revoked_at: now, updated_at: now })
+    .where("oauth_grant_id", "in", grantIds)
+    .where("used_at", "is", null)
+    .where("revoked_at", "is", null)
+    .execute();
+  await tx
+    .updateTable("oauth_authorization_request")
+    .set({ consumed_at: now, updated_at: now })
+    .where("oauth_client_id", "=", clientId)
+    .where("consumed_at", "is", null)
+    .execute();
 }
 
 async function invalidateRemovedRedirectUris(
