@@ -16,12 +16,15 @@ export const log: Logger = (
 ) => {
   // oxlint-disable-next-line no-console -- logger utility
   console.log(
-    JSON.stringify({
-      level,
-      message,
-      details: details ?? {},
-      timestamp: new Date().toISOString(),
-    }),
+    JSON.stringify(
+      {
+        level,
+        message,
+        details: details ?? {},
+        timestamp: new Date().toISOString(),
+      },
+      redactSensitiveLogValue,
+    ),
   );
 };
 
@@ -51,7 +54,7 @@ export function requestLogger() {
 
     // don't log successful health checks
     if (c.req.path !== "/version" || c.res.status !== 200) {
-      const safePath = redactSensitivePath(c.req.path);
+      const safePath = redactSensitiveText(c.req.path);
       const details: Record<string, unknown> = {
         level: "info",
         duration_ms: Date.now() - begin,
@@ -69,11 +72,18 @@ export function requestLogger() {
   };
 }
 
-function redactSensitivePath(path: string) {
-  return path.replace(
-    /^(\/v2\/account\/oauth\/authorization-requests\/)[^/]+/,
-    "$1:token",
-  );
+function redactSensitiveLogValue(_key: string, value: unknown) {
+  if (typeof value !== "string") return value;
+  return redactSensitiveText(value);
+}
+
+function redactSensitiveText(value: string) {
+  return value
+    .replace(
+      /(\/v2\/account\/oauth\/authorization-requests\/)[^/?#\s]+/g,
+      "$1:token",
+    )
+    .replace(/ab_ar_[A-Za-z0-9_-]{43}/g, ":token");
 }
 
 function isPublicShareRequest(c: Context<HonoEnv>) {
