@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$repo_root"
+
+for required_command in curl find node npm unzip xargs; do
+  if ! command -v "$required_command" >/dev/null; then
+    echo "Required command is not available: $required_command" >&2
+    exit 1
+  fi
+done
+
+wrangler="$repo_root/node_modules/.bin/wrangler"
+if [[ ! -x "$wrangler" ]]; then
+  echo "Wrangler is not installed. Run npm install first." >&2
+  exit 1
+fi
+
+bucket="arkham-build-guides"
+upload_concurrency="${PDFJS_UPLOAD_CONCURRENCY:-12}"
+if [[ ! "$upload_concurrency" =~ ^[1-9][0-9]*$ ]] ||
+  ((upload_concurrency > 32)); then
+  echo "PDFJS_UPLOAD_CONCURRENCY must be between 1 and 32." >&2
+  exit 1
+fi
+
+temp_dir="$(mktemp -d)"
+trap 'rm -rf "$temp_dir"' EXIT
+
+npm_cache="$temp_dir/npm-cache"
+version="$(npm --cache "$npm_cache" view pdfjs-dist@latest version)"
+if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "npm returned an invalid PDF.js version: $version" >&2
+  exit 1
+fi
+
+archive="$temp_dir/pdfjs-dist.zip"
+distribution_name="pdfjs-${version}-dist"
+distribution_dir="$temp_dir/$distribution_name"
+viewer_url="https://guides.arkham.build/$distribution_name/web/viewer.html"
+release_url="https://github.com/mozilla/pdf.js/releases/download/v${version}/${distribution_name}.zip"
+
+echo "Downloading PDF.js $version..."
+curl --fail --location --silent --show-error "$release_url" --output "$archive"
+unzip -q "$archive" -d "$temp_dir"
+
+if [[ ! -f "$distribution_dir/web/viewer.html" ]]; then
+  echo "The PDF.js release does not contain web/viewer.html." >&2
+  exit 1
+fi
+
+"$wrangler" whoami >/dev/null
+
+echo "Uploading PDF.js $version to R2 bucket $bucket..."
+export PDFJS_BUCKET="$bucket"
+export PDFJS_DISTRIBUTION_DIR="$distribution_dir"
+export PDFJS_DISTRIBUTION_NAME="$distribution_name"
+export PDFJS_WRANGLER="$wrangler"
+
+find "$distribution_dir" -type f \
+  ! -name '.DS_Store' \
+  ! -name '*.map' \
+  -print0 |
+xargs -0 -P "$upload_concurrency" -I '{}' sh -c '
+  set -eu
+
+  file_path="$1"
+  relative_path="${file_path#"$PDFJS_DISTRIBUTION_DIR"/}"
+  object_path="$PDFJS_DISTRIBUTION_NAME/$relative_path"
+
+  case "$file_path" in
+    *.html) content_type="text/html; charset=utf-8" ;;
+    *.mjs | *.js) content_type="text/javascript; charset=utf-8" ;;
+    *.css) content_type="text/css; charset=utf-8" ;;
+    *.json) content_type="application/json" ;;
+    *.pdf) content_type="application/pdf" ;;
+    *.wasm) content_type="application/wasm" ;;
+    *.svg) content_type="image/svg+xml" ;;
+    *.gif) content_type="image/gif" ;;
+    *.png) content_type="image/png" ;;
+    *.webp) content_type="image/webp" ;;
+    *.ftl) content_type="text/plain; charset=utf-8" ;;
+    *.ttf) content_type="font/ttf" ;;
+    *) content_type="application/octet-stream" ;;
+  esac
+
+  "$PDFJS_WRANGLER" r2 object put "$PDFJS_BUCKET/$object_path" \
+    --remote \
+    --force \
+    --file "$file_path" \
+    --content-type "$content_type" \
+    --cache-control "public, max-age=31536000, immutable" \
+    >/dev/null
+
+  printf "Uploaded %s\n" "$object_path"
+' _ '{}'
+
+echo "Updating the PDF.js dependency..."
+npm --cache "$npm_cache" install --save-dev --save-exact "pdfjs-dist@$version"
+
+PDFJS_VIEWER_URL="$viewer_url" node <<'NODE'
+import fs from "node:fs";
+
+const viewerUrl = process.env.PDFJS_VIEWER_URL;
+if (!viewerUrl) throw new Error("PDFJS_VIEWER_URL is required");
+
+replaceExactly(
+  "frontend/.env.example",
+  /^VITE_PDFJS_VIEWER_URL=.*$/gmu,
+  `VITE_PDFJS_VIEWER_URL="${viewerUrl}"`,
+  1,
+);
+replaceExactly(
+  "wrangler.toml",
+  /^VITE_PDFJS_VIEWER_URL\s*=.*$/gmu,
+  `VITE_PDFJS_VIEWER_URL = "${viewerUrl}"`,
+  2,
+);
+
+function replaceExactly(path, pattern, replacement, expectedCount) {
+  const content = fs.readFileSync(path, "utf8");
+  const matches = content.match(pattern) ?? [];
+
+  if (matches.length !== expectedCount) {
+    throw new Error(
+      `Expected ${expectedCount} PDF.js viewer URL entries in ${path}, found ${matches.length}`,
+    );
+  }
+
+  fs.writeFileSync(path, content.replace(pattern, replacement));
+}
+NODE
+
+echo "PDF.js $version is available at $viewer_url"

@@ -2,7 +2,7 @@ import type {
   Card,
   CustomizationOption as CustomizationOptionType,
 } from "@arkham-build/shared";
-import { useCallback, useId, useMemo } from "react";
+import { useId } from "react";
 import type { Customization } from "@/store/lib/types";
 import type { CustomizationEdit } from "@/store/slices/deck-edits.types";
 import { parseCustomizationTextHtml } from "@/utils/card-utils";
@@ -13,6 +13,7 @@ import { CustomizationChooseSkill } from "./customization-choose-skill";
 import { CustomizationChooseTraits } from "./customization-choose-trait";
 import { CustomizationRemoveSlot } from "./customization-remove-slot";
 import css from "./customizations.module.css";
+import { cx } from "@/utils/cx";
 
 type Props = {
   card: Card;
@@ -25,6 +26,7 @@ type Props = {
   readonly?: boolean;
   text: string[];
   xpMax?: number;
+  xpNew?: number;
 };
 
 export function CustomizationOption(props: Props) {
@@ -39,6 +41,7 @@ export function CustomizationOption(props: Props) {
     readonly,
     text,
     xpMax,
+    xpNew,
   } = props;
 
   const id = useId();
@@ -46,21 +49,15 @@ export function CustomizationOption(props: Props) {
 
   const selections = choice?.selections?.split("^").filter((x) => x) ?? [];
 
-  const cssVariables = useMemo(
-    () => ({
-      "--customization-xp-max": xpMax,
-    }),
-    [xpMax],
-  );
+  const cssVariables = {
+    "--customization-xp-max": xpMax,
+  };
 
   const unlocked = xpSpent >= option.xp;
 
-  const onChangeSelection = useCallback(
-    (selections: string[]) => {
-      if (onChange) onChange(index, { selections });
-    },
-    [onChange, index],
-  );
+  const onChangeSelection = (selections: string[]) => {
+    if (onChange) onChange(index, { selections });
+  };
 
   const htmlText = omitOptionText
     ? (/(<b>.*<\/b>)/.exec(text[index])?.[1] ?? "")
@@ -76,6 +73,12 @@ export function CustomizationOption(props: Props) {
         {!!option.xp &&
           range(0, option.xp).map((i) => (
             <Checkbox
+              boxClassName={cx(
+                xpNew != null &&
+                  i < xpSpent &&
+                  i >= xpSpent - xpNew &&
+                  css["highlighted"],
+              )}
               checked={i < xpSpent}
               data-testid={`customization-${index}-xp-${i}`}
               disabled={disabled}

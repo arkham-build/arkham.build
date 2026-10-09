@@ -1,7 +1,7 @@
 import type { Card as CardT } from "@arkham-build/shared";
 import { FloatingPortal } from "@floating-ui/react";
 import { DicesIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { Card } from "@/components/card/card";
@@ -12,7 +12,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "@/components/ui/modal";
 import { QuantityInput } from "@/components/ui/quantity-input";
@@ -48,7 +47,7 @@ export function QuickUpgrade(props: Props) {
   const slots = currentTab === "extraSlots" ? "extraSlots" : "slots";
 
   const {
-    refs,
+    refs: { setFloating, setReference },
     referenceProps,
     isMounted,
     floatingStyles,
@@ -70,7 +69,7 @@ export function QuickUpgrade(props: Props) {
     ),
   );
 
-  const onUpgradeCard = useCallback(() => {
+  const onUpgradeCard = () => {
     closeTooltip();
 
     const upgrades = availableUpgrades.upgrades[card.code];
@@ -92,13 +91,13 @@ export function QuickUpgrade(props: Props) {
     } else {
       setDialogOpen(true);
     }
-  }, [availableUpgrades, card, slots, deck, closeTooltip, upgradeCard]);
+  };
 
   return (
     <>
       {!hideButton && (
         <Button
-          ref={refs.setReference}
+          ref={setReference}
           {...referenceProps}
           iconOnly
           data-testid="quick-upgrade"
@@ -111,7 +110,7 @@ export function QuickUpgrade(props: Props) {
       )}
       {!hideButton && isMounted && (
         <FloatingPortal id={FLOATING_PORTAL_ID}>
-          <div ref={refs.setFloating} style={floatingStyles}>
+          <div ref={setFloating} style={floatingStyles}>
             <div style={transitionStyles}>
               <div className={css["upgrade-tooltip"]}>
                 {resolvedUpgrades.map((upgrade) => {
@@ -168,21 +167,18 @@ function QuickUpgradeDialog(
   const upgradeCard = useStore((state) => state.upgradeCard);
   const applyShrewdAnalysis = useStore((state) => state.applyShrewdAnalysis);
 
-  const onChangeUpgradeQuantity = useCallback(
-    (upgradeCode: string, delta: number) => {
-      upgradeCard({
-        availableUpgrades,
-        deckId: deck.id,
-        code: card.code,
-        upgradeCode,
-        delta,
-        slots,
-      });
-    },
-    [availableUpgrades, deck.id, card.code, slots, upgradeCard],
-  );
+  const onChangeUpgradeQuantity = (upgradeCode: string, delta: number) => {
+    upgradeCard({
+      availableUpgrades,
+      deckId: deck.id,
+      code: card.code,
+      upgradeCode,
+      delta,
+      slots,
+    });
+  };
 
-  const onUseShrewdAnalysis = useCallback(() => {
+  const onUseShrewdAnalysis = () => {
     applyShrewdAnalysis({
       availableUpgrades,
       deckId: deck.id,
@@ -191,14 +187,7 @@ function QuickUpgradeDialog(
     });
 
     onOpenChange(false);
-  }, [
-    applyShrewdAnalysis,
-    availableUpgrades,
-    deck.id,
-    card.code,
-    onOpenChange,
-    slots,
-  ]);
+  };
 
   const shrewdAnalysisPossible =
     slots === "slots" && isShrewdAnalysisUpgrade(availableUpgrades, card, deck);
@@ -210,7 +199,6 @@ function QuickUpgradeDialog(
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <Modal data-testid="quick-upgrade-modal">
-            <ModalBackdrop />
             <ModalInner size="52rem">
               <ModalActions />
               <DefaultModalContent

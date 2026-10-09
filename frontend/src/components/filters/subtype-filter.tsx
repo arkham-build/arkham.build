@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -32,14 +31,11 @@ export function SubtypeFilter({ id }: FilterProps) {
 
   const { onReset, onOpenChange, onChange, locked } = useFilter(id);
 
-  const onValueChange = useCallback(
-    (key: keyof SubtypeFilterType, value: boolean) => {
-      onChange({
-        [key]: value,
-      });
-    },
-    [onChange],
-  );
+  const onValueChange = (key: keyof SubtypeFilterType, value: boolean) => {
+    onChange({
+      [key]: value,
+    });
+  };
 
   return (
     <FilterContainer

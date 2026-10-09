@@ -1,12 +1,15 @@
 import { SlidersVerticalIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CardlistCount } from "@/components/card-list/card-list-count";
 import { useStore } from "@/store";
 import { getGroupingKeyLabel, NONE } from "@/store/lib/grouping";
 import type { ResolvedDeck } from "@/store/lib/types";
-import type { ListState } from "@/store/selectors/lists";
-import { selectActiveList } from "@/store/selectors/shared";
+import {
+  selectActiveTabooSetFilterValue,
+  type ListState,
+  selectListTabooSetId,
+} from "@/store/selectors/lists";
+import { selectActiveList, selectMetadata } from "@/store/selectors/shared";
 import type { ViewMode } from "@/store/slices/lists.types";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
@@ -19,6 +22,7 @@ import {
 } from "../deck-tags/deck-tags";
 import { useResolvedDeck } from "../resolved-deck-context";
 import { SortSelect } from "../sort-select";
+import { TabooSelect } from "../taboo-select";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -32,6 +36,7 @@ import { Scroller } from "../ui/scroller";
 import { Select } from "../ui/select";
 import { Slider } from "../ui/slider";
 import css from "./card-list-nav.module.css";
+import { Card } from "@arkham-build/shared";
 
 const SCAN_MAX_COLUMNS_MIN = 1;
 const SCAN_MAX_COLUMNS_MAX = 6;
@@ -54,44 +59,56 @@ export function CardListNav(props: Props) {
 
   const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
 
-  const onExport = useCallback(() => {
+  const onExport = () => {
     if (!data) return;
+
+    const metadata = selectMetadata(useStore.getState());
+
+    const exportCards = data.cards.reduce((acc, card) => {
+      acc.push(card);
+
+      if (card.back_link_id) {
+        const backCard = metadata.cards[card.back_link_id];
+        if (backCard) {
+          acc.push(backCard);
+        }
+      }
+
+      return acc;
+    }, [] as Card[]);
+
     download(
-      JSON.stringify(data.cards, null, 2),
+      JSON.stringify(exportCards, null, 2),
       "cards.json",
       "application/json",
     );
-  }, [data]);
+  };
 
   const hasAssetGroup = data?.groups.some((group) =>
     group.key.includes("asset"),
   );
 
-  const jumpToOptions = useMemo(
-    () =>
-      data?.groups.map((group, i) => {
-        const count = data.groupCounts[i];
+  const jumpToOptions = data?.groups.map((group, i) => {
+    const count = data.groupCounts[i];
 
-        const keys = group.key.split("|");
-        const types = group.type.split("|");
-        const isAsset = group.key.includes("asset");
+    const keys = group.key.split("|");
+    const types = group.type.split("|");
+    const isAsset = group.key.includes("asset");
 
-        const groupLabel = keys
-          .map((key, i) => {
-            if (hasAssetGroup && !isAsset && key === NONE) return null;
-            const label = getGroupingKeyLabel(types[i], key, metadata);
-            return label;
-          })
-          .filter(Boolean)
-          .join(" · ");
+    const groupLabel = keys
+      .map((key, i) => {
+        if (hasAssetGroup && !isAsset && key === NONE) return null;
+        const label = getGroupingKeyLabel(types[i], key, metadata);
+        return label;
+      })
+      .filter(Boolean)
+      .join(" · ");
 
-        return {
-          label: `${groupLabel} (${count})`,
-          value: group.key,
-        };
-      }),
-    [data, metadata, hasAssetGroup],
-  );
+    return {
+      label: `${groupLabel} (${count})`,
+      value: group.key,
+    };
+  });
 
   if (data == null) return null;
 
@@ -130,6 +147,7 @@ export function CardListNav(props: Props) {
         <DisplaySettings
           onScanMaxColumnsChange={props.onScanMaxColumnsChange}
           scanMaxColumns={props.scanMaxColumns}
+          showTabooSetOverride={!deck}
           viewMode={props.viewMode}
         />
       </div>
@@ -140,10 +158,12 @@ export function CardListNav(props: Props) {
 function DisplaySettings({
   onScanMaxColumnsChange,
   scanMaxColumns,
+  showTabooSetOverride,
   viewMode,
 }: {
   onScanMaxColumnsChange: (value: number) => void;
   scanMaxColumns: number;
+  showTabooSetOverride: boolean;
   viewMode: ViewMode;
 }) {
   const { t } = useTranslation();
@@ -156,33 +176,45 @@ function DisplaySettings({
 
   const setListSort = useStore((state) => state.setListSort);
 
-  const onScanMaxColumnsCommit = useCallback(
-    (value: number[]) => {
-      onScanMaxColumnsChange(value[0]);
-    },
-    [onScanMaxColumnsChange],
+  const tabooSetId = useStore(selectListTabooSetId);
+
+  const tabooSetFilterActive = useStore(
+    (state) => selectActiveTabooSetFilterValue(state) != null,
   );
 
+  const setListTabooSetOverride = useStore(
+    (state) => state.setListTabooSetOverride,
+  );
+
+  const onTabooSetChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = evt.target.value;
+    setListTabooSetOverride(value ? Number.parseInt(value, 10) : null);
+  };
+
+  const onScanMaxColumnsCommit = (value: number[]) => {
+    onScanMaxColumnsChange(value[0]);
+  };
+
   // TECH DEBT: option names and display names have diverted, reconcile.
-  const onToggleList = useCallback(() => {
+  const onToggleList = () => {
     setListViewMode("compact");
-  }, [setListViewMode]);
+  };
 
-  const onToggleCardText = useCallback(() => {
+  const onToggleCardText = () => {
     setListViewMode("card-text");
-  }, [setListViewMode]);
+  };
 
-  const onToggleFullCards = useCallback(() => {
+  const onToggleFullCards = () => {
     setListViewMode("full-cards");
-  }, [setListViewMode]);
+  };
 
-  const onToggleScans = useCallback(() => {
+  const onToggleScans = () => {
     setListViewMode("scans");
-  }, [setListViewMode]);
+  };
 
-  const onToggleScansGrouped = useCallback(() => {
+  const onToggleScansGrouped = () => {
     setListViewMode("scans-grouped");
-  }, [setListViewMode]);
+  };
 
   useHotkey("alt+l", onToggleList);
   useHotkey("alt+shift+l", onToggleCardText);
@@ -198,7 +230,7 @@ function DisplaySettings({
         <Button
           className={css["nav-config"]}
           aria-label={t("lists.nav.list_settings")}
-          data-test-id="card-list-config"
+          data-testid="card-list-config"
           variant="bare"
           iconOnly
           size="lg"
@@ -249,6 +281,26 @@ function DisplaySettings({
                       {scanMaxColumns}
                     </output>
                   </div>
+                </Field>
+              </DropdownMenuSection>
+            )}
+            {showTabooSetOverride && (
+              <DropdownMenuSection title={t("common.taboo")}>
+                <Field
+                  full
+                  helpText={
+                    tabooSetFilterActive
+                      ? t("lists.nav.taboo_filter_override")
+                      : undefined
+                  }
+                >
+                  <TabooSelect
+                    aria-label={t("common.taboo")}
+                    disabled={tabooSetFilterActive}
+                    id="card-list-taboo-set"
+                    onChange={onTabooSetChange}
+                    value={tabooSetId}
+                  />
                 </Field>
               </DropdownMenuSection>
             )}

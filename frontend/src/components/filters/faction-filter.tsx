@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useStore } from "@/store";
 import {
   selectActiveListFilter,
@@ -25,12 +24,9 @@ export function FactionFilter(props: FilterProps) {
 
   const { onChange } = useFilter(id);
 
-  const onValueChange = useCallback(
-    (value: string[]) => {
-      onChange(value);
-    },
-    [onChange],
-  );
+  const onValueChange = (value: string[]) => {
+    onChange(value);
+  };
 
   return (
     <FactionToggle

@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
@@ -82,55 +81,40 @@ export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { onReset, onChange, onOpenChange, locked } =
     useFilter<Partial<AssetFilterType>>(id);
 
-  const onChangeUses = useCallback(
-    (value: Coded[]) => {
-      onChange({ uses: value.map(({ code }) => code) });
-    },
-    [onChange],
-  );
+  const onChangeUses = (value: Coded[]) => {
+    onChange({ uses: value.map(({ code }) => code) });
+  };
 
-  const onChangeSlot = useCallback(
-    (value: Coded[]) => {
-      onChange({ slots: value.map(({ code }) => code) });
-    },
-    [onChange],
-  );
+  const onChangeSlot = (value: Coded[]) => {
+    onChange({ slots: value.map(({ code }) => code) });
+  };
 
-  const onChangeRange = useCallback(
-    function setValue<K extends keyof AssetFilterType>(
-      key: K,
-      value: AssetFilterType[K],
-    ) {
-      onChange({ [key]: value });
-    },
-    [onChange],
-  );
+  const onChangeRange = function setValue<K extends keyof AssetFilterType>(
+    key: K,
+    value: AssetFilterType[K],
+  ) {
+    onChange({ [key]: value });
+  };
 
-  const onSkillBoostChange = useCallback(
-    (code: string, value: string | boolean) => {
-      if (typeof value === "boolean") {
-        const next = [...filter.value.skillBoosts];
-        if (value) {
-          next.push(code);
-        } else {
-          const idx = next.indexOf(code);
-          if (idx !== -1) {
-            next.splice(idx, 1);
-          }
+  const onSkillBoostChange = (code: string, value: string | boolean) => {
+    if (typeof value === "boolean") {
+      const next = [...filter.value.skillBoosts];
+      if (value) {
+        next.push(code);
+      } else {
+        const idx = next.indexOf(code);
+        if (idx !== -1) {
+          next.splice(idx, 1);
         }
-
-        onChange({ skillBoosts: next });
       }
-    },
-    [onChange, filter.value.skillBoosts],
-  );
 
-  const onHealthXChange = useCallback(
-    (value: boolean) => {
-      onChange({ healthX: value });
-    },
-    [onChange],
-  );
+      onChange({ skillBoosts: next });
+    }
+  };
+
+  const onHealthXChange = (value: boolean) => {
+    onChange({ healthX: value });
+  };
 
   return (
     <FilterContainer

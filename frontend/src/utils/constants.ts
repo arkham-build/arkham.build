@@ -76,6 +76,7 @@ export const CYCLES_WITH_STANDALONE_PACKS = [
   "promotional",
   "parallel",
   "side_stories",
+  "small_campaign_expansions",
 ];
 
 export const ORIENTATION_CHANGED_CARDS = ["85037", "85038"];
@@ -95,7 +96,9 @@ export const CARD_SET_ORDER = [
 
 export const MQ_FLOATING_SIDEBAR = "(max-width: 52rem)";
 export const MQ_FLOATING_FILTERS = "(max-width: 75rem)";
+export const MQ_HOVER = "(hover: hover) and (pointer: fine)";
 export const MQ_MOBILE = "(pointer: coarse)";
+export const MQ_REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 export const MQ_WIDE_PREVIEW = "(min-width: 85rem)";
 
 export const NO_SLOT_STRING = "none";

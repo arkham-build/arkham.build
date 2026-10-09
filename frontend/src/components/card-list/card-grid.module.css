@@ -4,6 +4,10 @@
   border-bottom: 1px solid transparent;
 }
 
+.scroll-viewport {
+  isolation: isolate;
+}
+
 .group {
   position: relative;
   padding-top: 1rem;
@@ -71,6 +75,10 @@
     outline: 1px solid var(--color-focus);
   }
 
+  &:active {
+    opacity: 1;
+  }
+
   &.highlighted {
     animation: highlight-animation 0.375s ease-in;
   }
@@ -95,6 +103,6 @@
 .group-item-actions {
   position: absolute;
   bottom: 0;
-  left: 0;
+  right: 0;
   z-index: 1;
 }

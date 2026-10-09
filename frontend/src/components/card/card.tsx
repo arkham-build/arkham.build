@@ -7,9 +7,9 @@ import { reversed } from "@/utils/card-utils";
 import { dataLanguage } from "@/utils/formatting";
 import type { CardScanActionSlot } from "../card-scan";
 import { Button } from "../ui/button";
-import css from "./card.module.css";
 import { CardBack } from "./card-back";
 import { CardContainer } from "./card-container";
+import { CardReveal } from "./card-reveal";
 import { CardFace } from "./card-face";
 
 type Props = {
@@ -47,7 +47,8 @@ export function Card(props: Props) {
     titleLinks,
   } = props;
 
-  const [backVisible, toggleBack] = useState(!canToggleBackside);
+  const [backVisible, setBackVisible] = useState(!canToggleBackside);
+  const [backMounted, setBackMounted] = useState(false);
   const [ignoreTaboo, setIgnoreTaboo] = useState(false);
 
   const { t } = useTranslation();
@@ -96,12 +97,13 @@ export function Card(props: Props) {
     );
   }
 
+  const onToggleBack = () => {
+    setBackMounted(true);
+    setBackVisible((previous) => !previous);
+  };
+
   const backToggle = !!backNode && canToggleBackside && (
-    <Button
-      className={css["card-backtoggle"]}
-      data-testid="card-backtoggle"
-      onClick={() => toggleBack((p) => !p)}
-    >
+    <Button data-testid="card-backtoggle" onClick={onToggleBack}>
       {backVisible ? <ChevronUpIcon /> : <ChevronDownIcon />}
       {t("card_view.actions.view_backside")}
     </Button>
@@ -115,7 +117,13 @@ export function Card(props: Props) {
     >
       {cardReversed ? backNode : frontNode}
       {backToggle}
-      {backVisible && (cardReversed ? frontNode : backNode)}
+      {canToggleBackside
+        ? backMounted && (
+            <CardReveal open={backVisible}>
+              {cardReversed ? frontNode : backNode}
+            </CardReveal>
+          )
+        : backVisible && (cardReversed ? frontNode : backNode)}
       {children}
     </CardContainer>
   );

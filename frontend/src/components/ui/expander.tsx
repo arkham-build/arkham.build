@@ -1,6 +1,6 @@
 import { UnfoldVertical } from "lucide-react";
 import type { ReactNode } from "react";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cx } from "@/utils/cx";
 import { Button } from "./button";
@@ -24,12 +24,9 @@ export function Expander({
 
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const cssVariables = useMemo(
-    () => ({
-      "--collapsed-height": collapsedHeight,
-    }),
-    [collapsedHeight],
-  );
+  const cssVariables = {
+    "--collapsed-height": collapsedHeight,
+  };
 
   return (
     <article

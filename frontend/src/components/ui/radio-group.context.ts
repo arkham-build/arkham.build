@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useId, useMemo } from "react";
+import { createContext, useContext, useId } from "react";
 import { assert } from "@/utils/assert";
 
 interface RadioGroupContextValue {
@@ -20,15 +20,12 @@ interface RadioGroupProviderOptions {
 
 export function useRadioGroupProvider(options: RadioGroupProviderOptions) {
   const name = useId();
-  const ctx = useMemo(
-    () => ({
-      disabled: options.disabled,
-      name,
-      onValueChange: options.onValueChange,
-      value: options.value,
-    }),
-    [options.disabled, name, options.onValueChange, options.value],
-  );
+  const ctx = {
+    disabled: options.disabled,
+    name,
+    onValueChange: options.onValueChange,
+    value: options.value,
+  };
   return ctx;
 }
 
@@ -40,9 +37,9 @@ export function useRadioGroupItem(value: string, itemDisabled?: boolean) {
   const checked = ctx.value === value;
   const disabled = ctx.disabled || itemDisabled;
 
-  const handleChange = useCallback(() => {
+  const handleChange = () => {
     ctx.onValueChange?.(value);
-  }, [ctx, value]);
+  };
 
   return { checked, disabled, handleChange, id, name: ctx.name };
 }

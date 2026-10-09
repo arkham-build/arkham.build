@@ -26,7 +26,7 @@ export function UndoHistory(props: Props) {
         data-testid="undo-history"
         as="section"
       >
-        <header className={css["header"]}>
+        <header>
           <h2 className={css["title"]}>{t("deck_edit.versions.title")}</h2>
         </header>
         <ol className={css["entries"]}>
@@ -40,9 +40,7 @@ export function UndoHistory(props: Props) {
                 title={
                   entry.version === "current" ? (
                     <div className={css["entry-title"]}>
-                      <span className={css["version"]}>
-                        {t("deck_edit.versions.entry_title_current")}
-                      </span>
+                      <span>{t("deck_edit.versions.entry_title_current")}</span>
                     </div>
                   ) : (
                     <div className={css["entry-title"]}>

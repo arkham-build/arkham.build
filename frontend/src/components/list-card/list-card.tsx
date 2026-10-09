@@ -16,7 +16,7 @@ export function ListCard(props: Props) {
 
   const {
     closeTooltip,
-    refs,
+    refs: { setFloating, setReference },
     referenceProps,
     isMounted,
     floatingStyles,
@@ -45,13 +45,13 @@ export function ListCard(props: Props) {
         }
         cardLinkProps={referenceProps}
         closeCardTooltip={closeTooltip}
-        figureRef={refs.setReference}
+        figureRef={setReference}
         size={rest.size ?? settings.cardSize}
       />
       {isMounted && (
         <PortaledCardTooltip
           card={card}
-          ref={refs.setFloating}
+          ref={setFloating}
           floatingStyles={floatingStyles}
           transitionStyles={transitionStyles}
           tooltip={tooltip}

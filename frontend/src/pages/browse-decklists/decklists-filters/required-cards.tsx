@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CardsCombobox } from "@/components/cards-combobox";
 import { Field } from "@/components/ui/field";
@@ -24,10 +23,10 @@ export function RequiredCards({
 
   const locale = useStore((state) => state.settings.locale);
 
-  const playerCards = useMemo(() => {
+  const playerCards = (() => {
     const playerCards = Object.values(metadata.cards).filter(playerCardsFilter);
     return playerCards.sort(sortFn);
-  }, [metadata, playerCardsFilter, sortFn]);
+  })();
 
   return (
     <Field full>

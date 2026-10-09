@@ -6,7 +6,7 @@ import {
   ListChecksIcon,
   SortDescIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
@@ -15,7 +15,6 @@ import type { ResolvedDeck } from "@/store/lib/types";
 import { selectDeckGroups } from "@/store/selectors/decks";
 import type { ViewMode } from "@/store/slices/lists.types";
 import { DEFAULT_LIST_SORT_ID } from "@/utils/constants";
-import { cx } from "@/utils/cx";
 import { isEmpty } from "@/utils/is-empty";
 import { useHotkey } from "@/utils/use-hotkey";
 import { AnnotationIndicator } from "../annotation-indicator";
@@ -53,6 +52,7 @@ export function Decklist(props: Props) {
 
   const [displayConfigId, setDisplayConfigId] = useState(DEFAULT_LIST_SORT_ID);
   const [checklistMode, setChecklistMode] = useState(false);
+  const checklistValue = checklistMode ? "checklist" : undefined;
   const [checkedCardQuantities, setCheckedCardQuantities] = useState<
     ReadonlyMap<string, number>
   >(() => new Map());
@@ -79,110 +79,89 @@ export function Decklist(props: Props) {
     };
   }, [groups, setCardModalConfig]);
 
-  const renderCardExtra = useCallback(
-    (card: Card) => {
-      const isAttached = !isEmpty(getMatchingAttachables(card, deck));
-      const annotation = deck.annotations[card.code];
+  const renderCardExtra = (card: Card) => {
+    const isAttached = !isEmpty(getMatchingAttachables(card, deck));
+    const annotation = deck.annotations[card.code];
 
-      return !!annotation || isAttached ? (
-        <>
-          {isAttached && (
-            <Attachments
-              card={card}
-              resolvedDeck={deck}
-              buttonVariant={viewMode === "scans" ? "bare" : undefined}
-            />
-          )}
-          {viewMode === "scans" && annotation && <AnnotationIndicator />}
-        </>
-      ) : null;
-    },
-    [deck, viewMode],
-  );
+    return !!annotation || isAttached ? (
+      <>
+        {isAttached && (
+          <Attachments
+            card={card}
+            resolvedDeck={deck}
+            buttonVariant={viewMode === "scans" ? "bare" : undefined}
+          />
+        )}
+        {viewMode === "scans" && annotation && (
+          <AnnotationIndicator hideTooltip />
+        )}
+      </>
+    ) : null;
+  };
 
-  const getListCardProps = useCallback(
-    () => ({ renderCardExtra }),
-    [renderCardExtra],
-  );
+  const getListCardProps = () => ({ renderCardExtra });
 
   const hasAdditional =
     groups.bondedSlots || groups.extraSlots || groups.sideSlots;
 
-  const onSetViewMode = useCallback(
-    (mode: ViewMode) => {
-      if (mode) {
-        setViewMode(mode);
-        if (displayConfigId === DEFAULT_LIST_SORT_ID) {
-          setDisplayConfigId(DEFAULT_LIST_SORT_ID);
-          setDisplayConfig(
-            mode === "scans" ? settings.lists.deckScans : settings.lists.deck,
-          );
-        }
-      }
-    },
-    [
-      setViewMode,
-      settings.lists.deck,
-      settings.lists.deckScans,
-      displayConfigId,
-    ],
-  );
-
-  const onSetListConfig = useCallback(
-    (config: DecklistConfig | undefined) => {
-      if (config) {
-        setDisplayConfigId(sortPresetId(config));
-        setDisplayConfig(config);
-      } else {
+  const onSetViewMode = (mode: ViewMode) => {
+    if (mode) {
+      setViewMode(mode);
+      if (displayConfigId === DEFAULT_LIST_SORT_ID) {
         setDisplayConfigId(DEFAULT_LIST_SORT_ID);
         setDisplayConfig(
-          viewMode === "scans" ? settings.lists.deckScans : settings.lists.deck,
+          mode === "scans" ? settings.lists.deckScans : settings.lists.deck,
         );
       }
-    },
-    [settings.lists.deck, settings.lists.deckScans, viewMode],
-  );
+    }
+  };
 
-  const onChecklistModeChange = useCallback((value: string) => {
-    setChecklistMode(value === "checklist");
-  }, []);
+  const onSetListConfig = (config: DecklistConfig | undefined) => {
+    if (config) {
+      setDisplayConfigId(sortPresetId(config));
+      setDisplayConfig(config);
+    } else {
+      setDisplayConfigId(DEFAULT_LIST_SORT_ID);
+      setDisplayConfig(
+        viewMode === "scans" ? settings.lists.deckScans : settings.lists.deck,
+      );
+    }
+  };
 
-  const onChecklistClear = useCallback(() => {
+  const onChecklistModeChange = (value: string) => {
+    setChecklistMode(value === "checklist" && value !== checklistValue);
+  };
+
+  const onChecklistClear = () => {
     setCheckedCardQuantities(new Map());
-  }, []);
+  };
 
-  const onCardCheckedQuantityChange = useCallback(
-    (cardKey: string, quantity: number) => {
-      setCheckedCardQuantities((current) => {
-        const next = new Map(current);
+  const onCardCheckedQuantityChange = (cardKey: string, quantity: number) => {
+    setCheckedCardQuantities((current) => {
+      const next = new Map(current);
 
-        if (quantity > 0) {
-          next.set(cardKey, quantity);
-        } else {
-          next.delete(cardKey);
-        }
+      if (quantity > 0) {
+        next.set(cardKey, quantity);
+      } else {
+        next.delete(cardKey);
+      }
 
-        return next;
-      });
-    },
-    [],
-  );
+      return next;
+    });
+  };
 
-  const labels = useMemo(
-    () => ({
-      slots: t("common.decks.slots"),
-      sideSlots: t("common.decks.sideSlots"),
-      bondedSlots: t("common.decks.bondedSlots"),
-      extraSlots: t("common.decks.extraSlots"),
-    }),
-    [t],
-  );
+  const labels = {
+    slots: t("common.decks.slots"),
+    sideSlots: t("common.decks.sideSlots"),
+    bondedSlots: t("common.decks.bondedSlots"),
+    extraSlots: t("common.decks.extraSlots"),
+  };
 
   useHotkey("alt+s", () => onSetViewMode("scans"));
   useHotkey("alt+l", () => onSetViewMode("compact"));
 
   return (
-    <article className={cx(css["decklist-container"], className)}>
+    <article className={className}>
       <nav className={css["decklist-nav"]}>
         <ToggleGroup
           type="single"
@@ -225,7 +204,7 @@ export function Decklist(props: Props) {
           <>
             <ToggleGroup
               type="single"
-              value={checklistMode ? "checklist" : ""}
+              value={checklistValue}
               onValueChange={onChecklistModeChange}
             >
               <ToggleGroupItem

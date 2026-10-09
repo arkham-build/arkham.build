@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useDismissBannerMutation } from "@/queries/mutations/app";
 import { useApplySettingsMutation } from "@/queries/mutations/settings";
@@ -24,7 +23,7 @@ export function PreviewBanner() {
   return (
     <article className={css["preview"]} data-testid="preview-banner">
       <div className={css["content"]}>
-        <header className={css["header"]}>
+        <header>
           <h3 className={css["title"]}>
             <i className="encounters-core_2026" />
             {t("preview_banner.title")}
@@ -56,13 +55,13 @@ export function PreviewBanner() {
 function useDismissPreviewBanner() {
   const dismissBannerMutation = useDismissBannerMutation();
 
-  return useCallback(async () => {
+  return async () => {
     try {
       await dismissBannerMutation.mutateAsync(BANNER_ID);
     } catch (err) {
       console.error(err);
     }
-  }, [dismissBannerMutation]);
+  };
 }
 
 function useEnablePreviewBanner(
@@ -71,7 +70,7 @@ function useEnablePreviewBanner(
   const dismissBannerMutation = useDismissBannerMutation();
   const applySettingsMutation = useApplySettingsMutation();
 
-  return useCallback(async () => {
+  return async () => {
     try {
       await applySettingsMutation.mutateAsync({
         settings: { ...settings, showPreviews: true },
@@ -80,5 +79,5 @@ function useEnablePreviewBanner(
     } catch (err) {
       console.error(err);
     }
-  }, [applySettingsMutation, dismissBannerMutation, settings]);
+  };
 }

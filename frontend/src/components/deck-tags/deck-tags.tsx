@@ -170,7 +170,7 @@ export function LimitedCardPoolTag({
       options={{ placement: "bottom-start" }}
       tooltip={
         selectedPacks.length ? (
-          <ol className={css["packs"]}>
+          <ol className={css["pool"]}>
             {selectedPacks.map((pack) => {
               return pack ? (
                 <li className={css["pack"]} key={pack.code}>

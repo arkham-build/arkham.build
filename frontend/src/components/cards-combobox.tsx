@@ -1,5 +1,4 @@
 import type { Card } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { displayAttribute } from "@/utils/card-utils";
 import { ListCard } from "./list-card/list-card";
@@ -19,12 +18,11 @@ type Props = Omit<
 export function CardsCombobox(props: Props) {
   const { t } = useTranslation();
 
-  const cardRenderer = useCallback(
-    (item: Card) => <ListCard disableModalOpen card={item} />,
-    [],
+  const cardRenderer = (item: Card) => (
+    <ListCard disableModalOpen card={item} />
   );
 
-  const resultRenderer = useCallback((item: Card, onRemove?: () => void) => {
+  const resultRenderer = (item: Card, onRemove?: () => void) => {
     return (
       <ResultTag
         data-testid={`combobox-result-${item.code}`}
@@ -40,11 +38,11 @@ export function CardsCombobox(props: Props) {
         />
       </ResultTag>
     );
-  }, []);
+  };
 
-  const itemToString = useCallback((item: Card) => {
+  const itemToString = (item: Card) => {
     return displayAttribute(item, "name").toLowerCase();
-  }, []);
+  };
 
   return (
     <Combobox

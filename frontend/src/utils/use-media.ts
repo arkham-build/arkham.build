@@ -1,32 +1,17 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
-function getInitialState(query: string, defaultState?: boolean) {
-  return defaultState !== undefined
-    ? defaultState
-    : window.matchMedia(query).matches;
-}
-
-export function useMedia(query: string, defaultState?: boolean) {
-  const [state, setState] = useState(getInitialState(query, defaultState));
-
-  useEffect(() => {
-    let mounted = true;
-    const mql = window.matchMedia(query);
-    const onChange = () => {
-      if (!mounted) {
-        return;
-      }
-      setState(!!mql.matches);
-    };
-
-    mql.addEventListener("change", onChange);
-    setState(mql.matches);
+export function useMedia(query: string, defaultState = false) {
+  const subscribe = (onStoreChange: () => void) => {
+    const mediaQuery = window.matchMedia(query);
+    mediaQuery.addEventListener("change", onStoreChange);
 
     return () => {
-      mounted = false;
-      mql.removeEventListener("change", onChange);
+      mediaQuery.removeEventListener("change", onStoreChange);
     };
-  }, [query]);
+  };
 
-  return state;
+  const getSnapshot = () => window.matchMedia(query).matches;
+  const getServerSnapshot = () => defaultState;
+
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

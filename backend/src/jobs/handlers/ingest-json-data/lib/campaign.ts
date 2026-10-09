@@ -1,23 +1,35 @@
-import type { JsonDataCampaign } from "@arkham-build/shared";
+import type {
+  JsonDataCampaign,
+  JsonDataCampaignTranslation,
+} from "@arkham-build/shared";
+import type {
+  ItemTranslation,
+  WithItemTranslations,
+} from "../../../../lib/json-data.types.ts";
 import { uniqueStrings } from "./helpers.ts";
 
-export function resolveCampaignRecords(campaigns: JsonDataCampaign[]) {
+export function resolveCampaignRecords(campaigns: CampaignWithTranslations[]) {
   return {
     campaigns: resolveCampaigns(campaigns),
     campaignScenarios: resolveCampaignScenarios(campaigns),
   };
 }
 
+type CampaignWithTranslations = WithItemTranslations<
+  JsonDataCampaign,
+  JsonDataCampaignTranslation
+>;
+
 type CampaignRecord = {
+  campaign_guide_url: string | null;
   code: string;
+  cycle_code: string;
   name: string;
   translations: CampaignTranslation[];
+  variant_of_code: string | null;
 };
 
-type CampaignTranslation = {
-  locale: string;
-  name?: string;
-};
+type CampaignTranslation = ItemTranslation<JsonDataCampaignTranslation>;
 
 type CampaignScenarioRecord = {
   campaign_code: string;
@@ -25,11 +37,16 @@ type CampaignScenarioRecord = {
   scenario_code: string;
 };
 
-function resolveCampaigns(campaigns: JsonDataCampaign[]): CampaignRecord[] {
+function resolveCampaigns(
+  campaigns: CampaignWithTranslations[],
+): CampaignRecord[] {
   return campaigns.map((campaign) => ({
+    campaign_guide_url: campaign.campaign_guide_url ?? null,
     code: campaign.code,
+    cycle_code: campaign.cycle_code,
     name: campaign.name,
-    translations: [],
+    translations: campaign.translations,
+    variant_of_code: campaign.variant_of_code ?? null,
   }));
 }
 

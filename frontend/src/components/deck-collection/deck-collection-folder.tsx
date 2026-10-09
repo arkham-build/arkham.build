@@ -30,9 +30,7 @@ export function DeckCollectionFolder(props: Props) {
       type="button"
     >
       <span className={css["row"]}>
-        <figure className={css["expander"]}>
-          {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
-        </figure>
+        <figure>{expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}</figure>
         <FolderIcon folder={folder} />
         {folder.name}
       </span>

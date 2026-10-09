@@ -40,6 +40,7 @@ import type {
   FanMadeContentFilter,
   FilterKey,
   FilterMapping,
+  GroupOrder,
   LevelFilter,
   List,
   ListDisplay,
@@ -518,6 +519,44 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
     });
   },
 
+  setListTabooSetOverride(value) {
+    set((state) => {
+      assert(state.activeList, "no active list is defined.");
+
+      const list = state.lists[state.activeList];
+      assert(list, `list ${state.activeList} not defined.`);
+
+      return {
+        lists: {
+          ...state.lists,
+          [state.activeList]: {
+            ...list,
+            tabooSetOverride: value,
+          },
+        },
+      };
+    });
+  },
+
+  toggleListDefaultFlipped() {
+    set((state) => {
+      assert(state.activeList, "no active list is defined.");
+
+      const list = state.lists[state.activeList];
+      assert(list, `list ${state.activeList} not defined.`);
+
+      return {
+        lists: {
+          ...state.lists,
+          [state.activeList]: {
+            ...list,
+            defaultFlipped: !list.defaultFlipped,
+          },
+        },
+      };
+    });
+  },
+
   setListViewMode(viewMode) {
     set((state) => {
       assert(state.activeList, "no active list is defined.");
@@ -596,7 +635,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
     initialValues,
     opts = {
       display: undefined,
-      fanMadeCycleCodes: undefined,
+      fanMadeCardCodes: undefined,
       search: "",
       showOwnershipFilter: true,
       showInvestigatorFilter: true,
@@ -626,15 +665,18 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
       }
 
       lists[key] = makeList({
-        fanMadeCycleCodes: opts.fanMadeCycleCodes,
+        fanMadeCardCodes: opts.fanMadeCardCodes,
         display,
         displaySortSelection,
         displaySettingsKey: opts.displaySettingsKey,
-        filters: cardsFilters({
-          additionalFilters: opts.additionalFilters ?? ["illustrator"],
-          showOwnershipFilter: opts.showOwnershipFilter,
-          showInvestigatorsFilter: opts.showOwnershipFilter,
-        }),
+        filters:
+          opts.filters ??
+          cardsFilters({
+            additionalFilters: opts.additionalFilters ?? ["illustrator"],
+            showOwnershipFilter: opts.showOwnershipFilter,
+            showInvestigatorsFilter: opts.showOwnershipFilter,
+          }),
+        groupOrder: opts.groupOrder,
         initialValues: values,
         key,
         systemFilter: and([
@@ -647,6 +689,7 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
           mode: "simple",
           ...DEFAULT_SEARCH_FLAGS,
         },
+        tabooSetOverride: opts.tabooSetOverride,
         lockedFilters: opts.lockedFilters ?? new Set<FilterKey>(),
       });
 
@@ -954,32 +997,38 @@ function makeFilterValue(
 }
 
 type MakeListOptions = {
-  fanMadeCycleCodes?: string[];
+  fanMadeCardCodes?: ReadonlySet<string>;
   display: ListDisplay;
   displaySettingsKey?: string;
   displaySortSelection?: string;
   filters: FilterKey[];
+  groupOrder?: GroupOrder;
   initialValues?: Partial<Record<FilterKey, unknown>>;
   key: string;
   lockedFilters?: Set<FilterKey>;
   search?: Search;
   systemFilter?: Filter;
+  tabooSetOverride?: number | null;
 };
 
 function makeList({
-  fanMadeCycleCodes,
+  fanMadeCardCodes,
   key,
   filters,
   display,
   displaySettingsKey,
   displaySortSelection = DEFAULT_LIST_SORT_ID,
+  groupOrder,
   systemFilter,
   initialValues,
   search,
+  tabooSetOverride,
   lockedFilters = new Set<FilterKey>(),
 }: MakeListOptions): List {
   const list = {
-    fanMadeCycleCodes,
+    defaultFlipped: false,
+    tabooSetOverride,
+    fanMadeCardCodes,
     filters,
     filterValues: filters.reduce<List["filterValues"]>((acc, curr, i) => {
       const locked = lockedFilters.has(curr);
@@ -987,6 +1036,7 @@ function makeList({
       return acc;
     }, {}),
     filtersEnabled: true,
+    groupOrder,
     display,
     displaySettingsKey,
     displaySortSelection,

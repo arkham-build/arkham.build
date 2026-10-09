@@ -138,7 +138,7 @@ async function filterPack(page: Page, packName: string) {
     .getByTestId("filter-Pack")
     .getByTestId("collapsible-trigger")
     .click();
-  await page.getByTestId("combobox-input").fill(packName);
+  await page.getByTestId("combobox-input").pressSequentially(packName);
   await page.getByTestId("combobox-input").press("Enter");
 }
 

@@ -1,5 +1,4 @@
 import { LoaderCircleIcon } from "lucide-react";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useCardLinkTooltip } from "@/components/card-tooltip/use-card-link-tooltip";
 import { PlaneContainer } from "@/components/ui/plane-container";
@@ -19,19 +18,15 @@ export function CardFaq(props: Props) {
   const { t } = useTranslation();
   const faq = useCardFaqQuery(code);
   const { cardLinkTooltip, referenceProps } = useCardLinkTooltip();
-  const faqMarkup = useMemo(
-    () =>
-      faq.data?.map((item) => ({
-        ...item,
-        questionMarkup: {
-          __html: getCardFaqHtml(item.question, true),
-        },
-        rulingMarkup: {
-          __html: getCardFaqHtml(item.ruling),
-        },
-      })),
-    [faq.data],
-  );
+  const faqMarkup = faq.data?.map((item) => ({
+    ...item,
+    questionMarkup: {
+      __html: getCardFaqHtml(item.question, true),
+    },
+    rulingMarkup: {
+      __html: getCardFaqHtml(item.ruling),
+    },
+  }));
 
   return (
     <PlaneContainer as="section" title={t("card_view.faq.title")}>

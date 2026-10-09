@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { inputFocused } from "./keyboard";
 
 type Hotkey = {
@@ -16,7 +16,7 @@ export function useHotkey(
   callback?: () => void,
   options?: Options,
 ) {
-  const hotkey = useMemo(() => parseHotkey(hotkeyStr), [hotkeyStr]);
+  const hotkey = parseHotkey(hotkeyStr);
 
   useEffect(() => {
     if (options?.disabled || !hotkey) return;

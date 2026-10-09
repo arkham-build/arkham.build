@@ -1,5 +1,5 @@
 import type { Card, Slots } from "@arkham-build/shared";
-import { Fragment, useMemo } from "react";
+import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -26,6 +26,7 @@ import type { ViewMode } from "@/store/slices/lists.types";
 import { displayAttribute } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { range } from "@/utils/range";
+import { Annotation } from "../annotations/annotation";
 import { CardGridItem } from "../card-list/card-grid";
 import { GroupLabel } from "../card-list/grouphead";
 import type { FilteredListCardPropsGetter } from "../card-list/types";
@@ -34,6 +35,7 @@ import { useCardTagsListCard } from "../card-tags/use-card-tags-list-card";
 import { CustomizableSheet } from "../customizable-sheet";
 import { ListCard } from "../list-card/list-card";
 import { Checkbox } from "../ui/checkbox";
+import { DefaultTooltip } from "../ui/tooltip";
 import css from "./decklist-groups.module.css";
 
 type DecklistGroupsProps = {
@@ -285,15 +287,11 @@ function Scans(props: {
     onCardCheckedQuantityChange,
   } = props;
 
-  const styles = useMemo(
-    () =>
-      ({
-        "--scan-levels": Math.max(
-          ...group.cards.map((card) => grouping.quantities[card.code] ?? 0),
-        ),
-      }) as React.CSSProperties,
-    [grouping.quantities, group.cards],
-  );
+  const styles = {
+    "--scan-levels": Math.max(
+      ...group.cards.map((card) => grouping.quantities[card.code] ?? 0),
+    ),
+  } as React.CSSProperties;
 
   return (
     <ol className={css["grid"]} style={styles}>
@@ -311,6 +309,7 @@ function Scans(props: {
           <Fragment key={card.code}>
             <li>
               <Scan
+                annotation={deck.annotations[card.code] ?? undefined}
                 card={card}
                 checklist={checklist}
                 quantities={grouping.quantities}
@@ -334,17 +333,18 @@ function Scans(props: {
 }
 
 function Scan(props: {
+  annotation?: string;
   card: Card;
   checklist?: ChecklistState;
   quantities: Slots;
   getListCardProps?: FilteredListCardPropsGetter;
 }) {
-  const { card, checklist, getListCardProps, quantities } = props;
+  const { annotation, card, checklist, getListCardProps, quantities } = props;
 
   const quantity = quantities[card.code] ?? 0;
   const isComplete = checklist?.checkedQuantity === quantity;
 
-  return (
+  const scan = (
     <figure className={css["scan"]}>
       <div
         className={cx(
@@ -400,6 +400,14 @@ function Scan(props: {
         />
       )}
     </figure>
+  );
+
+  if (!annotation) return scan;
+
+  return (
+    <DefaultTooltip tooltip={<Annotation content={annotation} size="sm" />}>
+      {scan}
+    </DefaultTooltip>
   );
 }
 

@@ -13,15 +13,8 @@ import {
   useRole,
   useTransitionStyles,
 } from "@floating-ui/react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { tooltipTransitionStyles } from "./transition-styles";
 
 export interface TooltipOptions {
   delay?: number;
@@ -44,13 +37,10 @@ export function useTooltip({
 
   const open = !paused && (controlledOpen ?? uncontrolledOpen);
 
-  const setOpen = useCallback(
-    (value: boolean) => {
-      if (controlledOpen == null) setUncontrolledOpen(value);
-      onOpenChange?.(value);
-    },
-    [controlledOpen, onOpenChange],
-  );
+  const setOpen = (value: boolean) => {
+    if (controlledOpen == null) setUncontrolledOpen(value);
+    onOpenChange?.(value);
+  };
 
   const data = useFloating({
     placement,
@@ -75,6 +65,7 @@ export function useTooltip({
       close: 0,
     },
     move: false,
+    mouseOnly: true,
     enabled: !paused && controlledOpen == null,
   });
 
@@ -83,15 +74,12 @@ export function useTooltip({
 
   const interactions = useInteractions([hover, dismiss, role]);
 
-  return useMemo(
-    () => ({
-      open,
-      setOpen,
-      ...interactions,
-      ...data,
-    }),
-    [open, setOpen, interactions, data],
-  );
+  return {
+    open,
+    setOpen,
+    ...interactions,
+    ...data,
+  };
 }
 
 export function useRestingTooltip(
@@ -103,7 +91,7 @@ export function useRestingTooltip(
   const restTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
-  const suppressUntilLeaveRef = useRef(false);
+  const [suppressUntilLeave, setSuppressUntilLeave] = useState(false);
 
   useEffect(
     () => () => {
@@ -121,67 +109,62 @@ export function useRestingTooltip(
     ...options,
   });
 
-  const { isMounted, styles } = useTransitionStyles(context, {
-    duration: {
-      open: 250,
-      close: 50,
-    },
-  });
+  const { isMounted, styles } = useTransitionStyles(
+    context,
+    tooltipTransitionStyles(),
+  );
 
-  const closeTooltip = useCallback(() => {
-    suppressUntilLeaveRef.current = true;
+  const closeTooltip = () => {
+    setSuppressUntilLeave(true);
     clearTimeout(restTimeoutRef.current);
     setTooltipOpen(false);
-  }, []);
+  };
 
-  const onPointerDown = useCallback(() => {
-    suppressUntilLeaveRef.current = true;
+  const onPointerDown = () => {
+    setSuppressUntilLeave(true);
     clearTimeout(restTimeoutRef.current);
+  };
 
-    // Safari may cancel the subsequent click if pointerdown changes the DOM or
-    // hit testing. Opacity hides the tooltip without affecting either.
-    const floatingElement = refs.floating.current;
-    if (floatingElement) floatingElement.style.opacity = "0";
-  }, [refs.floating]);
-
-  const onPointerLeave = useCallback(() => {
-    suppressUntilLeaveRef.current = false;
+  const onPointerLeave = () => {
+    setSuppressUntilLeave(false);
     clearTimeout(restTimeoutRef.current);
     setTooltipOpen(false);
-  }, []);
+  };
 
-  const onPointerMove = useCallback(() => {
-    if (suppressUntilLeaveRef.current || tooltipOpen) return;
+  const onPointerMove = (evt: React.PointerEvent) => {
+    if (evt.pointerType === "touch" || suppressUntilLeave || tooltipOpen) {
+      return;
+    }
 
     clearTimeout(restTimeoutRef.current);
 
     restTimeoutRef.current = setTimeout(() => {
       setTooltipOpen(true);
     }, options?.delay ?? 25);
-  }, [tooltipOpen, options?.delay]);
+  };
 
-  const referenceProps = useMemo(
-    () => ({
-      onPointerDown,
-      onPointerLeave,
-      onPointerMove,
-      onMouseLeave: onPointerLeave,
-    }),
-    [onPointerDown, onPointerLeave, onPointerMove],
-  );
+  // Safari may cancel the subsequent click if pointerdown changes the DOM or
+  // hit testing. Opacity hides the tooltip without affecting either.
+  const transitionStyles = suppressUntilLeave
+    ? { ...styles, opacity: 0 }
+    : styles;
 
-  const value = useMemo(
-    () => ({
-      isMounted,
-      referenceProps,
-      refs,
-      floatingStyles,
-      transitionStyles: styles,
-      closeTooltip,
-      setTooltipOpen,
-    }),
-    [referenceProps, refs, styles, floatingStyles, isMounted, closeTooltip],
-  );
+  const referenceProps = {
+    onPointerDown,
+    onPointerLeave,
+    onPointerMove,
+    onMouseLeave: onPointerLeave,
+  };
+
+  const value = {
+    isMounted,
+    referenceProps,
+    refs,
+    floatingStyles,
+    transitionStyles,
+    closeTooltip,
+    setTooltipOpen,
+  };
 
   return value;
 }

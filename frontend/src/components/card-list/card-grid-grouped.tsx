@@ -1,7 +1,5 @@
-import type { Card } from "@arkham-build/shared";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { type ListRange, Virtuoso, type VirtuosoHandle } from "react-virtuoso";
-import { Link } from "wouter";
 import { useStore } from "@/store";
 import type {
   CardGroup as CardGroupType,
@@ -9,19 +7,20 @@ import type {
 } from "@/store/selectors/lists";
 import type { Metadata } from "@/store/slices/metadata.types";
 import { cx } from "@/utils/cx";
-import { preventLeftClick } from "@/utils/prevent-links";
-import { CardScan } from "../card-scan";
-import { CardFavoriteAction } from "../card-tags/card-favorite";
 import { Scroller } from "../ui/scroller";
-import { CardActions } from "./card-actions";
+import { CardGridItem } from "./card-grid";
 import css from "./card-grid.module.css";
 import { Grouphead } from "./grouphead";
 import type { CardListImplementationProps } from "./types";
 
 export function CardGridGrouped(
-  props: CardListImplementationProps & { scanMaxColumns: number },
+  props: CardListImplementationProps & {
+    defaultFlipped: boolean;
+    scanMaxColumns: number;
+  },
 ) {
-  const { data, metadata, scanMaxColumns, search, ...rest } = props;
+  const { data, defaultFlipped, metadata, scanMaxColumns, search, ...rest } =
+    props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
@@ -31,46 +30,46 @@ export function CardGridGrouped(
   const [scrollParent, setScrollParent] = useState<HTMLElement | undefined>();
   const [currentTop, setCurrentTop] = useState<number>(-1);
 
-  const onScrollChange = useCallback(() => {
+  const onScrollChange = useEffectEvent(() => {
     setCurrentTop(-1);
-  }, []);
+  });
+
+  const onSelectGroup = useEffectEvent((evt: Event) => {
+    const key = (evt as CustomEvent).detail;
+    const group = data.groups.findIndex((g) => g.key === key);
+
+    if (group === -1) return;
+
+    virtuosoRef.current?.scrollToIndex({
+      index: group,
+      behavior: "auto",
+    });
+
+    activeGroup.current = key;
+  });
+
+  const onKeyboardNavigate = useEffectEvent((evt: Event) => {
+    const key = (evt as CustomEvent).detail;
+
+    if (!data?.cards.length) return;
+
+    if (key === "Enter" && currentTop > -1) {
+      openCardModal(data.cards[currentTop].code);
+    }
+
+    if (key === "Escape") {
+      setCurrentTop(-1);
+    }
+  });
 
   useEffect(() => {
     scrollParent?.addEventListener("wheel", onScrollChange, { passive: true });
     return () => {
       scrollParent?.removeEventListener("wheel", onScrollChange);
     };
-  }, [scrollParent, onScrollChange]);
+  }, [scrollParent]);
 
   useEffect(() => {
-    function onSelectGroup(evt: Event) {
-      const key = (evt as CustomEvent).detail;
-      const group = data.groups.findIndex((g) => g.key === key);
-
-      if (group === -1) return;
-
-      virtuosoRef.current?.scrollToIndex({
-        index: group,
-        behavior: "auto",
-      });
-
-      activeGroup.current = key;
-    }
-
-    function onKeyboardNavigate(evt: Event) {
-      const key = (evt as CustomEvent).detail;
-
-      if (!data?.cards.length) return;
-
-      if (key === "Enter" && currentTop > -1) {
-        openCardModal(data.cards[currentTop].code);
-      }
-
-      if (key === "Escape") {
-        setCurrentTop(-1);
-      }
-    }
-
     window.addEventListener("list-select-group", onSelectGroup);
     window.addEventListener("list-keyboard-navigate", onKeyboardNavigate);
 
@@ -78,14 +77,11 @@ export function CardGridGrouped(
       window.removeEventListener("list-select-group", onSelectGroup);
       window.removeEventListener("list-keyboard-navigate", onKeyboardNavigate);
     };
-  }, [data, openCardModal, currentTop]);
+  }, []);
 
-  const rangeChanged = useCallback(
-    (range: ListRange) => {
-      activeGroup.current = data.groups[range.startIndex].key;
-    },
-    [data],
-  );
+  const rangeChanged = (range: ListRange) => {
+    activeGroup.current = data.groups[range.startIndex].key;
+  };
 
   useEffect(() => {
     setCurrentTop(-1);
@@ -113,6 +109,7 @@ export function CardGridGrouped(
       padded
       ref={setScrollParent as unknown as React.RefObject<HTMLDivElement | null>}
       type="always"
+      viewportClassName={css["scroll-viewport"]}
     >
       {data && (
         <Virtuoso
@@ -126,6 +123,7 @@ export function CardGridGrouped(
               {...rest}
               group={group}
               data={data}
+              defaultFlipped={defaultFlipped}
               index={index}
               metadata={metadata}
               scanMaxColumns={scanMaxColumns}
@@ -141,12 +139,21 @@ function CardGridGroup(
   props: {
     group: CardGroupType;
     data: ListState;
+    defaultFlipped: boolean;
     index: number;
     metadata: Metadata;
     scanMaxColumns: number;
   } & CardListImplementationProps,
 ) {
-  const { group, data, index, metadata, scanMaxColumns, ...rest } = props;
+  const {
+    group,
+    data,
+    defaultFlipped,
+    index,
+    metadata,
+    scanMaxColumns,
+    ...rest
+  } = props;
   const { cards, groupCounts } = data;
 
   const counts = groupCounts[index];
@@ -156,21 +163,15 @@ function CardGridGroup(
       ? groupCounts.slice(0, index).reduce((acc, count) => acc + count, 0)
       : 0;
 
-  const groupCards = useMemo(
-    () => cards.slice(offset, offset + counts),
-    [cards, counts, offset],
-  );
+  const groupCards = cards.slice(offset, offset + counts);
 
-  const cssVariables = useMemo(
-    () => ({
-      "--grid-columns-2": Math.min(2, scanMaxColumns),
-      "--grid-columns-3": Math.min(3, scanMaxColumns),
-      "--grid-columns-4": Math.min(4, scanMaxColumns),
-      "--grid-columns-5": Math.min(5, scanMaxColumns),
-      "--grid-columns-6": Math.min(6, scanMaxColumns),
-    }),
-    [scanMaxColumns],
-  );
+  const cssVariables = {
+    "--grid-columns-2": Math.min(2, scanMaxColumns),
+    "--grid-columns-3": Math.min(3, scanMaxColumns),
+    "--grid-columns-4": Math.min(4, scanMaxColumns),
+    "--grid-columns-5": Math.min(5, scanMaxColumns),
+    "--grid-columns-6": Math.min(6, scanMaxColumns),
+  };
 
   return (
     <div className={css["group"]} key={group.key}>
@@ -184,74 +185,14 @@ function CardGridGroup(
         style={cssVariables as React.CSSProperties}
       >
         {groupCards.map((card) => (
-          <CardGridItem {...rest} card={card} key={card.code} />
+          <CardGridItem
+            {...rest}
+            card={card}
+            defaultFlipped={defaultFlipped}
+            key={card.code}
+            packQuantity={data.packQuantities?.[card.code]}
+          />
         ))}
-      </div>
-    </div>
-  );
-}
-
-function CardGridItem(
-  props: {
-    card: Card;
-  } & Pick<
-    CardListImplementationProps,
-    "getListCardProps" | "quantities" | "resolvedDeck"
-  >,
-) {
-  const { card, getListCardProps, quantities } = props;
-
-  const openCardModal = useStore((state) => state.openCardModal);
-
-  const openModal = useCallback(() => {
-    openCardModal(card.code);
-  }, [openCardModal, card.code]);
-
-  const onClick = useCallback(
-    (evt: React.MouseEvent) => {
-      const linkPrevented = preventLeftClick(evt);
-      if (linkPrevented) openModal();
-    },
-    [openModal],
-  );
-
-  const onPressEnter = useCallback(
-    (evt: React.KeyboardEvent) => {
-      if (evt.key === "Enter" && evt.target === evt.currentTarget) {
-        openModal();
-      }
-    },
-    [openModal],
-  );
-
-  const leftActionSlot = useCallback(
-    () => <CardFavoriteAction card={card} />,
-    [card],
-  );
-
-  const quantity = quantities?.[card.code] ?? 0;
-
-  return (
-    <div
-      className={css["group-item"]}
-      key={card.code}
-      data-component="card-group-item"
-    >
-      <Link
-        href={`~/card/${card.code}`}
-        className={css["group-item-scan"]}
-        onClick={onClick}
-        onKeyUp={onPressEnter}
-        tabIndex={0}
-      >
-        <CardScan card={card} lazy leftActionSlot={leftActionSlot} />
-      </Link>
-      <div className={css["group-item-actions"]}>
-        <CardActions
-          card={card}
-          quantity={quantities ? quantity : undefined}
-          listCardProps={getListCardProps?.(card)}
-        />
       </div>
     </div>
   );

@@ -2,22 +2,32 @@ export type Coded = {
   code: string;
 };
 
-export type Translatable<T> = {
+export type Translatable<SourceItem> = {
   code: string;
-} & Partial<T>;
+} & Partial<SourceItem>;
 
-export type WrappedTranslation<T> = {
+export type WrappedTranslation<
+  SourceItem,
+  TranslationItem extends Coded = Translatable<SourceItem>,
+> = {
   locale: string;
-  translation: Translatable<T>[];
+  translation: TranslationItem[];
 };
 
-export type TranslationTable<T> = Record<
-  string,
-  Record<string, Translatable<T>>
->;
+export type TranslationTable<
+  SourceItem,
+  TranslationItem extends Coded = Translatable<SourceItem>,
+> = Record<string, Record<string, TranslationItem>>;
 
-export type ItemTranslation<T> = Partial<T> & { locale: string };
+export type ItemTranslation<TranslationItem> = Partial<
+  Omit<TranslationItem, "code">
+> & {
+  locale: string;
+};
 
-export type WithItemTranslations<T> = T & {
-  translations: ItemTranslation<T>[];
+export type WithItemTranslations<
+  SourceItem,
+  TranslationItem = SourceItem,
+> = SourceItem & {
+  translations: ItemTranslation<TranslationItem>[];
 };

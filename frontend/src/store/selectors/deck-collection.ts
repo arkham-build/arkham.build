@@ -442,17 +442,17 @@ type FolderEntry = {
 export const selectDecksDisplayList = createSelector(
   selectDecksFiltered,
   selectDecksSortingFunc,
+  selectLocaleSortingCollator,
   (state: StoreState) => state.data.folders,
   (state: StoreState) => state.data.deckFolders,
   (state: StoreState) => state.deckCollection.expandedFolders,
-  (filteredDecks, sorting, folders, deckFolders, expandedFolders) => {
-    const resolvedFolders = Object.values(deckFolders).includes(
-      ARCHIVE_FOLDER_ID,
-    )
+  (filteredDecks, sorting, collator, folders, deckFolders, expandedFolders) => {
+    const resolvedFolders: Record<string, Folder> = Object.values(
+      deckFolders,
+    ).includes(ARCHIVE_FOLDER_ID)
       ? {
           ...folders,
-          [ARCHIVE_FOLDER_ID]:
-            folders[ARCHIVE_FOLDER_ID] ?? createArchiveFolder(),
+          [ARCHIVE_FOLDER_ID]: createArchiveFolder(),
         }
       : folders;
     const folderHierarchy: Record<string, string[]> = {};
@@ -486,7 +486,7 @@ export const selectDecksDisplayList = createSelector(
       .filter(
         (folder) => !folder.parent_id || !resolvedFolders[folder.parent_id],
       )
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => collator.compare(a.name, b.name));
 
     const traverse = (folder: Folder, depth: number) => {
       const expanded = expandedFolders[folder.id] ?? false;
@@ -494,7 +494,7 @@ export const selectDecksDisplayList = createSelector(
       const childFolders = (folderHierarchy[folder.id] ?? [])
         .map((id) => resolvedFolders[id])
         .filter((childFolder): childFolder is Folder => childFolder != null)
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .sort((a, b) => collator.compare(a.name, b.name));
 
       sorted.push({
         count: decksInFolder.length,

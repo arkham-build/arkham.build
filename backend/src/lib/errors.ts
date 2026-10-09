@@ -8,6 +8,8 @@ import type { HonoEnv } from "./hono-env.ts";
 
 export function errorHandler(err: unknown, c: Context<HonoEnv>) {
   if (err instanceof ApiError) {
+    if (err.status >= 500) logServerError(c, err, err.status);
+
     return c.json(
       {
         message: err.message,
@@ -18,6 +20,7 @@ export function errorHandler(err: unknown, c: Context<HonoEnv>) {
 
   if (err instanceof HTTPException) {
     const body = formatError(err);
+    if (err.status >= 500) logServerError(c, err, err.status);
     if (err.status === 400) logBadRequest(c, body);
     return c.json(body, err.status);
   }
@@ -31,18 +34,18 @@ export function errorHandler(err: unknown, c: Context<HonoEnv>) {
     return c.json(body, 400);
   }
 
-  const config = c.get("config");
-  const logger = c.get("logger");
-
-  if (config.NODE_ENV === "production") {
-    logger("error", "Internal server error", {
-      error: (err as Error)?.message,
-    });
-  } else {
-    console.error(err);
-  }
-
+  logServerError(c, err, 500);
   return c.json({ message: STATUS_CODES[500] as string }, 500);
+}
+
+function logServerError(c: Context<HonoEnv>, error: unknown, status: number) {
+  c.get("logger")("error", "Internal server error", {
+    method: c.req.method,
+    path: c.req.path,
+    status,
+    error: error instanceof Error ? error.message : String(error),
+    ...(error instanceof Error && error.stack ? { stack: error.stack } : {}),
+  });
 }
 
 function logBadRequest(

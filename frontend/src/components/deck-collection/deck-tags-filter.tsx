@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Combobox } from "@/components/ui/combobox/combobox";
 import { ResultTag } from "@/components/ui/combobox/combobox-results";
@@ -32,42 +31,27 @@ export function DeckTagsFilter({ containerClass }: Props) {
   const setFilterOpen = useStore((state) => state.setDeckFilterOpen);
   const resetFilter = useStore((state) => state.resetDeckFilter);
 
-  const onReset = useCallback(() => {
+  const onReset = () => {
     resetFilter("tags");
-  }, [resetFilter]);
+  };
 
-  const onOpenChange = useCallback(
-    (val: boolean) => {
-      setFilterOpen("tags", val);
-    },
-    [setFilterOpen],
-  );
+  const onOpenChange = (val: boolean) => {
+    setFilterOpen("tags", val);
+  };
 
-  const onChange = useCallback(
-    (value: Coded[]) => {
-      setFilterValue(
-        "tags",
-        value.map((tag) => tag.code),
-      );
-    },
-    [setFilterValue],
-  );
+  const onChange = (value: Coded[]) => {
+    setFilterValue(
+      "tags",
+      value.map((tag) => tag.code),
+    );
+  };
 
-  const renderTag = useCallback(
-    (tag: Coded) => capitalize(tag.code.trim()),
-    [],
-  );
+  const renderTag = (tag: Coded) => capitalize(tag.code.trim());
 
-  const renderResult = useCallback(
-    (tag: Coded, onRemove?: () => void) => (
-      <ResultTag
-        data-testid={`combobox-result-${tag.code}`}
-        onRemove={onRemove}
-      >
-        {renderTag(tag)}
-      </ResultTag>
-    ),
-    [renderTag],
+  const renderResult = (tag: Coded, onRemove?: () => void) => (
+    <ResultTag data-testid={`combobox-result-${tag.code}`} onRemove={onRemove}>
+      {renderTag(tag)}
+    </ResultTag>
   );
 
   return (

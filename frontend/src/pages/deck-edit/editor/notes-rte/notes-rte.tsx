@@ -1,5 +1,4 @@
 import { EyeIcon, PilcrowIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import DeckDescription from "@/components/deck-description";
@@ -10,7 +9,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "@/components/ui/modal";
 import {
@@ -42,27 +40,21 @@ export function NotesRichTextEditor({ deck }: { deck: ResolvedDeck }) {
 
   const updateDescription = useStore(selectUpdateDescription);
 
-  const onDescriptionChange = useCallback(
-    (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-      if (evt.target instanceof HTMLTextAreaElement) {
-        updateDescription(deck.id, evt.target.value);
-      }
-    },
-    [updateDescription, deck.id],
-  );
+  const onDescriptionChange = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (evt.target instanceof HTMLTextAreaElement) {
+      updateDescription(deck.id, evt.target.value);
+    }
+  };
 
-  const handleShortcuts = useCallback(
-    (evt: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (evt.key === "Tab" && evt.shiftKey) {
-        evt.preventDefault();
-        setPopoverOpen("symbols");
-      } else if (evt.key === "Tab") {
-        evt.preventDefault();
-        setPopoverOpen("cards");
-      }
-    },
-    [setPopoverOpen],
-  );
+  const handleShortcuts = (evt: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (evt.key === "Tab" && evt.shiftKey) {
+      evt.preventDefault();
+      setPopoverOpen("symbols");
+    } else if (evt.key === "Tab") {
+      evt.preventDefault();
+      setPopoverOpen("cards");
+    }
+  };
 
   return (
     <div className={css["rich-text-editor"]} style={accentColorStyles}>
@@ -92,26 +84,20 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
   const { popoverOpen, setPopoverOpen, textareaRef } =
     useNotesRichTextEditorContext();
 
-  const onCardsOpenChange = useCallback(
-    (open: boolean) => {
-      setPopoverOpen(open ? "cards" : undefined);
-      textareaRef.current?.focus();
-    },
-    [setPopoverOpen, textareaRef.current],
-  );
+  const onCardsOpenChange = (open: boolean) => {
+    setPopoverOpen(open ? "cards" : undefined);
+    textareaRef.current?.focus();
+  };
 
-  const onSymbolsOpenChange = useCallback(
-    (open: boolean) => {
-      setPopoverOpen(open ? "symbols" : undefined);
-      textareaRef.current?.focus();
-    },
-    [setPopoverOpen, textareaRef.current],
-  );
+  const onSymbolsOpenChange = (open: boolean) => {
+    setPopoverOpen(open ? "symbols" : undefined);
+    textareaRef.current?.focus();
+  };
 
-  const onBlurPopover = useCallback(() => {
+  const onBlurPopover = () => {
     setPopoverOpen(undefined);
     textareaRef.current?.focus();
-  }, [setPopoverOpen, textareaRef.current]);
+  };
 
   return (
     <nav className={css["toolbar"]}>
@@ -119,6 +105,7 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
         <Popover
           hoverDisabled
           onOpenChange={onCardsOpenChange}
+          strategy="fixed"
           open={popoverOpen === "cards"}
           placement="bottom-start"
         >
@@ -132,7 +119,7 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
                   description={t("deck_edit.notes.toolbar.card_tooltip")}
                 />
               }
-              variant={popoverOpen === "cards" ? "primary" : "secondary"}
+              variant={popoverOpen === "cards" ? "primary" : undefined}
             >
               <i className="icon-card-outline" />
               {t("deck_edit.notes.toolbar.card")}
@@ -147,6 +134,7 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
         <Popover
           hoverDisabled
           onOpenChange={onSymbolsOpenChange}
+          strategy="fixed"
           open={popoverOpen === "symbols"}
           placement="bottom-start"
         >
@@ -160,7 +148,7 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
                 />
               }
               size="sm"
-              variant={popoverOpen === "symbols" ? "primary" : "secondary"}
+              variant={popoverOpen === "symbols" ? "primary" : undefined}
             >
               <PilcrowIcon />
               {t("deck_edit.notes.toolbar.symbol")}
@@ -190,7 +178,6 @@ function NotesRichTextEditorToolbar({ deck }: { deck: ResolvedDeck }) {
             </DialogTrigger>
             <DialogContent>
               <Modal>
-                <ModalBackdrop />
                 <ModalInner size="48rem">
                   <ModalActions />
                   <DefaultModalContent

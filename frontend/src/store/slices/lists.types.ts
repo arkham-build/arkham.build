@@ -152,6 +152,11 @@ export type SortingType =
   | "subtype"
   | "type";
 
+export type GroupOrder = {
+  keys: readonly string[];
+  type: GroupingType;
+};
+
 export type ViewMode =
   | "compact"
   | "card-text"
@@ -172,10 +177,11 @@ export type ListDisplaySettings = {
 };
 
 export type List = {
-  // Unowned fan-made content (in cache) is filtered from lists by default.
-  // For fan-made content preview pages, we need to cache and "whitelist" the fan-made data
-  // for the displayed list, which is what this field can be used for.
-  fanMadeCycleCodes?: string[];
+  defaultFlipped: boolean;
+  tabooSetOverride?: number | null;
+  // Unowned fan-made content in the cache is filtered from lists by default.
+  // Preview pages use this field to allow only cards from the preview project.
+  fanMadeCardCodes?: ReadonlySet<string>;
   display: ListDisplay;
   displaySortSelection: string;
   filters: FilterKey[];
@@ -183,6 +189,7 @@ export type List = {
   filterValues: {
     [id: number]: FilterObject<FilterKey>;
   };
+  groupOrder?: GroupOrder;
   initialState: Omit<List, "initialState">;
   key: string;
   displaySettingsKey?: string;
@@ -207,19 +214,24 @@ export type ListsSlice = {
       additionalFilters?: FilterKey[];
       display?: Partial<ListDisplay>;
       displaySettingsKey?: string;
-      fanMadeCycleCodes?: string[];
+      fanMadeCardCodes?: ReadonlySet<string>;
+      filters?: FilterKey[];
+      groupOrder?: GroupOrder;
       lockedFilters?: Set<FilterKey>;
       search?: string;
       showInvestigatorFilter?: boolean;
       showOwnershipFilter?: boolean;
       systemFilter?: Filter;
+      tabooSetOverride?: number | null;
     },
   ): void;
 
   removeList(key: string): void;
 
   setFiltersEnabled(value: boolean): void;
+  setListTabooSetOverride(value: number | null): void;
   setListViewMode(value: ViewMode): void;
+  toggleListDefaultFlipped(): void;
   setListSort(value: DecklistConfig | undefined): void;
 
   setFilterValue<T>(id: number, payload: T): void;

@@ -88,27 +88,33 @@
 
 .scan-images {
   position: relative;
-  transition: opacity 0.2s;
 }
 
 .scan-group-collected {
   opacity: 0.33;
 }
 
-.scan:hover .scan-group-collected {
-  opacity: 0.5;
-}
-
-.scan-copy {
-  transition: opacity 0.2s;
-}
-
 .scan-copy-collected {
   opacity: 0.33;
 }
 
-.scan:hover .scan-copy-collected {
-  opacity: 0.5;
+@media (hover: hover) and (pointer: fine) {
+  .scan-images,
+  .scan-copy {
+    transition: opacity 125ms var(--motion-ease-out);
+  }
+
+  .scan:hover .scan-group-collected,
+  .scan:hover .scan-copy-collected {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-images,
+  .scan-copy {
+    transition: none;
+  }
 }
 
 .list-checkbox {

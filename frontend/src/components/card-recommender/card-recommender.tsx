@@ -6,7 +6,6 @@ import {
   RecommendationsRequestSchema,
   type RecommendationsResponse,
 } from "@arkham-build/shared";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ErrorDisplay,
@@ -89,7 +88,7 @@ export function CardRecommender(
     requestKey,
   );
 
-  const onKeyboardNavigate = useCallback((evt: React.KeyboardEvent) => {
+  const onKeyboardNavigate = (evt: React.KeyboardEvent) => {
     if (
       evt.key === "ArrowDown" ||
       evt.key === "ArrowUp" ||
@@ -108,7 +107,7 @@ export function CardRecommender(
         evt.target.blur();
       }
     }
-  }, []);
+  };
 
   if (!listState || !resolvedDeck) return null;
 
@@ -200,15 +199,11 @@ function CardRecommenderInner(
   const metadata = useStore(selectMetadata);
   const lookupTables = useStore(selectLookupTables);
 
-  const listDisplay = useMemo(
-    () =>
-      ({
-        sorting: [],
-        grouping: [],
-        viewMode: "compact",
-      }) as ListDisplay,
-    [],
-  );
+  const listDisplay = {
+    sorting: [],
+    grouping: [],
+    viewMode: "compact",
+  } as ListDisplay;
 
   const { recommendations, decks_analyzed } = data;
 
@@ -254,30 +249,18 @@ function CardRecommenderInner(
     key: "recommendations",
   };
 
-  /* oxlint-disable react/exhaustive-deps -- these lookup tables are rebuilt together on every render. */
-  const listCardPropsWithRecommendations = useCallback(
-    (card: Card) => ({
-      ...getListCardProps?.(card),
-      renderCardAfter: (card: Card) => (
-        <RecommendationBar
-          card={card}
-          data={indexedRecommendations[idMappings.get(card.code)!]}
-          decksAnalyzed={decks_analyzed}
-          isRelative={isRelative}
-          investigator={investigator}
-        />
-      ),
-    }),
-    [
-      getListCardProps,
-      decks_analyzed,
-      investigator,
-      indexedRecommendations,
-      isRelative,
-      idMappings,
-    ],
-  );
-  /* oxlint-enable react/exhaustive-deps */
+  const listCardPropsWithRecommendations = (card: Card) => ({
+    ...getListCardProps?.(card),
+    renderCardAfter: (card: Card) => (
+      <RecommendationBar
+        card={card}
+        data={indexedRecommendations[idMappings.get(card.code)!]}
+        decksAnalyzed={decks_analyzed}
+        isRelative={isRelative}
+        investigator={investigator}
+      />
+    ),
+  });
 
   if (isEmpty(sortedCards)) {
     return (

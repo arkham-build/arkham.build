@@ -11,19 +11,6 @@
   margin-top: 0.75rem;
 }
 
-.limits {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-}
-
-.limits > * {
-  display: inline-block;
-  padding: 0.125rem;
-  background: var(--palette-point-five);
-  border-radius: var(--rounded);
-}
-
 .preview {
   border: 1px solid var(--palette-point-five);
   padding: 0.25rem;

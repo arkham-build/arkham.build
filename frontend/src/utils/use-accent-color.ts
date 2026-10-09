@@ -1,11 +1,7 @@
 import type { Card } from "@arkham-build/shared";
-import { useMemo } from "react";
 
 export function useAccentColor(card?: Card) {
-  const cssVariables = useMemo(
-    () => (card ? getAccentColorsForFaction(card) : {}),
-    [card],
-  );
+  const cssVariables = card ? getAccentColorsForFaction(card) : {};
 
   return cssVariables;
 }
@@ -24,6 +20,8 @@ export function getAccentColorsForFaction(card: Card): React.CSSProperties {
   return {
     "--accent-color": `var(--color-${accent})`,
     "--accent-color-dark": `var(--${accent}-dark)`,
+    "--accent-color-interaction":
+      "color-mix(in srgb, var(--accent-color-dark) 85%, var(--accent-interaction-target))",
     "--accent-color-contrast": "var(--color-inverted)",
   } as React.CSSProperties;
 }

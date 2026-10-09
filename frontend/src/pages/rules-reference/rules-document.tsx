@@ -1,12 +1,5 @@
 import { ChevronLeftIcon, ChevronUpIcon, ListIcon, XIcon } from "lucide-react";
-import {
-  memo,
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useDeferredValue, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Scroller } from "@/components/ui/scroller";
@@ -38,13 +31,13 @@ export function RulesDocument({
   const searchRef = useRef<HTMLInputElement>(null);
   const tocRef = useRef<HTMLDivElement>(null);
 
-  const onToggleToc = useCallback(() => {
+  const onToggleToc = () => {
     setTocOpen((prev) => !prev);
-  }, []);
+  };
 
-  const onCloseToc = useCallback(() => {
+  const onCloseToc = () => {
     setTocOpen(false);
-  }, []);
+  };
 
   useEffect(() => {
     const onHashChange = () => {
@@ -120,7 +113,7 @@ export function RulesDocument({
   );
 }
 
-const RulesToc = memo(function RulesToc({
+const RulesToc = function RulesToc({
   renderToc,
   search,
 }: {
@@ -128,9 +121,9 @@ const RulesToc = memo(function RulesToc({
   search: string;
 }) {
   return renderToc(search);
-});
+};
 
-const RulesContent = memo(function RulesContent({
+const RulesContent = function RulesContent({
   renderContent,
   search,
 }: {
@@ -138,7 +131,7 @@ const RulesContent = memo(function RulesContent({
   search: string;
 }) {
   return renderContent(search);
-});
+};
 
 function useClickOutside(
   ref: React.RefObject<HTMLElement | null>,

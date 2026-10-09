@@ -13,8 +13,10 @@
   border-radius: var(--rounded);
 }
 
-.item:hover {
-  background: var(--palette-1);
+@media (hover: hover) and (pointer: fine) {
+  .item:hover {
+    background: var(--palette-1);
+  }
 }
 
 .item.active {
@@ -24,12 +26,6 @@
 
 .item-content {
   flex: 1 1 auto;
-}
-
-.item-actions {
-  display: inline-flex;
-  gap: 0.125rem;
-  flex: 0 0 auto;
 }
 
 .item-handle-button {

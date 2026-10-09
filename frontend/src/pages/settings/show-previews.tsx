@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
@@ -8,12 +7,9 @@ export function ShowPreviewsSetting(props: SettingProps) {
   const { settings, setSettings } = props;
   const { t } = useTranslation();
 
-  const onCheckedChange = useCallback(
-    (val: boolean | string) => {
-      setSettings((settings) => ({ ...settings, showPreviews: !!val }));
-    },
-    [setSettings],
-  );
+  const onCheckedChange = (val: boolean | string) => {
+    setSettings((settings) => ({ ...settings, showPreviews: !!val }));
+  };
 
   return (
     <Field bordered helpText={t("settings.collection.show_previews_help")}>

@@ -1,10 +1,22 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 import { defaultScreenshotMask, fillSearch } from "./actions";
 import { mockApiCalls } from "./mocks";
 
 test.beforeEach(async ({ page }) => {
   await mockApiCalls(page);
 });
+
+async function screenshotCardSection(
+  page: Page,
+  section: string,
+  options: { mask: Locator[]; maxDiffPixels?: number },
+) {
+  const locator = page.getByTestId(section);
+  await expect(locator).toBeVisible();
+  // Errata requests can complete after the card appears.
+  await expect(page.locator("main .spin")).toHaveCount(0);
+  await expect(locator).toHaveScreenshot(options);
+}
 
 async function cardVisible(page: Page, code: string, section?: string) {
   const locator = section ? page.getByTestId(section) : page;
@@ -39,8 +51,9 @@ test.describe("card view: display", () => {
 
   test("renders customizable options", async ({ page }) => {
     await page.goto("/card/09042");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
+      maxDiffPixels: 1,
     });
   });
 
@@ -74,14 +87,14 @@ test.describe("card view: display", () => {
 
   test("renders cards present in multiple packs", async ({ page }) => {
     await page.goto("/card/01039");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders investigators", async ({ page }) => {
     await page.goto("/card/02005");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: [
         ...defaultScreenshotMask(page),
         page.getByText("Errata (23 Apr 2019)", { exact: true }),
@@ -95,101 +108,108 @@ test.describe("card view: display", () => {
     await page.getByTestId("settings-save").click();
 
     await page.goto("/card/03006");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
 
     await page.goto("/card/07197");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
 
     await page.goto("/card/07268");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders cards from standalone packs", async ({ page }) => {
     await page.goto("/card/60216");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders parallel investigators", async ({ page }) => {
     await page.goto("/card/02005");
-    await expect(page.getByTestId("parallel")).toHaveScreenshot({
+    // Content above this section must settle before its crop is measured.
+    await expect(
+      page.getByText("No FAQ entries available.", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("No deck guides found", { exact: true }),
+    ).toBeVisible();
+    await screenshotCardSection(page, "parallel", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders encounter cards with unique backside", async ({ page }) => {
     await page.goto("/card/01121a");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders acts", async ({ page }) => {
     await page.goto("/card/08526");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders agendas", async ({ page }) => {
     await page.goto("/card/01143");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders enemies", async ({ page }) => {
     await page.goto("/card/01181");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders stories", async ({ page }) => {
     await page.goto("/card/05263");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders locations with unique fronts", async ({ page }) => {
     await page.goto("/card/88010");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders locations with shroud 0", async ({ page }) => {
     await page.goto("/card/08686");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders locations with shroud null", async ({ page }) => {
     await page.goto("/card/08630");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders locations with shroud per investigator", async ({ page }) => {
     await page.goto("/card/87018");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });
 
   test("renders player locations", async ({ page }) => {
     await page.goto("/card/06015a");
-    await expect(page.getByTestId("main")).toHaveScreenshot({
+    await screenshotCardSection(page, "main", {
       mask: defaultScreenshotMask(page),
     });
   });

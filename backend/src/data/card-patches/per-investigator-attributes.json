@@ -5,6 +5,16 @@
     "patch": true
   },
   {
+    "code": "03122",
+    "doom_per_investigator": true,
+    "patch": true
+  },
+  {
+    "code": "03123",
+    "doom_per_investigator": true,
+    "patch": true
+  },
+  {
     "code": "08679",
     "enemy_evade_per_investigator": true,
     "enemy_fight_per_investigator": true,

@@ -1,5 +1,4 @@
 import type { Card, Pack } from "@arkham-build/shared";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -34,36 +33,23 @@ export function LimitedCardPoolField(props: Props) {
 
   const locale = useStore((state) => state.settings.locale);
 
-  const items = useMemo(() => packs.filter(isDeckbuildingPoolPack), [packs]);
+  const items = packs.filter(isDeckbuildingPoolPack);
 
-  const packRenderer = useCallback(
-    (pack: Pack) => <PackName pack={pack} shortenNewFormat />,
-    [],
+  const packRenderer = (pack: Pack) => (
+    <PackName pack={pack} shortenNewFormat />
   );
 
-  const packResultRenderer = useCallback(
-    (pack: Pack, onRemove?: () => void) => (
-      <ResultTag
-        data-testid={`combobox-result-${pack.code}`}
-        onRemove={onRemove}
-      >
-        {packRenderer(pack)}
-      </ResultTag>
-    ),
-    [packRenderer],
+  const packResultRenderer = (pack: Pack, onRemove?: () => void) => (
+    <ResultTag data-testid={`combobox-result-${pack.code}`} onRemove={onRemove}>
+      {packRenderer(pack)}
+    </ResultTag>
   );
 
-  const packToString = useCallback(
-    (pack: Pack) => displayPackName(pack).toLowerCase(),
-    [],
-  );
+  const packToString = (pack: Pack) => displayPackName(pack).toLowerCase();
 
-  const onChange = useCallback(
-    (values: Pack[]) => {
-      onValueChange(values.map((pack) => pack.code));
-    },
-    [onValueChange],
-  );
+  const onChange = (values: Pack[]) => {
+    onValueChange(values.map((pack) => pack.code));
+  };
 
   return (
     <Dialog>

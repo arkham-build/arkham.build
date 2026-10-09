@@ -1,5 +1,5 @@
 import type { Card } from "@arkham-build/shared";
-import type { i18n, TFunction } from "i18next";
+import { createInstance, type i18n, type TFunction } from "i18next";
 import { beforeAll, describe, expect, test } from "vitest";
 import {
   selectLocaleSortingCollator,
@@ -119,6 +119,16 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ is_unique: true }))).toBe(false);
     });
 
+    test("errata is true when the errata date is non-nullish", () => {
+      const expr = parse("errata == true");
+      const filter = compile(expr, ctx);
+
+      expect(filter(createMockCard({ errata_date: "2025-07-11" }))).toBe(true);
+      expect(filter(createMockCard({ errata_date: "" }))).toBe(true);
+      expect(filter(createMockCard({ errata_date: null }))).toBe(false);
+      expect(filter(createMockCard({ errata_date: undefined }))).toBe(false);
+    });
+
     test("loose equals (=) with strings", () => {
       const expr = parse('name = "test"');
       const filter = compile(expr, ctx);
@@ -217,6 +227,49 @@ describe("Interpreter", () => {
     });
   });
 
+  describe("Card backs", () => {
+    test("evaluates a conjunction against one card side at a time", () => {
+      const expr = parse('text !== "record"& text == "in your campaign log"');
+      const filter = compile(expr, {
+        ...ctx,
+        fieldLookupContext: {
+          ...ctx.fieldLookupContext,
+          matchBacks: true,
+        },
+      });
+      const shatteredRuins = createMockCard({
+        double_sided: true,
+        real_text:
+          'In your Campaign Log, record "Stranger" on the glyph record.',
+        real_back_text:
+          "You cannot enter Treacherous Path if there are clues on your location.",
+      });
+
+      expect(filter(shatteredRuins)).toBe(false);
+    });
+
+    test("does not combine a negative front match with a positive back match", () => {
+      const expr = parse('text !== "record" & text == "in your campaign log"');
+      const filter = compile(expr, {
+        ...ctx,
+        fieldLookupContext: {
+          ...ctx.fieldLookupContext,
+          matchBacks: true,
+        },
+      });
+      const lonelyCaverns = createMockCard({
+        double_sided: true,
+        real_name: "The Lonely Caverns",
+        real_text: "Do not remove doom from each location in play.",
+        real_back_name: "Serpents' Revenge",
+        real_back_text:
+          "If there are 8 or more tally marks in your Campaign Log, it enters play with damage recorded in your Campaign Log.",
+      });
+
+      expect(filter(lonelyCaverns)).toBe(false);
+    });
+  });
+
   describe("Groups", () => {
     test("groups override precedence", () => {
       const expr = parse("(xp == 0 | xp == 2) & cost < 3");
@@ -305,8 +358,8 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ code: "01018" }))).toBe(false);
     });
 
-    test("is_favorite matches favorited cards", () => {
-      const expr = parse("is_favorite = true");
+    test("favorite matches favorited cards", () => {
+      const expr = parse("favorite = true");
       const aliasExpr = parse("fav = true");
       const favoriteCtx: InterpreterContext = {
         ...ctx,
@@ -503,6 +556,24 @@ describe("Interpreter", () => {
       expect(filter(createMockCard({ name: "健康卡" }))).toBe(true);
       expect(filter(createMockCard({ name: "Another Card" }))).toBe(false);
     });
+  });
+
+  test("matches displayed and English names with strings and regex", async () => {
+    const localizedI18n = createInstance();
+    await localizedI18n.init({ lng: "de", resources: {} });
+    const localizedCtx: InterpreterContext = {
+      ...ctx,
+      fieldLookupContext: { ...ctx.fieldLookupContext, i18n: localizedI18n },
+    };
+    const card = createMockCard({ name: "Klinge", real_name: "Blade" });
+
+    for (const value of ['"Klinge"', '"Blade"', "/^Klinge$/", "/^Blade$/"]) {
+      expect(compile(parse(`name = ${value}`), localizedCtx)(card)).toBe(true);
+      expect(compile(parse(`name != ${value}`), localizedCtx)(card)).toBe(
+        false,
+      );
+    }
+    expect(compile(parse('name = "Blade"'), ctx)(card)).toBe(false);
   });
 
   describe("Bidirectional comparison context", () => {

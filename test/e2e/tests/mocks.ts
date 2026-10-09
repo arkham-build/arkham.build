@@ -1,5 +1,6 @@
 /* oxlint-disable typescript/no-explicit-any -- test code */
 import type { Page } from "@playwright/test";
+import starterDecks from "../../../backend/src/data/starter_decks.json" with { type: "json" };
 import allCardsResponse from "../../fixtures/stubs/all_card.json" with { type: "json" };
 
 import versionsResponse from "../../fixtures/stubs/data_version.json" with { type: "json" };
@@ -16,6 +17,27 @@ export async function mockApiCalls(page: Page) {
   const baseUrl = `${apiUrl}/v1`;
 
   await Promise.all([
+    page.route(`${apiUrl}/v2/account/auth/me`, async (route) => {
+      await route.fulfill({ status: 401, json: { message: "Unauthorized" } });
+    }),
+    page.route(`${apiUrl}/v2/public/faq/card/*`, async (route) => {
+      await route.fulfill({ json: [] });
+    }),
+    page.route(
+      `${apiUrl}/v2/public/arkhamdb-decklists/search?*`,
+      async (route) => {
+        await route.fulfill({
+          json: { data: [], meta: { limit: 10, offset: 0, total: 0 } },
+        });
+      },
+    ),
+    // Keep the errata notice fallback fixed. Do not use live errata data.
+    page.route(`${apiUrl}/v2/public/errata/card/*`, async (route) => {
+      await route.fulfill({
+        status: 503,
+        json: { message: "Errata unavailable" },
+      });
+    }),
     page.route(`${baseUrl}/cache/cards/en*`, async (route) => {
       const json: any = structuredClone(allCardsResponse);
       json.data.all_card.push({
@@ -33,7 +55,13 @@ export async function mockApiCalls(page: Page) {
       await route.fulfill({ json });
     }),
     page.route(`${baseUrl}/cache/metadata/en*`, async (route) => {
-      const json = metadataResponse;
+      const json = {
+        ...metadataResponse,
+        data: {
+          ...metadataResponse.data,
+          starter_decks: [starterDecks["2624931"]],
+        },
+      };
       await route.fulfill({ json });
     }),
     page.route(`${baseUrl}/cache/version/en`, async (route) => {

@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from "react";
+import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -18,10 +18,7 @@ export function CardlistCount(props: { data: ListState | undefined }) {
 
   const filterChanges = useStore(selectActiveListChanges);
 
-  const tooltipOptions = useMemo(
-    () => ({ placement: "bottom-start" as const }),
-    [],
-  );
+  const tooltipOptions = { placement: "bottom-start" as const };
 
   return (
     <>

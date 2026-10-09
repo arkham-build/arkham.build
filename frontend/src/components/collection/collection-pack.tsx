@@ -3,7 +3,6 @@ import PackIcon from "@/components/icons/pack-icon";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { CollectionCounts } from "@/store/selectors/collection";
 import { CYCLES_WITH_STANDALONE_PACKS } from "@/utils/constants";
-import { cx } from "@/utils/cx";
 import { displayPackName } from "@/utils/formatting";
 import css from "./collection.module.css";
 import { CollectionCount } from "./collection-count";
@@ -39,10 +38,7 @@ export function CollectionPack(props: Props) {
   };
 
   return (
-    <li
-      className={cx(css["pack"], pack.reprint_type && css["reprint"])}
-      key={pack.code}
-    >
+    <li className={css["pack"]} key={pack.code}>
       {hasQuantity ? (
         <div className={css["pack-name"]}>
           <input

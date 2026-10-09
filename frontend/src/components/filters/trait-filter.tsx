@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
@@ -32,7 +31,7 @@ export function TraitFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
 
   const traitMapper = useStore(selectTraitMapper);
 
-  const nameRenderer = useCallback((c: Coded & { name: string }) => c.name, []);
+  const nameRenderer = (c: Coded & { name: string }) => c.name;
 
   return (
     <MultiselectFilter

@@ -143,23 +143,27 @@ export const createSettingsSlice: StateCreator<
       // TODO: once reprint packs are returned localized by the API, remove this.
       await changeLanguage(settings.locale);
 
-      await get().init(
-        (locale, revision) => queryMetadata(client, locale, revision),
-        (locale) => queryDataVersion(client, locale),
-        (locale, revision) => queryCards(client, locale, revision),
-        {
-          refresh: true,
-          locale: settings.locale,
-          overrides: {
-            lists: resetLists ? makeLists(settings) : state.lists,
-            settings: {
-              ...state.settings,
-              ...settings,
+      try {
+        await get().init(
+          (locale, revision) => queryMetadata(client, locale, revision),
+          (locale) => queryDataVersion(client, locale),
+          (locale, revision) => queryCards(client, locale, revision),
+          {
+            refresh: true,
+            locale: settings.locale,
+            overrides: {
+              lists: resetLists ? makeLists(settings) : state.lists,
+              settings: {
+                ...state.settings,
+                ...settings,
+              },
+              sync: state.sync,
             },
-            sync: state.sync,
           },
-        },
-      );
+        );
+      } finally {
+        await changeLanguage(get().settings.locale);
+      }
     } else {
       set({
         settings,

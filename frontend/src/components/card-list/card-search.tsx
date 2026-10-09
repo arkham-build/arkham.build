@@ -1,17 +1,31 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CheckIcon, ClipboardCopyIcon, Share2Icon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { z } from "zod";
 import { useStore } from "@/store";
-import { setSearchFlagParams } from "@/store/lib/search-url";
-import { selectActiveListSearch } from "@/store/selectors/lists";
+import {
+  setSearchContextParams,
+  setSearchFlagParams,
+} from "@/store/lib/search-url";
+import {
+  selectActiveListSearch,
+  selectCanonicalTabooSetId,
+} from "@/store/selectors/lists";
 import { selectActiveList } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
-import { debounce } from "@/utils/debounce";
 import { useAgathaEasterEggTrigger } from "@/utils/easter-egg-agatha";
+import { useCopyToClipboard } from "@/utils/use-copy-to-clipboard";
 import { useHotkey } from "@/utils/use-hotkey";
 import { useResolvedDeck } from "../resolved-deck-context";
+import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
-import { CopyToClipboard } from "../ui/copy-to-clipboard";
+import {
+  DropdownButton,
+  DropdownMenu,
+  DropdownMenuSection,
+} from "../ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { SearchInput } from "../ui/search-input";
 import { StatusBubble } from "../ui/status-bubble";
 import { Tag } from "../ui/tag";
@@ -46,7 +60,11 @@ export function CardSearch(props: Props) {
 
   const search = useStore(selectActiveListSearch);
   const activeList = useStore(selectActiveList);
+  const visibleTabooSetId = useStore((state) =>
+    selectCanonicalTabooSetId(state, resolvedDeck),
+  );
   assert(search, "Search bar requires an active list.");
+  assert(activeList, "Search bar requires an active list.");
 
   const { includeBacks, includeFlavor, includeGameText, includeName } = search;
 
@@ -54,17 +72,32 @@ export function CardSearch(props: Props) {
 
   const [inputValue, setInputValue] = useState(search.value ?? "");
   const [iconSlotSize, setIconSlotSize] = useState(0);
+  const [sharePreferences, setSharePreferences] = useState(
+    loadSearchSharePreferences,
+  );
+  const { matchDisplayMode, matchVisibleTaboo } = sharePreferences;
 
   const pasted = useRef(false);
+  const searchValueTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
-  const cardType = useMemo(() => {
+  const cardType = (() => {
     const id = activeList?.filters.indexOf("card_type");
     if (id == null || id < 0) return "";
     const value = activeList?.filterValues[id]?.value;
     return value === "player" || value === "encounter" ? value : "";
-  }, [activeList]);
+  })();
 
-  const shareUrl = useMemo(() => {
+  const onMatchDisplayModeChange = (value: boolean) => {
+    setSharePreferences({ ...sharePreferences, matchDisplayMode: value });
+  };
+
+  const onMatchVisibleTabooChange = (value: boolean) => {
+    setSharePreferences({ ...sharePreferences, matchVisibleTaboo: value });
+  };
+
+  const shareUrl = (() => {
     const url = new URL("/search", window.location.origin);
     url.searchParams.set("q", inputValue);
     if (cardType) url.searchParams.set("card_type", cardType);
@@ -74,94 +107,93 @@ export function CardSearch(props: Props) {
       includeGameText,
       includeName,
     });
+    setSearchContextParams(url.searchParams, {
+      displayMode: activeList.display.viewMode,
+      matchDisplayMode,
+      matchVisibleTaboo,
+      tabooSetId: visibleTabooSetId,
+    });
     return url.toString();
-  }, [
-    cardType,
-    includeBacks,
-    includeFlavor,
-    includeGameText,
-    includeName,
-    inputValue,
-  ]);
+  })();
 
   useEffect(() => {
+    storeSearchSharePreferences(sharePreferences);
+  }, [sharePreferences]);
+
+  useEffect(() => {
+    const iconSlot = iconSlotRef.current;
+    if (!iconSlot) return;
+
     const updateIconSlotSize = () => {
-      if (iconSlotRef.current) {
-        setIconSlotSize(iconSlotRef.current.getBoundingClientRect().width);
-      }
+      setIconSlotSize(iconSlot.getBoundingClientRect().width);
     };
 
     updateIconSlotSize();
 
-    window.addEventListener("resize", updateIconSlotSize, { passive: true });
-    return () => window.removeEventListener("resize", updateIconSlotSize);
+    const resizeObserver = new ResizeObserver(updateIconSlotSize);
+    resizeObserver.observe(iconSlot);
+    return () => resizeObserver.disconnect();
   }, []);
 
-  const onShortcut = useCallback(() => {
+  const onShortcut = () => {
     inputRef.current?.focus();
     inputRef.current?.select();
-  }, []);
+  };
 
   useHotkey("/", onShortcut);
 
-  const debouncedSetSearchValue = useMemo(
-    () => debounce(setSearchValue, 50),
-    [setSearchValue],
-  );
-
-  const onValueChange = useCallback(
-    (val: string) => {
-      const changeOpts = {
-        clearMode: val.length <= 1 || pasted.current,
-      };
-
-      pasted.current = false;
-      setInputValue(val);
-      debouncedSetSearchValue(val, resolvedDeck, changeOpts);
-
-      if (easterEggHandler(val)) {
-        setInputValue("");
-        debouncedSetSearchValue("", resolvedDeck, changeOpts);
-      }
-    },
-    [debouncedSetSearchValue, easterEggHandler, resolvedDeck],
-  );
-
-  const onInputPaste = useCallback(() => {
-    pasted.current = true;
+  useEffect(() => {
+    return () => clearTimeout(searchValueTimerRef.current);
   }, []);
 
-  const onToggleGameText = useCallback(
-    (val: boolean | string) => {
-      setSearchFlag("includeGameText", !!val, resolvedDeck);
-      inputRef.current?.focus();
-    },
-    [setSearchFlag, resolvedDeck],
-  );
+  const debouncedSetSearchValue = (
+    value: string,
+    changeOpts: { clearMode: boolean },
+  ) => {
+    clearTimeout(searchValueTimerRef.current);
+    searchValueTimerRef.current = setTimeout(() => {
+      setSearchValue(value, resolvedDeck, changeOpts);
+    }, 50);
+  };
 
-  const onToggleFlavor = useCallback(
-    (val: boolean | string) => {
-      setSearchFlag("includeFlavor", !!val, resolvedDeck);
-      inputRef.current?.focus();
-    },
-    [setSearchFlag, resolvedDeck],
-  );
+  const onValueChange = (val: string) => {
+    const changeOpts = {
+      clearMode: val.length <= 1 || pasted.current,
+    };
 
-  const onToggleBacks = useCallback(
-    (val: boolean | string) => {
-      setSearchFlag("includeBacks", !!val, resolvedDeck);
-      inputRef.current?.focus();
-    },
-    [setSearchFlag, resolvedDeck],
-  );
+    pasted.current = false;
+    setInputValue(val);
+    debouncedSetSearchValue(val, changeOpts);
 
-  const onToggleCardName = useCallback(
-    (val: boolean | string) => {
-      setSearchFlag("includeName", !!val, resolvedDeck);
-      inputRef.current?.focus();
-    },
-    [setSearchFlag, resolvedDeck],
-  );
+    if (easterEggHandler(val)) {
+      setInputValue("");
+      debouncedSetSearchValue("", changeOpts);
+    }
+  };
+
+  const onInputPaste = () => {
+    pasted.current = true;
+  };
+
+  const onToggleGameText = (val: boolean | string) => {
+    setSearchFlag("includeGameText", !!val, resolvedDeck);
+    inputRef.current?.focus();
+  };
+
+  const onToggleFlavor = (val: boolean | string) => {
+    setSearchFlag("includeFlavor", !!val, resolvedDeck);
+    inputRef.current?.focus();
+  };
+
+  const onToggleBacks = (val: boolean | string) => {
+    setSearchFlag("includeBacks", !!val, resolvedDeck);
+    inputRef.current?.focus();
+  };
+
+  const onToggleCardName = (val: boolean | string) => {
+    setSearchFlag("includeName", !!val, resolvedDeck);
+    inputRef.current?.focus();
+  };
 
   const iconSlotNode = (
     <>
@@ -185,11 +217,12 @@ export function CardSearch(props: Props) {
         </a>
       </DefaultTooltip>
       {!!inputValue && (
-        <CopyToClipboard
-          size="sm"
-          text={shareUrl}
-          tooltip={t("lists.search.share")}
-          variant="bare"
+        <SearchShare
+          matchDisplayMode={matchDisplayMode}
+          matchVisibleTaboo={matchVisibleTaboo}
+          onMatchDisplayModeChange={onMatchDisplayModeChange}
+          onMatchVisibleTabooChange={onMatchVisibleTabooChange}
+          shareUrl={shareUrl}
         />
       )}
     </>
@@ -258,5 +291,109 @@ export function CardSearch(props: Props) {
         />
       </div>
     </search>
+  );
+}
+
+function SearchShare({
+  matchDisplayMode,
+  matchVisibleTaboo,
+  onMatchDisplayModeChange,
+  onMatchVisibleTabooChange,
+  shareUrl,
+}: {
+  matchDisplayMode: boolean;
+  matchVisibleTaboo: boolean;
+  onMatchDisplayModeChange: (value: boolean) => void;
+  onMatchVisibleTabooChange: (value: boolean) => void;
+  shareUrl: string;
+}) {
+  const { t } = useTranslation();
+  const { copyToClipboard, isCopied } = useCopyToClipboard();
+
+  const onCopy = () => {
+    void copyToClipboard(shareUrl).catch(console.error);
+  };
+
+  return (
+    <Popover clickStickIfOpen={false} placement="bottom-end">
+      <PopoverTrigger asChild>
+        <Button
+          aria-label={t("lists.search.share")}
+          data-testid="search-share"
+          iconOnly
+          onClick={onCopy}
+          size="sm"
+          tooltip={
+            isCopied
+              ? t("ui.copy_to_clipboard_success")
+              : t("lists.search.share")
+          }
+          variant="bare"
+        >
+          {isCopied ? <CheckIcon /> : <Share2Icon />}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <DropdownMenu>
+          <DropdownMenuSection title={t("lists.search.share_settings")}>
+            <div className={css["share-settings"]}>
+              <Checkbox
+                checked={matchVisibleTaboo}
+                data-testid="search-share-match-taboo"
+                label={t("lists.search.match_visible_taboo")}
+                onCheckedChange={onMatchVisibleTabooChange}
+              />
+              <Checkbox
+                checked={matchDisplayMode}
+                data-testid="search-share-match-display-mode"
+                label={t("lists.search.match_display_mode")}
+                onCheckedChange={onMatchDisplayModeChange}
+              />
+            </div>
+          </DropdownMenuSection>
+          <DropdownMenuSection>
+            <DropdownButton onClick={onCopy} size="sm">
+              {isCopied ? <CheckIcon /> : <ClipboardCopyIcon />}
+              {isCopied
+                ? t("ui.copy_to_clipboard_success")
+                : t("ui.copy_to_clipboard")}
+            </DropdownButton>
+          </DropdownMenuSection>
+        </DropdownMenu>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+const SEARCH_SHARE_PREFERENCES_KEY = "search-share-preferences";
+
+const SearchSharePreferencesSchema = z.object({
+  matchDisplayMode: z.boolean(),
+  matchVisibleTaboo: z.boolean(),
+});
+
+type SearchSharePreferences = z.infer<typeof SearchSharePreferencesSchema>;
+
+const DEFAULT_SEARCH_SHARE_PREFERENCES: SearchSharePreferences = {
+  matchDisplayMode: false,
+  matchVisibleTaboo: false,
+};
+
+function loadSearchSharePreferences(): SearchSharePreferences {
+  const value = localStorage.getItem(SEARCH_SHARE_PREFERENCES_KEY);
+  if (!value) return DEFAULT_SEARCH_SHARE_PREFERENCES;
+
+  try {
+    const result = SearchSharePreferencesSchema.safeParse(JSON.parse(value));
+    return result.success ? result.data : DEFAULT_SEARCH_SHARE_PREFERENCES;
+  } catch {
+    return DEFAULT_SEARCH_SHARE_PREFERENCES;
+  }
+}
+
+function storeSearchSharePreferences(preferences: SearchSharePreferences) {
+  localStorage.setItem(
+    SEARCH_SHARE_PREFERENCES_KEY,
+    JSON.stringify(preferences),
   );
 }

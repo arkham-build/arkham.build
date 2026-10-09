@@ -2,7 +2,7 @@
   font-size: var(--text-sm);
   border: 1px solid var(--palette-2);
   border-radius: var(--rounded);
-  background-image: url("/assets/cycles/core_ch2.avif");
+  background-image: url("/assets/content/banners/core_ch2.avif");
   background-size: cover;
   background-position: center center;
   color: var(--color-inverted);
@@ -14,7 +14,7 @@
 .content {
   padding: 0.5rem;
   background-color: rgba(0, 0, 0, 0.5);
-  border-radius: var(--rounded);
+  border-radius: calc(var(--rounded) - 1px);
 }
 
 .content > * + * {

@@ -117,7 +117,6 @@ function ConnectedAppCard({
           <Button
             disabled={pendingClientId != null}
             onClick={async () => await onDisconnect(grant)}
-            variant="secondary"
           >
             {t("settings.account.oauth.disconnect")}
           </Button>

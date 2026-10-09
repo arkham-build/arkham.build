@@ -1,8 +1,9 @@
 import { CheckIcon, ClipboardCopyIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { cx } from "@/utils/cx";
 import { useCopyToClipboard } from "@/utils/use-copy-to-clipboard";
 import { Button, type Props as ButtonProps } from "./button";
+import css from "./copy-to-clipboard.module.css";
 
 interface Props extends Omit<ButtonProps<"button">, "children" | "onClick"> {
   text: string;
@@ -15,9 +16,9 @@ export function CopyToClipboard(props: Props) {
 
   const { copyToClipboard, isCopied } = useCopyToClipboard();
 
-  const onClick = useCallback(() => {
+  const onClick = () => {
     void copyToClipboard(text).catch(console.error);
-  }, [copyToClipboard, text]);
+  };
 
   return (
     <Button
@@ -30,7 +31,16 @@ export function CopyToClipboard(props: Props) {
       iconOnly
       onClick={onClick}
     >
-      {isCopied ? <CheckIcon /> : <ClipboardCopyIcon />}
+      <span className={css["icon-swap"]} data-copied={isCopied}>
+        <ClipboardCopyIcon
+          aria-hidden="true"
+          className={cx(css["icon"], css["copy"])}
+        />
+        <CheckIcon
+          aria-hidden="true"
+          className={cx(css["icon"], css["check"])}
+        />
+      </span>
     </Button>
   );
 }

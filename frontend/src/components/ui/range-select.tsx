@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { cx } from "@/utils/cx";
 import css from "./range-select.module.css";
 import type { Props as SliderProps } from "./slider";
@@ -35,14 +35,16 @@ export function RangeSelect(props: Props) {
   } = props;
 
   const [liveValue, setLiveValue] = useState(value);
+  const [previousValue, setPreviousValue] = useState(value);
 
-  useEffect(() => {
+  if (!valuesEqual(value, previousValue)) {
+    setPreviousValue(value);
     setLiveValue(value);
-  }, [value]);
+  }
 
-  const onValueChange = useCallback((value: number[]) => {
+  const onValueChange = (value: number[]) => {
     setLiveValue([value[0], value[1]]);
-  }, []);
+  };
 
   return (
     <div className={cx(css["field"], className)}>
@@ -81,4 +83,8 @@ export function RangeSelect(props: Props) {
       </div>
     </div>
   );
+}
+
+function valuesEqual(a: [number, number], b: [number, number]): boolean {
+  return a[0] === b[0] && a[1] === b[1];
 }

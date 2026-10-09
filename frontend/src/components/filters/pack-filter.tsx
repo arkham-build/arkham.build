@@ -1,5 +1,4 @@
 import type { Pack } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -44,27 +43,21 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
     selectPackOptions(state, resolvedDeck, targetDeck),
   );
 
-  const nameRenderer = useCallback(
-    (pack: Pack) => <PackName pack={pack} />,
-    [],
-  );
+  const nameRenderer = (pack: Pack) => <PackName pack={pack} />;
 
-  const itemToString = useCallback(
-    (pack: Pack) => displayPackName(pack).toLowerCase(),
-    [],
-  );
+  const itemToString = (pack: Pack) => displayPackName(pack).toLowerCase();
 
   const { onChange } = useFilter<string[]>(id);
 
   const metadata = useStore(selectMetadata);
 
-  const onApplyCurrentEnvironment = useCallback(() => {
+  const onApplyCurrentEnvironment = () => {
     onChange(
       resolveLimitedPoolPacks(metadata, environments.current()).map(
         (p) => p.code,
       ),
     );
-  }, [onChange, metadata]);
+  };
 
   const showShortcut = listFilterProperties.cardTypes.has("player");
 
@@ -81,13 +74,7 @@ export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       value={filter.value.map(packMapper)}
     >
       {showShortcut && !changes && (
-        <Button
-          size="sm"
-          onClick={onApplyCurrentEnvironment}
-          variant="secondary"
-          rounded="xl"
-          full
-        >
+        <Button size="sm" onClick={onApplyCurrentEnvironment} rounded="xl" full>
           {t("deck_edit.config.card_pool.apply_environment", {
             environment: t("deck_edit.config.card_pool.current"),
           })}

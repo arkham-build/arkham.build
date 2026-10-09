@@ -30,8 +30,10 @@
   background: var(--palette-2);
 }
 
-.item:hover {
-  background: var(--palette-2);
+@media (hover: hover) and (pointer: fine) {
+  .item:hover {
+    background: var(--palette-2);
+  }
 }
 
 .item:has(.input:focus-visible) {

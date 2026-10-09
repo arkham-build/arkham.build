@@ -13,7 +13,7 @@ import { useBrowserLocation } from "wouter/use-browser-location";
 import { ErrorBoundary } from "./components/error-boundary";
 import { KeyboardShortcutsModal } from "./components/keyboard-shortcuts/keyboard-shortcuts-modal";
 import { Loader } from "./components/ui/loader";
-import { ToastProvider } from "./components/ui/toast";
+import { Toaster } from "./components/ui/toast";
 import { useToast } from "./components/ui/toast.hooks";
 import {
   createAuthRedirectPath,
@@ -33,6 +33,8 @@ import { HttpClientProvider } from "./store/services/http-client.provider";
 import { useAgathaEasterEggHint } from "./utils/easter-egg-agatha";
 import { useColorThemeListener } from "./utils/use-color-theme";
 
+const browserLocationHook = useBrowserLocation;
+
 const Index = lazy(() => import("./pages/index"));
 
 const AccountMigration = lazy(
@@ -40,6 +42,12 @@ const AccountMigration = lazy(
 );
 
 const BrowseRoutes = lazy(() => import("./pages/browse/index"));
+
+const Content = lazy(() => import("./pages/content/content"));
+
+const Campaign = lazy(() => import("./pages/campaign/campaign"));
+
+const Scenario = lazy(() => import("./pages/scenario/scenario"));
 
 const DeckEdit = lazy(() => import("./pages/deck-edit/deck-edit"));
 
@@ -68,6 +76,8 @@ const LegalNotice = lazy(() => import("./pages/legal/legal-notice"));
 const Share = lazy(() => import("./pages/share/share"));
 
 const Search = lazy(() => import("./pages/search/search"));
+
+const SealedDeck = lazy(() => import("./pages/sealed-deck/sealed-deck"));
 
 const CollectionStats = lazy(
   () => import("./pages/collection-stats/collection-stats"),
@@ -125,9 +135,8 @@ function Providers(props: {
     <HttpClientProvider client={props.httpClient}>
       <QueryClientProvider client={queryClient}>
         <ErrorBoundary>
-          <Suspense>
-            <ToastProvider>{props.children}</ToastProvider>
-          </Suspense>
+          <Suspense>{props.children}</Suspense>
+          <Toaster />
         </ErrorBoundary>
       </QueryClientProvider>
     </HttpClientProvider>
@@ -151,7 +160,7 @@ function AppInner() {
       <Loader message={t("app.init")} show={!storeInitialized} delay={200} />
       <Suspense fallback={<Loader delay={300} show />}>
         {storeInitialized && (
-          <Router hook={useBrowserLocation}>
+          <Router hook={browserLocationHook}>
             <AccountMigrationRouteGuard>
               <ProfileCompletionRouteGuard>
                 <Switch>
@@ -164,7 +173,11 @@ function AppInner() {
                     component={BrowseRoutes}
                     path={/^\/browse(?:\/.*)?$/}
                   />
+                  <Route component={Content} path="/content" />
+                  <Route component={Campaign} path="/campaign/:id" />
+                  <Route component={Scenario} path="/scenario/:code" />
                   <Route component={Search} path="/search" />
+                  <Route component={SealedDeck} path="/sealed-deck/:id" />
                   <Route component={CardView} path="/card/:code" />
                   <Route
                     component={CardViewUsable}

@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import { createContext, useContext, useEffect, useRef } from "react";
 import { cx } from "@/utils/cx";
 import css from "./toggle-group.module.css";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
@@ -23,22 +16,23 @@ const ToggleGroupContext = createContext<ToggleGroupContextValue>({
 
 interface ToggleGroupSingleProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
-  "onChange"
+  "defaultValue" | "onChange"
 > {
   disabled?: boolean;
   type: "single";
-  value?: string;
-  onValueChange?(value: string): void;
+  value: string | undefined;
+  /** Called with the clicked item value, including when it is selected. */
+  onValueChange(value: string): void;
 }
 
 interface ToggleGroupMultipleProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
-  "onChange"
+  "defaultValue" | "onChange"
 > {
   disabled?: boolean;
   type: "multiple";
-  value?: string[];
-  onValueChange?(value: string[]): void;
+  value: string[];
+  onValueChange(value: string[]): void;
 }
 
 export type ToggleGroupProps = (
@@ -49,17 +43,18 @@ export type ToggleGroupProps = (
   icons?: boolean;
 };
 
-export function ToggleGroup({
-  className,
-  disabled,
-  full,
-  icons,
-  onValueChange,
-  type,
-  value,
-  children,
-  ...rest
-}: ToggleGroupProps) {
+export function ToggleGroup(props: ToggleGroupProps) {
+  const {
+    className,
+    disabled,
+    full,
+    icons,
+    onValueChange,
+    type,
+    value,
+    children,
+    ...rest
+  } = props;
   const shiftKeyPressed = useRef(false);
 
   useEffect(() => {
@@ -80,38 +75,28 @@ export function ToggleGroup({
     };
   }, []);
 
-  const isSelected = useCallback(
-    (v: string) => {
-      if (type === "single") return value === v;
-      return (value as string[] | undefined)?.includes(v) ?? false;
-    },
-    [type, value],
-  );
+  const isSelected = (itemValue: string) => {
+    if (type === "single") return value === itemValue;
+    return value.includes(itemValue);
+  };
 
-  const onItemClick = useCallback(
-    (v: string) => {
-      if (type === "single") {
-        (onValueChange as ToggleGroupSingleProps["onValueChange"])?.(
-          value === v ? "" : v,
-        );
-      } else {
-        const current = (value as string[] | undefined) ?? [];
-        let next = current.includes(v)
-          ? current.filter((x) => x !== v)
-          : [...current, v];
-        if (shiftKeyPressed.current) {
-          next = next.filter((x) => !current.includes(x));
-        }
-        (onValueChange as ToggleGroupMultipleProps["onValueChange"])?.(next);
-      }
-    },
-    [type, value, onValueChange],
-  );
+  const onItemClick = (itemValue: string) => {
+    if (type === "single") {
+      onValueChange(itemValue);
+      return;
+    }
 
-  const ctx = useMemo(
-    () => ({ disabled, isSelected, onItemClick }),
-    [disabled, isSelected, onItemClick],
-  );
+    const current = value;
+    let next = current.includes(itemValue)
+      ? current.filter((value) => value !== itemValue)
+      : [...current, itemValue];
+    if (shiftKeyPressed.current) {
+      next = next.filter((value) => !current.includes(value));
+    }
+    onValueChange(next);
+  };
+
+  const ctx = { disabled, isSelected, onItemClick };
 
   return (
     <ToggleGroupContext value={ctx}>
@@ -155,13 +140,10 @@ export function ToggleGroupItem({
   const selected = isSelected(value);
   const disabled = rest.disabled ?? groupDisabled;
 
-  const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      onItemClick(value);
-      onClick?.(e);
-    },
-    [onItemClick, value, onClick],
-  );
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    onItemClick(value);
+    onClick?.(e);
+  };
 
   const element = (
     <button

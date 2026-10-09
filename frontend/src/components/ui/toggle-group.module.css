@@ -77,16 +77,26 @@
     z-index: 1;
   }
 
-  &:hover:not([data-state="on"]),
   &:active:not([data-state="on"]),
   &:focus-visible:not([data-state="on"]) {
     background: var(--background-hover);
   }
 
-  &:hover[data-state="on"],
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not([data-state="on"]) {
+      background: var(--background-hover);
+    }
+  }
+
   &:active[data-state="on"],
   &:focus-visible[data-state="on"] {
     background: var(--background-active);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover[data-state="on"] {
+      background: var(--background-active);
+    }
   }
 }
 

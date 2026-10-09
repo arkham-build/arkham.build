@@ -42,28 +42,10 @@
   margin-top: 0.75rem;
 }
 
-.quantity {
-  display: flex;
-  gap: 0.25rem;
-  align-items: center;
-}
-
 .exile {
   background: var(--palette-point-five);
   box-shadow: var(--shadow-md);
   border-radius: var(--rounded);
   width: min(22rem, 95dvh);
   padding-block: 1rem;
-}
-
-.list > * + * {
-  margin-top: 0.25rem;
-}
-
-.diffs {
-  list-style: none;
-}
-
-.diff {
-  display: flex;
 }

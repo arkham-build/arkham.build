@@ -1,5 +1,7 @@
 .details {
-  background: var(--palette-0);
+  border: 1px solid var(--palette-1);
+  border-radius: var(--rounded);
+  background-color: var(--palette-point-five);
 }
 
 .details > * + * {
@@ -12,12 +14,6 @@
 
 .details summary > * {
   pointer-events: none;
-}
-
-.details-content {
-  border: 1px solid var(--palette-point-five);
-  padding-block: 0.5rem;
-  border-radius: var(--rounded);
 }
 
 .details-content.scrollable {

@@ -1,7 +1,7 @@
 \restrict dbmate
 
 -- Dumped from database version 18.3
--- Dumped by pg_dump version 18.4 (Homebrew)
+-- Dumped by pg_dump version 18.6 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -700,7 +700,10 @@ CREATE TABLE public.arkhamdb_user (
 CREATE TABLE public.campaign (
     code character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
-    translations jsonb NOT NULL
+    translations jsonb NOT NULL,
+    cycle_code character varying(255) NOT NULL,
+    variant_of_code character varying(255),
+    campaign_guide_url text
 );
 
 
@@ -1263,7 +1266,11 @@ CREATE TABLE public.scenario (
     code character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
     translations jsonb NOT NULL,
-    campaign_code character varying(255)
+    campaign_code character varying(255),
+    variant_of_code character varying(255),
+    rules_insert_url text,
+    campaign_guide_location integer,
+    CONSTRAINT scenario_campaign_guide_location_check CHECK ((campaign_guide_location > 0))
 );
 
 
@@ -2686,6 +2693,14 @@ ALTER TABLE ONLY public.arkhamdb_decklist
 
 
 --
+-- Name: campaign campaign_cycle_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.campaign
+    ADD CONSTRAINT campaign_cycle_code_fkey FOREIGN KEY (cycle_code) REFERENCES public.cycle(code);
+
+
+--
 -- Name: campaign_scenario campaign_scenario_campaign_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2699,6 +2714,14 @@ ALTER TABLE ONLY public.campaign_scenario
 
 ALTER TABLE ONLY public.campaign_scenario
     ADD CONSTRAINT campaign_scenario_scenario_code_fkey FOREIGN KEY (scenario_code) REFERENCES public.scenario(code) ON DELETE CASCADE;
+
+
+--
+-- Name: campaign campaign_variant_of_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.campaign
+    ADD CONSTRAINT campaign_variant_of_code_fkey FOREIGN KEY (variant_of_code) REFERENCES public.campaign(code) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -3126,6 +3149,14 @@ ALTER TABLE ONLY public.scenario_encounter_set
 
 
 --
+-- Name: scenario scenario_variant_of_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.scenario
+    ADD CONSTRAINT scenario_variant_of_code_fkey FOREIGN KEY (variant_of_code) REFERENCES public.scenario(code) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: session session_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3168,6 +3199,8 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260705120000'),
     ('20260718074916'),
     ('20260721191533'),
-    ('20260722150000'),
     ('20260725125000'),
-    ('20260731070811');
+    ('20260731070811'),
+    ('20260801090000'),
+    ('20260815120000'),
+    ('20260818150000');

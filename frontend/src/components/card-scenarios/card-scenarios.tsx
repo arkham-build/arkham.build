@@ -1,6 +1,7 @@
 import type { Card } from "@arkham-build/shared";
 import { Trans, useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
+import { Link } from "wouter";
 import { useStore } from "@/store";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
@@ -25,7 +26,6 @@ export function CardScenarios({ card }: Props) {
   return (
     <PlaneContainer
       as="section"
-      className={css["scenarios"]}
       title={
         <Trans
           components={{ em: <em /> }}
@@ -54,9 +54,13 @@ export function CardScenarios({ card }: Props) {
                 />
               }
             >
-              <span className={css["scenario-icon"]}>
+              <Link
+                aria-label={displayPackName(scenario)}
+                className={css["scenario-icon"]}
+                href={`/scenario/${scenario.code}`}
+              >
                 <EncounterIcon code={scenario.code} />
-              </span>
+              </Link>
             </DefaultTooltip>
           </li>
         ))}

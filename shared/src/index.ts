@@ -204,6 +204,8 @@ export {
   CampaignSchema,
   type JsonDataCampaign,
   JsonDataCampaignSchema,
+  type JsonDataCampaignTranslation,
+  JsonDataCampaignTranslationSchema,
 } from "./schemas/campaign.schema.ts";
 export {
   type ApiCard,
@@ -302,6 +304,8 @@ export {
 export {
   type JsonDataScenario,
   JsonDataScenarioSchema,
+  type JsonDataScenarioTranslation,
+  JsonDataScenarioTranslationSchema,
   type Scenario,
   ScenarioSchema,
 } from "./schemas/scenario.schema.ts";

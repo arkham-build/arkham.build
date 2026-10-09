@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { Combobox } from "@/components/ui/combobox/combobox";
 import { ResultTag } from "@/components/ui/combobox/combobox-results";
 import { useStore } from "@/store";
@@ -39,23 +38,14 @@ export function MultiselectFilter<T extends Coded>(props: Props<T>) {
 
   const locale = useStore((state) => state.settings.locale);
 
-  const onValueChange = useCallback(
-    (selected: T[]) => {
-      onChange(selected.map((s) => s.code));
-    },
-    [onChange],
-  );
+  const onValueChange = (selected: T[]) => {
+    onChange(selected.map((s) => s.code));
+  };
 
-  const renderResult = useCallback(
-    (item: T, onRemove?: () => void) => (
-      <ResultTag
-        data-testid={`combobox-result-${item.code}`}
-        onRemove={onRemove}
-      >
-        {nameRenderer ? nameRenderer(item) : item.code}
-      </ResultTag>
-    ),
-    [nameRenderer],
+  const renderResult = (item: T, onRemove?: () => void) => (
+    <ResultTag data-testid={`combobox-result-${item.code}`} onRemove={onRemove}>
+      {nameRenderer ? nameRenderer(item) : item.code}
+    </ResultTag>
   );
 
   return (

@@ -1,5 +1,5 @@
 import type { Card } from "@arkham-build/shared";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import { Link } from "wouter";
 import { useStore } from "@/store";
@@ -16,49 +16,34 @@ import type { CardListImplementationProps } from "./types";
 const SCAN_GRID_GAP = 16;
 
 export function CardGrid(
-  props: CardListImplementationProps & { scanMaxColumns: number },
+  props: CardListImplementationProps & {
+    defaultFlipped: boolean;
+    scanMaxColumns: number;
+  },
 ) {
-  const { data, scanMaxColumns, search, ...rest } = props;
-
-  const openCardModal = useStore((state) => state.openCardModal);
+  const { data, defaultFlipped, scanMaxColumns, search, ...rest } = props;
 
   const virtuosoRef = useRef<VirtuosoHandle>(null);
 
   const [scrollParent, setScrollParentState] = useState<
     HTMLElement | undefined
   >();
-  const [currentTop, setCurrentTop] = useState<number>(-1);
   const [highlighted, setHighlighted] = useState<number | null>(null);
 
   const [setMeasureRef, rect] = useMeasure();
 
-  const onScrollChange = useCallback(() => {
-    setCurrentTop(-1);
-  }, []);
-
   useEffect(() => {
-    scrollParent?.addEventListener("wheel", onScrollChange, { passive: true });
-    return () => {
-      scrollParent?.removeEventListener("wheel", onScrollChange);
-    };
-  }, [scrollParent, onScrollChange]);
-
-  useEffect(() => {
-    setCurrentTop(-1);
     virtuosoRef.current?.scrollToIndex(0);
   }, [search, data?.cards.length, rest.listDisplay]);
 
-  const setScrollParent = useCallback(
-    (el: HTMLDivElement | null) => {
-      if (el) {
-        setScrollParentState(el);
-        setMeasureRef(el);
-      }
-    },
-    [setMeasureRef],
-  );
+  const setScrollParent = (el: HTMLDivElement | null) => {
+    if (el) {
+      setScrollParentState(el);
+      setMeasureRef(el);
+    }
+  };
 
-  const cols = useMemo(() => {
+  const cols = (() => {
     const w = rect?.width ?? 0;
     if (w >= 1152) return Math.min(6, scanMaxColumns);
     if (w >= 960) return Math.min(5, scanMaxColumns);
@@ -66,35 +51,33 @@ export function CardGrid(
     if (w >= 528) return Math.min(3, scanMaxColumns);
     if (w >= 320) return Math.min(2, scanMaxColumns);
     return 1;
-  }, [rect, scanMaxColumns]);
+  })();
 
   // Determine the default orientation of cards in the list.
   // This prevents lists from becoming jumpy when they overwhelmingly consist of horizontal cards.
-  const defaultOrientation = useMemo(() => {
-    return data.cards.reduce(
-      (acc, curr) => {
-        if (
-          curr.type_code === "act" ||
-          curr.type_code === "agenda" ||
-          curr.type_code === "investigator"
-        ) {
-          acc.horizontal += 1;
-        } else {
-          acc.vertical += 1;
-        }
+  const defaultOrientation = data.cards.reduce(
+    (acc, curr) => {
+      if (
+        curr.type_code === "act" ||
+        curr.type_code === "agenda" ||
+        curr.type_code === "investigator"
+      ) {
+        acc.horizontal += 1;
+      } else {
+        acc.vertical += 1;
+      }
 
-        return acc;
-      },
-      { horizontal: 0, vertical: 0 },
-    );
-  }, [data.cards]);
+      return acc;
+    },
+    { horizontal: 0, vertical: 0 },
+  );
 
   const orientationModifier =
     defaultOrientation.horizontal > defaultOrientation.vertical
       ? 300 / 420
       : 420 / 300;
 
-  const rows = useMemo(() => {
+  const rows = (() => {
     if (!data) return [];
 
     const rowCards: Card[][] = [];
@@ -104,7 +87,7 @@ export function CardGrid(
     }
 
     return rowCards;
-  }, [data, cols]);
+  })();
 
   useEffect(() => {
     function onSelectGroup(evt: Event) {
@@ -125,28 +108,12 @@ export function CardGrid(
       });
     }
 
-    function onKeyboardNavigate(evt: Event) {
-      const key = (evt as CustomEvent).detail;
-
-      if (!data?.cards.length) return;
-
-      if (key === "Enter" && currentTop > -1) {
-        openCardModal(data.cards[currentTop].code);
-      }
-
-      if (key === "Escape") {
-        setCurrentTop(-1);
-      }
-    }
-
     window.addEventListener("list-select-group", onSelectGroup);
-    window.addEventListener("list-keyboard-navigate", onKeyboardNavigate);
 
     return () => {
       window.removeEventListener("list-select-group", onSelectGroup);
-      window.removeEventListener("list-keyboard-navigate", onKeyboardNavigate);
     };
-  }, [data, openCardModal, currentTop, cols]);
+  }, [data, cols]);
 
   return (
     <Scroller
@@ -178,11 +145,13 @@ export function CardGrid(
                 <CardGridItem
                   {...rest}
                   card={card}
+                  defaultFlipped={defaultFlipped}
                   key={card.id}
                   highlighted={
                     highlighted !== null &&
                     data.cards.indexOf(card) === highlighted
                   }
+                  packQuantity={data.packQuantities?.[card.code]}
                 />
               ))}
             </div>
@@ -197,8 +166,10 @@ export function CardGridItem(
   props: {
     card: Card;
     className?: string;
+    defaultFlipped?: boolean;
     highlighted?: boolean;
     omitFavorite?: boolean;
+    packQuantity?: number;
   } & Pick<
     CardListImplementationProps,
     "getListCardProps" | "quantities" | "resolvedDeck"
@@ -207,41 +178,34 @@ export function CardGridItem(
   const {
     card,
     className,
+    defaultFlipped = false,
     highlighted,
     omitFavorite,
     getListCardProps,
     quantities,
+    packQuantity,
   } = props;
 
   const openCardModal = useStore((state) => state.openCardModal);
 
-  const openModal = useCallback(() => {
+  const openModal = () => {
     openCardModal(card.code);
-  }, [openCardModal, card.code]);
+  };
 
-  const onClick = useCallback(
-    (evt: React.MouseEvent) => {
-      const linkPrevented = preventLeftClick(evt);
-      if (linkPrevented) openModal();
-    },
-    [openModal],
-  );
+  const onClick = (evt: React.MouseEvent) => {
+    const linkPrevented = preventLeftClick(evt);
+    if (linkPrevented) openModal();
+  };
 
-  const onPressEnter = useCallback(
-    (evt: React.KeyboardEvent) => {
-      if (evt.key === "Enter" && evt.target === evt.currentTarget) {
-        openModal();
-      }
-    },
-    [openModal],
-  );
+  const onPressEnter = (evt: React.KeyboardEvent) => {
+    if (evt.key === "Enter" && evt.target === evt.currentTarget) {
+      openModal();
+    }
+  };
 
-  const leftActionSlot = useCallback(
-    () => <CardFavoriteAction card={card} />,
-    [card],
-  );
+  const leftActionSlot = () => <CardFavoriteAction card={card} />;
 
-  const quantity = quantities?.[card.code] ?? 0;
+  const quantity = quantities?.[card.code] ?? packQuantity ?? 0;
 
   return (
     <div
@@ -261,6 +225,7 @@ export function CardGridItem(
       >
         <CardScan
           card={card}
+          defaultFlipped={defaultFlipped}
           lazy
           leftActionSlot={omitFavorite ? undefined : leftActionSlot}
         />
@@ -268,7 +233,9 @@ export function CardGridItem(
       <div className={css["group-item-actions"]}>
         <CardActions
           card={card}
-          quantity={quantities ? quantity : undefined}
+          quantity={
+            quantities != null || packQuantity != null ? quantity : undefined
+          }
           listCardProps={getListCardProps?.(card)}
         />
       </div>

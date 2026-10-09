@@ -1,6 +1,5 @@
 import type { SealedDeckResponse } from "@arkham-build/shared";
 import { BookLockIcon, XIcon } from "lucide-react";
-import { useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { assert } from "@/utils/assert";
 import { parseCsv } from "@/utils/parse-csv";
@@ -20,42 +19,35 @@ export function SealedDeckField(props: {
   const { t } = useTranslation();
   const toast = useToast();
 
-  const onChangeFile = useCallback(
-    async (evt: React.ChangeEvent<HTMLInputElement>) => {
-      const { files } = evt.target;
-      if (!files || !files.length) return;
+  const onChangeFile = async (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const { files } = evt.target;
+    if (!files || !files.length) return;
 
-      const file = files[0];
-      const fileText = await file.text();
+    const file = files[0];
+    const fileText = await file.text();
 
-      try {
-        const parsed = parseCsv(fileText);
-        assert(
-          parsed.every(isCardRow),
-          "File is not a sealed deck definition.",
-        );
-        onValueChange({
-          name: file.name.split(".csv")[0],
-          cards: parsed.reduce(
-            (acc, curr) => {
-              acc[curr.code] = curr.quantity;
-              return acc;
-            },
-            {} as Record<string, number>,
-          ),
-        });
-      } catch (err) {
-        toast.show({
-          children:
-            (err as Error)?.message ??
-            "Unknown error while parsing sealed deck.",
-          variant: "error",
-          duration: 5000,
-        });
-      }
-    },
-    [onValueChange, toast],
-  );
+    try {
+      const parsed = parseCsv(fileText);
+      assert(parsed.every(isCardRow), "File is not a sealed deck definition.");
+      onValueChange({
+        name: file.name.split(".csv")[0],
+        cards: parsed.reduce(
+          (acc, curr) => {
+            acc[curr.code] = curr.quantity;
+            return acc;
+          },
+          {} as Record<string, number>,
+        ),
+      });
+    } catch (err) {
+      toast.show({
+        children:
+          (err as Error)?.message ?? "Unknown error while parsing sealed deck.",
+        variant: "error",
+        duration: 5000,
+      });
+    }
+  };
 
   return (
     <Field

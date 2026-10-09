@@ -58,8 +58,10 @@
   cursor: pointer;
 }
 
-.thumb:hover {
-  background-color: var(--palette-6);
+@media (hover: hover) and (pointer: fine) {
+  .thumb:hover {
+    background-color: var(--palette-6);
+  }
 }
 
 .thumb:focus-visible {

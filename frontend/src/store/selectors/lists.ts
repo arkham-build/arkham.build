@@ -1,4 +1,10 @@
-import type { Card, CardTagsState, Cycle, Pack } from "@arkham-build/shared";
+import type {
+  Card,
+  CardTagsState,
+  Cycle,
+  Pack,
+  Slots,
+} from "@arkham-build/shared";
 import {
   ASSET_SLOT_ORDER,
   CARD_TAG_FAVORITE_ID,
@@ -88,6 +94,7 @@ import {
 } from "../lib/sorting";
 import { isResolvedDeck, type ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";
+import { isFanMadeContentFilterObject } from "../slices/lists.type-guards";
 import type {
   AssetFilter,
   CardTypeFilter,
@@ -130,6 +137,7 @@ export type ListState = {
   groupCounts: number[];
   groups: CardGroup[];
   key: string;
+  packQuantities?: Slots;
   totalCardCount: number;
 };
 
@@ -432,16 +440,29 @@ export function selectCanonicalTabooSetId(
 ) {
   if (resolvedDeck) return resolvedDeck.taboo_id;
 
-  const filters = selectActiveListFilters(state);
-  const filterId = filters.indexOf("taboo_set");
+  const filterValue = selectActiveTabooSetFilterValue(state);
+  if (filterValue != null) return filterValue;
 
-  const filterValue = filterId
-    ? selectActiveListFilter(state, filterId)
-    : undefined;
+  return selectListTabooSetId(state);
+}
 
-  if (typeof filterValue?.value === "number") return filterValue.value;
+export function selectListTabooSetId(state: StoreState) {
+  const activeList = selectActiveList(state);
+
+  if (activeList?.tabooSetOverride !== undefined) {
+    return activeList.tabooSetOverride;
+  }
 
   return selectSettingsTabooId(state.settings, selectMetadata(state));
+}
+
+export function selectActiveTabooSetFilterValue(state: StoreState) {
+  const filters = selectActiveListFilters(state);
+  const filterId = filters.indexOf("taboo_set");
+  const filterValue =
+    filterId >= 0 ? selectActiveListFilter(state, filterId) : undefined;
+
+  return typeof filterValue?.value === "number" ? filterValue.value : undefined;
 }
 
 // Custom equality check for deck's card access.
@@ -668,13 +689,24 @@ const selectDeckFanMadeData = createSelector(
   (resolvedDeck) => resolvedDeck?.fanMadeData,
 );
 
+const selectInstalledFanMadeCardCodes = createSelector(
+  (state: StoreState) => state.fanMadeData.projects,
+  (projects) => {
+    const codes = new Set<string>();
+    for (const project of Object.values(projects)) {
+      for (const card of project.data.cards) codes.add(card.code);
+    }
+    return codes;
+  },
+);
+
 const selectBaseListCards = createSelector(
   selectMetadata,
   selectLookupTables,
-  (state: StoreState) => state.fanMadeData.projects,
+  selectInstalledFanMadeCardCodes,
   (state: StoreState) => selectActiveList(state)?.systemFilter,
   (state: StoreState) => selectActiveList(state)?.filterValues,
-  (state: StoreState) => selectActiveList(state)?.fanMadeCycleCodes,
+  (state: StoreState) => selectActiveList(state)?.fanMadeCardCodes,
   selectDeckInvestigatorFilter,
   selectCanonicalTabooSetId,
   selectDeckCustomizations,
@@ -683,10 +715,10 @@ const selectBaseListCards = createSelector(
   (
     metadata,
     lookupTables,
-    fanMadeProjects,
+    installedFanMadeCardCodes,
     systemFilter,
     filterValues,
-    fanMadeCycleCodes,
+    fanMadeCardCodes,
     deckInvestigatorFilter,
     tabooSetId,
     customizations,
@@ -718,13 +750,10 @@ const selectBaseListCards = createSelector(
     filters.push((card: Card) => {
       if (card.official) return true;
 
-      const pack = metadata.packs[card.pack_code];
-      if (!pack?.cycle_code) return false;
-
       return Boolean(
         fanMadeData?.cards?.[card.code] ||
-        fanMadeProjects?.[pack.cycle_code] ||
-        fanMadeCycleCodes?.includes(pack.cycle_code),
+        installedFanMadeCardCodes.has(card.code) ||
+        fanMadeCardCodes?.has(card.code),
       );
     });
 
@@ -817,6 +846,12 @@ export const selectListCards = createSelector(
   (state: StoreState) => state.ui.showUnusableCards,
   (state: StoreState) => state.settings.collection,
   (
+    _: StoreState,
+    __: ResolvedDeck | undefined,
+    ___: TargetDeck | undefined,
+    includePackQuantities = false,
+  ) => includePackQuantities,
+  (
     metadata,
     lookupTables,
     activeList,
@@ -829,6 +864,7 @@ export const selectListCards = createSelector(
     targetDeck,
     showUnusableCards,
     collection,
+    includePackQuantities,
   ) => {
     if (!baseFilterResult || !activeList) return undefined;
 
@@ -836,25 +872,27 @@ export const selectListCards = createSelector(
     let filteredCards = baseFilterResult.filteredCards;
     let totalCardCount = baseFilterResult.totalCardCount;
 
-    // filter duplicates, taking into account the deck and list context.
-    const currentTotal = filteredCards.length;
-
-    if (!showUnusableCards) {
-      filteredCards = filteredCards.filter(
-        filterDuplicatesFromContext(
+    const duplicateFilter = showUnusableCards
+      ? undefined
+      : filterDuplicatesFromContext(
           filteredCards,
           activeList,
           metadata,
           lookupTables,
           deck,
           collection,
-        ),
-      );
+        );
 
-      totalCardCount -= currentTotal - filteredCards.length;
+    if (duplicateFilter) {
+      let visibleCardCount = 0;
+
+      for (const card of filteredCards) {
+        if (duplicateFilter(card)) visibleCardCount += 1;
+      }
+
+      totalCardCount -= filteredCards.length - visibleCardCount;
     }
 
-    // apply search after initial filtering to cut down on search operations.
     const search = activeList.search;
 
     if (search.value) {
@@ -893,13 +931,21 @@ export const selectListCards = createSelector(
 
     if (userFilter) {
       filteredCards = filteredCards.filter(
-        (card) =>
+        (card: Card) =>
           userFilter(card) ||
           // surface cards where the backside matches the filter
           (!!card.back_link_id &&
             metadata.cards[card.back_link_id] &&
             userFilter(metadata.cards[card.back_link_id])),
       );
+    }
+
+    const matchingQuantityCardsByCode = includePackQuantities
+      ? indexCardsByCode(filteredCards)
+      : undefined;
+
+    if (duplicateFilter) {
+      filteredCards = filteredCards.filter(duplicateFilter);
     }
 
     const cards: Card[] = [];
@@ -912,6 +958,7 @@ export const selectListCards = createSelector(
       makeSortFunction(activeList.display.sorting, metadata, sortingCollator),
       metadata,
       sortingCollator,
+      activeList.groupOrder,
     );
 
     for (const group of groupedCards.data) {
@@ -932,10 +979,51 @@ export const selectListCards = createSelector(
       groups,
       cards,
       groupCounts,
+      packQuantities: matchingQuantityCardsByCode
+        ? resolvePackQuantities(
+            cards,
+            matchingQuantityCardsByCode,
+            lookupTables,
+          )
+        : undefined,
       totalCardCount,
     } as ListState;
   },
 );
+
+function indexCardsByCode(cards: Card[]): Map<string, Card> {
+  const cardsByCode = new Map<string, Card>();
+
+  for (const card of cards) {
+    cardsByCode.set(card.code, card);
+  }
+
+  return cardsByCode;
+}
+
+function resolvePackQuantities(
+  cards: Card[],
+  matchingCardsByCode: Map<string, Card>,
+  lookupTables: LookupTables,
+): Slots {
+  return cards.reduce<Slots>((quantities, card) => {
+    const duplicateCodes = Object.keys(
+      lookupTables.relations.duplicates[card.code] ?? {},
+    );
+
+    quantities[card.code] = [card.code, ...duplicateCodes].reduce(
+      (highest, code) => {
+        const matchingCard = matchingCardsByCode.get(code);
+        return matchingCard
+          ? Math.max(highest, matchingCard.quantity)
+          : highest;
+      },
+      card.quantity,
+    );
+
+    return quantities;
+  }, {});
+}
 
 export const selectCardRelationsResolver = createSelector(
   selectMetadata,
@@ -1397,15 +1485,21 @@ export const selectInvestigatorOptions = createSelector(
  * Investigator Card Access
  */
 
-// FIXME: consider how to handle fan-made content here
 export const selectCardOptions = createSelector(
   selectMetadata,
+  selectActiveList,
   selectLocaleSortingCollator,
-  (metadata, collator) => {
+  (metadata, activeList, collator) => {
     const sortFn = makeSortFunction(["name", "level"], metadata, collator);
+    const contentType = Object.values(activeList?.filterValues ?? {}).find(
+      isFanMadeContentFilterObject,
+    )?.value;
 
     return Object.values(metadata.cards)
       .filter((card) => {
+        if (contentType === "official" && !official(card)) return false;
+        if (contentType === "fan-made" && official(card)) return false;
+
         return (
           !filterEncounterCards(card) &&
           filterMythosCards(card) &&
@@ -1875,6 +1969,9 @@ export const selectAvailableUpgrades = createSelector(
           availableUpgrades.upgrades[card.code].every(
             (c) =>
               c.xp !== upgrade.xp ||
+              c.faction_code !== upgrade.faction_code ||
+              c.faction2_code !== upgrade.faction2_code ||
+              c.faction3_code !== upgrade.faction3_code ||
               displayAttribute(c, "subname") !==
                 displayAttribute(upgrade, "subname"),
           );

@@ -1,6 +1,6 @@
 import type { Card } from "@arkham-build/shared";
 import { RotateCcwIcon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { selectBackCard } from "@/store/selectors/shared";
@@ -20,7 +20,6 @@ export type CardScanActionSlot = (scanId: string) => React.ReactNode;
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   card: Card;
   className?: string;
-  defaultFlipped?: boolean;
   draggable?: boolean;
   flipped: boolean;
   hideFlipButton?: boolean;
@@ -32,18 +31,27 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   suffix?: string;
 }
 
-export function CardScan(props: Omit<Props, "flipped">) {
-  const [flipped, setFlipped] = useState(false);
+type CardScanProps = Omit<Props, "flipped"> & {
+  defaultFlipped?: boolean;
+};
 
-  const onFlip = useCallback(
-    (value: boolean, sideways: boolean) => {
-      setFlipped(value);
-      props.onFlip?.(value, sideways);
-    },
-    [props],
-  );
+export function CardScan(props: CardScanProps) {
+  const { defaultFlipped = false, onFlip: onFlipProp, ...rest } = props;
+  const [flipped, setFlipped] = useState(defaultFlipped);
+  const [previousDefaultFlipped, setPreviousDefaultFlipped] =
+    useState(defaultFlipped);
 
-  return <CardScanControlled {...props} flipped={flipped} onFlip={onFlip} />;
+  if (defaultFlipped !== previousDefaultFlipped) {
+    setPreviousDefaultFlipped(defaultFlipped);
+    setFlipped(defaultFlipped);
+  }
+
+  const onFlip = (value: boolean, sideways: boolean) => {
+    setFlipped(value);
+    onFlipProp?.(value, sideways);
+  };
+
+  return <CardScanControlled {...rest} flipped={flipped} onFlip={onFlip} />;
 }
 
 export function CardScanControlled(props: Props) {
@@ -66,6 +74,7 @@ export function CardScanControlled(props: Props) {
 
   const backCard = useStore((state) => selectBackCard(state, card.code));
   const backType = backCard ? "card" : cardBackType(card);
+  const hasDefaultBack = backType === "player" || backType === "encounter";
 
   const code = card.code;
 
@@ -106,16 +115,13 @@ export function CardScanControlled(props: Props) {
       ? card.image_url
       : card.back_image_url;
 
-  const onToggleFlip = useCallback(
-    (evt: React.MouseEvent) => {
-      evt.preventDefault();
-      evt.stopPropagation();
+  const onToggleFlip = (evt: React.MouseEvent) => {
+    evt.preventDefault();
+    evt.stopPropagation();
 
-      const next = !flipped;
-      if (onFlip) onFlip(next, next ? reverseSideways : isSideways);
-    },
-    [flipped, isSideways, reverseSideways, onFlip],
-  );
+    const next = !flipped;
+    if (onFlip) onFlip(next, next ? reverseSideways : isSideways);
+  };
 
   return (
     <div
@@ -165,7 +171,10 @@ export function CardScanControlled(props: Props) {
           </div>
           {!preventFlip && !hideFlipButton && (
             <Button
-              className={css["scan-flip-trigger"]}
+              className={cx(
+                css["scan-flip-trigger"],
+                hasDefaultBack && css["default-back"],
+              )}
               onClick={onToggleFlip}
               iconOnly
               rounded="full"
@@ -218,6 +227,7 @@ export function CardScanInner(
         <img
           alt={alt}
           draggable={draggable}
+          key={url}
           crossOrigin={crossOrigin}
           height={sideways ? 300 : 420}
           loading={lazy ? "lazy" : undefined}

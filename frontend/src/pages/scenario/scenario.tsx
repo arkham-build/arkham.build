@@ -1,0 +1,246 @@
+import type {
+  Campaign,
+  Card,
+  Scenario as ScenarioData,
+} from "@arkham-build/shared";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useParams } from "wouter";
+import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
+import { ContentGuideLink } from "@/components/content-guide-link";
+import {
+  ContentNavigation,
+  type ContentNavigationTarget,
+} from "@/components/content-navigation/content-navigation";
+import EncounterIcon from "@/components/icons/encounter-icon";
+import PackIcon from "@/components/icons/pack-icon";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { ListLayoutContextProvider } from "@/layouts/list-layout-context-provider";
+import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
+import { useStore } from "@/store";
+import {
+  resolveScenarioNavigation,
+  type ScenarioNavigation,
+  selectStandaloneScenarioGroups,
+} from "@/store/selectors/content";
+import { selectMetadata } from "@/store/selectors/shared";
+import { assert } from "@/utils/assert";
+import { resolveScenarioGuide } from "@/utils/content";
+import { displayPackName } from "@/utils/formatting";
+import { ErrorStatus } from "../errors/404";
+import css from "./scenario.module.css";
+
+function Scenario() {
+  const { code } = useParams();
+  const metadata = useStore(selectMetadata);
+  const standaloneGroups = useStore(selectStandaloneScenarioGroups);
+  const scenario = code ? metadata.scenarios[code] : undefined;
+
+  if (!scenario) {
+    return <ErrorStatus statusCode={404} />;
+  }
+
+  const campaign = scenario.campaign_code
+    ? metadata.campaigns[scenario.campaign_code]
+    : undefined;
+  assert(
+    scenario.campaign_code == null || campaign,
+    `Scenario ${scenario.code} references missing campaign ${scenario.campaign_code}`,
+  );
+
+  const originalScenario = scenario.variant_of_code
+    ? metadata.scenarios[scenario.variant_of_code]
+    : undefined;
+
+  assert(
+    scenario.variant_of_code == null || originalScenario,
+    `Scenario ${scenario.code} references missing scenario ${scenario.variant_of_code}`,
+  );
+
+  const originalCampaign = originalScenario?.campaign_code
+    ? metadata.campaigns[originalScenario.campaign_code]
+    : undefined;
+
+  assert(
+    originalScenario?.campaign_code == null || originalCampaign,
+    `Scenario ${originalScenario?.code} references missing campaign ${originalScenario?.campaign_code}`,
+  );
+
+  const navigation = resolveScenarioNavigation(
+    scenario,
+    metadata,
+    standaloneGroups,
+  );
+
+  return (
+    <ScenarioContent
+      campaign={campaign}
+      navigation={navigation}
+      originalCampaign={originalCampaign}
+      originalScenario={originalScenario}
+      scenario={scenario}
+    />
+  );
+}
+
+function ScenarioContent({
+  campaign,
+  navigation,
+  originalCampaign,
+  originalScenario,
+  scenario,
+}: {
+  campaign: Campaign | undefined;
+  navigation: ScenarioNavigation;
+  originalCampaign: Campaign | undefined;
+  originalScenario: ScenarioData | undefined;
+  scenario: ScenarioData;
+}) {
+  const { t } = useTranslation();
+  const activeListId = useStore((state) => state.activeList);
+  const addList = useStore((state) => state.addList);
+  const removeList = useStore((state) => state.removeList);
+  const setActiveList = useStore((state) => state.setActiveList);
+
+  const listKey = `scenario-${scenario.code}`;
+  const listExists = useStore((state) => state.lists[listKey] != null);
+
+  useEffect(() => {
+    if (!listExists) {
+      addList(
+        listKey,
+        {
+          card_type: "encounter",
+          fan_made_content: "all",
+          ownership: "all",
+        },
+        {
+          displaySettingsKey: "scenario",
+          filters: [
+            "type",
+            "trait",
+            "card_tags",
+            "subtype",
+            "action",
+            "encounter_set",
+            "illustrator",
+          ],
+          groupOrder: {
+            keys: scenario.encounter_sets.map(({ code }) => code),
+            type: "encounter_set",
+          },
+          systemFilter: (card) => isCardUsedInScenario(card, scenario),
+        },
+      );
+    }
+
+    setActiveList(listKey);
+  }, [addList, listExists, listKey, scenario, setActiveList]);
+
+  useEffect(() => {
+    return () => {
+      removeList(listKey);
+      setActiveList(undefined);
+    };
+  }, [listKey, removeList, setActiveList]);
+
+  if (!listExists || activeListId !== listKey) return null;
+
+  const title = displayPackName(scenario);
+  const guide = resolveScenarioGuide(campaign, scenario);
+  const originalGuide = originalScenario
+    ? resolveScenarioGuide(originalCampaign, originalScenario)
+    : undefined;
+
+  return (
+    <CardModalProvider>
+      <ListLayoutContextProvider>
+        <ListLayoutNoSidebar
+          showPackQuantities
+          headerActions={
+            (originalGuide || guide) && (
+              <>
+                {originalGuide && (
+                  <ContentGuideLink {...originalGuide}>
+                    {originalCampaign
+                      ? t("content.guide.campaign_pdf")
+                      : t("content.guide.rules_insert_pdf")}
+                  </ContentGuideLink>
+                )}
+                {guide && (
+                  <ContentGuideLink {...guide}>
+                    {originalScenario
+                      ? t("content.guide.return_to_pdf")
+                      : campaign
+                        ? t("content.guide.campaign_pdf")
+                        : t("content.guide.rules_insert_pdf")}
+                  </ContentGuideLink>
+                )}
+              </>
+            )
+          }
+          headerNavigation={
+            (navigation.previous || navigation.next) && (
+              <ContentNavigation
+                next={toNavigationTarget(navigation.next)}
+                previous={toNavigationTarget(navigation.previous)}
+              />
+            )
+          }
+          headerTop={
+            <Breadcrumb
+              items={[
+                { href: "/content", label: t("content.title") },
+                ...(campaign
+                  ? [
+                      {
+                        href: `/campaign/${campaign.code}`,
+                        icon: <PackIcon code={campaign.code} />,
+                        label: displayPackName(campaign),
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+          }
+          omitBackButton
+          title={
+            <span className={css["title"]}>
+              <EncounterIcon
+                className={css["title-icon"]}
+                code={scenario.code}
+              />
+              <span>{title}</span>
+            </span>
+          }
+          titleString={title}
+        />
+      </ListLayoutContextProvider>
+    </CardModalProvider>
+  );
+}
+
+function toNavigationTarget(
+  scenario: ScenarioData | undefined,
+): ContentNavigationTarget | undefined {
+  if (!scenario) return undefined;
+
+  return {
+    href: `/scenario/${scenario.code}`,
+    icon: <EncounterIcon code={scenario.code} />,
+    name: displayPackName(scenario),
+  };
+}
+
+function isCardUsedInScenario(card: Card, scenario: ScenarioData) {
+  if (card.encounter_code == null) return false;
+
+  const encounterSet = scenario.encounter_sets.find(
+    ({ code }) => code === card.encounter_code,
+  );
+
+  if (!encounterSet) return false;
+  return encounterSet.cards == null || encounterSet.cards.includes(card.code);
+}
+
+export default Scenario;

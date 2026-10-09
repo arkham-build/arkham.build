@@ -1,6 +1,6 @@
 import { CARD_TAG_NAME_MAX_LENGTH } from "@arkham-build/shared";
 import { GlobeIcon, PlusIcon, Settings2Icon } from "lucide-react";
-import { useId, useMemo } from "react";
+import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedDeck } from "@/store/lib/types";
 import type { TagItem } from "@/store/selectors/card-tags";
@@ -16,7 +16,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
 import { CardTagLabel } from "./card-tag-label";
@@ -139,18 +138,15 @@ function CardTagCombobox({
 }) {
   const { i18n, t } = useTranslation();
 
-  const creatable = useMemo(
-    () => ({
-      label: (name: string) => (
-        <>
-          <PlusIcon />
-          {t("common.create_named", { name })}
-        </>
-      ),
-      onCreate: onCreateTag,
-    }),
-    [onCreateTag, t],
-  );
+  const creatable = {
+    label: (name: string) => (
+      <>
+        <PlusIcon />
+        {t("common.create_named", { name })}
+      </>
+    ),
+    onCreate: onCreateTag,
+  };
 
   return (
     <Combobox
@@ -228,7 +224,7 @@ export function CardTagManager({ cardCode }: { cardCode: string }) {
                             required
                           />
                         </Field>
-                        <Button type="submit" variant="secondary">
+                        <Button type="submit">
                           {t("card_tags.manage.save")}
                         </Button>
                         <Button
@@ -250,7 +246,6 @@ export function CardTagManager({ cardCode }: { cardCode: string }) {
             </DefaultModalContent>
           </ModalInner>
         </Modal>
-        <ModalBackdrop />
       </DialogContent>
     </Dialog>
   );

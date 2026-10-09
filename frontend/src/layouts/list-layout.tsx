@@ -1,7 +1,7 @@
 /* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-element-interactions -- TODO */
 import { FilterIcon } from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CollapseSidebarButton } from "@/components/collapse-sidebar-button";
 import { Masthead } from "@/components/masthead";
@@ -24,7 +24,6 @@ type Props = {
   hideSidebarCollapse?: boolean;
   inert?: boolean;
   mastheadNav?: React.ReactNode;
-  noFade?: boolean;
   sidebar: React.ReactNode;
   sidebarWidthMax: string;
 };
@@ -37,7 +36,6 @@ export function ListLayout(props: Props) {
     hideSidebarCollapse,
     inert,
     mastheadNav,
-    noFade,
     sidebar,
     sidebarWidthMax,
   } = props;
@@ -52,47 +50,25 @@ export function ListLayout(props: Props) {
 
   const previousFloatingSidebar = useRef(floatingSidebar);
   const previousFloatingFilters = useRef(floatingFilters);
-  const [floatingTransitionsEnabled, setFloatingTransitionsEnabled] =
-    useState(false);
 
   const filtersRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const onContentClick = useCallback(
-    (evt: React.MouseEvent) => {
-      if (filtersOpen && floatingFilters) {
-        setFiltersOpen(false);
-        evt.preventDefault();
-      }
+  const onContentClick = (evt: React.MouseEvent) => {
+    if (filtersOpen && floatingFilters) {
+      setFiltersOpen(false);
+      evt.preventDefault();
+    }
 
-      if (sidebarOpen && floatingSidebar) {
-        setSidebarOpen(false);
-        evt.preventDefault();
-      }
-    },
-    [
-      filtersOpen,
-      sidebarOpen,
-      setSidebarOpen,
-      setFiltersOpen,
-      floatingFilters,
-      floatingSidebar,
-    ],
-  );
+    if (sidebarOpen && floatingSidebar) {
+      setSidebarOpen(false);
+      evt.preventDefault();
+    }
+  };
 
-  const preventBubble = useCallback((e: React.MouseEvent) => {
+  const preventBubble = (e: React.MouseEvent) => {
     e.stopPropagation();
-  }, []);
-
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      setFloatingTransitionsEnabled(true);
-    });
-
-    return () => {
-      cancelAnimationFrame(frame);
-    };
-  }, []);
+  };
 
   useEffect(() => {
     if (previousFloatingSidebar.current === floatingSidebar) return;
@@ -112,21 +88,21 @@ export function ListLayout(props: Props) {
     ((floatingSidebar && sidebarOpen) || (floatingFilters && filtersOpen)) &&
     css["floating-menu-open"];
 
-  const toggleSidebar = useCallback(() => {
+  const toggleSidebar = () => {
     setSidebarOpen((open) => !open);
-  }, [setSidebarOpen]);
+  };
 
-  const toggleFilters = useCallback(() => {
+  const toggleFilters = () => {
     setFiltersOpen((open) => !open);
-  }, [setFiltersOpen]);
+  };
 
-  const closeSidebar = useCallback(() => {
+  const closeSidebar = () => {
     setSidebarOpen(false);
-  }, [setSidebarOpen]);
+  };
 
-  const closeFilters = useCallback(() => {
+  const closeFilters = () => {
     setFiltersOpen(false);
-  }, [setFiltersOpen]);
+  };
 
   useHotkey("alt+1", toggleSidebar);
   useHotkey("alt+2", toggleFilters);
@@ -135,10 +111,8 @@ export function ListLayout(props: Props) {
     <div
       className={cx(
         css["layout"],
-        !noFade && "fade-in",
         className,
         floatingMenuOpen && css["floating-menu-open"],
-        !floatingTransitionsEnabled && css["floating-transitions-disabled"],
         filters && css["has-filters"],
       )}
       inert={inert}
@@ -177,12 +151,7 @@ export function ListLayout(props: Props) {
               keybind="alt+1"
               description={t("lists.actions.toggle_sidebar")}
             >
-              <Button
-                className={css["toggle-sidebar"]}
-                onClick={toggleSidebar}
-                iconOnly
-                size="lg"
-              >
+              <Button onClick={toggleSidebar} iconOnly size="lg">
                 <i className="icon-deck" />
               </Button>
             </HotkeyTooltip>
@@ -192,12 +161,7 @@ export function ListLayout(props: Props) {
               keybind="alt+2"
               description={t("lists.actions.toggle_filters")}
             >
-              <Button
-                className={css["toggle-filters"]}
-                onClick={toggleFilters}
-                iconOnly
-                size="lg"
-              >
+              <Button onClick={toggleFilters} iconOnly size="lg">
                 <FilterIcon />
               </Button>
             </HotkeyTooltip>

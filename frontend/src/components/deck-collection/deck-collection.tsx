@@ -1,6 +1,6 @@
 import { type DeckId, isArkhamDBIdentity } from "@arkham-build/shared";
 import { EllipsisIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Virtuoso } from "react-virtuoso";
 import { Link, useLocation } from "wouter";
@@ -34,7 +34,6 @@ import type { DeckSummary as DeckSummaryType } from "@/store/lib/types";
 import { selectDecksDisplayList } from "@/store/selectors/deck-collection";
 import { ARKHAMDB_WARNING_VISIBLE } from "@/utils/constants";
 import { useHotkey } from "@/utils/use-hotkey";
-import { FileInput } from "../ui/file-input";
 import { Notice } from "../ui/notice";
 import css from "./deck-collection.module.css";
 import { DeckCollectionFilters } from "./deck-collection-filters";
@@ -65,18 +64,33 @@ export function DeckCollection() {
       !!state.auth.session?.identities.some(isArkhamDBIdentity),
   );
 
-  const onAddFiles = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      const files = evt.target.files;
-      if (files?.length) {
-        importDecksMutation.mutate(files);
-        setPopoverOpen(false);
-      }
-    },
-    [importDecksMutation],
-  );
+  const onAddFiles = async (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const input = evt.currentTarget;
+    const files = Array.from(input.files ?? []);
+    if (!files.length) return;
 
-  const onDeleteAll = useCallback(async () => {
+    const toastId = toast.show({
+      children: t("deck_collection.import_loading"),
+      variant: "loading",
+    });
+
+    try {
+      await importDecksMutation.mutateAsync(files);
+    } catch (error) {
+      toast.show({
+        children: t("deck_collection.import_error", {
+          error: error instanceof Error ? error.message : "Unknown error",
+        }),
+        variant: "error",
+      });
+    }
+
+    input.value = "";
+    setPopoverOpen(false);
+    toast.dismiss(toastId);
+  };
+
+  const onDeleteAll = async () => {
     const confirmed = confirm(t("deck_collection.delete_all_confirm"));
 
     if (confirmed) {
@@ -99,19 +113,27 @@ export function DeckCollection() {
         });
       }
     }
-  }, [deleteAllDecksMutation, toast, t]);
+  };
 
   const deleteDeck = useDeleteDeck();
   const duplicateDeck = useDuplicateDeck();
 
-  const onNewDeck = useCallback(() => {
+  const onNewDeck = () => {
     navigate("/deck/create");
-  }, [navigate]);
+  };
 
   useHotkey("n", onNewDeck);
 
   return (
     <div className={css["container"]}>
+      <input
+        className="sr-only"
+        accept="application/json"
+        id="collection-import"
+        type="file"
+        multiple
+        onChange={onAddFiles}
+      />
       {ARKHAMDB_WARNING_VISIBLE && hasArkhamDBConnection && (
         <Notice className={css["banner"]} variant="warning">
           {t("deck_collection.arkhamdb_response_time_banner")}
@@ -120,11 +142,7 @@ export function DeckCollection() {
       <header className={css["header"]}>
         <h2 className={css["title"]}>{t("deck_collection.title")}</h2>
         <div className={css["actions"]}>
-          {!hasConnections && (
-            <Popover>
-              <DeckCollectionImport />
-            </Popover>
-          )}
+          {!hasConnections && <DeckCollectionImport />}
           <Popover onOpenChange={setPopoverOpen} open={popoverOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -138,16 +156,15 @@ export function DeckCollection() {
             <PopoverContent>
               <DropdownMenu>
                 <DropdownItem>
-                  <FileInput
-                    accept="application/json"
-                    id="collection-import"
-                    multiple
-                    onChange={onAddFiles}
+                  <Button
+                    as="label"
+                    data-testid="collection-import-button"
+                    htmlFor="collection-import"
                     full
                     variant="bare"
                   >
                     <UploadIcon /> {t("deck_collection.import_json")}
-                  </FileInput>
+                  </Button>
                 </DropdownItem>
                 <DropdownButton
                   data-testid="collection-delete-all"
@@ -191,6 +208,7 @@ export function DeckCollection() {
           <Virtuoso
             customScrollParent={scrollParent}
             data={deckCollection.entries}
+            defaultItemHeight={97}
             overscan={5}
             totalCount={deckCollection.total}
             skipAnimationFrameInResizeObserver
@@ -238,10 +256,7 @@ export function DeckCollection() {
                   </Button>
                 </Link>
                 <Link href="/auth/login" asChild>
-                  <Button variant="bare">
-                    <i className="icon-elder_sign" />
-                    {t("auth.login.action")}
-                  </Button>
+                  <Button variant="bare">{t("auth.login.action")}</Button>
                 </Link>
               </nav>
             </figcaption>

@@ -1,6 +1,6 @@
 import type { Card, Cycle, Pack } from "@arkham-build/shared";
 import { InfoIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
@@ -10,9 +10,14 @@ import {
   selectCyclesAndPacks,
   selectLimitedPoolPackOptions,
 } from "@/store/selectors/lists";
-import { environments } from "@/utils/environments";
+import {
+  environments,
+  type ProgressionTarget,
+  progressionTargets,
+} from "@/utils/environments";
 import { capitalize, displayPackName } from "@/utils/formatting";
 import { useAccentColor } from "@/utils/use-accent-color";
+import PackIcon from "../icons/pack-icon";
 import { PackName } from "../pack-name";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
@@ -24,7 +29,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
 import { Plane } from "../ui/plane";
@@ -75,7 +79,6 @@ export function ConfigureEnvironmentModal(props: Props) {
 
   return (
     <Modal style={accentColor}>
-      <ModalBackdrop />
       <ModalInner size="60rem">
         <ModalActions />
         <DefaultModalContent
@@ -97,6 +100,7 @@ export function ConfigureEnvironmentModal(props: Props) {
                 <EnvironmentsTabTrigger value="collection" />
                 <EnvironmentsTabTrigger value="chapter_1" />
                 <EnvironmentsTabTrigger value="chapter_2" />
+                <EnvironmentsTabTrigger value="progression" />
                 <div className={css["nav-section"]}>
                   <h4>FAQ 2.5</h4>
                 </div>
@@ -115,6 +119,9 @@ export function ConfigureEnvironmentModal(props: Props) {
                 </EnvironmentsTabContent>
                 <EnvironmentsTabContent value="campaign_playalong">
                   <CampaignPlayalongTab {...tabProps} />
+                </EnvironmentsTabContent>
+                <EnvironmentsTabContent value="progression">
+                  <ProgressionTab {...tabProps} />
                 </EnvironmentsTabContent>
                 <EnvironmentsTabContent value="chapter_1">
                   <ChapterTab {...tabProps} chapter={1} />
@@ -253,15 +260,14 @@ function LimitedTab(props: TabProps) {
     dialogCtx.setOpen(false);
   };
 
-  const onSelectionChange = useCallback((items: Pack[]) => {
+  const onSelectionChange = (items: Pack[]) => {
     setSelectedItems(items.map((cycle) => cycle.code));
-  }, []);
+  };
 
   return (
     <>
       <Field full>
         <Combobox
-          autoFocus
           id="cycle-select-combobox"
           limit={3}
           locale={locale}
@@ -318,15 +324,14 @@ function CampaignPlayalongTab(props: TabProps) {
     dialogCtx.setOpen(false);
   };
 
-  const onSelectionChange = useCallback((items: CycleWithPacks[]) => {
+  const onSelectionChange = (items: CycleWithPacks[]) => {
     setSelectedItems(items.map((cycle) => cycle.code));
-  }, []);
+  };
 
   return (
     <>
       <Field className={css["cpa"]} full>
         <Combobox
-          autoFocus
           id="cycle-select-combobox"
           limit={1}
           locale={locale}
@@ -356,6 +361,81 @@ function CampaignPlayalongTab(props: TabProps) {
       <EnvironmentsTabConfirm
         disabled={!selectedItems.length}
         environment="campaign_playalong"
+        onClick={applyEnvironment}
+      />
+    </>
+  );
+}
+
+const progressionTargetRenderer = (target: ProgressionTarget) => (
+  <>
+    <PackIcon code={target.code} />
+    {target.name}
+  </>
+);
+
+const progressionTargetResultRenderer = (
+  target: ProgressionTarget,
+  onRemove?: () => void,
+) => (
+  <ResultTag data-testid={`combobox-result-${target.code}`} onRemove={onRemove}>
+    {progressionTargetRenderer(target)}
+  </ResultTag>
+);
+
+const progressionTargetToString = (target: ProgressionTarget) =>
+  target.name.toLowerCase();
+
+function ProgressionTab(props: TabProps) {
+  const { dialogCtx, locale, onValueChange } = props;
+
+  const { t } = useTranslation();
+
+  const metadata = useStore((state) => state.metadata);
+  const showPreviews = useStore((state) => state.settings.showPreviews);
+  const targets = progressionTargets(metadata, showPreviews);
+
+  const [selectedCode, setSelectedCode] = useState<string>();
+  const selectedTarget = targets.find((target) => target.code === selectedCode);
+
+  const applyEnvironment = () => {
+    if (!selectedTarget) return;
+
+    onValueChange(
+      environments.progression(metadata, selectedTarget.dateRelease),
+    );
+    dialogCtx.setOpen(false);
+  };
+
+  const valueChangeHandler = (items: ProgressionTarget[]) => {
+    setSelectedCode(items[0]?.code);
+  };
+
+  const selection = selectedTarget ? [selectedTarget] : [];
+
+  return (
+    <>
+      <Field full>
+        <Combobox
+          id="progression-target-combobox"
+          limit={1}
+          locale={locale}
+          placeholder={t(
+            "deck_edit.config.card_pool.choose_progression_target_placeholder",
+          )}
+          renderItem={progressionTargetRenderer}
+          renderResult={progressionTargetResultRenderer}
+          itemToString={progressionTargetToString}
+          onValueChange={valueChangeHandler}
+          items={targets}
+          label={t("deck_edit.config.card_pool.progression_target")}
+          showLabel
+          selectedItems={selection}
+        />
+      </Field>
+      <EnvironmentsTabConfirm
+        disabled={!selectedTarget}
+        environment="progression"
         onClick={applyEnvironment}
       />
     </>
@@ -397,15 +477,14 @@ function Limited25Tab(props: TabProps) {
     dialogCtx.setOpen(false);
   };
 
-  const onSelectionChange = useCallback((items: CycleWithPacks[]) => {
+  const onSelectionChange = (items: CycleWithPacks[]) => {
     setSelectedItems(items.map((cycle) => cycle.code));
-  }, []);
+  };
 
   return (
     <>
       <Field full>
         <Combobox
-          autoFocus
           id="cycle-select-combobox"
           limit={3}
           locale={locale}

@@ -37,8 +37,14 @@
 .icon-numNull:before {
   content: "\2d";
 }
+.icon-arkham-cards:before {
+  content: "\e95a";
+}
 .icon-paintbrush:before {
   content: "\e923";
+}
+.icon-blood:before {
+  content: "\e94a";
 }
 .icon-unique:before {
   content: "\e93f";

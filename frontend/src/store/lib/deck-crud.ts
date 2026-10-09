@@ -13,6 +13,7 @@ import { randomId } from "@/utils/crypto";
 import { isEmpty } from "@/utils/is-empty";
 import { dehydrate } from "../persist";
 import { selectDeckCreateCardSets } from "../selectors/deck-create";
+import { selectStarterDeckForInvestigator } from "../selectors/starter-decks";
 import {
   findDeckHistory,
   selectDeckValid,
@@ -65,12 +66,21 @@ export const createAdapter = {
       `Storage provider ${provider} is not available.`,
     );
 
-    const extraSlots: Record<string, number> = {};
-    const meta: DeckMeta = {};
-    const slots: Record<string, number> = {};
-
     const { investigatorCode, investigatorFrontCode, investigatorBackCode } =
       state.deckCreate;
+
+    const starterDeck = state.deckCreate.applyStarterDeck
+      ? selectStarterDeckForInvestigator(state, investigatorCode)
+      : undefined;
+
+    assert(
+      !state.deckCreate.applyStarterDeck || starterDeck,
+      "No starter deck is available for the investigator.",
+    );
+
+    const extraSlots: Record<string, number> = {};
+    const meta: DeckMeta = starterDeck ? decodeDeckMeta(starterDeck) : {};
+    const slots: Record<string, number> = { ...starterDeck?.slots };
 
     if (investigatorCode !== investigatorFrontCode) {
       meta.alternate_front = investigatorFrontCode;
@@ -107,22 +117,24 @@ export const createAdapter = {
       meta.deck_size_selected = "30";
     }
 
-    const cardSets = selectDeckCreateCardSets(state);
+    if (!starterDeck) {
+      const cardSets = selectDeckCreateCardSets(state);
 
-    for (const set of cardSets) {
-      if (!set.selected) continue;
+      for (const set of cardSets) {
+        if (!set.selected) continue;
 
-      for (const { card } of set.cards) {
-        const quantity =
-          state.deckCreate.extraCardQuantities?.[card.code] ??
-          set.quantities?.[card.code];
+        for (const { card } of set.cards) {
+          const quantity =
+            state.deckCreate.extraCardQuantities?.[card.code] ??
+            set.quantities?.[card.code];
 
-        if (!quantity) continue;
+          if (!quantity) continue;
 
-        if (set.id === "sideDeckRequiredCards") {
-          extraSlots[card.code] = quantity;
-        } else {
-          slots[card.code] = quantity;
+          if (set.id === "sideDeckRequiredCards") {
+            extraSlots[card.code] = quantity;
+          } else {
+            slots[card.code] = quantity;
+          }
         }
       }
     }
@@ -147,6 +159,7 @@ export const createAdapter = {
       investigator_name: back.real_name,
       name: state.deckCreate.title,
       slots,
+      sideSlots: starterDeck ? { ...starterDeck.sideSlots } : {},
       meta: JSON.stringify(meta),
       taboo_id: state.deckCreate.tabooSetId ?? null,
       problem: "too_few_cards",

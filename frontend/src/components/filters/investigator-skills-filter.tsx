@@ -1,5 +1,4 @@
 import { SKILL_KEYS, type SkillKey } from "@arkham-build/shared";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -44,37 +43,31 @@ export function InvestigatorSkillsFilter(props: FilterProps) {
     selectFilterChanges(state, filter.type, filter.value),
   );
 
-  const onSetShortcut = useCallback(
-    (keys: SkillKey[]) => {
-      const value = INVESTIGATOR_SKILL_KEYS.reduce((acc, key) => {
-        if (keys.includes(key)) {
-          acc[key as keyof InvestigatorSkillsFilterType] = [
-            4,
-            skillsMinMax[key].max,
-          ];
-        } else {
-          acc[key as keyof InvestigatorSkillsFilterType] = undefined;
-        }
-        return acc;
-      }, {} as InvestigatorSkillsFilterType);
+  const onSetShortcut = (keys: SkillKey[]) => {
+    const value = INVESTIGATOR_SKILL_KEYS.reduce((acc, key) => {
+      if (keys.includes(key)) {
+        acc[key as keyof InvestigatorSkillsFilterType] = [
+          4,
+          skillsMinMax[key].max,
+        ];
+      } else {
+        acc[key as keyof InvestigatorSkillsFilterType] = undefined;
+      }
+      return acc;
+    }, {} as InvestigatorSkillsFilterType);
 
-      onChange(value);
-    },
-    [onChange, skillsMinMax],
-  );
+    onChange(value);
+  };
 
-  const shortcutValue = useMemo(() => {
+  const shortcutValue = (() => {
     return Object.entries(filter.value)
       .filter(([, value]) => value?.[0] === 4)
       .map(([key]) => key as SkillKey);
-  }, [filter.value]);
+  })();
 
-  const onRangeChange = useCallback(
-    (key: SkillKey, value: [number, number]) => {
-      onChange({ ...filter.value, [key]: value });
-    },
-    [filter.value, onChange],
-  );
+  const onRangeChange = (key: SkillKey, value: [number, number]) => {
+    onChange({ ...filter.value, [key]: value });
+  };
 
   return (
     <FilterContainer

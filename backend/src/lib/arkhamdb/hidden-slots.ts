@@ -52,8 +52,8 @@ export function extractHiddenSlots(deck: DeckMutablePayload) {
   deck.meta = JSON.stringify(meta);
 }
 
-function isPreview(_: string) {
-  return false;
+function isPreview(code: string) {
+  return code.startsWith("13");
 }
 
 export function applyHiddenSlots(deck: ArkhamDbRemoteDeck) {

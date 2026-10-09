@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useStore } from "@/store";
@@ -9,12 +8,9 @@ export function IncludeSideDeckToggle() {
   const checked = useStore((state) => state.recommender.includeSideDeck);
   const setChecked = useStore((state) => state.setIncludeSideDeck);
 
-  const onValueChange = useCallback(
-    (val: boolean) => {
-      setChecked(val);
-    },
-    [setChecked],
-  );
+  const onValueChange = (val: boolean) => {
+    setChecked(val);
+  };
 
   return (
     <Checkbox

@@ -32,10 +32,15 @@
     background: var(--palette-2);
   }
 
-  &:hover,
   &:active,
   &:focus-within {
     z-index: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      z-index: 1;
+    }
   }
 
   &:has(.input:focus-visible) {
@@ -43,10 +48,15 @@
     outline-offset: 2px;
   }
 
-  &:hover:not(:has(.input:checked)),
   &:active:not(:has(.input:checked)),
   &:focus-within:not(:has(.input:checked)) {
     background: var(--palette-1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:has(.input:checked)) {
+      background: var(--palette-1);
+    }
   }
 }
 

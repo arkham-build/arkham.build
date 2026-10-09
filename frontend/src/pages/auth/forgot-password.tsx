@@ -23,6 +23,8 @@ function ForgotPassword() {
   if (forgotPasswordMutation.isSuccess) {
     return (
       <AuthLayout
+        animateEntry
+        key="success"
         title={t("auth.forgot_password.title")}
         description={
           <>

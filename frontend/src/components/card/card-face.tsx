@@ -1,6 +1,6 @@
 import type { Card } from "@arkham-build/shared";
 import { ImageIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { CardWithRelations, ResolvedCard } from "@/store/lib/types";
 import { displayAttribute, sideways } from "@/utils/card-utils";
@@ -55,9 +55,9 @@ export function CardFace(props: Props) {
   const showImage =
     !omitImage && (size === "full" || card.type_code !== "story");
 
-  const onFlip = useCallback((_: boolean, sideways: boolean) => {
+  const onFlip = (_: boolean, sideways: boolean) => {
     setSideways(sideways);
-  }, []);
+  };
 
   return (
     <article

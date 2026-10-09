@@ -31,7 +31,8 @@ export type DataSlice = {
 
   duplicateDeck(id: Id, options?: { applyEdits: boolean }): Promise<Id>;
   importDeck(client: HttpClient, code: string): Promise<void>;
-  importFromFiles(files: FileList): Promise<void>;
+  importDecks(decks: Deck[]): Promise<void>;
+  importFromFiles(files: readonly File[]): Promise<void>;
   removeDeckFromFolder(client: HttpClient, deckId: Id): Promise<void>;
   setDeckFolder(
     client: HttpClient | undefined,

@@ -1,6 +1,5 @@
 import type { Id } from "@arkham-build/shared";
 import { CircleQuestionMarkIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -35,8 +34,8 @@ export function DeckConflictPanel(props: Props) {
   return (
     <section className={cx(css["panel"], className)}>
       <header className={css["header"]}>
-        <CircleQuestionMarkIcon className={css["icon"]} />
-        <h3 className={css["title"]}>{t("deck_sync.conflict.title")}</h3>
+        <CircleQuestionMarkIcon />
+        <h3>{t("deck_sync.conflict.title")}</h3>
       </header>
       <p className={css["description"]}>{t(descriptionLabel)}</p>
       {conflict.remoteVersion && (
@@ -53,7 +52,6 @@ export function DeckConflictPanel(props: Props) {
           disabled={isPending}
           onClick={run}
           size="sm"
-          variant="secondary"
         >
           {t(actionLabel)}
         </Button>
@@ -83,7 +81,7 @@ function useResolveDeckConflictAction(
   const discardLocalMutation = useDiscardLocalDeckConflictMutation();
   const refreshMutation = useRefreshDeckConflictMutation();
 
-  const run = useCallback(async () => {
+  const run = async () => {
     if (!conflict) return;
 
     try {
@@ -103,15 +101,7 @@ function useResolveDeckConflictAction(
         variant: "error",
       });
     }
-  }, [
-    conflict,
-    deckId,
-    discardLocalMutation,
-    navigate,
-    refreshMutation,
-    t,
-    toast,
-  ]);
+  };
 
   return {
     actionLabel:

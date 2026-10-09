@@ -1,15 +1,11 @@
-import {
-  type Card,
-  type Slots,
-  SPECIAL_CARD_CODES,
-} from "@arkham-build/shared";
+import { type Card, type Slots } from "@arkham-build/shared";
 import {
   DicesIcon,
   ExternalLinkIcon,
   TriangleAlertIcon,
   XIcon,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { CardScan } from "@/components/card-scan";
@@ -21,51 +17,67 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "@/components/ui/modal";
 import { Plane } from "@/components/ui/plane";
-import { useToast } from "@/components/ui/toast.hooks";
 import { useRestingTooltip } from "@/components/ui/tooltip.hooks";
 import { useStore } from "@/store";
 import type { LookupTables } from "@/store/lib/lookup-tables.types";
-import { randomBasicWeaknessForDeck } from "@/store/lib/random-basic-weakness";
+import {
+  randomBasicWeaknessForDeck,
+  type RandomBasicWeaknessOptions,
+} from "@/store/lib/random-basic-weakness";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";
-import { cardLimit, displayAttribute } from "@/utils/card-utils";
+import { displayAttribute } from "@/utils/card-utils";
 import { useAccentColor } from "@/utils/use-accent-color";
 import css from "./draft-basic-weakness.module.css";
 
 type Props = {
   deck: ResolvedDeck;
-  quantity?: number;
-  targetDeck: string;
+  disabled?: boolean;
+  onWeaknessSelect: (weakness: Card) => void;
+  options?: RandomBasicWeaknessOptions;
+  triggerType?: "button" | "icon";
 };
 
 export function DraftBasicWeakness(props: Props) {
   const { t } = useTranslation();
+  const label = (
+    <Trans
+      t={t}
+      i18nKey="deck_edit.actions.draft_random_basic_weakness"
+      components={{ em: <em /> }}
+    />
+  );
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          data-testid="draft-basic-weakness"
-          disabled={!props.quantity || props.targetDeck !== "slots"}
-          iconOnly
-          size="sm"
-          tooltip={
-            <Trans
-              t={t}
-              i18nKey={"deck_edit.actions.draft_random_basic_weakness"}
-              components={{ em: <em /> }}
-            />
-          }
-          variant="bare"
-        >
-          <DicesIcon />
-        </Button>
+        {props.triggerType === "button" ? (
+          <Button
+            data-testid="draft-basic-weakness-tool"
+            disabled={props.disabled}
+            size="sm"
+            tooltip={label}
+          >
+            <DicesIcon />
+            {t("deck.tools.random_basic_weakness.draft")}
+          </Button>
+        ) : (
+          <Button
+            data-testid="draft-basic-weakness"
+            disabled={props.disabled}
+            iconOnly
+            size="sm"
+            tooltip={label}
+            variant="bare"
+          >
+            <DicesIcon />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DraftBasicWeaknessModal {...props} />
@@ -76,8 +88,7 @@ export function DraftBasicWeakness(props: Props) {
 
 function DraftBasicWeaknessModal(props: Props) {
   const { t } = useTranslation();
-  const toast = useToast();
-  const { deck } = props;
+  const { deck, onWeaknessSelect, options } = props;
 
   const deps = useStore(
     useShallow((state) => ({
@@ -87,83 +98,41 @@ function DraftBasicWeaknessModal(props: Props) {
     })),
   );
 
-  // oxlint-disable-next-line react/exhaustive-deps -- should only be computed once on mount
-  const weaknesses = useMemo(() => selectDraftWeaknesses(deps, deck), []);
+  const [weaknesses] = useState(() =>
+    selectDraftWeaknesses(deps, deck, options),
+  );
 
   const [selectedWeakness, setSelectedWeakness] = useState<
     string | undefined
   >();
 
-  const updateCardQuantity = useStore((state) => state.updateCardQuantity);
-
   const accentColor = useAccentColor(deck.investigatorBack.card);
 
   const dialogContext = useDialogContext();
 
-  const handleSubmit = useCallback(
-    (evt: React.SubmitEvent) => {
-      evt.preventDefault();
+  const handleSubmit = (evt: React.SubmitEvent) => {
+    evt.preventDefault();
 
-      assert(weaknesses, "Submit called before draft initialized.");
+    assert(weaknesses, "Submit called before draft initialized.");
 
-      const remainingWeaknesses = weaknesses.filter(
-        (w) => w.code !== selectedWeakness,
-      );
+    const remainingWeaknesses = weaknesses.filter(
+      (w) => w.code !== selectedWeakness,
+    );
 
-      const chosenWeakness =
-        remainingWeaknesses[
-          Math.floor(Math.random() * remainingWeaknesses.length)
-        ];
+    const chosenWeakness =
+      remainingWeaknesses[
+        Math.floor(Math.random() * remainingWeaknesses.length)
+      ];
 
-      assert(chosenWeakness, "Could not determine which weakness to add.");
+    assert(chosenWeakness, "Could not determine which weakness to add.");
 
-      dialogContext?.setOpen(false);
+    dialogContext?.setOpen(false);
 
-      updateCardQuantity(
-        deck.id,
-        chosenWeakness.code,
-        1,
-        cardLimit(deps.metadata.cards[chosenWeakness.code]),
-      );
-
-      updateCardQuantity(
-        deck.id,
-        SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS,
-        -1,
-        cardLimit(
-          deps.metadata.cards[SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS],
-        ),
-      );
-
-      toast.show({
-        variant: "success",
-        duration: 3000,
-        children: (
-          <Trans
-            defaults="<strong>{{name}}</strong> was added to your deck."
-            i18nKey="deck_edit.actions.draft_random_basic_weakness_success"
-            t={t}
-            values={{ name: displayAttribute(chosenWeakness, "name") }}
-            components={{ strong: <strong /> }}
-          />
-        ),
-      });
-    },
-    [
-      weaknesses,
-      selectedWeakness,
-      updateCardQuantity,
-      deck.id,
-      deps.metadata.cards,
-      dialogContext,
-      toast,
-      t,
-    ],
-  );
+    onWeaknessSelect(chosenWeakness);
+  };
 
   return (
     <Modal>
-      <ModalBackdrop />
       <ModalInner size="52rem">
         <ModalActions />
         <DefaultModalContent
@@ -234,16 +203,18 @@ type WeaknessCardProps = {
 function WeaknessCard(props: WeaknessCardProps) {
   const { card, selectedCode, setSelectedCode } = props;
 
-  const { refs, referenceProps, isMounted, floatingStyles, transitionStyles } =
-    useRestingTooltip();
+  const {
+    refs: { setFloating, setReference },
+    referenceProps,
+    isMounted,
+    floatingStyles,
+    transitionStyles,
+  } = useRestingTooltip();
 
   const isSelected = card.code === selectedCode;
 
   return (
-    <li
-      key={card.code}
-      className={`${css["list-item"]} ${isSelected ? css["selected"] : ""}`}
-    >
+    <li key={card.code} className={css["list-item"]}>
       <button
         className={css["card-container"]}
         data-testid="drafted-weakness"
@@ -270,7 +241,7 @@ function WeaknessCard(props: WeaknessCardProps) {
 
       <Button
         {...referenceProps}
-        ref={refs.setReference}
+        ref={setReference}
         as="a"
         href={`/card/${card.code}`}
         target="_blank"
@@ -286,7 +257,7 @@ function WeaknessCard(props: WeaknessCardProps) {
       {isMounted && (
         <PortaledCardTooltip
           card={card}
-          ref={refs.setFloating}
+          ref={setFloating}
           floatingStyles={floatingStyles}
           transitionStyles={transitionStyles}
         />
@@ -302,6 +273,7 @@ function selectDraftWeaknesses(
     settings: StoreState["settings"];
   },
   deck: ResolvedDeck,
+  options?: RandomBasicWeaknessOptions,
 ) {
   const { lookupTables, metadata, settings } = deps;
 
@@ -323,6 +295,7 @@ function selectDraftWeaknesses(
           }, {} as Slots),
         },
       },
+      options,
     );
 
     if (weaknessCode) {

@@ -14,7 +14,9 @@ Example: If the filters are set to only show player cards, queries will only ret
 - Multi-value fields such as `slot` and `traits` are split, and then each value is checked individually. If one one the values matches, the whole field is considered a match. Example: `trait = "practiced"` would match a card that is `Practiced. Fortune.`.
 - All string operations work on the raw ArkhamDB representation. HTML and icons are not interpolated.
 - All string and text operations are case-insensitive.
-- A localized application matches on the localized text by default.
+- When the display language is not English, string and regex comparisons check
+  both the displayed text and the English text. A negative comparison matches
+  only if neither language matches.
 
 ## Parameter types
 
@@ -173,7 +175,7 @@ The query language is left-associative, meaning that expressions are evaluated f
 
 ## Card backs
 
-When the `[x] Backs` toggle is activated, queries will check both the front- and backside of a card when matching values. All fields can be prefixed with `back:` to query against the backside of a card. This can be used to compare with the frontside:
+When the `[x] Backs` toggle is activated, BuildQL evaluates the complete query against the front and then against the back of a card. Conditions in one query must match the same side. All fields can be prefixed with `back:` to query against the backside of a card. This can be used to compare with the frontside:
 
 ```
 back:subname != null & back:subname != subname
@@ -209,6 +211,8 @@ back:subname != null & back:subname != subname
   - aliases: `do`
 - **encounter_set** (string)
   - aliases: `en`, `encounter`, `set`
+- **errata** (boolean)
+  - matches cards with a non-nullish errata date
 - **evade** (number)
   - aliases: `ev`
 - **exceptional** (boolean)
@@ -247,7 +251,7 @@ back:subname != null & back:subname != subname
   - legacy alias: `do`
 - **in_deck** (number)
 - **in_side_deck** (number)
-- **is_favorite** (boolean)
+- **favorite** (boolean)
   - aliases: `fav`
   - matches cards marked as favorites
 - **is_upgrade** (boolean)
@@ -261,7 +265,7 @@ back:subname != null & back:subname != subname
   - aliases: `my`
 - **name** (string)
   - aliases: `na`
-  - matches printed name and card abbreviation
+  - matches printed name and card abbreviations
 - **pack** (string)
   - aliases: `pa`
   - legacy alias: `e`
@@ -290,6 +294,8 @@ back:subname != null & back:subname != subname
   - legacy alias: `b`
 - **taboo_set** (string)
   - aliases: `ts`
+  - matches cards that belong to the specified taboo set
+  - does not change which taboo set is applied for display
 - **tag** (string)
   - matches combined account and deck-local tags when available
 - **text** (text)

@@ -21,7 +21,7 @@
       "@arkham-build/shared": ["../shared/src/index.ts"]
     }
   },
-  "include": ["src", "../shared/src"],
+  "include": ["src"],
   "exclude": ["functions/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

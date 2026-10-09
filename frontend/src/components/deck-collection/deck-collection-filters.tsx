@@ -8,6 +8,7 @@ import {
   selectDeckSearchTerm,
   selectFactionsInLocalDecks,
 } from "@/store/selectors/deck-collection";
+import { useMedia } from "@/utils/use-media";
 import { FactionToggle } from "../faction-toggle";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -20,6 +21,7 @@ import { DeckProviderFilter } from "./deck-provider-filter";
 import { DeckSortingOptions } from "./deck-sorting-options";
 import { DeckTagsFilter } from "./deck-tags-filter";
 import { DeckXPCostFilter } from "./deck-xp-cost-filter";
+import { MQ_FLOATING_SIDEBAR } from "@/utils/constants";
 
 type Props = {
   filteredCount: number;
@@ -33,6 +35,8 @@ export function DeckCollectionFilters(props: Props) {
   const hasChanges = useStore(selectDeckFilterChanges);
 
   const addFilter = useStore((state) => state.addDecksFilter);
+
+  const isNarrow = useMedia(MQ_FLOATING_SIDEBAR);
 
   const onSearchChange = (value: string) => {
     addFilter("search", value);
@@ -63,7 +67,11 @@ export function DeckCollectionFilters(props: Props) {
           value={searchValue}
           className={css["search-outer"]}
         />
-        <Popover placement="right-start" modal>
+        <Popover
+          placement={isNarrow ? "bottom-end" : "right-start"}
+          modal
+          strategy="fixed"
+        >
           <PopoverTrigger asChild>
             <Button
               className={css["expand-filters"]}
@@ -89,11 +97,11 @@ export function DeckCollectionFilters(props: Props) {
                   onValueChange={onFactionFilterChange}
                 />
               )}
-              <DeckCardsFilter containerClass={css["filter"]} />
-              <DeckTagsFilter containerClass={css["filter"]} />
-              <DeckXPCostFilter containerClass={css["filter"]} />
-              <DeckProviderFilter containerClass={css["filter"]} />
-              <DeckPropertiesFilter containerClass={css["filter"]} />
+              <DeckCardsFilter />
+              <DeckTagsFilter />
+              <DeckXPCostFilter />
+              <DeckProviderFilter />
+              <DeckPropertiesFilter />
             </Scroller>
           </PopoverContent>
         </Popover>

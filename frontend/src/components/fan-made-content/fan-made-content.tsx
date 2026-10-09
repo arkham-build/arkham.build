@@ -14,7 +14,7 @@ import {
   LinkIcon,
   Trash2Icon,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "wouter";
@@ -50,7 +50,6 @@ import {
   DefaultModalContent,
   Modal,
   ModalActions,
-  ModalBackdrop,
   ModalInner,
 } from "../ui/modal";
 import { Plane } from "../ui/plane";
@@ -65,7 +64,10 @@ type Filterable = {
   meta: FanMadeProject["meta"];
 };
 
-export function FanMadeContent(props: SettingProps) {
+export function FanMadeContent(
+  props: SettingProps & { headerPortalTarget: HTMLElement | null },
+) {
+  const { headerPortalTarget, ...settingProps } = props;
   const [searchParams] = useSearchParams();
 
   // TECH DEBT: the current preview implementation re-uses the card grid.
@@ -85,7 +87,7 @@ export function FanMadeContent(props: SettingProps) {
 
   const [search, setSearchValue] = useState("");
 
-  const projectFilter = useMemo(() => {
+  const projectFilter = (() => {
     function projectFilterfn<T extends Filterable>(
       projects: T[] | undefined,
     ): T[] | undefined {
@@ -100,16 +102,20 @@ export function FanMadeContent(props: SettingProps) {
       });
     }
     return projectFilterfn;
-  }, [search]);
+  })();
 
-  const searchChange = useCallback((val: string) => {
+  const searchChange = (val: string) => {
     setSearchValue(val);
-  }, []);
+  };
 
   return (
     <div className={css["container"]}>
-      <DisplaySettings {...props} />
-      <FanMadeSearch search={search} onSearchChange={searchChange} />
+      <DisplaySettings {...settingProps} />
+      <FanMadeSearch
+        portalTarget={headerPortalTarget}
+        search={search}
+        onSearchChange={searchChange}
+      />
       <Collection
         onAddProject={onAddProject}
         listingsQuery={listingsQuery}
@@ -136,40 +142,37 @@ function useAddFanMadeProject() {
   const toast = useToast();
   const addFanMadeProjectMutation = useAddFanMadeProjectMutation();
 
-  return useCallback(
-    async (payload: unknown) => {
-      try {
-        const search = new URLSearchParams(window.location.search);
-        search.delete("install_id");
-        search.delete("install_url");
+  return async (payload: unknown) => {
+    try {
+      const search = new URLSearchParams(window.location.search);
+      search.delete("install_id");
+      search.delete("install_url");
 
-        window.history.replaceState(
-          {},
-          "",
-          `${window.location.pathname}?${search.toString()}`,
-        );
+      window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}?${search.toString()}`,
+      );
 
-        await addFanMadeProjectMutation.mutateAsync(payload);
-      } catch (err) {
-        const message =
-          err instanceof z.core.$ZodError
-            ? z.prettifyError(err)
-            : (err as Error).message;
+      await addFanMadeProjectMutation.mutateAsync(payload);
+    } catch (err) {
+      const message =
+        err instanceof z.core.$ZodError
+          ? z.prettifyError(err)
+          : (err as Error).message;
 
-        toast.show({
-          children: t("fan_made_content.messages.parse_failed", {
-            error: message,
-          }),
-          variant: "error",
-        });
+      toast.show({
+        children: t("fan_made_content.messages.parse_failed", {
+          error: message,
+        }),
+        variant: "error",
+      });
 
-        console.error(err);
-        // oxlint-disable-next-line typescript/no-explicit-any -- debug
-        console.info("error details:", (err as any)?.issues);
-      }
-    },
-    [addFanMadeProjectMutation, t, toast],
-  );
+      console.error(err);
+      // oxlint-disable-next-line typescript/no-explicit-any -- debug
+      console.info("error details:", (err as any)?.issues);
+    }
+  };
 }
 
 function DisplaySettings(props: SettingProps) {
@@ -177,33 +180,27 @@ function DisplaySettings(props: SettingProps) {
 
   const { t } = useTranslation();
 
-  const options = useMemo(
-    () => [
-      {
-        value: "all",
-        label: t("filters.fan_made_content.all"),
-      },
-      {
-        value: "official",
-        label: t("filters.fan_made_content.official"),
-      },
-      {
-        value: "fan-made",
-        label: t("filters.fan_made_content.fan_made"),
-      },
-    ],
-    [t],
-  );
-
-  const onChangeDisplay = useCallback(
-    (evt: React.ChangeEvent<HTMLSelectElement>) => {
-      setSettings({
-        ...settings,
-        cardListsDefaultContentType: evt.target.value as FanMadeContentFilter,
-      });
+  const options = [
+    {
+      value: "all",
+      label: t("filters.fan_made_content.all"),
     },
-    [setSettings, settings],
-  );
+    {
+      value: "official",
+      label: t("filters.fan_made_content.official"),
+    },
+    {
+      value: "fan-made",
+      label: t("filters.fan_made_content.fan_made"),
+    },
+  ];
+
+  const onChangeDisplay = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+    setSettings({
+      ...settings,
+      cardListsDefaultContentType: evt.target.value as FanMadeContentFilter,
+    });
+  };
 
   return (
     <section className={css["section"]}>
@@ -227,35 +224,25 @@ function DisplaySettings(props: SettingProps) {
 }
 
 type SearchProps = {
+  portalTarget: HTMLElement | null;
   search: string;
   onSearchChange: (val: string) => void;
 };
 
-function FanMadeSearch({ search, onSearchChange }: SearchProps) {
+function FanMadeSearch({ portalTarget, search, onSearchChange }: SearchProps) {
   const { t } = useTranslation();
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(
-    document.getElementById("settings-header-portal"),
-  );
-
   const ref = useRef<HTMLInputElement | null>(null);
 
-  useEffect(() => {
-    if (!portalTarget) {
-      const target = document.getElementById("settings-header-portal");
-      setPortalTarget(target);
-    }
-  }, [portalTarget]);
-
-  const onFocusSearch = useCallback(() => {
+  const onFocusSearch = () => {
     if (ref.current) {
       ref.current.focus();
     }
-  }, []);
+  };
 
   useHotkey("/", onFocusSearch);
 
   const searchElement = (
-    <search className={css["fan-made-search"]}>
+    <search>
       <SearchInput
         bindSlashKey
         placeholder={t("fan_made_content.filter_fan_made_content")}
@@ -309,7 +296,7 @@ function Collection({ onAddProject, listingsQuery, filterFn }: RegistryProps) {
         >
           <FileJson2Icon /> {t("fan_made_content.actions.import_file")}
         </FileInput>
-        <Popover>
+        <Popover strategy="fixed">
           <PopoverTrigger asChild>
             <Button data-testid="collection-import-url">
               <LinkIcon /> {t("fan_made_content.actions.import_url")}
@@ -352,7 +339,7 @@ function Collection({ onAddProject, listingsQuery, filterFn }: RegistryProps) {
       {isEmpty(filteredOwned) && (
         <div className={css["empty"]} data-testid="collection-placeholder">
           <BookDashedIcon className={css["empty-icon"]} />
-          <p className={css["empty-title"]}>{t("fan_made_content.empty")}</p>
+          <p>{t("fan_made_content.empty")}</p>
         </div>
       )}
 
@@ -600,13 +587,19 @@ function ProjectCard(props: {
           <nav className={css["actions"]}>{children}</nav>
         </div>
       }
-      bannerAlt={meta.name}
-      bannerUrl={meta.banner_url}
+      banner={
+        meta.banner_url
+          ? {
+              alt: meta.name,
+              src: meta.banner_url,
+            }
+          : undefined
+      }
       title={<h3 data-testid="collection-project-title">{meta.name}</h3>}
     >
       <h4>{meta.author}</h4>
 
-      <div className={cx(css["content"], "longform")}>
+      <div className="longform">
         {meta.description && (
           <div
             // oxlint-disable-next-line react/no-danger -- escaped in markdown parser
@@ -657,17 +650,16 @@ function QuickInstallDialog({
   const validation = data ? FanMadeProjectSchema.safeParse(data) : undefined;
   const project = validation?.success ? validation.data : undefined;
 
-  const onInstall = useCallback(async () => {
+  async function onInstall() {
     if (!project) return;
     await onAddProject(project);
     setOpen(false);
-  }, [onAddProject, project]);
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <Modal>
-          <ModalBackdrop />
           <ModalInner size="60rem">
             <ModalActions />
             <DefaultModalContent title={t("fan_made_content.actions.install")}>
@@ -730,74 +722,65 @@ function useProjectRegistry(onAddProject: (payload: unknown) => Promise<void>) {
   const { t } = useTranslation();
   const toast = useToast();
 
-  const onAddQuery = useCallback(
-    async (query: () => Promise<FanMadeProject>) => {
-      let project: FanMadeProject;
-      let toastId: string | undefined;
+  const onAddQuery = async (query: () => Promise<FanMadeProject>) => {
+    let project: FanMadeProject;
+    let toastId: string | undefined;
 
-      try {
-        toastId = toast.show({
-          children: t("fan_made_content.messages.content_loading"),
-          variant: "loading",
-        });
-        project = await query();
-      } catch (err) {
-        toast.show({
-          children: t("fan_made_content.messages.fetch_failed", {
-            error: (err as Error).message,
-          }),
-          variant: "error",
-        });
-
-        console.error(err);
-        return;
-      } finally {
-        if (toastId) toast.dismiss(toastId);
-      }
-
-      await onAddProject(project);
-    },
-    [onAddProject, toast, t],
-  );
-
-  const onAddLocalProject = useCallback(
-    async (evt: React.ChangeEvent<HTMLInputElement>) => {
-      const files = evt.target.files;
-      if (!files?.length) return;
-      for (const file of files) {
-        const text = await file.text();
-        await onAddProject(JSON.parse(text));
-      }
-    },
-    [onAddProject],
-  );
-
-  const onAddFromUrl = useCallback(
-    async (evt: React.SubmitEvent<HTMLFormElement>) => {
-      evt.preventDefault();
-      evt.stopPropagation();
-
-      const formData = new FormData(evt.currentTarget);
-      const value = formData.get("url");
-      if (typeof value !== "string" || !value) return;
-
-      const url = value;
-
-      await onAddQuery(async () => {
-        const res = await fetch(url);
-        assert(res.ok, `Bad status code: ${res.status}`);
-        return res.json();
+    try {
+      toastId = toast.show({
+        children: t("fan_made_content.messages.content_loading"),
+        variant: "loading",
       });
-    },
-    [onAddQuery],
-  );
+      project = await query();
+    } catch (err) {
+      if (toastId) toast.dismiss(toastId);
 
-  const onAddFromRegistry = useCallback(
-    async (project: FanMadeProjectInfo) => {
-      await onAddQuery(() => queryFanMadeProjectData(project.bucket_path));
-    },
-    [onAddQuery],
-  );
+      toast.show({
+        children: t("fan_made_content.messages.fetch_failed", {
+          error: (err as Error).message,
+        }),
+        variant: "error",
+      });
+
+      console.error(err);
+      return;
+    }
+
+    if (toastId) toast.dismiss(toastId);
+    await onAddProject(project);
+  };
+
+  const onAddLocalProject = async (
+    evt: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = evt.target.files;
+    if (!files?.length) return;
+    for (const file of files) {
+      const text = await file.text();
+      await onAddProject(JSON.parse(text));
+    }
+  };
+
+  const onAddFromUrl = async (evt: React.SubmitEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+
+    const formData = new FormData(evt.currentTarget);
+    const value = formData.get("url");
+    if (typeof value !== "string" || !value) return;
+
+    const url = value;
+
+    await onAddQuery(async () => {
+      const res = await fetch(url);
+      assert(res.ok, `Bad status code: ${res.status}`);
+      return res.json();
+    });
+  };
+
+  const onAddFromRegistry = async (project: FanMadeProjectInfo) => {
+    await onAddQuery(() => queryFanMadeProjectData(project.bucket_path));
+  };
 
   return {
     onAddLocalProject,

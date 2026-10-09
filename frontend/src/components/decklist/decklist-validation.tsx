@@ -51,7 +51,7 @@ export function DecklistValidation(props: Props) {
           <ul className={css["decklist-validation-results"]}>
             {validation.errors.map((error, i) => (
               // oxlint-disable-next-line react/no-array-index-key -- no unique key available.
-              <li className={css["decklist-validation-result"]} key={i}>
+              <li key={i}>
                 {isTooManyCardsError(error) && (
                   <>
                     {t("deck.validation.too_many_cards", {

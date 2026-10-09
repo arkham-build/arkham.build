@@ -36,6 +36,11 @@ export const recommendationKeys = {
     [...recommendationKeys.all, ...parts] as const,
 };
 
+export const sealedDeckKeys = {
+  all: ["sealed-decks"] as const,
+  detail: (id: string) => [...sealedDeckKeys.all, id] as const,
+};
+
 export const fanMadeKeys = {
   all: ["fan-made"] as const,
   listings: () => [...fanMadeKeys.all, "listings"] as const,

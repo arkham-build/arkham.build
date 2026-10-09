@@ -1,6 +1,5 @@
 import type { Card } from "@arkham-build/shared";
 import { HeartIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { cx } from "@/utils/cx";
 import { useAccentColor } from "@/utils/use-accent-color";
@@ -35,14 +34,11 @@ export function CardFavoriteAction({ card }: Props) {
   const { t } = useTranslation();
   const { isFavorite, onToggleFavorite } = useCardFavorite(card.code);
 
-  const onClick = useCallback(
-    (evt: React.MouseEvent) => {
-      evt.preventDefault();
-      evt.stopPropagation();
-      onToggleFavorite();
-    },
-    [onToggleFavorite],
-  );
+  const onClick = (evt: React.MouseEvent) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    onToggleFavorite();
+  };
 
   return (
     <Button

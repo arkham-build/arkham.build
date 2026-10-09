@@ -12,15 +12,13 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useContext, useState } from "react";
+import { MQ_HOVER } from "@/utils/constants";
+import { useMedia } from "@/utils/use-media";
 
 export interface PopoverOptions {
+  clickDisabled?: boolean;
+  clickStickIfOpen?: boolean;
   hoverDisabled?: boolean;
   initialOpen?: boolean;
   placement?: Placement;
@@ -31,6 +29,8 @@ export interface PopoverOptions {
 }
 
 export function usePopover({
+  clickDisabled,
+  clickStickIfOpen,
   hoverDisabled,
   initialOpen = false,
   placement = "bottom",
@@ -40,18 +40,16 @@ export function usePopover({
   ...rest
 }: PopoverOptions = {}) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(initialOpen);
+  const canHover = useMedia(MQ_HOVER);
   const [labelId, setLabelId] = useState<string | undefined>();
   const [descriptionId, setDescriptionId] = useState<string | undefined>();
 
   const open = controlledOpen ?? uncontrolledOpen;
 
-  const setOpen = useCallback(
-    (value: boolean) => {
-      if (controlledOpen == null) setUncontrolledOpen(value);
-      onOpenChange?.(value);
-    },
-    [controlledOpen, onOpenChange],
-  );
+  const setOpen = (value: boolean) => {
+    if (controlledOpen == null) setUncontrolledOpen(value);
+    onOpenChange?.(value);
+  };
 
   const data = useFloating({
     placement,
@@ -73,11 +71,12 @@ export function usePopover({
   const context = data.context;
 
   const click = useClick(context, {
-    enabled: true,
+    ignoreMouse: clickDisabled,
+    stickIfOpen: clickStickIfOpen,
   });
 
   const hover = useHover(context, {
-    enabled: !hoverDisabled,
+    enabled: canHover && !hoverDisabled,
     restMs: 50,
     handleClose: safePolygon({
       blockPointerEvents: false,
@@ -89,20 +88,17 @@ export function usePopover({
 
   const interactions = useInteractions([click, dismiss, role, hover]);
 
-  return useMemo(
-    () => ({
-      open,
-      setOpen,
-      ...interactions,
-      ...data,
-      modal,
-      labelId,
-      descriptionId,
-      setLabelId,
-      setDescriptionId,
-    }),
-    [open, setOpen, interactions, data, modal, labelId, descriptionId],
-  );
+  return {
+    open,
+    setOpen,
+    ...interactions,
+    ...data,
+    modal,
+    labelId,
+    descriptionId,
+    setLabelId,
+    setDescriptionId,
+  };
 }
 
 type ContextType =

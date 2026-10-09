@@ -112,12 +112,21 @@ export function useImportDeckMutation() {
   });
 }
 
+export function useImportDecksMutation() {
+  const importDecks = useStore((state) => state.importDecks);
+
+  return useMutation({
+    mutationKey: ["decks", "import-data"],
+    mutationFn: (decks: Deck[]) => importDecks(decks),
+  });
+}
+
 export function useImportFromFilesMutation() {
   const importFromFiles = useStore((state) => state.importFromFiles);
 
   return useMutation({
     mutationKey: ["decks", "import-files"],
-    mutationFn: (files: FileList) => importFromFiles(files),
+    mutationFn: (files: readonly File[]) => importFromFiles(files),
   });
 }
 

@@ -4,6 +4,7 @@ import {
   resolveCardTagCardCode,
 } from "@/store/lib/card-tags";
 import {
+  filterCardPool,
   filterInvestigatorAccess,
   filterInvestigatorWeaknessAccess,
   filterTag,
@@ -12,7 +13,9 @@ import {
   cardBackType,
   displayAttribute,
   doubleSidedBackCard,
+  matchingAttribute,
   isSpecialist,
+  splitCommaSeparatedValue,
   splitMultiValue,
 } from "@/utils/card-utils";
 import { displayPackName } from "@/utils/formatting";
@@ -22,12 +25,6 @@ import type {
   FieldLookupContext,
   FieldType,
 } from "./interpreter.types";
-
-export class BackArray<T> extends Array<T> {
-  constructor(items: T[]) {
-    super(...items);
-  }
-}
 
 interface FieldDefinition {
   aliases?: string[];
@@ -90,14 +87,18 @@ const fieldDefinitions: FieldDefinition[] = [
     legacyAlias: "y",
     lookup:
       () =>
-      (card, { metadata }) => {
+      (card, { metadata, i18n }) => {
         const pack = metadata.packs[card.pack_code];
         if (!pack) return null;
 
         const cycle = metadata.cycles[pack.cycle_code];
         if (!cycle) return null;
 
-        return [pack.cycle_code, displayPackName(cycle)];
+        return [
+          pack.cycle_code,
+          displayPackName(cycle),
+          ...(i18n.language === "en" ? [] : [cycle.real_name]),
+        ];
       },
     name: "cycle",
     type: "string",
@@ -124,16 +125,25 @@ const fieldDefinitions: FieldDefinition[] = [
     aliases: ["en", "encounter", "set"],
     lookup:
       () =>
-      (card, { metadata }) => {
+      (card, { metadata, i18n }) => {
         if (!card.encounter_code) return null;
 
         const encounterSet = metadata.encounterSets[card.encounter_code];
         if (!encounterSet) return null;
 
-        return [card.encounter_code, displayPackName(encounterSet)];
+        return [
+          card.encounter_code,
+          displayPackName(encounterSet),
+          ...(i18n.language === "en" ? [] : [encounterSet.real_name]),
+        ];
       },
     name: "encounter_set",
     type: "string",
+  },
+  {
+    lookup: () => (card) => card.errata_date != null,
+    name: "errata",
+    type: "boolean",
   },
   {
     aliases: ["ev"],
@@ -185,7 +195,9 @@ const fieldDefinitions: FieldDefinition[] = [
   {
     aliases: ["fl"],
     legacyAlias: "v",
-    lookup: backResolver((card) => displayAttribute(card, "flavor")),
+    lookup: backResolver((card, { i18n }) =>
+      matchingAttribute(card, "flavor", i18n.language),
+    ),
     name: "flavor",
     type: "text",
   },
@@ -202,6 +214,11 @@ const fieldDefinitions: FieldDefinition[] = [
             selections: deck.selections,
           })
         : undefined;
+      const cardPoolFilter = filterCardPool(
+        deck?.cardPool,
+        metadata,
+        lookupTables,
+      );
 
       return Object.keys(otherLevels).some((otherCode) => {
         const otherCard = metadata.cards[otherCode];
@@ -210,8 +227,9 @@ const fieldDefinitions: FieldDefinition[] = [
         const cardXp = countExperience(card, 1);
         const otherCardXp = countExperience(otherCard, 1);
 
-        if (!otherCard || otherCardXp <= cardXp) return false;
-        return !deck || accessFilter?.(otherCard);
+        if (otherCardXp <= cardXp) return false;
+        if (deck && !accessFilter?.(otherCard)) return false;
+        return !cardPoolFilter || cardPoolFilter(otherCard);
       });
     }),
     name: "has_upgrade",
@@ -322,7 +340,7 @@ const fieldDefinitions: FieldDefinition[] = [
 
         return cardTags.favorites?.[canonicalCode] ?? false;
       },
-    name: "is_favorite",
+    name: "favorite",
     type: "boolean",
   },
   {
@@ -371,9 +389,10 @@ const fieldDefinitions: FieldDefinition[] = [
   },
   {
     aliases: ["na"],
-    lookup: backResolver((card) => {
-      const name = displayAttribute(card, "name");
-      return card.abbreviation ? [name, card.abbreviation] : name;
+    lookup: backResolver((card, { i18n }) => {
+      const name = matchingAttribute(card, "name", i18n.language);
+      const abbreviations = splitCommaSeparatedValue(card.abbreviation);
+      return abbreviations.length ? [name, ...abbreviations].flat() : name;
     }),
     name: "name",
     type: "string",
@@ -383,11 +402,15 @@ const fieldDefinitions: FieldDefinition[] = [
     legacyAlias: "e",
     lookup:
       () =>
-      (card, { metadata }) => {
+      (card, { metadata, i18n }) => {
         const pack = metadata.packs[card.pack_code];
         if (!pack) return null;
 
-        return [card.pack_code, displayPackName(pack)];
+        return [
+          card.pack_code,
+          displayPackName(pack),
+          ...(i18n.language === "en" ? [] : [pack.real_name]),
+        ];
       },
     name: "pack",
     type: "string",
@@ -456,7 +479,9 @@ const fieldDefinitions: FieldDefinition[] = [
   },
   {
     aliases: ["sn"],
-    lookup: backResolver((card) => displayAttribute(card, "subname")),
+    lookup: backResolver((card, { i18n }) =>
+      matchingAttribute(card, "subname", i18n.language),
+    ),
     name: "subname",
     type: "string",
   },
@@ -496,10 +521,13 @@ const fieldDefinitions: FieldDefinition[] = [
     lookup:
       () =>
       (card, { metadata }) => {
-        if (card.taboo_set_id == null) return null;
-        const taboo = metadata.tabooSets[card.taboo_set_id];
-        if (!taboo) return null;
-        return taboo.name;
+        const tabooSetNames = Object.values(metadata.tabooSets)
+          .filter((tabooSet) =>
+            Boolean(metadata.taboos[`${card.code}-${tabooSet.id}`]),
+          )
+          .map((tabooSet) => tabooSet.name);
+
+        return tabooSetNames.length ? tabooSetNames : null;
       },
     name: "taboo_set",
     type: "string",
@@ -507,7 +535,9 @@ const fieldDefinitions: FieldDefinition[] = [
   {
     aliases: ["txt"],
     legacyAlias: "x",
-    lookup: backResolver((card) => displayAttribute(card, "text")),
+    lookup: backResolver((card, { i18n }) =>
+      matchingAttribute(card, "text", i18n.language),
+    ),
     name: "text",
     type: "text",
   },
@@ -523,6 +553,7 @@ const fieldDefinitions: FieldDefinition[] = [
 
       return [
         ...traits,
+        ...splitMultiValue(card.real_traits),
         ...traits.map((trait) => i18n.t(`common.traits.${trait}`)),
       ];
     }),
@@ -586,7 +617,8 @@ const fieldDefinitions: FieldDefinition[] = [
 function backResolver(resolver: FieldLookup) {
   return (onlyReturnBackAttr = false) => {
     return (card: Card, ctx: FieldLookupContext) => {
-      if (!ctx.matchBacks && !onlyReturnBackAttr) return resolver(card, ctx);
+      const returnBackAttr = onlyReturnBackAttr || ctx.matchSide === "back";
+      if (!returnBackAttr) return resolver(card, ctx);
 
       let back: Card | undefined;
       if (card.double_sided) {
@@ -595,11 +627,7 @@ function backResolver(resolver: FieldLookup) {
         back = ctx.metadata.cards[card.back_link_id];
       }
 
-      if (onlyReturnBackAttr) return resolver(back ?? ({} as Card), ctx);
-
-      return back
-        ? new BackArray([resolver(card, ctx), resolver(back, ctx)].flat())
-        : resolver(card, ctx);
+      return resolver(back ?? ({} as Card), ctx);
     };
   };
 }

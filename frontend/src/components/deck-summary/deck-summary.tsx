@@ -8,7 +8,6 @@ import {
   PencilIcon,
   Trash2Icon,
 } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
 import type { DeckValidationResult } from "@/store/lib/deck-validation";
@@ -162,47 +161,32 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
 
-  const onDuplicate = useCallback(
-    (evt: React.MouseEvent) => {
-      cancelEvent(evt);
-      onDuplicateDeck?.(deck.id);
-    },
-    [deck.id, onDuplicateDeck],
-  );
+  const onDuplicate = (evt: React.MouseEvent) => {
+    cancelEvent(evt);
+    onDuplicateDeck?.(deck.id);
+  };
 
-  const onDelete = useCallback(
-    (evt: React.MouseEvent) => {
-      cancelEvent(evt);
-      void onDeleteDeck?.(deck.id)?.catch(console.error);
-    },
-    [deck.id, onDeleteDeck],
-  );
+  const onDelete = (evt: React.MouseEvent) => {
+    cancelEvent(evt);
+    void onDeleteDeck?.(deck.id)?.catch(console.error);
+  };
 
-  const onEdit = useCallback(
-    (evt: React.MouseEvent) => {
-      cancelEvent(evt);
-      navigate(`/deck/edit/${deck.id}`);
-    },
-    [deck.id, navigate],
-  );
+  const onEdit = (evt: React.MouseEvent) => {
+    cancelEvent(evt);
+    navigate(`/deck/edit/${deck.id}`);
+  };
 
-  const onUpgrade = useCallback(
-    (evt: React.MouseEvent) => {
-      cancelEvent(evt);
-      navigate(`/deck/view/${deck.id}?upgrade`);
-    },
-    [deck.id, navigate],
-  );
+  const onUpgrade = (evt: React.MouseEvent) => {
+    cancelEvent(evt);
+    navigate(`/deck/view/${deck.id}?upgrade`);
+  };
 
   const { isArchived, toggleArchived } = useChangeArchiveStatus(deck.id);
 
-  const onArchive = useCallback(
-    (evt: React.MouseEvent) => {
-      cancelEvent(evt);
-      toggleArchived();
-    },
-    [toggleArchived],
-  );
+  const onArchive = (evt: React.MouseEvent) => {
+    cancelEvent(evt);
+    toggleArchived();
+  };
 
   return (
     <nav className={css["quick-actions"]}>

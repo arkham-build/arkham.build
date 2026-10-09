@@ -17,4 +17,8 @@ select {
   & option {
     background-color: var(--palette-1);
   }
+
+  &[disabled] {
+    opacity: 0.5;
+  }
 }

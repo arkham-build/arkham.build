@@ -12,6 +12,15 @@ import {
 } from "./constants";
 import { isEmpty } from "./is-empty";
 
+export function splitCommaSeparatedValue(s: string | null | undefined) {
+  if (!s) return [];
+  return s.split(",").reduce<string[]>((acc, curr) => {
+    const s = curr.trim();
+    if (s) acc.push(s);
+    return acc;
+  }, []);
+}
+
 export function splitMultiValue(s: string | null | undefined) {
   if (!s) return [];
   return s.split(".").reduce<string[]>((acc, curr) => {
@@ -208,6 +217,21 @@ export function displayAttribute(
     | "customization_change",
 ) {
   return card?.[key] ?? card?.[`real_${key}`] ?? "";
+}
+
+export function matchingAttribute(
+  card: Card | undefined,
+  key: Parameters<typeof displayAttribute>[1],
+  language: string,
+): string | string[] {
+  const displayed = displayAttribute(card, key);
+  const base = card?.[`real_${key}`];
+
+  if (language === "en" || base == null || base === displayed) {
+    return displayed;
+  }
+
+  return [displayed, base];
 }
 
 export function cycleOrPack(cycle: Cycle, pack: Pack) {

@@ -8,7 +8,7 @@ import type { Selectable } from "kysely";
 import type { Card } from "../../db/schema.types.ts";
 import type { ItemTranslation } from "../../lib/json-data.types.ts";
 
-const TRANSLATED_KEYS = [
+const CARD_TRANSLATED_KEYS = [
   "back_flavor",
   "back_name",
   "back_subname",
@@ -23,11 +23,48 @@ const TRANSLATED_KEYS = [
   "taboo_text_change",
   "text",
   "traits",
-];
+] as const;
 
-export function applyLocaleTranslations<T>(
+const NAME_TRANSLATED_KEYS = ["name"] as const;
+const CAMPAIGN_TRANSLATED_KEYS = ["name", "campaign_guide_url"] as const;
+const SCENARIO_TRANSLATED_KEYS = [
+  "name",
+  "campaign_guide_location",
+  "rules_insert_url",
+] as const;
+
+export function applyCardLocaleTranslations<T>(
   input: T & { translations?: ItemTranslation<T>[] },
   locale: string,
+) {
+  return applyLocaleTranslations(input, locale, CARD_TRANSLATED_KEYS);
+}
+
+export function applyNameLocaleTranslations<T>(
+  input: T & { translations?: ItemTranslation<T>[] },
+  locale: string,
+) {
+  return applyLocaleTranslations(input, locale, NAME_TRANSLATED_KEYS);
+}
+
+export function applyCampaignLocaleTranslations<T>(
+  input: T & { translations?: ItemTranslation<T>[] },
+  locale: string,
+) {
+  return applyLocaleTranslations(input, locale, CAMPAIGN_TRANSLATED_KEYS);
+}
+
+export function applyScenarioLocaleTranslations<T>(
+  input: T & { translations?: ItemTranslation<T>[] },
+  locale: string,
+) {
+  return applyLocaleTranslations(input, locale, SCENARIO_TRANSLATED_KEYS);
+}
+
+function applyLocaleTranslations<T>(
+  input: T & { translations?: ItemTranslation<T>[] },
+  locale: string,
+  translatedKeys: readonly string[],
 ) {
   const match: Record<string, unknown> | undefined = input.translations?.find(
     (translation) => translation.locale === locale,
@@ -36,9 +73,9 @@ export function applyLocaleTranslations<T>(
   const output: Record<string, unknown> = structuredClone(input);
   delete output["translations"];
 
-  for (const key of TRANSLATED_KEYS) {
+  for (const key of translatedKeys) {
     output[`real_${key}`] = output[key];
-    if (match?.[key]) {
+    if (match && Object.hasOwn(match, key)) {
       output[key] = match[key];
     } else {
       delete output[key];

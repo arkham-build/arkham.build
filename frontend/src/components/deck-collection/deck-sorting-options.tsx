@@ -1,5 +1,4 @@
 import { ArrowDownNarrowWideIcon } from "lucide-react";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type {
@@ -25,35 +24,32 @@ export function DeckSortingOptions(props: Props) {
   const sortingOptions: {
     label: string;
     sorting: DeckSortPayload;
-  }[] = useMemo(
-    () => [
-      {
-        label: t("deck_collection.sorting.date_updated"),
-        sorting: { order: "desc", criteria: "date_updated" },
-      },
-      {
-        label: t("deck_collection.sorting.date_created"),
-        sorting: { order: "desc", criteria: "date_created" },
-      },
-      {
-        label: t("deck_collection.sorting.alphabetical_asc"),
-        sorting: { order: "asc", criteria: "alphabetical" },
-      },
-      {
-        label: t("deck_collection.sorting.alphabetical_desc"),
-        sorting: { order: "desc", criteria: "alphabetical" },
-      },
-      {
-        label: t("deck_collection.sorting.xp_desc"),
-        sorting: { order: "desc", criteria: "xp" },
-      },
-      {
-        label: t("deck_collection.sorting.xp_asc"),
-        sorting: { order: "asc", criteria: "xp" },
-      },
-    ],
-    [t],
-  );
+  }[] = [
+    {
+      label: t("deck_collection.sorting.date_updated"),
+      sorting: { order: "desc", criteria: "date_updated" },
+    },
+    {
+      label: t("deck_collection.sorting.date_created"),
+      sorting: { order: "desc", criteria: "date_created" },
+    },
+    {
+      label: t("deck_collection.sorting.alphabetical_asc"),
+      sorting: { order: "asc", criteria: "alphabetical" },
+    },
+    {
+      label: t("deck_collection.sorting.alphabetical_desc"),
+      sorting: { order: "desc", criteria: "alphabetical" },
+    },
+    {
+      label: t("deck_collection.sorting.xp_desc"),
+      sorting: { order: "desc", criteria: "xp" },
+    },
+    {
+      label: t("deck_collection.sorting.xp_asc"),
+      sorting: { order: "asc", criteria: "xp" },
+    },
+  ];
 
   const handleValueChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
     const [criteria, order] = evt.target.value.split("|");

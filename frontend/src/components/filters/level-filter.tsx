@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -15,11 +14,15 @@ import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
 import { useFilter } from "./primitives/filter-hooks";
 
-function getToggleValue(value: [number, number] | undefined) {
-  if (!value) return "";
+type LevelShortcut = "0" | "1-5";
+
+function getToggleValue(
+  value: [number, number] | undefined,
+): LevelShortcut | undefined {
+  if (!value) return undefined;
   if (value[0] === 0 && value[1] === 0) return "0";
   if (value[0] === 1 && value[1] === 5) return "1-5";
-  return "";
+  return undefined;
 }
 
 export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
@@ -42,43 +45,33 @@ export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
 
   const { onReset, onChange, onOpenChange, locked } = useFilter(id);
 
-  const onChangeRange = useCallback(
-    (val: [number, number] | undefined) => {
+  const onChangeRange = (val: [number, number] | undefined) => {
+    onChange({
+      range: val,
+    });
+  };
+
+  const onToggleOpen = (val: boolean) => {
+    if (val && !filter.value.range) {
+      onChangeRange([-1, 5]);
+    }
+    onOpenChange(val);
+  };
+
+  const levelShortcut = getToggleValue(filter.value.range);
+
+  const onApplyLevelShortcut = (value: LevelShortcut) => {
+    if (value === levelShortcut) {
       onChange({
-        range: val,
+        range: undefined,
       });
-    },
-    [onChange],
-  );
+      return;
+    }
 
-  const onToggleOpen = useCallback(
-    (val: boolean) => {
-      if (val && !filter.value.range) {
-        onChangeRange([-1, 5]);
-      }
-      onOpenChange(val);
-    },
-    [onChangeRange, filter.value.range, onOpenChange],
-  );
-
-  const onApplyLevelShortcut = useCallback(
-    (value: string) => {
-      if (value === "0") {
-        onChange({
-          range: [0, 0],
-        });
-      } else if (value === "1-5") {
-        onChange({
-          range: [1, 5],
-        });
-      } else {
-        onChange({
-          range: undefined,
-        });
-      }
-    },
-    [onChange],
-  );
+    onChange({
+      range: value === "0" ? [0, 0] : [1, 5],
+    });
+  };
 
   return (
     <FilterContainer
@@ -87,6 +80,7 @@ export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
       locked={locked}
       nonCollapsibleContent={
         !filter.open &&
+        listProperties.cardTypes.has("player") &&
         listProperties.levels.size > 1 && (
           <ToggleGroup
             disabled={locked}
@@ -94,7 +88,7 @@ export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
             full
             onValueChange={onApplyLevelShortcut}
             type="single"
-            value={getToggleValue(filter.value.range)}
+            value={levelShortcut}
           >
             <ToggleGroupItem value="0">
               {t("common.level.value", { level: "0" })}

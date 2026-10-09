@@ -1,5 +1,4 @@
 import type { Card } from "@arkham-build/shared";
-import { useCallback, useMemo } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -33,18 +32,15 @@ export function InvestigatorCardAccessFilter(props: FilterProps) {
     `InvestigatorCardAccessFilter instantiated with '${filter?.type}'`,
   );
 
-  const value = useMemo(() => filter.value ?? [], [filter.value]);
+  const value = filter.value ?? [];
 
   const changes = useStore((state) =>
     selectFilterChanges(state, filter.type, filter.value),
   );
 
-  const onValueChange = useCallback(
-    (value: Card[]) => {
-      onChange(value.map((card) => card.code));
-    },
-    [onChange],
-  );
+  const onValueChange = (value: Card[]) => {
+    onChange(value.map((card) => card.code));
+  };
 
   return (
     <FilterContainer

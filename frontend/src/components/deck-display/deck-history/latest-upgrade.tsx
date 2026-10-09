@@ -5,7 +5,6 @@ import {
   MinusCircleIcon,
   PlusCircleIcon,
 } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomizableDiff } from "@/components/deck-display/deck-history/customizable-diff";
 import { SlotDiff } from "@/components/deck-display/deck-history/slot-diff";
@@ -56,50 +55,38 @@ export function LatestUpgrade(props: Props) {
   const updateXpAdjustment = useStore((state) => state.updateXpAdjustment);
   const updateCardQuantity = useStore((state) => state.updateCardQuantity);
 
-  const onIcrement = useCallback(
-    (evt: React.MouseEvent<HTMLButtonElement>) => {
-      evt.stopPropagation();
-      updateXpAdjustment(deck.id, (latestUpgrade?.xpAdjustment ?? 0) + 1);
-    },
-    [deck.id, latestUpgrade?.xpAdjustment, updateXpAdjustment],
-  );
+  const onIcrement = (evt: React.MouseEvent<HTMLButtonElement>) => {
+    evt.stopPropagation();
+    updateXpAdjustment(deck.id, (latestUpgrade?.xpAdjustment ?? 0) + 1);
+  };
 
-  const onDecrement = useCallback(
-    (evt: React.MouseEvent<HTMLButtonElement>) => {
-      evt.stopPropagation();
-      updateXpAdjustment(deck.id, (latestUpgrade?.xpAdjustment ?? 0) - 1);
-    },
-    [deck.id, latestUpgrade?.xpAdjustment, updateXpAdjustment],
-  );
+  const onDecrement = (evt: React.MouseEvent<HTMLButtonElement>) => {
+    evt.stopPropagation();
+    updateXpAdjustment(deck.id, (latestUpgrade?.xpAdjustment ?? 0) - 1);
+  };
 
-  const onAddExile = useCallback(
-    (card: Card, quantity: number) => {
-      if (!currentTab) return;
-      updateCardQuantity(
-        deck.id,
-        card.code,
-        quantity,
-        cardLimit(card),
-        mapTabToSlot(currentTab),
-        "increment",
-      );
-    },
-    [currentTab, deck.id, updateCardQuantity],
-  );
+  const onAddExile = (card: Card, quantity: number) => {
+    if (!currentTab) return;
+    updateCardQuantity(
+      deck.id,
+      card.code,
+      quantity,
+      cardLimit(card),
+      mapTabToSlot(currentTab),
+      "increment",
+    );
+  };
 
-  const canAddExile = useCallback(
-    (card: Card) => {
-      if (currentTab && currentTab !== "config") {
-        const slot = deck[mapTabToSlot(currentTab)];
-        if (slot) {
-          const result = (slot[card.code] ?? 0) < cardLimit(card);
-          return result;
-        }
+  const canAddExile = (card: Card) => {
+    if (currentTab && currentTab !== "config") {
+      const slot = deck[mapTabToSlot(currentTab)];
+      if (slot) {
+        const result = (slot[card.code] ?? 0) < cardLimit(card);
+        return result;
       }
-      return false;
-    },
-    [currentTab, deck],
-  );
+    }
+    return false;
+  };
 
   if (!latestUpgrade) return null;
 
@@ -121,22 +108,27 @@ export function LatestUpgrade(props: Props) {
             title={t("common.decks.slots")}
             differences={differences.slots}
             listCardProps={diffCardProps}
+            deck={deck}
           />
+
           <SlotDiff
             title={t("common.decks.extraSlots")}
             differences={differences.extraSlots}
             listCardProps={diffCardProps}
+            deck={deck}
           />
           <SlotDiff
             title={t("common.exiled_cards")}
             differences={differences.exileSlots}
             omitHeadings
             listCardProps={diffCardProps}
+            deck={deck}
           />
           <CustomizableDiff
             title={t("common.customizations")}
             differences={differences.customizations}
             listCardProps={diffCardProps}
+            deck={deck}
           />
         </>
       ) : (
@@ -147,11 +139,7 @@ export function LatestUpgrade(props: Props) {
 
   return (
     <div
-      className={cx(
-        css["container"],
-        overflowScroll && css["scroll"],
-        readonly && css["readonly"],
-      )}
+      className={cx(css["container"], overflowScroll && css["scroll"])}
       style={accentColor}
     >
       <Progress max={xp + xpAdjustment} value={xpSpent} validateInRange />

@@ -20,8 +20,10 @@
   opacity: 0.85;
 }
 
-[data-component="card-group-item"]:hover .actions > * {
-  opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+  [data-component="card-group-item"]:hover .actions > * {
+    opacity: 1;
+  }
 }
 
 .actions-row {

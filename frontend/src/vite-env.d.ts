@@ -7,6 +7,7 @@ interface ImportMetaEnv {
   readonly VITE_CARD_IMAGE_URL: string;
   readonly VITE_ARKHAMDB_BASE_URL: string;
   readonly VITE_API_URL: string;
+  readonly VITE_PDFJS_VIEWER_URL: string;
   readonly VITE_TURNSTILE_SITE_KEY?: string;
 }
 

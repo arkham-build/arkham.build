@@ -1,5 +1,4 @@
 import { SKILL_KEYS } from "@arkham-build/shared";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Combobox } from "@/components/ui/combobox/combobox";
 import { ResultTag } from "@/components/ui/combobox/combobox-results";
@@ -38,17 +37,11 @@ export function CustomizationChooseSkill(props: Props) {
 
   const skillMapper = useStore(selectSkillMapper);
 
-  const options = useMemo(
-    () => SKILL_KEYS.filter((x) => x !== "wild").map(skillMapper),
-    [skillMapper],
-  );
+  const options = SKILL_KEYS.filter((x) => x !== "wild").map(skillMapper);
 
-  const onValueChange = useCallback(
-    (newSelections: Coded[]) => {
-      onChange(newSelections.map((skill) => skill.code));
-    },
-    [onChange],
-  );
+  const onValueChange = (newSelections: Coded[]) => {
+    onChange(newSelections.map((skill) => skill.code));
+  };
 
   return (
     <Combobox

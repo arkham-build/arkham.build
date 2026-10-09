@@ -1,5 +1,4 @@
 import type { Card } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -27,13 +26,10 @@ export function CustomizationsEditor(props: Props) {
   const options = card.customization_options;
   const text = displayAttribute(card, "customization_text")?.split("\n");
 
-  const onChangeCustomization = useCallback(
-    (index: number, edit: CustomizationEdit) => {
-      if (!deck) return;
-      updateCustomization(deck.id, card.code, index, edit);
-    },
-    [card.code, updateCustomization, deck],
-  );
+  const onChangeCustomization = (index: number, edit: CustomizationEdit) => {
+    if (!deck) return;
+    updateCustomization(deck.id, card.code, index, edit);
+  };
 
   if (!options || !text) return null;
 

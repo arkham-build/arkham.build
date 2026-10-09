@@ -5,7 +5,6 @@ import {
 } from "@arkham-build/shared";
 import type { ReferenceType } from "@floating-ui/react";
 import { FileWarningIcon, StarIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { useStore } from "@/store";
@@ -75,6 +74,7 @@ export type Props = {
   renderCardMetaExtra?: RenderCallback;
   renderCardTags?: RenderCallback;
   renderCardExtra?: RenderCallback;
+  renderCardNameExtra?: RenderCallback;
   size?: "xs" | "sm" | "investigator" | "standard";
   showCardText?: boolean;
   style?: React.CSSProperties;
@@ -117,6 +117,7 @@ export function ListCardInner(props: Props) {
     renderCardBefore,
     renderCardExtra,
     renderCardMetaExtra,
+    renderCardNameExtra,
     renderCardTags,
     showCardText,
     showInvestigatorIcons,
@@ -135,28 +136,22 @@ export function ListCardInner(props: Props) {
   const colorCls = getCardColor(card);
   const Element = as as React.JSX.ElementType;
 
-  const onQuantityChange = useCallback(
-    (val: number, limit: number) => {
-      onChangeCardQuantity?.(card, val, limit);
-    },
-    [onChangeCardQuantity, card],
-  );
+  const onQuantityChange = (val: number, limit: number) => {
+    onChangeCardQuantity?.(card, val, limit);
+  };
 
-  const openModal = useCallback(
-    (evt: React.MouseEvent) => {
-      const linkPrevented = preventLeftClick(evt);
-      closeCardTooltip?.();
+  const openModal = (evt: React.MouseEvent) => {
+    const linkPrevented = preventLeftClick(evt);
+    closeCardTooltip?.();
 
-      if (linkPrevented) {
-        if (titleOpens === "dialog" && dialogContext) {
-          dialogContext.setOpen(true);
-        } else {
-          openCardModal(card.code);
-        }
+    if (linkPrevented) {
+      if (titleOpens === "dialog" && dialogContext) {
+        dialogContext.setOpen(true);
+      } else {
+        openCardModal(card.code);
       }
-    },
-    [card.code, closeCardTooltip, dialogContext, openCardModal, titleOpens],
-  );
+    }
+  };
 
   const limit = cardLimit(card, limitOverride);
   const cardTags = renderCardTags?.(card, quantity);
@@ -207,7 +202,6 @@ export function ListCardInner(props: Props) {
             {!omitThumbnail && (
               <ListCardLink
                 card={card}
-                className={css["thumbnail-link"]}
                 disableModalOpen={disableModalOpen}
                 openModal={openModal}
                 referenceProps={cardLinkProps}
@@ -246,28 +240,31 @@ export function ListCardInner(props: Props) {
                       }
                       cardShowUniqueIcon={cardShowUniqueIcon}
                       slotAfter={
-                        ownedCount != null &&
-                        card.code !==
-                          SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS &&
-                        (!ownedCount ||
-                          (quantity != null && ownedCount < quantity)) && (
-                          <DefaultTooltip
-                            tooltip={
-                              quantity &&
-                              t("deck.stats.unowned", {
-                                count: quantity - ownedCount,
-                                total: quantity,
-                              })
-                            }
-                          >
-                            <span
-                              className={css["ownership"]}
-                              data-testid="ownership"
-                            >
-                              <FileWarningIcon />
-                            </span>
-                          </DefaultTooltip>
-                        )
+                        <>
+                          {renderCardNameExtra?.(card, quantity)}
+                          {ownedCount != null &&
+                            card.code !==
+                              SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS &&
+                            (!ownedCount ||
+                              (quantity != null && ownedCount < quantity)) && (
+                              <DefaultTooltip
+                                tooltip={
+                                  quantity &&
+                                  t("deck.stats.unowned", {
+                                    count: quantity - ownedCount,
+                                    total: quantity,
+                                  })
+                                }
+                              >
+                                <span
+                                  className={css["ownership"]}
+                                  data-testid="ownership"
+                                >
+                                  <FileWarningIcon />
+                                </span>
+                              </DefaultTooltip>
+                            )}
+                        </>
                       }
                     />
                   </ListCardLink>
@@ -289,10 +286,7 @@ export function ListCardInner(props: Props) {
               {!omitDetails && size !== "xs" && (
                 <div className={css["meta"]}>
                   {card.type_code !== "investigator" && !card.subtype_code && (
-                    <MulticlassIcons
-                      card={card}
-                      className={css["multiclass"]}
-                    />
+                    <MulticlassIcons card={card} />
                   )}
 
                   {card.parallel &&

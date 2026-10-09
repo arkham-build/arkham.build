@@ -20,12 +20,14 @@ type Props = {
   filters: DecklistsFiltersState["filters"];
   onFiltersChange: (state: DecklistsFiltersState["filters"]) => void;
   onFiltersReset: () => void;
+  resetFilters: DecklistsFiltersState["filters"];
 };
 
 export function DecklistsFilters({
   filters,
   onFiltersChange,
   onFiltersReset,
+  resetFilters,
 }: Props) {
   const { t } = useTranslation();
 
@@ -36,6 +38,11 @@ export function DecklistsFilters({
   const handleSubmit = (evt: React.SubmitEvent) => {
     evt.preventDefault();
     onFiltersChange(formState);
+  };
+
+  const handleReset = () => {
+    setFormState(resetFilters);
+    onFiltersReset();
   };
 
   return (
@@ -91,7 +98,7 @@ export function DecklistsFilters({
               <Button type="submit" variant="primary">
                 {t("decklists.filters.submit")}
               </Button>
-              <Button variant="bare" onClick={onFiltersReset}>
+              <Button variant="bare" onClick={handleReset}>
                 {t("common.reset")}
               </Button>
             </footer>

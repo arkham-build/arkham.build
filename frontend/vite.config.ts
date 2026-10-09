@@ -2,7 +2,6 @@
 import path from "node:path";
 import react from "@vitejs/plugin-react";
 import autoprefixer from "autoprefixer";
-import { bundleStats } from "rollup-plugin-bundle-stats";
 import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
@@ -22,10 +21,11 @@ export default defineConfig({
     },
   },
   plugins: [
-    react(),
-    bundleStats({
-      baseline: true,
-      silent: true,
+    react({
+      compiler: {
+        target: "19",
+        logDiagnostics: true,
+      },
     }),
   ],
   resolve: {

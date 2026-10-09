@@ -107,7 +107,6 @@ function OAuthConsentView(props: OAuthConsentViewProps) {
           <Button
             disabled={pendingDecision != null}
             onClick={() => onDecision("deny")}
-            variant="secondary"
             full
           >
             {t("oauth_consent.deny")}

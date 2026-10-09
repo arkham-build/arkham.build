@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-element-interactions -- TODO */
 import { ChevronLeftIcon, FilterIcon } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { CardListContainer } from "@/components/card-list/card-list-container";
 import { Filters } from "@/components/filters/filters";
@@ -14,6 +14,9 @@ import { useListLayoutContext } from "./list-layout-context";
 import css from "./list-layout-no-sidebar.module.css";
 
 interface Props extends React.ComponentProps<typeof CardListContainer> {
+  headerActions?: React.ReactNode;
+  headerNavigation?: React.ReactNode;
+  headerTop?: React.ReactNode;
   omitBackButton?: boolean;
   titleString: string;
   title?: React.ReactNode;
@@ -24,7 +27,15 @@ interface Props extends React.ComponentProps<typeof CardListContainer> {
  * This component should be removed and folded into a refactored ListLayout component.
  */
 export function ListLayoutNoSidebar(props: Props) {
-  const { omitBackButton, title, titleString, ...rest } = props;
+  const {
+    headerActions,
+    headerNavigation,
+    headerTop,
+    omitBackButton,
+    title,
+    titleString,
+    ...rest
+  } = props;
   const { t } = useTranslation();
 
   const { filtersOpen, setFiltersOpen } = useListLayoutContext();
@@ -33,19 +44,16 @@ export function ListLayoutNoSidebar(props: Props) {
 
   const goBack = useGoBack();
 
-  const preventBubble = useCallback((e: React.MouseEvent) => {
+  const preventBubble = (e: React.MouseEvent) => {
     e.stopPropagation();
-  }, []);
+  };
 
-  const onContentClick = useCallback(
-    (evt: React.MouseEvent) => {
-      if (filtersOpen && floatingFilters) {
-        evt.preventDefault();
-        setFiltersOpen(false);
-      }
-    },
-    [filtersOpen, floatingFilters, setFiltersOpen],
-  );
+  const onContentClick = (evt: React.MouseEvent) => {
+    if (filtersOpen && floatingFilters) {
+      evt.preventDefault();
+      setFiltersOpen(false);
+    }
+  };
 
   const floatingMenuOpen =
     floatingFilters && filtersOpen && css["floating-menu-open"];
@@ -63,12 +71,11 @@ export function ListLayoutNoSidebar(props: Props) {
       className={cx(
         css["layout"],
         floatingMenuOpen && css["floating-menu-open"],
-        "fade-in",
       )}
       onClick={onContentClick}
     >
       <PageTitle>{titleString}</PageTitle>
-      <Masthead className={css["masthead"]}>
+      <Masthead>
         {!omitBackButton && (
           <Button onClick={goBack} variant="bare" size="sm">
             <ChevronLeftIcon /> {t("common.back")}
@@ -82,19 +89,27 @@ export function ListLayoutNoSidebar(props: Props) {
           {...rest}
           slotRight={
             !filtersOpen && (
-              <Button
-                className={css["toggle-filters"]}
-                onClick={() => setFiltersOpen(true)}
-                iconOnly
-                size="lg"
-              >
+              <Button onClick={() => setFiltersOpen(true)} iconOnly size="lg">
                 <FilterIcon />
               </Button>
             )
           }
           topContent={
             <header className={css["header"]}>
-              <h1 className={css["title"]}>{title ?? titleString}</h1>
+              {(headerTop || headerNavigation) && (
+                <div className={css["header-top"]}>
+                  {headerTop && (
+                    <div className={css["header-top-content"]}>{headerTop}</div>
+                  )}
+                  {headerNavigation}
+                </div>
+              )}
+              <div className={css["title-row"]}>
+                <h1 className={css["title"]}>{title ?? titleString}</h1>
+                {headerActions && (
+                  <div className={css["header-actions"]}>{headerActions}</div>
+                )}
+              </div>
             </header>
           }
         />

@@ -1,5 +1,4 @@
 import type { Card } from "@arkham-build/shared";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CardsCombobox } from "@/components/cards-combobox";
 import { useStore } from "@/store";
@@ -40,7 +39,7 @@ export function DeckCardsFilter({ containerClass }: Props) {
   const setFilterOpen = useStore((state) => state.setDeckFilterOpen);
   const resetFilter = useStore((state) => state.resetDeckFilter);
 
-  const playerCards = useMemo(() => {
+  const playerCards = (() => {
     const playerCardFilter = and([
       filterMythosCards,
       not(filterType(["investigator"])),
@@ -54,28 +53,22 @@ export function DeckCardsFilter({ containerClass }: Props) {
       collator,
     );
     return cards.sort(sortFn);
-  }, [metadata, collator]);
+  })();
 
-  const onReset = useCallback(() => {
+  const onReset = () => {
     resetFilter("cards");
-  }, [resetFilter]);
+  };
 
-  const onOpenChange = useCallback(
-    (val: boolean) => {
-      setFilterOpen("cards", val);
-    },
-    [setFilterOpen],
-  );
+  const onOpenChange = (val: boolean) => {
+    setFilterOpen("cards", val);
+  };
 
-  const onChange = useCallback(
-    (cards: Card[]) => {
-      setFilterValue(
-        "cards",
-        cards.map((card) => card.code),
-      );
-    },
-    [setFilterValue],
-  );
+  const onChange = (cards: Card[]) => {
+    setFilterValue(
+      "cards",
+      cards.map((card) => card.code),
+    );
+  };
 
   return (
     <FilterContainer

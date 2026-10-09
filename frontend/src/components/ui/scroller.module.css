@@ -12,7 +12,7 @@
   overflow-y: auto;
 }
 
-@supports selector(::-webkit-scrollbar) {
+@supports selector(::-webkit-scrollbar-thumb) {
   .viewport {
     padding-right: calc(var(--scrollbar-padding) - 6px);
   }
@@ -34,10 +34,11 @@
 
   .viewport-hover {
     mask-image: linear-gradient(to left, transparent 6px, black 6px);
-    transition: mask-image 300ms;
 
-    &:hover {
-      mask-image: linear-gradient(to left, black 6px, black 6px);
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        mask-image: linear-gradient(to left, black 6px, black 6px);
+      }
     }
   }
 }
@@ -47,6 +48,7 @@
     scrollbar-width: thin;
     scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar);
     scrollbar-gutter: stable;
+    padding-right: 0;
   }
 
   .scroller.padded .viewport {
@@ -56,8 +58,10 @@
   .viewport-hover {
     scrollbar-color: transparent transparent;
 
-    &:hover {
-      scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar);
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar);
+      }
     }
   }
 }

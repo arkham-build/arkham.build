@@ -11,7 +11,7 @@ import {
   useTypeahead,
 } from "@floating-ui/react";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import css from "./custom-select.module.css";
@@ -61,34 +61,36 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
 
   const [open, setOpen] = useState(!!initialOpen);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
 
   const selectedIndex = items.findIndex((item) => item.value === value);
   const selectedItem = items[selectedIndex];
 
-  const { refs, floatingStyles, context } = usePopover({
+  const {
+    refs: { setFloating, setReference },
+    floatingStyles,
+    context,
+  } = usePopover({
     placement: "bottom",
     open,
     onOpenChange: setOpen,
   });
 
-  const onSelectItem = useCallback(
-    (index: number) => {
-      setOpen(false);
-      setActiveIndex(null);
-      const item = items[index];
-      if (item) onValueChange(item.value);
-    },
-    [onValueChange, items],
-  );
+  const onSelectItem = (index: number) => {
+    setOpen(false);
+    setActiveIndex(null);
+    const item = items[index];
+    if (item) onValueChange(item.value);
+  };
 
   const elementsRef = useRef<(HTMLElement | null)[]>([]);
   const labelsRef = useRef(items.map(itemToString));
-  const isTypingRef = useRef(false);
 
   const listNav = useListNavigation(context, {
     listRef: elementsRef,
     activeIndex,
     selectedIndex,
+    focusItemOnHover: false,
     onNavigate: setActiveIndex,
   });
 
@@ -103,9 +105,7 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
         onSelectItem(index);
       }
     },
-    onTypingChange(isTyping) {
-      isTypingRef.current = isTyping;
-    },
+    onTypingChange: setIsTyping,
   });
 
   const click = useClick(context);
@@ -117,12 +117,8 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
   );
 
   const menuNode = open ? (
-    <FloatingFocusManager context={context} modal={false}>
-      <div
-        ref={refs.setFloating}
-        style={floatingStyles}
-        {...getFloatingProps()}
-      >
+    <FloatingFocusManager context={context} initialFocus={-1} modal={false}>
+      <div ref={setFloating} style={floatingStyles} {...getFloatingProps()}>
         <div className={cx(css["menu"], menuClassName)}>
           <Scroller>
             <FloatingList elementsRef={elementsRef} labelsRef={labelsRef}>
@@ -136,7 +132,7 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
                         onSelectItem(index);
                       }
 
-                      if (event.key === " " && !isTypingRef.current) {
+                      if (event.key === " " && !isTyping) {
                         event.preventDefault();
                         onSelectItem(index);
                       }
@@ -159,16 +155,13 @@ export function CustomSelect<T extends Item>(props: Props<T>) {
   ) : null;
 
   return (
-    <div
-      className={cx(css["container"], variant && css[variant], className)}
-      id={id}
-    >
+    <div className={cx(variant && css[variant], className)} id={id}>
       <button
         {...getReferenceProps()}
         className={css["control"]}
         data-testid="custom-select-control"
         disabled={disabled}
-        ref={refs.setReference}
+        ref={setReference}
         type="button"
       >
         {(renderControl || renderItem)(selectedItem)}
@@ -208,11 +201,7 @@ function Option<T extends Item>({
   return (
     <button
       {...rest}
-      className={cx(
-        css["option"],
-        isSelected && css["selected"],
-        isActive && css["active"],
-      )}
+      className={cx(css["option"], isActive && css["active"])}
       ref={ref}
       type="button"
     >

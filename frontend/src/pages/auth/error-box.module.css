@@ -5,13 +5,41 @@
   padding: 0.5rem;
   border-radius: 0.25rem;
   font-size: var(--text-sm);
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 150ms ease-in-out,
+    transform 150ms ease-in-out;
+}
+
+@starting-style {
+  .error {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error {
+    transform: none;
+    transition: opacity 125ms ease-in;
+  }
+
+  @starting-style {
+    .error {
+      opacity: 0;
+      transform: none;
+    }
+  }
 }
 
 .error a {
   color: currentColor;
 
-  &:hover {
-    text-decoration: underline;
-    color: var(--color-inverted);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration: underline;
+      color: var(--color-inverted);
+    }
   }
 }

@@ -3,12 +3,12 @@ import {
   BookTextIcon,
   KeyboardIcon,
   LogOutIcon,
+  MapIcon,
   MenuIcon,
   RefreshCwIcon,
   SettingsIcon,
   UserIcon,
 } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
 import {
@@ -25,7 +25,12 @@ import { Logo } from "./icons/logo";
 import { LocaleQuickSwitch } from "./locale-quick-switch";
 import css from "./masthead.module.css";
 import { Button } from "./ui/button";
-import { DropdownButton, DropdownItem, DropdownMenu } from "./ui/dropdown-menu";
+import {
+  DropdownButton,
+  DropdownItem,
+  DropdownMenu,
+  DropdownMenuSection,
+} from "./ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { StatusBubble } from "./ui/status-bubble";
 import { Avatar } from "./user-account/avatar";
@@ -35,15 +40,13 @@ type Props = {
   children?: React.ReactNode;
   slotRight?: React.ReactNode;
   navSlot?: React.ReactNode;
-  hideLocaleSwitch?: boolean;
   invert?: boolean;
 };
 
-type MastheadSection = "browse" | "decklists" | "rules" | "settings";
+type MastheadSection = "cards" | "content" | "decklists" | "rules" | "settings";
 
 export function Masthead(props: Props) {
-  const { children, className, hideLocaleSwitch, invert, navSlot, slotRight } =
-    props;
+  const { children, className, invert, navSlot, slotRight } = props;
 
   const { t } = useTranslation();
 
@@ -77,11 +80,12 @@ export function Masthead(props: Props) {
           <>
             {!session && (
               <Link asChild href="~/auth/login">
-                <Button as="a" size="sm" variant="primary">
+                <Button as="a" variant="primary">
                   {t("auth.login.action")}
                 </Button>
               </Link>
             )}
+            {!collapseNav && <LocaleQuickSwitch variant="compact" />}
             <NavLink
               className={css["icon-link"]}
               href="~/settings"
@@ -93,11 +97,7 @@ export function Masthead(props: Props) {
             >
               <SettingsIcon />
             </NavLink>
-            <AccountMenu
-              collapseNav={collapseNav}
-              hideLocaleSwitch={hideLocaleSwitch}
-              location={location}
-            />
+            <AccountMenu collapseNav={collapseNav} location={location} />
           </>
         )}
       </nav>
@@ -115,11 +115,21 @@ function MastheadNav(props: { location: string; navSlot?: React.ReactNode }) {
         className={css["nav-link"]}
         href="~/browse"
         location={location}
-        section="browse"
-        testId="masthead-browse"
+        section="cards"
+        testId="masthead-browse-cards"
       >
         <i className="icon-card-outline-bold" />
-        {t("masthead.browse")}
+        {t("masthead.cards")}
+      </NavLink>
+      <NavLink
+        className={css["nav-link"]}
+        href="~/content"
+        location={location}
+        section="content"
+        testId="masthead-browse-content"
+      >
+        <MapIcon />
+        {t("content.title")}
       </NavLink>
       <NavLink
         className={css["nav-link"]}
@@ -210,12 +220,8 @@ function NavDropdownLink(props: {
   );
 }
 
-function AccountMenu(props: {
-  collapseNav: boolean;
-  hideLocaleSwitch?: boolean;
-  location: string;
-}) {
-  const { collapseNav, hideLocaleSwitch, location } = props;
+function AccountMenu(props: { collapseNav: boolean; location: string }) {
+  const { collapseNav, location } = props;
   const { t } = useTranslation();
   const session = useStore(selectSession);
   const toggleKeyboardShortcuts = useStore(
@@ -229,23 +235,19 @@ function AccountMenu(props: {
 
   const actionNodes = (
     <>
-      {!hideLocaleSwitch && (
-        <>
+      {collapseNav && (
+        <DropdownMenuSection>
           <DropdownItem>
             <LocaleQuickSwitch fullWidth portal={false} />
           </DropdownItem>
-          <hr />
-        </>
+        </DropdownMenuSection>
       )}
       {session && (
-        <>
-          <DropdownItem>
-            <p className={css["logged-in-as"]}>
-              {t("auth.menu.logged_in_as", {
-                name: session.account.name,
-              })}
-            </p>
-          </DropdownItem>
+        <DropdownMenuSection
+          title={t("auth.menu.logged_in_as", {
+            name: session.account.name,
+          })}
+        >
           <Link asChild href="~/settings?tab=account">
             <DropdownButton as="a" data-testid="masthead-account">
               <UserIcon />
@@ -267,73 +269,77 @@ function AccountMenu(props: {
               </p>
             </DropdownItem>
           )}
-          <hr />
-        </>
+        </DropdownMenuSection>
       )}
       {collapseNav && (
         <>
-          <NavDropdownLink
-            href="~/browse"
-            location={location}
-            section="browse"
-            testId="masthead-browse"
-          >
-            <i className="icon-card-outline-bold" />
-            {t("masthead.browse")}
-          </NavDropdownLink>
-          <NavDropdownLink
-            href="~/decklists"
-            location={location}
-            section="decklists"
-            testId="masthead-deck-guides"
-          >
-            <BookTextIcon />
-            {t("decklists.browse.title")}
-          </NavDropdownLink>
-          <NavDropdownLink
-            href="~/rules"
-            location={location}
-            section="rules"
-            testId="masthead-rules"
-          >
-            <BookOpenTextIcon />
-            {t("masthead.rules")}
-          </NavDropdownLink>
-          <hr />
+          <DropdownMenuSection title={t("masthead.browse")}>
+            <NavDropdownLink
+              href="~/browse"
+              location={location}
+              section="cards"
+              testId="masthead-browse-cards"
+            >
+              <i className="icon-card-outline-bold" />
+              {t("masthead.cards")}
+            </NavDropdownLink>
+            <NavDropdownLink
+              href="~/content"
+              location={location}
+              section="content"
+              testId="masthead-browse-content"
+            >
+              <MapIcon />
+              {t("content.title")}
+            </NavDropdownLink>
+            <NavDropdownLink
+              href="~/decklists"
+              location={location}
+              section="decklists"
+              testId="masthead-deck-guides"
+            >
+              <BookTextIcon />
+              {t("decklists.browse.title")}
+            </NavDropdownLink>
+            <NavDropdownLink
+              href="~/rules"
+              location={location}
+              section="rules"
+              testId="masthead-rules"
+            >
+              <BookOpenTextIcon />
+              {t("masthead.rules")}
+            </NavDropdownLink>
+          </DropdownMenuSection>
         </>
       )}
-      <DropdownButton
-        className={css["action-shortcuts"]}
-        hotkey="?"
-        onClick={toggleKeyboardShortcuts}
-      >
-        <KeyboardIcon /> {t("help.shortcuts.title")}
-      </DropdownButton>
-      <hr />
-      <Link asChild href="~/about">
-        <DropdownButton
-          as="a"
-          className={css["about"]}
-          data-testid="masthead-about"
-        >
-          {t("help.about")}
+      <DropdownMenuSection>
+        <DropdownButton hotkey="?" onClick={toggleKeyboardShortcuts}>
+          <KeyboardIcon /> {t("help.shortcuts.title")}
         </DropdownButton>
-      </Link>
-      <Link asChild href="~/terms">
-        <DropdownButton as="a" data-testid="masthead-terms">
-          {t("footer.terms")}
-        </DropdownButton>
-      </Link>
-      <Link asChild href="~/privacy">
-        <DropdownButton as="a" data-testid="masthead-privacy">
-          {t("footer.privacy")}
-        </DropdownButton>
-      </Link>
-      <Link asChild href="~/legal-notice">
-        <DropdownButton as="a" data-testid="masthead-legal-notice">
-          {t("footer.legal_notice")}
-        </DropdownButton>
-      </Link>
+      </DropdownMenuSection>
+      <DropdownMenuSection>
+        <Link asChild href="~/about">
+          <DropdownButton as="a" data-testid="masthead-about">
+            {t("help.about")}
+          </DropdownButton>
+        </Link>
+        <Link asChild href="~/terms">
+          <DropdownButton as="a" data-testid="masthead-terms">
+            {t("footer.terms")}
+          </DropdownButton>
+        </Link>
+        <Link asChild href="~/privacy">
+          <DropdownButton as="a" data-testid="masthead-privacy">
+            {t("footer.privacy")}
+          </DropdownButton>
+        </Link>
+        <Link asChild href="~/legal-notice">
+          <DropdownButton as="a" data-testid="masthead-legal-notice">
+            {t("footer.legal_notice")}
+          </DropdownButton>
+        </Link>
+      </DropdownMenuSection>
     </>
   );
 
@@ -358,7 +364,7 @@ function AccountMenu(props: {
         </PopoverTrigger>
       ) : (
         <PopoverTrigger asChild>
-          <Button variant="bare" iconOnly>
+          <Button data-testid="masthead-account-menu" variant="bare" iconOnly>
             <MenuIcon />
           </Button>
         </PopoverTrigger>
@@ -386,11 +392,13 @@ function AccountMenu(props: {
 
 function isMastheadPathActive(
   location: string,
-  section: "browse" | "decklists" | "rules" | "settings",
-) {
+  section: MastheadSection,
+): boolean {
   switch (section) {
-    case "browse":
+    case "cards":
       return location.startsWith("/browse");
+    case "content":
+      return location.startsWith("/content");
     case "decklists":
       return location.startsWith("/decklists");
     case "rules":
@@ -433,7 +441,7 @@ function isPendingSyncStatus(status: SyncStatus) {
 function useAccountSyncAction() {
   const { mutateAsync } = useAccountSyncMutation();
 
-  return useCallback(() => {
+  return () => {
     void mutateAsync({ forceArkhamdbSync: true }).catch(console.error);
-  }, [mutateAsync]);
+  };
 }

@@ -1,6 +1,5 @@
 import type { Card } from "@arkham-build/shared";
 import { PlusSquareIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { ResolvedDeck } from "@/store/lib/types";
@@ -33,16 +32,13 @@ export function CardPoolExtension(props: Props) {
 
   const updateMetaProperty = useStore((state) => state.updateMetaProperty);
 
-  const onCardPoolChange = useCallback(
-    (selectedItems: Card[]) => {
-      updateMetaProperty(
-        deck.id,
-        id,
-        selectedItems.map(({ code }) => `card:${code}`).join(","),
-      );
-    },
-    [updateMetaProperty, deck.id, id],
-  );
+  const onCardPoolChange = (selectedItems: Card[]) => {
+    updateMetaProperty(
+      deck.id,
+      id,
+      selectedItems.map(({ code }) => `card:${code}`).join(","),
+    );
+  };
 
   if (card.card_pool_extension?.type !== "card") {
     return null;
@@ -52,7 +48,6 @@ export function CardPoolExtension(props: Props) {
 
   return (
     <CardsCombobox
-      className={canEdit ? undefined : css["extension-readonly"]}
       data-testid="card-pool-extension"
       id={id}
       items={items}
@@ -87,9 +82,7 @@ export function CardPoolExtensionFields(props: {
     <>
       {cardsWithExtensions.map(({ card }) => (
         <Field className={css["extension"]} key={card.code}>
-          <FieldLabel className={css["extension-name"]}>
-            {displayAttribute(card, "name")}
-          </FieldLabel>
+          <FieldLabel>{displayAttribute(card, "name")}</FieldLabel>
           <CardPoolExtension canEdit card={card} deck={deck} />
         </Field>
       ))}

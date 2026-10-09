@@ -1,6 +1,6 @@
 import type { Card } from "@arkham-build/shared";
 import { PlusIcon } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
@@ -30,24 +30,21 @@ function DeckCreateChooseInvestigator() {
     setActiveList("create_deck");
   }, [setActiveList]);
 
-  const getListCardProps = useCallback(
-    () => ({
-      renderCardExtra: (card: Card) => <ChooseInvestigatorLink card={card} />,
-      renderCardMetaExtra:
-        activeList?.display.viewMode === "compact"
-          ? (card: Card) => (
-              <p className={css["traits"]}>
-                &middot; {displayAttribute(card, "traits")}
-              </p>
-            )
-          : undefined,
-      renderCardAfter: (card: Card) => (
-        <ListcardExtra code={card.code} cardResolver={cardResolver} />
-      ),
-      size: "investigator" as const,
-    }),
-    [activeList?.display.viewMode, cardResolver],
-  );
+  const getListCardProps = () => ({
+    renderCardExtra: (card: Card) => <ChooseInvestigatorLink card={card} />,
+    renderCardMetaExtra:
+      activeList?.display.viewMode === "compact"
+        ? (card: Card) => (
+            <p className={css["traits"]}>
+              &middot; {displayAttribute(card, "traits")}
+            </p>
+          )
+        : undefined,
+    renderCardAfter: (card: Card) => (
+      <ListcardExtra code={card.code} cardResolver={cardResolver} />
+    ),
+    size: "investigator" as const,
+  });
 
   if (activeListId !== "create_deck") return null;
 

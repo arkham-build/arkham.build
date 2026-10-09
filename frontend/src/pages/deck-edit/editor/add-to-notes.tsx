@@ -1,6 +1,5 @@
 import type { Card } from "@arkham-build/shared";
 import { PencilLine } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +25,7 @@ export function AddToNotes(props: Props) {
 
   const { cardFormat, insertTextAtCaret } = useNotesRichTextEditorContext();
 
-  const onClick = useCallback(() => {
+  const onClick = () => {
     insertTextAtCaret(
       cardToMarkdown(
         card,
@@ -35,7 +34,7 @@ export function AddToNotes(props: Props) {
         cardFormatDefinition(cardFormat),
       ),
     );
-  }, [card, insertTextAtCaret, metadata, lookupTables, cardFormat]);
+  };
 
   return (
     <Button

@@ -46,6 +46,104 @@
       "attached": "{{name}} 항목에 부착됨",
       "eligible": "{{name}} 적용 대상"
     },
+    "auth": {
+      "arkhamdb_login_banner": "현재 ArkhamDB API의 응답 속도가 느립니다. 문제가 발생할 경우, 이메일 주소로 로그인해 주세요.",
+      "arkhamdb_signup_banner": "현재 ArkhamDB API의 응답 속도가 느립니다. 문제가 발생하면 이메일로 가입해 주세요.",
+      "email": "이메일",
+      "email_or_username": "이메일 또는 계정명",
+      "errors": {
+        "account_not_verified": "당신의 계정은 아직 인증되지 않았습니다. 로그인하기 전에 <verifyLink>이메일 인증</verifyLink>을 완료해 주세요.",
+        "captcha_load_failed": "턴스타일 보안 문자를 불러오는데 실패하였습니다.",
+        "forgot_password_failed": "암호 재설정 시작에 실패했습니다: {{error}}",
+        "invalid_credentials": "유효하지 않은 이메일 또는 암호",
+        "login_failed": "로그인 실패: {{error}}",
+        "password_reset_failed": "암호 재설정 실패: {{error}}",
+        "rate_limited": "요청이 너무 많습니다. {{interval}} 동안 기다린 후에 다시 시도해 주세요",
+        "signup_failed": "가입에 실패했습니다: {{error}}",
+        "verify_email_failed": "이메일 인증에 실패했습니다: {{error}}",
+        "verify_email_send_failed": "인증 이메일 재전송에 실패했습니다: {{error}}"
+      },
+      "forgot_password": {
+        "description": "이메일 주소나 계정명을 입력해 주시면 암호 재설정 방법을 안내해 드리겠습니다.",
+        "submit": "암호 재설정 안내 보내기",
+        "success": "해당 계정이 등록되어 있다면, 곧 암호 재설정 링크를 받아보실 수 있습니다.",
+        "title": "암호 재설정"
+      },
+      "login": {
+        "action": "로그인",
+        "forgot_password": "암호를 잊었습니까?",
+        "no_account": "계정이 없으신가요?",
+        "title": "로그인",
+        "with_arkhamdb": "ArkhamDB 사이트를 통해 로그인"
+      },
+      "logout": "로그아웃",
+      "menu": {
+        "logged_in_as": "{{name}} 계정 로그인",
+        "sync_account": "데이터 동기화",
+        "sync_error": "데이터 동기화에 실패하였습니다: {{error}}",
+        "sync_status": {
+          "conflict": "계정 동기화 충돌",
+          "error": "계정 동기화 에러",
+          "idle": "계정 동기화 대기 중",
+          "loading": "계정 동기화 불러오는 중",
+          "partial": "계정 동기화가 부분적으로 실패함",
+          "saving": "계정 동기화 저장하는 중",
+          "synced": "계정 동기화 완료"
+        },
+        "syncing": "계정 데이터를 동기화하는 중..."
+      },
+      "oauth_errors": {
+        "arkhamdb_invalid_response": "ArkhamDB 사이트 로그인에 실패하였습니다. 다시 시도해 주세요.",
+        "arkhamdb_no_decks": "계속 진행하려면 ArkhamDB 계정 내에 덱이 하나 이상 있어야 합니다.",
+        "identity_belongs_to_another_account": "해당 ArkhamDB 계정은 이미 다른 계정과 연동되어 있습니다.",
+        "invalid_state": "ArkhamDB 로그인 유효 기간이 만료되었거나 무효화되었습니다. 다시 시도해 주세요.",
+        "oauth_failed": "ArkhamDB 로그인에 실패했습니다. 다시 시도해 주세요.",
+        "oauth_missing_code": "ArkhamDB 로그인이 취소되었거나 완료되지 않았습니다. 다시 시도해 주세요."
+      },
+      "password": "암호",
+      "password_validation": "최소 8자",
+      "reset_password": {
+        "confirm_password": "암호 확인",
+        "password": "새로운 암호",
+        "success": "암호 재설정에 성공하였습니다. 이제 로그인할 수 있습니다.",
+        "title": "암호 재설정"
+      },
+      "signup": {
+        "action": "회원 가입",
+        "complete_profile": {
+          "description": "계정에 사용할 사용자 이름을 선택하세요. 이 이름은 당신의 덱과 기여 내역에 공개적으로 표시됩니다.",
+          "title": "당신의 프로필 완료하기",
+          "upload": {
+            "decks": {
+              "help": "로컬 덱 컬렉션을 계정에 업로드합니다.",
+              "label": "로컬 덱 업로드"
+            },
+            "settings": {
+              "help": "사용자의 컬렉션 및 표시 설정을 업로드합니다.",
+              "label": "업로드 설정"
+            },
+            "title": "로컬 데이터 업로드"
+          }
+        },
+        "has_account": "이미 계정이 있으신가요?",
+        "legal_acceptance": "계정을 생성함으로써 귀하는 <terms>이용약관</terms>에 동의하고 <privacy>개인정보 처리방침</privacy>을 확인한 것으로 간주됩니다.",
+        "success": "가입이 완료되었습니다! 계정 인증을 위해 이메일을 확인해 주세요. 첫 로그인 후에 사용자 이름을 선택하게 됩니다.",
+        "title": "회원 가입",
+        "verifying": "확인 중...",
+        "with_arkhamdb": "ArkhamDB 사이트로 회원 가입"
+      },
+      "username": "계정명",
+      "username_validation": "영문자, 숫자, 밑줄(_), 하이픈(-)만 허용됩니다.",
+      "verify_email": {
+        "action": "이메일 확인",
+        "resend": "확인 이메일 재전송",
+        "resend_action": "확인 이메일 재전송",
+        "resend_success": "인증 이메일이 성공적으로 발송되었습니다. 수신함을 확인해 주세요.",
+        "success": "이메일 인증이 완료되었습니다! 이제 로그인할 수 있습니다.",
+        "title": "이메일 인증",
+        "token": "인증 토큰"
+      }
+    },
     "browse": {
       "title": "카드 탐색기"
     },
@@ -54,11 +152,38 @@
         "complete_task": "작업 완료",
         "open_card_page": "카드 페이지",
         "reviews": "리뷰"
+      },
+      "custom_behavior": {
+        "investigator_traits": {
+          "help": "{{card}} 카드는 조사자의 특성에 새로운 특성을 추가할 수 있습니다.",
+          "title": "조사자 특성 선택"
+        }
       }
+    },
+    "card_scenarios": {
+      "standalone": "독립 시나리오",
+      "title": "<em>{{name}}</em> 사용하는 시나리오",
+      "tooltip": "{{name}} <em>({{campaignName}})</em>"
+    },
+    "card_tags": {
+      "account_title": "전역 태그",
+      "deck_placeholder": "덱 태그 추가...",
+      "deck_title": "덱 태그",
+      "favorite": "즐겨찾기",
+      "manage": {
+        "action": "태그 관리",
+        "delete": "삭제",
+        "error": "카드 태그를 갱신하는데 실패하였습니다: {{error}}",
+        "name": "태그 이름",
+        "save": "태그 갱신",
+        "title": "태그 관리",
+        "unknown_error": "알 수 없는 에러"
+      },
+      "placeholder": "전역 태그 추가...",
+      "title": "태그"
     },
     "card_view": {
       "actions": {
-        "faq": "FAQ 보기",
         "open_on_arkhamdb": "아컴디비 사이트에서 열기",
         "reviews": "리뷰 보기",
         "show_original_image": "원본 카드 이미지 보기",
@@ -68,16 +193,18 @@
         "view_backside": "뒷면",
         "who_can_take": "이 카드에 접근 가능한 조사자 보기"
       },
+      "errata_notice": "에라타 ({{date}})",
       "faq": {
         "empty": "FAQ 항목 사용 불가.",
         "error": "FAQ 항목 불러오기 실패.",
-        "loading": "FAQ 항목 불러오는 중...",
         "title": "FAQ"
+      },
+      "ratings": {
+        "title": "카드 등급"
       },
       "scan": "{{code}} 스캔",
       "section_actions": "행동",
       "section_deckbuilding": "덱 구성",
-      "section_faq": "FAQ",
       "section_printings": "판본",
       "thumbnail": "{{code}} 섬네일"
     },
@@ -93,7 +220,6 @@
       "tooltip_count_player": "{{type}} 유형인 플레이어 카드 수"
     },
     "common": {
-      "or": "또는",
       "actions": {
         "draw": "카드 뽑기",
         "engage": "교전",
@@ -117,6 +243,7 @@
         "value": "비용 {{cost}}",
         "x": "비용 X"
       },
+      "create_named": "\"{{name}}\" 생성하기",
       "customizable": "맞춤형",
       "customizations": "향상 요소",
       "cycle_one": "사이클",
@@ -126,17 +253,21 @@
         "Blessed": "축복받은",
         "Blessed and Cursed": "축복받은 및 저주받은",
         "Class Choice": "역할군 선택",
+        "Collector": "Collector",
         "Cursed": "저주받은",
         "Deck Size": "덱 크기",
         "Deck must have at least 10 skill cards.": "덱에 반드시 10장 이상의 능력 카드를 포함하여야 합니다.",
+        "Deck must have at least 11 Insights.": "덱에는 반드시 11장 이상의 통찰 카드를 포함하여야 합니다.",
         "Fortune": "행운",
         "Gambit": "도박수",
         "Improvised": "즉흥",
         "No permanents except story and signature permanents": "이야기 및 전용 영속 카드를 제외하고 어떠한 영속 카드도 없어야 합니다.",
         "Secondary Class": "보조 역할군",
+        "Too many off-class cards for Collector.": "역할군과 무관한 카드가 너무 많습니다.",
         "Too many off-class cards for Versatile.": "‘다재다능’ 카드의 효과를 적용하더라도 다른 역할군 카드가 너무 많습니다.",
         "Too many off-class cards.": "다른 역할군 카드가 너무 많습니다.",
         "Trait Choice": "특성 선택",
+        "Versatile": "다재다능",
         "You cannot have assets that take up an ally slot.": "조력자 슬롯을 차지하는 자산은 포함할 수 없습니다.",
         "You cannot have more than 15 level 0-1 Guardian and/or Survivor cards": "수호자 그리고/또는 생존자인 0-1 레벨 카드를 15장보다 많이 포함할 수 없습니다.",
         "You cannot have more than 15 level 0-1 Seeker and/or Mystic cards": "탐구자 그리고/또는 신비주의자인 0-1 레벨 카드를 15장보다 많이 포함할 수 없습니다.",
@@ -199,9 +330,11 @@
       "more_actions": "더 많은 작업",
       "myriad": "무수한",
       "no_entries": "항목 없음",
+      "no_results": "결과 없음",
+      "non_collection_cards": "보유 게임 외 카드 {{count}}장",
       "none": "없음",
-      "nonexceptional": "특별이 아닌",
       "ok": "확인",
+      "or": "또는",
       "pack_one": "팩",
       "pack_other": "팩",
       "packs_new_format": {
@@ -227,6 +360,7 @@
         "replacement": "대체물",
         "requiredCards": "전용 카드",
         "restrictedTo": "다음으로 제한됨",
+        "sideDeckRequiredCards": "기타 덱 전용 카드",
         "specialist": "전문화",
         "specialist_investigators": "전문화 조사자"
       },
@@ -258,6 +392,7 @@
       "sort_asc": "오름차순 정렬",
       "sort_desc": "내림차순 정렬",
       "specialist": "전문화",
+      "stage": "Stage",
       "subtype": {
         "basicweakness": "기본 약점",
         "none": "없음",
@@ -323,6 +458,7 @@
         "Attack": "Attack",
         "Augury": "예지 - Augury",
         "Avatar": "화신 - Avatar",
+        "Bane": "Bane",
         "Basement": "지하층 - Basement",
         "Bayou": "늪지대 - Bayou",
         "Bazaar": "바자르 - Bazaar",
@@ -353,6 +489,7 @@
         "Circle": "의식진 - Circle",
         "City": "도시 - City",
         "Civic": "공공근로자 - Civic",
+        "Civilian": "Civilian",
         "Clairvoyant": "선견자 - Clairvoyant",
         "Clothing": "옷 - Clothing",
         "Clover Club": "클로버 클럽 - Clover Club",
@@ -387,7 +524,6 @@
         "Dhole": "드홀 - Dhole",
         "Dilemma": "딜레마 - Dilemma",
         "Dinosaur": "Dinosaur",
-        "Dionsaur": "Dionsaur",
         "Distortion": "왜곡 - Distortion",
         "Dormant": "휴면 - Dormant",
         "Double": "이중 - Double",
@@ -505,6 +641,7 @@
         "Mountain": "산 - Mountain",
         "Mountains": "산맥 - Mountains",
         "Mutated": "변이체 - Mutated",
+        "Mutation": "Mutation",
         "Mystery": "불가사의 - Mystery",
         "Nest": "Nest",
         "New Orleans": "뉴올리언스 - New Orleans",
@@ -541,6 +678,7 @@
         "Present-Day": "오늘날 - Present-Day",
         "Prison": "감옥 - Prison",
         "Private": "일반인 출입금지 - Private",
+        "Profession": "Profession",
         "Prop": "Prop",
         "Providence": "Providence",
         "Public": "일반인 구역 - Public",
@@ -584,6 +722,7 @@
         "Service": "서비스 - Service",
         "Servitor": "시종 - Servitor",
         "Set": "Set",
+        "Sewer": "Sewer",
         "Shantak": "샨타크 - Shantak",
         "Shattered": "산산조각난 - Shattered",
         "Ship": "배 - Ship",
@@ -681,6 +820,7 @@
       "uses": {
         "aether": "에테르 - Aether",
         "ammo": "탄약 - Ammo",
+        "arrow": "Arrow",
         "bounties": "현상금 - Bounties",
         "brilliance": "Brilliance",
         "chances": "Chances",
@@ -695,7 +835,9 @@
         "obsessions": "Obsessions",
         "offerings": "공물 - Offerings",
         "portents": "Portents",
+        "renown": "Renown",
         "resources": "자원 - Resources",
+        "rumors": "Rumors",
         "secrets": "비밀 - Secrets",
         "shards": "Shards",
         "shell": "Shell",
@@ -708,13 +850,9 @@
         "whistles": "호각 - Whistles",
         "wishes": "Wishes"
       },
+      "vengeance": "복수",
       "victory": "승점",
       "xp": "경험치"
-    },
-    "connect": {
-      "error": "{{provider}} 연결에 실패함: {{error}}",
-      "syncing": "{{provider}}에 동기화...",
-      "title": "{{provider}}에 연결..."
     },
     "deck": {
       "actions": {
@@ -751,10 +889,10 @@
         "increment_xp": "이번 향상에 대해 사용가능한 경험치를 늘리기",
         "no_changes": "변경점 없음.",
         "summary": "소비한 경험치: {{xpSpent}}/{{xp}}",
-        "title": "마지막 향상",
-        "xp_spent": "점 소비됨"
+        "title": "마지막 향상"
       },
       "limited_decks": {
+        "Collector": "Collector",
         "Secondary Class": "보조 역할군",
         "Versatile": "다재다능"
       },
@@ -770,7 +908,7 @@
         "xp_required_help": "이 덱을 처음부터 새로 구성하는 데 필요한 경험치입니다."
       },
       "tags": {
-        "limited_pool": "제한된 구성 환경",
+        "account": "arkham.build",
         "private": "비공개",
         "sealed": "봉인됨",
         "shared": "공유됨"
@@ -785,20 +923,22 @@
         "duplicate_error": "덱을 복제하는데 실패함: {{error}}",
         "export_error": "덱을 내보내는데 실패함: {{error}}",
         "upload_error": "덱을 {{provider}}에 업로드하는데 실패함: {{error}}",
-        "upload_loading": "덱을 {{provider}}에 업로드하는 중..."
+        "upload_loading": "덱을 {{provider}}에 업로드하는 중...",
+        "upload_requires_duplicate": "이 덱을 ArkhamDB 사이트에 업로드하기 전에 먼저 복제해야 합니다."
       },
       "tools": {
+        "average_cost": "자원 비용 평균값: {{cost}}",
         "cards": "카드",
         "count": "수량",
         "factions": "역할군",
         "factions_tooltip": "{{faction}} {{cards}} {{count}}장",
         "loading": "덱 도구를 불러오는 중...",
+        "median_cost": "자원 비용 중앙값: {{cost}}",
         "resource_cost": "자원 비용",
         "resource_cost_tooltip": "비용 {{cost}}인 {{cards}} {{count}}장",
         "resource_costs": "자원 비용",
         "skill_icons": "능력 아이콘",
-        "skill_icons_tooltip": "{{skill}} {{icons}} 도합 {{count}}개",
-        "title": "덱 도구"
+        "skill_icons_tooltip": "{{skill}} {{icons}} 도합 {{count}}개"
       },
       "validation": {
         "card_not_in_limited_pool": "다음 카드는 이 덱의 카드 구성 환경에서는 포함될 수 없습니다:",
@@ -813,6 +953,7 @@
     },
     "deck_collection": {
       "archive": "보관하기",
+      "arkhamdb_response_time_banner": "ArkhamDB API가 현재 느립니다. 문제가 발생하면 대신 arkham.build에 덱을 직접 업로드해 주세요.",
       "collection_empty": "보유 게임이 비어있음",
       "connect_arkhamdb": "아컴디비 사이트에 연결",
       "count": "덱 {{count}}개",
@@ -825,7 +966,9 @@
       "import": "가져오기",
       "import_arkhamdb": "아컴디비 사이트에서 가져오기",
       "import_arkhamdb_help": "아컴디비 사이트에서 공개되어 있는 덱 ID, 덱 URL 또는 덱 가이드 URL을 입력하세요. 덱은 <strong>복사</strong>되며 덱 기록은 가져오지 않습니다.",
+      "import_error": "덱 가져오는데 실패하였습니다: {{error}}",
       "import_json": "JSON 형태로 파일 가져오기",
+      "import_loading": "덱 가져오는 중...",
       "more_filters": "더 많은 필터",
       "search_placeholder": "덱 탐색하기...",
       "sorting": {
@@ -859,7 +1002,8 @@
       "sealed_deck": {
         "error": "봉인된 덱을 가져오는데 실패함: {{error}}",
         "loading": "봉인된 덱을 가져오는 중..."
-      }
+      },
+      "title": "{{name}} 덱 생성하기"
     },
     "deck_edit": {
       "actions": {
@@ -878,31 +1022,41 @@
         "move_to_side_deck": "보조 덱으로 이동",
         "quick_discard": "변경 사항 폐기 (페이지에 머무르기)",
         "quick_save_deck": "덱 저장 (페이지에 머무르기)",
-        "quick_upgrade": "{{name}} 향상",
         "set_quantity": "덱 수량 설정",
         "set_side_quantity": "보조 덱 수량 설정"
       },
       "changes_restored": "저장되지 않은 변경 사항이 복원되었습니다.",
       "config": {
+        "buildql_deck_option": "BuildQL 덱 구성 덮어쓰기",
         "card_pool": {
           "apply_environment": "{{environment}} 환경 적용",
           "campaign_playalong": "캠페인 함께하기",
           "campaign_playalong_help": "캠페인 함께하기는 ‘미소스 버스터즈 (Mythos Busters)’ 디스코드 서버에서 진행 중인 이벤트입니다. 아컴호러 카드게임 캠페인을 함께 플레이하고, 이야기를 공유하며, 전반적인 공동체 의식을 형성하기 위해 마련되었습니다.",
+          "chapter_1": "챕터 1",
+          "chapter_1_help": "카드 구성 환경을 챕터 1의 모든 팩으로 설정하기.",
+          "chapter_2": "챕터 2",
+          "chapter_2_help": "카드 구성 환경을 챕터 2의 모든 팩으로 설정하기.",
           "choose_cycle_placeholder": "사이클 선택...",
           "collection": "보유 게임",
           "collection_help": "현재 <settings_link>보유 게임</settings_link>을 이 덱의 카드 구성 환경으로 설정하십시오. 이는 덱의 카드 구성 환경으로 고정하거나, 물리적으로 보유 게임을 함께 사용하는 사람들과 “덱 구성 프리셋”을 공유하는데 유용할 수 있습니다.",
           "configure_environment": "환경 설정",
           "current": "현행",
+          "current_faq25": "현행 (FAQ 2.5)",
           "current_faq25_help": "현행 환경에서 덱을 구성하려면, 플레이어는 기본판과 조사자 확장 5종 및 최근 출시된 조사자 확장 3종으로만 덱을 구성할 수 있습니다.",
+          "current_help": "현행 환경에서 덱을 구성할 때, 플레이어는 다음 제품들을 사용할 수 있습니다: 2026 기본판, 5종의 조사자 덱, 가장 최근에 출시된 덱 구성 확장팩 2종, 그리고 2026 기본판 이후 가장 최근에 출시된 조사자 확장팩 2종입니다.",
           "custom": "커스텀",
           "help": "조사자, 전용 카드 및 이야기 자산 카드는 이 선택에 영향을 받지 않습니다..",
+          "help_chapter_1": "이곳은 챕터 1 환경입니다.",
           "legacy": "유산",
           "legacy_help": "유산 환경에서 덱을 구성하려면, 플레이어는 아컴호러 카드게임의 모든 제품에서 나온 덱 구성 요소와 조사자, 플레이어 카드 및 약점을 자유롭게 사용할 수 있습니다. 어떠한 제한도 없습니다.",
           "limited": "제한",
+          "limited_faq25": "제한됨 (FAQ 2.5)",
           "limited_faq25_help": "제한 환경에서 덱을 구성하려면, 플레이어는 기본판과 조사자 확장 5종 및 선택한 조사자 확장 3종으로만 덱을 구성할 수 있습니다.",
+          "limited_help": "제한 환경에서 덱을 구성할 때, 플레이어는 다음 제품을 사용할 수 있습니다: 2026 기본판, 5종의 조사자 덱, 그리고 자신이 선택한 3종의 플레이어 카드 확장팩.",
           "placeholder": "팩 선택하기...",
           "section_title": "카드 구성 환경 설정",
           "selected_cards": "선택된 카드",
+          "substitute_chapter_2_with_chapter_1": "챕터 2의 핵심 덱과 조사자 덱을 챕터 1장의 해당 덱으로 대체하십시오.",
           "title": "제한된 카드 구성 환경"
         },
         "name": "덱 이름",
@@ -920,6 +1074,8 @@
           "parallel_front": "평행 앞면"
         },
         "storage_provider": {
+          "account": "arkham.build",
+          "arkhamdb": "ArkhamDB",
           "local": "비공개",
           "shared": "공개됨",
           "title": "저장소 공급자"
@@ -1021,8 +1177,22 @@
         "title": "버전"
       }
     },
+    "deck_sync": {
+      "conflict": {
+        "action_error": "덱 충돌을 해결하는데 실패하였습니다: {{error}}",
+        "collection_badge": "덱 간 충돌 문제 주의",
+        "description": "사용자의 변경 사항이 완료되기 전에 이 덱이 원격으로 변경되었습니다. 최신 원격 상태를 적용하려면 새로고침하십시오.",
+        "description_remote_missing": "이 덱은 변경 사항이 완료되기 전에 원격에서 삭제되었습니다. 원격 상태와 일치하도록 로컬 덱을 버리십시오.",
+        "discard_local": "로컬 덱 버리기",
+        "edit_locked": "편집하기 전에 덱 충돌을 해결하십시오.",
+        "refresh": "새로고침",
+        "remote_version": "원격 버전: {{version}}",
+        "title": "덱 동기화 충돌"
+      }
+    },
     "deck_view": {
       "actions": {
+        "check_card": "{{card}} 카드를 내 보유 게임으로 표기",
         "display_as_list": "목록으로 표시",
         "display_as_scans": "이미지로 표시",
         "import": "보유 게임에 덱 가져오기",
@@ -1030,12 +1200,10 @@
         "save_upgrade_close": "향상 저장하고 닫기",
         "save_upgrade_close_short": "저장하고 닫기",
         "save_upgrade_short": "향상",
-        "upload": "{{provider}}에 업로드"
+        "upload": "{{provider}}에 업로드",
+        "upload_account": "업로드"
       },
-      "connections": {
-        "description": "이 덱은 {{provider}}에 동기화되도록 설정되어 있습니다.",
-        "view": "{{provider}}에서 보기"
-      },
+      "checklist": "체크리스트",
       "discounts": {
         "adaptable": "적응력",
         "arcaneResearch": "불가사의한 연구",
@@ -1044,12 +1212,14 @@
       },
       "history": {
         "added": "추가됨",
+        "created": "생성됨",
         "current_upgrade": "현재 향상",
         "discounts": "할인",
         "initial_deck": "초기 덱",
         "no_changes": "변경점 없음",
         "removed": "제거됨",
         "slot_changes": "{{slot}} 변경",
+        "updated": "갱신됨",
         "upgrade": "향상 #{{index}}",
         "upgrade_xp": "사용 가능 경험치: {{xp}}{{adjustment}} ({{spent}}점 소비됨)"
       },
@@ -1060,17 +1230,13 @@
       "newer_version": "이 덱의 <a>새로운 버전</a>이 있습니다. 이 덱은 읽기 전용입니다.",
       "scans": "이미지",
       "sharing": {
-        "create": "공유 생성하기",
-        "create_failed": "공유 생성하기에 실패함: {{error}}",
-        "create_tooltip": "공유하면 공개적으로 접속할 수 있는 읽기 전용 링크가 생성됩니다. 링크가 있는 사람은 누구나 덱을 볼 수는 있지만 편집할 수는 없습니다.  <br />공유는 언제든지 제거할 수 있습니다. 공유를 제거해도 덱 자체에는 영향을 미치지 않습니다.",
-        "delete": "공유 삭제하기",
-        "delete_failed": "공유 삭제하기에 실패함: {{error}}",
+        "api_link": "Json API",
         "description": "덱은 로컬로 저장되었습니다.",
         "description_present": "이 덱은 <a>해당 링크</a>를 통해 보일 수 있도록 공개 공유됩니다.",
         "title": "공개 공유",
-        "update": "공유 갱신하기",
-        "update_failed": "공유 갱신하기에 실패함: {{error}}"
+        "view_on_arkhamdb": "ArkhamDB 사이트에서 보기"
       },
+      "show_deck_list": "덱 목록 보기",
       "tab_deck_list": "덱",
       "tab_history": "기록",
       "tab_notes": "메모",
@@ -1106,7 +1272,8 @@
         "name_placeholder": "이름 입력 (예시. Deck Guide)...",
         "required_cards": "필수 카드",
         "submit": "적용",
-        "title": "필터 기준"
+        "title": "필터 기준",
+        "xp_range": "경험치 요구됨"
       },
       "sorting": {
         "date": "최신 날짜 순",
@@ -1136,6 +1303,11 @@
       "preview_publish": "덱에 {{provider}}에서 지원하지 않는 카드가 포함되어 있음: {{names}}. 업로드하기 전에 해당 카드들을 제거해 주세요.",
       "report": "이슈 제보하기"
     },
+    "external_embed": {
+      "load": "외부 콘텐츠 불러오기",
+      "notice": "이 외부 콘텐츠는 사용자가 로드를 선택할 때까지 차단됩니다. 콘텐츠를 로드하면 해당 제공자가 사용자의 데이터를 처리하거나 쿠키를 설정할 수 있습니다.",
+      "title": "실험적인 콘텐츠"
+    },
     "fan_made_content": {
       "actions": {
         "import_file": "파일로부터 가져오기",
@@ -1150,6 +1322,7 @@
       "content_types": "콘텐츠 유형",
       "content_version": "콘텐츠 버전",
       "empty": "설치된 콘텐츠 없음",
+      "filter_fan_made_content": "콘텐츠 찾기...",
       "import_url": {
         "label": "콘텐츠 URL",
         "placeholder": "URL을 입력하세요...",
@@ -1160,6 +1333,7 @@
         "available_content_loading": "사용가능한 콘텐츠를 불러오는 중...",
         "content_loading": "콘텐츠 불러오는 중...",
         "fetch_failed": "콘텐츠를 불러오는데 실패함: {{error}}",
+        "no_match": "지정하신 필터 조건에 맞는 콘텐츠가 없음",
         "parse_failed": "콘텐츠를 추가하는데 실패함: {{error}}",
         "registry_failed": "저장소에서 사용가능한 콘텐츠를 불러오는데 실패함: {{error}}"
       },
@@ -1167,6 +1341,7 @@
         "card_lists": "카드 목록",
         "card_lists_help": "이 설정은 카드 목록에서 “팬 제작 콘텐츠” 필터의 기본값을 제어합니다."
       },
+      "short_title": "팬 제작",
       "status": {
         "alpha": "알파",
         "beta": "베타",
@@ -1196,6 +1371,11 @@
       "asset": {
         "title": "자산"
       },
+      "card_tags": {
+        "favorites": "즐겨찾기",
+        "placeholder": "태그 선택하기...",
+        "title": "카드 태그"
+      },
       "cost": {
         "even": "짝수",
         "nocost": "비용 없음",
@@ -1209,9 +1389,6 @@
       "encounter_set": {
         "placeholder": "조우 세트 선택...",
         "title": "조우 세트"
-      },
-      "environment": {
-        "title": "환경"
       },
       "fan_made_content": {
         "all": "모두 보기",
@@ -1242,8 +1419,6 @@
         "no_level": "Null",
         "title": "레벨"
       },
-      "locked": "이 필터는 잠겼습니다.",
-      "or": "또는",
       "ownership": {
         "owned": "소유함",
         "title": "소유 여부",
@@ -1291,6 +1466,15 @@
         "title": "이용물"
       }
     },
+    "footer": {
+      "arkham_title": "아컴호러: 카드게임",
+      "disclaimer": "<arkham>아컴호러: 카드게임</arkham> 및 모든 관련 콘텐츠 © <ffg>Fantasy Flight Games (FFG)</ffg>. 본 사이트는 FFG가 제작하거나 후원하지 않으며, FFG와 어떠한 제휴 관계도 없습니다.",
+      "ffg": "Fantasy Flight Games (FFG)",
+      "legal": "법률",
+      "legal_notice": "법적 고지",
+      "privacy": "개인정보 처리방침",
+      "terms": "이용약관"
+    },
     "help": {
       "about": "이 사이트에 대하여",
       "changelog": "변경 기록",
@@ -1315,6 +1499,7 @@
         "display_as_list": "목록으로 표시",
         "display_as_list_text": "카드 문구와 목록으로 표시",
         "display_as_scans": "이미지로 표시",
+        "flip_all_scans": "모든 이미지 뒤집기",
         "focus_search": "탐색 결과 활성화",
         "move_down": "아래로 이동",
         "move_up": "위로 이동",
@@ -1355,10 +1540,13 @@
         "display_as_list_text": "카드 문구와 함께 목록 표기",
         "display_as_scans": "이미지",
         "display_as_scans_grouped": "(그룹화된) 이미지",
+        "export": "내보내기",
         "jump_to": "빠른 이동",
         "list_settings": "목록 설정",
+        "max_columns": "열당 최대 스캔 횟수",
         "sort": "정렬",
-        "sort_default": "사용자 기본값"
+        "sort_default": "사용자 기본값",
+        "taboo_filter_override": "“금기 목록” 필터에 의해 덮어쓰여짐"
       },
       "reset": "기본값으로 초기화하기",
       "search": {
@@ -1367,9 +1555,15 @@
         "include_game_text": "카드 문구",
         "include_name": "이름",
         "placeholder": "카드 찾아보기...",
+        "share": "쿼리 공유하기",
         "title": "검색"
       },
       "sort_by": "정렬 기준"
+    },
+    "masthead": {
+      "browse": "찾아보기",
+      "navigation": "주요 탐색 메뉴",
+      "rules": "규칙"
     },
     "popular_decks": {
       "decklists_link": "모든 덱 가이드 살펴보기",
@@ -1388,6 +1582,15 @@
     },
     "rules": {
       "back_to_top": "맨 위로 되돌아가기",
+      "grimoire": {
+        "empty": "마도서 관련 내용이 없습니다.",
+        "error": "마도서 콘텐츠를 불러오지 못했습니다.",
+        "intro_description": "‘아컴 마도서’는 게임 내에서 알려진 모든 상황을 다루는 포괄적인 규칙 모음집입니다. 이 문서는 지속적으로 업데이트되는 문서로, 새로운 카드, 규칙, 상호작용이 도입되거나 발견될 때마다 온라인에서 관리 및 갱신됩니다. 이 문서에는 카드 문구의 해석, 타이밍 충돌 해결, 자주 묻는 질문, 모든 키워드 및 기타 규칙 문구 목록과 같은 보다 심도 있는 주제에 관한 정보가 포함되어 있습니다.",
+        "intro_title": "아컴 마도서",
+        "loading": "마도서 콘텐츠 불러오는 중...",
+        "open_link": "마도서 열기",
+        "references": "참조"
+      },
       "search_placeholder": "키워드 찾아보기...",
       "title": "참조 안내서",
       "toc": "목차"
@@ -1396,16 +1599,71 @@
       "title": "검색 결과"
     },
     "settings": {
-      "support": {
-        "confirm": "이 백업을 복원하시겠습니까? 기존 데이터는 모두 덮어쓰게 됩니다.",
-        "create": "백업 생성하기",
-        "help": "설정, 덱, 카드 보유 항목에 대한 백업을 JSON 파일로 생성합니다. 이 파일을 사용하여 이 장치 또는 다른 장치에서 데이터를 복원할 수 있습니다.",
-        "help_warning": "백업이 복원되면, <strong>기존 데이터를 모두 덮어씁니다.</  strong>",
-        "no_file_selected": "파일이 선택되지 않음",
-        "restore": "백업 복구하기",
-        "restore_error": "백업 복구에 실패함: {{error}}",
-        "restore_success": "백업 복구에 성공하였습니다.",
-        "title": "백업 & 복구"
+      "account": {
+        "danger_zone": "위험 구역",
+        "delete": {
+          "confirm_help": "계정 삭제를 확인하려면 {{username}}을 입력하세요.",
+          "confirm_label": "확인",
+          "deleting": "계정 삭제하는 중...",
+          "help": "arkham.build 계정과 관련 데이터를 영구적으로 삭제합니다. 이 작업으로 서버 측 인증 정보, 세션, 계정에 동기화된 덱, 설정 및 OAuth 연결이 삭제됩니다. 계정에 연결된 덱은 이 기기에서 제거됩니다. 기기 전용 덱, 설정 및 기타 브라우저 데이터는 삭제되지 않습니다. ArkhamDB에 동기화된 콘텐츠는 ArkhamDB에서 삭제되지 않습니다.",
+          "submit": "계정 삭제",
+          "title": "계정 삭제"
+        },
+        "email": {
+          "add": "이메일 추가",
+          "add_help": "대체 로그인 방법으로 이메일과 암호를 추가하세요.",
+          "cancel_pending": "이메일 인증 취소",
+          "canceling_pending": "이메일 인증을 취소하는 중...",
+          "current_password": "현재 암호",
+          "new_email": "새로운 이메일",
+          "new_email_help": "현재 이메일 주소를 유지하려면 비워 두세요.",
+          "new_password": "새로운 암호",
+          "new_password_help": "현재 암호를 유지하려면 이 항목을 비워 두세요.",
+          "pending": "이메일 확인하는 중",
+          "pending_help": "{{email}} 주소를 확인하여 <verifyLink>인증하세요</verifyLink>.",
+          "save": "자격 증명 갱신",
+          "saving": "자격 증명 저장하는 중...",
+          "status": "상태",
+          "status_pending": "인증 대기 중",
+          "status_verified": "인증됨",
+          "title": "자격 증명"
+        },
+        "oauth": {
+          "connect": "연결하기",
+          "connect_help": "{{provider}} 계정을 연결하여 덱을 동기화하고 이 계정으로 로그인합니다.",
+          "connected": "연결됨",
+          "details": "상세 내역",
+          "disconnect": "연결 해제",
+          "disconnect_error": "{{provider}} 연결 해제 실패: {{error}}",
+          "disconnected": "이 연결에 문제가 있습니다. 다시 연결해 주세요.",
+          "disconnecting": "{{provider}} 연결 해제 중...",
+          "last_error": "마지막 에러",
+          "last_synced_at": "마지막 동기화",
+          "none": "없음",
+          "providers": {
+            "arkhamdb": "ArkhamDB"
+          },
+          "reconnect": "새로고침",
+          "status": {
+            "healthy": "안정적",
+            "unhealthy": "불안정"
+          },
+          "sync_status": "상태 동기화",
+          "title": "연결",
+          "user_id": "사용자 ID"
+        },
+        "privacy_rights": {
+          "body": "‘지원’ 탭에서 데이터를 내보낼 수 있으며, 아래에서 계정을 삭제할 수 있습니다. 처리 제한 또는 이의 제기 요청 등 셀프 서비스가 불가능한 GDPR 관련 요청의 경우, <privacyEmail />으로 문의해 주십시오.",
+          "title": "개인정보 및 데이터 권리"
+        },
+        "profile": {
+          "save": "프로필 저장",
+          "saving": "프로필 저장하는 중...",
+          "title": "프로필",
+          "username": "계정명",
+          "username_help": "영문자, 숫자, 밑줄, 하이픈만 허용됨"
+        },
+        "title": "Account"
       },
       "card_data": {
         "card_count": "카드 수량",
@@ -1414,13 +1672,13 @@
         "loading": "최신 카드 데이터 불러오는 중...",
         "locale": "언어",
         "sync": "카드 데이터 동기화",
-        "title": "카드 데이터",
         "up_to_date": "카드 데이터가 최신입니다.",
         "update_available": "새로운 카드 데이터가 사용 가능합니다."
       },
       "collection": {
         "card_collection": "보유 카드",
         "card_count": "카드 수량",
+        "chapter": "챕터 {{number}}",
         "new_format": "새로운 형식",
         "old_format": "기존 형식",
         "show_all_cards_owned": "모든 카드를 소유한 것으로 표시",
@@ -1429,20 +1687,15 @@
         "show_previews_help": "이 옵션을 선택하면 출시되지 않은 카드도 애플리케이션에 표시되며, 덱에도 추가할 수 있습니다.",
         "title": "보유 게임"
       },
-      "connections": {
-        "disconnected_all": "연결 중 하나에 문제가 있습니다. 설정에서 새로고침을 진행해 주세요.",
-        "items_synced": "항목 동기화",
-        "last_modified": "데이터 타임스탬프",
-        "lock": "다른 {{provider}} 작업이 진행 중입니다. 잠시만 기다려 주십시오...",
-        "no_errors": "오류 없음",
-        "provider_error": "{{provider}}에 동기화 실패: {{error}}",
-        "provider_syncing": "{{provider}}에 동기화 중...",
-        "sync": "동기화",
-        "sync_all": "{{collectionLabels}} 덱 동기화",
-        "sync_errors": "동기화 오류",
-        "sync_status": "동기화 상태",
-        "syncing": "동기화 진행 중",
-        "username": "사용자 이름"
+      "conflict": {
+        "description": "계정 설정이 다른 곳에서 변경되었습니다. 페이지를 새로 고침하여 원격 버전을 불러오거나, 현재 로컬 변경 사항으로 덮어쓰십시오.",
+        "overwrite": "덮어쓰기",
+        "refresh": "페이지 다시 불러오기",
+        "remote_revision": "원격 버전: {{revision}}"
+      },
+      "developer": {
+        "dev_mode_enabled": "개발자 모드 활성화",
+        "title": "개발자"
       },
       "display": {
         "card_display": "카드 표기 설정",
@@ -1452,7 +1705,9 @@
         "card_level_icon_only": "카드 아이콘으로만 보기",
         "card_show_collection_number": "보유게임 내 번호 보기",
         "card_show_details": "카드 세부내용 보기",
+        "card_show_favorite_highlights": "즐겨찾기 강조",
         "card_show_icon": "카드 아이콘 보기",
+        "card_show_tags": "카드 태그 보기",
         "card_show_thumbnail": "카드 썸네일 보기",
         "card_show_unique_icon": "고유(＊) 아이콘 보기",
         "card_size": "크기",
@@ -1463,8 +1718,6 @@
         "card_skill_icons_simple": "간략하게 보기",
         "font_size": "글자 크기",
         "font_size_preview": "아미티지는 알파벳이 고대부터 내려온 특정 금지된 종파에 의해 비전적으로 사용된 것일 수 있으며, 사라센 세계의 마법사들로부터 많은 형태와 전통을 물려받은 것일지도 모른다는 생각을 했습니다.",
-        "hide_weaknesses": "플레이어 카드 목록에서 약점 숨기기",
-        "hide_weaknesses_help": "이 옵션을 선택하면 기본적으로 플레이어 카드 목록에서 약점이 숨겨지며, 약점을 보려면 <strong>보조 유형</strong> 필터에서 활성화해야 합니다.",
         "show_card_modal_popular_decks": "카드 화면에서 인기 있는 덱 표시",
         "show_card_modal_popular_decks_help": "이 항목이 선택되면, 해당 카드가 포함되어 있는 인기 있는 덱이 카드 화면에 표시됩니다.",
         "show_move_to_side_deck": "“보조 덱으로 옮기기” 버튼 보기",
@@ -1491,6 +1744,7 @@
         "deck_view_scans": "덱 보기 (이미지)",
         "title": "목록"
       },
+      "load_error": "계정 설정을 불러오는데 실패했습니다. 로컬 설정을 사용합니다: {{error}}",
       "locale": {
         "help": "이렇게 하면 카드 및 메타데이터 문자를 포함한 앱의 표시 언어가 변경됩니다.",
         "title": "언어"
@@ -1498,28 +1752,14 @@
       "preview": "미리보기",
       "save": "설정 저장",
       "saving": "설정 저장하는 중...",
-      "title": "설정",
-      "account": {
-        "oauth": {
-          "connect": "연결하기",
-          "connect_help": "{{provider}} 계정을 연결하여 덱을 동기화하고 이 계정으로 로그인합니다.",
-          "connected": "연결됨",
-          "created_at": "연결된 날짜",
-          "details": "상세 내역",
-          "disconnect": "연결 해제",
-          "disconnect_error": "{{provider}} 연결 해제 실패: {{error}}",
-          "disconnecting": "{{provider}} 연결 해제 중...",
-          "last_synced_at": "마지막 동기화",
-          "not_connected": "연결되지 않음",
-          "providers": {
-            "arkhamdb": "ArkhamDB"
-          },
-          "reconnect": "새로고침",
-          "title": "연결",
-          "user_id": "사용자 ID",
-          "disconnected": "이 연결에 문제가 있습니다. 다시 연결해 주세요."
-        }
-      }
+      "support": {
+        "create": "백업 생성하기",
+        "data_export_title": "데이터 내보내기",
+        "help": "설정, 덱, 카드 보유 항목에 대한 백업을 JSON 파일로 생성합니다. 이 파일을 사용하여 이 장치 또는 다른 장치에서 데이터를 복원할 수 있습니다.",
+        "metadata_title": "어플리케이션 데이터",
+        "title": "백업 & 복구"
+      },
+      "title": "설정"
     },
     "suzi_standalone_setup": {
       "description": "FAQ 2.4에서는 “수지”용 독립 시나리오 덱을 어떻게 구성할 수 있는지 설명합니다. 컬렉션에서 레벨 1-5 사이의 무작위 카드를 원하는 경험치에 도달할 때까지 뽑습니다. 이후 덱에서 동일한 수의 카드를 제거해야 합니다.",
@@ -1551,6 +1791,10 @@
       "pagination": {
         "next": "다음",
         "previous": "이전"
+      },
+      "password_input": {
+        "hide_password": "암호 숨기기",
+        "show_password": "암호 보이기"
       }
     }
   }

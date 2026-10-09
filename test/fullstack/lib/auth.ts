@@ -29,5 +29,5 @@ export async function logout(page: Page) {
 
   const response = await responsePromise;
   expect(response.ok()).toBe(true);
-  await expect(accountMenu).toBeHidden();
+  await expect(page.getByRole("link", { name: "Log in" })).toBeVisible();
 }

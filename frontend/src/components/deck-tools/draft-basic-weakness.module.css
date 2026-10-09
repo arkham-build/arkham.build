@@ -37,9 +37,7 @@
   max-width: 15rem;
   margin: 0 auto;
   position: relative;
-  transition: transform 0.125s ease;
   user-select: none;
-  will-change: transform;
   width: 100%;
 
   @media screen and (min-width: 40rem) {
@@ -47,16 +45,22 @@
     max-width: none;
   }
 
-  &:hover {
-    cursor: pointer;
-    transform: translateY(-0.25rem);
-    transition: transform 0.125s ease;
+  &:focus-visible {
+    border: 2px solid var(--color-focus);
   }
 
-  &:focus-visible {
-    transform: translateY(-0.25rem);
-    transition: transform 0.125s ease;
-    border: 2px solid var(--color-focus);
+  @media (hover: hover) and (pointer: fine) {
+    transition: transform 125ms var(--motion-ease-out);
+
+    &:hover {
+      cursor: pointer;
+      transform: translateY(-0.25rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none;
+    transition: none;
   }
 }
 

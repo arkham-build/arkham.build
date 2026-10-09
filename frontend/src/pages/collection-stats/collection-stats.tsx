@@ -16,7 +16,7 @@ function CollectionStats() {
   return (
     <AppLayout title={t("collection_stats.title")}>
       <div className={cx(css["layout"])}>
-        <h1 className={css["title"]}>{t("collection_stats.title")}</h1>
+        <h1>{t("collection_stats.title")}</h1>
         <div className={cx(css["content"], "longform")}>
           <p>
             <Trans

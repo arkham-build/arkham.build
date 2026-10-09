@@ -25,10 +25,11 @@ export async function request<T, E extends HonoEnv = HonoEnv>(
   options: RequestInit = {},
 ): Promise<WrappedResponse<T>> {
   const config = c.get("config");
+  const method = options.method ?? "GET";
+  const startedAt = Date.now();
   let res: Response;
 
   try {
-    const method = options.method ?? "GET";
     const signal = options.signal
       ? AbortSignal.any([c.req.raw.signal, options.signal])
       : c.req.raw.signal;
@@ -41,12 +42,14 @@ export async function request<T, E extends HonoEnv = HonoEnv>(
     });
   } catch (err) {
     if (err instanceof FetchTimeoutError) {
+      logRequestFailure(c, method, path, startedAt, err);
       throw new ApiError("ArkhamDB request timed out", 500);
     }
 
     const cause = err instanceof Error ? err.cause : undefined;
 
-    if (cause instanceof Error && "code" in cause) {
+    if (err instanceof Error && cause instanceof Error && "code" in cause) {
+      logRequestFailure(c, method, path, startedAt, err, cause);
       throw new ApiError("Failed to connect to ArkhamDB", 500);
     }
 
@@ -62,6 +65,47 @@ export async function request<T, E extends HonoEnv = HonoEnv>(
     headers: Object.fromEntries(res.headers),
     status: res.status,
   };
+}
+
+function logRequestFailure<E extends HonoEnv>(
+  c: Context<E>,
+  method: string,
+  path: string,
+  startedAt: number,
+  error: Error,
+  cause?: Error,
+) {
+  const details: Record<string, unknown> = {
+    duration_ms: Date.now() - startedAt,
+    error: error.message,
+    error_name: error.name,
+    upstream_method: method,
+    upstream_path: path,
+  };
+
+  if (error.stack) details["error_stack"] = error.stack;
+
+  if (cause) {
+    details["cause"] = cause.message;
+    details["cause_name"] = cause.name;
+    if (cause.stack) details["cause_stack"] = cause.stack;
+
+    for (const property of [
+      "address",
+      "code",
+      "errno",
+      "hostname",
+      "port",
+      "syscall",
+    ]) {
+      const value = Reflect.get(cause, property);
+      if (typeof value === "string" || typeof value === "number") {
+        details[`cause_${property}`] = value;
+      }
+    }
+  }
+
+  c.get("logger")("error", "ArkhamDB request failed", details);
 }
 
 async function assertSuccessful(res: Response) {

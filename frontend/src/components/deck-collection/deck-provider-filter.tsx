@@ -1,5 +1,4 @@
 import { STORAGE_PROVIDERS, type StorageProvider } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -26,19 +25,13 @@ export function DeckProviderFilter(props: Props) {
   const setFilterOpen = useStore((state) => state.setDeckFilterOpen);
   const setFilterValue = useStore((state) => state.addDecksFilter);
 
-  const onOpenChange = useCallback(
-    (val: boolean) => {
-      setFilterOpen("provider", val);
-    },
-    [setFilterOpen],
-  );
+  const onOpenChange = (val: boolean) => {
+    setFilterOpen("provider", val);
+  };
 
-  const onChange = useCallback(
-    (value: string[]) => {
-      setFilterValue("provider", value as StorageProvider[]);
-    },
-    [setFilterValue],
-  );
+  const onChange = (value: string[]) => {
+    setFilterValue("provider", value as StorageProvider[]);
+  };
 
   return (
     <FilterContainer

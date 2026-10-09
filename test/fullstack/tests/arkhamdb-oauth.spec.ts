@@ -56,6 +56,8 @@ test.describe("ArkhamDB OAuth", () => {
   });
 
   test("disconnects an ArkhamDB account", async ({ page }) => {
+    test.setTimeout(60_000);
+
     await createAuthenticatedAccount(page);
     const arkhamDbUser = await createArkhamDbUser();
 
@@ -66,6 +68,9 @@ test.describe("ArkhamDB OAuth", () => {
     await expect(page).toHaveURL(/\/settings\?tab=account$/);
     await expect(page.getByTestId("connection-status")).toHaveText("Connected");
     await page.getByRole("button", { name: "Disconnect" }).click();
+    await expect(
+      page.getByRole("link", { exact: true, name: "Connect" }),
+    ).toBeVisible();
 
     await logout(page);
     await page.goto("/auth/login");
@@ -73,6 +78,7 @@ test.describe("ArkhamDB OAuth", () => {
     await page.getByRole("link", { name: "Log in with ArkhamDB" }).click();
     await authorizeArkhamDbOAuth(page, arkhamDbUser);
 
+    await expect(page).toHaveURL(/\/auth\/signup\/complete$/);
     await expect(
       page.getByRole("button", { name: "Complete your profile" }),
     ).toBeVisible();

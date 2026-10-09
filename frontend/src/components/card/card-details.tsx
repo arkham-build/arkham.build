@@ -99,9 +99,7 @@ export function CardDetails(props: Props) {
         )}
       </div>
 
-      {!omitSlotIcon && card.real_slot && (
-        <CardSlots className={css["details-slots"]} slot={card.real_slot} />
-      )}
+      {!omitSlotIcon && card.real_slot && <CardSlots slot={card.real_slot} />}
     </div>
   );
 }

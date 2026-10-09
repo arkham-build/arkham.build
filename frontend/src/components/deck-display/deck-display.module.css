@@ -94,11 +94,22 @@
   flex: 0 0 auto;
   font-size: var(--icon-sm);
   opacity: 0.5;
-  transition: opacity 0.15s ease-in-out;
 }
 
-.name-modal-trigger:hover .name-modal-icon {
-  opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+  .name-modal-icon {
+    transition: opacity 125ms var(--motion-ease-out);
+  }
+
+  .name-modal-trigger:hover .name-modal-icon {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .name-modal-icon {
+    transition: none;
+  }
 }
 
 .name-modal-footer {

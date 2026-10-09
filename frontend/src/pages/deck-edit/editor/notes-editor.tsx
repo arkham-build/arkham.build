@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { AutoSizingTextarea } from "@/components/ui/auto-sizing-textarea";
@@ -30,23 +29,17 @@ export function NotesEditor(props: Props) {
 
   const updateMetaProperty = useStore(selectUpdateMetaProperty);
 
-  const onBannerUrlChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      if (evt.target instanceof HTMLInputElement) {
-        updateMetaProperty(deck.id, "banner_url", evt.target.value);
-      }
-    },
-    [updateMetaProperty, deck.id],
-  );
+  const onBannerUrlChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target instanceof HTMLInputElement) {
+      updateMetaProperty(deck.id, "banner_url", evt.target.value);
+    }
+  };
 
-  const onIntroChange = useCallback(
-    (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-      if (evt.target instanceof HTMLTextAreaElement) {
-        updateMetaProperty(deck.id, "intro_md", evt.target.value);
-      }
-    },
-    [updateMetaProperty, deck.id],
-  );
+  const onIntroChange = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (evt.target instanceof HTMLTextAreaElement) {
+      updateMetaProperty(deck.id, "intro_md", evt.target.value);
+    }
+  };
 
   const isWide = useMedia(MQ_WIDE_PREVIEW);
 

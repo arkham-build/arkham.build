@@ -5,13 +5,14 @@ import {
   type FloatingPortalProps,
   flip,
   offset,
+  shift,
   size,
   useDismiss,
   useFloating,
   useInteractions,
 } from "@floating-ui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Coded } from "@/store/lib/types";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
@@ -103,24 +104,41 @@ export function Combobox<T extends Coded>(props: Props<T>) {
 
   const { t } = useTranslation();
 
-  const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
-  const [isOpen, setOpen] = useState(defaultOpen);
+  const [activeIndex, setActiveIndex] = useState<number | undefined>(
+    defaultOpen ? 0 : undefined,
+  );
+  const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
   const [inputValue, setInputValue] = useState("");
 
-  const { context, refs, floatingStyles } = useFloating({
+  const setOpen = (nextOpen: boolean) => {
+    if (nextOpen === isOpen) return;
+
+    setIsOpen(nextOpen);
+    setActiveIndex(nextOpen ? 0 : undefined);
+  };
+
+  const {
+    context,
+    elements,
+    refs: { setFloating, setReference },
+    floatingStyles,
+  } = useFloating({
     whileElementsMounted: autoUpdate,
     placement: "bottom-start",
+    strategy: omitFloatingPortal ? "absolute" : "fixed",
     open: isOpen,
     middleware: [
-      flip(),
+      offset(5),
+      flip({ padding: 5 }),
+      shift({ padding: 5 }),
       size({
+        padding: 5,
         apply({ rects, elements }) {
           Object.assign(elements.floating.style, {
             minWidth: `${rects.reference.width}px`,
           });
         },
       }),
-      offset(5),
     ],
     onOpenChange(nextOpen, event, reason) {
       if (!nextOpen && reason === "outside-press") {
@@ -137,12 +155,9 @@ export function Combobox<T extends Coded>(props: Props<T>) {
 
   const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
 
-  const filteredItems = useMemo(
-    () => fuzzy(inputValue, items, itemToString),
-    [items, inputValue, itemToString],
-  );
+  const filteredItems = fuzzy(inputValue, items, itemToString);
 
-  const menuItems = useMemo(() => {
+  const menuItems = (() => {
     const result = filteredItems.map<ComboboxMenuItem<T>>((item) => ({
       code: item.code,
       item,
@@ -167,83 +182,74 @@ export function Combobox<T extends Coded>(props: Props<T>) {
     }
 
     return result;
-  }, [creatable, filteredItems, inputValue, itemToString, items]);
+  })();
 
-  const setSelectedItem = useCallback(
-    (item: T) => {
-      const next = [...selectedItems] as T[];
+  const normalizedActiveIndex =
+    !isOpen || menuItems.length === 0
+      ? undefined
+      : activeIndex == null || activeIndex >= menuItems.length
+        ? 0
+        : activeIndex;
 
-      const idx = next.findIndex((s) => s.code === item.code);
+  const setSelectedItem = (item: T) => {
+    const next = [...selectedItems] as T[];
 
-      if (idx === -1) {
-        next.push(item);
-      } else {
-        next.splice(idx, 1);
-      }
+    const idx = next.findIndex((s) => s.code === item.code);
 
-      onValueChange?.(next);
+    if (idx === -1) {
+      next.push(item);
+    } else {
+      next.splice(idx, 1);
+    }
 
-      if (limit && next.length >= limit) {
-        setOpen(false);
-      }
+    onValueChange?.(next);
 
-      const ref = refs.reference.current;
-
-      if (ref instanceof HTMLInputElement) {
-        setInputValue("");
-        if (ref && document.activeElement !== ref) {
-          ref.focus();
-        }
-      }
-    },
-    [refs.reference, onValueChange, selectedItems, limit],
-  );
-
-  const setSelectedMenuItem = useCallback(
-    (menuItem: ComboboxMenuItem<T>) => {
-      if (menuItem.type === "item") {
-        setSelectedItem(menuItem.item);
-        return;
-      }
-
-      creatable?.onCreate(menuItem.value);
-      setInputValue("");
+    if (limit && next.length >= limit) {
       setOpen(false);
+    }
 
-      const ref = refs.reference.current;
+    const ref = elements.reference;
 
-      if (ref instanceof HTMLInputElement && document.activeElement !== ref) {
+    if (ref instanceof HTMLInputElement) {
+      setInputValue("");
+      setActiveIndex(0);
+      if (ref && document.activeElement !== ref) {
         ref.focus();
       }
-    },
-    [creatable, refs.reference, setSelectedItem],
-  );
+    }
+  };
 
-  const removeSelectedItem = useCallback(
-    (index: number) => {
-      const next = [...selectedItems] as T[];
-      next.splice(index, 1);
-      onValueChange?.(next);
-    },
-    [selectedItems, onValueChange],
-  );
+  const setSelectedMenuItem = (menuItem: ComboboxMenuItem<T>) => {
+    if (menuItem.type === "item") {
+      setSelectedItem(menuItem.item);
+      return;
+    }
+
+    creatable?.onCreate(menuItem.value);
+    setInputValue("");
+    setActiveIndex(0);
+    setOpen(false);
+
+    const ref = elements.reference;
+
+    if (ref instanceof HTMLInputElement && document.activeElement !== ref) {
+      ref.focus();
+    }
+  };
+
+  const removeSelectedItem = (index: number) => {
+    const next = [...selectedItems] as T[];
+    next.splice(index, 1);
+    onValueChange?.(next);
+  };
 
   useEffect(() => {
     listRef.current = [];
-    setActiveIndex(menuItems.length > 0 ? 0 : undefined);
   }, [menuItems.length]);
-
-  useEffect(() => {
-    if (isOpen) {
-      setActiveIndex(0);
-    } else {
-      setActiveIndex(undefined);
-    }
-  }, [isOpen]);
 
   return (
     <div className={cx(css["combobox"], className)} data-testid={id}>
-      <div className={cx(css["control"], !showLabel && readonly && "sr-only")}>
+      <div className={cx(!showLabel && readonly && "sr-only")}>
         <label
           className={cx(css["control-label"], !showLabel && "sr-only")}
           htmlFor={id}
@@ -255,7 +261,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
             <input
               autoComplete="off"
               data-testid="combobox-input"
-              ref={refs.setReference}
+              ref={setReference}
               {...getReferenceProps({
                 id,
                 className: css["control-input"],
@@ -275,28 +281,34 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                     setOpen(false);
                     (evt.target as HTMLInputElement)?.blur();
                     onEscapeBlur?.();
-                  } else if (evt.key === "Enter" && activeIndex != null) {
+                  } else if (
+                    evt.key === "Enter" &&
+                    normalizedActiveIndex != null
+                  ) {
                     evt.preventDefault();
-                    const activeItem = menuItems[activeIndex];
+                    const activeItem = menuItems[normalizedActiveIndex];
                     if (activeItem) {
                       setSelectedMenuItem(activeItem);
                       setOpen(false);
                     }
                   } else if (evt.key === "ArrowDown") {
                     evt.preventDefault();
-                    setActiveIndex((prev) => {
-                      if (isEmpty(menuItems)) return undefined;
-                      if (activeIndex == null || prev == null) return 0;
-                      return prev < menuItems.length - 1 ? prev + 1 : prev;
-                    });
+                    setActiveIndex(
+                      normalizedActiveIndex == null
+                        ? 0
+                        : Math.min(
+                            normalizedActiveIndex + 1,
+                            menuItems.length - 1,
+                          ),
+                    );
                     if (!isOpen) setOpen(true);
                   } else if (evt.key === "ArrowUp") {
                     evt.preventDefault();
-                    setActiveIndex((prev) => {
-                      if (isEmpty(menuItems)) return undefined;
-                      if (prev == null) return 0;
-                      return prev > 0 ? prev - 1 : prev;
-                    });
+                    setActiveIndex(
+                      normalizedActiveIndex == null
+                        ? 0
+                        : Math.max(normalizedActiveIndex - 1, 0),
+                    );
                     if (!isOpen) setOpen(true);
                   } else if (
                     !isOpen &&
@@ -314,6 +326,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
                 onChange(evt: React.ChangeEvent<HTMLInputElement>) {
                   if (evt.target instanceof HTMLInputElement) {
                     setInputValue(evt.target.value);
+                    setActiveIndex(0);
                   }
                 },
                 onPaste() {
@@ -334,14 +347,13 @@ export function Combobox<T extends Coded>(props: Props<T>) {
           <FloatingFocusManager context={context} initialFocus={-1}>
             <div
               className={css["menu"]}
-              ref={refs.setFloating}
+              data-testid="combobox-menu"
+              ref={setFloating}
               style={floatingStyles}
-              {...getFloatingProps({
-                ref: refs.setFloating,
-              })}
+              {...getFloatingProps()}
             >
               <ComboboxMenu
-                activeIndex={activeIndex}
+                activeIndex={normalizedActiveIndex}
                 items={menuItems}
                 listRef={listRef}
                 noResultsLabel={noResultsLabel ?? t("common.no_results")}

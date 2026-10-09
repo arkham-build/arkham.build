@@ -51,6 +51,19 @@ describe("searching", () => {
     expect(card.real_back_name).toBe("Back Hall Doorway");
     expect(applySearch(search, [card], state.metadata)).toEqual([card]);
   });
+
+  it("matches each comma-separated card abbreviation", () => {
+    const state = store.getState();
+    const card = {
+      ...state.metadata.cards["12013"],
+      abbreviation: "izzie, izzy",
+    };
+
+    for (const abbreviation of ["izzie", "izzy"]) {
+      const search = makeSearch(abbreviation, { includeName: true });
+      expect(applySearch(search, [card], state.metadata)).toEqual([card]);
+    }
+  });
 });
 
 function makeSearch(value: string, overrides: Partial<Search> = {}): Search {

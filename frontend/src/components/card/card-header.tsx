@@ -28,9 +28,7 @@ export function CardHeader(props: Props) {
       </div>
       {(slotHeaderActions || showClassIcons) && (
         <div className={cx(css["header-row"], css["header-extras"])}>
-          {!!slotHeaderActions && (
-            <div className={css["header-actions"]}>{slotHeaderActions}</div>
-          )}
+          {!!slotHeaderActions && <div>{slotHeaderActions}</div>}
           {showClassIcons && (
             <MulticlassIcons
               card={card}

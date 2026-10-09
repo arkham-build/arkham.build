@@ -43,7 +43,6 @@ export function Turnstile(props: Props) {
     let cancelled = false;
 
     onChange(null);
-    setLoadFailed(false);
 
     async function init() {
       try {

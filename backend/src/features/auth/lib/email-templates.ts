@@ -21,7 +21,6 @@ If you didn't request a password reset, you can safely ignore this email.`,
 }
 
 type VerificationEmailParams = {
-  token: string;
   verificationUrl: string;
 };
 
@@ -35,9 +34,6 @@ export function verificationEmailTemplate(
 Please verify your email address by clicking the link below:
 ${params.verificationUrl}
 
-Or copy and paste this verification token:
-${params.token}
-
-This link and token will expire in 24 hours.`,
+This link will expire in 24 hours.`,
   };
 }

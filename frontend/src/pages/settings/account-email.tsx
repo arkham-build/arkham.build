@@ -5,6 +5,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Plane } from "@/components/ui/plane";
 import { StatusPill } from "@/components/ui/status-pill";
 import { useToast } from "@/components/ui/toast.hooks";
@@ -86,22 +87,17 @@ function CreateEmailIdentityForm() {
         <FieldLabel htmlFor="account-email-password">
           {t("auth.password")}
         </FieldLabel>
-        <input
+        <PasswordInput
           autoComplete="new-password"
           disabled={createEmailIdentityMutation.isPending}
           id="account-email-password"
           minLength={8}
           onChange={(e) => setPassword(e.target.value)}
           required
-          type="password"
           value={password}
         />
       </Field>
-      <Button
-        disabled={createEmailIdentityMutation.isPending}
-        type="submit"
-        variant="secondary"
-      >
+      <Button disabled={createEmailIdentityMutation.isPending} type="submit">
         {t("settings.account.email.add")}
       </Button>
     </form>
@@ -174,13 +170,12 @@ function UpdateCredentialsForm(props: { emailIdentity: EmailIdentity }) {
         <FieldLabel htmlFor="account-current-password">
           {t("settings.account.email.current_password")}
         </FieldLabel>
-        <input
+        <PasswordInput
           autoComplete="current-password"
           disabled={isPending}
           id="account-current-password"
           onChange={(e) => setCurrentPassword(e.target.value)}
           required
-          type="password"
           value={currentPassword}
         />
       </Field>
@@ -201,17 +196,16 @@ function UpdateCredentialsForm(props: { emailIdentity: EmailIdentity }) {
         <FieldLabel htmlFor="account-new-password">
           {t("settings.account.email.new_password")}
         </FieldLabel>
-        <input
+        <PasswordInput
           autoComplete="new-password"
           disabled={isPending}
           id="account-new-password"
           minLength={8}
           onChange={(e) => setNewPassword(e.target.value)}
-          type="password"
           value={newPassword}
         />
       </Field>
-      <Button disabled={isSubmitDisabled} type="submit" variant="secondary">
+      <Button disabled={isSubmitDisabled} type="submit">
         {t("settings.account.email.save")}
       </Button>
     </form>
@@ -235,11 +229,9 @@ function PendingEmailIdentity({
       variant: "loading",
     });
 
-    try {
-      await cancelPendingEmailChangeMutation.mutateAsync();
-    } finally {
+    await cancelPendingEmailChangeMutation.mutateAsync().finally(() => {
       toast.dismiss(toastId);
-    }
+    });
   };
   return (
     <Plane className={css["pending-email"]} size="sm">

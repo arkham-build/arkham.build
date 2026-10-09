@@ -1,0 +1,7 @@
+.quantity {
+  color: color-mix(in srgb, var(--text), transparent 20%);
+  flex: 0 0 auto;
+  font-size: var(--text-xs);
+  font-weight: 400;
+  white-space: nowrap;
+}

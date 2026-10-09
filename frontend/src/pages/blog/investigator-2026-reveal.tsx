@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo } from "react";
+import { useLayoutEffect } from "react";
 import { Card } from "@/components/card/card";
 import { Masthead } from "@/components/masthead";
 import { PageTitle } from "@/components/ui/page-title";
@@ -29,27 +29,24 @@ function Investigator2026Reveal() {
     (state) => selectResolvedCardById(state, "60468") as ResolvedCard,
   );
 
-  const cards = useMemo(
-    () => [
-      {
-        card: arcaneInitiate,
-        fileName: "reveal_arcane_initiate",
-      },
-      {
-        card: offeringBowl,
-        fileName: "reveal_offering_bowl",
-      },
-      {
-        card: bloodstone,
-        fileName: "reveal_bloodstone",
-      },
-      {
-        card: cosmicGuidance,
-        fileName: "reveal_cosmic_guidance",
-      },
-    ],
-    [arcaneInitiate, offeringBowl, bloodstone, cosmicGuidance],
-  );
+  const cards = [
+    {
+      card: arcaneInitiate,
+      fileName: "reveal_arcane_initiate",
+    },
+    {
+      card: offeringBowl,
+      fileName: "reveal_offering_bowl",
+    },
+    {
+      card: bloodstone,
+      fileName: "reveal_bloodstone",
+    },
+    {
+      card: cosmicGuidance,
+      fileName: "reveal_cosmic_guidance",
+    },
+  ];
 
   const prefersDarkMode = useMedia("(prefers-color-scheme: dark)");
 
@@ -67,8 +64,8 @@ function Investigator2026Reveal() {
       <PageTitle>Investigator Starter Decks 2026 Reveal</PageTitle>
 
       <header className={css["header"]}>
-        <div className={css["header-nav"]}>
-          <Masthead hideLocaleSwitch invert />
+        <div>
+          <Masthead invert />
         </div>
         <h1>
           <i className="icon-mystic fg-mystic" />

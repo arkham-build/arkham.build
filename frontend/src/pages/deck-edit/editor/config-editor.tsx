@@ -5,7 +5,6 @@ import {
   SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
 import type { TFunction } from "i18next";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { CardPoolExtensionFields } from "@/components/limited-card-pool/card-pool-extension";
@@ -79,10 +78,7 @@ export function MetaEditor(props: Props) {
     selectLimitedPoolPacks(state, deck.cardPool),
   );
 
-  const selectedPackCodes = useMemo(
-    () => selectedPacks.map((pack) => pack.code),
-    [selectedPacks],
-  );
+  const selectedPackCodes = selectedPacks.map((pack) => pack.code);
 
   const updateName = useStore(selectUpdateName);
   const updateTags = useStore(selectUpdateTags);
@@ -93,109 +89,89 @@ export function MetaEditor(props: Props) {
     selectUpdateMetaPropertyDebounced,
   );
 
-  const onTabooChange = useCallback(
-    (evt: React.ChangeEvent<HTMLSelectElement>) => {
-      if (evt.target instanceof HTMLSelectElement) {
-        const value = Number.parseInt(evt.target.value, 10);
-        updateTabooId(deck.id, Number.isNaN(value) ? null : value);
-      }
-    },
-    [updateTabooId, deck.id],
-  );
+  const onTabooChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+    if (evt.target instanceof HTMLSelectElement) {
+      const value = Number.parseInt(evt.target.value, 10);
+      updateTabooId(deck.id, Number.isNaN(value) ? null : value);
+    }
+  };
 
-  const onNameChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      if (evt.target instanceof HTMLInputElement) {
-        updateName(deck.id, evt.target.value);
-      }
-    },
-    [updateName, deck.id],
-  );
+  const onNameChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target instanceof HTMLInputElement) {
+      updateName(deck.id, evt.target.value);
+    }
+  };
 
-  const onTagsChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      if (evt.target instanceof HTMLInputElement) {
-        updateTags(deck.id, evt.target.value);
-      }
-    },
-    [updateTags, deck.id],
-  );
+  const onTagsChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target instanceof HTMLInputElement) {
+      updateTags(deck.id, evt.target.value);
+    }
+  };
 
-  const onFieldChange = useCallback(
-    (evt: React.ChangeEvent<HTMLSelectElement>) => {
-      if (evt.target instanceof HTMLSelectElement) {
-        const value = evt.target.value;
+  const onFieldChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+    if (evt.target instanceof HTMLSelectElement) {
+      const value = evt.target.value;
 
-        if (evt.target.dataset.field && evt.target.dataset.type) {
-          updateMetaProperty(
-            deck.id,
-            evt.target.dataset.field,
-            value || null,
-            evt.target.dataset.type as DeckOptionSelectType,
-          );
-        }
+      if (evt.target.dataset.field && evt.target.dataset.type) {
+        updateMetaProperty(
+          deck.id,
+          evt.target.dataset.field,
+          value || null,
+          evt.target.dataset.type as DeckOptionSelectType,
+        );
       }
-    },
-    [updateMetaProperty, deck.id],
-  );
+    }
+  };
 
-  const onInvestigatorSideChange = useCallback(
-    (evt: React.ChangeEvent<HTMLSelectElement>) => {
-      if (evt.target instanceof HTMLSelectElement) {
-        const value = evt.target.value;
-        if (evt.target.dataset.side) {
-          updateInvestigatorSide(deck.id, evt.target.dataset.side, value);
-        }
+  const onInvestigatorSideChange = (
+    evt: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    if (evt.target instanceof HTMLSelectElement) {
+      const value = evt.target.value;
+      if (evt.target.dataset.side) {
+        updateInvestigatorSide(deck.id, evt.target.dataset.side, value);
       }
-    },
-    [updateInvestigatorSide, deck.id],
-  );
+    }
+  };
 
   const interpreter = useStore((state) =>
     selectBuildQlInterpreter(state, deck),
   );
 
-  const onBuildqlDeckOptionChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      if (evt.target instanceof HTMLInputElement) {
-        try {
-          if (evt.target.value) {
-            const filter = interpreter.evaluate(parse(evt.target.value));
-            filter({} as Card); // test for runtime errors
-          }
-
-          updateMetaPropertyDebounced(
-            deck.id,
-            "buildql_deck_options_override",
-            evt.target.value || null,
-          );
-        } catch (error) {
-          console.warn("Error parsing buildQL deck option override", error);
+  const onBuildqlDeckOptionChange = (
+    evt: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (evt.target instanceof HTMLInputElement) {
+      try {
+        if (evt.target.value) {
+          const filter = interpreter.evaluate(parse(evt.target.value));
+          filter({} as Card); // test for runtime errors
         }
+
+        updateMetaPropertyDebounced(
+          deck.id,
+          "buildql_deck_options_override",
+          evt.target.value || null,
+        );
+      } catch (error) {
+        console.warn("Error parsing buildQL deck option override", error);
       }
-    },
-    [updateMetaPropertyDebounced, deck.id, interpreter],
-  );
+    }
+  };
 
-  const onCardPoolChange = useCallback(
-    (selectedItems: string[]) => {
-      updateMetaProperty(deck.id, "card_pool", encodeCardPool(selectedItems));
-    },
-    [updateMetaProperty, deck.id],
-  );
+  const onCardPoolChange = (selectedItems: string[]) => {
+    updateMetaProperty(deck.id, "card_pool", encodeCardPool(selectedItems));
+  };
 
-  const onSealedDeckChange = useCallback(
-    (value: SealedDeckResponse | undefined) => {
-      const encoded = value ? encodeSealedDeck(value) : undefined;
-      updateMetaProperty(deck.id, "sealed_deck", encoded?.sealed_deck ?? null);
-      updateMetaProperty(
-        deck.id,
-        "sealed_deck_name",
-        encoded?.sealed_deck_name ?? null,
-      );
-    },
-    [deck.id, updateMetaProperty],
-  );
+  const onSealedDeckChange = (value: SealedDeckResponse | undefined) => {
+    const encoded = value ? encodeSealedDeck(value) : undefined;
+    updateMetaProperty(deck.id, "sealed_deck", encoded?.sealed_deck ?? null);
+    updateMetaProperty(
+      deck.id,
+      "sealed_deck_name",
+      encoded?.sealed_deck_name ?? null,
+    );
+  };
 
   return (
     <div className={css["meta"]}>

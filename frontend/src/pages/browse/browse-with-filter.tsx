@@ -80,7 +80,6 @@ export function BrowseWithFilter(props: Props) {
     <>
       <PageTitle>{title}</PageTitle>
       <ListLayout
-        noFade
         filters={<Filters targetDeck={undefined} />}
         sidebar={
           <SetTree
@@ -92,7 +91,7 @@ export function BrowseWithFilter(props: Props) {
         }
         sidebarWidthMax="var(--sidebar-width-one-col)"
       >
-        {(props) => <CardListContainer {...props} />}
+        {(props) => <CardListContainer {...props} showPackQuantities />}
       </ListLayout>
     </>
   );

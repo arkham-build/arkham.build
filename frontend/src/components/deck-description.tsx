@@ -1,6 +1,5 @@
 /* oxlint-disable jsx-a11y/click-events-have-key-events -- not relevant. */
 /* oxlint-disable jsx-a11y/no-static-element-interactions -- catches onclick bubbles up from content. */
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useCardLinkTooltip } from "@/components/card-tooltip/use-card-link-tooltip";
 import { useStore } from "@/store";
@@ -23,50 +22,44 @@ function DeckDescription(props: Props) {
 
   const { cardLinkTooltip, referenceProps } = useCardLinkTooltip();
 
-  const descriptionMarkup = useMemo(
-    () => ({
-      __html: parseMarkdown(content, {
-        noImageReferrer: true,
-        externalEmbeds: {
-          loadLabel: t("external_embed.load"),
-          notice: t("external_embed.notice"),
-          title: t("external_embed.title"),
-        },
-      }),
+  const descriptionMarkup = {
+    __html: parseMarkdown(content, {
+      noImageReferrer: true,
+      externalEmbeds: {
+        loadLabel: t("external_embed.load"),
+        notice: t("external_embed.notice"),
+        title: t("external_embed.title"),
+      },
     }),
-    [content, t],
-  );
+  };
 
-  const onLinkClick = useCallback(
-    (evt: React.MouseEvent) => {
-      if (evt.target instanceof HTMLElement) {
-        const loadEmbedButton = evt.target.closest("[data-load-embed]");
+  const onLinkClick = (evt: React.MouseEvent) => {
+    if (evt.target instanceof HTMLElement) {
+      const loadEmbedButton = evt.target.closest("[data-load-embed]");
 
-        if (loadEmbedButton) {
-          evt.preventDefault();
-          loadExternalEmbed(loadEmbedButton);
-          return;
-        }
+      if (loadEmbedButton) {
+        evt.preventDefault();
+        loadExternalEmbed(loadEmbedButton);
+        return;
+      }
 
-        const anchor = evt.target.closest("a") as HTMLAnchorElement | null;
-        const href = anchor?.getAttribute("href");
+      const anchor = evt.target.closest("a") as HTMLAnchorElement | null;
+      const href = anchor?.getAttribute("href");
 
-        if (href?.includes("/card/") && !href.includes("#")) {
-          evt.preventDefault();
-          const code = anchor?.href.split("/card/").at(-1);
+      if (href?.includes("/card/") && !href.includes("#")) {
+        evt.preventDefault();
+        const code = anchor?.href.split("/card/").at(-1);
 
-          if (code) {
-            openCardModal(code);
-          } else {
-            redirectArkhamDBLinks(evt);
-          }
+        if (code) {
+          openCardModal(code);
         } else {
           redirectArkhamDBLinks(evt);
         }
+      } else {
+        redirectArkhamDBLinks(evt);
       }
-    },
-    [openCardModal],
-  );
+    }
+  };
 
   return (
     <>

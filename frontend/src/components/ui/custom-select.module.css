@@ -19,11 +19,13 @@
   }
 
   .compact .control {
-    padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0.25rem 0.25rem 0.375rem;
   }
 
-  .control:hover {
-    border-color: var(--palette-3);
+  @media (hover: hover) and (pointer: fine) {
+    .control:hover {
+      border-color: var(--palette-3);
+    }
   }
 
   .control:focus-visible {
@@ -65,6 +67,12 @@
 
   .option.active {
     background: var(--palette-1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .option:hover {
+      background: var(--palette-1);
+    }
   }
 
   .option-indicator {

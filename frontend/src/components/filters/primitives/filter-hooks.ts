@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useStore } from "@/store";
 
 export function useFilter<T>(id: number) {
@@ -12,23 +11,17 @@ export function useFilter<T>(id: number) {
       : false;
   });
 
-  const onReset = useCallback(() => {
+  const onReset = () => {
     resetFilter(id);
-  }, [resetFilter, id]);
+  };
 
-  const onOpenChange = useCallback(
-    (val: boolean) => {
-      setFilterOpen(id, val);
-    },
-    [setFilterOpen, id],
-  );
+  const onOpenChange = (val: boolean) => {
+    setFilterOpen(id, val);
+  };
 
-  const onChange = useCallback(
-    (value: T) => {
-      setFilterValue(id, value);
-    },
-    [id, setFilterValue],
-  );
+  const onChange = (value: T) => {
+    setFilterValue(id, value);
+  };
 
   return {
     onReset,

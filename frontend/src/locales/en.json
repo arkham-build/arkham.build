@@ -145,6 +145,7 @@
       }
     },
     "browse": {
+      "sets": "Sets",
       "title": "Browse cards"
     },
     "card_modal": {
@@ -188,6 +189,7 @@
         "reviews": "View reviews",
         "show_original_image": "Show original card image",
         "show_taboo_image": "Show taboo card image",
+        "starter_deck": "Official starter deck",
         "usable_by": "Card pool: {{prefix}}{{name}}",
         "usable_by_interpolated": "Card pool: <tooltip>{{name}}</tooltip>",
         "view_backside": "Backside",
@@ -249,6 +251,7 @@
       "cycle_one": "cycle",
       "cycle_other": "cycles",
       "deck_options": {
+        "A deck cannot include more than one reward card with the permanent keyword.": "Deck cannot include more than one reward card with the permanent keyword.",
         "Atleast constraint violated.": "Atleast constraint violated.",
         "Blessed": "Blessed",
         "Blessed and Cursed": "Blessed and Cursed",
@@ -846,6 +849,23 @@
       "victory": "Victory",
       "xp": "XP"
     },
+    "content": {
+      "empty": {
+        "campaigns": "No campaigns are available.",
+        "standalone_scenarios": "No standalone scenarios are available."
+      },
+      "guide": {
+        "campaign_pdf": "Campaign guide",
+        "return_to_pdf": "Return to",
+        "rules_insert_pdf": "Rules insert"
+      },
+      "tabs": {
+        "campaigns": "Campaigns",
+        "standalone_scenarios": "Standalone scenarios"
+      },
+      "title": "Content",
+      "unknown_release_year": "Unknown year"
+    },
     "deck": {
       "actions": {
         "archive": "Archive deck",
@@ -926,6 +946,16 @@
         "factions_tooltip": "{{count}} {{faction}} {{cards}}",
         "loading": "Loading deck tools...",
         "median_cost": "Median cost: {{cost}}",
+        "random_basic_weakness": {
+          "add": "Add random basic weakness",
+          "draft": "Draft random basic weakness",
+          "equal_probability": "Use equal probability for each weakness",
+          "ignore_deck_card_pool": "Ignore deck card pool",
+          "replace_random_basic_weakness": "Replace random basic weakness placeholder",
+          "require_trait": "Require trait",
+          "title": "Add Random Basic Weakness",
+          "trait_placeholder": "Choose trait"
+        },
         "resource_cost": "Resource cost",
         "resource_cost_tooltip": "{{count}} {{cards}} of cost {{cost}}",
         "resource_costs": "Resource costs",
@@ -995,7 +1025,8 @@
         "error": "Failed to fetch sealed deck: {{error}}",
         "loading": "Fetching sealed deck..."
       },
-      "title": "Create {{name}} deck"
+      "title": "Create {{name}} deck",
+      "use_starter_deck": "Use official starter deck"
     },
     "deck_edit": {
       "actions": {
@@ -1029,6 +1060,7 @@
           "chapter_2": "Chapter 2",
           "chapter_2_help": "Set the card pool to all packs in chapter 2.",
           "choose_cycle_placeholder": "Select cycles...",
+          "choose_progression_target_placeholder": "Select a campaign or standalone scenario...",
           "collection": "Collection",
           "collection_help": "Set your current <settings_link>collection</settings_link> as this deck's card pool. This can be useful to freeze the deck's card pool, or to share a \"build preset\" with people sharing a physical collection.",
           "configure_environment": "Configure environment",
@@ -1046,6 +1078,9 @@
           "limited_faq25_help": "When deckbuilding in the Limited Environment, players may only build their decks with cards from the core set, the five starter decks and three different investigator expansions of their choice.",
           "limited_help": "When deckbuilding in the the Limited environment, players may use the following products: The 2026 core set, the five investigator decks, three different player card expansions of their choice.",
           "placeholder": "Select packs...",
+          "progression": "Progression",
+          "progression_help": "Set the card pool to the products that were available when the selected campaign or standalone scenario was released.",
+          "progression_target": "Campaign or standalone scenario",
           "section_title": "Card pool settings",
           "selected_cards": "Selected cards",
           "substitute_chapter_2_with_chapter_1": "Substitute chapter 2 core and investigator decks with chapter 1 equivalents",
@@ -1491,6 +1526,7 @@
         "display_as_list": "Display as list",
         "display_as_list_text": "Display as list with card text",
         "display_as_scans": "Display as scans",
+        "flip_all_scans": "Flip all scans",
         "focus_search": "Focus search",
         "move_down": "Move down",
         "move_up": "Move up",
@@ -1536,7 +1572,8 @@
         "list_settings": "List settings",
         "max_columns": "Max. scans per columns",
         "sort": "Sort",
-        "sort_default": "User default"
+        "sort_default": "User default",
+        "taboo_filter_override": "Overridden by the \"Taboo list\" filter"
       },
       "reset": "Reset to default",
       "search": {
@@ -1544,14 +1581,18 @@
         "include_flavor": "Flavor",
         "include_game_text": "Game text",
         "include_name": "Name",
+        "match_display_mode": "Match display mode",
+        "match_visible_taboo": "Match visible taboo",
         "placeholder": "Search cards...",
         "share": "Share query",
+        "share_settings": "Share settings",
         "title": "Search"
       },
       "sort_by": "Sort by"
     },
     "masthead": {
       "browse": "Browse",
+      "cards": "Cards",
       "navigation": "Primary navigation",
       "rules": "Rules"
     },
@@ -1614,6 +1655,11 @@
       "search_placeholder": "Search keywords...",
       "title": "Rules reference",
       "toc": "Table of contents"
+    },
+    "sealed_deck": {
+      "empty": "This sealed card pool does not contain any cards.",
+      "loading": "Fetching sealed card pool...",
+      "title": "Sealed card pool: {{name}}"
     },
     "search": {
       "title": "Search results"
@@ -1825,6 +1871,10 @@
       "pagination": {
         "next": "Next",
         "previous": "Previous"
+      },
+      "password_input": {
+        "hide_password": "Hide password",
+        "show_password": "Show password"
       }
     }
   }

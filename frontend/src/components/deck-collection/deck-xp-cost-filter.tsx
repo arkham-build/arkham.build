@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -26,23 +25,17 @@ export function DeckXPCostFilter({ containerClass }: Props) {
   const resetFilter = useStore((state) => state.resetDeckFilter);
   const setFilterValue = useStore((state) => state.addDecksFilter);
 
-  const onReset = useCallback(() => {
+  const onReset = () => {
     resetFilter("xpCost");
-  }, [resetFilter]);
+  };
 
-  const onOpenChange = useCallback(
-    (val: boolean) => {
-      setFilterOpen("xpCost", val);
-    },
-    [setFilterOpen],
-  );
+  const onOpenChange = (val: boolean) => {
+    setFilterOpen("xpCost", val);
+  };
 
-  const onValueCommit = useCallback(
-    (value: [number, number]) => {
-      setFilterValue("xpCost", value);
-    },
-    [setFilterValue],
-  );
+  const onValueCommit = (value: [number, number]) => {
+    setFilterValue("xpCost", value);
+  };
 
   return (
     min !== max && (

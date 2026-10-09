@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import { DeckSchema } from "@arkham-build/shared";
 import { type Context, Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
@@ -13,6 +12,7 @@ import {
   resolveLocalPublicDeck,
   resolveLocalPublicDeckHistory,
 } from "../../lib/resolve-public-deck.ts";
+import { STARTER_DECKS } from "../../lib/starter-decks.ts";
 
 const routes = new Hono<HonoEnv>();
 
@@ -21,22 +21,11 @@ const LegacyShareHistorySchema = z.object({
   history: z.unknown(),
 });
 
-const starterDecks = z
-  .record(z.string(), DeckSchema)
-  .parse(
-    JSON.parse(
-      readFileSync(
-        new URL("../../data/starter_decks.json", import.meta.url),
-        "utf8",
-      ),
-    ),
-  );
-
 routes.get("/share/:id", async (c) => {
   const type = c.req.query("type");
   const id = c.req.param("id");
 
-  const starterDeck = starterDecks[id];
+  const starterDeck = STARTER_DECKS[id];
   if (starterDeck) return c.json(starterDeck);
 
   const deck = await resolveLocalPublicDeck(

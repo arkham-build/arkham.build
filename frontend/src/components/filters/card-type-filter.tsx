@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { selectActiveListFilter } from "@/store/selectors/lists";
@@ -25,16 +24,13 @@ export function CardTypeFilter(props: FilterProps & { className?: string }) {
 
   const { onChange, locked } = useFilter(id);
 
-  const onToggle = useCallback(
-    (value: CardTypeFilterType) => {
-      if (value === filter.value) {
-        onChange("");
-      } else {
-        onChange(value);
-      }
-    },
-    [onChange, filter.value],
-  );
+  const onToggle = (value: CardTypeFilterType) => {
+    if (value === filter.value) {
+      onChange("");
+    } else {
+      onChange(value);
+    }
+  };
 
   useHotkey("alt+p", () => onToggle("player"));
   useHotkey("alt+c", () => onToggle("encounter"));
@@ -44,13 +40,12 @@ export function CardTypeFilter(props: FilterProps & { className?: string }) {
   return (
     <ToggleGroup
       className={className}
-      defaultValue=""
       data-testid="toggle-card-type"
       disabled={locked}
       full
-      onValueChange={onChange}
+      onValueChange={onToggle}
       type="single"
-      value={filter.value}
+      value={filter.value || undefined}
     >
       <HotkeyTooltip keybind="alt+p" description={t("common.player_cards")}>
         <ToggleGroupItem data-testid="card-type-player" value="player">

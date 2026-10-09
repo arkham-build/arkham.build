@@ -198,8 +198,10 @@
   }
 
   .header a {
-    &:hover {
-      text-decoration: underline;
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 
@@ -264,9 +266,14 @@
     text-decoration: none;
     text-shadow: inherit;
 
-    &:hover:not(span),
     &:focus:not(span) {
       text-decoration: underline;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(span) {
+        text-decoration: underline;
+      }
     }
   }
 
@@ -368,15 +375,6 @@
     flex: 0 0 auto;
     width: 1em;
     height: 1em;
-  }
-
-  .errata-content {
-    display: grid;
-    gap: 0.5rem;
-  }
-
-  .errata-content p {
-    margin: 0;
   }
 
   .flavor {

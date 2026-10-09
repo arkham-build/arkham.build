@@ -7,7 +7,7 @@
 }
 
 .header {
-  border-radius: calc(var(--rounded) - 2px) calc(var(--rounded) - 2px) 0 0;
+  border-radius: calc(var(--rounded) - 1px) calc(var(--rounded) - 1px) 0 0;
   padding: 0.5rem 1rem;
 }
 
@@ -53,9 +53,16 @@
 }
 
 .content {
-  min-width: 18rem;
+  flex: 1 1 18rem;
+  max-width: 60ch;
 }
 
 .content > * + * {
   margin-top: 0.25rem;
+}
+
+@layer app {
+  .highlighted {
+    border: 1px solid var(--palette-5);
+  }
 }

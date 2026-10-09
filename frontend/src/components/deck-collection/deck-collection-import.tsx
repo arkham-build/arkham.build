@@ -1,5 +1,5 @@
 import { CloudDownloadIcon, LoaderCircleIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -22,27 +22,29 @@ export function DeckCollectionImport() {
 
   const session = useStore(selectSession);
 
-  const onFormSubmit = useCallback(
-    async (evt: React.SubmitEvent<HTMLFormElement>) => {
-      evt.preventDefault();
+  const onFormSubmit = async (evt: React.SubmitEvent<HTMLFormElement>) => {
+    evt.preventDefault();
 
-      const value = new FormData(evt.currentTarget).get("deck-id");
-      const input = typeof value === "string" ? value : "";
+    const value = new FormData(evt.currentTarget).get("deck-id");
+    const input = typeof value === "string" ? value : "";
 
-      try {
-        await importDeck(input);
-        setOpen(false);
-      } catch {
-        return;
-      }
-    },
-    [importDeck],
-  );
+    try {
+      await importDeck(input);
+      setOpen(false);
+    } catch {
+      return;
+    }
+  };
 
   if (session) return null;
 
   return (
-    <Popover onOpenChange={setOpen} open={open} placement="bottom-start">
+    <Popover
+      onOpenChange={setOpen}
+      open={open}
+      placement="bottom-start"
+      strategy="fixed"
+    >
       <PopoverTrigger asChild>
         <Button
           data-testid="import-trigger"
@@ -53,7 +55,7 @@ export function DeckCollectionImport() {
       </PopoverTrigger>
       <PopoverContent>
         <form className={css["import"]} onSubmit={onFormSubmit}>
-          <header className={css["deck-collection-form-header"]}>
+          <header>
             <h3>{t("deck_collection.import_arkhamdb")}</h3>
           </header>
           <Field
@@ -103,30 +105,27 @@ function useImportDeck() {
   const toast = useToast();
   const importDeckMutation = useImportDeckMutation();
 
-  const importDeck = useCallback(
-    async (input: string) => {
-      const toastId = toast.show({
-        children: t("deck_collection.import_loading"),
-        variant: "loading",
+  const importDeck = async (input: string) => {
+    const toastId = toast.show({
+      children: t("deck_collection.import_loading"),
+      variant: "loading",
+    });
+
+    try {
+      await importDeckMutation.mutateAsync(input);
+      toast.dismiss(toastId);
+    } catch (error) {
+      toast.dismiss(toastId);
+      toast.show({
+        children: t("deck_collection.import_error", {
+          error: error instanceof Error ? error.message : "Unknown error",
+        }),
+        variant: "error",
       });
 
-      try {
-        await importDeckMutation.mutateAsync(input);
-        toast.dismiss(toastId);
-      } catch (error) {
-        toast.dismiss(toastId);
-        toast.show({
-          children: t("deck_collection.import_error", {
-            error: error instanceof Error ? error.message : "Unknown error",
-          }),
-          variant: "error",
-        });
-
-        throw error;
-      }
-    },
-    [importDeckMutation, t, toast],
-  );
+      throw error;
+    }
+  };
 
   return {
     importDeck,

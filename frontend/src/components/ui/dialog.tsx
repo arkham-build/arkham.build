@@ -5,8 +5,9 @@ import {
   useMergeRefs,
   useTransitionStyles,
 } from "@floating-ui/react";
-import { cloneElement, isValidElement } from "react";
-import { FLOATING_PORTAL_ID } from "@/utils/constants";
+import { isValidElement } from "react";
+import { FLOATING_PORTAL_ID, MQ_REDUCED_MOTION } from "@/utils/constants";
+import { useMedia } from "@/utils/use-media";
 import type { DialogOptions } from "./dialog.hooks";
 import {
   DialogContext,
@@ -14,6 +15,7 @@ import {
   useDialog,
   useDialogContextChecked,
 } from "./dialog.hooks";
+import { dialogTransitionStyles } from "./transition-styles";
 
 export function Dialog({
   children,
@@ -45,17 +47,17 @@ export function DialogTrigger({
   // `asChild` allows the user to pass any element as the anchor
   if (asChild && isValidElement(children)) {
     // oxlint-disable-next-line typescript/no-explicit-any -- safe.
-    const { ref: _, ...childProps } = (children as React.ReactElement<any>)
-      .props;
-    return cloneElement(
-      children as React.ReactElement,
-      context.getReferenceProps({
-        ref,
-        ...props,
-        ...childProps,
-        "data-state": context.open ? "open" : "closed",
-      } as React.HTMLProps<Element>),
-    );
+    const child = children as React.ReactElement<any>;
+    const { ref: _, ...childProps } = child.props;
+    const Child = child.type;
+
+    const referenceProps = context.getReferenceProps({
+      ...props,
+      ...childProps,
+      "data-state": context.open ? "open" : "closed",
+    } as React.HTMLProps<Element>);
+
+    return <Child key={child.key ?? undefined} {...referenceProps} ref={ref} />;
   }
 
   return (
@@ -69,28 +71,22 @@ export function DialogTrigger({
   );
 }
 
-export function DialogContent(props: React.HTMLProps<HTMLElement>) {
+export function DialogContent({
+  children,
+  ref: propRef,
+  ...props
+}: React.HTMLProps<HTMLElement>) {
   const { context: floatingContext, ...context } = useDialogContextChecked();
+  const reducedMotion = useMedia(MQ_REDUCED_MOTION);
 
-  const { isMounted, styles } = useTransitionStyles(floatingContext, {
-    duration: 250,
-    common: {
-      transitionProperty: "opacity, backdrop-filter",
-      willChange: "opacity, backdrop-filter",
-    },
-    initial: {
-      opacity: 0,
-      backdropFilter: "blur(0px)",
-    },
-    open: {
-      opacity: 1,
-      backdropFilter: "blur(1.25px)",
-    },
-  });
+  const { isMounted, styles } = useTransitionStyles(
+    floatingContext,
+    dialogTransitionStyles(reducedMotion),
+  );
 
   const ref = useMergeRefs([
     context.refs.setFloating,
-    props.ref,
+    propRef,
   ] as React.Ref<HTMLDivElement>[]);
 
   if (!isMounted) return null;
@@ -108,7 +104,7 @@ export function DialogContent(props: React.HTMLProps<HTMLElement>) {
             ref={ref}
           >
             <DialogTransitionStylesContext value={styles}>
-              {props.children}
+              {children}
             </DialogTransitionStylesContext>
           </div>
         </FloatingFocusManager>

@@ -1,7 +1,7 @@
 /* oxlint-disable jsx-a11y/click-events-have-key-events -- escape handler is defined higher up. */
 /* oxlint-disable jsx-a11y/no-static-element-interactions -- backdrop needs to be clickable. */
 import { XIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { MQ_MOBILE } from "@/utils/constants";
 import { cx } from "@/utils/cx";
 import { useMedia } from "@/utils/use-media";
@@ -30,26 +30,20 @@ export function Modal(props: Props) {
 
   const isMobile = useMedia(MQ_MOBILE);
 
-  const onPointerDownBackdrop = useCallback(
-    (evt: React.PointerEvent) => {
-      evt.preventDefault();
+  const onPointerDownBackdrop = (evt: React.PointerEvent) => {
+    evt.preventDefault();
 
-      if (isMobile) {
-        window.history.back();
-      } else {
-        closeModal();
-      }
-    },
-    [closeModal, isMobile],
-  );
+    if (isMobile) {
+      window.history.back();
+    } else {
+      closeModal();
+    }
+  };
 
-  const modalStyle = useMemo(
-    () => ({
-      ...style,
-      ...transitionStyles,
-    }),
-    [style, transitionStyles],
-  );
+  const modalStyle = {
+    ...style,
+    ...transitionStyles,
+  };
 
   useEffect(() => {
     if (!isMobile) return;
@@ -108,12 +102,9 @@ export function ModalActions(props: ModalActionProps) {
 
   const actionRef = useRef<HTMLDivElement>(null);
 
-  const onCloseActions = useCallback(
-    (evt: React.MouseEvent) => {
-      if (evt.target === actionRef.current) closeModal();
-    },
-    [closeModal],
-  );
+  const onCloseActions = (evt: React.MouseEvent) => {
+    if (evt.target === actionRef.current) closeModal();
+  };
 
   return (
     <div
@@ -143,16 +134,13 @@ type ModalInnerProps = {
 export function ModalInner(props: ModalInnerProps) {
   const { className, children, size } = props;
 
-  const stopPropagation = useCallback((evt: React.PointerEvent) => {
+  const stopPropagation = (evt: React.PointerEvent) => {
     evt.stopPropagation();
-  }, []);
+  };
 
-  const cssVariables = useMemo(
-    () => ({
-      "--modal-width": size,
-    }),
-    [size],
-  );
+  const cssVariables = {
+    "--modal-width": size,
+  };
 
   return (
     <Scroller type="always" padded>
@@ -165,15 +153,6 @@ export function ModalInner(props: ModalInnerProps) {
       </div>
     </Scroller>
   );
-}
-
-type ModalBackdropProps = {
-  className?: string;
-};
-
-export function ModalBackdrop(props: ModalBackdropProps) {
-  const { className } = props;
-  return <div className={cx(css["backdrop"], className)} />;
 }
 
 type DefaultModalContentProps = {
@@ -189,11 +168,11 @@ export function DefaultModalContent(props: DefaultModalContentProps) {
   return (
     <section className={cx(css["content"], className)} {...rest}>
       {title && (
-        <header className={css["content-header"]}>
+        <header>
           <h2 className={css["content-title"]}>{title}</h2>
         </header>
       )}
-      <div className={cx(css["content-main"], mainClassName)}>{children}</div>
+      <div className={mainClassName}>{children}</div>
       {footer && <footer className={css["content-footer"]}>{footer}</footer>}
     </section>
   );
@@ -202,9 +181,9 @@ export function DefaultModalContent(props: DefaultModalContentProps) {
 function useCloseModal() {
   const modalContext = useDialogContextChecked();
 
-  const onCloseModal = useCallback(() => {
+  const onCloseModal = () => {
     modalContext.setOpen(false);
-  }, [modalContext]);
+  };
 
   return onCloseModal;
 }

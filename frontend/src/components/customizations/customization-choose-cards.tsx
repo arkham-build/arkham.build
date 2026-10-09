@@ -2,7 +2,6 @@ import type {
   Card,
   CustomizationOption as CustomizationOptionType,
 } from "@arkham-build/shared";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useStore } from "@/store";
@@ -109,12 +108,9 @@ export function CustomizationChooseCards(props: Props) {
 
   const locale = useStore((state) => state.settings.locale);
 
-  const onValueChange = useCallback(
-    (newSelections: Card[]) => {
-      onChange(newSelections.map((card) => card.code));
-    },
-    [onChange],
-  );
+  const onValueChange = (newSelections: Card[]) => {
+    onChange(newSelections.map((card) => card.code));
+  };
 
   return (
     <CardsCombobox

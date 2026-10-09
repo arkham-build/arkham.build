@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
@@ -44,40 +43,37 @@ export function InvestigatorFilter({
     selectInvestigatorOptions(state, resolvedDeck, targetDeck),
   );
 
-  const renderOption = useCallback(
-    (item: Item | undefined) => {
-      if (!item) {
-        return (
-          <div className={css["investigator-filter-empty"]}>
-            {t("ui.combobox.unknown_option")}
-          </div>
-        );
-      }
-
-      if (!item.value) {
-        return (
-          <div className={css["investigator-filter-empty"]}>
-            {t("filters.investigator.placeholder")}
-          </div>
-        );
-      }
-
-      const card = metadata.cards[item.value];
-      if (!card) return null;
-
+  const renderOption = (item: Item | undefined) => {
+    if (!item) {
       return (
-        <ListCardInner
-          card={card}
-          cardLevelDisplay="icon-only"
-          cardShowCollectionNumber
-          disableModalOpen
-          omitBorders
-          size="xs"
-        />
+        <div className={css["investigator-filter-empty"]}>
+          {t("ui.combobox.unknown_option")}
+        </div>
       );
-    },
-    [t, metadata],
-  );
+    }
+
+    if (!item.value) {
+      return (
+        <div className={css["investigator-filter-empty"]}>
+          {t("filters.investigator.placeholder")}
+        </div>
+      );
+    }
+
+    const card = metadata.cards[item.value];
+    if (!card) return null;
+
+    return (
+      <ListCardInner
+        card={card}
+        cardLevelDisplay="icon-only"
+        cardShowCollectionNumber
+        disableModalOpen
+        omitBorders
+        size="xs"
+      />
+    );
+  };
 
   if (!listFilterProperties.cardTypes.has("player") && !filter.value) {
     return null;

@@ -1,5 +1,4 @@
 import { SearchIcon, XIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
 import { cx } from "@/utils/cx";
 import { Button } from "./button";
 import css from "./search-input.module.css";
@@ -33,26 +32,19 @@ export function SearchInput({
   value,
   ...rest
 }: Props) {
-  const onClear = useCallback(() => {
+  const onClear = () => {
     onValueChange("");
-  }, [onValueChange]);
+  };
 
-  const onChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      if (evt.target instanceof HTMLInputElement) {
-        onValueChange(evt.target.value);
-      }
-    },
-    [onValueChange],
-  );
+  const onChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target instanceof HTMLInputElement) {
+      onValueChange(evt.target.value);
+    }
+  };
 
-  const cssVariables = useMemo(
-    () =>
-      ({
-        "--icon-slot-size": iconSlotSize ? `${iconSlotSize}px` : "0px",
-      }) as React.CSSProperties,
-    [iconSlotSize],
-  );
+  const cssVariables = {
+    "--icon-slot-size": iconSlotSize ? `${iconSlotSize}px` : "0px",
+  } as React.CSSProperties;
 
   return (
     <div

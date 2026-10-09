@@ -1,5 +1,5 @@
 import type { Id } from "@arkham-build/shared";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { useStore } from "@/store";
@@ -33,26 +33,25 @@ export function AnnotationEdit(props: Props) {
 
   const updateAnnotation = useStore(selectUpdateAnnotation);
 
-  const onAnnotationChange = useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setValue(event.target.value);
-      updateAnnotation(deckId, cardCode, event.target.value);
-    },
-    [updateAnnotation, cardCode, deckId],
-  );
+  const onAnnotationChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    setValue(event.target.value);
+    updateAnnotation(deckId, cardCode, event.target.value);
+  };
 
-  const onAnnotationClear = useCallback(() => {
+  const onAnnotationClear = () => {
     setValue("");
     updateAnnotation(deckId, cardCode, null);
-  }, [updateAnnotation, cardCode, deckId]);
+  };
 
-  const focusTextarea = useCallback(() => {
+  const focusTextarea = () => {
     const element = textareaRef.current;
     if (element) {
       element.focus();
       element.setSelectionRange(element.value.length, element.value.length);
     }
-  }, []);
+  };
 
   useHotkey("a", focusTextarea, {
     allowInputFocused: false,

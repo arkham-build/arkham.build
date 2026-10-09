@@ -18,7 +18,7 @@ function LegalNotice() {
         </Button>
         <h1>Legal Notice</h1>
         <div
-          className={css["longform"]}
+          className="longform"
           // oxlint-disable-next-line react/no-danger -- safe.
           dangerouslySetInnerHTML={{
             __html: legalNotice,

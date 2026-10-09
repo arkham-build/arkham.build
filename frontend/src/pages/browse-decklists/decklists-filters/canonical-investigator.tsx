@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { createSelector } from "reselect";
 import { CardsCombobox } from "@/components/cards-combobox";
@@ -58,7 +57,7 @@ export function CanonicalInvestigator({
   const choices = formState.canonical_investigator_code?.split("-");
   const selectedCard = choices ? metadata.cards[choices[1]] : undefined;
 
-  const resolvedCanonicalCard = useMemo(() => {
+  const resolvedCanonicalCard = (() => {
     if (!selectedCard) return undefined;
 
     const resolved = resolveCardWithRelations(
@@ -81,15 +80,15 @@ export function CanonicalInvestigator({
       );
     }
     return resolved;
-  }, [metadata, lookupTables, collator, selectedCard]);
+  })();
 
-  const parallelOptions = useMemo(() => {
+  const parallelOptions = (() => {
     if (!resolvedCanonicalCard?.relations?.parallel) return undefined;
     return [
       resolvedCanonicalCard.card.code,
       resolvedCanonicalCard.relations.parallel.card.code,
     ];
-  }, [resolvedCanonicalCard]);
+  })();
 
   return (
     <Field full>

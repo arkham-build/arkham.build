@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { MQ_FLOATING_FILTERS, MQ_FLOATING_SIDEBAR } from "@/utils/constants";
 import { ListLayoutContext } from "./list-layout-context";
 
@@ -15,15 +15,12 @@ export function ListLayoutContextProvider({
     !window.matchMedia(MQ_FLOATING_FILTERS).matches,
   );
 
-  const contextValue = useMemo(
-    () => ({
-      sidebarOpen,
-      filtersOpen,
-      setSidebarOpen,
-      setFiltersOpen,
-    }),
-    [sidebarOpen, filtersOpen],
-  );
+  const contextValue = {
+    sidebarOpen,
+    filtersOpen,
+    setSidebarOpen,
+    setFiltersOpen,
+  };
 
   return <ListLayoutContext value={contextValue}>{children}</ListLayoutContext>;
 }

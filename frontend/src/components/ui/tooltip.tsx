@@ -1,5 +1,9 @@
-import { FloatingPortal, useMergeRefs } from "@floating-ui/react";
-import { cloneElement, isValidElement, memo } from "react";
+import {
+  FloatingPortal,
+  useMergeRefs,
+  useTransitionStyles,
+} from "@floating-ui/react";
+import { isValidElement } from "react";
 import { cx } from "@/utils/cx";
 import {
   TooltipContext,
@@ -7,9 +11,10 @@ import {
   useTooltip,
   useTooltipContext,
 } from "./tooltip.hooks";
+import { tooltipTransitionStyles } from "./transition-styles";
 import css from "./tooltip.module.css";
 
-export const Tooltip = memo(function Tooltip({
+export const Tooltip = function Tooltip({
   children,
   ...options
 }: { children: React.ReactNode } & TooltipOptions) {
@@ -18,7 +23,7 @@ export const Tooltip = memo(function Tooltip({
   const tooltip = useTooltip(options);
 
   return <TooltipContext value={tooltip}>{children}</TooltipContext>;
-});
+};
 
 export function TooltipTrigger({
   children,
@@ -37,18 +42,18 @@ export function TooltipTrigger({
   // `asChild` allows the user to pass any element as the anchor
   if (asChild && isValidElement(children)) {
     // oxlint-disable-next-line typescript/no-explicit-any -- safe.
-    const { ref: _, ...childProps } = (children as React.ReactElement<any>)
-      .props;
-    return cloneElement(
-      children as React.ReactElement,
-      context.getReferenceProps({
-        ref,
-        ...props,
-        ...childProps,
-        className: cx(props.className, childProps.className),
-        "data-tooltip-state": context.open ? "open" : "closed",
-      } as React.HTMLProps<Element>),
-    );
+    const child = children as React.ReactElement<any>;
+    const { ref: _, ...childProps } = child.props;
+    const Child = child.type;
+
+    const referenceProps = context.getReferenceProps({
+      ...props,
+      ...childProps,
+      className: cx(props.className, childProps.className),
+      "data-tooltip-state": context.open ? "open" : "closed",
+    } as React.HTMLProps<Element>);
+
+    return <Child key={child.key ?? undefined} {...referenceProps} ref={ref} />;
   }
 
   return (
@@ -68,25 +73,35 @@ export function TooltipContent({
   ...props
 }: React.HTMLProps<HTMLElement>) {
   const context = useTooltipContext();
+  const { isMounted, styles } = useTransitionStyles(
+    context.context,
+    tooltipTransitionStyles(),
+  );
 
   const ref = useMergeRefs([
     context.refs.setFloating,
     propRef,
   ] as React.Ref<HTMLDivElement>[]);
 
-  if (!context.open) return null;
+  if (!isMounted) return null;
 
   return (
     <FloatingPortal>
       <div
-        {...context.getFloatingProps(props)}
-        className={cx(css["content"], props.className)}
+        {...context.getFloatingProps()}
+        className={css["positioner"]}
         ref={ref}
         style={{
           ...context.floatingStyles,
-          ...(style as React.CSSProperties),
+          pointerEvents: context.open ? undefined : "none",
         }}
-      />
+      >
+        <div
+          {...props}
+          className={cx(css["content"], props.className)}
+          style={{ ...styles, ...(style as React.CSSProperties) }}
+        />
+      </div>
     </FloatingPortal>
   );
 }
@@ -100,7 +115,7 @@ export type DefaultTooltipProps = {
   paused?: boolean;
 };
 
-export const DefaultTooltip = memo(function DefaultTooltip(
+export const DefaultTooltip = function DefaultTooltip(
   props: DefaultTooltipProps,
 ) {
   const { children, className, options, paused, tooltip } = props;
@@ -121,4 +136,4 @@ export const DefaultTooltip = memo(function DefaultTooltip(
       <TooltipContent className={className}>{tooltip}</TooltipContent>
     </Tooltip>
   );
-});
+};

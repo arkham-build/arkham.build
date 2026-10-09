@@ -10,7 +10,7 @@ import { cx } from "@/utils/cx";
 import css from "./diffs.module.css";
 
 type Props = {
-  deck?: ResolvedDeck;
+  deck: ResolvedDeck;
   differences: CustomizationUpgrade[];
   listCardProps?: Partial<ListCardProps>;
   title: React.ReactNode;
@@ -50,9 +50,14 @@ export function CustomizableDiff(props: Props) {
                       <CustomizationOption
                         card={card}
                         index={customization.index}
-                        choice={customization}
+                        choice={
+                          deck?.customizations?.[card.code]?.[
+                            customization.index
+                          ]
+                        }
                         readonly
                         omitOptionText
+                        xpNew={customization.xp_spent}
                         xpMax={xpMax}
                         option={card.customization_options[customization.index]}
                         text={displayAttribute(

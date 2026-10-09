@@ -292,6 +292,18 @@ test.describe("deck edit", () => {
     expect(await sumCardCounts(page)).toEqual(9);
   });
 
+  test("add random basic weakness from deck tools", async ({ page }) => {
+    await page.goto("/deck/create/01001");
+    await page.getByTestId("create-save").click();
+    await assertEditorDeckQuantity(page, "01000", 1);
+
+    await page.getByTestId("editor-tools").click();
+    await page.getByTestId("add-random-basic-weakness").click();
+    await expect(page.getByTestId("toast")).toContainText(
+      "was added to your deck",
+    );
+  });
+
   test("draft random basic weakness", async ({ page }) => {
     await page.goto("/deck/create/01001");
     await page.getByTestId("create-save").click();
@@ -416,18 +428,11 @@ test.describe("deck edit", () => {
 
     await page.getByTestId("search-input").focus();
 
-    await page.getByTestId("search-game-text").click();
+    await page.getByText("Game text", { exact: true }).click();
     await fillSearch(page, "Advanced.");
 
-    await page
-      .getByTestId("listcard-90009")
-      .getByTestId("quantity-increment")
-      .click();
-
-    await page
-      .getByTestId("listcard-90010")
-      .getByTestId("quantity-increment")
-      .click();
+    await adjustListCardQuantity(page, "90009", "increment");
+    await adjustListCardQuantity(page, "90010", "increment");
 
     await expect(
       page

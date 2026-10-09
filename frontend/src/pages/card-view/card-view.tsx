@@ -1,5 +1,4 @@
 import { DownloadIcon, GlobeIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "wouter";
 import {
@@ -23,12 +22,12 @@ import {
   displayAttribute,
   isStaticInvestigator,
 } from "@/utils/card-utils";
-import { cx } from "@/utils/cx";
 import { download } from "@/utils/download";
 import { ErrorStatus } from "../errors/404";
 import css from "./card-view.module.css";
 import { Printings } from "./printings";
 import { UsableBy } from "./usable-by";
+import { selectStarterDeckForInvestigator } from "@/store/selectors/starter-decks";
 
 function CardView() {
   const { code } = useParams();
@@ -39,7 +38,18 @@ function CardView() {
   );
   const devModeEnabled = useStore((state) => state.settings.devModeEnabled);
 
-  const onExport = useCallback(() => {
+  const isInvestigator = cardWithRelations?.card.type_code === "investigator";
+
+  const isBuildableInvestigator =
+    isInvestigator && !isStaticInvestigator(cardWithRelations.card);
+
+  const starterDeck = useStore((state) =>
+    isBuildableInvestigator
+      ? selectStarterDeckForInvestigator(state, cardWithRelations.card.code)
+      : undefined,
+  );
+
+  const onExport = () => {
     if (!cardWithRelations) return;
 
     const cards = [
@@ -52,15 +62,11 @@ function CardView() {
       `${cardWithRelations.card.code}.json`,
       "application/json",
     );
-  }, [cardWithRelations]);
+  };
 
   if (!cardWithRelations) {
     return <ErrorStatus statusCode={404} />;
   }
-
-  const isInvestigator = cardWithRelations.card.type_code === "investigator";
-  const isBuildableInvestigator =
-    isInvestigator && !isStaticInvestigator(cardWithRelations.card);
 
   const deckbuildable =
     filterPlayerCards(cardWithRelations.card) && !isInvestigator;
@@ -71,7 +77,7 @@ function CardView() {
   return (
     <CardModalProvider>
       <PageTitle>{displayAttribute(cardWithRelations.card, "name")}</PageTitle>
-      <div className={cx(css["layout"], "fade-in")}>
+      <div className={css["layout"]}>
         <Masthead className={css["header"]} />
         <main className={css["main"]}>
           <CardViewCards
@@ -119,6 +125,14 @@ function CardView() {
               <SidebarSection title={t("card_view.section_deckbuilding")}>
                 {isBuildableInvestigator && (
                   <>
+                    {starterDeck && (
+                      <Link asChild href={`/deck/view/${starterDeck.id}`}>
+                        <Button full data-testid="starter-deck" as="a">
+                          <i className="icon-deck" />
+                          {t("card_view.actions.starter_deck")}
+                        </Button>
+                      </Link>
+                    )}
                     <Link
                       asChild
                       href={`/card/${cardWithRelations.card.code}/usable_cards`}
@@ -170,7 +184,7 @@ function SidebarSection(props: {
 }) {
   return (
     <section className={css["sidebar-section"]}>
-      <header className={css["sidebar-section-header"]}>
+      <header>
         <h2 className={css["sidebar-section-title"]}>{props.title}</h2>
       </header>
       <div className={css["sidebar-section-content"]}>{props.children}</div>

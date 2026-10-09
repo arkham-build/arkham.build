@@ -1,6 +1,5 @@
 import { CARD_TAG_FAVORITE_ID } from "@arkham-build/shared";
 import { HeartIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
@@ -35,10 +34,7 @@ export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   );
   const tagMapper = useStore(selectCardTagMapper);
 
-  const nameRenderer = useCallback(
-    (tag: Coded & { name: string }) => tag.name,
-    [],
-  );
+  const nameRenderer = (tag: Coded & { name: string }) => tag.name;
 
   const { onChange } = useFilter<string[]>(id);
 
@@ -55,13 +51,11 @@ export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const showFavoriteShortcut =
     favoriteOnly ||
     options.some((option) => option.code === CARD_TAG_FAVORITE_ID);
+  const favoriteToggleValue = favoriteOnly ? CARD_TAG_FAVORITE_ID : undefined;
 
-  const onToggleFavoriteOnly = useCallback(
-    (value: string) => {
-      onChange(value === CARD_TAG_FAVORITE_ID ? [CARD_TAG_FAVORITE_ID] : []);
-    },
-    [onChange],
-  );
+  const onToggleFavoriteOnly = (value: string) => {
+    onChange(value === favoriteToggleValue ? [] : [CARD_TAG_FAVORITE_ID]);
+  };
 
   return (
     <MultiselectFilter
@@ -80,7 +74,7 @@ export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
           full
           onValueChange={onToggleFavoriteOnly}
           type="single"
-          value={favoriteOnly ? CARD_TAG_FAVORITE_ID : ""}
+          value={favoriteToggleValue}
         >
           <ToggleGroupItem
             className={css["favorite-toggle"]}

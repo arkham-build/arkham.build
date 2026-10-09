@@ -29,13 +29,7 @@ export const CardThumbnail = memo(
 
     return (
       <div
-        className={cx(
-          css["thumbnail"],
-          css[card.type_code],
-          card.subtype_code && css[card.subtype_code],
-          colorCls,
-          className,
-        )}
+        className={cx(css["thumbnail"], colorCls, className)}
         key={card.code}
         data-testid="card-thumbnail"
         data-component="card-thumbnail"

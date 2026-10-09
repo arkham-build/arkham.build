@@ -1,5 +1,5 @@
 import { ALargeSmallIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Slider } from "@/components/ui/slider";
@@ -14,29 +14,26 @@ export function FontSizeSetting(props: SettingProps) {
   const min = 85;
   const max = 125;
 
-  const value = useMemo(() => [settings.fontSize], [settings]);
+  const value = [settings.fontSize];
 
   const [liveValue, setLiveValue] = useState(value);
 
-  const onValueChange = useCallback(
-    (values: number[]) => {
-      setSettings({
-        ...settings,
-        fontSize: values[0],
-      });
-    },
-    [setSettings, settings],
-  );
+  const onValueChange = (values: number[]) => {
+    setSettings({
+      ...settings,
+      fontSize: values[0],
+    });
+  };
 
-  const onLiveValueChange = useCallback((values: number[]) => {
+  const onLiveValueChange = (values: number[]) => {
     setLiveValue(values);
-  }, []);
+  };
 
-  const onLostPointerCapture = useCallback(() => {
+  const onLostPointerCapture = () => {
     if (liveValue[0] !== value[0] || liveValue[1] !== value[1]) {
       onValueChange?.(liveValue);
     }
-  }, [liveValue, onValueChange, value]);
+  };
 
   return (
     <Field className={css["field"]} bordered>

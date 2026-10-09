@@ -1,5 +1,5 @@
 import type { Card as CardType } from "@arkham-build/shared";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ResolvedCard } from "@/store/lib/types";
 import {
@@ -39,10 +39,7 @@ export function CardBack(props: Props) {
   const { t } = useTranslation();
 
   // simple backsides only contain a subset of fields.
-  const backCard: CardType = useMemo(
-    () => doubleSidedBackCard(card, t) as CardType,
-    [card, t],
-  );
+  const backCard: CardType = doubleSidedBackCard(card, t) as CardType;
 
   const [isSideways, setSideways] = useState(sideways(card));
   const hasHeader = card.parallel || card.type_code !== "investigator";
@@ -56,9 +53,9 @@ export function CardBack(props: Props) {
     backCard.illustrator &&
     backCard.illustrator !== card.illustrator;
 
-  const onFlip = useCallback((_: boolean, sideways: boolean) => {
+  const onFlip = (_: boolean, sideways: boolean) => {
     setSideways(sideways);
-  }, []);
+  };
 
   return (
     <article

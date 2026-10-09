@@ -1,1 +1,92 @@
-[]
+[
+  {
+    "code": "river_of_blood",
+    "name": "River of Blood",
+    "pack_code": "cob"
+  },
+  {
+    "code": "new_horizons",
+    "name": "New Horizons",
+    "pack_code": "cob"
+  },
+  {
+    "code": "blood_money",
+    "name": "Blood Money",
+    "pack_code": "cob"
+  },
+  {
+    "code": "afflicted",
+    "name": "Afflicted",
+    "pack_code": "cob"
+  },
+  {
+    "code": "agents_of_zburamoarte",
+    "name": "Agents of Zburamoarte",
+    "pack_code": "cob"
+  },
+  {
+    "code": "blood_blight",
+    "name": "Blood Blight",
+    "pack_code": "cob"
+  },
+  {
+    "code": "blood_moon",
+    "name": "Blood Moon",
+    "pack_code": "cob"
+  },
+  {
+    "code": "bloodthirst",
+    "name": "Bloodthirst",
+    "pack_code": "cob"
+  },
+  {
+    "code": "children_of_blood",
+    "name": "Children of Blood",
+    "pack_code": "cob"
+  },
+  {
+    "code": "friends_in_low_places",
+    "name": "Friends in Low Places",
+    "pack_code": "cob"
+  },
+  {
+    "code": "hunted",
+    "name": "Hunted",
+    "pack_code": "cob"
+  },
+  {
+    "code": "infected",
+    "name": "Infected",
+    "pack_code": "cob"
+  },
+  {
+    "code": "misinformation",
+    "name": "Misinformation",
+    "pack_code": "cob"
+  },
+  {
+    "code": "mongrels",
+    "name": "Mongrels",
+    "pack_code": "cob"
+  },
+  {
+    "code": "preyed_upon",
+    "name": "Preyed Upon",
+    "pack_code": "cob"
+  },
+  {
+    "code": "sanguine_secrets",
+    "name": "Sanguine Secrets",
+    "pack_code": "cob"
+  },
+  {
+    "code": "stalked",
+    "name": "Stalked",
+    "pack_code": "cob"
+  },
+  {
+    "code": "vermin",
+    "name": "Vermin",
+    "pack_code": "cob"
+  }
+]

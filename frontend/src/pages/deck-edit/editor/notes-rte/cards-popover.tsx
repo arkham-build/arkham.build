@@ -1,6 +1,5 @@
 import type { Card } from "@arkham-build/shared";
 import { Settings2Icon } from "lucide-react";
-import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { CardsCombobox } from "@/components/cards-combobox";
@@ -13,6 +12,7 @@ import {
   cardFormatDefinition,
   cardToMarkdown,
 } from "@/pages/deck-edit/editor/notes-rte/cards-to-markdown";
+import { useSaveSettings } from "@/pages/settings/use-save-settings";
 import { useStore } from "@/store";
 import { filterEncounterCards, filterPlayerCards } from "@/store/lib/filtering";
 import { makeSortFunction } from "@/store/lib/sorting";
@@ -53,65 +53,59 @@ export function CardsPopover(props: Props) {
 
   const metadata = useStore(selectMetadata);
   const lookupTables = useStore(selectLookupTables);
-  const setSettings = useStore((state) => state.setSettings);
+  const settings = useStore((state) => state.settings);
 
-  const locale = useStore((state) => state.settings.locale);
+  const locale = settings.locale;
 
-  const onUpdateDefaults = useCallback(() => {
-    void setSettings({
+  const { isPending: isSavingSettings, saveSettings } = useSaveSettings({
+    settings: {
+      ...settings,
       notesEditor: {
         defaultFormat: cardFormat,
         defaultOrigin: cardOrigin,
       },
-    }).catch(console.error);
-  }, [setSettings, cardFormat, cardOrigin]);
+    },
+  });
+
+  const onUpdateDefaults = () => {
+    void saveSettings();
+  };
 
   const cards = useStore(
     useShallow((state) => selectCardOptions(state, cardOrigin, deck)),
   );
 
-  const formatOptions = useMemo(
-    () =>
-      Object.keys(CARD_FORMATS).map((id) => ({
-        label: t(`deck_edit.notes.toolbar.formats.${id}`),
-        value: id,
-      })),
-    [t],
-  );
+  const formatOptions = Object.keys(CARD_FORMATS).map((id) => ({
+    label: t(`deck_edit.notes.toolbar.formats.${id}`),
+    value: id,
+  }));
 
-  const originOptions = useMemo(
-    () =>
-      ["deck", "usable", "player", "campaign"].map((id) => ({
-        label: t(`deck_edit.notes.toolbar.origins.${id}`),
-        value: id,
-      })),
-    [t],
-  );
+  const originOptions = ["deck", "usable", "player", "campaign"].map((id) => ({
+    label: t(`deck_edit.notes.toolbar.origins.${id}`),
+    value: id,
+  }));
 
-  const onSelectItem = useCallback(
-    (item: Card[]) => {
-      const card = item[0];
+  const onSelectItem = (item: Card[]) => {
+    const card = item[0];
 
-      if (!card) return;
-      insertTextAtCaret(
-        cardToMarkdown(
-          card,
-          metadata,
-          lookupTables,
-          cardFormatDefinition(cardFormat),
-        ),
-      );
-      onEscapePress();
-    },
-    [insertTextAtCaret, metadata, lookupTables, cardFormat, onEscapePress],
-  );
+    if (!card) return;
+    insertTextAtCaret(
+      cardToMarkdown(
+        card,
+        metadata,
+        lookupTables,
+        cardFormatDefinition(cardFormat),
+      ),
+    );
+    onEscapePress();
+  };
 
   return (
     <div className={css["cards-popover"]}>
       <div className={css["cards-popover-header"]}>
         <Button
           data-testid="notes-rte-update-defaults"
-          disabled={!settingsChanged}
+          disabled={!settingsChanged || isSavingSettings}
           onClick={onUpdateDefaults}
           size="xs"
         >

@@ -12,5 +12,5 @@
       "@arkham-build/shared": ["../shared/src/index.ts"]
     }
   },
-  "include": ["src/**/*.ts", "../shared/src"]
+  "include": ["src/**/*.ts"]
 }

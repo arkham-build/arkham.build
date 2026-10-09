@@ -44,6 +44,8 @@ export function getPackIcon(code?: string) {
     case "tdep":
     case "tdec":
     case "tde":
+    case "tde_a":
+    case "tde_b":
       return "dream";
 
     case "ticc":
@@ -271,6 +273,8 @@ export function getPackIcon(code?: string) {
       return "film_fatale";
     case "enc":
       return "enthralling_encore";
+    case "cob":
+      return "cob";
 
     default:
       return null;

@@ -14,10 +14,8 @@ import {
   cloneElement,
   createContext,
   isValidElement,
-  useCallback,
   useContext,
   useId,
-  useMemo,
 } from "react";
 import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
@@ -44,26 +42,17 @@ type TabsProps = HTMLAttributes<HTMLDivElement> & {
 
 export function Tabs({
   children,
-  className,
   onValueChange,
   ref,
   value,
   ...rest
 }: TabsProps) {
   const baseId = useId();
-  const context = useMemo(
-    () => ({ baseId, onValueChange, value }),
-    [baseId, onValueChange, value],
-  );
+  const context = { baseId, onValueChange, value };
 
   return (
     <TabsContext value={context}>
-      <div
-        data-orientation="horizontal"
-        {...rest}
-        className={cx(css["tabs"], className)}
-        ref={ref}
-      >
+      <div data-orientation="horizontal" {...rest} ref={ref}>
         {children}
       </div>
     </TabsContext>
@@ -86,29 +75,27 @@ export function TabsList({
   vertical,
   ...rest
 }: ListProps) {
-  const handleKeyDown = useCallback(
-    (evt: ReactKeyboardEvent<HTMLDivElement>) => {
-      onKeyDown?.(evt);
-      if (evt.defaultPrevented) return;
+  const handleKeyDown = (evt: ReactKeyboardEvent<HTMLDivElement>) => {
+    onKeyDown?.(evt);
+    if (evt.defaultPrevented) return;
 
-      const target = evt.target;
-      if (!(target instanceof HTMLElement)) return;
+    const target = evt.target;
+    if (!(target instanceof HTMLElement)) return;
 
-      const currentTab = target.closest<HTMLElement>("[role='tab']");
-      if (!currentTab || !evt.currentTarget.contains(currentTab)) return;
+    const currentTab = target.closest<HTMLElement>("[role='tab']");
+    if (!currentTab || !evt.currentTarget.contains(currentTab)) return;
 
-      const nextIndex = getNextTabIndex(
-        evt.key,
-        getEnabledTabs(evt.currentTarget),
-        currentTab,
-      );
-      if (nextIndex == null) return;
+    const nextIndex = getNextTabIndex(
+      evt.key,
+      getEnabledTabs(evt.currentTarget),
+      currentTab,
+      vertical,
+    );
+    if (nextIndex == null) return;
 
-      evt.preventDefault();
-      getEnabledTabs(evt.currentTarget)[nextIndex]?.focus();
-    },
-    [onKeyDown],
-  );
+    evt.preventDefault();
+    getEnabledTabs(evt.currentTarget)[nextIndex]?.focus();
+  };
 
   return (
     <div
@@ -158,47 +145,38 @@ export function TabsTrigger({
   const contentId = makeContentId(context.baseId, value);
   const { onValueChange } = context;
 
-  const selectTab = useCallback(() => {
+  const selectTab = () => {
     onValueChange(value);
-  }, [onValueChange, value]);
+  };
 
-  const handleMouseDown = useCallback(
-    (evt: ReactMouseEvent<HTMLButtonElement>) => {
-      onMouseDown?.(evt);
-      if (evt.defaultPrevented) return;
+  const handleMouseDown = (evt: ReactMouseEvent<HTMLButtonElement>) => {
+    onMouseDown?.(evt);
+    if (evt.defaultPrevented) return;
 
-      if (disabled || evt.button !== 0 || evt.ctrlKey) {
-        evt.preventDefault();
-        return;
-      }
+    if (disabled || evt.button !== 0 || evt.ctrlKey) {
+      evt.preventDefault();
+      return;
+    }
 
+    selectTab();
+  };
+
+  const handleKeyDown = (evt: ReactKeyboardEvent<HTMLButtonElement>) => {
+    onKeyDown?.(evt);
+    if (evt.defaultPrevented) return;
+
+    if (evt.key === " " || evt.key === "Enter") {
+      evt.preventDefault();
       selectTab();
-    },
-    [disabled, onMouseDown, selectTab],
-  );
+    }
+  };
 
-  const handleKeyDown = useCallback(
-    (evt: ReactKeyboardEvent<HTMLButtonElement>) => {
-      onKeyDown?.(evt);
-      if (evt.defaultPrevented) return;
-
-      if (evt.key === " " || evt.key === "Enter") {
-        evt.preventDefault();
-        selectTab();
-      }
-    },
-    [onKeyDown, selectTab],
-  );
-
-  const handleFocus = useCallback(
-    (evt: ReactFocusEvent<HTMLButtonElement>) => {
-      onFocus?.(evt);
-      if (!selected && !disabled) {
-        selectTab();
-      }
-    },
-    [disabled, onFocus, selected, selectTab],
-  );
+  const handleFocus = (evt: ReactFocusEvent<HTMLButtonElement>) => {
+    onFocus?.(evt);
+    if (!selected && !disabled) {
+      selectTab();
+    }
+  };
 
   const inner = (
     <Button
@@ -225,9 +203,9 @@ export function TabsTrigger({
     </Button>
   );
 
-  const onHotkey = useCallback(() => {
+  const onHotkey = () => {
     onTabChange?.(value);
-  }, [value, onTabChange]);
+  };
 
   useHotkey(hotkey, onHotkey);
 
@@ -310,26 +288,25 @@ function getNextTabIndex(
   key: string,
   tabs: HTMLElement[],
   currentTab: HTMLElement,
+  vertical?: boolean,
 ) {
   if (!tabs.length) return null;
 
   const index = tabs.indexOf(currentTab);
   if (index === -1) return null;
 
-  switch (key) {
-    case "ArrowLeft":
-    case "ArrowUp":
-      return (index - 1 + tabs.length) % tabs.length;
-    case "ArrowRight":
-    case "ArrowDown":
-      return (index + 1) % tabs.length;
-    case "Home":
-      return 0;
-    case "End":
-      return tabs.length - 1;
-    default:
-      return null;
+  if (vertical ? key === "ArrowUp" : key === "ArrowLeft") {
+    return (index - 1 + tabs.length) % tabs.length;
   }
+
+  if (vertical ? key === "ArrowDown" : key === "ArrowRight") {
+    return (index + 1 + tabs.length) % tabs.length;
+  }
+
+  if (key === "Home") return 0;
+  if (key === "End") return tabs.length - 1;
+
+  return null;
 }
 
 function renderAsChild(children: ReactNode, props: ContentElementProps) {

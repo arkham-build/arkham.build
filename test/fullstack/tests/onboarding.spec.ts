@@ -34,6 +34,7 @@ type AccountDeckRow = {
 type PersistedAppState = {
   state?: {
     data?: {
+      deckFolders?: Record<string, string>;
       decks?: Record<
         string,
         {
@@ -165,6 +166,7 @@ test.describe("signup onboarding", () => {
     });
 
     await toggleArchiveStatus(page);
+    await waitForPersistedDeckFolder(page, String(deck.id), archiveFolderId);
     await signupAndOpenCompleteProfile(page, email);
     await completeProfile(page, username);
 
@@ -185,6 +187,7 @@ test.describe("signup onboarding", () => {
     });
 
     await toggleArchiveStatus(page);
+    await waitForPersistedDeckFolder(page, String(deck.id), archiveFolderId);
     await createConflictingAccountDeck(String(deck.id));
     await signupAndOpenCompleteProfile(page, email);
 
@@ -381,6 +384,19 @@ async function readPersistedDeckChain(page: Page, deckName: string) {
   }
 
   return chain.length === decks.length ? chain : null;
+}
+
+async function waitForPersistedDeckFolder(
+  page: Page,
+  deckId: string,
+  folderId: string,
+) {
+  await expect
+    .poll(async () => {
+      const state = await readPersistedAppState(page);
+      return state.state?.data?.deckFolders?.[deckId];
+    })
+    .toBe(folderId);
 }
 
 async function waitForPersistedCardTag(page: Page, tagName: string) {

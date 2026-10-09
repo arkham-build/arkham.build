@@ -1,10 +1,11 @@
-import type {
-  Card,
-  CustomizationOption,
-  Deck,
-  DeckProblem,
-  Id,
-  OptionSelect,
+import {
+  type Card,
+  type CustomizationOption,
+  type Deck,
+  type DeckProblem,
+  DeckSchema,
+  type Id,
+  type OptionSelect,
 } from "@arkham-build/shared";
 import {
   type DeckValidationResult,
@@ -34,6 +35,17 @@ import { getGroupingKeyLabel } from "./grouping";
 import { resolveDeck } from "./resolve-deck";
 import { makeSortFunction } from "./sorting";
 import type { Customizations, ResolvedDeck } from "./types";
+
+export function parseDeckJson(text: string): Deck {
+  const parsed: unknown = JSON.parse(text.replace(/^\uFEFF/, ""));
+  const result = DeckSchema.safeParse(parsed);
+
+  if (!result.success) {
+    throw new Error("JSON does not contain a valid deck.");
+  }
+
+  return result.data;
+}
 
 export function formatDeckImport(
   state: StoreState,

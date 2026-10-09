@@ -6,10 +6,8 @@
   top: 0;
   z-index: 1;
   cursor: pointer;
-  opacity: 0;
-  transition: all 0.2s;
+  opacity: 1;
   width: var(--size);
-  transition-behavior: allow-discrete;
 
   &.right {
     left: calc(1px + var(--size) * -1);
@@ -23,18 +21,21 @@
     max-width: fit-content;
   }
 
-  &:not(:hover) > * {
-    display: none;
-  }
-
-  &:hover {
-    opacity: 1;
-  }
-}
-
-@starting-style {
-  .collapse-container {
+  @media (hover: hover) and (pointer: fine) {
     opacity: 0;
+    transition: opacity 125ms var(--motion-ease-out);
+
+    &:not(:hover) > * {
+      display: none;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 
@@ -55,7 +56,6 @@
   );
   height: 100%;
   width: 1px;
-  transition: 0.3s;
   position: absolute;
   margin: auto;
   z-index: -1;

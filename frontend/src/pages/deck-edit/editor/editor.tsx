@@ -70,7 +70,7 @@ export function Editor(props: Props) {
         }}
         value={currentTab}
       >
-        <TabsList className={css["editor-tabs-list"]}>
+        <TabsList>
           {tabs.map((tab) => (
             <TabsTrigger
               key={tab.value}

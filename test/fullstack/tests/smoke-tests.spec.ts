@@ -98,7 +98,7 @@ test.describe("smoke tests", () => {
 
       await page.getByTestId("masthead-settings").click();
       await page.getByTestId("tab-collection").click();
-      await page.getByRole("navigation").getByRole("button").click();
+      await page.getByTestId("masthead-account-menu").click();
       await page.getByTestId("masthead-about").click();
       await page.getByRole("button", { name: "Back" }).click();
       await page.getByTestId("settings-back").click();

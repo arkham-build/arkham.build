@@ -25,6 +25,7 @@ import {
   filterCardPool,
   filterInvestigatorAccess,
   filterInvestigatorWeaknessAccess,
+  isRewardCard,
   makeOptionFilter,
 } from "./filtering";
 import type { LookupTables } from "./lookup-tables.types";
@@ -199,6 +200,7 @@ export function validateDeck(
 
   const errors: DeckValidationError[] = [
     ...validateDeckSize(deck),
+    ...validateRewardCardLimit(deck),
     ...validateSlots(deck, metadata, lookupTables, buildQlInterpreter),
   ];
 
@@ -313,6 +315,29 @@ function validateDeckSize(deck: ResolvedDeck): DeckValidationError[] {
           },
         ]
       : [{ type: "TOO_FEW_CARDS", details }]
+    : [];
+}
+
+function validateRewardCardLimit(deck: ResolvedDeck): DeckValidationError[] {
+  const limit = 1;
+  const count = Object.entries(deck.slots).reduce((total, [code, quantity]) => {
+    if (quantity <= 0) return total;
+
+    const card = deck.cards.slots[code]?.card;
+    return card?.permanent && isRewardCard(card) ? total + quantity : total;
+  }, 0);
+
+  return count > limit
+    ? [
+        {
+          type: "INVALID_DECK_OPTION",
+          details: {
+            count: `(${count} / ${limit})`,
+            error:
+              "A deck cannot include more than one reward card with the permanent keyword.",
+          },
+        },
+      ]
     : [];
 }
 
