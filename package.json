@@ -44,6 +44,6 @@
     "pdfjs-dist": "6.3.289",
     "typescript": "7.0.2",
     "vitest": "5.0.0",
-    "wrangler": "4.144.0"
+    "wrangler": "4.149.0"
   }
 }
