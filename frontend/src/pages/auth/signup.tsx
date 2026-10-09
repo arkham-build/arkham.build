@@ -1,7 +1,7 @@
 import { PATTERN_VALID_PASSWORD } from "@arkham-build/shared";
 import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { Link, useSearch } from "wouter";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Notice } from "@/components/ui/notice";
@@ -13,17 +13,12 @@ import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
 import { createPasswordMatchPattern, errorMapper } from "./helpers";
 import { OAuthSeparator } from "./oauth-separator";
-import { createAuthRedirectPath, getLocalReturnPath } from "./return-to";
 import css from "./signup.module.css";
 import { Turnstile } from "./turnstile";
 
 function Signup() {
   const { t } = useTranslation();
-  const search = useSearch();
   const signupMutation = useSignupMutation();
-  const returnTo = getLocalReturnPath(
-    new URLSearchParams(search).get("redirect"),
-  );
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,9 +57,7 @@ function Signup() {
       footer={
         <>
           {t("auth.signup.has_account")}{" "}
-          <Link href={createAuthRedirectPath("/auth/login", returnTo)}>
-            {t("auth.login.action")}
-          </Link>
+          <Link href="/auth/login">{t("auth.login.action")}</Link>
         </>
       }
     >
@@ -151,19 +144,17 @@ function Signup() {
         {ARKHAMDB_WARNING_VISIBLE && (
           <Notice variant="warning">{t("auth.arkhamdb_signup_banner")}</Notice>
         )}
-        <Button as="a" href={getArkhamDbSignupHref(returnTo)} full>
+        <Button
+          as="a"
+          href={`${import.meta.env.VITE_API_URL}/auth/arkhamdb/signup`}
+          full
+        >
           <i className="icon-elder_sign" />
           {t("auth.signup.with_arkhamdb")}
         </Button>
       </AuthForm>
     </AuthLayout>
   );
-}
-
-function getArkhamDbSignupHref(returnTo: string) {
-  const url = new URL("/auth/arkhamdb/signup", import.meta.env.VITE_API_URL);
-  url.searchParams.set("returnTo", returnTo);
-  return url.toString();
 }
 
 export default Signup;

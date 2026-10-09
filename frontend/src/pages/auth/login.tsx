@@ -13,7 +13,7 @@ import { AuthLayout } from "./auth-layout";
 import { ErrorBox } from "./error-box";
 import { errorMapper } from "./helpers";
 import css from "./login.module.css";
-import { createAuthRedirectPath, getLocalReturnPath } from "./return-to";
+import { getLocalReturnPath } from "./return-to";
 import { OAuthSeparator } from "./oauth-separator";
 
 function Login() {
@@ -42,9 +42,7 @@ function Login() {
       footer={
         <>
           {t("auth.login.no_account")}{" "}
-          <Link href={createAuthRedirectPath("/auth/signup", returnTo)}>
-            {t("auth.signup.action")}
-          </Link>
+          <Link href="/auth/signup">{t("auth.signup.action")}</Link>
         </>
       }
     >

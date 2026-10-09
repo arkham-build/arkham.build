@@ -98,11 +98,6 @@ arkhamdbOAuthRoutes.get("/signup", (c) =>
   beginOAuthAuthorization(c, arkhamdbOAuthProvider, {
     intent: "signup",
     returnTo: "/auth/signup",
-    successReturnTo: getFrontendReturnTo(
-      c.req.query("returnTo"),
-      c.get("config").FRONTEND_URL,
-      "/",
-    ),
   }),
 );
 
@@ -192,10 +187,9 @@ async function handleArkhamDbOAuthCallback(c: Context<HonoEnv>) {
     });
 
     setSessionCookie(c, session.token);
-    const successReturnTo = validatedOAuthContext.successReturnTo ?? "/";
     const path = existing
-      ? successReturnTo
-      : getProfileCompletionPath(successReturnTo);
+      ? (validatedOAuthContext.successReturnTo ?? "/")
+      : "/auth/signup/complete";
     return c.redirect(`${config.FRONTEND_URL}${path}`);
   } catch (error) {
     return redirectToOAuthError(c, returnTo, error);
@@ -526,10 +520,4 @@ function getFrontendReturnTo(
 
 function invalidReturnTo() {
   return new HTTPException(400, { message: "Invalid returnTo URL" });
-}
-
-function getProfileCompletionPath(successReturnTo: string) {
-  if (successReturnTo === "/") return "/auth/signup/complete";
-  const query = new URLSearchParams({ redirect: successReturnTo });
-  return `/auth/signup/complete?${query.toString()}`;
 }
