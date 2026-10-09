@@ -46,18 +46,40 @@ export async function exchangeOAuthAuthorizationCode(
   return await db.transaction().execute(async (tx) => {
     await lockActiveOAuthClient(tx, input.clientId, verifiedSecretHash);
 
+    const codeHash = hashOAuthCredential(input.code);
+    const authorizationCodeReference = await tx
+      .selectFrom("oauth_authorization_code")
+      .select("oauth_grant_id")
+      .where("code_hash", "=", codeHash)
+      .executeTakeFirst();
+
+    if (!authorizationCodeReference) {
+      throw invalidAuthorizationCode();
+    }
+
+    const grant = await tx
+      .selectFrom("oauth_grant")
+      .select(["id", "oauth_client_id"])
+      .where("id", "=", authorizationCodeReference.oauth_grant_id)
+      .forUpdate()
+      .executeTakeFirst();
+
+    if (!grant || grant.oauth_client_id !== input.clientId) {
+      throw invalidAuthorizationCode();
+    }
+
     const authorizationCode = await tx
       .selectFrom("oauth_authorization_code")
       .select([
         "expires_at",
         "id",
-        "oauth_grant_id",
         "redirect_uri",
         "revoked_at",
         "scopes",
         "used_at",
       ])
-      .where("code_hash", "=", hashOAuthCredential(input.code))
+      .where("code_hash", "=", codeHash)
+      .where("oauth_grant_id", "=", grant.id)
       .forUpdate()
       .executeTakeFirst();
 
@@ -67,21 +89,7 @@ export async function exchangeOAuthAuthorizationCode(
       !authorizationCode ||
       authorizationCode.used_at != null ||
       authorizationCode.revoked_at != null ||
-      authorizationCode.expires_at <= now
-    ) {
-      throw invalidAuthorizationCode();
-    }
-
-    const grant = await tx
-      .selectFrom("oauth_grant")
-      .select(["id", "oauth_client_id"])
-      .where("id", "=", authorizationCode.oauth_grant_id)
-      .forUpdate()
-      .executeTakeFirst();
-
-    if (
-      !grant ||
-      grant.oauth_client_id !== input.clientId ||
+      authorizationCode.expires_at <= now ||
       authorizationCode.redirect_uri !== input.redirectUri
     ) {
       throw invalidAuthorizationCode();
@@ -144,17 +152,33 @@ export async function exchangeOAuthRefreshToken(
   return await db.transaction().execute(async (tx) => {
     await lockActiveOAuthClient(tx, input.clientId, verifiedSecretHash);
 
+    const refreshTokenHash = hashOAuthCredential(input.refreshToken);
+    const refreshTokenReference = await tx
+      .selectFrom("oauth_refresh_token")
+      .select("oauth_grant_id")
+      .where("token_hash", "=", refreshTokenHash)
+      .executeTakeFirst();
+
+    if (!refreshTokenReference) {
+      throw invalidRefreshToken();
+    }
+
+    const grant = await tx
+      .selectFrom("oauth_grant")
+      .select(["id", "oauth_client_id"])
+      .where("id", "=", refreshTokenReference.oauth_grant_id)
+      .forUpdate()
+      .executeTakeFirst();
+
+    if (!grant || grant.oauth_client_id !== input.clientId) {
+      throw invalidRefreshToken();
+    }
+
     const refreshToken = await tx
       .selectFrom("oauth_refresh_token")
-      .select([
-        "expires_at",
-        "id",
-        "oauth_grant_id",
-        "revoked_at",
-        "rotated_at",
-        "scopes",
-      ])
-      .where("token_hash", "=", hashOAuthCredential(input.refreshToken))
+      .select(["expires_at", "id", "revoked_at", "rotated_at", "scopes"])
+      .where("token_hash", "=", refreshTokenHash)
+      .where("oauth_grant_id", "=", grant.id)
       .forUpdate()
       .executeTakeFirst();
     const now = new Date();
@@ -165,17 +189,6 @@ export async function exchangeOAuthRefreshToken(
       refreshToken.rotated_at != null ||
       refreshToken.expires_at <= now
     ) {
-      throw invalidRefreshToken();
-    }
-
-    const grant = await tx
-      .selectFrom("oauth_grant")
-      .select(["id", "oauth_client_id"])
-      .where("id", "=", refreshToken.oauth_grant_id)
-      .forUpdate()
-      .executeTakeFirst();
-
-    if (!grant || grant.oauth_client_id !== input.clientId) {
       throw invalidRefreshToken();
     }
 

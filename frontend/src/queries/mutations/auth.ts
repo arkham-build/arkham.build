@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { authKeys } from "@/queries/keys";
+import { authKeys, oauthGrantKeys } from "@/queries/keys";
 import { useStore } from "@/store";
 import { toRemoteSettings } from "@/store/lib/settings-sync";
 import { isSyncedStorageProvider } from "@/store/lib/sync";
@@ -54,6 +54,9 @@ export function useLogoutMutation() {
         queryKey: authKeys.session(),
       });
     },
+    onSettled: () => {
+      queryClient.removeQueries({ queryKey: oauthGrantKeys.all });
+    },
   });
 }
 
@@ -83,6 +86,9 @@ export function useDeleteAccountMutation() {
       void queryClient.invalidateQueries({
         queryKey: authKeys.session(),
       });
+    },
+    onSettled: () => {
+      queryClient.removeQueries({ queryKey: oauthGrantKeys.all });
     },
   });
 }

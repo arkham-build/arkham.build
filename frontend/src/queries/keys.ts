@@ -5,7 +5,8 @@ export const authKeys = {
 
 export const oauthGrantKeys = {
   all: ["oauth-grants"] as const,
-  list: () => [...oauthGrantKeys.all, "list"] as const,
+  list: (accountId: string | undefined) =>
+    [...oauthGrantKeys.all, "list", accountId] as const,
 };
 
 export const cacheKeys = {
