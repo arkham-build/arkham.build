@@ -67,6 +67,10 @@ class TestJobDispatcher implements JobDispatcher {
     this.mailer = mailer;
   }
 
+  enqueueCleanupOAuthCredentials() {
+    return Promise.resolve(true);
+  }
+
   enqueueEmail(data: DeliverEmailJobData, _options?: EnqueueOptions) {
     return this.mailer.send(data.to, data.subject, data.text);
   }

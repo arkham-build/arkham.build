@@ -4,7 +4,7 @@ import type { DB } from "../../../db/schema.types.ts";
 
 export async function cleanupExpiredOAuthCredentials(db: Database, now: Date) {
   const cutoff = new Date(now.getTime() - OAUTH_CREDENTIAL_AUDIT_RETENTION_MS);
-  const deleted = await db.transaction().execute(async (tx) => {
+  const result = await db.transaction().execute(async (tx) => {
     const authorizationRequests = await deleteExpiredAuthorizationRequests(
       tx,
       cutoff,
@@ -15,16 +15,20 @@ export async function cleanupExpiredOAuthCredentials(db: Database, now: Date) {
     );
     const accessTokens = await deleteExpiredAccessTokens(tx, cutoff);
     const refreshTokens = await deleteExpiredRefreshTokens(tx, cutoff);
-
-    return {
+    const deleted = {
       accessTokens,
       authorizationCodes,
       authorizationRequests,
       refreshTokens,
     };
+    const batchLimitReached = Object.values(deleted).some(
+      (count) => count === OAUTH_CREDENTIAL_CLEANUP_BATCH_SIZE,
+    );
+
+    return { batchLimitReached, deleted };
   });
 
-  return { cutoff, deleted };
+  return { cutoff, ...result };
 }
 
 const OAUTH_CREDENTIAL_AUDIT_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;

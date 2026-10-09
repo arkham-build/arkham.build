@@ -5,6 +5,7 @@ import {
   EMAIL_DELIVER_QUEUE,
   type JobName,
   type JobPayloadMap,
+  TASK_CLEANUP_OAUTH_CREDENTIALS_QUEUE,
   TASK_INGEST_ARKHAMDB_DECKLISTS_QUEUE,
   TASK_INGEST_JSON_DATA_QUEUE,
   TASK_PURGE_CLOUDFLARE_CACHE_QUEUE,
@@ -15,6 +16,7 @@ export type EnqueueOptions = {
 };
 
 export interface JobDispatcher {
+  enqueueCleanupOAuthCredentials(): Promise<boolean>;
   enqueueEmail(
     data: DeliverEmailJobData,
     options?: EnqueueOptions,
@@ -29,6 +31,15 @@ export class PgBossJobDispatcher implements JobDispatcher {
 
   constructor(boss: PgBoss) {
     this.#boss = boss;
+  }
+
+  async enqueueCleanupOAuthCredentials() {
+    const jobId = await this.#boss.send(
+      TASK_CLEANUP_OAUTH_CREDENTIALS_QUEUE,
+      {},
+    );
+
+    return jobId != null;
   }
 
   enqueueEmail(data: DeliverEmailJobData, options?: EnqueueOptions) {

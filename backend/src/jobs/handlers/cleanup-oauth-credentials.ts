@@ -2,19 +2,28 @@ import { connectionString, getDatabase } from "../../db/db.ts";
 import { cleanupExpiredOAuthCredentials } from "../../features/oauth/lib/credential-cleanup.ts";
 import { configFromEnv } from "../../lib/config.ts";
 import { log } from "../../lib/logger.ts";
+import type { JobDispatcher } from "../dispatcher.ts";
 
-export async function runCleanupOAuthCredentials(jobId: string) {
+export async function runCleanupOAuthCredentials(
+  jobId: string,
+  dispatcher: JobDispatcher,
+) {
   const startedAt = Date.now();
   const config = configFromEnv();
   const db = getDatabase(connectionString(config));
 
   try {
     const result = await cleanupExpiredOAuthCredentials(db, new Date());
+    const followUpEnqueued = result.batchLimitReached
+      ? await dispatcher.enqueueCleanupOAuthCredentials()
+      : false;
 
     log("info", "Expired OAuth records cleaned up", {
       access_tokens_deleted: result.deleted.accessTokens,
       authorization_codes_deleted: result.deleted.authorizationCodes,
       authorization_requests_deleted: result.deleted.authorizationRequests,
+      cleanup_batch_limit_reached: result.batchLimitReached,
+      cleanup_follow_up_enqueued: followUpEnqueued,
       cutoff: result.cutoff.toISOString(),
       duration_ms: Date.now() - startedAt,
       job_id: jobId,

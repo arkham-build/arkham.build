@@ -103,6 +103,7 @@ describe("OAuth credential retention cleanup", () => {
     const result = await cleanupExpiredOAuthCredentials(db, NOW);
 
     expect(result).toEqual({
+      batchLimitReached: false,
       cutoff: CUTOFF,
       deleted: {
         accessTokens: 1,
@@ -185,6 +186,7 @@ describe("OAuth credential retention cleanup", () => {
       authorizationRequests: 0,
       refreshTokens: 1,
     });
+    expect(result.batchLimitReached).toBe(false);
     expect(
       await remainingIds(db, "oauth_refresh_token", [
         blockedRefreshId,
@@ -197,6 +199,23 @@ describe("OAuth credential retention cleanup", () => {
         deletedAccessId,
       ]),
     ).toEqual(new Set([retainedAccessId]));
+  });
+
+  test("flags a full batch for follow-up cleanup", async ({ dependencies }) => {
+    const { db } = dependencies;
+    const { clientId } = await seedOAuthOwner(db);
+    const expiresAt = new Date(CUTOFF.getTime() - 60_000);
+    await seedAuthorizationRequests(db, clientId, expiresAt, 1_001);
+
+    const firstResult = await cleanupExpiredOAuthCredentials(db, NOW);
+
+    expect(firstResult.deleted.authorizationRequests).toBe(1_000);
+    expect(firstResult.batchLimitReached).toBe(true);
+
+    const secondResult = await cleanupExpiredOAuthCredentials(db, NOW);
+
+    expect(secondResult.deleted.authorizationRequests).toBe(1);
+    expect(secondResult.batchLimitReached).toBe(false);
   });
 });
 
@@ -249,6 +268,27 @@ async function seedAuthorizationRequest(
     .executeTakeFirstOrThrow();
 
   return request.id;
+}
+
+async function seedAuthorizationRequests(
+  db: Database,
+  clientId: string,
+  expiresAt: Date,
+  count: number,
+) {
+  await db
+    .insertInto("oauth_authorization_request")
+    .values(
+      Array.from({ length: count }, () => ({
+        expires_at: expiresAt,
+        oauth_client_id: clientId,
+        redirect_uri: "https://example.com/oauth/callback",
+        request_token_hash: randomUUID(),
+        scopes: ["profile:read"],
+        state: randomUUID(),
+      })),
+    )
+    .execute();
 }
 
 async function seedAuthorizationCode(
