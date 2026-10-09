@@ -154,6 +154,12 @@ curl --request GET "$API_BASE/v2/user/me" \
 }
 ```
 
+All `/v2/user/*` endpoints use the default rate limit. This shared limit allows
+100 matching API requests per 60 seconds for each client IP. Public API routes,
+`POST /v2/oauth/token`, and `POST /v2/oauth/revoke` use the same limit. If a
+client exceeds the limit, the API returns `429` and blocks matching requests for
+60 seconds.
+
 If the API cannot use the token, it returns `401`. If the account is banned, or
 if the token has insufficient scope, the API returns `403`. User API errors use
 this format:

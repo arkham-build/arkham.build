@@ -8,8 +8,8 @@ resource "cloudflare_ruleset" "rate_limiting" {
   rules = [
     {
       action      = "block"
-      expression  = "(http.host eq \"api.arkham.build\" and (starts_with(http.request.uri.path, \"/v1/public\") or starts_with(http.request.uri.path, \"/v2/public\") or (http.request.method eq \"POST\" and http.request.uri.path in {\"/v2/oauth/token\" \"/v2/oauth/revoke\"})))"
-      description = "Default public and server OAuth rate limit"
+      expression  = "(http.host eq \"api.arkham.build\" and (starts_with(http.request.uri.path, \"/v1/public\") or starts_with(http.request.uri.path, \"/v2/public\") or starts_with(http.request.uri.path, \"/v2/user/\") or (http.request.method eq \"POST\" and http.request.uri.path in {\"/v2/oauth/token\" \"/v2/oauth/revoke\"})))"
+      description = "Default public, user API, and server OAuth rate limit"
       enabled     = true
       ref         = "ddf302a7b2d94ced9c4ec807aa65da5e"
 
@@ -25,7 +25,7 @@ resource "cloudflare_ruleset" "rate_limiting" {
         characteristics     = ["ip.src", "cf.colo.id"]
         mitigation_timeout  = 60
         period              = 60
-        requests_per_period = 50
+        requests_per_period = 100
         requests_to_origin  = false
       }
     },
