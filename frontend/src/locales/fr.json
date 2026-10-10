@@ -1,7 +1,36 @@
 {
   "translation": {
     "about": {
-      "title": "À propos"
+      "description": "<p>Les informations présentées dans cette application sur <ffg>Horreur à Arkham : le jeu de cartes™</ffg>, qu’elles soient textuelles ou graphiques, sont © Fantasy Flight Games {{date}}. Cette application est un projet de fans ; elle n’est ni produite, ni approuvée, ni soutenue par Fantasy Flight Games, et ne lui est pas affiliée.</p><p>Cette application a été créée par <felix_url>Felix</felix_url> et des <contrib_url>contributeurs</contrib_url> pour soutenir la communauté d’Horreur à Arkham : le jeu de cartes. Le code source du projet est disponible sur <github_url>Github</github_url>. Les commentaires et les signalements de bugs sont les bienvenus via les tickets Github ou le canal dédié du serveur Discord Mythos Busters.</p><p>Toutes les œuvres et illustrations sont la propriété intellectuelle de leurs créateurs respectifs. Toutes les images et tous les éléments graphiques d’Horreur à Arkham : le jeu de cartes™ sont protégés par les droits d’auteur de Fantasy Flight Games.</p>",
+      "title": "À propos",
+      "hall_of_fame": {
+        "arkham_db": "Accès OAuth à ArkhamDB.",
+        "card_design": "Création de cartes personnalisées.",
+        "code": "Contributions importantes au code source.",
+        "customization_api": "Accès à l’API pour générer les fiches de personnalisation.",
+        "metadata": "Prise en charge des métadonnées des cartes.",
+        "qa": "Tests d’assurance qualité.",
+        "testing": "Retours patients et tests durant le développement de la version initiale, concepts de conception.",
+        "title": "Tableau d’honneur",
+        "translation": {
+          "es": "Espagnol",
+          "fr": "Français",
+          "ko": "Coréen",
+          "pl": "Polonais",
+          "ru": "Russe",
+          "title": "Cette application est disponible dans plusieurs langues grâce aux contributeurs suivants",
+          "zh": "Chinois simplifié"
+        },
+        "zzorba": "Accès à l’API et aux icônes d’ArkhamCards, aide pour répondre aux questions et inspiration pour l’éditeur de decks. Sans vous, ce projet n’aurait pas été possible."
+      },
+      "image_credits": {
+        "404": "Illustration de la page 404 (retouche)",
+        "arkham_cards_icons": "Icônes réutilisées d’ArkhamCards",
+        "card_icons": "Icônes des cartes",
+        "logo": "Conception du logo",
+        "other": "Autres icônes",
+        "title": "Crédits des images et icônes"
+      }
     },
     "app": {
       "actions": {
@@ -18,12 +47,20 @@
       "eligible": "Éligible pour {{name}}"
     },
     "browse": {
+      "sets": "Boîtes et extensions",
       "title": "Parcourir les cartes"
     },
     "card_modal": {
       "actions": {
+        "complete_task": "Terminer la tâche",
         "open_card_page": "Page de la carte",
         "reviews": "Avis"
+      },
+      "custom_behavior": {
+        "investigator_traits": {
+          "help": "{{card}} peut ajouter un nouveau trait à votre investigateur.",
+          "title": "Choix du trait de l’investigateur"
+        }
       }
     },
     "card_view": {
@@ -31,11 +68,15 @@
         "faq": "Voir FAQ",
         "open_on_arkhamdb": "Ouvrir sur ArkhamDB",
         "reviews": "Voir les avis",
+        "show_original_image": "Afficher l’image originale de la carte",
+        "show_taboo_image": "Afficher l’image de la carte avec tabou",
+        "starter_deck": "Deck de départ officiel",
         "usable_by": "Cartes utilisables par : {{prefix}}{{name}}",
         "usable_by_interpolated": "Cartes utilisables par : <tooltip>{{name}}</tooltip>",
         "view_backside": "Voir le verso",
         "who_can_take": "Qui peut prendre cette carte ?"
       },
+      "errata_notice": "Errata ({{date}})",
       "faq": {
         "empty": "Aucune entrée FAQ trouvée.",
         "error": "Echec de chargement des entrées FAQ.",
@@ -46,7 +87,11 @@
       "section_actions": "Actions",
       "section_deckbuilding": "Construction de deck",
       "section_faq": "FAQ",
-      "thumbnail": "Miniature de {{code}}"
+      "section_printings": "Éditions",
+      "thumbnail": "Miniature de {{code}}",
+      "ratings": {
+        "title": "Évaluations des cartes"
+      }
     },
     "choose_investigator": {
       "create_tooltip": "Créez un deck pour {{name}}",
@@ -60,6 +105,15 @@
       "tooltip_count_player": "Nombre total de cartes Joueur dans {{type}}"
     },
     "common": {
+      "card_back": "{{name}} - Verso",
+      "card_many": "cartes",
+      "clue_many": "Indices",
+      "create_named": "Créer « {{name}} »",
+      "cycle_many": "cycles",
+      "icon_many": "icônes de compétence",
+      "myriad": "Myriade",
+      "no_results": "Aucun résultat",
+      "non_collection_cards": "{{count}} cartes hors collection",
       "or": "ou",
       "actions": {
         "draw": "Piocher",
@@ -92,17 +146,21 @@
         "Blessed": "Béni",
         "Blessed and Cursed": "Béni et Maudit",
         "Class Choice": "Choix de classe",
+        "Collector": "Collectionneur",
         "Cursed": "Maudit",
         "Deck Size": "Taille du deck",
         "Deck must have at least 10 skill cards.": "Le deck doit comporter au moins 10 cartes Compétence.",
+        "Deck must have at least 11 Insights.": "Le deck doit contenir au moins 11 cartes Perspicacité.",
         "Fortune": "Chance",
         "Gambit": "Stratagème",
         "Improvised": "Improvisé",
         "No permanents except story and signature permanents": "Aucun permanent, sauf les permanents Histoire et Signature",
         "Secondary Class": "Classe secondaire",
+        "Too many off-class cards for Collector.": "Trop de cartes d’autres classes pour Collectionneur.",
         "Too many off-class cards for Versatile.": "Trop de cartes hors-classe pour Versatile.",
         "Too many off-class cards.": "Trop de cartes hors-classe.",
         "Trait Choice": "Choix de trait",
+        "Versatile": "Versatile",
         "You cannot have assets that take up an ally slot.": "Vous ne pouvez pas inclure de soutiens occupant un emplacement Allié.",
         "You cannot have more than 15 level 0-1 Guardian and/or Survivor cards": "Vous ne pouvez pas inclure plus de 15 cartes Gardien et/ou Survivant de niveau 0-1.",
         "You cannot have more than 15 level 0-1 Seeker and/or Mystic cards": "Vous ne pouvez pas inclure plus de 15 cartes Chercheur et/ou Mystique de niveau 0-1.",
@@ -122,6 +180,7 @@
         "You cannot have more than 5 level 0 Seeker cards": "Vous ne pouvez pas inclure plus de 5 cartes Chercheur de niveau 0.",
         "You cannot have more than 5 level 0 Survivor cards": "Vous ne pouvez pas inclure plus de 5 cartes Survivant de niveau 0.",
         "You cannot have more than one Covenant in your deck.": "Vous ne pouvez pas inclure plus d’un Traité dans votre deck.",
+        "You must have at least 6 cards from each faction.": "Vous devez avoir au moins 6 cartes de chaque classe.",
         "You must have at least 7 cards from 3 different factions": "Vous devez inclure au moins 7 cartes provenant de 3 factions différentes.",
         "You must have at least 7 cards from each class": "Vous devez inclure au moins 7 cartes de chaque classe."
       },
@@ -166,6 +225,7 @@
       "none": "Aucun",
       "nonexceptional": "Non-exceptionnel",
       "ok": "OK",
+      "pack_many": "paquets",
       "pack_one": "paquet",
       "pack_other": "paquets",
       "packs_new_format": {
@@ -176,6 +236,7 @@
       "permanent": "Permanent",
       "player_cards": "Cartes Joueur",
       "player_cards_short": "Joueur",
+      "proceed": "Continuer",
       "relations": {
         "advanced": "Signatures avancées",
         "base": "Investigateur de base",
@@ -188,13 +249,16 @@
         "parallel": "Investigateur parallèle",
         "parallelCards": "Cartes parallèles",
         "replacement": "Remplacements",
-        "requiredCards": "Signatures",
+        "requiredCards": "Cartes signature",
         "restrictedTo": "Restreint à",
+        "sideDeckRequiredCards": "Cartes signature du deck supplémentaire",
         "specialist": "Spécialiste",
         "specialist_investigators": "Investigateurs spécialistes"
       },
       "reset": "Réinitialiser",
       "seal": "Sceller",
+      "select": "Sélectionner",
+      "set_as_default": "Définir par défaut",
       "shroud": "Valeur occulte",
       "skill": {
         "agility": "Agilité",
@@ -207,15 +271,19 @@
       "slot": {
         "accessory": "Accessoire",
         "ally": "Allié",
-        "arcane": "Arcane",
-        "arcane x2": "Arcane x2",
+        "arcane": "Ésotérique",
+        "arcane x2": "Ésotérique x2",
         "body": "Corps",
         "hand": "Main",
         "hand x2": "Main x2",
+        "head": "Tête",
         "none": "Pas d’emplacement",
         "tarot": "Tarot"
       },
+      "sort_asc": "Trier par ordre croissant",
+      "sort_desc": "Trier par ordre décroissant",
       "specialist": "Spécialiste",
+      "stage": "Étape",
       "subtype": {
         "basicweakness": "Faiblesse de base",
         "none": "Pas de sous-type",
@@ -250,8 +318,10 @@
       "taboo_chained": "Coûte {{xp}} points d’expérience supplémentaires.",
       "taboo_mutated": "Modifié",
       "taboo_none": "aucun",
+      "taboo_original_text": "Texte original de la carte",
       "taboo_unchained": "Coûte {{xp}} points d’expérience en moins.",
       "total": "total",
+      "trait_many": "Traits",
       "trait_one": "Trait",
       "trait_other": "Traits",
       "traits": {
@@ -584,12 +654,13 @@
       },
       "type": {
         "act": "Acte",
-        "agenda": "Agenda",
+        "agenda": "Intrigue",
         "asset": "Soutien",
         "enemy": "Ennemi",
         "enemy_location": "Ennemi-Lieu",
         "event": "Événement",
         "investigator": "Investigateur",
+        "investigator_many": "Investigateurs",
         "investigator_one": "Investigateur",
         "investigator_other": "Investigateurs",
         "key": "Clé",
@@ -601,6 +672,7 @@
       },
       "undo": "Annuler",
       "unique": "Unique",
+      "update_default_settings": "Mettre à jour les paramètres par défaut",
       "uses": {
         "aether": "Éther",
         "ammo": "Munitions",
@@ -625,6 +697,7 @@
         "whistles": "Sifflets",
         "wishes": "Souhaits"
       },
+      "vengeance": "Vengeance",
       "victory": "Victoire",
       "xp": "XP"
     },
@@ -635,6 +708,7 @@
     },
     "deck": {
       "actions": {
+        "archive": "Archiver le deck",
         "copy_id": "Copier l’ID du deck",
         "create": "Créer un deck",
         "delete": "Supprimer le deck",
@@ -645,6 +719,7 @@
         "edit_short": "Modifier",
         "export_json": "Exporter le JSON",
         "export_text": "Exporter le texte",
+        "unarchive": "Désarchiver le deck",
         "upgrade": "Améliorer le deck",
         "upgrade_short": "Améliorer"
       },
@@ -657,22 +732,27 @@
         "Stick to the Plan": "S'en Tenir au Plan",
         "Market deck": "Deck Marché"
       },
+      "cards": "Cartes du deck",
       "customization_sheet": "Feuille de personnalisation pour {{name}}",
       "id": "ID du deck",
       "latest_upgrade": {
         "add_to_deck": "Ajouter au deck actuel",
+        "decrement_xp": "Diminuer les XP disponibles pour cette amélioration",
+        "increment_xp": "Augmenter les XP disponibles pour cette amélioration",
         "no_changes": "Aucun changement.",
         "summary": "{{xpSpent}} de {{xp}} XP dépensés",
         "title": "Dernière amélioration",
         "xp_spent": "XP dépensés"
       },
       "limited_decks": {
+        "Collector": "Collectionneur",
         "Secondary Class": "Classe secondaire",
         "Versatile": "Versatile"
       },
       "limited_slots": "Emplacements limités",
       "stats": {
         "deck_size": "Taille du deck",
+        "ignored_many": "{{count}} exemplaires ne comptent pas dans la limite de deck.",
         "ignored_one": "{{count}} exemplaire ne compte pas dans la limite de deck.",
         "ignored_other": "{{count}} exemplaires ne comptent pas dans la limite de deck.",
         "unowned": "Indisponible : {{count}} sur {{total}} cartes",
@@ -682,6 +762,7 @@
         "xp_required_help": "Montant d’XP requis pour construire ce deck depuis le début."
       },
       "tags": {
+        "account": "arkham.build",
         "limited_pool": "Pool limité",
         "private": "Privé",
         "sealed": "Scellé",
@@ -697,19 +778,36 @@
         "duplicate_error": "Échec de la duplication du deck : {{error}}",
         "export_error": "Échec de l’exportation du deck : {{error}}",
         "upload_error": "Échec du téléversement du deck vers {{provider}} : {{error}}",
-        "upload_loading": "Téléversement du deck vers {{provider}}..."
+        "upload_loading": "Téléversement du deck vers {{provider}}...",
+        "upload_requires_duplicate": "Vous devez d’abord dupliquer ce deck avant de le transférer vers ArkhamDB."
       },
       "tools": {
+        "average_cost": "Coût moyen : {{cost}}",
         "cards": "Cartes",
+        "count": "Nombre",
         "factions": "Factions",
+        "factions_tooltip": "{{count}} {{faction}} {{cards}}",
         "loading": "Chargement des outils du deck...",
+        "median_cost": "Coût médian : {{cost}}",
         "resource_cost": "Coût en ressources",
         "resource_cost_tooltip": "{{count}} {{cards}} avec un coût de {{cost}}",
         "resource_costs": "Coûts en ressources",
         "skill_icons": "Icônes de compétence",
-        "title": "Outils de deck"
+        "skill_icons_tooltip": "{{count}} {{skill}} {{icons}}",
+        "title": "Outils de deck",
+        "random_basic_weakness": {
+          "add": "Ajouter une faiblesse de base aléatoire",
+          "draft": "Drafter une faiblesse de base aléatoire",
+          "equal_probability": "Utiliser une probabilité identique pour chaque faiblesse",
+          "ignore_deck_card_pool": "Ignorer la réserve de cartes du deck",
+          "replace_random_basic_weakness": "Remplacer le marqueur de faiblesse de base aléatoire",
+          "require_trait": "Exiger un trait",
+          "title": "Ajouter une faiblesse de base aléatoire",
+          "trait_placeholder": "Choisir un trait"
+        }
       },
       "validation": {
+        "card_not_in_limited_pool": "Les cartes suivantes ne font pas partie de la réserve de cartes de ce deck :",
         "forbidden_cards": "Le deck contient des cartes interdites (non autorisées par l’investigateur) :",
         "invalid": "Le deck n’est pas valide.",
         "invalid_card_count": "Le deck contient un nombre invalide d’exemplaires pour les cartes suivantes :",
@@ -720,6 +818,8 @@
       }
     },
     "deck_collection": {
+      "archive": "Archives",
+      "arkhamdb_response_time_banner": "L’API d’ArkhamDB est actuellement lente. Si vous rencontrez des difficultés, transférez vos decks directement vers arkham.build.",
       "collection_empty": "Collection vide",
       "connect_arkhamdb": "Se connecter à ArkhamDB",
       "count": "{{count}} decks",
@@ -732,7 +832,9 @@
       "import": "Importer",
       "import_arkhamdb": "Importer depuis ArkhamDB",
       "import_arkhamdb_help": "Saisissez un ID de deck ArkhamDB public, une URL de deck ou l’URL d’un guide de deck. Les decks seront <strong>copiés</strong>, et l’historique ainsi que l’état d’amélioration ne seront pas importés. Si vous souhaitiez synchroniser vos decks ArkhamDB, <settings_link>connectez votre compte ArkhamDB.</settings_link>",
+      "import_error": "Impossible d’importer le deck : {{error}}",
       "import_json": "Importer depuis des fichiers JSON",
+      "import_loading": "Importation du deck...",
       "more_filters": "Plus de filtres",
       "search_placeholder": "Rechercher dans les decks...",
       "sorting": {
@@ -745,7 +847,7 @@
       },
       "tags_filter": {
         "placeholder": "Sélectionner des tags...",
-        "title": "Tags"
+        "title": "Étiquettes"
       },
       "title": "Decks"
     },
@@ -766,13 +868,18 @@
       "sealed_deck": {
         "error": "Échec de la récupération du deck scellé : {{error}}",
         "loading": "Récupération du deck scellé..."
-      }
+      },
+      "title": "Créer un deck {{name}}",
+      "use_starter_deck": "Utiliser le deck de départ officiel"
     },
     "deck_edit": {
       "actions": {
+        "add_to_notes": "Ajouter aux notes",
         "cycle_decks": "Basculer les listes de deck",
         "decrement_quantity": "Diminuer la quantité du deck",
         "decrement_side_quantity": "Diminuer la quantité du deck annexe",
+        "draft_random_basic_weakness": "Drafter une faiblesse de base aléatoire <em>(Faveur de la Morrígan)</em>",
+        "draft_random_basic_weakness_success": "<strong>{{name}}</strong> a été ajouté à votre deck.",
         "draw_random_basic_weakness": "Tirer une faiblesse basique aléatoire",
         "draw_random_basic_weakness_success": "<strong>{{name}}</strong> est votre faiblesse basique aléatoire.",
         "edit_annotation": "Modifier l’annotation",
@@ -788,14 +895,44 @@
       },
       "changes_restored": "Les modifications non enregistrées ont été restaurées.",
       "config": {
+        "buildql_deck_option": "Remplacer les règles de construction du deck avec BuildQL",
         "card_pool": {
+          "apply_environment": "Appliquer l’environnement {{environment}}",
           "campaign": "Campagne",
+          "campaign_playalong": "Campagne en commun",
+          "campaign_playalong_help": "La Campagne en commun est un événement permanent organisé sur le serveur Discord Mythos Busters. Elle permet de jouer ensemble aux campagnes d’Arkham, de partager des histoires et de renforcer les liens de la communauté.",
+          "chapter_1": "Chapitre 1",
+          "chapter_1_help": "Inclure tous les paquets du chapitre 1 dans la réserve de cartes.",
+          "chapter_2": "Chapitre 2",
+          "chapter_2_help": "Inclure tous les paquets du chapitre 2 dans la réserve de cartes.",
           "choose_campaign": "Choisir une campagne",
           "choose_campaign_placeholder": "Sélectionner une campagne...",
+          "choose_cycle_placeholder": "Sélectionner des cycles...",
+          "choose_progression_target_placeholder": "Sélectionner une campagne ou un scénario indépendant...",
+          "collection": "Collection",
+          "collection_help": "Définir votre <settings_link>collection</settings_link> actuelle comme réserve de cartes de ce deck. Cela permet de figer la réserve de cartes du deck ou de partager une configuration de construction avec des personnes utilisant la même collection physique.",
+          "configure_environment": "Configurer l’environnement",
           "cpa_help": "Le \"Campaign Play-Along\" est un événement continu hébergé sur le serveur Discord de Mythos Busters, conçu pour jouer aux campagnes d’Arkham et partager ses histoires au sein de la communauté.",
+          "current": "Actuel",
+          "current_faq25": "Actuel (FAQ 2.5)",
+          "current_faq25_help": "Dans l’environnement Actuel, les joueurs ne peuvent construire leurs decks qu’avec les cartes de la boîte de base, des cinq decks de départ et des trois dernières extensions Investigateurs.",
+          "current_help": "Dans l’environnement Actuel, les joueurs peuvent utiliser les produits suivants : la boîte de base de 2026, les cinq decks Investigateurs, les deux dernières extensions de construction de decks et les deux dernières extensions Investigateurs publiées après la boîte de base de 2026.",
+          "custom": "Réserve personnalisée",
           "help": "Les investigateurs, les cartes signature et les soutiens d'histoire ne sont pas affectés par cette sélection.",
+          "help_chapter_1": "Cet environnement appartient au chapitre 1.",
+          "legacy": "Historique",
+          "legacy_help": "Dans l’environnement Historique, les joueurs peuvent construire leurs decks et utiliser les investigateurs, les cartes Joueur et les faiblesses de n’importe quel produit Horreur à Arkham : le jeu de cartes™. Aucune restriction ne s’applique.",
+          "limited": "Limité",
+          "limited_faq25": "Limité (FAQ 2.5)",
+          "limited_faq25_help": "Dans l’environnement Limité, les joueurs ne peuvent construire leurs decks qu’avec les cartes de la boîte de base, des cinq decks de départ et de trois extensions Investigateurs différentes de leur choix.",
+          "limited_help": "Dans l’environnement Limité, les joueurs peuvent utiliser les produits suivants : la boîte de base de 2026, les cinq decks Investigateurs et trois extensions de cartes Joueur différentes de leur choix.",
           "placeholder": "Sélectionner des paquets...",
+          "progression": "Progression",
+          "progression_help": "Limiter la réserve de cartes aux produits disponibles lors de la sortie de la campagne ou du scénario indépendant sélectionné.",
+          "progression_target": "Campagne ou scénario indépendant",
           "section_title": "Paramètres du pool de cartes",
+          "selected_cards": "Cartes sélectionnées",
+          "substitute_chapter_2_with_chapter_1": "Remplacer la boîte de base et les decks Investigateurs du chapitre 2 par leurs équivalents du chapitre 1",
           "title": "Pool de cartes limité",
           "use_preset": "Utiliser le préréglage du Campaign Play-Along"
         },
@@ -814,12 +951,16 @@
           "parallel_front": "Recto parallèle"
         },
         "storage_provider": {
+          "account": "arkham.build",
+          "arkhamdb": "ArkhamDB",
           "local": "Privé",
+          "shared": "Ancienne API",
           "title": "Fournisseur de stockage"
         },
         "taboo": "Liste de tabous",
-        "tags": "Tags",
+        "tags": "Étiquettes",
         "tags_help": "Saisissez des tags séparés par des espaces",
+        "title_and_tags": "Modifier le titre et les étiquettes",
         "version": {
           "switch": "Basculer",
           "title": "Autres versions"
@@ -829,6 +970,7 @@
       "create_local_copy_help": "Crée une copie locale de ce deck. Toutes les modifications en attente y seront appliquées. Les améliorations ni l’historique du deck ne seront conservés.",
       "customizable": {
         "skill_placeholder": "Sélectionner une compétence...",
+        "traits_placeholder_many": "Sélectionner des traits...",
         "traits_placeholder_one": "Sélectionner un trait...",
         "traits_placeholder_other": "Sélectionner des traits..."
       },
@@ -840,8 +982,31 @@
         "banner_url_placeholder": "Entrez une URL",
         "description": "Notes",
         "description_help": "Accepte la syntaxe Markdown d'ArkhamDB.",
+        "description_placeholder": "Saisir des notes...",
         "intro": "Introduction",
-        "intro_help": "Une courte présentation du deck, affichée dans la vue du deck et dans les aperçus sur les réseaux sociaux. Accepte la syntaxe Markdown d’ArkhamDB."
+        "intro_help": "Une courte présentation du deck, affichée dans la vue du deck et dans les aperçus sur les réseaux sociaux. Accepte la syntaxe Markdown d’ArkhamDB.",
+        "toolbar": {
+          "card": "Carte",
+          "card_tooltip": "Insérer une carte",
+          "format": "Format",
+          "formats": {
+            "header": "Titre",
+            "header_with_set": "Titre (avec numéro de collection)",
+            "paragraph": "Paragraphe",
+            "paragraph_colored": "Paragraphe (coloré)"
+          },
+          "origin": "Cartes disponibles",
+          "origins": {
+            "campaign": "Cartes de campagne",
+            "deck": "Cartes du deck",
+            "player": "Toutes les cartes Joueur",
+            "usable": "Cartes Joueur utilisables"
+          },
+          "preview": "Aperçu",
+          "symbol": "Symbole",
+          "symbol_placeholder": "Sélectionner un symbole...",
+          "symbol_tooltip": "Insérer un symbole"
+        }
       },
       "quick_upgrade": {
         "available_upgrades": "Améliorations disponibles",
@@ -854,14 +1019,16 @@
         "absolute": "Absolu",
         "absolute_help": "Compte combien de decks {{name}} utilisent chaque carte",
         "analyze_side_decks": "Analyser les decks annexes",
-        "core": "Core",
+        "core": "Boîte de base",
         "core_help": "Cocher une carte comme « Core » indique au moteur de recommandations de ne considérer que les decks qui contiennent cette carte.",
         "error": "Impossible de récupérer les recommandations.",
         "loading": "Calcul des recommandations...",
         "no_results": "Aucune recommandation pour cette configuration.",
         "publication_date": "Date de publication",
         "relative": "Relatif",
-        "relative_help": "Comparer la fréquence d’utilisation de chaque carte dans les decks {{name}} par rapport à d’autres investigateurs y ayant accès"
+        "relative_help": "Comparer la fréquence d’utilisation de chaque carte dans les decks {{name}} par rapport à d’autres investigateurs y ayant accès",
+        "tooltip_absolute": "{{name}} est utilisé dans {{decksPercentage}}% des decks de {{investigator}}. ({{decksMatched}}/{{decksAnalyzed}})",
+        "tooltip_relative": "{{investigator}} utilise {{name}} plus souvent que {{percentile}}% des investigateurs."
       },
       "save": "Enregistrer le deck",
       "save_error": "Échec de l’enregistrement du deck : {{error}}",
@@ -877,10 +1044,20 @@
         "entry_title": "Version {{version}}",
         "entry_title_current": "Version courante",
         "title": "Versions"
+      },
+      "draft_weakness_modal": {
+        "cancel_button": "Annuler",
+        "choice_title": "Choisir une faiblesse à écarter",
+        "confirm_button": "Confirmer",
+        "explanation_body": "La <em>Faveur de la Morrígan</em> permet aux joueurs de mieux contrôler le choix de leur faiblesse de base plutôt que de la tirer entièrement au hasard. Trois faiblesses de base sont tirées au hasard. Le joueur en écarte une, puis l’une des deux faiblesses restantes est ajoutée au deck au hasard.",
+        "explanation_title": "Explication",
+        "title": "Draft d’une faiblesse de base",
+        "too_few_rbw": "Il n’y a pas assez de faiblesses de base aléatoires disponibles pour effectuer un draft."
       }
     },
     "deck_view": {
       "actions": {
+        "check_card": "Marquer {{card}} comme faisant partie de la collection",
         "display_as_list": "Afficher en liste",
         "display_as_scans": "Afficher les scans",
         "import": "Importer le deck dans la collection",
@@ -888,8 +1065,10 @@
         "save_upgrade_close": "Enregistrer l’amélioration et fermer",
         "save_upgrade_close_short": "Enregistrer et fermer",
         "save_upgrade_short": "Améliorer",
-        "upload": "Téléverser vers {{provider}}"
+        "upload": "Téléverser vers {{provider}}",
+        "upload_account": "Transférer"
       },
+      "checklist": "Liste de contrôle",
       "connections": {
         "description": "Ce deck est configuré pour se synchroniser avec {{provider}}.",
         "view": "Voir sur {{provider}}"
@@ -902,29 +1081,35 @@
       },
       "history": {
         "added": "Ajoutées",
+        "created": "Créé",
         "current_upgrade": "Amélioration actuelle",
         "discounts": "Réductions",
         "initial_deck": "Deck initial",
         "no_changes": "Aucun changement",
         "removed": "Retirées",
         "slot_changes": "Modifications de {{slot}}",
+        "updated": "Mis à jour",
         "upgrade": "Amélioration {{index}}",
         "upgrade_xp": "XP disponible : {{xp}}{{adjustment}} (dépensé : {{spent}})"
       },
       "import_failed": "Échec de l’importation du deck : {{error}}",
+      "latest_version": "<a>Aller à la dernière version</a>.",
       "list": "Liste",
       "loading": "Récupération du deck...",
       "newer_version": "Il existe une <a>version plus récente</a> de ce deck. Celui-ci est en lecture seule.",
-      "scans": "Scans",
+      "scans": "Images des cartes",
       "sharing": {
+        "api_link": "API JSON",
         "create": "Créer un partage",
         "create_tooltip": "Le partage crée un lien public en lecture seule vers le deck. Toute personne disposant de ce lien peut voir le deck, mais pas le modifier.<br />Vous pouvez supprimer le partage à tout moment. Supprimer un partage ne supprime pas le deck.",
         "delete": "Supprimer le partage",
         "description": "Deck stocké localement.",
         "description_present": "Ce deck possède un lien de partage public, visible via <a>ce lien</a>.",
         "title": "Partage public",
-        "update": "Mettre à jour le partage"
+        "update": "Mettre à jour le partage",
+        "view_on_arkhamdb": "Voir sur ArkhamDB"
       },
+      "show_deck_list": "Afficher la liste du deck",
       "tab_deck_list": "Deck",
       "tab_history": "Historique",
       "tab_notes": "Notes",
@@ -942,6 +1127,8 @@
     },
     "draw_simulator": {
       "draw_tooltip": "Piocher {{count}} {{cards}}.",
+      "mulligan_mode": "Mode mulligan",
+      "mulligan_mode_help": "Lorsque ce mode est activé, les faiblesses sans le trait Tarot et les cartes qui commencent la partie en jeu sont automatiquement remplacées. Le deck est mélangé une fois après la désactivation du mode mulligan.",
       "redraw": "Repiocher la selection",
       "redraw_tooltip": "Les cartes sélectionnées seront replacées à la fin du deck puis remplacées par de nouvelles cartes.",
       "reset": "Réinitialiser",
@@ -1047,6 +1234,21 @@
       "uses": {
         "placeholder": "Sélectionner des attributs de charges...",
         "title": "Utilisations"
+      },
+      "card_tags": {
+        "favorites": "Favorites",
+        "placeholder": "Sélectionner des étiquettes...",
+        "title": "Étiquettes des cartes"
+      },
+      "cycle": {
+        "placeholder": "Sélectionner des cycles...",
+        "title": "Cycle"
+      },
+      "fan_made_content": {
+        "all": "Tout afficher",
+        "fan_made": "Contenu de fans uniquement",
+        "official": "Contenu officiel uniquement",
+        "title": "Contenu de fans"
       }
     },
     "help": {
@@ -1074,10 +1276,13 @@
         "display_as_list": "Afficher la liste",
         "display_as_list_text": "Afficher la liste avec texte",
         "display_as_scans": "Afficher les scans",
+        "flip_all_scans": "Retourner toutes les images",
         "focus_search": "Activer la recherche",
         "move_down": "Déplacer vers le bas",
         "move_up": "Déplacer vers le haut",
+        "next_card": "Carte suivante",
         "open_card_modal": "Ouvrir la fenêtre de carte pour la carte en cours",
+        "previous_card": "Carte précédente",
         "reset_filters": "Réinitialiser les filtres",
         "show_limited_access": "Afficher l’accès limité",
         "show_limited_access_help": "Certains investigateurs ont un accès limité et optionnel aux cartes selon le niveau, la classe, le trait, etc. Quand cela est activé, ces cartes seront affichées.",
@@ -1104,15 +1309,22 @@
       "group_by": "Grouper par",
       "nav": {
         "card_count_hidden": "({{count}} masquées par les filtres)",
+        "card_count_many": "{{count}} cartes",
         "card_count_one": "{{count}} carte",
         "card_count_other": "{{count}} cartes",
         "display": "Affichage",
         "display_as_detailed": "Cartes détaillées",
         "display_as_list": "Liste",
         "display_as_list_text": "Liste avec texte",
-        "display_as_scans": "Scans",
+        "display_as_scans": "Images des cartes",
+        "display_as_scans_grouped": "Images des cartes (groupées)",
+        "export": "Exporter",
         "jump_to": "Aller à…",
-        "list_settings": "Paramètres de liste"
+        "list_settings": "Paramètres de liste",
+        "max_columns": "Nombre maximal d’images par colonne",
+        "sort": "Trier",
+        "sort_default": "Valeur par défaut de l’utilisateur",
+        "taboo_filter_override": "Remplacé par le filtre « Liste des Tabous »"
       },
       "reset": "Réinitialiser",
       "search": {
@@ -1120,7 +1332,12 @@
         "include_flavor": "Texte d’ambiance",
         "include_game_text": "Texte de jeu",
         "include_name": "Nom",
-        "placeholder": "Rechercher des cartes..."
+        "match_display_mode": "Correspondre au mode d’affichage",
+        "match_visible_taboo": "Correspondre aux tabous visibles",
+        "placeholder": "Rechercher des cartes...",
+        "share": "Partager la requête",
+        "share_settings": "Partager les paramètres",
+        "title": "Rechercher"
       },
       "sort_by": "Trier par"
     },
@@ -1133,11 +1350,14 @@
       "title": "La saison des prévisualisations est arrivée !"
     },
     "settings": {
+      "load_error": "Impossible de charger les paramètres du compte. Utilisation des paramètres locaux : {{error}}",
       "support": {
         "confirm": "Êtes-vous sûr de vouloir restaurer cette sauvegarde ? Toutes les données existantes seront écrasées.",
         "create": "Créer une sauvegarde",
+        "data_export_title": "Exportation des données",
         "help": "Créez une sauvegarde de vos paramètres, decks et collection de cartes au format JSON. Vous pourrez l’utiliser pour restaurer vos données sur cet appareil ou un autre.",
         "help_warning": "Lorsque vous restaurez une sauvegarde, <strong>toutes les données existantes seront écrasées.</strong>",
+        "metadata_title": "Données de l’application",
         "no_file_selected": "Aucun fichier sélectionné",
         "restore": "Restaurer la sauvegarde",
         "restore_error": "Échec de la restauration de la sauvegarde : {{error}}",
@@ -1158,6 +1378,7 @@
       "collection": {
         "card_collection": "Collection de cartes",
         "card_count": "Nombre de cartes",
+        "chapter": "Chapitre {{number}}",
         "new_format": "Nouveau format",
         "old_format": "Ancien format",
         "show_all_cards_owned": "Afficher toutes les cartes comme possédées",
@@ -1182,14 +1403,30 @@
         "username": "Nom d’utilisateur"
       },
       "display": {
+        "card_display": "Paramètres d’affichage des cartes",
         "card_level": "Affichage du niveau de carte",
         "card_level_as_dots": "Dans l’icône de la carte et en points",
         "card_level_as_text": "Dans l’icône de la carte et en texte",
         "card_level_icon_only": "Uniquement dans l’icône de la carte",
+        "card_show_collection_number": "Afficher le numéro de collection",
+        "card_show_details": "Afficher les détails des cartes",
+        "card_show_favorite_highlights": "Mettre les favorites en évidence",
+        "card_show_icon": "Afficher l’icône de la carte",
+        "card_show_tags": "Afficher les étiquettes des cartes",
+        "card_show_thumbnail": "Afficher la miniature de la carte",
+        "card_show_unique_icon": "Afficher l’icône Unique",
+        "card_size": "Taille",
+        "card_size_sm": "Compact",
+        "card_size_standard": "Standard",
+        "card_skill_icons": "Icônes de compétence",
+        "card_skill_icons_as_printed": "Telles qu’imprimées",
+        "card_skill_icons_simple": "Simple",
         "font_size": "Taille de la police",
         "font_size_preview": "Armitage pensait que cet alphabet pouvait être utilisé à des fins ésotériques par certains cultes interdits issus de temps anciens, héritant de nombreuses formes et traditions des sorciers du monde sarrazin.",
         "hide_weaknesses": "Masquer les faiblesses dans la liste des cartes Joueur",
         "hide_weaknesses_help": "Si activé, les faiblesses ne s’affichent pas par défaut dans la liste de cartes Joueur. Elles doivent être explicitement activées via le filtre <strong>Sous-type</strong>.",
+        "show_card_modal_popular_decks": "Afficher les decks populaires dans les fenêtres des cartes",
+        "show_card_modal_popular_decks_help": "Lorsque cette option est cochée, les decks populaires contenant la carte sont affichés dans sa fenêtre.",
         "show_move_to_side_deck": "Afficher le bouton « Déplacer vers la deck annexe »",
         "show_move_to_side_deck_help": "Ajoute un bouton permettant de déplacer des cartes du deck principal vers un deck annexe lors de la construction. Pratique si vous construisez en « sur-remplissant » avant de réduire (méthode dayorbyte).",
         "sort_ignore_punctuation": "Le tri ignore la ponctuation",
@@ -1202,7 +1439,9 @@
       },
       "error": "Échec de l’enregistrement des paramètres : {{error}}",
       "general": {
+        "default_environment": "Environnement par défaut",
         "default_taboo": "Liste de tabous par défaut",
+        "latest_taboo": "Dernière",
         "title": "Général",
         "weakness_limited_card_pool": "Utiliser le pool de cartes limité pour le tirage de faiblesses basiques aléatoires",
         "weakness_limited_card_pool_help": "Si activé, le tirage aléatoire de faiblesse basique tiendra compte du pool de cartes limité défini par le deck, s’il existe."
@@ -1221,6 +1460,7 @@
       "saving": "Enregistrement des paramètres…",
       "title": "Paramètres",
       "account": {
+        "danger_zone": "Zone de danger",
         "oauth": {
           "connect": "Se connecter",
           "connect_help": "Connectez votre compte {{provider}} pour synchroniser vos decks et vous connecter avec celui-ci.",
@@ -1230,20 +1470,91 @@
           "disconnect": "Déconnecter",
           "disconnect_error": "Échec de la déconnexion de {{provider}} : {{error}}",
           "disconnecting": "Déconnexion de {{provider}}…",
+          "last_error": "Dernière erreur",
           "last_synced_at": "Dernière synchro",
+          "none": "Aucune",
           "not_connected": "Non connecté",
           "providers": {
             "arkhamdb": "ArkhamDB"
           },
           "reconnect": "Rafraîchir",
+          "sync_status": "État de synchronisation",
           "title": "Connexions",
           "user_id": "ID utilisateur",
-          "disconnected": "Il y a un problème avec cette connexion, veuillez la rafraîchir."
-        }
+          "disconnected": "Il y a un problème avec cette connexion, veuillez la rafraîchir.",
+          "status": {
+            "healthy": "Fonctionnel",
+            "unhealthy": "Non fonctionnel"
+          }
+        },
+        "connected_apps": {
+          "error": "Impossible de charger les applications connectées.",
+          "granted_at": "Accès accordé",
+          "last_authorized_at": "Dernière autorisation",
+          "loading": "Chargement des applications connectées...",
+          "permissions": "Autorisations",
+          "revoke_confirm": "Révoquer l’accès de {{clientName}} à votre compte ?",
+          "revoke_error": "Impossible de révoquer l’accès de {{clientName}} : {{error}}",
+          "revoking_app": "Révocation de l’accès de {{clientName}}...",
+          "status": {
+            "active": "Connectée",
+            "disabled": "Désactivée"
+          }
+        },
+        "delete": {
+          "confirm_help": "Saisissez {{username}} pour confirmer la suppression du compte.",
+          "confirm_label": "Confirmation",
+          "deleting": "Suppression du compte...",
+          "help": "Supprime définitivement votre compte arkham.build et les données associées. Les identifiants, sessions, decks synchronisés avec le compte, paramètres et connexions OAuth sont supprimés du serveur. Les decks liés au compte sont retirés de cet appareil. Les decks présents uniquement sur l’appareil, les paramètres et les autres données du navigateur ne sont pas supprimés. Le contenu synchronisé avec ArkhamDB n’est pas supprimé d’ArkhamDB.",
+          "submit": "Supprimer le compte",
+          "title": "Supprimer le compte"
+        },
+        "email": {
+          "add": "Ajouter une adresse e-mail",
+          "add_help": "Ajoutez une adresse e-mail et un mot de passe comme autre moyen de connexion.",
+          "cancel_pending": "Annuler la vérification de l’adresse e-mail",
+          "canceling_pending": "Annulation de la vérification de l’adresse e-mail...",
+          "current_password": "Mot de passe actuel",
+          "new_email": "Nouvelle adresse e-mail",
+          "new_email_help": "Laissez vide pour conserver votre adresse e-mail actuelle.",
+          "new_password": "Nouveau mot de passe",
+          "new_password_help": "Laissez vide pour conserver votre mot de passe actuel.",
+          "pending": "Adresse e-mail en attente",
+          "pending_help": "Consultez {{email}} pour <verifyLink>la vérifier</verifyLink>.",
+          "save": "Mettre à jour les identifiants",
+          "saving": "Enregistrement des identifiants...",
+          "status": "État",
+          "status_pending": "En attente de vérification",
+          "status_verified": "Vérifiée",
+          "title": "Identifiants"
+        },
+        "privacy_rights": {
+          "body": "Vous pouvez exporter vos données depuis l’onglet Assistance et supprimer votre compte ci-dessous. Pour les demandes relatives au RGPD qui ne sont pas accessibles en libre-service, comme les demandes de limitation ou d’opposition, contactez <privacyEmail />.",
+          "title": "Confidentialité et droits sur les données"
+        },
+        "profile": {
+          "save": "Enregistrer le profil",
+          "saving": "Enregistrement du profil...",
+          "title": "Profil",
+          "username": "Nom d’utilisateur",
+          "username_help": "Lettres, chiffres, traits de soulignement et tirets uniquement"
+        },
+        "title": "Compte"
+      },
+      "conflict": {
+        "description": "Les paramètres de votre compte ont été modifiés ailleurs. Actualisez pour charger la version distante ou remplacez-la par vos modifications locales actuelles.",
+        "overwrite": "Remplacer",
+        "refresh": "Recharger la page",
+        "remote_revision": "Révision distante : {{revision}}"
+      },
+      "developer": {
+        "dev_mode_enabled": "Activer le mode développeur",
+        "title": "Développeur"
       }
     },
     "ui": {
       "cards_combobox": {
+        "placeholder_many": "Sélectionner des cartes...",
         "placeholder_one": "Sélectionner une carte...",
         "placeholder_other": "Sélectionner des cartes..."
       },
@@ -1253,7 +1564,343 @@
         "toggle": "Basculer la section"
       },
       "copy_to_clipboard": "Copier dans le presse-papiers",
-      "copy_to_clipboard_success": "Copié."
+      "copy_to_clipboard_success": "Copié.",
+      "combobox": {
+        "unknown_option": "Option inconnue"
+      },
+      "pagination": {
+        "next": "Suivant",
+        "previous": "Précédent"
+      },
+      "password_input": {
+        "hide_password": "Masquer le mot de passe",
+        "show_password": "Afficher le mot de passe"
+      }
+    },
+    "auth": {
+      "arkhamdb_login_banner": "L’API d’ArkhamDB est actuellement lente. Si vous rencontrez des difficultés, connectez-vous avec votre adresse e-mail.",
+      "arkhamdb_signup_banner": "L’API d’ArkhamDB est actuellement lente. Si vous rencontrez des difficultés, inscrivez-vous avec votre adresse e-mail.",
+      "email": "E-mail",
+      "email_or_username": "E-mail ou nom d’utilisateur",
+      "errors": {
+        "account_not_verified": "Votre compte n’a pas encore été vérifié. Veuillez <verifyLink>vérifier</verifyLink> votre adresse e-mail avant de vous connecter.",
+        "captcha_load_failed": "Impossible de charger le captcha Turnstile.",
+        "forgot_password_failed": "Impossible de lancer la réinitialisation du mot de passe : {{error}}",
+        "invalid_credentials": "Adresse e-mail ou mot de passe incorrect",
+        "login_failed": "Échec de la connexion : {{error}}",
+        "password_reset_failed": "Échec de la réinitialisation du mot de passe : {{error}}",
+        "rate_limited": "Trop de demandes. Veuillez attendre {{interval}} avant de réessayer",
+        "signup_failed": "Échec de l’inscription : {{error}}",
+        "verify_email_failed": "Échec de la vérification de l’adresse e-mail : {{error}}",
+        "verify_email_send_failed": "Impossible de renvoyer l’e-mail de vérification : {{error}}"
+      },
+      "forgot_password": {
+        "description": "Saisissez votre adresse e-mail ou votre nom d’utilisateur et nous vous enverrons les instructions pour réinitialiser votre mot de passe.",
+        "submit": "Envoyer les instructions de réinitialisation",
+        "success": "Si un compte existe, vous recevrez bientôt un lien de réinitialisation.",
+        "title": "Mot de passe oublié"
+      },
+      "login": {
+        "action": "Se connecter",
+        "forgot_password": "Mot de passe oublié ?",
+        "no_account": "Vous n’avez pas de compte ?",
+        "title": "Se connecter",
+        "with_arkhamdb": "Se connecter avec ArkhamDB"
+      },
+      "logout": "Se déconnecter",
+      "menu": {
+        "logged_in_as": "Connecté en tant que {{name}}",
+        "sync_account": "Synchroniser les données",
+        "sync_error": "Impossible de synchroniser les données : {{error}}",
+        "sync_status": {
+          "conflict": "Conflit de synchronisation du compte",
+          "error": "Erreur de synchronisation du compte",
+          "idle": "Synchronisation du compte inactive",
+          "loading": "Chargement de la synchronisation du compte",
+          "partial": "Échec partiel de la synchronisation du compte",
+          "saving": "Enregistrement de la synchronisation du compte",
+          "synced": "Synchronisation du compte terminée"
+        },
+        "syncing": "Synchronisation des données du compte..."
+      },
+      "oauth_errors": {
+        "arkhamdb_invalid_response": "Échec de la connexion à ArkhamDB. Veuillez réessayer.",
+        "arkhamdb_no_decks": "Votre compte ArkhamDB doit contenir au moins un deck pour pouvoir continuer.",
+        "identity_belongs_to_another_account": "Ce compte ArkhamDB est déjà lié à un autre compte.",
+        "invalid_state": "La connexion à ArkhamDB a expiré ou n’est plus valide. Veuillez réessayer.",
+        "oauth_failed": "Échec de la connexion à ArkhamDB. Veuillez réessayer.",
+        "oauth_missing_code": "La connexion à ArkhamDB a été annulée ou n’a pas abouti. Veuillez réessayer."
+      },
+      "password": "Mot de passe",
+      "password_validation": "8 caractères minimum",
+      "reset_password": {
+        "confirm_password": "Confirmer le mot de passe",
+        "password": "Nouveau mot de passe",
+        "success": "Mot de passe réinitialisé. Vous pouvez maintenant vous connecter.",
+        "title": "Réinitialiser le mot de passe"
+      },
+      "signup": {
+        "action": "S’inscrire",
+        "complete_profile": {
+          "description": "Choisissez un nom d’utilisateur pour votre compte. Il sera affiché publiquement sur vos decks et contributions.",
+          "title": "Compléter votre profil",
+          "upload": {
+            "decks": {
+              "help": "Transfère votre collection locale de decks vers votre compte.",
+              "label": "Transférer les decks locaux"
+            },
+            "settings": {
+              "help": "Transfère vos préférences de collection et d’affichage.",
+              "label": "Transférer les paramètres"
+            },
+            "title": "Transférer les données locales"
+          }
+        },
+        "has_account": "Vous avez déjà un compte ?",
+        "legal_acceptance": "En créant un compte, vous acceptez les <terms>Conditions d’utilisation</terms> et prenez connaissance de la <privacy>Politique de confidentialité</privacy>.",
+        "success": "Inscription réussie ! Consultez vos e-mails pour vérifier votre compte. Vous choisirez un nom d’utilisateur après votre première connexion.",
+        "title": "S’inscrire",
+        "verifying": "Vérification...",
+        "with_arkhamdb": "S’inscrire avec ArkhamDB"
+      },
+      "username": "Nom d’utilisateur",
+      "username_validation": "Lettres, chiffres, traits de soulignement et tirets uniquement",
+      "verify_email": {
+        "action": "Vérifier l’adresse e-mail",
+        "resend": "Renvoyer l’e-mail de vérification",
+        "resend_action": "Renvoyer l’e-mail de vérification",
+        "resend_success": "E-mail de vérification envoyé. Veuillez consulter votre boîte de réception.",
+        "success": "Adresse e-mail vérifiée ! Vous pouvez maintenant vous connecter.",
+        "title": "Vérifier l’adresse e-mail",
+        "token": "Jeton de vérification"
+      }
+    },
+    "card_scenarios": {
+      "standalone": "Indépendant",
+      "title": "Scénarios utilisant <em>{{name}}</em>",
+      "tooltip": "{{name}} <em>({{campaignName}})</em>"
+    },
+    "card_tags": {
+      "account_title": "Étiquettes globales",
+      "deck_placeholder": "Ajouter une étiquette de deck...",
+      "deck_title": "Étiquettes du deck",
+      "favorite": "Favorite",
+      "manage": {
+        "action": "Gérer les étiquettes",
+        "delete": "Supprimer",
+        "error": "Impossible de mettre à jour les étiquettes des cartes : {{error}}",
+        "name": "Nom de l’étiquette",
+        "save": "Mettre à jour l’étiquette",
+        "title": "Gérer les étiquettes",
+        "unknown_error": "Erreur inconnue"
+      },
+      "placeholder": "Ajouter une étiquette globale...",
+      "title": "Étiquettes"
+    },
+    "content": {
+      "empty": {
+        "campaigns": "Aucune campagne disponible.",
+        "standalone_scenarios": "Aucun scénario indépendant disponible."
+      },
+      "guide": {
+        "campaign_pdf": "Guide de campagne",
+        "return_to_pdf": "Renouveau",
+        "rules_insert_pdf": "Feuillet de règles"
+      },
+      "tabs": {
+        "campaigns": "Campagnes",
+        "standalone_scenarios": "Scénarios indépendants"
+      },
+      "title": "Contenu",
+      "unknown_release_year": "Année inconnue"
+    },
+    "deck_sync": {
+      "conflict": {
+        "action_error": "Impossible de résoudre le conflit du deck : {{error}}",
+        "collection_badge": "Un conflit du deck demande votre attention",
+        "description": "Ce deck a été modifié à distance avant la fin de votre modification. Actualisez pour appliquer le dernier état distant.",
+        "description_remote_missing": "Ce deck a été supprimé à distance avant la fin de votre modification. Supprimez le deck local pour refléter l’état distant.",
+        "discard_local": "Supprimer le deck local",
+        "edit_locked": "Résolvez le conflit du deck avant de le modifier.",
+        "refresh": "Actualiser",
+        "remote_version": "Version distante : {{version}}",
+        "title": "Conflit de synchronisation du deck"
+      }
+    },
+    "decklists": {
+      "browse": {
+        "loading": "Chargement des guides de decks...",
+        "no_results": "Aucun résultat",
+        "results_count": "{{count}} résultats",
+        "title": "Guides de decks"
+      },
+      "filters": {
+        "author": "Auteur",
+        "author_placeholder": "Saisir le nom de l’auteur (par ex. Valentin1331)...",
+        "description_length": "Longueur minimale du guide de deck",
+        "description_length_long": "Long",
+        "description_length_medium": "Moyen",
+        "description_length_short": "Court",
+        "excluded_cards": "Cartes exclues",
+        "investigator_factions": "Classes des investigateurs",
+        "name": "Nom du deck",
+        "name_placeholder": "Saisir un nom (par ex. Guide de deck)...",
+        "required_cards": "Cartes requises",
+        "submit": "Appliquer",
+        "title": "Critères de filtrage",
+        "xp_range": "XP requis"
+      },
+      "sorting": {
+        "date": "Les plus récents",
+        "likes": "Les plus appréciés",
+        "popularity": "Les plus populaires",
+        "user_reputation": "Meilleure réputation de l’utilisateur"
+      }
+    },
+    "external_embed": {
+      "load": "Charger le contenu externe",
+      "notice": "Ce contenu externe est bloqué tant que vous ne choisissez pas de le charger. Son chargement peut permettre au fournisseur de traiter vos données et de déposer des cookies.",
+      "title": "Contenu externe"
+    },
+    "fan_made_content": {
+      "actions": {
+        "import_file": "Importer depuis un fichier",
+        "import_url": "Importer depuis une URL",
+        "install": "Installer le contenu",
+        "uninstall": "Désinstaller",
+        "view_cards": "Voir les cartes",
+        "view_external": "En savoir plus"
+      },
+      "available_content": "Contenu disponible",
+      "banner_credit": "Illustration : {{credit}}",
+      "content_types": "Types de contenu",
+      "content_version": "Version du contenu",
+      "empty": "Aucun contenu installé",
+      "filter_fan_made_content": "Rechercher du contenu...",
+      "import_url": {
+        "label": "URL du contenu",
+        "placeholder": "Saisir une URL...",
+        "submit": "Importer"
+      },
+      "installed_content": "Contenu installé",
+      "messages": {
+        "available_content_loading": "Chargement du contenu disponible...",
+        "content_loading": "Chargement du contenu...",
+        "fetch_failed": "Impossible de charger le contenu : {{error}}",
+        "no_match": "Aucun contenu disponible ne correspond à votre filtre",
+        "parse_failed": "Impossible d’ajouter le contenu : {{error}}",
+        "registry_failed": "Impossible de charger le contenu disponible depuis le registre : {{error}}"
+      },
+      "settings": {
+        "card_lists": "Listes de cartes",
+        "card_lists_help": "Ce paramètre contrôle la valeur par défaut du filtre « Contenu de fans » dans les listes de cartes."
+      },
+      "short_title": "Créations de fans",
+      "status": {
+        "alpha": "Alpha",
+        "beta": "Beta",
+        "complete": "Complet",
+        "draft": "Brouillon",
+        "final": "Finalisé"
+      },
+      "status_installed": "Installé",
+      "status_update_available": "Mettre à jour le contenu",
+      "tags": "Étiquettes",
+      "title": "Contenu de fans",
+      "types": {
+        "campaign": "Campagne",
+        "investigators": "Investigateurs",
+        "player_cards": "Cartes Joueur",
+        "rework": "Refonte",
+        "scenario": "Scénario"
+      }
+    },
+    "footer": {
+      "arkham_title": "Horreur à Arkham : le jeu de cartes™",
+      "disclaimer": "<arkham>Horreur à Arkham : le jeu de cartes™</arkham> et tout le contenu associé © <ffg>Fantasy Flight Games (FFG)</ffg>. Ce site n’est ni produit ni approuvé par FFG et ne lui est pas affilié.",
+      "ffg": "Fantasy Flight Games (FFG)",
+      "legal": "Informations légales",
+      "legal_notice": "Mentions légales",
+      "privacy": "Politique de confidentialité",
+      "terms": "Conditions d’utilisation"
+    },
+    "masthead": {
+      "browse": "Parcourir",
+      "cards": "Cartes",
+      "navigation": "Navigation principale",
+      "rules": "Règles"
+    },
+    "oauth_consent": {
+      "allow": "Autoriser",
+      "authorize": "Autoriser {{clientName}}",
+      "deny": "Refuser",
+      "description": "{{clientName}} demande l’accès à votre compte arkham.build.",
+      "error": "Impossible de charger la demande d’autorisation. Retournez dans l’application et réessayez.",
+      "expired": "Cette demande d’autorisation est invalide ou a expiré. Retournez dans l’application et recommencez.",
+      "loading": "Chargement de la demande d’autorisation...",
+      "permissions": "Autorisations demandées",
+      "redirecting_to_login": "Redirection vers la connexion...",
+      "scopes": {
+        "decks_delete": {
+          "description": "Supprimer vos decks.",
+          "title": "Supprimer les decks"
+        },
+        "decks_read": {
+          "description": "Consulter vos decks.",
+          "title": "Lire les decks"
+        },
+        "decks_write": {
+          "description": "Créer et mettre à jour vos decks.",
+          "title": "Écrire les decks"
+        },
+        "profile_read": {
+          "description": "Consulter l’identifiant de votre compte et votre nom d’utilisateur.",
+          "title": "Lire le profil"
+        }
+      },
+      "title": "Autorisation de l’application"
+    },
+    "popular_decks": {
+      "decklists_link": "Parcourir tous les guides de decks",
+      "error": "Impossible de charger les guides de decks populaires : {{error}}",
+      "no_results": "Aucun guide de deck trouvé",
+      "title_card": "Guides de decks populaires contenant <tooltip>{{name}}</tooltip>",
+      "title_investigator": "Guides de decks populaires pour <tooltip>{{name}}</tooltip>"
+    },
+    "rules": {
+      "back_to_top": "Retour en haut",
+      "grimoire": {
+        "empty": "Aucun contenu du Grimoire trouvé.",
+        "error": "Impossible de charger le contenu du Grimoire.",
+        "intro_description": "Le Grimoire d’Arkham est un recueil complet de décisions couvrant toutes les situations connues du jeu. Ce document évolutif est maintenu en ligne et mis à jour à mesure que de nouvelles cartes, règles et interactions sont introduites ou découvertes. Il contient des informations sur des sujets avancés, comme l’interprétation du texte des cartes, la résolution des conflits de timing, les questions fréquentes ainsi qu’une liste de tous les mots-clés et autres textes de règles.",
+        "intro_title": "Le Grimoire d’Arkham",
+        "loading": "Chargement du contenu du Grimoire...",
+        "open_link": "Ouvrir le Grimoire",
+        "references": "Références"
+      },
+      "search_placeholder": "Rechercher des mots-clés...",
+      "title": "Guide de référence",
+      "toc": "Table des matières"
+    },
+    "sealed_deck": {
+      "empty": "Cette réserve de cartes scellée ne contient aucune carte.",
+      "loading": "Récupération de la réserve de cartes scellée...",
+      "title": "Réserve de cartes scellée : {{name}}"
+    },
+    "search": {
+      "title": "Résultats de recherche"
+    },
+    "suzi_standalone_setup": {
+      "description": "La FAQ 2.4 précise comment construire les decks de Suzi pour une partie indépendante. Des cartes aléatoires de niveau 1 à 5 sont tirées de votre collection jusqu’à atteindre le total d’XP souhaité. Il faut ensuite retirer du deck un nombre équivalent de cartes.",
+      "draw_cards": "Piocher des cartes",
+      "limit_collection": "Utiliser uniquement les cartes de ma collection",
+      "limit_exile": "Utiliser l’« Ultimatum de l’Exil » (interdire les cartes avec Exil)",
+      "limit_fan_made": "Utiliser le contenu de fans",
+      "results": "Résultats",
+      "reveal_all": "Tout révéler",
+      "title": "Sujet 5U-21 / « Suzi » : préparation d’une partie indépendante",
+      "title_short": "Préparation d’une partie indépendante",
+      "xp": "XP cible"
     }
   }
 }
