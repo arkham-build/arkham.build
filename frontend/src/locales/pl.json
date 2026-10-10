@@ -1073,7 +1073,7 @@
         "buildql_deck_option": "Nadpisz deckbuilding używając BuildQL",
         "card_pool": {
           "apply_environment": "Zastosuj środowisko {{environment}}",
-          "campaign_playalong": "Wspólna kampania",
+          "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "„Campaign Play-Along” jest powracającym wydarzeniem organizowanym na serwerze Discord Mythos Busters. Jest ono zaprojektowane do wspólnego grania w kampanie Arkham, dzielenia się historiami i ogólnie tworzenia poczucia wspólnoty.",
           "chapter_1": "Rozdział 1",
           "chapter_1_help": "Stwórz pulę kart ze wszystkich zestawów z Chapteru 1.",
@@ -1091,7 +1091,7 @@
           "custom": "Własna pula",
           "help": "Ten wybór nie ma wpływu na badaczy, ich wymagane karty i atuty fabularne.",
           "help_chapter_1": "To jest środowisko chapteru 1.",
-          "legacy": "Starsze wydania",
+          "legacy": "Legacy",
           "legacy_help": "Podczas budowania talii w środowisku Legacy gracze mogą budować swoje talie i korzystać z badaczy, kart badacza i osłabień z dowolnego produktu Horroru w Arkham: Gry karcianej™. Bez żadnych ograniczeń.",
           "limited": "Ograniczone",
           "limited_faq25": "Ograniczone (FAQ 2.5)",
