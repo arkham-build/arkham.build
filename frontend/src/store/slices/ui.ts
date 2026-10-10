@@ -66,7 +66,12 @@ export const createUISlice: StateCreator<StoreState, [], [], UISlice> = (
           ...state.ui,
           fanMadeContentCache: mergeFanMadeContent(
             state.ui.fanMadeContentCache,
-            meta,
+            {
+              cards: meta.cards,
+              packs: meta.packs,
+              cycles: meta.cycles,
+              encounter_sets: meta.encounterSets,
+            },
           ),
         },
       };

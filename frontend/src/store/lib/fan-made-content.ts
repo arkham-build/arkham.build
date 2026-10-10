@@ -116,8 +116,14 @@ export function cloneMetadata(metadata: StoreState["metadata"]) {
 
 export function addProjectToMetadata(meta: Metadata, project: FanMadeProject) {
   const encounterSets = project.data.encounter_sets.reduce(
-    (acc, curr) => {
-      acc[curr.code] = curr as unknown as EncounterSet;
+    (acc, encounterSet) => {
+      acc[encounterSet.code] = {
+        ...encounterSet,
+        official: false,
+        pack_code: "",
+        position: null,
+        real_name: encounterSet.name,
+      };
       return acc;
     },
     {} as Record<string, EncounterSet>,
@@ -144,8 +150,21 @@ export function addProjectToMetadata(meta: Metadata, project: FanMadeProject) {
   }
 
   for (const card of project.data.cards) {
-    if (card.encounter_code && encounterSets[card.encounter_code]) {
-      encounterSets[card.encounter_code].pack_code = card.pack_code;
+    if (card.encounter_code) {
+      const encounterSet = encounterSets[card.encounter_code];
+
+      if (encounterSet) {
+        if (
+          !card.hidden &&
+          card.position < (encounterSet.position ?? Number.MAX_SAFE_INTEGER)
+        ) {
+          encounterSet.position = card.position;
+        }
+
+        if (!encounterSet.pack_code) {
+          encounterSet.pack_code = card.pack_code;
+        }
+      }
     }
 
     if (!meta.cards[card.code]) {
