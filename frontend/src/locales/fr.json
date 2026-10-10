@@ -899,7 +899,7 @@
         "card_pool": {
           "apply_environment": "Appliquer l’environnement {{environment}}",
           "campaign": "Campagne",
-          "campaign_playalong": "Campagne en commun",
+          "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "La Campagne en commun est un événement permanent organisé sur le serveur Discord Mythos Busters. Elle permet de jouer ensemble aux campagnes d’Arkham, de partager des histoires et de renforcer les liens de la communauté.",
           "chapter_1": "Chapitre 1",
           "chapter_1_help": "Inclure tous les paquets du chapitre 1 dans la réserve de cartes.",
@@ -920,7 +920,7 @@
           "custom": "Réserve personnalisée",
           "help": "Les investigateurs, les cartes signature et les soutiens d'histoire ne sont pas affectés par cette sélection.",
           "help_chapter_1": "Cet environnement appartient au chapitre 1.",
-          "legacy": "Historique",
+          "legacy": "Legacy",
           "legacy_help": "Dans l’environnement Historique, les joueurs peuvent construire leurs decks et utiliser les investigateurs, les cartes Joueur et les faiblesses de n’importe quel produit Horreur à Arkham : le jeu de cartes™. Aucune restriction ne s’applique.",
           "limited": "Limité",
           "limited_faq25": "Limité (FAQ 2.5)",
