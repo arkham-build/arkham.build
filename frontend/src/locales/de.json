@@ -10,7 +10,7 @@
         "metadata": "Einpflege von Metadaten.",
         "qa": "QA Testing.",
         "testing": "Testen der Anwendung, Feedback und Fehlermeldungen in der frühen Entwicklungsphase.",
-        "title": "Ehrentafel",
+        "title": "Hall of Fame",
         "translation": {
           "es": "Spanisch",
           "fr": "Französisch",
@@ -37,7 +37,7 @@
         "close_modal": "Dialog schließen",
         "legend": "Tastenkürzel anzeigen"
       },
-      "home": "Startseite",
+      "home": "Start",
       "init": "Lade Kartendaten...",
       "init_error": "Kartendaten konnten nicht geladen werden: {{error}}"
     },
@@ -181,7 +181,7 @@
         "unknown_error": "Unbekannter Fehler"
       },
       "placeholder": "Account-Tag hinzufügen...",
-      "title": "Markierungen"
+      "title": "Tags"
     },
     "card_view": {
       "actions": {
@@ -1057,7 +1057,7 @@
         "buildql_deck_option": "Deckbauregeln mit BuildQL überschreiben",
         "card_pool": {
           "apply_environment": "{{environment}} Umgebung anwenden",
-          "campaign_playalong": "Gemeinsame Kampagne",
+          "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "\"Campaign Play-Along\" ist ein regelmäßiges Event, das auf dem Mythos Busters Discord-Server stattfindet. Während des jeweiligen Events wird eine Kampagne zusammen, mit einem eingeschränkten Kartenpool, gespielt.",
           "chapter_1": "Kapitel 1",
           "chapter_1_help": "Kartenpool auf alle Packs in Kapitel 1 setzen.",
@@ -1075,14 +1075,14 @@
           "custom": "Benutzerdefinierte Umgebung",
           "help": "Auswahl gilt nicht für Ermittler, Signaturkarten und Schwächen.",
           "help_chapter_1": "Diese Umgebung ist auf Kapitel 1 beschränkt.",
-          "legacy": "Ältere Ausgaben",
+          "legacy": "Legacy",
           "legacy_help": "In der \"Legacy\" Umgebung dürfen Decks alle erschienenen Karten ohne Einschränkungen verwenden.",
           "limited": "Limitiert",
           "limited_faq25": "Limitiert (FAQ 2.5)",
           "limited_faq25_help": "In der \"limitierten\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und bis zu drei weiteren Ermittlererweiterungen verwenden.",
           "limited_help": "In der \"limitierten\" Umgebung dürfen Decks Karten der folgenden Produkte enthalten: Grundspiel (2026), 5 Ermittlerdecks, 3 verschiedene Spielerkarten-Erweiterungen deiner Wahl.",
           "placeholder": "Packs auswählen...",
-          "progression": "Nach Erscheinungsdatum",
+          "progression": "Progression",
           "progression_help": "Kartenpool auf den Stand bei Veröffentlichung der ausgewählten Kampagne oder des eigenständigen Szenarios setzen.",
           "progression_target": "Kampagne oder Einzelspielszenario",
           "section_title": "Kartenpooleinstellungen",
@@ -1382,7 +1382,7 @@
       },
       "status_installed": "Hinzugefügt",
       "status_update_available": "Inhalt aktualisieren",
-      "tags": "Markierungen",
+      "tags": "Tags",
       "title": "Inoffizielle Inhalte",
       "types": {
         "campaign": "Kampagne",
@@ -1866,7 +1866,7 @@
           "title": "Decks lesen"
         },
         "decks_write": {
-          "description": "Deine Decks erstellen und aktualisieren.",
+          "description": "Decks erstellen und aktualisieren.",
           "title": "Decks schreiben"
         },
         "profile_read": {
