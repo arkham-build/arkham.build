@@ -49,7 +49,7 @@
     "auth": {
       "arkhamdb_login_banner": "Obecnie ArkhamDB API działa bardzo powolnie. Jeśli występują problemy, zaloguj się przy użyciu adresu email.",
       "arkhamdb_signup_banner": "Obecnie ArkhamDB API działa bardzo powolnie. Jeśli występują problemy, zarejestruj się przy użyciu adresu email.",
-      "email": "Email",
+      "email": "E-mail",
       "email_or_username": "Email lub nazwa użytkownika",
       "errors": {
         "account_not_verified": "Twoje konto nie zostało jeszcze zweryfikowane. Proszę <verifyLink>potwierdź</verifyLink> swój adres email przed logowaniem.",
@@ -145,6 +145,7 @@
       }
     },
     "browse": {
+      "sets": "Zestawy",
       "title": "Przeglądaj karty"
     },
     "content": {
@@ -157,7 +158,12 @@
         "standalone_scenarios": "Scenariusze"
       },
       "title": "Zawartość",
-      "unknown_release_year": "Nieznany rok"
+      "unknown_release_year": "Nieznany rok",
+      "guide": {
+        "campaign_pdf": "Przewodnik kampanii",
+        "return_to_pdf": "Powrót do",
+        "rules_insert_pdf": "Dodatek z zasadami"
+      }
     },
     "card_modal": {
       "actions": {
@@ -200,6 +206,7 @@
         "reviews": "Otwórz recenzje",
         "show_original_image": "Pokaż obrazek oryginalnej wersji karty",
         "show_taboo_image": "Pokaż obrazek wersji tabu karty",
+        "starter_deck": "Oficjalna talia startowa",
         "usable_by": "Pula kart: {{prefix}}{{name}}",
         "usable_by_interpolated": "Pula kart: <tooltip>{{name}}</tooltip>",
         "view_backside": "Rewers",
@@ -245,9 +252,13 @@
       "back": "Wstecz",
       "cancel": "Anuluj",
       "card_back": "{{name}} - rewers",
+      "card_few": "karty",
+      "card_many": "kart",
       "card_one": "karta",
       "card_other": "karty",
       "clear": "Wyczyść",
+      "clue_few": "Wskazówki",
+      "clue_many": "Wskazówek",
       "clue_one": "Wskazówka",
       "clue_other": "Wskazówki",
       "cost": {
@@ -258,6 +269,8 @@
       "create_named": "Stwórz \"{{name}}\"",
       "customizable": "Przystosowalna",
       "customizations": "Usprawnienia",
+      "cycle_few": "cykle",
+      "cycle_many": "cykli",
       "cycle_one": "cykl",
       "cycle_other": "cykle",
       "deck_options": {
@@ -266,17 +279,21 @@
         "Blessed": "Błogosławiona",
         "Blessed and Cursed": "Błogosławiona i przeklęta",
         "Class Choice": "Wybrana klasa",
+        "Collector": "Kolekcjoner",
         "Cursed": "Przeklęta",
         "Deck Size": "Rozmiar Talii",
         "Deck must have at least 10 skill cards.": "Talia musi mieć co najmniej 10 kart umiejętności.",
+        "Deck must have at least 11 Insights.": "Talia musi zawierać co najmniej 11 kart z cechą Informacja.",
         "Fortune": "Los",
         "Gambit": "Gambit",
         "Improvised": "Improwizowany",
         "No permanents except story and signature permanents": "Bez trwałych z wyjątkiem trwałych fabularnych i powiązanych z badaczem",
         "Secondary Class": "Klasa Poboczna",
+        "Too many off-class cards for Collector.": "Zbyt wiele kart z innych klas dla Kolekcjonera.",
         "Too many off-class cards for Versatile.": "Zbyt wiele kart pozaklasowych dla atutu Wszechstronny.",
         "Too many off-class cards.": "Zbyt wiele kart pozaklasowych.",
         "Trait Choice": "Wybór atutów",
+        "Versatile": "Wszechstronny",
         "You cannot have assets that take up an ally slot.": "Nie możesz mieć atutów zajmujących strefę sprzymierzeńca.",
         "You cannot have more than 15 level 0-1 Guardian and/or Survivor cards": "Nie możesz mieć więcej niż 15 kart Strażnika i/lub Ocalałego o poziomie 0-1",
         "You cannot have more than 15 level 0-1 Seeker and/or Mystic cards": "Nie możesz mieć więcej niż 15 kart Poszukiwacza i/lub Mistyka poziomu 0-1",
@@ -328,6 +345,8 @@
         "survivor": "Ocalały"
       },
       "fast": "Szybka",
+      "icon_few": "ikony umiejętności",
+      "icon_many": "ikon umiejętności",
       "icon_one": "ikona umiejętności",
       "icon_other": "ikony umiejętności",
       "level": {
@@ -343,7 +362,9 @@
       "non_collection_cards": "{{count}} kart spoza kolekcji",
       "none": "Brak",
       "ok": "OK",
-      "or": "or",
+      "or": "lub",
+      "pack_few": "zestawy",
+      "pack_many": "zestawów",
       "pack_one": "zestaw",
       "pack_other": "zestawy",
       "packs_new_format": {
@@ -382,7 +403,7 @@
         "agility": "Zręczność",
         "combat": "Walka",
         "intellect": "Intelekt",
-        "title": "Skill",
+        "title": "Umiejętność",
         "wild": "Joker",
         "willpower": "Wola"
       },
@@ -439,6 +460,8 @@
       "taboo_original_text": "Oryginalny tekst karty",
       "taboo_unchained": "Kosztuje {{xp}} doświadczenia mniej.",
       "total": "łącznie",
+      "trait_few": "Cechy",
+      "trait_many": "Cech",
       "trait_one": "Cecha",
       "trait_other": "Cechy",
       "traits": {
@@ -810,6 +833,8 @@
         "enemy_location": "Wróg-lokalizacja",
         "event": "Wydarzenie",
         "investigator": "Badacz",
+        "investigator_few": "Badacze",
+        "investigator_many": "Badaczy",
         "investigator_one": "Badacz",
         "investigator_other": "Badaczy",
         "key": "Klucz",
@@ -857,7 +882,7 @@
       },
       "vengeance": "Zemsta",
       "victory": "Zwycięstwo",
-      "xp": "XP"
+      "xp": "PD"
     },
     "deck": {
       "actions": {
@@ -880,7 +905,7 @@
       "annotation_tooltip": "Karta ma adnotacje",
       "attachments": {
         "Bewitching": "Zły urok",
-        "Eldritch Brand": "Eldritch Brand",
+        "Eldritch Brand": "Nadprzyrodzone znamię",
         "Hunch deck": "Talia przeczuć",
         "Market deck": "Talia handlu",
         "Stick to the Plan": "Trzymaj się planu"
@@ -897,16 +922,18 @@
         "title": "Ostatnie ulepszenie"
       },
       "limited_decks": {
-        "Collector": "Collector",
+        "Collector": "Kolekcjoner",
         "Secondary Class": "Drugorzędna klasa",
         "Versatile": "Wszechstronny"
       },
       "limited_slots": "Limitowane sloty",
       "stats": {
         "deck_size": "Rozmiar talii",
+        "ignored_few": "{{count}} kopie nie wliczają się do rozmiaru talii.",
+        "ignored_many": "{{count}} kopii nie wlicza się do rozmiaru talii.",
         "ignored_one": "{{count}} kopia nie wlicza się do rozmiaru talii.",
         "ignored_other": "{{count}} kopie nie wliczają się do rozmiaru talii.",
-        "unowned": "Unavailable: {{count}} of {{total}} cards",
+        "unowned": "Niedostępne: {{count}} z {{total}} kart",
         "uses_parallel": "Używa strony z równoległego świata",
         "xp_available_help": "XP zdobyte przy ostatnim ulepszeniu.",
         "xp_required": "Wymagane XP",
@@ -943,7 +970,17 @@
         "resource_cost_tooltip": "{{count}} {{cards}} o koszcie {{cost}}",
         "resource_costs": "Koszty zasobów",
         "skill_icons": "Ikony umiejętności",
-        "skill_icons_tooltip": "{{skill}} - {{count}} {{icons}}"
+        "skill_icons_tooltip": "{{skill}} - {{count}} {{icons}}",
+        "random_basic_weakness": {
+          "add": "Dodaj losowe podstawowe osłabienie",
+          "draft": "Wybierz losowe podstawowe osłabienie w drafcie",
+          "equal_probability": "Jednakowe prawdopodobieństwo dla każdego osłabienia",
+          "ignore_deck_card_pool": "Ignoruj pulę kart talii",
+          "replace_random_basic_weakness": "Zastąp kartę zastępczą losowego podstawowego osłabienia",
+          "require_trait": "Wymagaj cechy",
+          "title": "Dodaj losowe podstawowe osłabienie",
+          "trait_placeholder": "Wybierz cechę"
+        }
       },
       "validation": {
         "card_not_in_limited_pool": "Poniższe karty nie są częścią dozwolonej puli kart dla tej talii:",
@@ -1008,7 +1045,8 @@
         "error": "Nie udało się zaimportować zapieczętowanej talii: {{error}}",
         "loading": "Wgrywanie zapieczętowanej talii..."
       },
-      "title": "Stwórz talię {{name}}"
+      "title": "Stwórz talię {{name}}",
+      "use_starter_deck": "Użyj oficjalnej talii startowej"
     },
     "deck_edit": {
       "actions": {
@@ -1035,11 +1073,11 @@
         "buildql_deck_option": "Nadpisz deckbuilding używając BuildQL",
         "card_pool": {
           "apply_environment": "Zastosuj środowisko {{environment}}",
-          "campaign_playalong": "Campaign Play-Along",
+          "campaign_playalong": "Wspólna kampania",
           "campaign_playalong_help": "„Campaign Play-Along” jest powracającym wydarzeniem organizowanym na serwerze Discord Mythos Busters. Jest ono zaprojektowane do wspólnego grania w kampanie Arkham, dzielenia się historiami i ogólnie tworzenia poczucia wspólnoty.",
-          "chapter_1": "Chapter 1",
+          "chapter_1": "Rozdział 1",
           "chapter_1_help": "Stwórz pulę kart ze wszystkich zestawów z Chapteru 1.",
-          "chapter_2": "Chapter 2",
+          "chapter_2": "Rozdział 2",
           "chapter_2_help": "Stwórz pulę kart ze wszystkich zestawów z Chapteru 2.",
           "choose_cycle_placeholder": "Wybierz cykle...",
           "choose_progression_target_placeholder": "Wybierz kampanię lub scenariusz...",
@@ -1053,7 +1091,7 @@
           "custom": "Własna pula",
           "help": "Ten wybór nie ma wpływu na badaczy, ich wymagane karty i atuty fabularne.",
           "help_chapter_1": "To jest środowisko chapteru 1.",
-          "legacy": "Legacy",
+          "legacy": "Starsze wydania",
           "legacy_help": "Podczas budowania talii w środowisku Legacy gracze mogą budować swoje talie i korzystać z badaczy, kart badacza i osłabień z dowolnego produktu Horroru w Arkham: Gry karcianej™. Bez żadnych ograniczeń.",
           "limited": "Ograniczone",
           "limited_faq25": "Ograniczone (FAQ 2.5)",
@@ -1102,6 +1140,8 @@
       "create_local_copy_help": "Utwórz lokalną kopię tej talii. Zastosuje to wszystkie zaległe edycje i umożliwi ich zapisanie. Ulepszenia i historia talii nie zostaną przeniesione.",
       "customizable": {
         "skill_placeholder": "Wybierz umiejętność...",
+        "traits_placeholder_few": "Wybierz cechy...",
+        "traits_placeholder_many": "Wybierz cechy...",
         "traits_placeholder_one": "Wybierz cechę...",
         "traits_placeholder_other": "Wybierz cechy..."
       },
@@ -1154,7 +1194,7 @@
         "shrewd_analysis_help": "Aplikacja doda ilość XP odpowiadającą zniżce.",
         "title": "Ulepszanie {{name}}"
       },
-      "read_only": "This deck has an upgrade and is read-only.",
+      "read_only": "Ta talia ma ulepszoną wersję i jest tylko do odczytu.",
       "recommendations": {
         "absolute": "Absolutnie",
         "absolute_help": "Pokazuje najczęściej używane karty w talii {{name}}, posortowane według procentu talii, które je zawierają.",
@@ -1239,7 +1279,7 @@
       "newer_version": "Dostępna jest <a>nowa wersja</a> tej talii. Ta talia jest tylko do odczytu.",
       "scans": "Skany",
       "sharing": {
-        "api_link": "Json API",
+        "api_link": "JSON API",
         "description": "Talia jest zapisana lokalnie na tym urządzeniu.",
         "description_present": "Talia jest zapisana na {{provider}}. Wyświetl przy użyciu <a>this link</a>.",
         "title": "Dostęp",
@@ -1294,7 +1334,7 @@
     "draw_simulator": {
       "draw_tooltip": "Wylosuj {{count}} {{cards}}.",
       "mulligan_mode": "Tryb pierwszej ręki",
-      "mulligan_mode_help": "When enabled, non-Tarot weaknesses and cards that start in play are redrawn automatically. After mulligan mode is disabled, the deck is shuffled once.",
+      "mulligan_mode_help": "Po włączeniu osłabienia bez cechy Tarot oraz karty rozpoczynające grę w grze są automatycznie dobierane ponownie. Po wyłączeniu trybu wymiany kart talia jest jednorazowo tasowana.",
       "redraw": "Wylosuj wybrane ponownie",
       "redraw_tooltip": "Wybrane karty zostaną przesunięte na koniec talii, a następnie zastąpione nowymi kartami.",
       "reset": "Resetuj",
@@ -1355,7 +1395,7 @@
         "alpha": "Alfa",
         "beta": "Beta",
         "complete": "Kompletna",
-        "draft": "Draft",
+        "draft": "Wersja robocza",
         "final": "Finalna"
       },
       "status_installed": "Zainstalowany",
@@ -1540,7 +1580,9 @@
       },
       "group_by": "Grupuj według",
       "nav": {
+        "card_count_few": "{{count}} karty",
         "card_count_hidden": "({{count}} ukrytych przez filtry)",
+        "card_count_many": "{{count}} kart",
         "card_count_one": "{{count}} karta",
         "card_count_other": "{{count}} kart",
         "display": "Wyświetlanie listy",
@@ -1652,7 +1694,7 @@
           "disconnecting": "Rozłączanie {{provider}}...",
           "last_error": "Ostatni błąd",
           "last_synced_at": "Ostatnia synchronizacja",
-          "none": "None",
+          "none": "Brak",
           "providers": {
             "arkhamdb": "ArkhamDB"
           },
@@ -1676,7 +1718,21 @@
           "username": "Nazwa użytkownika",
           "username_help": "Tylko litery, cyfry, podkreślenia i myślniki."
         },
-        "title": "Konto"
+        "title": "Konto",
+        "connected_apps": {
+          "error": "Nie udało się wczytać połączonych aplikacji.",
+          "granted_at": "Dostęp przyznano",
+          "last_authorized_at": "Ostatnia autoryzacja",
+          "loading": "Wczytywanie połączonych aplikacji...",
+          "permissions": "Uprawnienia",
+          "revoke_confirm": "Cofnąć dostęp aplikacji {{clientName}} do twojego konta?",
+          "revoke_error": "Nie udało się cofnąć dostępu aplikacji {{clientName}}: {{error}}",
+          "revoking_app": "Cofanie dostępu aplikacji {{clientName}}...",
+          "status": {
+            "active": "Połączona",
+            "disabled": "Wyłączona"
+          }
+        }
       },
       "card_data": {
         "card_count": "Liczba kart",
@@ -1691,7 +1747,7 @@
       "collection": {
         "card_collection": "Kolekcja kart",
         "card_count": "Liczba kart",
-        "chapter": "Chapter {{number}}",
+        "chapter": "Rozdział {{number}}",
         "new_format": "Nowy format",
         "old_format": "Stary format",
         "show_all_cards_owned": "Zaznacz wszystkie karty jako posiadane",
@@ -1788,6 +1844,8 @@
     },
     "ui": {
       "cards_combobox": {
+        "placeholder_few": "Wybierz karty...",
+        "placeholder_many": "Wybierz karty...",
         "placeholder_one": "Wybierz kartę...",
         "placeholder_other": "Wybierz karty..."
       },
@@ -1809,6 +1867,41 @@
         "next": "Następna",
         "previous": "Poprzednia"
       }
+    },
+    "oauth_consent": {
+      "allow": "Zezwól",
+      "authorize": "Autoryzuj {{clientName}}",
+      "deny": "Odmów",
+      "description": "{{clientName}} prosi o dostęp do twojego konta arkham.build.",
+      "error": "Nie udało się wczytać żądania autoryzacji. Wróć do aplikacji i spróbuj ponownie.",
+      "expired": "Żądanie autoryzacji jest nieprawidłowe lub wygasło. Wróć do aplikacji i zacznij ponownie.",
+      "loading": "Wczytywanie żądania autoryzacji...",
+      "permissions": "Żądane uprawnienia",
+      "redirecting_to_login": "Przekierowywanie do logowania...",
+      "scopes": {
+        "decks_delete": {
+          "description": "Usuwanie twoich talii.",
+          "title": "Usuwanie talii"
+        },
+        "decks_read": {
+          "description": "Przeglądanie twoich talii.",
+          "title": "Odczyt talii"
+        },
+        "decks_write": {
+          "description": "Tworzenie i aktualizacja twoich talii.",
+          "title": "Zapis talii"
+        },
+        "profile_read": {
+          "description": "Przeglądanie identyfikatora konta i nazwy użytkownika.",
+          "title": "Odczyt profilu"
+        }
+      },
+      "title": "Autoryzacja aplikacji"
+    },
+    "sealed_deck": {
+      "empty": "Ta zapieczętowana pula kart nie zawiera żadnych kart.",
+      "loading": "Pobieranie zapieczętowanej puli kart...",
+      "title": "Zapieczętowana pula kart: {{name}}"
     }
   }
 }
