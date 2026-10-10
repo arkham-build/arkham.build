@@ -1,11 +1,11 @@
 [
   {
     "chapter": 2,
-    "code": "cob",
-    "cycle_code": "small_campaign_expansions",
-    "date_release": "2026-08-14",
-    "name": "Children of Blood",
+    "code": "traces_to_nowhere",
+    "cycle_code": "scenario_packs_ch2",
+    "date_release": "2026-10-16",
+    "name": "Traces to Nowhere",
     "position": 1,
-    "size": 119
+    "size": 60
   }
 ]
