@@ -23,7 +23,7 @@
         "zzorba": "Доступ к API и иконкам ArkhamCards, помощь в решении вопросов и вдохновение для построения колод. Без вас этот проект был бы невозможен."
       },
       "image_credits": {
-        "404": "404 illustration (edit)",
+        "404": "Иллюстрация для страницы 404 (редакция)",
         "arkham_cards_icons": "Переиспользование иконок ArkhamCards",
         "card_icons": "Иконки карт",
         "logo": "Дизайн логотипа",
@@ -145,6 +145,7 @@
       }
     },
     "browse": {
+      "sets": "Наборы",
       "title": "Просмотр карт"
     },
     "card_modal": {
@@ -171,6 +172,7 @@
         "reviews": "Посмотреть отзывы",
         "show_original_image": "Показать оригинальное изображение карты",
         "show_taboo_image": "Показать изображение карты с табу",
+        "starter_deck": "Официальная стартовая колода",
         "usable_by": "Доступные карты: {{prefix}}{{name}}",
         "usable_by_interpolated": "Доступные карты: <tooltip>{{name}}</tooltip>",
         "view_backside": "Оборотная сторона",
@@ -189,7 +191,7 @@
       "section_actions": "Действия",
       "section_deckbuilding": "Колодостроение",
       "section_printings": "Издания",
-      "thumbnail": "Thumbnail of {{code}}"
+      "thumbnail": "Миниатюра {{code}}"
     },
     "choose_investigator": {
       "create_tooltip": "Создать колоду {{name}}",
@@ -219,36 +221,44 @@
       "card_few": "карты",
       "card_many": "карт",
       "card_one": "карта",
+      "card_other": "карты",
       "clear": "Очистить",
       "clue_few": "Улики",
       "clue_many": "Улик",
       "clue_one": "Улика",
+      "clue_other": "Улики",
       "cost": {
         "none": "Нет цены",
         "value": "Цена {{cost}}",
         "x": "Цена X"
       },
+      "create_named": "Создать «{{name}}»",
       "customizable": "Адаптация",
       "customizations": "Адаптации",
       "cycle_few": "цикла",
       "cycle_many": "циклов",
       "cycle_one": "цикл",
+      "cycle_other": "циклы",
       "deck_options": {
         "Atleast constraint violated.": "Нарушено ограничение «Хотя бы».",
         "Blessed": "Благословенный",
         "Blessed and Cursed": "Благословенный и Проклятый",
         "Class Choice": "Второстепенный класс",
+        "Collector": "Коллекционер",
         "Cursed": "Проклятый",
         "Deck Size": "Размер колоды",
         "Deck must have at least 10 skill cards.": "В колоде должны быть хотя бы 10 карт навыков",
-        "Fortune": "Fortune",
-        "Gambit": "Gambit",
-        "Improvised": "Improvised",
+        "Deck must have at least 11 Insights.": "В колоде должно быть не менее 11 карт с чертой Интуиция.",
+        "Fortune": "Удача",
+        "Gambit": "Авантюра",
+        "Improvised": "Экспромт",
         "No permanents except story and signature permanents": "Только сюжетные и персональныепостоянные карты",
         "Secondary Class": "Побочный класс",
+        "Too many off-class cards for Collector.": "Слишком много карт других классов для Коллекционера.",
         "Too many off-class cards for Versatile.": "Слишком много внеклассовых карт для «Разностороннего».",
         "Too many off-class cards.": "Слишком много внеклассовых карт.",
         "Trait Choice": "Выбор черты",
+        "Versatile": "Разносторонний",
         "You cannot have assets that take up an ally slot.": "Вы не можете брать активы занимающие слот союзника.",
         "You cannot have more than 15 level 0-1 Guardian and/or Survivor cards": "В колоде не может быть более 15 карт Хранителя и/или Выжившего уровня 0–1",
         "You cannot have more than 15 level 0-1 Seeker and/or Mystic cards": "У вас не может быть больше 15 карт Искателей и/или Мистиков 0–1 уровня",
@@ -268,7 +278,7 @@
         "You cannot have more than 5 level 0 Seeker cards": "Нельзя включить больше 5 карт Искателей уровня 0",
         "You cannot have more than 5 level 0 Survivor cards": "Нельзя включить больше 5 карт Выживших уровня 0",
         "You cannot have more than one Covenant in your deck.": "У вас не может быть больше одного завета в колоде.",
-        "You must have at least 6 cards from each faction.": "You must have at least 6 cards from each faction.",
+        "You must have at least 6 cards from each faction.": "В колоде должно быть не менее 6 карт каждой фракции.",
         "You must have at least 7 cards from 3 different factions": "У вас должно быть хотя бы по 7 карт из 3 разных классов",
         "You must have at least 7 cards from each class": "У вас должно быть хотя бы по 7 карт каждого класса"
       },
@@ -303,6 +313,7 @@
       "icon_few": "символа навыков",
       "icon_many": "символов навыков",
       "icon_one": "символ навыков",
+      "icon_other": "значки навыков",
       "level": {
         "base": "Уровень 0 / Нет",
         "none": "Без уровня",
@@ -312,6 +323,7 @@
       "more_actions": "Больше действий",
       "myriad": "Мириада",
       "no_entries": "Нет записей",
+      "no_results": "Нет результатов",
       "non_collection_cards": "{{count}} карт вне коллекции",
       "none": "Нет",
       "ok": "OK",
@@ -319,6 +331,7 @@
       "pack_few": "дополнения",
       "pack_many": "дополнений",
       "pack_one": "дополнение",
+      "pack_other": "наборы",
       "packs_new_format": {
         "encounter": "Кампания",
         "player": "Сыщики"
@@ -415,6 +428,7 @@
       "trait_few": "Черты",
       "trait_many": "Черт",
       "trait_one": "Черта",
+      "trait_other": "Черты",
       "traits": {
         "???": "???",
         "Abandoned": "Покинутая",
@@ -787,6 +801,7 @@
         "investigator_few": "Сыщика",
         "investigator_many": "Сыщиков",
         "investigator_one": "Сыщик",
+        "investigator_other": "Сыщики",
         "key": "Ключ",
         "location": "Локация",
         "scenario": "Сценарий",
@@ -830,10 +845,13 @@
         "whistles": "Свистки",
         "wishes": "Wishes"
       },
+      "vengeance": "Месть",
       "victory": "Победа",
+      "xp": "Опыт",
       "xp_few": "Опыта",
       "xp_many": "Опыта",
-      "xp_one": "Опыт"
+      "xp_one": "Опыт",
+      "xp_other": "Опыта"
     },
     "deck": {
       "actions": {
@@ -893,8 +911,8 @@
       "tags": {
         "account": "arkham.build",
         "private": "Устройство",
-        "sealed": "Sealed",
-        "shared": "Shared"
+        "sealed": "Запечатанная",
+        "shared": "Общая"
       },
       "toasts": {
         "delete_confirm": "Вы уверены, что хотите удалить эту колоду?",
@@ -906,7 +924,8 @@
         "duplicate_error": "Ошибка копирования колоды: {{error}}",
         "export_error": "Ошибка экспортирования колоды: {{error}}",
         "upload_error": "Ошибка загрузки колоды на {{provider}}: {{error}}",
-        "upload_loading": "Загрузка колоды на {{provider}}…"
+        "upload_loading": "Загрузка колоды на {{provider}}…",
+        "upload_requires_duplicate": "Прежде чем загрузить эту колоду в ArkhamDB, создайте её копию."
       },
       "tools": {
         "average_cost": "Средняя цена: {{cost}}",
@@ -920,10 +939,20 @@
         "resource_cost_tooltip": "{{count}} {{cards}} ценой {{cost}}",
         "resource_costs": "Цены карт",
         "skill_icons": "Символы навыков",
-        "skill_icons_tooltip": "{{skill}} — {{count}} {{icons}}"
+        "skill_icons_tooltip": "{{skill}} — {{count}} {{icons}}",
+        "random_basic_weakness": {
+          "add": "Добавить случайную базовую слабость",
+          "draft": "Выбрать случайную базовую слабость на драфте",
+          "equal_probability": "Использовать равную вероятность для каждой слабости",
+          "ignore_deck_card_pool": "Игнорировать пул карт колоды",
+          "replace_random_basic_weakness": "Заменить заглушку случайной базовой слабости",
+          "require_trait": "Требовать черту",
+          "title": "Добавить случайную базовую слабость",
+          "trait_placeholder": "Выберите черту"
+        }
       },
       "validation": {
-        "card_not_in_limited_pool": "The following cards are not part of this deck's card pool:",
+        "card_not_in_limited_pool": "Следующие карты не входят в пул карт этой колоды:",
         "forbidden_cards": "Колода содержит запрещённые карты (карты не доступные сыщику):",
         "invalid": "Ошибка в колоде.",
         "invalid_card_count": "Колода содержит неверное количество следующих карт:",
@@ -982,15 +1011,16 @@
       "loading": "Создание колоды…",
       "random_basic_weakness": "Случайная базовая слабость",
       "sealed_deck": {
-        "error": "Failed to fetch sealed deck: {{error}}",
-        "loading": "Fetching sealed deck..."
+        "error": "Не удалось загрузить запечатанную колоду: {{error}}",
+        "loading": "Загрузка запечатанной колоды..."
       },
-      "title": "Создать колоду {{name}}"
+      "title": "Создать колоду {{name}}",
+      "use_starter_deck": "Использовать официальную стартовую колоду"
     },
     "deck_edit": {
       "actions": {
         "add_to_notes": "Добавить в заметки",
-        "cycle_decks": "Cycle deck lists",
+        "cycle_decks": "Переключать списки колод",
         "decrement_quantity": "Уменьшить количество в колоде",
         "decrement_side_quantity": "Уменьшить количество в отложенных картах",
         "draft_random_basic_weakness": "Драфтить случайную базовую слабость",
@@ -1009,12 +1039,17 @@
       },
       "changes_restored": "Несохранённые изменения были восстановлены.",
       "config": {
-        "buildql_deck_option": "BuildQL deckbuilding override",
+        "buildql_deck_option": "Переопределить правила создания колоды с помощью BuildQL",
         "card_pool": {
           "apply_environment": "Применить {{environment}}",
           "campaign_playalong": "Campaign Play-Along",
-          "campaign_playalong_help": "The Campaign Play-Along is an ongoing event hosted on the Mythos Busters discord server. It is designed to play Arkham campaigns together, share stories and generally create a sense of community.",
+          "campaign_playalong_help": "Совместное прохождение кампаний — постоянное мероприятие на Discord-сервере Mythos Busters. Оно позволяет вместе проходить кампании Аркхэма, делиться историями и укреплять сообщество.",
+          "chapter_1": "Глава 1",
+          "chapter_1_help": "Включить в пул карт все наборы главы 1.",
+          "chapter_2": "Глава 2",
+          "chapter_2_help": "Включить в пул карт все наборы главы 2.",
           "choose_cycle_placeholder": "Выбрать циклы",
+          "choose_progression_target_placeholder": "Выберите кампанию или одиночный сценарий...",
           "collection": "Коллекция",
           "collection_help": "Установить вашу текущую <settings_link>коллекцию</settings_link> как пул карт для этой колоды. Это может быть полезно для ограничения пула карт колоды или для совместного использования с людьми, которые играют с одной физической коллекцией.",
           "configure_environment": "Настроить среду",
@@ -1032,6 +1067,9 @@
           "limited_faq25_help": "При составлении колоды в ограниченной среде игроки могут использовать только карты из базового набора, пяти отдельных колod сыщиков и трех различных дополнений сыщиков по своему выбору.",
           "limited_help": "При составлении колоды в ограниченной среде игроки могут использовать карты из слудующих продуктов: базовый набор 2026, пять отдельных колод сыщиков, три разных дополнения карт игроков по их выбору.",
           "placeholder": "Выбрать наборы",
+          "progression": "По дате выпуска",
+          "progression_help": "Включить в пул карт продукты, доступные на момент выпуска выбранной кампании или одиночного сценария.",
+          "progression_target": "Кампания или одиночный сценарий",
           "section_title": "Настройка наборов карт",
           "selected_cards": "Выбранные карты",
           "substitute_chapter_2_with_chapter_1": "Заменить основные колоды и колоды сыщиков из второго сезона на соответствующие колоды из первого сезона",
@@ -1039,9 +1077,9 @@
         },
         "name": "Название колоды",
         "sealed": {
-          "add": "Add sealed deck",
-          "help": "Upload a sealed deck definition (.csv) to use it. Use <a>ArkhamSealed</a> to generate a sealed deck.",
-          "title": "Sealed"
+          "add": "Добавить запечатанную колоду",
+          "help": "Загрузите описание запечатанной колоды (.csv). Для создания запечатанной колоды используйте <a>ArkhamSealed</a>.",
+          "title": "Запечатанная"
         },
         "sides": {
           "investigator_back": "Оборот сыщика",
@@ -1055,7 +1093,7 @@
           "account": "arkham.build",
           "arkhamdb": "ArkhamDB",
           "local": "Локально",
-          "shared": "Legacy API",
+          "shared": "Устаревший API",
           "title": "Хранилище"
         },
         "taboo": "Список табу",
@@ -1073,7 +1111,8 @@
         "skill_placeholder": "Выбрать навык",
         "traits_placeholder_few": "Выбрать черты",
         "traits_placeholder_many": "Выбрать черт",
-        "traits_placeholder_one": "Выбрать черту"
+        "traits_placeholder_one": "Выбрать черту",
+        "traits_placeholder_other": "Выберите черты..."
       },
       "discard": "Отменить изменения",
       "discard_confirm": "Вы уверены, что хотите отменить изменения?",
@@ -1171,6 +1210,7 @@
     },
     "deck_view": {
       "actions": {
+        "check_card": "Отметить {{card}} как карту из коллекции",
         "display_as_list": "Списком",
         "display_as_scans": "Сканами",
         "import": "Импортировать колоду",
@@ -1181,6 +1221,7 @@
         "upload": "Загрузить на {{provider}}",
         "upload_account": "Загрузить"
       },
+      "checklist": "Контрольный список",
       "discounts": {
         "adaptable": "Приспособляемость",
         "arcaneResearch": "Изучение магии",
@@ -1207,13 +1248,13 @@
       "newer_version": "Доступна более <a>новая версия</a> этой колоды. Эта колода не может быть изменена.",
       "scans": "Сканы",
       "sharing": {
-        "api_link": "Json API",
+        "api_link": "JSON API",
         "description": "Колода хранится локально.",
         "description_present": "Эта колода публичная и может быть просмотрена по <a>этой ссылке</a>.",
         "title": "Публичный доступ",
         "view_on_arkhamdb": "Просмотреть на ArkhamDB"
       },
-      "show_deck_list": "Show deck list",
+      "show_deck_list": "Показать список колоды",
       "tab_deck_list": "Колода",
       "tab_history": "История",
       "tab_notes": "Заметки",
@@ -1282,7 +1323,7 @@
     },
     "external_embed": {
       "load": "Загрузить внешний контент",
-      "notice": "This external content is blocked until you choose to load it. Loading it may allow the provider to process your data and set cookies.",
+      "notice": "Этот внешний контент заблокирован, пока вы не разрешите его загрузку. После загрузки поставщик может обрабатывать ваши данные и устанавливать файлы cookie.",
       "title": "Внешний контент"
     },
     "fan_made_content": {
@@ -1295,7 +1336,7 @@
         "view_external": "Узнать больше"
       },
       "available_content": "Доступный контент",
-      "banner_credit": "Illus. {{credit}}",
+      "banner_credit": "Иллюстрация: {{credit}}",
       "content_types": "Типы контента",
       "content_version": "Версия контента",
       "empty": "Нет установленного контента",
@@ -1436,13 +1477,18 @@
       "uses": {
         "placeholder": "Выбрать тип многоразового",
         "title": "Многоразовый"
+      },
+      "card_tags": {
+        "favorites": "Избранное",
+        "placeholder": "Выберите теги...",
+        "title": "Теги карт"
       }
     },
     "footer": {
-      "arkham_title": "Arkham Horror: The Card Game™",
-      "disclaimer": "<arkham>Arkham Horror: The Card Game™</arkham> and all related content © <ffg>Fantasy Flight Games (FFG)</ffg>. This site is not produced, endorsed by, or affiliated with FFG.",
+      "arkham_title": "Ужас Аркхэма: Карточная игра™",
+      "disclaimer": "<arkham>Ужас Аркхэма: Карточная игра™</arkham> и все связанные материалы © <ffg>Fantasy Flight Games (FFG)</ffg>. Этот сайт не создан, не одобрен и не связан с FFG.",
       "ffg": "Fantasy Flight Games (FFG)",
-      "legal": "Legal",
+      "legal": "Правовая информация",
       "legal_notice": "Правовая информация",
       "privacy": "Политика конфиденциальности",
       "terms": "Условия использования"
@@ -1471,6 +1517,7 @@
         "display_as_list": "Списком",
         "display_as_list_text": "Списком с текстами карт",
         "display_as_scans": "Сканами",
+        "flip_all_scans": "Перевернуть все сканы",
         "focus_search": "Выбрать поиск",
         "move_down": "Переместить низ",
         "move_up": "Переместить вверх",
@@ -1506,6 +1553,7 @@
         "card_count_hidden": "({{count}} скрыто фильтрами)",
         "card_count_many": "{{count}} карт",
         "card_count_one": "{{count}} карта",
+        "card_count_other": "{{count}} карт",
         "display": "Отображение",
         "display_as_detailed": "Полные карты",
         "display_as_list": "Список",
@@ -1517,7 +1565,8 @@
         "list_settings": "Настройка списка",
         "max_columns": "Макс. сканов в столбце",
         "sort": "Сортировка",
-        "sort_default": "Пользовательская"
+        "sort_default": "Пользовательская",
+        "taboo_filter_override": "Переопределено фильтром «Список табу»"
       },
       "reset": "По умолчанию",
       "search": {
@@ -1525,14 +1574,18 @@
         "include_flavor": "Художественный текст",
         "include_game_text": "Игровой текст",
         "include_name": "Название",
+        "match_display_mode": "Согласовать с режимом отображения",
+        "match_visible_taboo": "Согласовать с отображаемым табу",
         "placeholder": "Поиск по картам",
         "share": "Поделиться запросом",
+        "share_settings": "Поделиться настройками",
         "title": "Поиск"
       },
       "sort_by": "Сортировка"
     },
     "masthead": {
       "browse": "Обзор",
+      "cards": "Карты",
       "navigation": "Основная навигация",
       "rules": "Правила"
     },
@@ -1548,19 +1601,19 @@
         "dismiss": "Отклонить",
         "enable": "Включить превью карт"
       },
-      "description": "Enabling previews will show cards from upcoming sets in the card browser. You can change this setting at any time in the collection settings.",
-      "title": "Preview season is here!"
+      "description": "При включённом предпросмотре в каталоге карт будут показаны карты из будущих наборов. Вы можете изменить эту настройку в любое время в настройках коллекции.",
+      "title": "Начался сезон предпросмотра!"
     },
     "rules": {
       "back_to_top": "Назад к началу",
       "grimoire": {
-        "empty": "No grimoire content found.",
-        "error": "Failed to load grimoire content.",
-        "intro_description": "The Arkham Grimoire is a comprehensive collection of rulings covering all known situations in the game. As a living document, it is maintained online and updated as new cards, rules, and interactions are introduced or discovered. This document contains information pertaining to more advanced topics such as the interpretation of card text, the resolution of timing conflicts, frequently asked questions, and a list of all keywords and other rules text.",
-        "intro_title": "The Arkham Grimoire",
-        "loading": "Loading grimoire content...",
-        "open_link": "Open the Grimoire",
-        "references": "References"
+        "empty": "Материалы Гримуара не найдены.",
+        "error": "Не удалось загрузить материалы Гримуара.",
+        "intro_description": "Гримуар Аркхэма — полное собрание разъяснений для всех известных игровых ситуаций. Этот постоянно обновляемый документ доступен онлайн и дополняется по мере появления или обнаружения новых карт, правил и взаимодействий. Он содержит информацию по сложным вопросам: толкование текста карт, разрешение временных конфликтов, ответы на часто задаваемые вопросы, а также список всех ключевых слов и других правил.",
+        "intro_title": "Гримуар Аркхэма",
+        "loading": "Загрузка материалов Гримуара...",
+        "open_link": "Открыть Гримуар",
+        "references": "Ссылки"
       },
       "search_placeholder": "Поиск по ключевым словам…",
       "title": "Справочник правил",
@@ -1616,16 +1669,16 @@
           },
           "reconnect": "Обновить",
           "status": {
-            "healthy": "Healthy",
-            "unhealthy": "Unhealthy"
+            "healthy": "Работает",
+            "unhealthy": "Не работает"
           },
           "sync_status": "Статус синхронизации",
           "title": "Подключения",
           "user_id": "ID пользователя"
         },
         "privacy_rights": {
-          "body": "You can export your data from the Support tab and delete your account below. For GDPR requests that are not self-service, such as restriction or objection requests, contact <privacyEmail />.",
-          "title": "Privacy and data rights"
+          "body": "Вы можете экспортировать свои данные на вкладке «Поддержка» и удалить учётную запись ниже. По вопросам GDPR, которые нельзя решить самостоятельно, например об ограничении обработки данных или возражении против неё, обращайтесь по адресу <privacyEmail />.",
+          "title": "Конфиденциальность и права на данные"
         },
         "profile": {
           "save": "Сохранить профиль",
@@ -1634,7 +1687,21 @@
           "username": "Имя пользователя",
           "username_help": "Только символы, цифры, подчеркивания и дефисы"
         },
-        "title": "Аккаунт"
+        "title": "Аккаунт",
+        "connected_apps": {
+          "error": "Не удалось загрузить подключённые приложения.",
+          "granted_at": "Доступ предоставлен",
+          "last_authorized_at": "Последняя авторизация",
+          "loading": "Загрузка подключённых приложений...",
+          "permissions": "Разрешения",
+          "revoke_confirm": "Отозвать доступ {{clientName}} к вашей учётной записи?",
+          "revoke_error": "Не удалось отозвать доступ {{clientName}}: {{error}}",
+          "revoking_app": "Отзыв доступа {{clientName}}...",
+          "status": {
+            "active": "Подключено",
+            "disabled": "Отключено"
+          }
+        }
       },
       "card_data": {
         "card_count": "Количество карт",
@@ -1676,7 +1743,9 @@
         "card_level_icon_only": "Только в иконке",
         "card_show_collection_number": "Показывать номер в коллекции",
         "card_show_details": "Показывать карту подробно",
+        "card_show_favorite_highlights": "Выделять избранное",
         "card_show_icon": "Показывать цену и уровень",
+        "card_show_tags": "Показывать теги карт",
         "card_show_thumbnail": "Показывать картинку карты",
         "card_show_unique_icon": "Показывать иконку «Уникальный»",
         "card_size": "Размер",
@@ -1686,7 +1755,7 @@
         "card_skill_icons_as_printed": "Как на картах",
         "card_skill_icons_simple": "Простые",
         "font_size": "Размер шрифта",
-        "font_size_preview": "Armitage had an idea that the alphabet might be something esoterically used by certain forbidden cults which have come down from old times, and which have inherited many forms and traditions from the wizards of the Saracenic world.",
+        "font_size_preview": "Армитаж предположил, что этот алфавит тайно используют некие запретные культы, сохранившиеся с древних времён и унаследовавшие множество обрядов и традиций колдунов сарацинского мира.",
         "show_card_modal_popular_decks": "Показывать популярные колоды в окне карты",
         "show_card_modal_popular_decks_help": "Популярные колоды содержащие открытую карту будут показаны в окне карты",
         "show_move_to_side_deck": "Показывать кнопку «Переместить в отложенные карты»",
@@ -1731,27 +1800,28 @@
       "title": "Настройки"
     },
     "suzi_standalone_setup": {
-      "description": "FAQ 2.4 defines how standalone decks for Suzi may be built. Random cards between level 1-5 from your collection are drawn until your desired amount of XP is reached. Afterwards, an equivalent number of cards have to be removed from the deck.",
-      "draw_cards": "Draw cards",
-      "limit_collection": "Use only cards from my collection",
-      "limit_exile": "Use \"Ultimatum of Exile\" (disallow exile cards)",
-      "limit_fan_made": "Use fan-made content",
-      "results": "Results",
-      "reveal_all": "Reveal all",
-      "title": "Subject 5U-21 / \"Suzi\" standalone setup",
-      "title_short": "Standalone setup",
-      "xp": "Target XP"
+      "description": "В FAQ 2.4 описаны правила создания колоды Сьюзи для одиночной игры. Случайные карты уровней 1–5 из вашей коллекции вытягиваются, пока не будет достигнуто нужное количество опыта. Затем из колоды необходимо удалить такое же количество карт.",
+      "draw_cards": "Вытянуть карты",
+      "limit_collection": "Использовать только карты из моей коллекции",
+      "limit_exile": "Использовать «Ультиматум изгнания» (запретить карты с изгнанием)",
+      "limit_fan_made": "Использовать фанатские материалы",
+      "results": "Результаты",
+      "reveal_all": "Открыть все",
+      "title": "Объект 5U-21 / «Сьюзи»: подготовка к одиночной игре",
+      "title_short": "Подготовка к одиночной игре",
+      "xp": "Целевой опыт"
     },
     "ui": {
       "cards_combobox": {
         "placeholder_few": "Выберите карты",
         "placeholder_many": "Выберите карт",
-        "placeholder_one": "Выберите карту"
+        "placeholder_one": "Выберите карту",
+        "placeholder_other": "Выберите карты..."
       },
       "collapsible": {
         "collapse": "Закрыть раздел",
         "expand": "Развернуть раздел",
-        "toggle": "Toggle section"
+        "toggle": "Развернуть или свернуть раздел"
       },
       "combobox": {
         "unknown_option": "Неизвестный вариант"
@@ -1761,7 +1831,80 @@
       "pagination": {
         "next": "Дальше",
         "previous": "Назад"
+      },
+      "password_input": {
+        "hide_password": "Скрыть пароль",
+        "show_password": "Показать пароль"
       }
+    },
+    "card_tags": {
+      "account_title": "Глобальные теги",
+      "deck_placeholder": "Добавить тег колоды...",
+      "deck_title": "Теги колоды",
+      "favorite": "Избранное",
+      "manage": {
+        "action": "Управление тегами",
+        "delete": "Удалить",
+        "error": "Не удалось обновить теги карт: {{error}}",
+        "name": "Название тега",
+        "save": "Обновить тег",
+        "title": "Управление тегами",
+        "unknown_error": "Неизвестная ошибка"
+      },
+      "placeholder": "Добавить глобальный тег...",
+      "title": "Теги"
+    },
+    "content": {
+      "empty": {
+        "campaigns": "Нет доступных кампаний.",
+        "standalone_scenarios": "Нет доступных одиночных сценариев."
+      },
+      "guide": {
+        "campaign_pdf": "Руководство кампании",
+        "return_to_pdf": "Возвращение",
+        "rules_insert_pdf": "Вкладыш с правилами"
+      },
+      "tabs": {
+        "campaigns": "Кампании",
+        "standalone_scenarios": "Одиночные сценарии"
+      },
+      "title": "Материалы",
+      "unknown_release_year": "Неизвестный год"
+    },
+    "oauth_consent": {
+      "allow": "Разрешить",
+      "authorize": "Авторизовать {{clientName}}",
+      "deny": "Отказать",
+      "description": "{{clientName}} запрашивает доступ к вашей учётной записи arkham.build.",
+      "error": "Не удалось загрузить запрос авторизации. Вернитесь в приложение и попробуйте снова.",
+      "expired": "Этот запрос авторизации недействителен или истёк. Вернитесь в приложение и начните заново.",
+      "loading": "Загрузка запроса авторизации...",
+      "permissions": "Запрашиваемые разрешения",
+      "redirecting_to_login": "Перенаправление на страницу входа...",
+      "scopes": {
+        "decks_delete": {
+          "description": "Удалять ваши колоды.",
+          "title": "Удаление колод"
+        },
+        "decks_read": {
+          "description": "Просматривать ваши колоды.",
+          "title": "Чтение колод"
+        },
+        "decks_write": {
+          "description": "Создавать и обновлять ваши колоды.",
+          "title": "Запись колод"
+        },
+        "profile_read": {
+          "description": "Просматривать ID учётной записи и имя пользователя.",
+          "title": "Чтение профиля"
+        }
+      },
+      "title": "Авторизация приложения"
+    },
+    "sealed_deck": {
+      "empty": "Этот пул карт для запечатанной колоды не содержит карт.",
+      "loading": "Загрузка пула карт для запечатанной колоды...",
+      "title": "Пул карт для запечатанной колоды: {{name}}"
     }
   }
 }
