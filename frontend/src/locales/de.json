@@ -10,7 +10,7 @@
         "metadata": "Einpflege von Metadaten.",
         "qa": "QA Testing.",
         "testing": "Testen der Anwendung, Feedback und Fehlermeldungen in der frühen Entwicklungsphase.",
-        "title": "Hall of Fame",
+        "title": "Ehrentafel",
         "translation": {
           "es": "Spanisch",
           "fr": "Französisch",
@@ -37,7 +37,7 @@
         "close_modal": "Dialog schließen",
         "legend": "Tastenkürzel anzeigen"
       },
-      "home": "Home",
+      "home": "Startseite",
       "init": "Lade Kartendaten...",
       "init_error": "Kartendaten konnten nicht geladen werden: {{error}}"
     },
@@ -145,6 +145,7 @@
       }
     },
     "browse": {
+      "sets": "Kartensets",
       "title": "Kartenbrowser"
     },
     "card_modal": {
@@ -161,7 +162,7 @@
       }
     },
     "card_scenarios": {
-      "standalone": "Standalone",
+      "standalone": "Einzelspiel",
       "title": "Szenarien mit <em>{{name}}</em>",
       "tooltip": "{{name}} <em>({{campaignName}})</em>"
     },
@@ -180,7 +181,7 @@
         "unknown_error": "Unbekannter Fehler"
       },
       "placeholder": "Account-Tag hinzufügen...",
-      "title": "Tags"
+      "title": "Markierungen"
     },
     "card_view": {
       "actions": {
@@ -188,6 +189,7 @@
         "reviews": "Meinungen",
         "show_original_image": "Originalversion anzeigen",
         "show_taboo_image": "Tabuversion anzeigen",
+        "starter_deck": "Offizielles Einsteigerdeck",
         "usable_by": "{{prefix}}{{name}} Kartenpool",
         "usable_by_interpolated": "<tooltip>{{name}}</tooltip> Kartenpool",
         "view_backside": "Rückseite",
@@ -254,17 +256,21 @@
         "Blessed": "Gesegnet",
         "Blessed and Cursed": "Gesegnet und Verflucht",
         "Class Choice": "Ausgewählte Klasse",
+        "Collector": "Sammler",
         "Cursed": "Verflucht",
         "Deck Size": "Deckgröße",
         "Deck must have at least 10 skill cards.": "Das Deck muss mindestens 10 Fertigkeitskarten enthalten.",
+        "Deck must have at least 11 Insights.": "Das Deck muss mindestens 11 Erkenntnis-Karten enthalten.",
         "Fortune": "Glücksfall",
         "Gambit": "Schachzug",
         "Improvised": "Improvisiert",
         "No permanents except story and signature permanents": "Keine dauerhaften Vorteilskarten außer Story- und Signatur-Karten",
         "Secondary Class": "Sekundärklasse",
+        "Too many off-class cards for Collector.": "Zu viele klassenfremde Karten für Sammler.",
         "Too many off-class cards for Versatile.": "Zu viele Off-Class-Karten für \"Vielseitig\".",
         "Too many off-class cards.": "Zu viele Off-Class-Karten.",
         "Trait Choice": "Ausgewähltes Merkmal",
+        "Versatile": "Vielseitig",
         "You cannot have assets that take up an ally slot.": "Du kannst keine Vorteile haben, die einen Verbündeten-Slot belegen",
         "You cannot have more than 15 level 0-1 Guardian and/or Survivor cards": "Du kannst nicht mehr als 15 Stufe 0-1 Wächter und/oder Überlebende Karten haben",
         "You cannot have more than 15 level 0-1 Seeker and/or Mystic cards": "Du kannst nicht mehr als 15 Stufe 0-1 Sucher- und/oder Mystikerkarten haben",
@@ -885,7 +891,7 @@
       "annotation_tooltip": "Diese Karte hat eine Anmerkung",
       "attachments": {
         "Bewitching": "Bezaubernd",
-        "Eldritch Brand": "Eldritch Brand",
+        "Eldritch Brand": "Unheimliches Brandmal",
         "Hunch deck": "Spürnase-Deck",
         "Market deck": "Marktdeck",
         "Stick to the Plan": "Sich an den Plan halten"
@@ -902,7 +908,7 @@
         "title": "Aktuelle Verbesserung"
       },
       "limited_decks": {
-        "Collector": "Collector",
+        "Collector": "Sammler",
         "Secondary Class": "Sekundärklasse",
         "Versatile": "Vielseitig"
       },
@@ -948,7 +954,17 @@
         "resource_cost_tooltip": "{{count}} {{cards}}, die {{cost}} kosten",
         "resource_costs": "Ressourcenkosten",
         "skill_icons": "Fertigkeitssymbole",
-        "skill_icons_tooltip": "{{count}} \"{{skill}}\" {{icons}}"
+        "skill_icons_tooltip": "{{count}} \"{{skill}}\" {{icons}}",
+        "random_basic_weakness": {
+          "add": "Zufällige Grundschwäche hinzufügen",
+          "draft": "Zufällige Grundschwäche draften",
+          "equal_probability": "Gleiche Wahrscheinlichkeit für jede Schwäche verwenden",
+          "ignore_deck_card_pool": "Kartenpool des Decks ignorieren",
+          "replace_random_basic_weakness": "Platzhalter für zufällige Grundschwäche ersetzen",
+          "require_trait": "Merkmal voraussetzen",
+          "title": "Zufällige Grundschwäche hinzufügen",
+          "trait_placeholder": "Merkmal wählen"
+        }
       },
       "validation": {
         "card_not_in_limited_pool": "Die folgenden Karten sind nicht Teil des Kartenpools für dieses Deck:",
@@ -1013,7 +1029,8 @@
         "error": "Versiegeltes Deck konnte nicht geladen werden: {{error}}",
         "loading": "Versiegeltes Deck wird geladen..."
       },
-      "title": "{{name}} Deck erstellen"
+      "title": "{{name}} Deck erstellen",
+      "use_starter_deck": "Offizielles Einsteigerdeck verwenden"
     },
     "deck_edit": {
       "actions": {
@@ -1037,10 +1054,10 @@
       },
       "changes_restored": "Ungespeicherte Änderungen wurden wiederhergestellt.",
       "config": {
-        "buildql_deck_option": "BuildQL deckbuilding override",
+        "buildql_deck_option": "Deckbauregeln mit BuildQL überschreiben",
         "card_pool": {
           "apply_environment": "{{environment}} Umgebung anwenden",
-          "campaign_playalong": "Campaign Play-Along",
+          "campaign_playalong": "Gemeinsame Kampagne",
           "campaign_playalong_help": "\"Campaign Play-Along\" ist ein regelmäßiges Event, das auf dem Mythos Busters Discord-Server stattfindet. Während des jeweiligen Events wird eine Kampagne zusammen, mit einem eingeschränkten Kartenpool, gespielt.",
           "chapter_1": "Kapitel 1",
           "chapter_1_help": "Kartenpool auf alle Packs in Kapitel 1 setzen.",
@@ -1058,14 +1075,14 @@
           "custom": "Benutzerdefinierte Umgebung",
           "help": "Auswahl gilt nicht für Ermittler, Signaturkarten und Schwächen.",
           "help_chapter_1": "Diese Umgebung ist auf Kapitel 1 beschränkt.",
-          "legacy": "Legacy",
+          "legacy": "Ältere Ausgaben",
           "legacy_help": "In der \"Legacy\" Umgebung dürfen Decks alle erschienenen Karten ohne Einschränkungen verwenden.",
           "limited": "Limitiert",
           "limited_faq25": "Limitiert (FAQ 2.5)",
           "limited_faq25_help": "In der \"limitierten\" Umgebung dürfen Decks Karten aus dem Basisspiel, den Starter-Decks und bis zu drei weiteren Ermittlererweiterungen verwenden.",
           "limited_help": "In der \"limitierten\" Umgebung dürfen Decks Karten der folgenden Produkte enthalten: Grundspiel (2026), 5 Ermittlerdecks, 3 verschiedene Spielerkarten-Erweiterungen deiner Wahl.",
           "placeholder": "Packs auswählen...",
-          "progression": "Progression",
+          "progression": "Nach Erscheinungsdatum",
           "progression_help": "Kartenpool auf den Stand bei Veröffentlichung der ausgewählten Kampagne oder des eigenständigen Szenarios setzen.",
           "progression_target": "Kampagne oder Einzelspielszenario",
           "section_title": "Kartenpooleinstellungen",
@@ -1332,7 +1349,7 @@
         "view_external": "Mehr erfahren"
       },
       "available_content": "Verfügbare Inhalte",
-      "banner_credit": "Illus. {{credit}}",
+      "banner_credit": "Illustration: {{credit}}",
       "content_types": "Inhaltstypen",
       "content_version": "Inhaltsversion",
       "empty": "Keine Inhalte installiert",
@@ -1355,17 +1372,17 @@
         "card_lists": "Kartenlisten",
         "card_lists_help": "Standardwert für den \"Inoffizielle Inhalte\" Filter in den Kartenlisten."
       },
-      "short_title": "Fan-made",
+      "short_title": "Fan-Inhalte",
       "status": {
         "alpha": "Alpha",
         "beta": "Beta",
         "complete": "Komplett",
-        "draft": "Draft",
-        "final": "Final"
+        "draft": "Entwurf",
+        "final": "Abgeschlossen"
       },
       "status_installed": "Hinzugefügt",
       "status_update_available": "Inhalt aktualisieren",
-      "tags": "Tags",
+      "tags": "Markierungen",
       "title": "Inoffizielle Inhalte",
       "types": {
         "campaign": "Kampagne",
@@ -1440,7 +1457,7 @@
       },
       "pack": {
         "placeholder": "Packs auswählen...",
-        "title": "Pack"
+        "title": "Erweiterung"
       },
       "properties": {
         "heals_damage": "Heilt Schaden",
@@ -1481,7 +1498,7 @@
       }
     },
     "footer": {
-      "arkham_title": "Arkham Horror: The Card Game™",
+      "arkham_title": "Arkham Horror: Das Kartenspiel™",
       "disclaimer": "<arkham>Arkham Horror: The Card Game™</arkham> und alle Inhalte © <ffg>Fantasy Flight Games (FFG)</ffg>. Diese Seite wird nicht von FFG betrieben.",
       "ffg": "Fantasy Flight Games (FFG)",
       "legal": "Rechtliches",
@@ -1537,7 +1554,7 @@
         "faction": "Klasse",
         "level": "Stufe",
         "name": "Name",
-        "pack": "Pack",
+        "pack": "Erweiterung",
         "position": "Position",
         "slot": "Slot",
         "subtype": "Untertyp",
@@ -1578,7 +1595,7 @@
       "sort_by": "Sortierung"
     },
     "masthead": {
-      "browse": "Browse",
+      "browse": "Durchsuchen",
       "cards": "Karten",
       "navigation": "Navigation",
       "rules": "Regeln"
@@ -1681,7 +1698,21 @@
           "username": "Nutzername",
           "username_help": "Nur Buchstaben, Zahlen, Bindestriche, und Unterstriche"
         },
-        "title": "Konto"
+        "title": "Konto",
+        "connected_apps": {
+          "error": "Verbundene Anwendungen konnten nicht geladen werden.",
+          "granted_at": "Zugriff gewährt",
+          "last_authorized_at": "Zuletzt autorisiert",
+          "loading": "Verbundene Anwendungen werden geladen...",
+          "permissions": "Berechtigungen",
+          "revoke_confirm": "Zugriff von {{clientName}} auf dein Konto widerrufen?",
+          "revoke_error": "Zugriff von {{clientName}} konnte nicht widerrufen werden: {{error}}",
+          "revoking_app": "Zugriff von {{clientName}} wird widerrufen...",
+          "status": {
+            "active": "Verbunden",
+            "disabled": "Deaktiviert"
+          }
+        }
       },
       "card_data": {
         "card_count": "Kartenanzahl",
@@ -1745,7 +1776,7 @@
         "theme": "Anzeigemodus",
         "theme_dark": "Dunkel",
         "theme_light": "Hell",
-        "theme_system": "System",
+        "theme_system": "Systemeinstellung",
         "title": "Anzeige"
       },
       "error": "Speichern der Einstellungen fehlgeschlagen: {{error}}",
@@ -1814,6 +1845,41 @@
         "hide_password": "Passwort ausblenden",
         "show_password": "Passwort anzeigen"
       }
+    },
+    "oauth_consent": {
+      "allow": "Erlauben",
+      "authorize": "{{clientName}} autorisieren",
+      "deny": "Ablehnen",
+      "description": "{{clientName}} fordert Zugriff auf dein arkham.build-Konto an.",
+      "error": "Die Autorisierungsanfrage konnte nicht geladen werden. Kehre zur Anwendung zurück und versuche es erneut.",
+      "expired": "Diese Autorisierungsanfrage ist ungültig oder abgelaufen. Kehre zur Anwendung zurück und beginne erneut.",
+      "loading": "Autorisierungsanfrage wird geladen...",
+      "permissions": "Angeforderte Berechtigungen",
+      "redirecting_to_login": "Weiterleitung zur Anmeldung...",
+      "scopes": {
+        "decks_delete": {
+          "description": "Deine Decks löschen.",
+          "title": "Decks löschen"
+        },
+        "decks_read": {
+          "description": "Deine Decks ansehen.",
+          "title": "Decks lesen"
+        },
+        "decks_write": {
+          "description": "Deine Decks erstellen und aktualisieren.",
+          "title": "Decks schreiben"
+        },
+        "profile_read": {
+          "description": "Deine Konto-ID und deinen Benutzernamen ansehen.",
+          "title": "Profil lesen"
+        }
+      },
+      "title": "Anwendungsautorisierung"
+    },
+    "sealed_deck": {
+      "empty": "Dieser versiegelte Kartenpool enthält keine Karten.",
+      "loading": "Versiegelter Kartenpool wird abgerufen...",
+      "title": "Versiegelter Kartenpool: {{name}}"
     }
   }
 }
