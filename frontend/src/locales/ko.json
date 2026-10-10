@@ -145,6 +145,7 @@
       }
     },
     "browse": {
+      "sets": "세트",
       "title": "카드 탐색기"
     },
     "card_modal": {
@@ -188,6 +189,7 @@
         "reviews": "리뷰 보기",
         "show_original_image": "원본 카드 이미지 보기",
         "show_taboo_image": "금기 카드 이미지 보기",
+        "starter_deck": "공식 입문자 덱",
         "usable_by": "{{prefix}}{{name}} 조사자가 접근 가능한 모든 카드 보기",
         "usable_by_interpolated": "<tooltip>{{name}}</tooltip> 조사자가 접근 가능한 모든 카드 보기",
         "view_backside": "뒷면",
@@ -197,7 +199,7 @@
       "faq": {
         "empty": "FAQ 항목 사용 불가.",
         "error": "FAQ 항목 불러오기 실패.",
-        "title": "FAQ"
+        "title": "자주 묻는 질문"
       },
       "ratings": {
         "title": "카드 등급"
@@ -253,7 +255,7 @@
         "Blessed": "축복받은",
         "Blessed and Cursed": "축복받은 및 저주받은",
         "Class Choice": "역할군 선택",
-        "Collector": "Collector",
+        "Collector": "수집가",
         "Cursed": "저주받은",
         "Deck Size": "덱 크기",
         "Deck must have at least 10 skill cards.": "덱에 반드시 10장 이상의 능력 카드를 포함하여야 합니다.",
@@ -392,7 +394,7 @@
       "sort_asc": "오름차순 정렬",
       "sort_desc": "내림차순 정렬",
       "specialist": "전문화",
-      "stage": "Stage",
+      "stage": "단계",
       "subtype": {
         "basicweakness": "기본 약점",
         "none": "없음",
@@ -892,7 +894,7 @@
         "title": "마지막 향상"
       },
       "limited_decks": {
-        "Collector": "Collector",
+        "Collector": "수집가",
         "Secondary Class": "보조 역할군",
         "Versatile": "다재다능"
       },
@@ -938,7 +940,17 @@
         "resource_cost_tooltip": "비용 {{cost}}인 {{cards}} {{count}}장",
         "resource_costs": "자원 비용",
         "skill_icons": "능력 아이콘",
-        "skill_icons_tooltip": "{{skill}} {{icons}} 도합 {{count}}개"
+        "skill_icons_tooltip": "{{skill}} {{icons}} 도합 {{count}}개",
+        "random_basic_weakness": {
+          "add": "무작위 기본 약점 추가",
+          "draft": "무작위 기본 약점 드래프트",
+          "equal_probability": "모든 약점의 선택 확률을 동일하게 적용",
+          "ignore_deck_card_pool": "덱 카드 풀 무시",
+          "replace_random_basic_weakness": "무작위 기본 약점 자리 표시자 교체",
+          "require_trait": "특성 조건 적용",
+          "title": "무작위 기본 약점 추가",
+          "trait_placeholder": "특성 선택"
+        }
       },
       "validation": {
         "card_not_in_limited_pool": "다음 카드는 이 덱의 카드 구성 환경에서는 포함될 수 없습니다:",
@@ -1003,7 +1015,8 @@
         "error": "봉인된 덱을 가져오는데 실패함: {{error}}",
         "loading": "봉인된 덱을 가져오는 중..."
       },
-      "title": "{{name}} 덱 생성하기"
+      "title": "{{name}} 덱 생성하기",
+      "use_starter_deck": "공식 입문자 덱 사용"
     },
     "deck_edit": {
       "actions": {
@@ -1037,6 +1050,7 @@
           "chapter_2": "챕터 2",
           "chapter_2_help": "카드 구성 환경을 챕터 2의 모든 팩으로 설정하기.",
           "choose_cycle_placeholder": "사이클 선택...",
+          "choose_progression_target_placeholder": "캠페인 또는 독립 시나리오 선택...",
           "collection": "보유 게임",
           "collection_help": "현재 <settings_link>보유 게임</settings_link>을 이 덱의 카드 구성 환경으로 설정하십시오. 이는 덱의 카드 구성 환경으로 고정하거나, 물리적으로 보유 게임을 함께 사용하는 사람들과 “덱 구성 프리셋”을 공유하는데 유용할 수 있습니다.",
           "configure_environment": "환경 설정",
@@ -1054,6 +1068,9 @@
           "limited_faq25_help": "제한 환경에서 덱을 구성하려면, 플레이어는 기본판과 조사자 확장 5종 및 선택한 조사자 확장 3종으로만 덱을 구성할 수 있습니다.",
           "limited_help": "제한 환경에서 덱을 구성할 때, 플레이어는 다음 제품을 사용할 수 있습니다: 2026 기본판, 5종의 조사자 덱, 그리고 자신이 선택한 3종의 플레이어 카드 확장팩.",
           "placeholder": "팩 선택하기...",
+          "progression": "발매 순서",
+          "progression_help": "선택한 캠페인 또는 독립 시나리오가 출시되었을 때 이용 가능했던 제품으로 카드 풀을 설정합니다.",
+          "progression_target": "캠페인 또는 독립 시나리오",
           "section_title": "카드 구성 환경 설정",
           "selected_cards": "선택된 카드",
           "substitute_chapter_2_with_chapter_1": "챕터 2의 핵심 덱과 조사자 덱을 챕터 1장의 해당 덱으로 대체하십시오.",
@@ -1230,7 +1247,7 @@
       "newer_version": "이 덱의 <a>새로운 버전</a>이 있습니다. 이 덱은 읽기 전용입니다.",
       "scans": "이미지",
       "sharing": {
-        "api_link": "Json API",
+        "api_link": "JSON API",
         "description": "덱은 로컬로 저장되었습니다.",
         "description_present": "이 덱은 <a>해당 링크</a>를 통해 보일 수 있도록 공개 공유됩니다.",
         "title": "공개 공유",
@@ -1416,7 +1433,7 @@
         "title": "능력값"
       },
       "level": {
-        "no_level": "Null",
+        "no_level": "없음",
         "title": "레벨"
       },
       "ownership": {
@@ -1554,14 +1571,18 @@
         "include_flavor": "기타 문구",
         "include_game_text": "카드 문구",
         "include_name": "이름",
+        "match_display_mode": "표시 방식에 맞춤",
+        "match_visible_taboo": "표시된 금기 목록에 맞춤",
         "placeholder": "카드 찾아보기...",
         "share": "쿼리 공유하기",
+        "share_settings": "설정 공유",
         "title": "검색"
       },
       "sort_by": "정렬 기준"
     },
     "masthead": {
       "browse": "찾아보기",
+      "cards": "카드",
       "navigation": "주요 탐색 메뉴",
       "rules": "규칙"
     },
@@ -1663,7 +1684,21 @@
           "username": "계정명",
           "username_help": "영문자, 숫자, 밑줄, 하이픈만 허용됨"
         },
-        "title": "Account"
+        "title": "계정",
+        "connected_apps": {
+          "error": "연결된 애플리케이션을 불러오지 못했습니다.",
+          "granted_at": "접근 허용일",
+          "last_authorized_at": "마지막 승인일",
+          "loading": "연결된 애플리케이션 불러오는 중...",
+          "permissions": "권한",
+          "revoke_confirm": "{{clientName}}의 계정 접근 권한을 취소할까요?",
+          "revoke_error": "{{clientName}}의 접근 권한 취소 실패: {{error}}",
+          "revoking_app": "{{clientName}}의 접근 권한 취소 중...",
+          "status": {
+            "active": "연결됨",
+            "disabled": "비활성화됨"
+          }
+        }
       },
       "card_data": {
         "card_count": "카드 수량",
@@ -1796,6 +1831,58 @@
         "hide_password": "암호 숨기기",
         "show_password": "암호 보이기"
       }
+    },
+    "content": {
+      "empty": {
+        "campaigns": "이용 가능한 캠페인이 없습니다.",
+        "standalone_scenarios": "이용 가능한 독립 시나리오가 없습니다."
+      },
+      "guide": {
+        "campaign_pdf": "캠페인 안내서",
+        "return_to_pdf": "돌아온",
+        "rules_insert_pdf": "규칙 안내지"
+      },
+      "tabs": {
+        "campaigns": "캠페인",
+        "standalone_scenarios": "독립 시나리오"
+      },
+      "title": "콘텐츠",
+      "unknown_release_year": "연도 미상"
+    },
+    "oauth_consent": {
+      "allow": "허용",
+      "authorize": "{{clientName}} 승인",
+      "deny": "거부",
+      "description": "{{clientName}}에서 arkham.build 계정에 대한 접근 권한을 요청하고 있습니다.",
+      "error": "승인 요청을 불러오지 못했습니다. 애플리케이션으로 돌아가 다시 시도하세요.",
+      "expired": "승인 요청이 유효하지 않거나 만료되었습니다. 애플리케이션으로 돌아가 다시 시작하세요.",
+      "loading": "승인 요청 불러오는 중...",
+      "permissions": "요청한 권한",
+      "redirecting_to_login": "로그인 페이지로 이동 중...",
+      "scopes": {
+        "decks_delete": {
+          "description": "덱을 삭제합니다.",
+          "title": "덱 삭제"
+        },
+        "decks_read": {
+          "description": "덱을 조회합니다.",
+          "title": "덱 조회"
+        },
+        "decks_write": {
+          "description": "덱을 생성하고 수정합니다.",
+          "title": "덱 작성"
+        },
+        "profile_read": {
+          "description": "계정 ID와 사용자 이름을 조회합니다.",
+          "title": "프로필 조회"
+        }
+      },
+      "title": "애플리케이션 승인"
+    },
+    "sealed_deck": {
+      "empty": "이 봉인된 카드 풀에는 카드가 없습니다.",
+      "loading": "봉인된 카드 풀 불러오는 중...",
+      "title": "봉인된 카드 풀: {{name}}"
     }
   }
 }
