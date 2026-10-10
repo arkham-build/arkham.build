@@ -160,8 +160,8 @@
       "title": "Zawartość",
       "unknown_release_year": "Nieznany rok",
       "guide": {
-        "campaign_pdf": "Przewodnik kampanii",
-        "return_to_pdf": "Powrót do",
+        "campaign_pdf": "Księga kampanii",
+        "return_to_pdf": "Powrót",
         "rules_insert_pdf": "Dodatek z zasadami"
       }
     },
@@ -206,7 +206,7 @@
         "reviews": "Otwórz recenzje",
         "show_original_image": "Pokaż obrazek oryginalnej wersji karty",
         "show_taboo_image": "Pokaż obrazek wersji tabu karty",
-        "starter_deck": "Oficjalna talia startowa",
+        "starter_deck": "Oficjalna talia badacza",
         "usable_by": "Pula kart: {{prefix}}{{name}}",
         "usable_by_interpolated": "Pula kart: <tooltip>{{name}}</tooltip>",
         "view_backside": "Rewers",
@@ -272,7 +272,7 @@
       "cycle_few": "cykle",
       "cycle_many": "cykli",
       "cycle_one": "cykl",
-      "cycle_other": "cykle",
+      "cycle_other": "cyklu",
       "deck_options": {
         "A deck cannot include more than one reward card with the permanent keyword.": "Talia nie może zawierać więcej niż jednej karty nagrody ze słowem kluczowym Trwała.",
         "Atleast constraint violated.": "Ograniczenie „przynajmniej” naruszone.",
@@ -289,7 +289,7 @@
         "Improvised": "Improwizowany",
         "No permanents except story and signature permanents": "Bez trwałych z wyjątkiem trwałych fabularnych i powiązanych z badaczem",
         "Secondary Class": "Klasa Poboczna",
-        "Too many off-class cards for Collector.": "Zbyt wiele kart z innych klas dla Kolekcjonera.",
+        "Too many off-class cards for Collector.": "Zbyt wiele kart pozaklasowych dla atutu Kolekcjoner.",
         "Too many off-class cards for Versatile.": "Zbyt wiele kart pozaklasowych dla atutu Wszechstronny.",
         "Too many off-class cards.": "Zbyt wiele kart pozaklasowych.",
         "Trait Choice": "Wybór atutów",
@@ -366,7 +366,7 @@
       "pack_few": "zestawy",
       "pack_many": "zestawów",
       "pack_one": "zestaw",
-      "pack_other": "zestawy",
+      "pack_other": "zestawu",
       "packs_new_format": {
         "encounter": "Rozszerzenie kampanijne",
         "player": "Rozszerzenie badaczy"
@@ -836,7 +836,7 @@
         "investigator_few": "Badacze",
         "investigator_many": "Badaczy",
         "investigator_one": "Badacz",
-        "investigator_other": "Badaczy",
+        "investigator_other": "Badacza",
         "key": "Klucz",
         "location": "Lokalizacja",
         "scenario": "Scenariusz",
@@ -932,7 +932,7 @@
         "ignored_few": "{{count}} kopie nie wliczają się do rozmiaru talii.",
         "ignored_many": "{{count}} kopii nie wlicza się do rozmiaru talii.",
         "ignored_one": "{{count}} kopia nie wlicza się do rozmiaru talii.",
-        "ignored_other": "{{count}} kopie nie wliczają się do rozmiaru talii.",
+        "ignored_other": "{{count}} kopii nie wlicza się do rozmiaru talii.",
         "unowned": "Niedostępne: {{count}} z {{total}} kart",
         "uses_parallel": "Używa strony z równoległego świata",
         "xp_available_help": "XP zdobyte przy ostatnim ulepszeniu.",
@@ -1046,7 +1046,7 @@
         "loading": "Wgrywanie zapieczętowanej talii..."
       },
       "title": "Stwórz talię {{name}}",
-      "use_starter_deck": "Użyj oficjalnej talii startowej"
+      "use_starter_deck": "Użyj oficjalnej talii badacza"
     },
     "deck_edit": {
       "actions": {
@@ -1076,9 +1076,9 @@
           "campaign_playalong": "Campaign Play-Along",
           "campaign_playalong_help": "„Campaign Play-Along” jest powracającym wydarzeniem organizowanym na serwerze Discord Mythos Busters. Jest ono zaprojektowane do wspólnego grania w kampanie Arkham, dzielenia się historiami i ogólnie tworzenia poczucia wspólnoty.",
           "chapter_1": "Rozdział 1",
-          "chapter_1_help": "Stwórz pulę kart ze wszystkich zestawów z Chapteru 1.",
+          "chapter_1_help": "Stwórz pulę kart ze wszystkich zestawów z rozdziału 1.",
           "chapter_2": "Rozdział 2",
-          "chapter_2_help": "Stwórz pulę kart ze wszystkich zestawów z Chapteru 2.",
+          "chapter_2_help": "Stwórz pulę kart ze wszystkich zestawów z rozdziału 2.",
           "choose_cycle_placeholder": "Wybierz cykle...",
           "choose_progression_target_placeholder": "Wybierz kampanię lub scenariusz...",
           "collection": "Kolekcja",
@@ -1090,7 +1090,7 @@
           "current_help": "Podczas budowania talii w środowisku Aktualnym gracze mogą budować talię wyłącznie przy użyciu kart z Zestawu Podstawowego 2026, pięciu talii badaczy, dwóch najnowszych rozszerzeń deckbuildingowych oraz dwóch najnowszych rozszerzeń badaczy wydanych po Zestawie Podstawowym 2026.",
           "custom": "Własna pula",
           "help": "Ten wybór nie ma wpływu na badaczy, ich wymagane karty i atuty fabularne.",
-          "help_chapter_1": "To jest środowisko chapteru 1.",
+          "help_chapter_1": "To jest środowisko rozdziału 1.",
           "legacy": "Legacy",
           "legacy_help": "Podczas budowania talii w środowisku Legacy gracze mogą budować swoje talie i korzystać z badaczy, kart badacza i osłabień z dowolnego produktu Horroru w Arkham: Gry karcianej™. Bez żadnych ograniczeń.",
           "limited": "Ograniczone",
@@ -1103,7 +1103,7 @@
           "progression_target": "Kampania lub scenariusz",
           "section_title": "Ustawienia puli kart",
           "selected_cards": "Wybrane karty",
-          "substitute_chapter_2_with_chapter_1": "Zastąp karty z zestawu podstawowego oraz talii badaczy z chapteru 2 odpowiednikami z chapteru 1.",
+          "substitute_chapter_2_with_chapter_1": "Zastąp karty z zestawu podstawowego oraz talii badaczy z rozdziału 2 odpowiednikami z rozdziału 1.",
           "title": "Ograniczona pula kart"
         },
         "name": "Nazwa talii",
@@ -1334,7 +1334,7 @@
     "draw_simulator": {
       "draw_tooltip": "Wylosuj {{count}} {{cards}}.",
       "mulligan_mode": "Tryb pierwszej ręki",
-      "mulligan_mode_help": "Po włączeniu osłabienia bez cechy Tarot oraz karty rozpoczynające grę w grze są automatycznie dobierane ponownie. Po wyłączeniu trybu wymiany kart talia jest jednorazowo tasowana.",
+      "mulligan_mode_help": "Po włączeniu, osłabienia bez cechy Tarot oraz karty rozpoczynające grę w grze są automatycznie dobierane ponownie. Po wyłączeniu trybu wymiany kart talia jest jednorazowo tasowana.",
       "redraw": "Wylosuj wybrane ponownie",
       "redraw_tooltip": "Wybrane karty zostaną przesunięte na koniec talii, a następnie zastąpione nowymi kartami.",
       "reset": "Resetuj",
@@ -1584,7 +1584,7 @@
         "card_count_hidden": "({{count}} ukrytych przez filtry)",
         "card_count_many": "{{count}} kart",
         "card_count_one": "{{count}} karta",
-        "card_count_other": "{{count}} kart",
+        "card_count_other": "{{count}} karty",
         "display": "Wyświetlanie listy",
         "display_as_detailed": "Szczegółowy podgląd karty",
         "display_as_list": "Tylko nazwa karty",
