@@ -1,9 +1,9 @@
-import type { Deck, DeckMeta, Slots } from "@arkham-build/shared";
-import { type Card, countExperience } from "@arkham-build/shared";
-import { decodeExileSlots, isSpecialCard } from "@/utils/card-utils";
+import type { Card, Deck, DeckMeta, Slots } from "@arkham-build/shared";
+import { decodeExileSlots } from "@/utils/card-utils";
 import { range } from "@/utils/range";
 import type { StoreState } from "../slices";
 import { addCardToDeckCharts, emptyDeckCharts } from "./deck-charts";
+import { computeDeckStats } from "./deck-stats";
 import type { LookupTables } from "./lookup-tables.types";
 import { resolveCardWithRelations } from "./resolve-card";
 import type {
@@ -63,10 +63,6 @@ export function decodeSlots(
     }
   }
 
-  let deckSize = 0;
-  let deckSizeTotal = 0;
-  let xpRequired = 0;
-
   const charts: DeckCharts = emptyDeckCharts();
 
   const bonded: Card[] = [];
@@ -83,9 +79,6 @@ export function decodeSlots(
     }
   }
 
-  // Myriad cards are counted only once, regardless of sub name.
-  const myriadCounted: Record<string, boolean> = {};
-
   for (const [code, quantity] of Object.entries(deck.slots)) {
     const card = resolveCardWithRelations(
       deps,
@@ -97,27 +90,10 @@ export function decodeSlots(
     );
 
     if (card) {
-      deckSizeTotal += quantity;
       cards.slots[code] = card;
-
-      xpRequired +=
-        card.card.myriad && myriadCounted[card.card.real_name]
-          ? 0
-          : countExperience(card.card, quantity);
-
-      if (card.card.myriad && !myriadCounted[card.card.real_name]) {
-        myriadCounted[card.card.real_name] = true;
-      }
 
       if (deck.ignoreDeckLimitSlots?.[code]) {
         cards.ignoreDeckLimitSlots[code] = card;
-      }
-
-      if (!isSpecialCard(card.card)) {
-        deckSize += Math.max(
-          quantity - (deck.ignoreDeckLimitSlots?.[code] ?? 0),
-          0,
-        );
       }
 
       addToFanMadeData(card);
@@ -179,7 +155,7 @@ export function decodeSlots(
   }
 
   if (extraSlots && !Array.isArray(extraSlots)) {
-    for (const [code, quantity] of Object.entries(extraSlots)) {
+    for (const code of Object.keys(extraSlots)) {
       const card = resolveCardWithRelations(
         deps,
         collator,
@@ -190,8 +166,6 @@ export function decodeSlots(
       ); // SAFE! we do not need relations for extra deck.
 
       if (card) {
-        xpRequired += countExperience(card.card, quantity);
-        deckSizeTotal += quantity;
         cards.extraSlots[code] = card;
         addToFanMadeData(card);
       }
@@ -216,13 +190,15 @@ export function decodeSlots(
     }
   }
 
+  const stats = computeDeckStats(deck, extraSlots, (code) => {
+    return cards.slots[code]?.card ?? cards.extraSlots[code]?.card;
+  });
+
   return {
     bondedSlots,
     cards,
     fanMadeData,
-    deckSize,
-    deckSizeTotal,
-    xpRequired,
+    ...stats,
     charts,
   };
 }

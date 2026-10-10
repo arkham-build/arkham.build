@@ -145,12 +145,6 @@ export function decodeExileSlots(s: string | null | undefined) {
   );
 }
 
-export function isSpecialCard(card: Card, ignorePermanent = false) {
-  const isSpecial = card.encounter_code || card.subtype_code || card.xp == null;
-
-  return !!isSpecial || !!(card.permanent && !ignorePermanent);
-}
-
 export function isEnemyLike(card: Card) {
   return card.type_code === "enemy" || card.type_code === "enemy_location";
 }

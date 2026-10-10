@@ -1,16 +1,11 @@
 import {
   type Attachments,
   type Card,
-  countExperience,
   type Deck,
   type DeckMeta,
   SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
-import {
-  decodeExileSlots,
-  isSpecialCard,
-  splitMultiValue,
-} from "@/utils/card-utils";
+import { decodeExileSlots, splitMultiValue } from "@/utils/card-utils";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import type { StoreState } from "../slices";
@@ -26,6 +21,7 @@ import {
   decodeSealedDeck,
   decodeSelections,
 } from "./deck-meta";
+import { computeDeckStats } from "./deck-stats";
 import type { LookupTables } from "./lookup-tables.types";
 import { resolveCardWithRelations } from "./resolve-card";
 import { decodeExtraSlots, decodeSlots } from "./slots";
@@ -368,10 +364,14 @@ export function resolveDeckSummary(
   const extraSlots = decodeExtraSlots(deckMeta);
 
   const { xpRequired, deckSize, deckSizeTotal } = computeDeckStats(
-    deps.metadata,
     deck,
     extraSlots,
-    customizations,
+    (code) => {
+      const card = deps.metadata.cards[code];
+      return card
+        ? applyCardChanges(card, deps.metadata, deck.taboo_id, customizations)
+        : undefined;
+    },
   );
 
   return {
@@ -394,67 +394,6 @@ export function resolveDeckSummary(
     xp: deck.xp,
     xp_adjustment: deck.xp_adjustment,
   };
-}
-
-function computeDeckStats(
-  metadata: StoreState["metadata"],
-  deck: Deck,
-  extraSlots: Record<string, number> | null,
-  customizations: ReturnType<typeof decodeCustomizations>,
-) {
-  let xpRequired = 0;
-  let deckSize = 0;
-  let deckSizeTotal = 0;
-  const myriadCounted: Record<string, boolean> = {};
-
-  for (const [code, quantity] of Object.entries(deck.slots)) {
-    const rawCard = metadata.cards[code];
-    if (!rawCard) continue;
-
-    const card = applyCardChanges(
-      rawCard,
-      metadata,
-      deck.taboo_id,
-      customizations,
-    );
-
-    deckSizeTotal += quantity;
-
-    xpRequired +=
-      card.myriad && myriadCounted[card.real_name]
-        ? 0
-        : countExperience(card, quantity);
-
-    if (card.myriad && !myriadCounted[card.real_name]) {
-      myriadCounted[card.real_name] = true;
-    }
-
-    if (!isSpecialCard(card)) {
-      deckSize += Math.max(
-        quantity - (deck.ignoreDeckLimitSlots?.[code] ?? 0),
-        0,
-      );
-    }
-  }
-
-  if (extraSlots) {
-    for (const [code, quantity] of Object.entries(extraSlots)) {
-      const rawCard = metadata.cards[code];
-      if (!rawCard) continue;
-
-      const card = applyCardChanges(
-        rawCard,
-        metadata,
-        deck.taboo_id,
-        customizations,
-      );
-
-      xpRequired += countExperience(card, quantity);
-      deckSizeTotal += quantity;
-    }
-  }
-
-  return { xpRequired, deckSize, deckSizeTotal };
 }
 
 export function deckTags(deck: Pick<DeckSummary, "tags">, delimiter = " ") {
