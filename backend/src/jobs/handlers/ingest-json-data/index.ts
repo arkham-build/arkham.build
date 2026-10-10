@@ -49,6 +49,7 @@ import {
   getMetadataWithTranslations,
   withTranslations,
 } from "./lib/json-data.ts";
+import { getLocalDataHash } from "./lib/local-data-hash.ts";
 import { applyLocalData } from "./lib/local-data.ts";
 import { resolvePacks } from "./lib/packs.ts";
 import { resolveRulesVersions } from "./lib/rules-versions.ts";
@@ -77,10 +78,12 @@ export async function runIngestJsonData() {
       { path: dir, sha: jsonDataSha },
       { path: metadataDir, sha: metadataSha },
       { path: tabooDir, sha: tabooSha },
+      localDataHash,
     ] = await Promise.all([
       trackDownloadedRepo(downloadJsonDataRepo(config)),
       trackDownloadedRepo(downloadMetadataRepo(config)),
       trackDownloadedRepo(downloadTabooRepo(config)),
+      getLocalDataHash(),
     ]);
 
     const [packFiles, grimoireFiles] = await Promise.all([
@@ -516,7 +519,7 @@ export async function runIngestJsonData() {
 
       await syncDataVersions(tx, {
         locales: config.METADATA_LOCALES,
-        sha: `${jsonDataSha}:${metadataSha}:${tabooSha}`,
+        sha: `${jsonDataSha}:${metadataSha}:${tabooSha}:${localDataHash}`,
         cardCount: cards.length,
       });
     });
