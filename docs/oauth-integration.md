@@ -1,17 +1,10 @@
-# Integrate OAuth and the user API
+# arkham.build OAuth 2.0 & User API
 
-arkham.build supplies an OAuth 2.0 authorization code API for confidential
-clients. Use `https://api.arkham.build` for the production API. For the complete
-machine-readable contract, refer to
-[`openapi/oauth-user-api.json`](./openapi/oauth-user-api.json).
+`https://api.arkham.build` implements a OAuth 2.0 authorization code API for confidential clients.
+An OpenAPI spec is available at [`openapi/oauth-user-api.json`](./openapi/oauth-user-api.json).
 
-The authorization process uses two channels:
-
-1. The browser asks the user to authorize access.
-2. Your backend exchanges the authorization code for tokens.
-
-Keep the client secret only on your backend. Do not put the secret in browser
-code, a native app, a repository, or logs.
+> [!IMPORTANT]
+> Your client secret must be securely stored on the backend.
 
 ## Register a client
 
@@ -183,7 +176,7 @@ OAuth endpoint errors use `error_description` instead of `message`:
 ## Refresh tokens
 
 Exchange a refresh token to get a new refresh token with the same scopes. The
-new refresh token is valid for 90 days. The response also contains a new access
+new refresh token is valid for 180 days. The response also contains a new access
 token that is valid for one hour.
 
 Each refresh token can be exchanged only once. Store the replacement before

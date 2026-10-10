@@ -13,7 +13,7 @@ import { revokeOAuthGrantTokens } from "./revocation.ts";
 import { canonicalizeOAuthScopes } from "./scopes.ts";
 
 export const OAUTH_ACCESS_TOKEN_EXPIRES_IN_SECONDS = 60 * 60;
-export const OAUTH_REFRESH_TOKEN_LIFETIME_MS = 90 * 24 * 60 * 60 * 1000;
+export const OAUTH_REFRESH_TOKEN_LIFETIME_MS = 180 * 24 * 60 * 60 * 1000;
 
 const OAUTH_ACCESS_TOKEN_LIFETIME_MS =
   OAUTH_ACCESS_TOKEN_EXPIRES_IN_SECONDS * 1000;

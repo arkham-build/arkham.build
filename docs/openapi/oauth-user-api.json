@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Arkham Build OAuth and User API",
+    "title": "arkham.build OAuth 2.0 & User API",
     "version": "1.0.0",
-    "description": "OAuth 2.0 authorization-code API for confidential server-side clients. Client credentials are accepted only in form bodies. Native apps must forward authorization codes to a confidential backend; direct token exchange from an installed app is unsupported."
+    "description": "OAuth 2.0 authorization-code API for confidential server-side clients. Client credentials are accepted only in form bodies."
   },
   "externalDocs": {
     "description": "Confidential-client integration guide",
