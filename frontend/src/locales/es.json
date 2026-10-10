@@ -23,7 +23,7 @@
         "zzorba": "Acceso a la API e iconos de ArkhamCards, ayuda con preguntas e inspiración para el constructor de mazos. Sin ti, este proyecto no habría sido posible."
       },
       "image_credits": {
-        "404": "404 illustration (edit)",
+        "404": "Ilustración de la página 404 (edición)",
         "arkham_cards_icons": "Iconos reutilizados de ArkhamCards",
         "card_icons": "Iconos de cartas",
         "logo": "Diseño del logo",
@@ -47,6 +47,7 @@
       "eligible": "Elegible para {{name}}"
     },
     "browse": {
+      "sets": "Conjuntos",
       "title": "Buscar cartas"
     },
     "card_modal": {
@@ -69,24 +70,28 @@
         "reviews": "Ver reseñas",
         "show_original_image": "Mostrar imagen original de la carta",
         "show_taboo_image": "Mostrar imagen tabú de la carta",
+        "starter_deck": "Mazo inicial oficial",
         "usable_by": "Cartas permitidas de {{prefix}}{{name}}",
         "usable_by_interpolated": "Cartas permitidas de <tooltip>{{name}}</tooltip>",
         "view_backside": "Reverso",
         "who_can_take": "¿Quién puede llevar esta carta?"
       },
-      "errata_notice": "Errata ({{date}})",
+      "errata_notice": "Fe de erratas ({{date}})",
       "faq": {
         "empty": "No hay entradas del FAQ disponibles.",
         "error": "Error al cargar el FAQ.",
         "loading": "Cargando el FAQ...",
-        "title": "FAQ"
+        "title": "Preguntas frecuentes"
       },
       "scan": "Imagen de {{code}}",
       "section_actions": "Acciones",
       "section_deckbuilding": "Construcción de mazos",
       "section_faq": "FAQ",
       "section_printings": "Ediciones",
-      "thumbnail": "Miniatura de {{code}}"
+      "thumbnail": "Miniatura de {{code}}",
+      "ratings": {
+        "title": "Valoraciones de cartas"
+      }
     },
     "choose_investigator": {
       "create_tooltip": "Crear mazo de {{name}}",
@@ -100,6 +105,12 @@
       "tooltip_count_player": "Número total de cartas de Jugador en {{type}}"
     },
     "common": {
+      "card_many": "cartas",
+      "clue_many": "Pistas",
+      "create_named": "Crear «{{name}}»",
+      "cycle_many": "ciclos",
+      "icon_many": "iconos de habilidad",
+      "no_results": "Sin resultados",
       "or": "o",
       "actions": {
         "draw": "Robar",
@@ -133,17 +144,21 @@
         "Blessed": "Bendecido",
         "Blessed and Cursed": "Bendecido y maldito",
         "Class Choice": "Elección de Clase",
+        "Collector": "Coleccionista",
         "Cursed": "Maldito",
         "Deck Size": "Tamaño del mazo",
         "Deck must have at least 10 skill cards.": "El mazo debe tener al menos 10 cartas de Habilidad.",
+        "Deck must have at least 11 Insights.": "El mazo debe tener al menos 11 cartas Inspiración.",
         "Fortune": "Fortuna",
         "Gambit": "Gambito",
         "Improvised": "Improvisado",
         "No permanents except story and signature permanents": "Sin cartas permanentes, excepto cartas de historia o características",
         "Secondary Class": "Clase secundaria",
+        "Too many off-class cards for Collector.": "Demasiadas cartas de otras clases para Coleccionista.",
         "Too many off-class cards for Versatile.": "Demasiadas cartas de otra clase para Versátil.",
         "Too many off-class cards.": "Demasiadas cartas de otra clase.",
         "Trait Choice": "Elección de rasgo",
+        "Versatile": "Versátil",
         "You cannot have assets that take up an ally slot.": "No puedes tener Apoyos que ocupen un espacio de Aliado.",
         "You cannot have more than 15 level 0-1 Guardian and/or Survivor cards": "No puedes tener más de 15 cartas de Guardián y/o Superviviente de nivel 0-1",
         "You cannot have more than 15 level 0-1 Seeker and/or Mystic cards": "No puedes tener más de 15 cartas de Buscador y/o Místico de nivel 0-1",
@@ -210,6 +225,7 @@
       "none": "Ninguno",
       "nonexceptional": "No excepcional",
       "ok": "Aceptar",
+      "pack_many": "packs",
       "pack_one": "pack",
       "pack_other": "packs",
       "packs_new_format": {
@@ -305,6 +321,7 @@
       "taboo_original_text": "Texto original de la carta",
       "taboo_unchained": "Cuesta {{xp}} puntos de experiencia menos.",
       "total": "total",
+      "trait_many": "Rasgos",
       "trait_one": "Rasgo",
       "trait_other": "Rasgos",
       "traits": {
@@ -676,6 +693,7 @@
         "enemy_location": "Lugar-Enemigo",
         "event": "Evento",
         "investigator": "Investigador",
+        "investigator_many": "Investigadores",
         "investigator_one": "Investigador",
         "investigator_other": "Investigadores",
         "key": "Llave",
@@ -721,8 +739,9 @@
         "whistles": "Silbatos",
         "wishes": "Deseos"
       },
+      "vengeance": "Venganza",
       "victory": "Victoria",
-      "xp": "XP"
+      "xp": "PX"
     },
     "connect": {
       "error": "Error al conectar con {{provider}}: {{error}}",
@@ -775,6 +794,7 @@
       "limited_slots": "Espacios limitados",
       "stats": {
         "deck_size": "Tam. del mazo",
+        "ignored_many": "{{count}} copias no cuentan para el tamaño del mazo.",
         "ignored_one": "{{count}} copia no cuenta para el tamaño del mazo.",
         "ignored_other": "{{count}} copias no cuentan para el tamaño del mazo.",
         "unowned": "No disponible: {{count}} de {{total}} cartas",
@@ -784,6 +804,7 @@
         "xp_required_help": "Cantidad de XP requerida para construir este mazo desde cero."
       },
       "tags": {
+        "account": "arkham.build",
         "limited_pool": "Conjunto limitado",
         "private": "Privado",
         "sealed": "Sellado",
@@ -799,20 +820,33 @@
         "duplicate_error": "Error al duplicar el mazo: {{error}}",
         "export_error": "Error al exportar el mazo: {{error}}",
         "upload_error": "Error al subir el mazo a {{provider}}: {{error}}",
-        "upload_loading": "Subiendo mazo a {{provider}}..."
+        "upload_loading": "Subiendo mazo a {{provider}}...",
+        "upload_requires_duplicate": "Debes duplicar este mazo antes de subirlo a ArkhamDB."
       },
       "tools": {
+        "average_cost": "Coste medio: {{cost}}",
         "cards": "Cartas",
         "count": "Cantidad",
         "factions": "Clases",
         "factions_tooltip": "{{count}} {{faction}} {{cards}}",
         "loading": "Cargando herramientas de mazo...",
+        "median_cost": "Coste mediano: {{cost}}",
         "resource_cost": "Coste de recursos",
         "resource_cost_tooltip": "{{count}} {{cards}} de coste {{cost}}",
         "resource_costs": "Costes de recursos",
         "skill_icons": "Iconos de habilidad",
         "skill_icons_tooltip": "{{count}} {{skill}} {{icons}}",
-        "title": "Herramientas de mazo"
+        "title": "Herramientas de mazo",
+        "random_basic_weakness": {
+          "add": "Añadir Debilidad básica aleatoria",
+          "draft": "Elegir Debilidad básica aleatoria mediante draft",
+          "equal_probability": "Usar la misma probabilidad para cada Debilidad",
+          "ignore_deck_card_pool": "Ignorar el conjunto de cartas del mazo",
+          "replace_random_basic_weakness": "Reemplazar el marcador de Debilidad básica aleatoria",
+          "require_trait": "Exigir rasgo",
+          "title": "Añadir Debilidad básica aleatoria",
+          "trait_placeholder": "Elige un rasgo"
+        }
       },
       "validation": {
         "card_not_in_limited_pool": "Las siguientes cartas no forman parte del conjunto de cartas de este mazo:",
@@ -827,6 +861,7 @@
     },
     "deck_collection": {
       "archive": "Archivo",
+      "arkhamdb_response_time_banner": "La API de ArkhamDB funciona lentamente. Si tienes problemas, sube los mazos directamente a arkham.build.",
       "collection_empty": "Colección vacía",
       "connect_arkhamdb": "Conectar con ArkhamDB",
       "count": "{{count}} mazos",
@@ -839,7 +874,9 @@
       "import": "Importar",
       "import_arkhamdb": "Importar desde ArkhamDB",
       "import_arkhamdb_help": "Introduce una ID de mazo público de ArkhamDB, URL del mazo o URL de la guía del mazo. El mazo se <strong>copiará</strong>, sin embargo el historial y las mejoras no se importarán. Si quieres sincronizar tus mazos de ArkhamDB con ArkhamBuild, <settings_link>conecta con tu cuenta de ArkhamDB.</settings_link>",
+      "import_error": "No se pudo importar el mazo: {{error}}",
       "import_json": "Importar desde un archivo JSON",
+      "import_loading": "Importando mazo...",
       "more_filters": "Más filtros",
       "search_placeholder": "Buscar mazos...",
       "sorting": {
@@ -874,7 +911,8 @@
         "error": "Error al obtener el mazo Sealed: {{error}}",
         "loading": "Obteniendo mazo Sealed..."
       },
-      "title": "Crear mazo {{name}}"
+      "title": "Crear mazo {{name}}",
+      "use_starter_deck": "Usar mazo inicial oficial"
     },
     "deck_edit": {
       "actions": {
@@ -904,7 +942,12 @@
           "apply_environment": "Aplicar entorno {{environment}}",
           "campaign_playalong": "Campaña Colaborativa",
           "campaign_playalong_help": "La Campaña Colaborativa (Campaign Play-Along) es un evento continuo organizado en el servidor de Discord de Mythos Busters. Está diseñado para jugar campañas de Arkham juntos, compartir historias y, en general, crear un sentido de comunidad.",
+          "chapter_1": "Capítulo 1",
+          "chapter_1_help": "Incluir en el conjunto de cartas todos los packs del capítulo 1.",
+          "chapter_2": "Capítulo 2",
+          "chapter_2_help": "Incluir en el conjunto de cartas todos los packs del capítulo 2.",
           "choose_cycle_placeholder": "Seleccionar ciclos...",
+          "choose_progression_target_placeholder": "Selecciona una campaña o un escenario independiente...",
           "collection": "Colección",
           "collection_help": "Establece tu <settings_link>colección</settings_link> actual como el conjunto de cartas de este mazo. Esto puede ser útil para congelar el conjunto de cartas del mazo, o para compartir un \"ajuste predefinido\" con personas que compartan una colección física.",
           "configure_environment": "Configurar entorno",
@@ -922,6 +965,9 @@
           "limited_faq25_help": "En el entorno Limitado, los jugadores solo pueden construir sus mazos con cartas del set básico, los cinco mazos iniciales y tres expansiones de investigador diferentes a su elección.",
           "limited_help": "Al construir mazos en el entorno Limitado, los jugadores pueden usar los siguientes productos: La caja básica de 2026, los cinco mazos de investigador y tres expansiones de cartas de jugador diferentes a su elección.",
           "placeholder": "Seleccionar packs...",
+          "progression": "Progresión",
+          "progression_help": "Limitar el conjunto de cartas a los productos disponibles cuando se publicó la campaña o el escenario independiente seleccionado.",
+          "progression_target": "Campaña o escenario independiente",
           "section_title": "Ajustes del conjunto de cartas",
           "selected_cards": "Cartas seleccionadas",
           "substitute_chapter_2_with_chapter_1": "Sustituir la caja básica y los mazos de investigador del capítulo 2 por sus equivalentes del capítulo 1",
@@ -942,6 +988,8 @@
           "parallel_front": "Anverso paralelo"
         },
         "storage_provider": {
+          "account": "arkham.build",
+          "arkhamdb": "ArkhamDB",
           "local": "Privado",
           "shared": "Compartido",
           "title": "Almacenamiento"
@@ -959,6 +1007,7 @@
       "create_local_copy_help": "Crea una copia local de este mazo. Esto aplicará todas las ediciones pendientes y te permitirá guardarlas. Las mejoras y el historial del mazo no se transferirán.",
       "customizable": {
         "skill_placeholder": "Seleccionar habilidad...",
+        "traits_placeholder_many": "Seleccionar rasgos...",
         "traits_placeholder_one": "Seleccionar rasgo...",
         "traits_placeholder_other": "Seleccionar rasgos..."
       },
@@ -1045,6 +1094,7 @@
     },
     "deck_view": {
       "actions": {
+        "check_card": "Marcar {{card}} como parte de la colección",
         "display_as_list": "Mostrar como lista",
         "display_as_scans": "Mostrar como escaneos",
         "import": "Importar mazo",
@@ -1052,8 +1102,10 @@
         "save_upgrade_close": "Guardar mejora y cerrar",
         "save_upgrade_close_short": "Guardar y cerrar",
         "save_upgrade_short": "Mejorar y editar",
-        "upload": "Subir a {{provider}}"
+        "upload": "Subir a {{provider}}",
+        "upload_account": "Subir"
       },
+      "checklist": "Lista de comprobación",
       "connections": {
         "description": "Este mazo está configurado para sincronizarse con {{provider}}.",
         "view": "Ver en {{provider}}"
@@ -1066,12 +1118,14 @@
       },
       "history": {
         "added": "Añadido",
+        "created": "Creado",
         "current_upgrade": "Mejora actual",
         "discounts": "Descuentos",
         "initial_deck": "Mazo inicial",
         "no_changes": "Sin cambios",
         "removed": "Eliminado",
         "slot_changes": "Cambios en {{slot}}",
+        "updated": "Actualizado",
         "upgrade": "Mejora #{{index}}",
         "upgrade_xp": "XP disponible: {{xp}}{{adjustment}} (gastado: {{spent}})"
       },
@@ -1082,7 +1136,7 @@
       "newer_version": "Hay una <a>versión más nueva</a> de este mazo. Este mazo es de sólo lectura.",
       "scans": "Imágenes",
       "sharing": {
-        "api_link": "Json API",
+        "api_link": "API JSON",
         "create": "Crear enlace para compartir",
         "create_failed": "Error al crear el enlace compartido: {{error}}",
         "create_tooltip": "Crea un enlace público al mazo de sólo lectura. Cualquier persona con el enlace puede ver el mazo, pero no editarlo.<br />Los enlaces compartidos se pueden eliminar en cualquier momento. Eliminar un enlace no afecta al mazo.",
@@ -1092,7 +1146,8 @@
         "description_present": "Este mazo tiene un enlace público compartido, se puede ver usando <a>este enlace</a>.",
         "title": "Compartir mazo",
         "update": "Actualizar enlace compartido",
-        "update_failed": "Error al actualizar el enlace compartido: {{error}}"
+        "update_failed": "Error al actualizar el enlace compartido: {{error}}",
+        "view_on_arkhamdb": "Ver en ArkhamDB"
       },
       "show_deck_list": "Mostrar lista de mazos",
       "tab_deck_list": "Mazo",
@@ -1315,6 +1370,11 @@
       "uses": {
         "placeholder": "Seleccionar tipo de usos...",
         "title": "Usos"
+      },
+      "card_tags": {
+        "favorites": "Favoritas",
+        "placeholder": "Selecciona etiquetas...",
+        "title": "Etiquetas de cartas"
       }
     },
     "help": {
@@ -1341,6 +1401,7 @@
         "display_as_list": "Mostrar lista",
         "display_as_list_text": "Mostrar lista con texto de carta",
         "display_as_scans": "Mostrar imágenes",
+        "flip_all_scans": "Voltear todas las imágenes",
         "focus_search": "Enfocar búsqueda",
         "move_down": "Mover abajo",
         "move_up": "Mover arriba",
@@ -1373,6 +1434,7 @@
       "group_by": "Agrupar por",
       "nav": {
         "card_count_hidden": "({{count}} ocultas por filtros)",
+        "card_count_many": "{{count}} cartas",
         "card_count_one": "{{count}} carta",
         "card_count_other": "{{count}} cartas",
         "display": "Mostrar",
@@ -1384,8 +1446,10 @@
         "export": "Exportar",
         "jump_to": "Ir a...",
         "list_settings": "Ajustes de lista",
+        "max_columns": "Máx. de imágenes por columna",
         "sort": "Ordenar",
-        "sort_default": "Por defecto del usuario"
+        "sort_default": "Por defecto del usuario",
+        "taboo_filter_override": "Anulado por el filtro «Lista de Tabúes»"
       },
       "reset": "Restablecer valores por defecto",
       "search": {
@@ -1393,7 +1457,11 @@
         "include_flavor": "Texto de ambientación",
         "include_game_text": "Texto de juego",
         "include_name": "Nombre",
+        "match_display_mode": "Coincidir con el modo de visualización",
+        "match_visible_taboo": "Coincidir con los tabúes visibles",
         "placeholder": "Buscar cartas...",
+        "share": "Compartir consulta",
+        "share_settings": "Compartir ajustes",
         "title": "Buscar"
       },
       "sort_by": "Ordenar por"
@@ -1417,15 +1485,26 @@
       "back_to_top": "Volver arriba",
       "search_placeholder": "Buscar palabras clave...",
       "title": "Referencia de reglas",
-      "toc": "Índice"
+      "toc": "Índice",
+      "grimoire": {
+        "empty": "No se encontró contenido del Grimorio.",
+        "error": "No se pudo cargar el contenido del Grimorio.",
+        "intro_description": "El Grimorio de Arkham es una colección completa de aclaraciones que abarca todas las situaciones conocidas del juego. Como documento vivo, se mantiene en línea y se actualiza a medida que se introducen o descubren nuevas cartas, reglas e interacciones. Contiene información sobre temas avanzados, como la interpretación del texto de las cartas, la resolución de conflictos de tiempo, preguntas frecuentes y una lista de todas las palabras clave y otros textos de reglas.",
+        "intro_title": "El Grimorio de Arkham",
+        "loading": "Cargando contenido del Grimorio...",
+        "open_link": "Abrir el Grimorio",
+        "references": "Referencias"
+      }
     },
     "search": {
       "title": "Resultados de búsqueda"
     },
     "settings": {
+      "load_error": "No se pudieron cargar los ajustes de la cuenta. Se usarán los ajustes locales: {{error}}",
       "support": {
         "confirm": "¿Seguro que quieres restaurar esta copia de seguridad? Cualquier dato existente se sobreescribirá.",
         "create": "Crear copia de seguridad",
+        "data_export_title": "Exportación de datos",
         "help": "Crea una copia de seguridad de tus ajustes, mazos y colección de cartas como un archivo JSON. Puedes usar este archivo para restaurar tus datos en cualquier dispositivo.",
         "help_warning": "Cuando se restaura una copia de seguridad, <strong>cualquier dato existente se sobreescribirá.</strong>",
         "metadata_title": "Datos de la aplicación",
@@ -1485,7 +1564,9 @@
         "card_level_icon_only": "Sólo en el icono de carta",
         "card_show_collection_number": "Mostrar número de colección",
         "card_show_details": "Mostrar detalles de la carta",
+        "card_show_favorite_highlights": "Resaltar favoritas",
         "card_show_icon": "Mostrar icono de la carta",
+        "card_show_tags": "Mostrar etiquetas de las cartas",
         "card_show_thumbnail": "Mostrar miniatura de la carta",
         "card_show_unique_icon": "Mostrar icono de carta única",
         "card_size": "Tamaño",
@@ -1533,6 +1614,7 @@
       "saving": "Guardando ajustes...",
       "title": "Ajustes",
       "account": {
+        "danger_zone": "Zona de peligro",
         "oauth": {
           "connect": "Conectar",
           "connect_help": "Conecta tu cuenta de {{provider}} para sincronizar tus mazos e iniciar sesión con ella.",
@@ -1542,16 +1624,82 @@
           "disconnect": "Desconectar",
           "disconnect_error": "No se pudo desconectar {{provider}}: {{error}}",
           "disconnecting": "Desconectando {{provider}}...",
+          "last_error": "Último error",
           "last_synced_at": "Última sincronización",
+          "none": "Ninguna",
           "not_connected": "No conectado",
           "providers": {
             "arkhamdb": "ArkhamDB"
           },
           "reconnect": "Refrescar",
+          "sync_status": "Estado de sincronización",
           "title": "Conexiones",
           "user_id": "ID de usuario",
-          "disconnected": "Hay un problema con esta conexión, por favor reconecta."
-        }
+          "disconnected": "Hay un problema con esta conexión, por favor reconecta.",
+          "status": {
+            "healthy": "Funciona correctamente",
+            "unhealthy": "No funciona correctamente"
+          }
+        },
+        "connected_apps": {
+          "error": "No se pudieron cargar las aplicaciones conectadas.",
+          "granted_at": "Acceso concedido",
+          "last_authorized_at": "Última autorización",
+          "loading": "Cargando aplicaciones conectadas...",
+          "permissions": "Permisos",
+          "revoke_confirm": "¿Revocar el acceso de {{clientName}} a tu cuenta?",
+          "revoke_error": "No se pudo revocar el acceso de {{clientName}}: {{error}}",
+          "revoking_app": "Revocando el acceso de {{clientName}}...",
+          "status": {
+            "active": "Conectada",
+            "disabled": "Desactivada"
+          }
+        },
+        "delete": {
+          "confirm_help": "Escribe {{username}} para confirmar la eliminación de la cuenta.",
+          "confirm_label": "Confirmación",
+          "deleting": "Eliminando cuenta...",
+          "help": "Elimina permanentemente tu cuenta de arkham.build y sus datos asociados. Se eliminarán las credenciales, sesiones, mazos sincronizados con la cuenta, ajustes y conexiones OAuth del servidor. Los mazos vinculados a la cuenta se eliminarán de este dispositivo. No se eliminarán los mazos guardados solo en el dispositivo, los ajustes ni otros datos del navegador. El contenido sincronizado con ArkhamDB no se eliminará de ArkhamDB.",
+          "submit": "Eliminar cuenta",
+          "title": "Eliminar cuenta"
+        },
+        "email": {
+          "add": "Añadir correo electrónico",
+          "add_help": "Añade una dirección de correo electrónico y una contraseña como forma alternativa de iniciar sesión.",
+          "cancel_pending": "Cancelar verificación del correo electrónico",
+          "canceling_pending": "Cancelando verificación del correo electrónico...",
+          "current_password": "Contraseña actual",
+          "new_email": "Nuevo correo electrónico",
+          "new_email_help": "Déjalo en blanco para conservar tu correo electrónico actual.",
+          "new_password": "Nueva contraseña",
+          "new_password_help": "Déjalo en blanco para conservar tu contraseña actual.",
+          "pending": "Correo electrónico pendiente",
+          "pending_help": "Revisa {{email}} para <verifyLink>verificarlo</verifyLink>.",
+          "save": "Actualizar credenciales",
+          "saving": "Guardando credenciales...",
+          "status": "Estado",
+          "status_pending": "Pendiente de verificación",
+          "status_verified": "Verificado",
+          "title": "Credenciales"
+        },
+        "privacy_rights": {
+          "body": "Puedes exportar tus datos desde la pestaña Soporte y eliminar tu cuenta a continuación. Para solicitudes del RGPD que no puedas gestionar por tu cuenta, como solicitudes de limitación u oposición, contacta con <privacyEmail />.",
+          "title": "Privacidad y derechos sobre los datos"
+        },
+        "profile": {
+          "save": "Guardar perfil",
+          "saving": "Guardando perfil...",
+          "title": "Perfil",
+          "username": "Nombre de usuario",
+          "username_help": "Solo letras, números, guiones bajos y guiones"
+        },
+        "title": "Cuenta"
+      },
+      "conflict": {
+        "description": "Los ajustes de tu cuenta han cambiado en otro lugar. Actualiza para cargar la versión remota o sobrescríbela con tus cambios locales actuales.",
+        "overwrite": "Sobrescribir",
+        "refresh": "Recargar página",
+        "remote_revision": "Revisión remota: {{revision}}"
       }
     },
     "suzi_standalone_setup": {
@@ -1568,6 +1716,7 @@
     },
     "ui": {
       "cards_combobox": {
+        "placeholder_many": "Selecciona cartas...",
         "placeholder_one": "Selecciona una carta...",
         "placeholder_other": "Selecciona cartas..."
       },
@@ -1584,7 +1733,216 @@
       "pagination": {
         "next": "Siguiente",
         "previous": "Anterior"
+      },
+      "password_input": {
+        "hide_password": "Ocultar contraseña",
+        "show_password": "Mostrar contraseña"
       }
+    },
+    "auth": {
+      "arkhamdb_login_banner": "La API de ArkhamDB funciona lentamente. Si tienes problemas, inicia sesión con tu correo electrónico.",
+      "arkhamdb_signup_banner": "La API de ArkhamDB funciona lentamente. Si tienes problemas, regístrate con tu correo electrónico.",
+      "email": "Correo electrónico",
+      "email_or_username": "Correo electrónico o nombre de usuario",
+      "errors": {
+        "account_not_verified": "Tu cuenta aún no está verificada. <verifyLink>Verifica</verifyLink> tu correo electrónico antes de iniciar sesión.",
+        "captcha_load_failed": "No se pudo cargar el captcha de Turnstile.",
+        "forgot_password_failed": "No se pudo iniciar el restablecimiento de la contraseña: {{error}}",
+        "invalid_credentials": "Correo electrónico o contraseña incorrectos",
+        "login_failed": "No se pudo iniciar sesión: {{error}}",
+        "password_reset_failed": "No se pudo restablecer la contraseña: {{error}}",
+        "rate_limited": "Demasiadas solicitudes. Espera {{interval}} antes de volver a intentarlo",
+        "signup_failed": "No se pudo completar el registro: {{error}}",
+        "verify_email_failed": "No se pudo verificar el correo electrónico: {{error}}",
+        "verify_email_send_failed": "No se pudo reenviar el correo de verificación: {{error}}"
+      },
+      "forgot_password": {
+        "description": "Introduce tu correo electrónico o nombre de usuario y te enviaremos instrucciones para restablecer tu contraseña.",
+        "submit": "Enviar instrucciones para restablecer la contraseña",
+        "success": "Si existe una cuenta, recibirás pronto un enlace de restablecimiento.",
+        "title": "Contraseña olvidada"
+      },
+      "login": {
+        "action": "Iniciar sesión",
+        "forgot_password": "¿Has olvidado tu contraseña?",
+        "no_account": "¿No tienes cuenta?",
+        "title": "Iniciar sesión",
+        "with_arkhamdb": "Iniciar sesión con ArkhamDB"
+      },
+      "logout": "Cerrar sesión",
+      "menu": {
+        "logged_in_as": "Sesión iniciada como {{name}}",
+        "sync_account": "Sincronizar datos",
+        "sync_error": "No se pudieron sincronizar los datos: {{error}}",
+        "sync_status": {
+          "conflict": "Conflicto de sincronización de la cuenta",
+          "error": "Error de sincronización de la cuenta",
+          "idle": "Sincronización de la cuenta inactiva",
+          "loading": "Cargando sincronización de la cuenta",
+          "partial": "La sincronización de la cuenta ha fallado parcialmente",
+          "saving": "Guardando sincronización de la cuenta",
+          "synced": "Sincronización de la cuenta completada"
+        },
+        "syncing": "Sincronizando datos de la cuenta..."
+      },
+      "oauth_errors": {
+        "arkhamdb_invalid_response": "No se pudo iniciar sesión con ArkhamDB. Vuelve a intentarlo.",
+        "arkhamdb_no_decks": "Tu cuenta de ArkhamDB debe tener al menos un mazo para poder continuar.",
+        "identity_belongs_to_another_account": "Esta cuenta de ArkhamDB ya está vinculada a otra cuenta.",
+        "invalid_state": "El inicio de sesión con ArkhamDB ha caducado o no es válido. Vuelve a intentarlo.",
+        "oauth_failed": "No se pudo iniciar sesión con ArkhamDB. Vuelve a intentarlo.",
+        "oauth_missing_code": "El inicio de sesión con ArkhamDB se ha cancelado o no se ha completado. Vuelve a intentarlo."
+      },
+      "password": "Contraseña",
+      "password_validation": "Mínimo 8 caracteres",
+      "reset_password": {
+        "confirm_password": "Confirmar contraseña",
+        "password": "Nueva contraseña",
+        "success": "Contraseña restablecida. Ya puedes iniciar sesión.",
+        "title": "Restablecer contraseña"
+      },
+      "signup": {
+        "action": "Registrarse",
+        "complete_profile": {
+          "description": "Elige un nombre de usuario para tu cuenta. Se mostrará públicamente en tus mazos y contribuciones.",
+          "title": "Completa tu perfil",
+          "upload": {
+            "decks": {
+              "help": "Sube tu colección local de mazos a tu cuenta.",
+              "label": "Subir mazos locales"
+            },
+            "settings": {
+              "help": "Sube tus preferencias de colección y visualización.",
+              "label": "Subir ajustes"
+            },
+            "title": "Subir datos locales"
+          }
+        },
+        "has_account": "¿Ya tienes cuenta?",
+        "legal_acceptance": "Al crear una cuenta, aceptas las <terms>Condiciones del servicio</terms> y reconoces la <privacy>Política de privacidad</privacy>.",
+        "success": "¡Registro completado! Revisa tu correo electrónico para verificar tu cuenta. Elegirás un nombre de usuario tras iniciar sesión por primera vez.",
+        "title": "Registrarse",
+        "verifying": "Verificando...",
+        "with_arkhamdb": "Registrarse con ArkhamDB"
+      },
+      "username": "Nombre de usuario",
+      "username_validation": "Solo letras, números, guiones bajos y guiones",
+      "verify_email": {
+        "action": "Verificar correo electrónico",
+        "resend": "Reenviar correo de verificación",
+        "resend_action": "Reenviar correo de verificación",
+        "resend_success": "Correo de verificación enviado. Revisa tu bandeja de entrada.",
+        "success": "¡Correo electrónico verificado! Ya puedes iniciar sesión.",
+        "title": "Verificar correo electrónico",
+        "token": "Código de verificación"
+      }
+    },
+    "card_scenarios": {
+      "standalone": "Independiente",
+      "title": "Escenarios que usan <em>{{name}}</em>",
+      "tooltip": "{{name}} <em>({{campaignName}})</em>"
+    },
+    "card_tags": {
+      "account_title": "Etiquetas globales",
+      "deck_placeholder": "Añadir etiqueta del mazo...",
+      "deck_title": "Etiquetas del mazo",
+      "favorite": "Favorita",
+      "manage": {
+        "action": "Gestionar etiquetas",
+        "delete": "Eliminar",
+        "error": "No se pudieron actualizar las etiquetas de las cartas: {{error}}",
+        "name": "Nombre de la etiqueta",
+        "save": "Actualizar etiqueta",
+        "title": "Gestionar etiquetas",
+        "unknown_error": "Error desconocido"
+      },
+      "placeholder": "Añadir etiqueta global...",
+      "title": "Etiquetas"
+    },
+    "content": {
+      "empty": {
+        "campaigns": "No hay campañas disponibles.",
+        "standalone_scenarios": "No hay escenarios independientes disponibles."
+      },
+      "guide": {
+        "campaign_pdf": "Guía de campaña",
+        "return_to_pdf": "Regreso a",
+        "rules_insert_pdf": "Hoja de reglas"
+      },
+      "tabs": {
+        "campaigns": "Campañas",
+        "standalone_scenarios": "Escenarios independientes"
+      },
+      "title": "Contenido",
+      "unknown_release_year": "Año desconocido"
+    },
+    "deck_sync": {
+      "conflict": {
+        "action_error": "No se pudo resolver el conflicto del mazo: {{error}}",
+        "collection_badge": "Hay un conflicto del mazo que requiere atención",
+        "description": "Este mazo cambió de forma remota antes de completar tu cambio. Actualiza para aplicar el estado remoto más reciente.",
+        "description_remote_missing": "Este mazo se eliminó de forma remota antes de completar tu cambio. Descarta el mazo local para reflejar el estado remoto.",
+        "discard_local": "Descartar mazo local",
+        "edit_locked": "Resuelve el conflicto del mazo antes de editarlo.",
+        "refresh": "Actualizar",
+        "remote_version": "Versión remota: {{version}}",
+        "title": "Conflicto de sincronización del mazo"
+      }
+    },
+    "external_embed": {
+      "load": "Cargar contenido externo",
+      "notice": "Este contenido externo está bloqueado hasta que decidas cargarlo. Al cargarlo, el proveedor podrá procesar tus datos y establecer cookies.",
+      "title": "Contenido externo"
+    },
+    "footer": {
+      "arkham_title": "Arkham Horror: El juego de cartas™",
+      "disclaimer": "<arkham>Arkham Horror: El juego de cartas™</arkham> y todo el contenido relacionado © <ffg>Fantasy Flight Games (FFG)</ffg>. Este sitio no está producido, respaldado ni afiliado a FFG.",
+      "ffg": "Fantasy Flight Games (FFG)",
+      "legal": "Información legal",
+      "legal_notice": "Aviso legal",
+      "privacy": "Política de privacidad",
+      "terms": "Condiciones del servicio"
+    },
+    "masthead": {
+      "browse": "Explorar",
+      "cards": "Cartas",
+      "navigation": "Navegación principal",
+      "rules": "Reglas"
+    },
+    "oauth_consent": {
+      "allow": "Permitir",
+      "authorize": "Autorizar {{clientName}}",
+      "deny": "Denegar",
+      "description": "{{clientName}} solicita acceso a tu cuenta de arkham.build.",
+      "error": "No se pudo cargar la solicitud de autorización. Vuelve a la aplicación e inténtalo de nuevo.",
+      "expired": "Esta solicitud de autorización no es válida o ha caducado. Vuelve a la aplicación y empieza de nuevo.",
+      "loading": "Cargando solicitud de autorización...",
+      "permissions": "Permisos solicitados",
+      "redirecting_to_login": "Redirigiendo al inicio de sesión...",
+      "scopes": {
+        "decks_delete": {
+          "description": "Eliminar tus mazos.",
+          "title": "Eliminar mazos"
+        },
+        "decks_read": {
+          "description": "Ver tus mazos.",
+          "title": "Leer mazos"
+        },
+        "decks_write": {
+          "description": "Crear y actualizar tus mazos.",
+          "title": "Escribir mazos"
+        },
+        "profile_read": {
+          "description": "Ver el ID de tu cuenta y tu nombre de usuario.",
+          "title": "Leer perfil"
+        }
+      },
+      "title": "Autorización de la aplicación"
+    },
+    "sealed_deck": {
+      "empty": "Este conjunto de cartas Sealed no contiene cartas.",
+      "loading": "Obteniendo conjunto de cartas Sealed...",
+      "title": "Conjunto de cartas Sealed: {{name}}"
     }
   }
 }
