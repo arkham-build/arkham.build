@@ -39,6 +39,7 @@ type DeckSummaryProps = {
   interactive?: boolean;
   showThumbnail?: boolean;
   showShadow?: boolean;
+  showProviderTag?: boolean;
   size?: "sm";
   variant?: "base" | "interactive" | "interactive-bright";
   type?: "deck" | "decklist";
@@ -54,6 +55,7 @@ export function DeckSummary(props: DeckSummaryProps) {
     interactive,
     showShadow,
     showThumbnail,
+    showProviderTag,
     size,
     type = "deck",
     validation,
@@ -134,12 +136,8 @@ export function DeckSummary(props: DeckSummaryProps) {
       <div className={css["meta"]}>
         {children}
         <DeckTagsContainer>
-          {type === "deck" && (
-            <>
-              <ProviderTag deck={deck} />
-              <FolderTag deckId={deck.id} />
-            </>
-          )}
+          {(type === "deck" || showProviderTag) && <ProviderTag deck={deck} />}
+          {type === "deck" && <FolderTag deckId={deck.id} />}
           <LimitedCardPoolTag deck={deck} omitLegacy />
           <SealedDeckTag deck={deck} />
           <DeckTags tags={deckTags(deck, type === "decklist" ? ", " : " ")} />

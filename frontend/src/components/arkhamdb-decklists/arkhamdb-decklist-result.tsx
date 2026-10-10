@@ -30,7 +30,7 @@ export function ArkhamDBDecklistResult({ result, showDetails }: Props) {
     const deps = { lookupTables, metadata };
     return resolveDeck(deps, collator, {
       ...result,
-      source: undefined,
+      source: "arkhamdb",
     });
   })();
 
@@ -38,6 +38,7 @@ export function ArkhamDBDecklistResult({ result, showDetails }: Props) {
     <DeckSummary
       deck={resolved}
       interactive
+      showProviderTag
       showThumbnail
       type="decklist"
       elevation="elevated"
