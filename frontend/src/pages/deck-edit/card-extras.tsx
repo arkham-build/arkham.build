@@ -70,8 +70,10 @@ export function CardExtras(props: Props) {
   const hasAttachable =
     currentTab === "slots" && !isEmpty(getMatchingAttachables(card, deck));
 
+  const isIgnored = !!deck.ignoreDeckLimitSlots?.[card.code];
+
   const hasUpgrades =
-    canEdit && !isEmpty(availableUpgrades.upgrades[card.code]);
+    canEdit && !isIgnored && !isEmpty(availableUpgrades.upgrades[card.code]);
 
   const canShowMoveButton =
     !!quantity && (currentTab !== "slots" || card.xp != null);
