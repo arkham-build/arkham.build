@@ -76,6 +76,9 @@ function CampaignCard({ entry }: { entry: CampaignListEntry }) {
   const { campaign, releaseYear, scenarios, variants } = entry;
   const versions = [{ campaign, scenarios }, ...variants];
   const [activeVersion, setActiveVersion] = useState(campaign.code);
+  const selectedCampaign =
+    versions.find(({ campaign }) => campaign.code === activeVersion)
+      ?.campaign ?? campaign;
 
   return (
     <MediaCard
@@ -87,9 +90,9 @@ function CampaignCard({ entry }: { entry: CampaignListEntry }) {
       classNames={{ content: css["campaign-content"] }}
       headerSlot={
         <a
-          aria-label={displayPackName(campaign)}
+          aria-label={displayPackName(selectedCampaign)}
           className={css["campaign-link"]}
-          href={`/campaign/${campaign.code}`}
+          href={`/campaign/${selectedCampaign.code}`}
         />
       }
       title={
