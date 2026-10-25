@@ -67,7 +67,12 @@ export function CollectionSettings(props: Props) {
         collection: {
           ...prev.collection,
           ...cycles.reduce<SettingsState["collection"]>((acc, cycle) => {
-            for (const pack of [...cycle.packs, ...cycle.reprintPacks]) {
+            const preferReprints = cycle.reprintPacks.length > 0;
+
+            for (const pack of cycle.packs) {
+              acc[pack.code] = preferReprints ? 0 : val;
+            }
+            for (const pack of cycle.reprintPacks) {
               acc[pack.code] = val;
             }
             return acc;
