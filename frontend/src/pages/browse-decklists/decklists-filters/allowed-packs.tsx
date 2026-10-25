@@ -15,7 +15,10 @@ import { ResultTag } from "@/components/ui/combobox/combobox-results";
 import { DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
 import { useStore } from "@/store";
-import { selectLimitedPoolPackOptions } from "@/store/selectors/lists";
+import {
+  selectCollectionEnvironmentPackCodes,
+  selectLimitedPoolPackOptions,
+} from "@/store/selectors/lists";
 import { selectMetadata } from "@/store/selectors/shared";
 import { official } from "@/utils/card-utils";
 import {
@@ -29,6 +32,7 @@ import type { DecklistFilterProps } from "./shared";
 export function AllowedPacks({ formState, setFormState }: DecklistFilterProps) {
   const { t } = useTranslation();
   const locale = useStore((state) => state.settings.locale);
+  const collectionPackCodes = useStore(selectCollectionEnvironmentPackCodes);
   const packOptions = useStore(selectLimitedPoolPackOptions).filter(
     (pack) => official(pack) && isDeckbuildingPoolPack(pack),
   );
@@ -66,10 +70,18 @@ export function AllowedPacks({ formState, setFormState }: DecklistFilterProps) {
             {renderPack(pack)}
           </ResultTag>
         )}
+        resultsCollapsedHeight="12rem"
         selectedItems={selectedItems}
         showLabel
       />
       <div className={css["allowed-packs-actions"]}>
+        <Button
+          data-testid="allowed-packs-use-collection"
+          onClick={() => onValueChange(collectionPackCodes)}
+          size="sm"
+        >
+          {t("decklists.filters.use_collection")}
+        </Button>
         <ConfigureEnvironmentButton />
         {!!formState.packCodes && (
           <Button onClick={() => onValueChange([])} size="xs" variant="link">

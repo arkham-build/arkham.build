@@ -1319,6 +1319,7 @@
         "required_cards": "Required cards",
         "submit": "Apply",
         "title": "Filter criteria",
+        "use_collection": "Use my collection",
         "xp_range": "XP required"
       },
       "sorting": {

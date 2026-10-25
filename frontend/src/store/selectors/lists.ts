@@ -1685,6 +1685,24 @@ export const selectCampaignCycles = createSelector(
     ),
 );
 
+export const selectCollectionEnvironmentPackCodes = createSelector(
+  selectCampaignCycles,
+  (state: StoreState) => state.settings.collection,
+  (cycles, collection) => {
+    const ignored = new Set(
+      cycles.flatMap((cycle) =>
+        cycle.reprintPacks
+          .filter((pack) => pack.reprint_type === "campaign")
+          .map((pack) => pack.code),
+      ),
+    );
+
+    return Object.keys(collection).filter(
+      (code) => collection[code] > 0 && !ignored.has(code),
+    );
+  },
+);
+
 export const selectCycleMapper = createSelector(selectMetadata, (metadata) => {
   return (code: string) => metadata.cycles[code];
 });

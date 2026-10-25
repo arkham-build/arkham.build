@@ -72,6 +72,7 @@ export type Props<T extends Coded> = {
   readonly?: boolean;
   renderItem?: (item: T) => React.ReactNode;
   renderResult?: ResultRenderer<T>;
+  resultsCollapsedHeight?: string;
   showLabel?: boolean;
   selectedItems: (T | undefined)[];
 };
@@ -97,6 +98,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
     readonly,
     renderItem = defaultRenderer,
     renderResult,
+    resultsCollapsedHeight,
     selectedItems,
     showLabel,
     omitFloatingPortal,
@@ -371,6 +373,7 @@ export function Combobox<T extends Coded>(props: Props<T>) {
       )}
       {!isEmpty(selectedItems) && (
         <ComboboxResults
+          collapsedHeight={resultsCollapsedHeight}
           items={selectedItems}
           onRemove={readonly ? undefined : removeSelectedItem}
           renderResult={renderResult}

@@ -2,6 +2,7 @@ import { XIcon } from "lucide-react";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../button";
+import { Expander } from "../expander";
 import { Tag } from "../tag";
 import css from "./combobox.module.css";
 
@@ -11,6 +12,7 @@ export type ResultRenderer<T extends { code: string }> = (
 ) => React.ReactNode;
 
 type Props<T extends { code: string }> = {
+  collapsedHeight?: string;
   onRemove?: (index: number) => void;
   items: (T | undefined)[];
   renderResult?: ResultRenderer<T>;
@@ -48,13 +50,13 @@ function ResultRemoveButton({ onClick }: { onClick: () => void }) {
 }
 
 export function ComboboxResults<T extends { code: string }>(props: Props<T>) {
-  const { items, onRemove, renderResult } = props;
+  const { collapsedHeight, items, onRemove, renderResult } = props;
 
   const { t } = useTranslation();
 
   if (!items.length) return null;
 
-  return (
+  const results = (
     <ul className={css["results"]}>
       {items.map((item, idx) => {
         const key = item?.code ?? idx;
@@ -88,5 +90,11 @@ export function ComboboxResults<T extends { code: string }>(props: Props<T>) {
         );
       })}
     </ul>
+  );
+
+  return collapsedHeight ? (
+    <Expander collapsedHeight={collapsedHeight}>{results}</Expander>
+  ) : (
+    results
   );
 }
