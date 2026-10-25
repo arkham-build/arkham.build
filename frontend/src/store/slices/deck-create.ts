@@ -143,6 +143,8 @@ export const createDeckCreateSlice: StateCreator<
         deckCreate: {
           ...state.deckCreate,
           [path]: value,
+          applyStarterDeck:
+            side === "back" ? false : state.deckCreate.applyStarterDeck,
         },
       };
     });

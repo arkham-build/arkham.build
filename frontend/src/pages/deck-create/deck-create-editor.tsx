@@ -49,7 +49,7 @@ export function DeckCreateEditor() {
   );
 
   const starterDeck = useStore((state) =>
-    selectStarterDeckForInvestigator(state, deckCreate.investigatorCode),
+    selectStarterDeckForInvestigator(state, deckCreate.investigatorBackCode),
   );
 
   const onDeckCreate = useCreateDeck();

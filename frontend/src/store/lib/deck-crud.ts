@@ -70,7 +70,7 @@ export const createAdapter = {
       state.deckCreate;
 
     const starterDeck = state.deckCreate.applyStarterDeck
-      ? selectStarterDeckForInvestigator(state, investigatorCode)
+      ? selectStarterDeckForInvestigator(state, investigatorBackCode)
       : undefined;
 
     assert(
