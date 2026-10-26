@@ -29,48 +29,13 @@
 }
 
 .loader-icon {
-  position: relative;
-  font-size: 4rem;
+  display: block;
   width: 4rem;
   height: 4rem;
-  left: calc(50% - 2rem);
-  font-family: var(--font-family-content);
-}
-
-.loader-icon * {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  animation: fadeInOut 5s infinite ease-in-out;
-}
-
-.loader-icon *:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.loader-icon *:nth-child(2) {
-  animation-delay: 2.5s;
+  margin-inline: auto;
+  color: var(--text);
 }
 
 .loader-message {
   min-height: 1em;
-}
-
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-  }
-  25% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-  75% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
 }

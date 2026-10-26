@@ -1,3 +1,4 @@
+import { LoaderCircleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cx } from "@/utils/cx";
 import css from "./loader.module.css";
@@ -26,10 +27,10 @@ export function Loader(props: Props) {
   return (
     <output className={cx(className, css["loader"], show && css["show"])}>
       <div className={css["loader-inner"]}>
-        <div className={css["loader-icon"]}>
-          <i className="icon-auto_fail" />
-          <i className="icon-elder_sign" />
-        </div>
+        <LoaderCircleIcon
+          aria-hidden="true"
+          className={cx("spin", css["loader-icon"])}
+        />
         <div className={css["loader-message"]}>
           {message && <p>{message}</p>}
         </div>
