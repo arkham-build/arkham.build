@@ -193,14 +193,19 @@ export const createAppSlice: StateCreator<StoreState, [], [], AppSlice> = (
 
     timeEnd("create_store_data");
 
-    await dehydrate(get(), "all");
-
     set((prev) => ({
       ui: {
         ...prev.ui,
         initialized: true,
       },
     }));
+
+    // move to event loop task queue
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    await dehydrate(get(), "all");
 
     return true;
   },
