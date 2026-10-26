@@ -8,7 +8,6 @@ import {
   selectTagsChanges,
   selectTagsInLocalDecks,
 } from "@/store/selectors/deck-collection";
-import { capitalize } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { FilterContainer } from "../filters/primitives/filter-container";
 
@@ -46,7 +45,7 @@ export function DeckTagsFilter({ containerClass }: Props) {
     );
   };
 
-  const renderTag = (tag: Coded) => capitalize(tag.code.trim());
+  const renderTag = (tag: Coded) => tag.code.trim();
 
   const renderResult = (tag: Coded, onRemove?: () => void) => (
     <ResultTag data-testid={`combobox-result-${tag.code}`} onRemove={onRemove}>

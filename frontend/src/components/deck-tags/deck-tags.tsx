@@ -47,7 +47,7 @@ export function DeckTags(props: { tags: string[] }) {
   return tags.map((s, i) => (
     // oxlint-disable-next-line react/no-array-index-key -- order is stable.
     <Tag as="li" key={i} size="xs">
-      {capitalize(s.trim())}
+      {s.trim()}
     </Tag>
   ));
 }
