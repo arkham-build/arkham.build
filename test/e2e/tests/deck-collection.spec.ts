@@ -19,9 +19,9 @@ test.describe("deck collection", () => {
       "30 (37)",
     );
 
-    await expect(deckNode.getByTestId("deck-tags")).toContainText(
-      "SoloMultiplayerThemeBeginner",
-    );
+    await expect(
+      deckNode.getByTestId("deck-tags").getByRole("listitem"),
+    ).toHaveText(["Device", "solo", "multiplayer", "theme", "beginner"]);
 
     await expect(deckNode.getByTestId("deck-summary-title")).toContainText(
       "Kōhaku, Fifty Shades of Blurse|FHV Intro|Deck Guide",

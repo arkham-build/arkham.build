@@ -570,9 +570,16 @@ test.describe("quick edit title and tags", () => {
       .fill("solo multiplayer theme advanced");
     await page.getByTestId("name-edit-submit").click();
 
-    await expect(page.getByTestId("view-tags")).toContainText(
-      "DeviceLegacySoloMultiplayerThemeAdvanced",
-    );
+    await expect(
+      page.getByTestId("view-tags").getByRole("listitem"),
+    ).toHaveText([
+      "Device",
+      "Legacy",
+      "solo",
+      "multiplayer",
+      "theme",
+      "advanced",
+    ]);
   });
 
   test("quick edit title w/ outstanding edits", async ({ page }) => {
