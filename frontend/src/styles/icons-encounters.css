@@ -1,3 +1,12 @@
+.encounters-dimensional_madness:before {
+  content: "\eabe";
+}
+.encounters-traces_to_nowhere_pack:before {
+  content: "\eabf";
+}
+.encounters-traces_to_nowhere:before {
+  content: "\eac0";
+}
 .encounters-children_of_blood:before {
   content: "\ea8f";
 }

@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+# Updates an icon font from an IcoMoon export.
+# Usage: bin/update-icon-font <encounters|icon> path/to/export.zip
+
+set -euo pipefail
+
+if [[ $# -ne 2 ]]; then
+  echo "Usage: $0 <encounters|icon> <icomoon-export.zip>" >&2
+  exit 1
+fi
+
+# The font name doubles as the IcoMoon font family, file name and class prefix.
+font="$1"
+case "$font" in
+  encounters | icon) ;;
+  *)
+    echo "Unknown font: $font (expected encounters or icon)" >&2
+    exit 1
+    ;;
+esac
+
+if [[ ! -f "$2" ]]; then
+  echo "Archive not found: $2" >&2
+  exit 1
+fi
+archive="$(cd "$(dirname "$2")" && pwd)/$(basename "$2")"
+
+repo_root="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$repo_root"
+
+for required_command in awk unzip woff2_compress; do
+  if ! command -v "$required_command" >/dev/null; then
+    echo "Required command is not available: $required_command" >&2
+    if [[ "$required_command" == "woff2_compress" ]]; then
+      echo "Install it with: brew install woff2" >&2
+    fi
+    exit 1
+  fi
+done
+
+font_target="frontend/src/assets/fonts/$font.woff2"
+css_target="frontend/src/styles/icons-$font.css"
+
+temp_dir="$(mktemp -d)"
+trap 'rm -rf "$temp_dir"' EXIT
+
+unzip -q "$archive" -d "$temp_dir"
+
+ttf="$temp_dir/fonts/$font.ttf"
+css="$temp_dir/style.css"
+for required_file in "$ttf" "$css"; do
+  if [[ ! -f "$required_file" ]]; then
+    echo "Archive is missing ${required_file#"$temp_dir"/}" >&2
+    exit 1
+  fi
+done
+
+woff2_compress "$ttf" >/dev/null
+cp "$temp_dir/fonts/$font.woff2" "$font_target"
+
+# The @font-face and base class rules live in main.css, keep only the glyph rules.
+awk -v prefix=".$font-" \
+  'found || index($0, prefix) == 1 { found = 1; print }' \
+  "$css" >"$temp_dir/icons.css"
+if [[ ! -s "$temp_dir/icons.css" ]]; then
+  echo "No .$font-* rules found in style.css" >&2
+  exit 1
+fi
+cp "$temp_dir/icons.css" "$css_target"
+
+glyph_count="$(grep -c "^\.$font-" "$css_target")"
+echo "Updated $font_target and $css_target ($glyph_count glyphs)."

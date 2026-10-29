@@ -1,3 +1,5 @@
+import { getEncounterIcon } from "./encounter-icon.helpers";
+
 export function getPackIcon(code?: string) {
   switch (code) {
     case "side_stories":
@@ -276,7 +278,10 @@ export function getPackIcon(code?: string) {
     case "cob":
       return "cob";
 
+    case "traces_to_nowhere":
+      return "traces_to_nowhere_pack";
+
     default:
-      return null;
+      return getEncounterIcon(code);
   }
 }

@@ -206,10 +206,7 @@ function ScenarioContent({
           omitBackButton
           title={
             <span className={css["title"]}>
-              <EncounterIcon
-                className={css["title-icon"]}
-                code={scenario.code}
-              />
+              <PackIcon className={css["title-icon"]} code={scenario.code} />
               <span>{title}</span>
             </span>
           }

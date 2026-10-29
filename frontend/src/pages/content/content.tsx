@@ -1,7 +1,6 @@
 import type { Scenario } from "@arkham-build/shared";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import EncounterIcon from "@/components/icons/encounter-icon";
 import PackIcon from "@/components/icons/pack-icon";
 import { MediaCard } from "@/components/ui/media-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -211,7 +210,7 @@ function ScenarioList({ scenarios }: { scenarios: Scenario[] }) {
             full
           >
             <span className={css["scenario-icon"]}>
-              <EncounterIcon code={scenario.code} />
+              <PackIcon code={scenario.code} />
             </span>
             <span>{displayPackName(scenario)}</span>
           </Button>
