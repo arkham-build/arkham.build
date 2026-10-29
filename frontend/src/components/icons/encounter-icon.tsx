@@ -1,6 +1,7 @@
 import { useStore } from "@/store";
 import { selectMetadata } from "@/store/selectors/shared";
 import { cx } from "@/utils/cx";
+import { getEncounterIcon } from "./encounter-icon.helpers";
 
 type Props = {
   code?: string | null;
