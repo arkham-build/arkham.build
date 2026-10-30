@@ -30,7 +30,12 @@ export function validatePackCodeOrder(
   for (const [position, existingCode] of existingCodes.entries()) {
     const incomingCode = incomingCodes[position];
 
-    if (incomingCode !== existingCode) {
+    const isTracesToNowhereRename =
+      existingCode === "traces_to_nowhere" &&
+      incomingCode === "traces_to_nowhere_pack" &&
+      !incomingCodes.includes(existingCode);
+
+    if (incomingCode !== existingCode && !isTracesToNowhereRename) {
       throw new Error(
         `Incoming pack order does not preserve pack ${existingCode} at bit position ${position}.`,
       );
