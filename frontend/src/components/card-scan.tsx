@@ -13,6 +13,7 @@ import {
 import { cx } from "@/utils/cx";
 import { useAgathaEasterEggTransform } from "@/utils/easter-egg-agatha";
 import css from "./card-scan.module.css";
+import { halloweenImageUrl } from "./halloween/halloween-image-url";
 import { Button } from "./ui/button";
 
 export type CardScanActionSlot = (scanId: string) => React.ReactNode;
@@ -108,12 +109,20 @@ export function CardScanControlled(props: Props) {
       : false;
 
   // Fan-made content uses card urls for sides, these take precedence.
-  const frontUrl = suffix === "b" ? card.back_image_url : card.image_url;
-  const backUrl = backCard
-    ? backCard.image_url
-    : suffix === "b"
-      ? card.image_url
-      : card.back_image_url;
+  const frontUrl =
+    halloweenImageUrl(card, "scan", suffix) ??
+    (suffix === "b" ? card.back_image_url : card.image_url);
+  const backUrl =
+    halloweenImageUrl(
+      backCard ?? card,
+      "scan",
+      backCard ? undefined : suffix === "b" ? undefined : "b",
+    ) ??
+    (backCard
+      ? backCard.image_url
+      : suffix === "b"
+        ? card.image_url
+        : card.back_image_url);
 
   const onToggleFlip = (evt: React.MouseEvent) => {
     evt.preventDefault();

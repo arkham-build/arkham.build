@@ -5,6 +5,7 @@ import { getCardColor, thumbnailUrl } from "@/utils/card-utils";
 import { cx } from "@/utils/cx";
 import { useAgathaEasterEggTransform } from "@/utils/easter-egg-agatha";
 import css from "./card-thumbnail.module.css";
+import { halloweenImageUrl } from "./halloween/halloween-image-url";
 
 type Props = {
   card: Card;
@@ -36,7 +37,10 @@ export const CardThumbnail = memo(
       >
         <img
           alt={t("card_view.thumbnail", { code: card.code })}
-          src={url ? url : thumbnailUrl(imageCode)}
+          src={
+            halloweenImageUrl(card, "thumbnail", suffix) ??
+            (url ? url : thumbnailUrl(imageCode))
+          }
         />
       </div>
     );
