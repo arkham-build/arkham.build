@@ -148,23 +148,6 @@
       "sets": "Zestawy",
       "title": "Przeglądaj karty"
     },
-    "content": {
-      "empty": {
-        "campaigns": "Brak dostępnych kampanii.",
-        "standalone_scenarios": "Brak dostępnych scenariuszy."
-      },
-      "tabs": {
-        "campaigns": "Kampanie",
-        "standalone_scenarios": "Scenariusze"
-      },
-      "title": "Zawartość",
-      "unknown_release_year": "Nieznany rok",
-      "guide": {
-        "campaign_pdf": "Księga kampanii",
-        "return_to_pdf": "Powrót",
-        "rules_insert_pdf": "Dodatek z zasadami"
-      }
-    },
     "card_modal": {
       "actions": {
         "complete_task": "Zakończ zadanie",
@@ -252,13 +235,9 @@
       "back": "Wstecz",
       "cancel": "Anuluj",
       "card_back": "{{name}} - rewers",
-      "card_few": "karty",
-      "card_many": "kart",
       "card_one": "karta",
       "card_other": "karty",
       "clear": "Wyczyść",
-      "clue_few": "Wskazówki",
-      "clue_many": "Wskazówek",
       "clue_one": "Wskazówka",
       "clue_other": "Wskazówki",
       "cost": {
@@ -269,12 +248,9 @@
       "create_named": "Stwórz \"{{name}}\"",
       "customizable": "Przystosowalna",
       "customizations": "Usprawnienia",
-      "cycle_few": "cykle",
-      "cycle_many": "cykli",
       "cycle_one": "cykl",
       "cycle_other": "cyklu",
       "deck_options": {
-        "A deck cannot include more than one reward card with the permanent keyword.": "Talia nie może zawierać więcej niż jednej karty nagrody ze słowem kluczowym Trwała.",
         "Atleast constraint violated.": "Ograniczenie „przynajmniej” naruszone.",
         "Blessed": "Błogosławiona",
         "Blessed and Cursed": "Błogosławiona i przeklęta",
@@ -345,8 +321,6 @@
         "survivor": "Ocalały"
       },
       "fast": "Szybka",
-      "icon_few": "ikony umiejętności",
-      "icon_many": "ikon umiejętności",
       "icon_one": "ikona umiejętności",
       "icon_other": "ikony umiejętności",
       "level": {
@@ -363,8 +337,6 @@
       "none": "Brak",
       "ok": "OK",
       "or": "lub",
-      "pack_few": "zestawy",
-      "pack_many": "zestawów",
       "pack_one": "zestaw",
       "pack_other": "zestawu",
       "packs_new_format": {
@@ -460,8 +432,6 @@
       "taboo_original_text": "Oryginalny tekst karty",
       "taboo_unchained": "Kosztuje {{xp}} doświadczenia mniej.",
       "total": "łącznie",
-      "trait_few": "Cechy",
-      "trait_many": "Cech",
       "trait_one": "Cecha",
       "trait_other": "Cechy",
       "traits": {
@@ -490,6 +460,7 @@
         "Attack": "Atak",
         "Augury": "Zapowiedź",
         "Avatar": "Wcielenie",
+        "Bane": "Zmora",
         "Basement": "Piwnica",
         "Bayou": "Zalewisko",
         "Bazaar": "Bazar",
@@ -520,6 +491,7 @@
         "Circle": "Krąg",
         "City": "Miasto",
         "Civic": "Miejski",
+        "Civilian": "Cywil",
         "Clairvoyant": "Jasnowidz",
         "Clothing": "Ubranie",
         "Clover Club": "Clover Club",
@@ -545,6 +517,8 @@
         "Cursed": "Przeklęty",
         "Dark": "Mrok",
         "Dark Young": "Mroczne Młode",
+        "Dawn": "Świt",
+        "Day": "Dzień",
         "Deep One": "Istota z Głębin",
         "Depths": "Czeluście",
         "Desert": "Pustynia",
@@ -561,6 +535,7 @@
         "Dreamlands": "Krainy Snów",
         "Drifter": "Tułacz",
         "Dunwich": "Dunwich",
+        "Dusk": "Zmierzch",
         "Eidolon": "Złuda",
         "Elder Thing": "Starsza Istota",
         "Eldritch": "Eldritch",
@@ -640,6 +615,7 @@
         "Key": "Klucz",
         "Kingsport": "Kingsport",
         "Kuala Lumpur": "Kuala Lumpur",
+        "Lab": "Laboratorium",
         "Lair": "Leże",
         "Lantern Club": "Klub Latarni",
         "Lead": "Trop",
@@ -671,10 +647,12 @@
         "Mountain": "Góra",
         "Mountains": "Góry",
         "Mutated": "Zmutowana",
+        "Mutation": "Zmutowany",
         "Mystery": "Tajemnica",
         "Nest": "Gniazdo",
         "New Orleans": "Nowy Orlean",
         "New York City": "Nowy Jork",
+        "Night": "Noc",
         "Nightgaunt": "Dziecię nocy",
         "Obstacle": "Przeszkoda",
         "Occult": "Okultystyczny",
@@ -751,6 +729,7 @@
         "Service": "Służba",
         "Servitor": "Posłuszny",
         "Set": "Scenografia",
+        "Sewer": "Ściek",
         "Shantak": "Szantak",
         "Shattered": "Zniszczona",
         "Ship": "Statek",
@@ -811,12 +790,14 @@
         "Void": "Pustka",
         "Walkway": "Chodnik",
         "Warden": "Stróż",
+        "Warehouse": "Magazyn",
         "Wastes": "Pustkowie",
         "Wayfarer": "Podróżnik",
         "Weapon": "Broń",
         "Wilderness": "Dzicz",
         "Witch": "Wiedźma",
         "Witch House": "Dom wiedźmy",
+        "Witness": "Świadek",
         "Woods": "Puszcza",
         "Worker": "Pracownik",
         "Y'ha-nthlei": "Y'ha-nthlei",
@@ -833,8 +814,6 @@
         "enemy_location": "Wróg-lokalizacja",
         "event": "Wydarzenie",
         "investigator": "Badacz",
-        "investigator_few": "Badacze",
-        "investigator_many": "Badaczy",
         "investigator_one": "Badacz",
         "investigator_other": "Badacza",
         "key": "Klucz",
@@ -884,6 +863,23 @@
       "victory": "Zwycięstwo",
       "xp": "PD"
     },
+    "content": {
+      "empty": {
+        "campaigns": "Brak dostępnych kampanii.",
+        "standalone_scenarios": "Brak dostępnych scenariuszy."
+      },
+      "guide": {
+        "campaign_pdf": "Księga kampanii",
+        "return_to_pdf": "Powrót",
+        "rules_insert_pdf": "Dodatek z zasadami"
+      },
+      "tabs": {
+        "campaigns": "Kampanie",
+        "standalone_scenarios": "Scenariusze"
+      },
+      "title": "Zawartość",
+      "unknown_release_year": "Nieznany rok"
+    },
     "deck": {
       "actions": {
         "archive": "Archiwizuj talię",
@@ -929,8 +925,6 @@
       "limited_slots": "Limitowane sloty",
       "stats": {
         "deck_size": "Rozmiar talii",
-        "ignored_few": "{{count}} kopie nie wliczają się do rozmiaru talii.",
-        "ignored_many": "{{count}} kopii nie wlicza się do rozmiaru talii.",
         "ignored_one": "{{count}} kopia nie wlicza się do rozmiaru talii.",
         "ignored_other": "{{count}} kopii nie wlicza się do rozmiaru talii.",
         "unowned": "Niedostępne: {{count}} z {{total}} kart",
@@ -961,16 +955,12 @@
       "tools": {
         "average_cost": "Średni koszt: {{cost}}",
         "cards": "Karty",
+        "costed": "Z kosztem: {{count}} / {{total}}",
         "count": "Liczba",
         "factions": "Klasy",
         "factions_tooltip": "{{faction}} - {{count}} {{cards}}",
         "loading": "Wczytywanie narzędzia talii...",
         "median_cost": "Mediana kosztu: {{cost}}",
-        "resource_cost": "Koszt zasobów",
-        "resource_cost_tooltip": "{{count}} {{cards}} o koszcie {{cost}}",
-        "resource_costs": "Koszty zasobów",
-        "skill_icons": "Ikony umiejętności",
-        "skill_icons_tooltip": "{{skill}} - {{count}} {{icons}}",
         "random_basic_weakness": {
           "add": "Dodaj losowe podstawowe osłabienie",
           "draft": "Wybierz losowe podstawowe osłabienie w drafcie",
@@ -980,7 +970,15 @@
           "require_trait": "Wymagaj cechy",
           "title": "Dodaj losowe podstawowe osłabienie",
           "trait_placeholder": "Wybierz cechę"
-        }
+        },
+        "resource_cost": "Koszt zasobów",
+        "resource_cost_tooltip_one": "{{count}} {{cards}} o koszcie {{cost}}",
+        "resource_cost_tooltip_other": "{{count}} {{cards}} o koszcie {{cost}}",
+        "resource_costs": "Koszty zasobów",
+        "skill_icons": "Ikony umiejętności",
+        "skill_icons_tooltip": "{{skill}} - {{count}} {{icons}}",
+        "trait_modal_title_one": "{{trait}}: {{count}} card",
+        "trait_modal_title_other": "{{trait}}: {{count}} cards"
       },
       "validation": {
         "card_not_in_limited_pool": "Poniższe karty nie są częścią dozwolonej puli kart dla tej talii:",
@@ -1140,8 +1138,6 @@
       "create_local_copy_help": "Utwórz lokalną kopię tej talii. Zastosuje to wszystkie zaległe edycje i umożliwi ich zapisanie. Ulepszenia i historia talii nie zostaną przeniesione.",
       "customizable": {
         "skill_placeholder": "Wybierz umiejętność...",
-        "traits_placeholder_few": "Wybierz cechy...",
-        "traits_placeholder_many": "Wybierz cechy...",
         "traits_placeholder_one": "Wybierz cechę...",
         "traits_placeholder_other": "Wybierz cechy..."
       },
@@ -1309,6 +1305,7 @@
         "title": "Przewodniki talii"
       },
       "filters": {
+        "allowed_packs": "Wybrane zestawy",
         "author": "Autor",
         "author_placeholder": "Wprowadź nazwę autora (np. Valentin1331)...",
         "description_length": "Minimalna długość przewodnika talii",
@@ -1322,6 +1319,7 @@
         "required_cards": "Wymagane karty",
         "submit": "Zastosuj",
         "title": "Kryteria filtrowania",
+        "use_collection": "Użyj mojej kolekcji",
         "xp_range": "Wymagane XP"
       },
       "sorting": {
@@ -1580,9 +1578,7 @@
       },
       "group_by": "Grupuj według",
       "nav": {
-        "card_count_few": "{{count}} karty",
         "card_count_hidden": "({{count}} ukrytych przez filtry)",
-        "card_count_many": "{{count}} kart",
         "card_count_one": "{{count}} karta",
         "card_count_other": "{{count}} karty",
         "display": "Wyświetlanie listy",
@@ -1620,6 +1616,36 @@
       "navigation": "Nawigacja",
       "rules": "Zasady"
     },
+    "oauth_consent": {
+      "allow": "Zezwól",
+      "authorize": "Autoryzuj {{clientName}}",
+      "deny": "Odmów",
+      "description": "{{clientName}} prosi o dostęp do twojego konta arkham.build.",
+      "error": "Nie udało się wczytać żądania autoryzacji. Wróć do aplikacji i spróbuj ponownie.",
+      "expired": "Żądanie autoryzacji jest nieprawidłowe lub wygasło. Wróć do aplikacji i zacznij ponownie.",
+      "loading": "Wczytywanie żądania autoryzacji...",
+      "permissions": "Żądane uprawnienia",
+      "redirecting_to_login": "Przekierowywanie do logowania...",
+      "scopes": {
+        "decks_delete": {
+          "description": "Usuwanie twoich talii.",
+          "title": "Usuwanie talii"
+        },
+        "decks_read": {
+          "description": "Przeglądanie twoich talii.",
+          "title": "Odczyt talii"
+        },
+        "decks_write": {
+          "description": "Tworzenie i aktualizacja twoich talii.",
+          "title": "Zapis talii"
+        },
+        "profile_read": {
+          "description": "Przeglądanie identyfikatora konta i nazwy użytkownika.",
+          "title": "Odczyt profilu"
+        }
+      },
+      "title": "Autoryzacja aplikacji"
+    },
     "popular_decks": {
       "decklists_link": "Przeglądaj wszystkie przewodniki talii",
       "error": "Popularne przewodniki talii nie mogły zostać załadowane: {{error}}",
@@ -1650,12 +1676,31 @@
       "title": "Zasady",
       "toc": "Spis treści"
     },
+    "sealed_deck": {
+      "empty": "Ta zapieczętowana pula kart nie zawiera żadnych kart.",
+      "loading": "Pobieranie zapieczętowanej puli kart...",
+      "title": "Zapieczętowana pula kart: {{name}}"
+    },
     "search": {
       "title": "Wyniki wyszukiwania"
     },
     "settings": {
       "account": {
         "danger_zone": "Strefa zagrożenia",
+        "connected_apps": {
+          "error": "Nie udało się wczytać połączonych aplikacji.",
+          "granted_at": "Dostęp przyznano",
+          "last_authorized_at": "Ostatnia autoryzacja",
+          "loading": "Wczytywanie połączonych aplikacji...",
+          "permissions": "Uprawnienia",
+          "revoke_confirm": "Cofnąć dostęp aplikacji {{clientName}} do twojego konta?",
+          "revoke_error": "Nie udało się cofnąć dostępu aplikacji {{clientName}}: {{error}}",
+          "revoking_app": "Cofanie dostępu aplikacji {{clientName}}...",
+          "status": {
+            "active": "Połączona",
+            "disabled": "Wyłączona"
+          }
+        },
         "delete": {
           "confirm_help": "Wpisz {{username}}, aby potwierdzić usunięcie konta.",
           "confirm_label": "Potwierdzenie",
@@ -1718,32 +1763,18 @@
           "username": "Nazwa użytkownika",
           "username_help": "Tylko litery, cyfry, podkreślenia i myślniki."
         },
-        "title": "Konto",
-        "connected_apps": {
-          "error": "Nie udało się wczytać połączonych aplikacji.",
-          "granted_at": "Dostęp przyznano",
-          "last_authorized_at": "Ostatnia autoryzacja",
-          "loading": "Wczytywanie połączonych aplikacji...",
-          "permissions": "Uprawnienia",
-          "revoke_confirm": "Cofnąć dostęp aplikacji {{clientName}} do twojego konta?",
-          "revoke_error": "Nie udało się cofnąć dostępu aplikacji {{clientName}}: {{error}}",
-          "revoking_app": "Cofanie dostępu aplikacji {{clientName}}...",
-          "status": {
-            "active": "Połączona",
-            "disabled": "Wyłączona"
-          }
-        }
-      },
-      "card_data": {
-        "card_count": "Liczba kart",
-        "data_version": "Wersja danych",
-        "error": "Nie udało się załadować najnowszych danych kart.",
-        "loading": "Wczytywanie najnowszych danych kart...",
-        "locale": "Język",
-        "sync": "Synchronizuj dane kart",
-        "up_to_date": "Używasz najnowszych danych kart.",
-        "update_available": "Nowe dane kart są dostępne."
-      },
+        "title": "Konto"
+        },
+        "card_data": {
+          "card_count": "Liczba kart",
+          "data_version": "Wersja danych",
+          "error": "Nie udało się załadować najnowszych danych kart.",
+          "loading": "Wczytywanie najnowszych danych kart...",
+          "locale": "Język",
+          "sync": "Synchronizuj dane kart",
+          "up_to_date": "Używasz najnowszych danych kart.",
+          "update_available": "Nowe dane kart są dostępne."
+        },
       "collection": {
         "card_collection": "Kolekcja kart",
         "card_count": "Liczba kart",
@@ -1844,8 +1875,6 @@
     },
     "ui": {
       "cards_combobox": {
-        "placeholder_few": "Wybierz karty...",
-        "placeholder_many": "Wybierz karty...",
         "placeholder_one": "Wybierz kartę...",
         "placeholder_other": "Wybierz karty..."
       },
@@ -1859,49 +1888,14 @@
       },
       "copy_to_clipboard": "Kopiuj do schowka",
       "copy_to_clipboard_success": "Skopiowano.",
-      "password_input": {
-        "hide_password": "Ukryj hasło",
-        "show_password": "Pokaż hasło"
-      },
       "pagination": {
         "next": "Następna",
         "previous": "Poprzednia"
-      }
-    },
-    "oauth_consent": {
-      "allow": "Zezwól",
-      "authorize": "Autoryzuj {{clientName}}",
-      "deny": "Odmów",
-      "description": "{{clientName}} prosi o dostęp do twojego konta arkham.build.",
-      "error": "Nie udało się wczytać żądania autoryzacji. Wróć do aplikacji i spróbuj ponownie.",
-      "expired": "Żądanie autoryzacji jest nieprawidłowe lub wygasło. Wróć do aplikacji i zacznij ponownie.",
-      "loading": "Wczytywanie żądania autoryzacji...",
-      "permissions": "Żądane uprawnienia",
-      "redirecting_to_login": "Przekierowywanie do logowania...",
-      "scopes": {
-        "decks_delete": {
-          "description": "Usuwanie twoich talii.",
-          "title": "Usuwanie talii"
-        },
-        "decks_read": {
-          "description": "Przeglądanie twoich talii.",
-          "title": "Odczyt talii"
-        },
-        "decks_write": {
-          "description": "Tworzenie i aktualizacja twoich talii.",
-          "title": "Zapis talii"
-        },
-        "profile_read": {
-          "description": "Przeglądanie identyfikatora konta i nazwy użytkownika.",
-          "title": "Odczyt profilu"
-        }
       },
-      "title": "Autoryzacja aplikacji"
-    },
-    "sealed_deck": {
-      "empty": "Ta zapieczętowana pula kart nie zawiera żadnych kart.",
-      "loading": "Pobieranie zapieczętowanej puli kart...",
-      "title": "Zapieczętowana pula kart: {{name}}"
+      "password_input": {
+        "hide_password": "Ukryj hasło",
+        "show_password": "Pokaż hasło"
+      }
     }
   }
 }
