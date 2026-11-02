@@ -55,8 +55,8 @@
 
 .scopes {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1rem;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .title {
