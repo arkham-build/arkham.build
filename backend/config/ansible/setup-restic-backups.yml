@@ -50,7 +50,6 @@
 
           config_file=/etc/restic/api-arkham-build.env
           lock_file=/var/lock/api-arkham-build-postgres-backup.lock
-          timestamp=$(date -u +%Y%m%dT%H%M%SZ)
 
           exec 9>"$lock_file"
           flock -n 9
@@ -59,13 +58,14 @@
           . "$config_file"
           set +a
 
-          docker exec "$POSTGRES_CONTAINER" pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc |
-            restic backup --stdin --stdin-filename "${POSTGRES_DB}-${timestamp}.dump"
+          docker exec "$POSTGRES_CONTAINER" pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc -Z0 |
+            restic backup --stdin --stdin-filename "${POSTGRES_DB}.dump"
 
           restic forget \
-            --keep-hourly 48 \
-            --keep-daily 30 \
-            --keep-weekly 8 \
+            --group-by host \
+            --keep-hourly 24 \
+            --keep-daily 14 \
+            --keep-weekly 4 \
             --keep-monthly 12 \
             --prune
 
