@@ -1,5 +1,4 @@
 import type { Campaign as CampaignData, Scenario } from "@arkham-build/shared";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
@@ -17,6 +16,7 @@ import type { Metadata } from "@/store/slices/metadata.types";
 import { assert } from "@/utils/assert";
 import { resolveCampaignGuide } from "@/utils/content";
 import { displayPackName } from "@/utils/formatting";
+import { useTemporaryList } from "@/utils/use-temporary-list";
 import { ErrorStatus } from "../errors/404";
 import {
   resolveCampaignCards,
@@ -81,62 +81,34 @@ function CampaignCards({
   originalCampaign: CampaignData | undefined;
 }) {
   const { t } = useTranslation();
-  const activeListId = useStore((state) => state.activeList);
-  const addList = useStore((state) => state.addList);
-  const removeList = useStore((state) => state.removeList);
-  const setActiveList = useStore((state) => state.setActiveList);
+  const listReady = useTemporaryList(
+    `campaign-${campaign.code}`,
+    {
+      card_type: "encounter",
+      fan_made_content: "all",
+      ownership: "all",
+    },
+    {
+      displaySettingsKey: "scenario",
+      filters: [
+        "type",
+        "trait",
+        "card_tags",
+        "subtype",
+        "action",
+        "pack",
+        "encounter_set",
+        "illustrator",
+      ],
+      groupOrder: {
+        keys: encounterSetOrder,
+        type: "encounter_set",
+      },
+      systemFilter: (card) => cardCodes.has(card.code),
+    },
+  );
 
-  const listKey = `campaign-${campaign.code}`;
-  const listExists = useStore((state) => state.lists[listKey] != null);
-
-  useEffect(() => {
-    if (!listExists) {
-      addList(
-        listKey,
-        {
-          card_type: "encounter",
-          fan_made_content: "all",
-          ownership: "all",
-        },
-        {
-          displaySettingsKey: "scenario",
-          filters: [
-            "type",
-            "trait",
-            "card_tags",
-            "subtype",
-            "action",
-            "pack",
-            "encounter_set",
-            "illustrator",
-          ],
-          groupOrder: {
-            keys: encounterSetOrder,
-            type: "encounter_set",
-          },
-          systemFilter: (card) => cardCodes.has(card.code),
-        },
-      );
-    }
-
-    setActiveList(listKey);
-  }, [
-    addList,
-    cardCodes,
-    encounterSetOrder,
-    listExists,
-    listKey,
-    setActiveList,
-  ]);
-
-  useEffect(() => {
-    return () => {
-      removeList(listKey);
-      setActiveList(undefined);
-    };
-  }, [listKey, removeList, setActiveList]);
-
-  if (!listExists || activeListId !== listKey) return null;
+  if (!listReady) return null;
 
   const title = displayPackName(campaign);
   const guide = resolveCampaignGuide(campaign);

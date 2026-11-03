@@ -1,5 +1,4 @@
 import type { Card } from "@arkham-build/shared";
-import { useEffect } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { CardLink } from "@/components/card-link";
@@ -9,6 +8,7 @@ import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useStore } from "@/store";
 import { selectMetadata } from "@/store/selectors/shared";
 import { displayAttribute } from "@/utils/card-utils";
+import { useTemporaryList } from "@/utils/use-temporary-list";
 import { ErrorStatus } from "../errors/404";
 
 type Props = {
@@ -33,28 +33,13 @@ function UsableCards() {
 
 function UsableCardsList(props: { card: Card }) {
   const { card } = props;
-  const listKey = `investigator_usable_${card.code}`;
   const { t } = useTranslation();
 
-  const activeList = useStore((state) => state.lists[state.activeList ?? ""]);
-  const addList = useStore((state) => state.addList);
-  const setActiveList = useStore((state) => state.setActiveList);
-  const removeList = useStore((state) => state.removeList);
+  const listReady = useTemporaryList(`investigator_usable_${card.code}`, {
+    investigator: card.code,
+  });
 
-  useEffect(() => {
-    addList(listKey, {
-      investigator: card.code,
-    });
-
-    setActiveList(listKey);
-
-    return () => {
-      removeList(listKey);
-      setActiveList(undefined);
-    };
-  }, [addList, removeList, setActiveList, listKey, card.code]);
-
-  if (!activeList) return null;
+  if (!listReady) return null;
 
   const titleInterpolationValues = {
     prefix: card.parallel ? `${t("common.parallel")} ` : "",

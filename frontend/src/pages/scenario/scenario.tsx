@@ -3,7 +3,6 @@ import type {
   Card,
   Scenario as ScenarioData,
 } from "@arkham-build/shared";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
@@ -27,6 +26,7 @@ import { selectMetadata } from "@/store/selectors/shared";
 import { assert } from "@/utils/assert";
 import { resolveScenarioGuide } from "@/utils/content";
 import { displayPackName } from "@/utils/formatting";
+import { useTemporaryList } from "@/utils/use-temporary-list";
 import { ErrorStatus } from "../errors/404";
 import css from "./scenario.module.css";
 
@@ -97,54 +97,33 @@ function ScenarioContent({
   scenario: ScenarioData;
 }) {
   const { t } = useTranslation();
-  const activeListId = useStore((state) => state.activeList);
-  const addList = useStore((state) => state.addList);
-  const removeList = useStore((state) => state.removeList);
-  const setActiveList = useStore((state) => state.setActiveList);
+  const listReady = useTemporaryList(
+    `scenario-${scenario.code}`,
+    {
+      card_type: "encounter",
+      fan_made_content: "all",
+      ownership: "all",
+    },
+    {
+      displaySettingsKey: "scenario",
+      filters: [
+        "type",
+        "trait",
+        "card_tags",
+        "subtype",
+        "action",
+        "encounter_set",
+        "illustrator",
+      ],
+      groupOrder: {
+        keys: scenario.encounter_sets.map(({ code }) => code),
+        type: "encounter_set",
+      },
+      systemFilter: (card) => isCardUsedInScenario(card, scenario),
+    },
+  );
 
-  const listKey = `scenario-${scenario.code}`;
-  const listExists = useStore((state) => state.lists[listKey] != null);
-
-  useEffect(() => {
-    if (!listExists) {
-      addList(
-        listKey,
-        {
-          card_type: "encounter",
-          fan_made_content: "all",
-          ownership: "all",
-        },
-        {
-          displaySettingsKey: "scenario",
-          filters: [
-            "type",
-            "trait",
-            "card_tags",
-            "subtype",
-            "action",
-            "encounter_set",
-            "illustrator",
-          ],
-          groupOrder: {
-            keys: scenario.encounter_sets.map(({ code }) => code),
-            type: "encounter_set",
-          },
-          systemFilter: (card) => isCardUsedInScenario(card, scenario),
-        },
-      );
-    }
-
-    setActiveList(listKey);
-  }, [addList, listExists, listKey, scenario, setActiveList]);
-
-  useEffect(() => {
-    return () => {
-      removeList(listKey);
-      setActiveList(undefined);
-    };
-  }, [listKey, removeList, setActiveList]);
-
-  if (!listExists || activeListId !== listKey) return null;
+  if (!listReady) return null;
 
   const title = displayPackName(scenario);
   const guide = resolveScenarioGuide(campaign, scenario);

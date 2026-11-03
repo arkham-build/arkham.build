@@ -1,5 +1,5 @@
 import type { Card, SealedDeckResponse, Slots } from "@arkham-build/shared";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "wouter";
 import { CardModalProvider } from "@/components/card-modal/card-modal-provider";
@@ -14,6 +14,7 @@ import { filterSealedPool, getSealedCardQuantity } from "@/store/lib/filtering";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import { ApiError } from "@/store/services/requests/shared";
 import { isStaticInvestigator } from "@/utils/card-utils";
+import { useTemporaryList } from "@/utils/use-temporary-list";
 import { ErrorStatus } from "../errors/404";
 
 function SealedDeck() {
@@ -45,15 +46,9 @@ function SealedDeckBrowser(props: {
   const { id, sealedDeck } = props;
   const { t } = useTranslation();
 
-  const activeListId = useStore((state) => state.activeList);
-  const activeList = useStore((state) => state.lists[`sealed-deck-${id}`]);
-  const addList = useStore((state) => state.addList);
-  const removeList = useStore((state) => state.removeList);
-  const setActiveList = useStore((state) => state.setActiveList);
   const lookupTables = useStore(selectLookupTables);
   const metadata = useStore(selectMetadata);
 
-  const listKey = `sealed-deck-${id}`;
   const poolFilter = useMemo(
     () => filterSealedPool(sealedDeck.cards, lookupTables),
     [lookupTables, sealedDeck.cards],
@@ -81,44 +76,37 @@ function SealedDeckBrowser(props: {
     [lookupTables, metadata.cards, sealedDeck.cards],
   );
 
-  useEffect(() => {
-    addList(
-      listKey,
-      {
-        card_type: "player",
-        fan_made_content: "all",
-        ownership: "all",
-      },
-      {
-        displaySettingsKey: "sealed-deck",
-        showInvestigatorFilter: true,
-        showOwnershipFilter: true,
-        systemFilter: poolFilter,
-        filters: [
-          "faction",
-          "type",
-          "level",
-          "cost",
-          "trait",
-          "card_tags",
-          "investigator",
-          "asset",
-          "skill_icons",
-          "properties",
-          "action",
-          "subtype",
-        ],
-      },
-    );
-    setActiveList(listKey);
+  const listReady = useTemporaryList(
+    `sealed-deck-${id}`,
+    {
+      card_type: "player",
+      fan_made_content: "all",
+      ownership: "all",
+    },
+    {
+      displaySettingsKey: "sealed-deck",
+      showInvestigatorFilter: true,
+      showOwnershipFilter: true,
+      systemFilter: poolFilter,
+      filters: [
+        "faction",
+        "type",
+        "level",
+        "cost",
+        "trait",
+        "card_tags",
+        "investigator",
+        "asset",
+        "skill_icons",
+        "properties",
+        "action",
+        "subtype",
+      ],
+    },
+    poolFilter,
+  );
 
-    return () => {
-      removeList(listKey);
-      setActiveList(undefined);
-    };
-  }, [addList, listKey, poolFilter, removeList, setActiveList]);
-
-  if (!activeList || activeListId !== listKey) {
+  if (!listReady) {
     return null;
   }
 

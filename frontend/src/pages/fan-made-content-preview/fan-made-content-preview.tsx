@@ -9,6 +9,7 @@ import { ListLayoutNoSidebar } from "@/layouts/list-layout-no-sidebar";
 import { useFanMadeProjectDataQuery } from "@/queries/fan-made";
 import { useStore } from "@/store";
 import { selectIsInitialized } from "@/store/selectors/shared";
+import { useTemporaryList } from "@/utils/use-temporary-list";
 import { ErrorStatus } from "../errors/404";
 import css from "./fan-made-content-preview.module.css";
 
@@ -58,45 +59,30 @@ function FanMadeContentPreview() {
 }
 
 function FanMadeContentPreviewInner({ project }: { project: FanMadeProject }) {
-  const addList = useStore((state) => state.addList);
-  const setActiveList = useStore((state) => state.setActiveList);
-  const removeList = useStore((state) => state.removeList);
-
-  useEffect(() => {
-    const listKey = `fan-made-content-preview-${project.meta.code}`;
-
-    addList(
-      listKey,
-      {
-        card_type: "",
-        ownership: "all",
-        fan_made_content: "fan-made",
-        cycle: [project.meta.code],
+  const listReady = useTemporaryList(
+    `fan-made-content-preview-${project.meta.code}`,
+    {
+      card_type: "",
+      ownership: "all",
+      fan_made_content: "fan-made",
+      cycle: [project.meta.code],
+    },
+    {
+      additionalFilters: ["cycle"],
+      display: {
+        viewMode: "scans",
       },
-      {
-        additionalFilters: ["cycle"],
-        display: {
-          viewMode: "scans",
-        },
-        fanMadeCardCodes: new Set(project.data.cards.map((card) => card.code)),
-        lockedFilters: new Set(["cycle"]),
-        showInvestigatorFilter: true,
-        showOwnershipFilter: false,
-      },
-    );
+      fanMadeCardCodes: new Set(project.data.cards.map((card) => card.code)),
+      lockedFilters: new Set(["cycle"]),
+      showInvestigatorFilter: true,
+      showOwnershipFilter: false,
+    },
+    project,
+  );
 
-    setActiveList(listKey);
-
-    return () => {
-      removeList(listKey);
-      setActiveList(undefined);
-    };
-  }, [addList, removeList, setActiveList, project]);
-
-  const activeList = useStore((state) => state.lists[state.activeList ?? ""]);
   const isInitalized = useStore(selectIsInitialized);
 
-  if (!activeList || !isInitalized) {
+  if (!listReady || !isInitalized) {
     return null;
   }
 
