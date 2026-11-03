@@ -235,9 +235,13 @@
       "back": "Wstecz",
       "cancel": "Anuluj",
       "card_back": "{{name}} - rewers",
+      "card_few": "karty",
       "card_one": "karta",
+      "card_many": "kart",
       "card_other": "karty",
       "clear": "Wyczyść",
+      "clue_few": "Wskazówki",
+      "clue_many": "Wskazówek",
       "clue_one": "Wskazówka",
       "clue_other": "Wskazówki",
       "cost": {
@@ -248,6 +252,8 @@
       "create_named": "Stwórz \"{{name}}\"",
       "customizable": "Przystosowalna",
       "customizations": "Usprawnienia",
+      "cycle_few": "cykle",
+      "cycle_many": "cykli",
       "cycle_one": "cykl",
       "cycle_other": "cyklu",
       "deck_options": {
@@ -321,6 +327,8 @@
         "survivor": "Ocalały"
       },
       "fast": "Szybka",
+      "icon_few": "ikony umiejętności",
+      "icon_many": "ikon umiejętności",
       "icon_one": "ikona umiejętności",
       "icon_other": "ikony umiejętności",
       "level": {
@@ -337,6 +345,8 @@
       "none": "Brak",
       "ok": "OK",
       "or": "lub",
+      "pack_few": "zestawy",
+      "pack_many": "zestawów",
       "pack_one": "zestaw",
       "pack_other": "zestawu",
       "packs_new_format": {
@@ -432,6 +442,8 @@
       "taboo_original_text": "Oryginalny tekst karty",
       "taboo_unchained": "Kosztuje {{xp}} doświadczenia mniej.",
       "total": "łącznie",
+      "trait_few": "Cechy",
+      "trait_many": "Cech",
       "trait_one": "Cecha",
       "trait_other": "Cechy",
       "traits": {
@@ -814,6 +826,8 @@
         "enemy_location": "Wróg-lokalizacja",
         "event": "Wydarzenie",
         "investigator": "Badacz",
+        "investigator_few": "Badacze",
+        "investigator_many": "Badaczy",
         "investigator_one": "Badacz",
         "investigator_other": "Badacza",
         "key": "Klucz",
@@ -925,6 +939,8 @@
       "limited_slots": "Limitowane sloty",
       "stats": {
         "deck_size": "Rozmiar talii",
+        "ignored_few": "{{count}} kopie nie wliczają się do rozmiaru talii.",
+        "ignored_many": "{{count}} kopii nie wlicza się do rozmiaru talii.",
         "ignored_one": "{{count}} kopia nie wlicza się do rozmiaru talii.",
         "ignored_other": "{{count}} kopii nie wlicza się do rozmiaru talii.",
         "unowned": "Niedostępne: {{count}} z {{total}} kart",
@@ -1138,6 +1154,8 @@
       "create_local_copy_help": "Utwórz lokalną kopię tej talii. Zastosuje to wszystkie zaległe edycje i umożliwi ich zapisanie. Ulepszenia i historia talii nie zostaną przeniesione.",
       "customizable": {
         "skill_placeholder": "Wybierz umiejętność...",
+        "traits_placeholder_few": "Wybierz cechy...",
+        "traits_placeholder_many": "Wybierz cechy...",
         "traits_placeholder_one": "Wybierz cechę...",
         "traits_placeholder_other": "Wybierz cechy..."
       },
@@ -1578,7 +1596,9 @@
       },
       "group_by": "Grupuj według",
       "nav": {
+        "card_count_few": "{{count}} karty",
         "card_count_hidden": "({{count}} ukrytych przez filtry)",
+        "card_count_many": "{{count}} kart",
         "card_count_one": "{{count}} karta",
         "card_count_other": "{{count}} karty",
         "display": "Wyświetlanie listy",
@@ -1875,6 +1895,8 @@
     },
     "ui": {
       "cards_combobox": {
+        "placeholder_few": "Wybierz karty...",
+        "placeholder_many": "Wybierz karty...",
         "placeholder_one": "Wybierz kartę...",
         "placeholder_other": "Wybierz karty..."
       },
