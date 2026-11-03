@@ -260,12 +260,10 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
       if (!isCurrentAccount(get(), accountId)) return;
 
-      if (response.revision == null || response.state == null) {
-        await get().saveFolders(client, { expectedRevision: null });
+      if (response.revision != null && response.state != null) {
+        await get().applyRemoteFolders(response);
         return;
       }
-
-      await get().applyRemoteFolders(response);
     } catch (error) {
       if (!isCurrentAccount(get(), accountId)) return;
 
@@ -278,6 +276,9 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       await dehydrate(get(), "app");
       throw error;
     }
+
+    // Outside the try: a failed seed records its own conflict/error state.
+    await get().saveFolders(client, { expectedRevision: null });
   },
 
   async applyRemoteFolders(payload) {
@@ -388,12 +389,10 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
       if (!isCurrentAccount(get(), accountId)) return;
 
-      if (response.revision == null || response.state == null) {
-        await get().saveCardTags(client, { expectedRevision: null });
+      if (response.revision != null && response.state != null) {
+        await get().applyRemoteCardTags(response);
         return;
       }
-
-      await get().applyRemoteCardTags(response);
     } catch (error) {
       if (!isCurrentAccount(get(), accountId)) return;
 
@@ -406,6 +405,9 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       await dehydrate(get(), "app");
       throw error;
     }
+
+    // Outside the try: a failed seed records its own conflict/error state.
+    await get().saveCardTags(client, { expectedRevision: null });
   },
 
   async applyRemoteCardTags(payload) {
@@ -640,7 +642,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       return { kind: conflict.kind };
     } catch (error) {
       set((prev) => ({
-        sync: updateDeckSyncConflictError(prev.sync, id, error, conflict.kind),
+        sync: updateDeckSyncConflictError(prev.sync, id, error, conflict),
       }));
       await dehydrate(get(), "app", "edits");
       throw error;
@@ -668,7 +670,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
       return { kind: conflict.kind };
     } catch (error) {
       set((prev) => ({
-        sync: updateDeckSyncConflictError(prev.sync, id, error, conflict.kind),
+        sync: updateDeckSyncConflictError(prev.sync, id, error, conflict),
       }));
       await dehydrate(get(), "app", "edits");
       throw error;

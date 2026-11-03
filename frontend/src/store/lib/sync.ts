@@ -152,19 +152,21 @@ export function updateDeckSyncConflictError(
   sync: StoreState["sync"],
   deckId: DeckId,
   error: unknown,
-  kind: NonNullable<DeckSyncItemState["conflict"]>["kind"],
+  // The conflict being resolved. The item no longer holds it here, because
+  // the resolution attempt cleared it when it started.
+  conflict: NonNullable<DeckSyncItemState["conflict"]>,
 ): StoreState["sync"] {
   const current = sync.decks.items[deckId] ?? getInitialDeckSyncItem();
 
   if (isDeckConflictError(error)) {
-    return updateDeckSyncError(sync, deckId, error, kind);
+    return updateDeckSyncError(sync, deckId, error, conflict.kind);
   }
 
   const items = updateDeckSyncItem(sync.decks.items, deckId, {
     ...current,
     status: "conflict",
     error: error instanceof Error ? error.message : "Unknown error",
-    conflict: current.conflict ?? { kind, remoteVersion: null },
+    conflict,
   });
 
   return {
@@ -224,4 +226,39 @@ function getInitialDeckSyncItem(): DeckSyncItemState {
     error: null,
     conflict: null,
   };
+}
+
+/**
+ * `loading` and `saving` describe requests of a previous page load, which can
+ * no longer complete. Left in place, a deck item stuck in `saving` would be
+ * skipped by reconciliation forever.
+ */
+export function settlePersistedSync(
+  sync: Partial<StoreState["sync"]>,
+): Partial<StoreState["sync"]> {
+  const settled = { ...sync };
+
+  if (sync.settings) settled.settings = settle(sync.settings);
+  if (sync.folders) settled.folders = settle(sync.folders);
+  if (sync.cardTags) settled.cardTags = settle(sync.cardTags);
+
+  if (sync.decks) {
+    settled.decks = {
+      ...settle(sync.decks),
+      items: Object.fromEntries(
+        Object.entries(sync.decks.items ?? {}).map(([id, item]) => [
+          id,
+          settle(item),
+        ]),
+      ),
+    };
+  }
+
+  return settled;
+}
+
+function settle<T extends { status: SyncStatus }>(state: T): T {
+  return state.status === "loading" || state.status === "saving"
+    ? { ...state, status: "idle" }
+    : state;
 }

@@ -72,6 +72,55 @@ test.describe("account folders", () => {
     await context.close();
   });
 
+  test("failed folder saves set sync status to error and recover", async ({
+    baseURL,
+    browser,
+    page,
+  }) => {
+    const account = await createAuthenticatedAccount(page);
+
+    await importDeckFromFile(page, "hunch_deck.json", { navigate: "view" });
+    await uploadAccountDeck(page);
+    await waitForAccountSync(page);
+
+    let failedSave = false;
+    await page.route(`${apiUrl}/v2/account/folders`, async (route) => {
+      if (route.request().method() === "PUT" && !failedSave) {
+        failedSave = true;
+        await route.abort("failed");
+        return;
+      }
+      await route.continue();
+    });
+
+    const saveFailed = page.waitForEvent(
+      "requestfailed",
+      (request) =>
+        request.url() === `${apiUrl}/v2/account/folders` &&
+        request.method() === "PUT",
+    );
+    await clickArchiveToggle(page);
+    await saveFailed;
+    await expect(
+      page.getByTestId("masthead-account-sync-status"),
+    ).toHaveAttribute("data-sync-status", "error");
+
+    // Both retries only succeed if the failure kept the last good revision.
+    await toggleArchiveStatus(page);
+    await toggleArchiveStatus(page);
+    await waitForAccountSync(page);
+
+    const { context, page2 } = await openLoggedInPage(
+      browser,
+      baseURL,
+      account,
+    );
+    await waitForAccountSync(page2);
+    await expectDeckArchived(page2, "Le Diamond");
+
+    await context.close();
+  });
+
   test("folder conflicts set sync status and are cleared by reload", async ({
     baseURL,
     browser,
@@ -115,10 +164,14 @@ async function toggleArchiveStatus(page: Page) {
       response.request().method() === "PUT",
   );
 
+  await clickArchiveToggle(page);
+  await response;
+}
+
+async function clickArchiveToggle(page: Page) {
   await page.getByTestId("view-more-actions").click();
   await page.getByTestId("view-archive").click();
   await page.getByTestId("view-more-actions").press("Escape");
-  await response;
 }
 
 async function uploadAccountDeck(page: Page) {

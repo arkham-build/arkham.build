@@ -47,7 +47,10 @@ describe("auth slice", () => {
 
     await store.getState().logout(getMockHttpClient());
 
-    expect(store.getState().auth).toEqual({ session: null, status: "idle" });
+    expect(store.getState().auth).toEqual({
+      session: null,
+      status: "unauthenticated",
+    });
     expect(store.getState().data.decks.remote).toBeUndefined();
     expect(store.getState().data.decks.local).toBeDefined();
     expect(store.getState().deckEdits.remote).toBeUndefined();

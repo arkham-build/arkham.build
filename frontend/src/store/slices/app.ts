@@ -19,7 +19,7 @@ import {
 import { formatDeckImport } from "../lib/deck-io";
 import { buildCacheFromDecks } from "../lib/fan-made-content";
 import { mappedByCode, mappedById } from "../lib/metadata-utils";
-import { isSyncedStorageProvider } from "../lib/sync";
+import { isSyncedStorageProvider, settlePersistedSync } from "../lib/sync";
 import { dehydrate, hydrate } from "../persist";
 import type { StoreState } from ".";
 import type { AppSlice } from "./app.types";
@@ -500,6 +500,9 @@ function mergeInitialState(
   persistedState: Partial<StoreState> | undefined,
   overrides: Partial<StoreState> | undefined,
 ) {
+  const persistedSync =
+    persistedState?.sync && settlePersistedSync(persistedState.sync);
+
   return {
     ...initialState,
     ...persistedState,
@@ -531,26 +534,26 @@ function mergeInitialState(
       initialState.starterDecks,
     sync: {
       ...initialState.sync,
-      ...persistedState?.sync,
+      ...persistedSync,
       ...overrides?.sync,
       settings: {
         ...initialState.sync.settings,
-        ...persistedState?.sync?.settings,
+        ...persistedSync?.settings,
         ...overrides?.sync?.settings,
       },
       decks: {
         ...initialState.sync.decks,
-        ...persistedState?.sync?.decks,
+        ...persistedSync?.decks,
         ...overrides?.sync?.decks,
         items: {
           ...initialState.sync.decks.items,
-          ...persistedState?.sync?.decks?.items,
+          ...persistedSync?.decks?.items,
           ...overrides?.sync?.decks?.items,
         },
       },
       folders: {
         ...initialState.sync.folders,
-        ...persistedState?.sync?.folders,
+        ...persistedSync?.folders,
         ...overrides?.sync?.folders,
       },
     },

@@ -278,6 +278,131 @@ test.describe("deck sync edge cases", () => {
   });
 });
 
+test.describe("deck sync conflicts", () => {
+  test("an outdated save conflicts and is resolved by refreshing", async ({
+    page,
+  }) => {
+    await createAuthenticatedAccount(page);
+    const deck = await createSyncedDeck(
+      page,
+      accountProvider,
+      "Outdated Conflict Deck",
+    );
+    await updateRemoteAccountDeck(page, deck);
+
+    await saveConflictingEdit(page);
+    await page.goto(`/deck/view/${deck.id}`);
+    await expectSyncStatus(page, "conflict");
+
+    let failedRefresh = false;
+    await page.route(`${apiUrl}/v2/account/decks/batch`, async (route) => {
+      if (route.request().method() === "POST" && !failedRefresh) {
+        failedRefresh = true;
+        await route.abort("failed");
+        return;
+      }
+      await route.continue();
+    });
+
+    const refreshFailed = page.waitForEvent(
+      "requestfailed",
+      (request) => request.url() === `${apiUrl}/v2/account/decks/batch`,
+    );
+    await page.getByTestId("deck-conflict-refresh").click();
+    await refreshFailed;
+
+    // A failed resolution keeps the conflict so it can be retried.
+    await expect(page.getByTestId("deck-conflict-refresh")).toBeEnabled();
+    await expectSyncStatus(page, "conflict");
+
+    await page.getByTestId("deck-conflict-refresh").click();
+    await expect(page.getByTestId("deck-conflict-refresh")).not.toBeVisible();
+    await expect(page.getByTestId("view-title")).toContainText(
+      "Outdated Conflict Deck Remote",
+    );
+    await waitForAccountSync(page);
+  });
+
+  test("a save of a remotely deleted deck is resolved by discarding", async ({
+    page,
+  }) => {
+    await createAuthenticatedAccount(page);
+    const deck = await createSyncedDeck(
+      page,
+      accountProvider,
+      "Deleted Conflict Deck",
+    );
+    await deleteRemoteAccountDeck(page, deck);
+
+    await saveConflictingEdit(page);
+    await page.goto(`/deck/view/${deck.id}`);
+    await expectSyncStatus(page, "conflict");
+
+    await page.getByTestId("deck-conflict-discard-local").click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect(
+      page.getByTestId("collection-deck-Deleted Conflict Deck"),
+    ).not.toBeVisible();
+    await waitForAccountSync(page);
+  });
+
+  test("a deck save interrupted by a reload does not block later syncs", async ({
+    page,
+  }) => {
+    await createAuthenticatedAccount(page);
+    const deck = await createSyncedDeck(
+      page,
+      accountProvider,
+      "Interrupted Save Deck",
+    );
+
+    // Never answer the save, so it is still in flight when the page reloads.
+    await page.route(`${apiUrl}/v2/account/decks/${deck.id}`, async (route) => {
+      if (route.request().method() === "PUT") return;
+      await route.continue();
+    });
+
+    const saveSent = page.waitForRequest(
+      (request) =>
+        request.url() === `${apiUrl}/v2/account/decks/${deck.id}` &&
+        request.method() === "PUT",
+    );
+    await page.getByTestId("view-edit").click();
+    await fillSearch(page, ".45 automatic");
+    await adjustListCardQuantity(page, "01016", "increment");
+    await page.getByTestId("editor-save").click();
+    await saveSent;
+    await expectSyncStatus(page, "saving");
+
+    // Archiving persists app state, including the in-flight save status.
+    // Navigate in-app so the pending save is not cancelled.
+    await page.getByTestId("masthead-logo").click();
+    await page
+      .getByTestId("collection-deck-Interrupted Save Deck")
+      .getByTestId("deck-summary-title")
+      .click({ force: true });
+    const archiveSaved = page.waitForResponse(
+      (response) =>
+        response.url() === `${apiUrl}/v2/account/folders` &&
+        response.request().method() === "PUT",
+    );
+    await page.getByTestId("view-more-actions").click();
+    await page.getByTestId("view-archive").click();
+    await archiveSaved;
+
+    // Reload before unrouting: unrouting would let the held save through.
+    await page.reload();
+    await page.unrouteAll({ behavior: "ignoreErrors" });
+    await updateRemoteAccountDeck(page, deck);
+    await reloadAndSyncAccount(page);
+
+    await page.goto(`/deck/view/${deck.id}`);
+    await expect(page.getByTestId("view-title")).toContainText(
+      "Interrupted Save Deck Remote",
+    );
+  });
+});
+
 async function exerciseSyncedDeckLifecycle(
   page: Page,
   browser: Browser,
@@ -359,6 +484,39 @@ async function updateRemoteAccountDeck(page: Page, deck: Deck) {
       `Remote deck update failed: ${response.status()} ${await response.text()}`,
     );
   }
+}
+
+async function deleteRemoteAccountDeck(page: Page, deck: Deck) {
+  const response = await page.request.delete(
+    `${apiUrl}/v2/account/decks/${deck.id}`,
+    { data: { expectedVersion: deck.version, provider: accountProvider } },
+  );
+
+  if (!response.ok()) {
+    throw new Error(
+      `Remote deck delete failed: ${response.status()} ${await response.text()}`,
+    );
+  }
+}
+
+async function saveConflictingEdit(page: Page) {
+  await page.getByTestId("view-edit").click();
+  await fillSearch(page, ".45 automatic");
+  await adjustListCardQuantity(page, "01016", "increment");
+
+  const response = page.waitForResponse(
+    (response) =>
+      response.url().startsWith(`${apiUrl}/v2/account/decks/`) &&
+      response.request().method() === "PUT",
+  );
+  await page.getByTestId("editor-save").click();
+  expect((await response).status()).toBe(409);
+}
+
+async function expectSyncStatus(page: Page, status: string) {
+  await expect(
+    page.getByTestId("masthead-account-sync-status"),
+  ).toHaveAttribute("data-sync-status", status);
 }
 
 async function editCurrentDeck(page: Page) {

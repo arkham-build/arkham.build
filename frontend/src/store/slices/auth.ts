@@ -242,7 +242,7 @@ export const createAuthSlice: StateCreator<StoreState, [], [], AuthSlice> = (
     try {
       await postLogout(client);
     } finally {
-      get().clearAccountState({ session: null, status: "idle" });
+      get().clearAccountState({ session: null, status: "unauthenticated" });
       setSessionInitialized(set, true);
       await dehydrate(get(), "app");
     }
