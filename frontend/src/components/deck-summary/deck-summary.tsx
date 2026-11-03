@@ -9,7 +9,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import type { DeckValidationResult } from "@/store/lib/deck-validation";
 import { deckTags } from "@/store/lib/resolve-deck";
 import type { DeckSummary as DeckSummaryType } from "@/store/lib/types";
@@ -157,7 +157,6 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
   const { deck, onDeleteDeck, onDuplicateDeck } = props;
 
   const { t } = useTranslation();
-  const [, navigate] = useLocation();
 
   const onDuplicate = (evt: React.MouseEvent) => {
     cancelEvent(evt);
@@ -169,16 +168,6 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
     void onDeleteDeck?.(deck.id)?.catch(console.error);
   };
 
-  const onEdit = (evt: React.MouseEvent) => {
-    cancelEvent(evt);
-    navigate(`/deck/edit/${deck.id}`);
-  };
-
-  const onUpgrade = (evt: React.MouseEvent) => {
-    cancelEvent(evt);
-    navigate(`/deck/view/${deck.id}?upgrade`);
-  };
-
   const { isArchived, toggleArchived } = useChangeArchiveStatus(deck.id);
 
   const onArchive = (evt: React.MouseEvent) => {
@@ -188,22 +177,28 @@ export function DeckSummaryQuickActions(props: DeckSummaryQuickActionsProps) {
 
   return (
     <nav className={css["quick-actions"]}>
-      <Button
-        className={css["quick-action"]}
-        iconOnly
-        tooltip={t("deck.actions.edit")}
-        onClick={onEdit}
-      >
-        <PencilIcon />
-      </Button>
-      <Button
-        className={css["quick-action"]}
-        iconOnly
-        tooltip={t("deck.actions.upgrade")}
-        onClick={onUpgrade}
-      >
-        <i className="icon-xp-bold" />
-      </Button>
+      <Link href={`/deck/edit/${deck.id}`} asChild>
+        <Button
+          as="a"
+          aria-label={t("deck.actions.edit")}
+          className={css["quick-action"]}
+          iconOnly
+          tooltip={t("deck.actions.edit")}
+        >
+          <PencilIcon />
+        </Button>
+      </Link>
+      <Link href={`/deck/view/${deck.id}?upgrade`} asChild>
+        <Button
+          as="a"
+          aria-label={t("deck.actions.upgrade")}
+          className={css["quick-action"]}
+          iconOnly
+          tooltip={t("deck.actions.upgrade")}
+        >
+          <i className="icon-xp-bold" />
+        </Button>
+      </Link>
       <Button
         className={css["quick-action"]}
         iconOnly
