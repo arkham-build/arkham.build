@@ -257,6 +257,7 @@
       "cycle_one": "cykl",
       "cycle_other": "cyklu",
       "deck_options": {
+        "A deck cannot include more than one reward card with the permanent keyword.": "Talia nie może zawierać więcej niż jednej karty nagrody ze słowem kluczowym Trwała.",
         "Atleast constraint violated.": "Ograniczenie „przynajmniej” naruszone.",
         "Blessed": "Błogosławiona",
         "Blessed and Cursed": "Błogosławiona i przeklęta",
