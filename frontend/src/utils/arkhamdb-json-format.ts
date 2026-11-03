@@ -1,10 +1,10 @@
-import type {
-  ApiCard,
-  ApiDeckRequirements,
-  ApiRestrictions,
-  JsonDataCard,
-  JsonDataCycle,
-  JsonDataPack,
+import {
+  type ApiCard,
+  decodeDeckRequirements,
+  decodeRestrictions,
+  type JsonDataCard,
+  type JsonDataCycle,
+  type JsonDataPack,
 } from "@arkham-build/shared";
 
 export function packToApiFormat(pack: JsonDataPack & { official?: boolean }) {
@@ -58,70 +58,4 @@ export function cardToApiFormat(
         Object.entries(fullCard).filter(([_, value]) => value !== undefined),
       ) as ApiCard)
     : fullCard;
-}
-
-type Restrictions = ApiRestrictions;
-
-function decodeRestrictions(
-  str: string | null | undefined,
-): Restrictions | undefined {
-  return str?.split(", ").reduce((acc: Restrictions, curr: string) => {
-    const key = curr.substring(0, curr.indexOf(":"));
-    const val = curr.substring(curr.indexOf(":") + 1);
-
-    if (key === "investigator") {
-      acc.investigator ??= {};
-      const values = val.split(":");
-      for (const val of values) {
-        acc.investigator[val] = val;
-      }
-    }
-
-    if (key === "trait") {
-      acc.trait ??= [];
-      acc.trait.push(val);
-    }
-
-    if (key === "faction") {
-      acc.faction ??= [];
-      acc.faction.push(val);
-    }
-
-    return acc;
-  }, {} as Restrictions);
-}
-
-function decodeDeckRequirements(
-  str?: string | null,
-): ApiDeckRequirements | undefined {
-  return str?.split(", ").reduce((acc: ApiDeckRequirements, curr: string) => {
-    const key = curr.substring(0, curr.indexOf(":"));
-    const val = curr.substring(curr.indexOf(":") + 1);
-
-    if (key === "size") {
-      acc.size = Number.parseInt(val, 10);
-    }
-
-    if (key === "random") {
-      const [target, value] = val.split(":");
-      acc.random ??= [];
-      acc.random.push({ target, value });
-    }
-
-    if (key === "card") {
-      acc.card ??= {};
-
-      const values = val.split(":");
-
-      acc.card[values[0]] = values.reduce<Record<string, string>>(
-        (acc, curr) => {
-          acc[curr] = curr;
-          return acc;
-        },
-        {},
-      );
-    }
-
-    return acc;
-  }, {} as ApiDeckRequirements);
 }

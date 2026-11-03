@@ -157,6 +157,10 @@ export {
 } from "./dtos/settings.schema.ts";
 
 export {
+  decodeDeckRequirements,
+  decodeRestrictions,
+} from "./lib/arkhamdb-card-fields.ts";
+export {
   canonicalCardName,
   cardLevel,
   countExperience,

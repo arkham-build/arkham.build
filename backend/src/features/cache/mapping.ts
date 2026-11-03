@@ -1,8 +1,7 @@
-import assert from "node:assert";
-import type {
-  ApiCard,
-  ApiDeckRequirements,
-  ApiRestrictions,
+import {
+  type ApiCard,
+  decodeDeckRequirements,
+  decodeRestrictions,
 } from "@arkham-build/shared";
 import type { Selectable } from "kysely";
 import type { Card } from "../../db/schema.types.ts";
@@ -167,72 +166,4 @@ export function mapCardRowToV1Card(card: Selectable<Card>) {
 
 function decodeTags(tags: string) {
   return tags.split(".").map((tag) => tag.trim());
-}
-
-type Restrictions = ApiRestrictions;
-
-function decodeRestrictions(
-  value: string | null | undefined,
-): Restrictions | undefined {
-  return value?.split(", ").reduce((acc: Restrictions, item: string) => {
-    const key = item.substring(0, item.indexOf(":"));
-    const entryValue = item.substring(item.indexOf(":") + 1);
-
-    if (key === "investigator") {
-      acc.investigator ??= {};
-      const values = entryValue.split(":");
-      for (const investigator of values) {
-        acc.investigator[investigator] = investigator;
-      }
-    }
-
-    if (key === "trait") {
-      acc.trait ??= [];
-      acc.trait.push(entryValue);
-    }
-
-    if (key === "faction") {
-      acc.faction ??= [];
-      acc.faction.push(entryValue);
-    }
-
-    return acc;
-  }, {} as Restrictions);
-}
-
-function decodeDeckRequirements(
-  value?: string | null,
-): ApiDeckRequirements | undefined {
-  return value?.split(", ").reduce((acc: ApiDeckRequirements, item: string) => {
-    const key = item.substring(0, item.indexOf(":"));
-    const entryValue = item.substring(item.indexOf(":") + 1);
-
-    if (key === "size") {
-      acc.size = Number.parseInt(entryValue, 10);
-    }
-
-    if (key === "random") {
-      const [target, randomValue] = entryValue.split(":");
-      assert(target && randomValue, `Invalid random deck requirement: ${item}`);
-      acc.random ??= [];
-      acc.random.push({ target, value: randomValue });
-    }
-
-    if (key === "card") {
-      acc.card ??= {};
-
-      const values = entryValue.split(":");
-      assert(values[0], `Invalid random deck requirement: ${item}`);
-
-      acc.card[values[0]] = values.reduce<Record<string, string>>(
-        (next, current) => {
-          next[current] = current;
-          return next;
-        },
-        {},
-      );
-    }
-
-    return acc;
-  }, {} as ApiDeckRequirements);
 }
