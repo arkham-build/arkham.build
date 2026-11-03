@@ -2,17 +2,13 @@ import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
   levelToString,
-  selectActiveListFilter,
-  selectFilterChanges,
   selectListFilterProperties,
 } from "@/store/selectors/lists";
-import { isLevelFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
 import { RangeSelect } from "../ui/range-select";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilter } from "./primitives/filter-hooks";
+import { useActiveFilter, useFilter } from "./primitives/filter-hooks";
 
 type LevelShortcut = "0" | "1-5";
 
@@ -28,19 +24,10 @@ function getToggleValue(
 export function LevelFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
+  const { filter, changes } = useActiveFilter(id, "level");
 
   const listProperties = useStore((state) =>
     selectListFilterProperties(state, resolvedDeck, targetDeck),
-  );
-
-  assert(
-    isLevelFilterObject(filter),
-    `LevelFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
   );
 
   const { onReset, onChange, onOpenChange, locked } = useFilter(id);

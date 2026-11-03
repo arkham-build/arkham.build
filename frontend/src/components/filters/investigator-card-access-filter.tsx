@@ -1,18 +1,12 @@
 import type { Card } from "@arkham-build/shared";
 import { Trans, useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import {
-  selectActiveListFilter,
-  selectCardOptions,
-  selectFilterChanges,
-} from "@/store/selectors/lists";
+import { selectCardOptions } from "@/store/selectors/lists";
 import { selectCardMapper } from "@/store/selectors/shared";
-import { isInvestigatorCardAccessFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
 import { CardsCombobox } from "../cards-combobox";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilter } from "./primitives/filter-hooks";
+import { useActiveFilter, useFilter } from "./primitives/filter-hooks";
 
 export function InvestigatorCardAccessFilter(props: FilterProps) {
   const { id } = props;
@@ -20,23 +14,14 @@ export function InvestigatorCardAccessFilter(props: FilterProps) {
 
   const { onReset, onChange, onOpenChange, locked } = useFilter<string[]>(id);
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
+  const { filter, changes } = useActiveFilter(id, "investigator_card_access");
 
   const locale = useStore((state) => state.settings.locale);
 
   const cards = useStore(selectCardOptions);
   const cardMapper = useStore(selectCardMapper);
 
-  assert(
-    isInvestigatorCardAccessFilterObject(filter),
-    `InvestigatorCardAccessFilter instantiated with '${filter?.type}'`,
-  );
-
   const value = filter.value ?? [];
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
-  );
 
   const onValueChange = (value: Card[]) => {
     onChange(value.map((card) => card.code));

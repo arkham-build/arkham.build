@@ -1,32 +1,17 @@
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import {
-  selectActiveListFilter,
-  selectFilterChanges,
-  selectPropertyOptions,
-} from "@/store/selectors/lists";
-import { isPropertiesFilterObject } from "@/store/slices/lists.type-guards";
+import { selectPropertyOptions } from "@/store/selectors/lists";
 import type { PropertiesFilter as PropertiesFilterType } from "@/store/slices/lists.types";
-import { assert } from "@/utils/assert";
 import { FactionIconFancy } from "../icons/faction-icon-fancy";
 import { Checkbox } from "../ui/checkbox";
 import { CheckboxGroup } from "../ui/checkboxgroup";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilter } from "./primitives/filter-hooks";
+import { useActiveFilter, useFilter } from "./primitives/filter-hooks";
 
 export function PropertiesFilter({ id }: FilterProps) {
-  const filter = useStore((state) => selectActiveListFilter(state, id));
+  const { filter, changes } = useActiveFilter(id, "properties");
   const { t } = useTranslation();
-
-  assert(
-    isPropertiesFilterObject(filter),
-    `PropertiesFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
-  );
 
   const { onReset, onChange, onOpenChange, locked } = useFilter(id);
 

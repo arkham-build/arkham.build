@@ -2,12 +2,6 @@ import { featherText } from "@lucide/lab";
 import { FileIcon, Icon, LibraryIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import {
-  selectActiveListFilter,
-  selectFilterChanges,
-} from "@/store/selectors/lists";
-import { isFanMadeContentFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
 import { isEmpty } from "@/utils/is-empty";
 import {
   RadioButtonGroup,
@@ -15,22 +9,13 @@ import {
 } from "../ui/radio-button-group";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilter } from "./primitives/filter-hooks";
+import { useActiveFilter, useFilter } from "./primitives/filter-hooks";
 
 export function FanMadeContentFilter({ id }: FilterProps) {
   const { t } = useTranslation();
-  const filter = useStore((state) => selectActiveListFilter(state, id));
-
-  assert(
-    isFanMadeContentFilterObject(filter),
-    "filter must be a fan-made-content filter",
-  );
+  const { filter, changes } = useActiveFilter(id, "fan_made_content");
 
   const { onChange, onOpenChange, locked } = useFilter(id);
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
-  );
 
   const showFilter = useStore((state) => {
     return (

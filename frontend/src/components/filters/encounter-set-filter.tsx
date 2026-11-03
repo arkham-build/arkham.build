@@ -2,17 +2,14 @@ import type { EncounterSet } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
-  selectActiveListFilter,
   selectEncounterSetMapper,
   selectEncounterSetOptions,
-  selectFilterChanges,
 } from "@/store/selectors/lists";
-import { isEncounterSetFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
 import { displayPackName } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import EncounterIcon from "../icons/encounter-icon";
 import type { FilterProps } from "./filters.types";
+import { useActiveFilter } from "./primitives/filter-hooks";
 import { MultiselectFilter } from "./primitives/multiselect-filter";
 
 export function EncounterSetFilter({
@@ -22,16 +19,7 @@ export function EncounterSetFilter({
 }: FilterProps) {
   const { t } = useTranslation();
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
-
-  assert(
-    isEncounterSetFilterObject(filter),
-    `EncounterSetFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
-  );
+  const { filter, changes } = useActiveFilter(id, "encounter_set");
 
   const options = useStore((state) =>
     selectEncounterSetOptions(state, resolvedDeck, targetDeck),

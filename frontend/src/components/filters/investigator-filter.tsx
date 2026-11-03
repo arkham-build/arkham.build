@@ -1,18 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
-  selectActiveListFilter,
-  selectFilterChanges,
   selectInvestigatorOptions,
   selectListFilterProperties,
 } from "@/store/selectors/lists";
 import { selectMetadata } from "@/store/selectors/shared";
-import { isInvestigatorFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
 import { ListCardInner } from "../list-card/list-card-inner";
 import type { Item } from "../ui/custom-select";
 import css from "./filters.module.css";
 import type { FilterProps } from "./filters.types";
+import { useActiveFilter } from "./primitives/filter-hooks";
 import { CustomSelectFilter } from "./primitives/custom-select-filter";
 
 export function InvestigatorFilter({
@@ -22,21 +19,12 @@ export function InvestigatorFilter({
 }: FilterProps) {
   const { t } = useTranslation();
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
+  const { filter, changes } = useActiveFilter(id, "investigator");
 
   const metadata = useStore(selectMetadata);
 
   const listFilterProperties = useStore((state) =>
     selectListFilterProperties(state, resolvedDeck, targetDeck),
-  );
-
-  assert(
-    isInvestigatorFilterObject(filter),
-    `InvestigatorFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
   );
 
   const options = useStore((state) =>

@@ -2,39 +2,26 @@ import type { Pack } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
-  selectActiveListFilter,
-  selectFilterChanges,
   selectListFilterProperties,
   selectPackMapper,
   selectPackOptions,
 } from "@/store/selectors/lists";
 import { selectMetadata } from "@/store/selectors/shared";
-import { isPackFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
 import { environments, resolveLimitedPoolPacks } from "@/utils/environments";
 import { displayPackName } from "@/utils/formatting";
 import { PackName } from "../pack-name";
 import { Button } from "../ui/button";
 import type { FilterProps } from "./filters.types";
-import { useFilter } from "./primitives/filter-hooks";
+import { useActiveFilter, useFilter } from "./primitives/filter-hooks";
 import { MultiselectFilter } from "./primitives/multiselect-filter";
 
 export function PackFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
+  const { filter, changes } = useActiveFilter(id, "pack");
 
   const listFilterProperties = useStore((state) =>
     selectListFilterProperties(state, resolvedDeck, targetDeck),
-  );
-
-  assert(
-    isPackFilterObject(filter),
-    `PackFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
   );
 
   const packMapper = useStore(selectPackMapper);

@@ -1,32 +1,17 @@
 import type { Cycle } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import {
-  selectActiveListFilter,
-  selectCycleMapper,
-  selectCycleOptions,
-  selectFilterChanges,
-} from "@/store/selectors/lists";
-import { isCycleFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
+import { selectCycleMapper, selectCycleOptions } from "@/store/selectors/lists";
 import { displayPackName } from "@/utils/formatting";
 import PackIcon from "../icons/pack-icon";
 import type { FilterProps } from "./filters.types";
+import { useActiveFilter } from "./primitives/filter-hooks";
 import { MultiselectFilter } from "./primitives/multiselect-filter";
 
 export function CycleFilter({ id }: FilterProps) {
   const { t } = useTranslation();
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
-
-  assert(
-    isCycleFilterObject(filter),
-    `CycleFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
-  );
+  const { filter, changes } = useActiveFilter(id, "cycle");
 
   const cycleMapper = useStore(selectCycleMapper);
 

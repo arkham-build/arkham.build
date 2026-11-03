@@ -1,12 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useStore } from "@/store";
-import {
-  selectActiveListFilter,
-  selectFilterChanges,
-} from "@/store/selectors/lists";
-import { isSkillIconsFilterObject } from "@/store/slices/lists.type-guards";
 import type { SkillIconsFilter as SkillIconsFilterType } from "@/store/slices/lists.types";
-import { assert } from "@/utils/assert";
 import { cx } from "@/utils/cx";
 import { SkillIconFancy } from "../icons/skill-icon-fancy";
 import { CheckboxGroup } from "../ui/checkboxgroup";
@@ -14,21 +7,12 @@ import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import css from "./filters.module.css";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilter } from "./primitives/filter-hooks";
+import { useActiveFilter, useFilter } from "./primitives/filter-hooks";
 
 export function SkillIconsFilter({ id }: FilterProps) {
   const { t } = useTranslation();
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
-
-  assert(
-    isSkillIconsFilterObject(filter),
-    `SkillIconsFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
-  );
+  const { filter, changes } = useActiveFilter(id, "skill_icons");
 
   const { onReset, onOpenChange, onChange, locked } = useFilter(id);
 

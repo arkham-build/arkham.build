@@ -4,31 +4,19 @@ import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
 import {
-  selectActiveListFilter,
   selectCardTagMapper,
   selectCardTagOptions,
-  selectFilterChanges,
 } from "@/store/selectors/lists";
-import { isCardTagsFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import css from "./filters.module.css";
 import type { FilterProps } from "./filters.types";
-import { useFilter } from "./primitives/filter-hooks";
+import { useActiveFilter, useFilter } from "./primitives/filter-hooks";
 import { MultiselectFilter } from "./primitives/multiselect-filter";
 
 export function CardTagsFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
-  const filter = useStore((state) => selectActiveListFilter(state, id));
+  const { filter, changes } = useActiveFilter(id, "card_tags");
 
-  assert(
-    isCardTagsFilterObject(filter),
-    `CardTagsFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
-  );
   const options = useStore((state) =>
     selectCardTagOptions(state, resolvedDeck, targetDeck),
   );

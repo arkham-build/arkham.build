@@ -1,29 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
-import {
-  selectActiveListFilter,
-  selectFilterChanges,
-  selectTraitOptions,
-} from "@/store/selectors/lists";
+import { selectTraitOptions } from "@/store/selectors/lists";
 import { selectTraitMapper } from "@/store/selectors/shared";
-import { isTraitFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
 import type { FilterProps } from "./filters.types";
+import { useActiveFilter } from "./primitives/filter-hooks";
 import { MultiselectFilter } from "./primitives/multiselect-filter";
 
 export function TraitFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
-  const filter = useStore((state) => selectActiveListFilter(state, id));
-
-  assert(
-    isTraitFilterObject(filter),
-    `PackFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
-  );
+  const { filter, changes } = useActiveFilter(id, "trait");
 
   const options = useStore((state) =>
     selectTraitOptions(state, resolvedDeck, targetDeck),

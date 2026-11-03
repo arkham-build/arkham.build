@@ -2178,7 +2178,7 @@ function selectHealthChanges(value: [number, number] | undefined) {
   return formatHealthChanges(value, i18n.t("filters.health.title"));
 }
 
-export function selectIllustratorChanges(value: MultiselectFilter) {
+function selectIllustratorChanges(value: MultiselectFilter) {
   const count = value.length;
   if (!count) return "";
   return value.join(` ${i18n.t("common.or")} `);
@@ -2358,6 +2358,10 @@ export function selectFilterChanges<T extends keyof FilterMapping>(
 
     case "health": {
       return selectHealthChanges(value as HealthFilter);
+    }
+
+    case "illustrator": {
+      return selectIllustratorChanges(value as MultiselectFilter);
     }
 
     case "investigator": {

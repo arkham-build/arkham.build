@@ -1,13 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import {
-  selectActiveListFilter,
-  selectIllustratorChanges,
-  selectIllustratorOptions,
-} from "@/store/selectors/lists";
-import { isIllustratorFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
+import { selectIllustratorOptions } from "@/store/selectors/lists";
 import type { FilterProps } from "./filters.types";
+import { useActiveFilter } from "./primitives/filter-hooks";
 import { MultiselectFilter } from "./primitives/multiselect-filter";
 
 export function IllustratorFilter({
@@ -17,14 +12,8 @@ export function IllustratorFilter({
 }: FilterProps) {
   const { t } = useTranslation();
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
+  const { filter, changes } = useActiveFilter(id, "illustrator");
 
-  assert(
-    isIllustratorFilterObject(filter),
-    `IllustratorFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = selectIllustratorChanges(filter.value);
   const options = useStore((state) =>
     selectIllustratorOptions(state, resolvedDeck, targetDeck),
   );

@@ -1,21 +1,15 @@
 import { SKILL_KEYS, type SkillKey } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import {
-  selectActiveListFilter,
-  selectFilterChanges,
-  selectSkillIconsMinMax,
-} from "@/store/selectors/lists";
-import { isInvestigatorSkillsFilterObject } from "@/store/slices/lists.type-guards";
+import { selectSkillIconsMinMax } from "@/store/selectors/lists";
 import type { InvestigatorSkillsFilter as InvestigatorSkillsFilterType } from "@/store/slices/lists.types";
-import { assert } from "@/utils/assert";
 import { SkillIconFancy } from "../icons/skill-icon-fancy";
 import { RangeSelect } from "../ui/range-select";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import type { FilterProps } from "./filters.types";
 import css from "./investigator-skills-filter.module.css";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilter } from "./primitives/filter-hooks";
+import { useActiveFilter, useFilter } from "./primitives/filter-hooks";
 
 const INVESTIGATOR_SKILL_KEYS: SkillKey[] = SKILL_KEYS.filter(
   (key) => key !== "wild",
@@ -28,19 +22,10 @@ export function InvestigatorSkillsFilter(props: FilterProps) {
   const { onReset, onChange, onOpenChange, locked } =
     useFilter<InvestigatorSkillsFilterType>(id);
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
+  const { filter, changes } = useActiveFilter(id, "investigator_skills");
 
   const skillsMinMax = useStore((state) =>
     selectSkillIconsMinMax(state, resolvedDeck, targetDeck),
-  );
-
-  assert(
-    isInvestigatorSkillsFilterObject(filter),
-    `InvestigatorSkillsFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
   );
 
   const onSetShortcut = (keys: SkillKey[]) => {

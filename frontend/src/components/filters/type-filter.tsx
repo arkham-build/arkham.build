@@ -2,16 +2,13 @@ import type { JsonDataType } from "@arkham-build/shared";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import {
-  selectActiveListFilter,
-  selectFilterChanges,
   selectListFilterProperties,
   selectTypeMapper,
   selectTypeOptions,
 } from "@/store/selectors/lists";
-import { isTypeFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import type { FilterProps } from "./filters.types";
+import { useActiveFilter } from "./primitives/filter-hooks";
 import { MultiselectFilter } from "./primitives/multiselect-filter";
 
 const nameRenderer = (item: JsonDataType) => item.name;
@@ -23,20 +20,11 @@ const CAMPAIGN_TYPE_SHORTCUTS = ["location", "enemy", "treachery"] as const;
 export function TypeFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
+  const { filter, changes } = useActiveFilter(id, "type");
   const setFilterValue = useStore((state) => state.setFilterValue);
 
   const listProperties = useStore((state) =>
     selectListFilterProperties(state, resolvedDeck, targetDeck),
-  );
-
-  assert(
-    isTypeFilterObject(filter),
-    `TypeFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
   );
 
   const options = useStore((state) =>

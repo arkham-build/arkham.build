@@ -4,26 +4,14 @@ import type { Coded } from "@/store/lib/types";
 import {
   selectActionMapper,
   selectActionOptions,
-  selectActiveListFilter,
-  selectFilterChanges,
 } from "@/store/selectors/lists";
-import { isActionFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
 import type { FilterProps } from "./filters.types";
+import { useActiveFilter } from "./primitives/filter-hooks";
 import { MultiselectFilter } from "./primitives/multiselect-filter";
 
 export function ActionFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
-  const filter = useStore((state) => selectActiveListFilter(state, id));
-
-  assert(
-    isActionFilterObject(filter),
-    `ActionFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
-  );
+  const { filter, changes } = useActiveFilter(id, "action");
 
   const options = useStore((state) =>
     selectActionOptions(state, resolvedDeck, targetDeck),

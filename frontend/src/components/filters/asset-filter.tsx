@@ -2,15 +2,11 @@ import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import type { Coded } from "@/store/lib/types";
 import {
-  selectActiveListFilter,
   selectAssetOptions,
-  selectFilterChanges,
   selectSlotsMapper,
   selectUsesMapper,
 } from "@/store/selectors/lists";
-import { isAssetFilterObject } from "@/store/slices/lists.type-guards";
 import type { AssetFilter as AssetFilterType } from "@/store/slices/lists.types";
-import { assert } from "@/utils/assert";
 import { SkillIcon } from "../icons/skill-icon";
 import SlotIcon from "../icons/slot-icon";
 import { Checkbox } from "../ui/checkbox";
@@ -20,7 +16,7 @@ import { RangeSelect } from "../ui/range-select";
 import css from "./filters.module.css";
 import type { FilterProps } from "./filters.types";
 import { FilterContainer } from "./primitives/filter-container";
-import { useFilter } from "./primitives/filter-hooks";
+import { useActiveFilter, useFilter } from "./primitives/filter-hooks";
 
 type Option = {
   code: string;
@@ -58,16 +54,7 @@ function renderSlotResult(c: Option, onRemove?: () => void) {
 export function AssetFilter({ id, resolvedDeck, targetDeck }: FilterProps) {
   const { t } = useTranslation();
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
-
-  assert(
-    isAssetFilterObject(filter),
-    `AssetFilter instantiated with '${filter?.type}'`,
-  );
-
-  const changes = useStore((state) =>
-    selectFilterChanges(state, filter.type, filter.value),
-  );
+  const { filter, changes } = useActiveFilter(id, "asset");
 
   const options = useStore((state) =>
     selectAssetOptions(state, resolvedDeck, targetDeck),

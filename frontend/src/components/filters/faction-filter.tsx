@@ -1,22 +1,13 @@
 import { useStore } from "@/store";
-import {
-  selectActiveListFilter,
-  selectFactionOptions,
-} from "@/store/selectors/lists";
-import { isFactionFilterObject } from "@/store/slices/lists.type-guards";
-import { assert } from "@/utils/assert";
+import { selectFactionOptions } from "@/store/selectors/lists";
 import { FactionToggle } from "../faction-toggle";
 import type { FilterProps } from "./filters.types";
-import { useFilter } from "./primitives/filter-hooks";
+import { useActiveFilter, useFilter } from "./primitives/filter-hooks";
 
 export function FactionFilter(props: FilterProps) {
   const { id, resolvedDeck, targetDeck } = props;
 
-  const filter = useStore((state) => selectActiveListFilter(state, id));
-  assert(
-    isFactionFilterObject(filter),
-    `FactionFilter instantiated with '${filter?.type}'`,
-  );
+  const { filter } = useActiveFilter(id, "faction");
 
   const options = useStore((state) =>
     selectFactionOptions(state, resolvedDeck, targetDeck),
