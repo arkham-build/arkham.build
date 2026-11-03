@@ -8,6 +8,12 @@ import {
 import type { StateCreator } from "zustand";
 import { assert } from "@/utils/assert";
 import { changeLanguage } from "@/utils/i18n";
+import {
+  getExpectedRevision,
+  revisionSyncFailed,
+  revisionSyncStarted,
+  revisionSyncSucceeded,
+} from "../lib/revision-sync";
 import { fromRemoteSettings, toRemoteSettings } from "../lib/settings-sync";
 import { dehydrate } from "../persist";
 import type { HttpClient } from "../services/http-client";
@@ -193,14 +199,10 @@ export const createSettingsSlice: StateCreator<
       return;
     }
 
-    get().setSettingsSync({
-      accountId,
-      revision: response.revision,
-      lastSyncedAt: Date.now(),
-      status: "synced",
-      error: null,
-      conflict: null,
-    });
+    get().setRevisionSync(
+      "settings",
+      revisionSyncSucceeded(accountId, response.revision),
+    );
 
     await dehydrate(get(), "app");
   },
@@ -210,12 +212,10 @@ export const createSettingsSlice: StateCreator<
     const accountId = state.auth.session?.account.id;
     assert(accountId, "Cannot load remote settings without an account.");
 
-    get().setSettingsSync({
-      accountId,
-      status: "loading",
-      error: null,
-      conflict: null,
-    });
+    get().setRevisionSync(
+      "settings",
+      revisionSyncStarted(accountId, "loading"),
+    );
 
     try {
       const response = await fetchSettings(client);
@@ -230,11 +230,7 @@ export const createSettingsSlice: StateCreator<
         return;
       }
 
-      get().setSettingsSync({
-        status: "error",
-        error: getErrorMessage(error),
-        conflict: null,
-      });
+      get().setRevisionSync("settings", revisionSyncFailed(accountId, error));
       await dehydrate(get(), "app");
       throw error;
     }
@@ -250,19 +246,13 @@ export const createSettingsSlice: StateCreator<
       return;
     }
 
-    const expectedRevision =
-      opts?.expectedRevision !== undefined
-        ? opts.expectedRevision
-        : get().sync.settings.accountId === accountId
-          ? get().sync.settings.revision
-          : null;
-
-    get().setSettingsSync({
+    const expectedRevision = getExpectedRevision(
+      state.sync.settings,
       accountId,
-      status: "saving",
-      error: null,
-      conflict: null,
-    });
+      opts?.expectedRevision,
+    );
+
+    get().setRevisionSync("settings", revisionSyncStarted(accountId, "saving"));
 
     try {
       const response = await putSettings(client, {
@@ -275,35 +265,20 @@ export const createSettingsSlice: StateCreator<
         return;
       }
 
-      get().setSettingsSync({
-        accountId,
-        revision: response.revision,
-        lastSyncedAt: Date.now(),
-        status: "synced",
-        error: null,
-        conflict: null,
-      });
+      get().setRevisionSync(
+        "settings",
+        revisionSyncSucceeded(accountId, response.revision),
+      );
       await dehydrate(get(), "app");
     } catch (error) {
       if (!isCurrentAccount(get(), accountId)) {
         return;
       }
 
-      if (isSettingsConflictError(error)) {
-        get().setSettingsSync({
-          accountId,
-          status: "conflict",
-          error: getErrorMessage(error),
-          conflict: error.remote,
-        });
-      } else {
-        get().setSettingsSync({
-          accountId,
-          status: "error",
-          error: getErrorMessage(error),
-          conflict: null,
-        });
-      }
+      get().setRevisionSync(
+        "settings",
+        revisionSyncFailed(accountId, error, isSettingsConflictError),
+      );
 
       await dehydrate(get(), "app");
       throw error;
@@ -361,8 +336,4 @@ function isCurrentAccount(state: StoreState, accountId: string) {
     state.auth.status === "authenticated" &&
     state.auth.session?.account.id === accountId
   );
-}
-
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Unknown error";
 }

@@ -16,14 +16,16 @@ export type SyncStatus =
   | "conflict"
   | "error";
 
-export type SettingsSyncState = {
+export type RevisionSyncState<Remote> = {
   accountId: string | null;
   revision: string | null;
   lastSyncedAt: number | null;
   status: SyncStatus;
   error: string | null;
-  conflict: SettingsResponse | null;
+  conflict: Remote | null;
 };
+
+export type SettingsSyncState = RevisionSyncState<SettingsResponse>;
 
 type DeckSyncConflictState = {
   kind: "update" | "delete" | "upgrade";
@@ -47,23 +49,9 @@ export type DecksSyncState = {
   items: Record<string, DeckSyncItemState>;
 };
 
-export type FoldersSyncState = {
-  accountId: string | null;
-  revision: string | null;
-  lastSyncedAt: number | null;
-  status: SyncStatus;
-  error: string | null;
-  conflict: FolderSyncResponse | null;
-};
+export type FoldersSyncState = RevisionSyncState<FolderSyncResponse>;
 
-export type CardTagsSyncState = {
-  accountId: string | null;
-  revision: string | null;
-  lastSyncedAt: number | null;
-  status: SyncStatus;
-  error: string | null;
-  conflict: CardTagsSyncResponse | null;
-};
+export type CardTagsSyncState = RevisionSyncState<CardTagsSyncResponse>;
 
 export type SyncState = {
   sync: {
@@ -84,10 +72,11 @@ export type SyncSlice = SyncState & {
     opts?: { forceArkhamdbSync?: boolean },
   ): Promise<void>;
   clearAccountState(auth?: AuthState): void;
-  setSettingsSync(payload: Partial<SettingsSyncState>): void;
+  setRevisionSync<Key extends "settings" | "folders" | "cardTags">(
+    key: Key,
+    payload: Partial<SyncState["sync"][Key]>,
+  ): void;
   setDecksSync(payload: Partial<DecksSyncState>): void;
-  setFoldersSync(payload: Partial<FoldersSyncState>): void;
-  setCardTagsSync(payload: Partial<CardTagsSyncState>): void;
   setDeckSyncItem(id: Id, payload: Partial<DeckSyncItemState> | null): void;
   loadRemoteFolders(client: HttpClient): Promise<void>;
   applyRemoteFolders(payload: FolderSyncResponse): Promise<void>;

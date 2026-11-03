@@ -16,6 +16,13 @@ import {
 } from "../lib/card-tags";
 import { deleteAdapter } from "../lib/deck-crud";
 import {
+  getExpectedRevision,
+  getInitialRevisionSyncState,
+  revisionSyncFailed,
+  revisionSyncStarted,
+  revisionSyncSucceeded,
+} from "../lib/revision-sync";
+import {
   updateDeckSyncConflictError,
   updateDeckSyncSaving,
   updateDeckSyncSuccess,
@@ -45,25 +52,11 @@ import type { AuthState } from "./auth.types";
 import { getInitialCardTagsState } from "./card-tags";
 import { createArchiveFolder } from "./data";
 import type {
-  CardTagsSyncState,
   DeckSyncItemState,
   DecksSyncState,
-  FoldersSyncState,
-  SettingsSyncState,
   SyncSlice,
   SyncState,
 } from "./sync.types";
-
-function getInitialSettingsSyncState(): SettingsSyncState {
-  return {
-    accountId: null,
-    revision: null,
-    lastSyncedAt: null,
-    status: "idle",
-    error: null,
-    conflict: null,
-  };
-}
 
 function getInitialDeckSyncItemState(): DeckSyncItemState {
   return {
@@ -86,35 +79,13 @@ function getInitialDecksSyncState(): DecksSyncState {
   };
 }
 
-function getInitialFoldersSyncState(): FoldersSyncState {
-  return {
-    accountId: null,
-    revision: null,
-    lastSyncedAt: null,
-    status: "idle",
-    error: null,
-    conflict: null,
-  };
-}
-
-function getInitialCardTagsSyncState(): CardTagsSyncState {
-  return {
-    accountId: null,
-    revision: null,
-    lastSyncedAt: null,
-    status: "idle",
-    error: null,
-    conflict: null,
-  };
-}
-
 function getInitialSyncState(): SyncState {
   return {
     sync: {
-      settings: getInitialSettingsSyncState(),
+      settings: getInitialRevisionSyncState(),
       decks: getInitialDecksSyncState(),
-      folders: getInitialFoldersSyncState(),
-      cardTags: getInitialCardTagsSyncState(),
+      folders: getInitialRevisionSyncState(),
+      cardTags: getInitialRevisionSyncState(),
     },
   };
 }
@@ -167,12 +138,12 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     }));
   },
 
-  setSettingsSync(payload) {
+  setRevisionSync(key, payload) {
     set((state) => ({
       sync: {
         ...state.sync,
-        settings: {
-          ...state.sync.settings,
+        [key]: {
+          ...state.sync[key],
           ...payload,
         },
       },
@@ -185,30 +156,6 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
         ...state.sync,
         decks: {
           ...state.sync.decks,
-          ...payload,
-        },
-      },
-    }));
-  },
-
-  setFoldersSync(payload) {
-    set((state) => ({
-      sync: {
-        ...state.sync,
-        folders: {
-          ...state.sync.folders,
-          ...payload,
-        },
-      },
-    }));
-  },
-
-  setCardTagsSync(payload) {
-    set((state) => ({
-      sync: {
-        ...state.sync,
-        cardTags: {
-          ...state.sync.cardTags,
           ...payload,
         },
       },
@@ -248,12 +195,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
     assert(accountId, "Cannot load remote folders without an account.");
 
-    state.setFoldersSync({
-      accountId,
-      status: "loading",
-      error: null,
-      conflict: null,
-    });
+    state.setRevisionSync("folders", revisionSyncStarted(accountId, "loading"));
 
     try {
       const response = await fetchFolders(client);
@@ -267,12 +209,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     } catch (error) {
       if (!isCurrentAccount(get(), accountId)) return;
 
-      get().setFoldersSync({
-        accountId,
-        status: "error",
-        error: getErrorMessage(error),
-        conflict: null,
-      });
+      get().setRevisionSync("folders", revisionSyncFailed(accountId, error));
       await dehydrate(get(), "app");
       throw error;
     }
@@ -297,12 +234,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
         ...state.sync,
         folders: {
           ...state.sync.folders,
-          accountId,
-          revision: payload.revision,
-          lastSyncedAt: Date.now(),
-          status: "synced",
-          error: null,
-          conflict: null,
+          ...revisionSyncSucceeded(accountId, payload.revision),
         },
       },
     }));
@@ -316,19 +248,13 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
     assert(accountId, "Cannot save folders without an account.");
 
-    const expectedRevision =
-      opts?.expectedRevision !== undefined
-        ? opts.expectedRevision
-        : state.sync.folders.accountId === accountId
-          ? state.sync.folders.revision
-          : null;
-
-    state.setFoldersSync({
+    const expectedRevision = getExpectedRevision(
+      state.sync.folders,
       accountId,
-      status: "saving",
-      error: null,
-      conflict: null,
-    });
+      opts?.expectedRevision,
+    );
+
+    state.setRevisionSync("folders", revisionSyncStarted(accountId, "saving"));
 
     try {
       const response = await putFolders(client, {
@@ -338,33 +264,18 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
       if (!isCurrentAccount(get(), accountId)) return;
 
-      get().setFoldersSync({
-        accountId,
-        revision: response.revision,
-        lastSyncedAt: Date.now(),
-        status: "synced",
-        error: null,
-        conflict: null,
-      });
+      get().setRevisionSync(
+        "folders",
+        revisionSyncSucceeded(accountId, response.revision),
+      );
       await dehydrate(get(), "app");
     } catch (error) {
       if (!isCurrentAccount(get(), accountId)) return;
 
-      if (isFoldersConflictError(error)) {
-        get().setFoldersSync({
-          accountId,
-          status: "conflict",
-          error: getErrorMessage(error),
-          conflict: error.remote,
-        });
-      } else {
-        get().setFoldersSync({
-          accountId,
-          status: "error",
-          error: getErrorMessage(error),
-          conflict: null,
-        });
-      }
+      get().setRevisionSync(
+        "folders",
+        revisionSyncFailed(accountId, error, isFoldersConflictError),
+      );
 
       await dehydrate(get(), "app");
       throw error;
@@ -377,12 +288,10 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
     assert(accountId, "Cannot load remote card tags without an account.");
 
-    state.setCardTagsSync({
-      accountId,
-      status: "loading",
-      error: null,
-      conflict: null,
-    });
+    state.setRevisionSync(
+      "cardTags",
+      revisionSyncStarted(accountId, "loading"),
+    );
 
     try {
       const response = await fetchCardTags(client);
@@ -396,12 +305,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
     } catch (error) {
       if (!isCurrentAccount(get(), accountId)) return;
 
-      get().setCardTagsSync({
-        accountId,
-        status: "error",
-        error: getErrorMessage(error),
-        conflict: null,
-      });
+      get().setRevisionSync("cardTags", revisionSyncFailed(accountId, error));
       await dehydrate(get(), "app");
       throw error;
     }
@@ -427,12 +331,7 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
         ...state.sync,
         cardTags: {
           ...state.sync.cardTags,
-          accountId,
-          revision: payload.revision,
-          lastSyncedAt: Date.now(),
-          status: "synced",
-          error: null,
-          conflict: null,
+          ...revisionSyncSucceeded(accountId, payload.revision),
         },
       },
     }));
@@ -446,19 +345,13 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
     assert(accountId, "Cannot save card tags without an account.");
 
-    const expectedRevision =
-      opts?.expectedRevision !== undefined
-        ? opts.expectedRevision
-        : state.sync.cardTags.accountId === accountId
-          ? state.sync.cardTags.revision
-          : null;
-
-    state.setCardTagsSync({
+    const expectedRevision = getExpectedRevision(
+      state.sync.cardTags,
       accountId,
-      status: "saving",
-      error: null,
-      conflict: null,
-    });
+      opts?.expectedRevision,
+    );
+
+    state.setRevisionSync("cardTags", revisionSyncStarted(accountId, "saving"));
 
     try {
       const response = await putCardTags(client, {
@@ -468,33 +361,18 @@ export const createSyncSlice: StateCreator<StoreState, [], [], SyncSlice> = (
 
       if (!isCurrentAccount(get(), accountId)) return;
 
-      get().setCardTagsSync({
-        accountId,
-        revision: response.revision,
-        lastSyncedAt: Date.now(),
-        status: "synced",
-        error: null,
-        conflict: null,
-      });
+      get().setRevisionSync(
+        "cardTags",
+        revisionSyncSucceeded(accountId, response.revision),
+      );
       await dehydrate(get(), "app");
     } catch (error) {
       if (!isCurrentAccount(get(), accountId)) return;
 
-      if (isCardTagsConflictError(error)) {
-        get().setCardTagsSync({
-          accountId,
-          status: "conflict",
-          error: getErrorMessage(error),
-          conflict: error.remote,
-        });
-      } else {
-        get().setCardTagsSync({
-          accountId,
-          status: "error",
-          error: getErrorMessage(error),
-          conflict: null,
-        });
-      }
+      get().setRevisionSync(
+        "cardTags",
+        revisionSyncFailed(accountId, error, isCardTagsConflictError),
+      );
 
       await dehydrate(get(), "app");
       throw error;
