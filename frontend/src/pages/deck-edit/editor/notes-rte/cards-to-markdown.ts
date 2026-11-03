@@ -43,119 +43,83 @@ type CardFormatDefinition = {
   };
 };
 
+type CardLevelOptions =
+  CardFormatDefinition["placeholderOptions"]["name"]["level"];
+
+const LEVEL_DISAMBIGUATE: CardLevelOptions = {
+  display: "disambiguate",
+  type: "number-parentheses",
+  padding: "left",
+};
+
+const LEVEL_DOTS: CardLevelOptions = {
+  display: true,
+  type: "dots",
+  padding: "left",
+};
+
+function cardFormat({
+  templateString,
+  classColored,
+  level,
+  collectionNumber,
+}: {
+  templateString: string;
+  classColored: boolean;
+  level: CardLevelOptions;
+  collectionNumber: boolean;
+}): CardFormatDefinition {
+  return {
+    templateString,
+    placeholderOptions: {
+      class: {
+        padding: "right",
+      },
+      name: {
+        classColored,
+        subname: {
+          display: "disambiguate",
+          small: true,
+          parentheses: true,
+          padding: "left",
+        },
+        level,
+      },
+      set: {
+        small: true,
+        parentheses: true,
+        collectionNumber,
+        padding: "left",
+      },
+    },
+  };
+}
+
 export const CARD_FORMATS: Record<CardFormat, CardFormatDefinition> = {
-  paragraph: {
+  paragraph: cardFormat({
     templateString: "[{name}](/card/{code})",
-    placeholderOptions: {
-      class: {
-        padding: "right",
-      },
-      name: {
-        classColored: false,
-        subname: {
-          display: "disambiguate",
-          small: true,
-          parentheses: true,
-          padding: "left",
-        },
-        level: {
-          display: "disambiguate",
-          type: "number-parentheses",
-          padding: "left",
-        },
-      },
-      set: {
-        small: true,
-        parentheses: true,
-        collectionNumber: false,
-        padding: "left",
-      },
-    },
-  },
-  paragraph_colored: {
+    classColored: false,
+    level: LEVEL_DISAMBIGUATE,
+    collectionNumber: false,
+  }),
+  paragraph_colored: cardFormat({
     templateString: "[{name}](/card/{code})",
-    placeholderOptions: {
-      class: {
-        padding: "right",
-      },
-      name: {
-        classColored: true,
-        subname: {
-          display: "disambiguate",
-          small: true,
-          parentheses: true,
-          padding: "left",
-        },
-        level: {
-          display: "disambiguate",
-          type: "number-parentheses",
-          padding: "left",
-        },
-      },
-      set: {
-        small: true,
-        parentheses: true,
-        collectionNumber: false,
-        padding: "left",
-      },
-    },
-  },
-  header: {
+    classColored: true,
+    level: LEVEL_DISAMBIGUATE,
+    collectionNumber: false,
+  }),
+  header: cardFormat({
     templateString: "{class}[**{name}**](/card/{code})",
-    placeholderOptions: {
-      class: {
-        padding: "right",
-      },
-      name: {
-        classColored: true,
-        subname: {
-          display: "disambiguate",
-          small: true,
-          parentheses: true,
-          padding: "left",
-        },
-        level: {
-          display: true,
-          type: "dots",
-          padding: "left",
-        },
-      },
-      set: {
-        small: true,
-        parentheses: true,
-        collectionNumber: false,
-        padding: "left",
-      },
-    },
-  },
-  header_with_set: {
+    classColored: true,
+    level: LEVEL_DOTS,
+    collectionNumber: false,
+  }),
+  header_with_set: cardFormat({
     templateString: "{class}[**{name}**](/card/{code}){set}",
-    placeholderOptions: {
-      class: {
-        padding: "right",
-      },
-      name: {
-        classColored: true,
-        subname: {
-          display: "disambiguate",
-          small: true,
-          parentheses: true,
-          padding: "left",
-        },
-        level: {
-          display: true,
-          type: "dots",
-          padding: "left",
-        },
-      },
-      set: {
-        small: true,
-        parentheses: true,
-        collectionNumber: true,
-        padding: "left",
-      },
-    },
-  },
+    classColored: true,
+    level: LEVEL_DOTS,
+    collectionNumber: true,
+  }),
 };
 
 export function cardFormatDefinition(value: CardFormat) {
