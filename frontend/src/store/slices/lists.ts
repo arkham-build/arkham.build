@@ -86,54 +86,34 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
 
   resetFilters() {
     set((state) => {
-      const activeList = state.activeList;
-      assert(activeList, "no active list is defined.");
-
-      const list = state.lists[activeList];
-      assert(list, `list ${activeList} not defined.`);
+      const list = getActiveList(state);
 
       const initialValues = mergeInitialValues(
         list.initialState.filterValues,
         state.settings,
       );
 
-      return {
-        lists: {
-          ...state.lists,
-          [activeList]: {
-            ...list.initialState,
-            display: getDisplaySettings(initialValues, state.settings),
-            initialState: list.initialState,
-            search: list.search,
-          },
-        },
-      };
+      return replaceList(state, {
+        ...list.initialState,
+        display: getDisplaySettings(initialValues, state.settings),
+        initialState: list.initialState,
+        search: list.search,
+      });
     });
   },
 
   resetFilter(id) {
     set((state) => {
-      assert(state.activeList, "no active list is defined.");
-
-      const list = state.lists[state.activeList];
-      assert(list, `list ${state.activeList} not defined.`);
+      const list = getActiveList(state);
 
       const filterValues = { ...list.filterValues };
-      assert(filterValues[id], `${state.activeList} has not filter ${id}.`);
+      assert(filterValues[id], `${list.key} has not filter ${id}.`);
 
       if (filterValues[id].locked) return state;
 
       filterValues[id] = makeFilterValue(filterValues[id].type);
 
-      return {
-        lists: {
-          ...state.lists,
-          [state.activeList]: {
-            ...list,
-            filterValues,
-          },
-        },
-      };
+      return replaceList(state, { ...list, filterValues });
     });
   },
 
@@ -171,38 +151,23 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
 
   setFilterOpen(id, open) {
     set((state) => {
-      assert(state.activeList, "no active list is defined.");
-
-      const list = state.lists[state.activeList];
-      assert(list, `list ${state.activeList} not defined.`);
+      const list = getActiveList(state);
 
       const filterValues = { ...list.filterValues };
-      assert(filterValues[id], `${state.activeList} has not filter ${id}.`);
+      assert(filterValues[id], `${list.key} has not filter ${id}.`);
 
       filterValues[id] = { ...filterValues[id], open };
 
-      return {
-        lists: {
-          ...state.lists,
-          [state.activeList]: {
-            ...list,
-            filterValues,
-          },
-        },
-      };
+      return replaceList(state, { ...list, filterValues });
     });
   },
 
   setFilterValue(id, payload) {
     set((state) => {
-      assert(state.activeList, "no active list is defined.");
-
-      let list = state.lists[state.activeList];
-      assert(list, `list ${state.activeList} not defined.`);
-      list = { ...list };
+      const list = { ...getActiveList(state) };
 
       const filterValues = { ...list.filterValues };
-      assert(filterValues[id], `${state.activeList} has not filter ${id}.`);
+      assert(filterValues[id], `${list.key} has not filter ${id}.`);
 
       if (filterValues[id].locked) return state;
 
@@ -395,76 +360,51 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
         }
       }
 
-      return {
-        lists: {
-          ...state.lists,
-          [state.activeList]: {
-            ...list,
-            filterValues,
-          },
-        },
-      };
+      return replaceList(state, { ...list, filterValues });
     });
   },
 
   setSearchFlag(flag, value, deck) {
-    let state = get();
-
-    assert(state.activeList, "no active list is defined.");
-    const activeList = state.activeList;
-
-    let list = state.lists[state.activeList];
-    assert(list, `list ${state.activeList} not defined.`);
+    let list = getActiveList(get());
 
     if (list.search[flag] === value) return;
 
-    set((state) => ({
-      lists: {
-        ...state.lists,
-        [activeList]: {
-          ...list,
-          search: {
-            ...list.search,
-            [flag]: value,
-          },
+    set((state) =>
+      replaceList(state, {
+        ...list,
+        search: {
+          ...list.search,
+          [flag]: value,
         },
-      },
-    }));
+      }),
+    );
 
     if (list.search.mode === "buildql") {
-      state = get();
-
-      list = state.lists[activeList];
-      assert(list, `list ${activeList} not defined.`);
+      const state = get();
+      list = getActiveList(state);
 
       const buildQlResult = list.search.value
         ? evaluateBuildQl(state, list.search.value, deck)
         : undefined;
 
-      set((state) => ({
-        lists: {
-          ...state.lists,
-          [activeList]: {
-            ...list,
-            search: {
-              ...list.search,
-              buildQlError: buildQlResult?.error,
-              buildQlSearchValue: buildQlResult?.filter
-                ? list.search.value
-                : list.search.buildQlSearchValue,
-            },
+      set((state) =>
+        replaceList(state, {
+          ...list,
+          search: {
+            ...list.search,
+            buildQlError: buildQlResult?.error,
+            buildQlSearchValue: buildQlResult?.filter
+              ? list.search.value
+              : list.search.buildQlSearchValue,
           },
-        },
-      }));
+        }),
+      );
     }
   },
 
   setSearchValue(value, deck, { clearMode } = { clearMode: false }) {
     set((state) => {
-      assert(state.activeList, "no active list is defined.");
-
-      const list = state.lists[state.activeList];
-      assert(list, `list ${state.activeList} not defined.`);
+      const list = getActiveList(state);
 
       const { filter: buildQlSearch, error: buildQlError } = evaluateBuildQl(
         state,
@@ -482,87 +422,44 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
           ? list.search.buildQlSearchValue
           : undefined;
 
-      return {
-        lists: {
-          ...state.lists,
-          [state.activeList]: {
-            ...list,
-            search: {
-              ...list.search,
-              mode,
-              buildQlError: isBuildQl ? buildQlError : undefined,
-              buildQlSearchValue,
-              value,
-            },
-          },
+      return replaceList(state, {
+        ...list,
+        search: {
+          ...list.search,
+          mode,
+          buildQlError: isBuildQl ? buildQlError : undefined,
+          buildQlSearchValue,
+          value,
         },
-      };
+      });
     });
   },
 
   setFiltersEnabled(value) {
-    set((state) => {
-      assert(state.activeList, "no active list is defined.");
-
-      const list = state.lists[state.activeList];
-      assert(list, `list ${state.activeList} not defined.`);
-
-      return {
-        lists: {
-          ...state.lists,
-          [state.activeList]: {
-            ...list,
-            filtersEnabled: value,
-          },
-        },
-      };
-    });
+    set((state) =>
+      replaceList(state, { ...getActiveList(state), filtersEnabled: value }),
+    );
   },
 
   setListTabooSetOverride(value) {
-    set((state) => {
-      assert(state.activeList, "no active list is defined.");
-
-      const list = state.lists[state.activeList];
-      assert(list, `list ${state.activeList} not defined.`);
-
-      return {
-        lists: {
-          ...state.lists,
-          [state.activeList]: {
-            ...list,
-            tabooSetOverride: value,
-          },
-        },
-      };
-    });
+    set((state) =>
+      replaceList(state, { ...getActiveList(state), tabooSetOverride: value }),
+    );
   },
 
   toggleListDefaultFlipped() {
     set((state) => {
-      assert(state.activeList, "no active list is defined.");
-
-      const list = state.lists[state.activeList];
-      assert(list, `list ${state.activeList} not defined.`);
-
-      return {
-        lists: {
-          ...state.lists,
-          [state.activeList]: {
-            ...list,
-            defaultFlipped: !list.defaultFlipped,
-          },
-        },
-      };
+      const list = getActiveList(state);
+      return replaceList(state, {
+        ...list,
+        defaultFlipped: !list.defaultFlipped,
+      });
     });
   },
 
   setListViewMode(viewMode) {
     set((state) => {
-      assert(state.activeList, "no active list is defined.");
-
-      const list = state.lists[state.activeList];
-      assert(list, `list ${state.activeList} not defined.`);
+      const list = getActiveList(state);
 
       return {
         listDisplaySettings: updateListDisplaySettings(
@@ -570,26 +467,20 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
           list,
           { viewMode },
         ),
-        lists: {
-          ...state.lists,
-          [state.activeList]: {
-            ...list,
-            display: {
-              ...list.display,
-              viewMode,
-            },
+        ...replaceList(state, {
+          ...list,
+          display: {
+            ...list.display,
+            viewMode,
           },
-        },
+        }),
       };
     });
   },
 
   setListSort(config) {
     set((state) => {
-      assert(state.activeList, "no active list is defined.");
-
-      const list = state.lists[state.activeList];
-      assert(list, `list ${state.activeList} not defined.`);
+      const list = getActiveList(state);
 
       let preset: Pick<ListDisplay, "grouping" | "sorting">;
 
@@ -615,17 +506,14 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
           list,
           { displaySortSelection },
         ),
-        lists: {
-          ...state.lists,
-          [state.activeList]: {
-            ...list,
-            display: {
-              ...list.display,
-              ...preset,
-            },
-            displaySortSelection,
+        ...replaceList(state, {
+          ...list,
+          display: {
+            ...list.display,
+            ...preset,
           },
-        },
+          displaySortSelection,
+        }),
       };
     });
   },
@@ -706,6 +594,19 @@ export const createListsSlice: StateCreator<StoreState, [], [], ListsSlice> = (
     });
   },
 });
+
+function getActiveList(state: StoreState) {
+  assert(state.activeList, "no active list is defined.");
+
+  const list = state.lists[state.activeList];
+  assert(list, `list ${state.activeList} not defined.`);
+
+  return list;
+}
+
+function replaceList(state: StoreState, list: List) {
+  return { lists: { ...state.lists, [list.key]: list } };
+}
 
 function evaluateBuildQl(
   state: StoreState,
