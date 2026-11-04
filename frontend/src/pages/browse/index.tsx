@@ -1,5 +1,4 @@
 import type { Card } from "@arkham-build/shared";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Route, Switch, useParams } from "wouter";
 import { CardListContainer } from "@/components/card-list/card-list-container";
@@ -16,6 +15,7 @@ import { selectIsInitialized, selectMetadata } from "@/store/selectors/shared";
 import { official } from "@/utils/card-utils";
 import { displayPackName } from "@/utils/formatting";
 import type { Filter } from "@/utils/fp";
+import { useTemporaryList } from "@/utils/use-temporary-list";
 import { BrowseWithFilter } from "./browse-with-filter";
 import { type ChapterTab, SetTree } from "./set-tree";
 
@@ -27,9 +27,6 @@ function Browse() {
     "chapter",
   );
 
-  const addList = useStore((state) => state.addList);
-  const setActiveList = useStore((state) => state.setActiveList);
-  const removeList = useStore((state) => state.removeList);
   const hasFanMadeCycles = useStore((state) =>
     Object.values(selectMetadata(state).cycles).some(
       (cycle) => !official(cycle),
@@ -39,42 +36,22 @@ function Browse() {
   const activeChapterTab =
     chapterTab === "fan-made" && !hasFanMadeCycles ? "all" : chapterTab;
 
-  const listKey = `browse-all-${activeChapterTab}`;
-
-  const activeList = useStore((state) => state.lists[listKey]);
-  const hasList = useStore((state) => !!state.lists[listKey]);
   const isInitalized = useStore(selectIsInitialized);
 
-  useEffect(() => {
-    if (!hasList) {
-      addList(
-        listKey,
-        {
-          card_type: "",
-          ownership: "all",
-          fan_made_content: "all",
-        },
-        {
-          displaySettingsKey: "browse",
-          systemFilter: browseChapterSystemFilter(activeChapterTab),
-        },
-      );
-    }
+  const listReady = useTemporaryList(
+    `browse-all-${activeChapterTab}`,
+    {
+      card_type: "",
+      ownership: "all",
+      fan_made_content: "all",
+    },
+    {
+      displaySettingsKey: "browse",
+      systemFilter: browseChapterSystemFilter(activeChapterTab),
+    },
+  );
 
-    setActiveList(listKey);
-  }, [activeChapterTab, addList, hasList, listKey, setActiveList]);
-
-  useEffect(() => {
-    return () => {
-      removeList("browse-all-all");
-      removeList("browse-all-1");
-      removeList("browse-all-2");
-      removeList("browse-all-fan-made");
-      setActiveList(undefined);
-    };
-  }, [removeList, setActiveList]);
-
-  if (!activeList || !isInitalized) {
+  if (!listReady || !isInitalized) {
     return null;
   }
 
