@@ -989,6 +989,7 @@
           "trait_placeholder": "Wybierz cechę"
         },
         "resource_cost": "Koszt zasobów",
+        "resource_cost_tooltip": "{{count}} {{cards}} o koszcie {{cost}}",
         "resource_cost_tooltip_one": "{{count}} {{cards}} o koszcie {{cost}}",
         "resource_cost_tooltip_other": "{{count}} {{cards}} o koszcie {{cost}}",
         "resource_costs": "Koszty zasobów",
