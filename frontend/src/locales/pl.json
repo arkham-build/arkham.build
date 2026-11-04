@@ -1786,17 +1786,17 @@
           "username_help": "Tylko litery, cyfry, podkreślenia i myślniki."
         },
         "title": "Konto"
-        },
-        "card_data": {
-          "card_count": "Liczba kart",
-          "data_version": "Wersja danych",
-          "error": "Nie udało się załadować najnowszych danych kart.",
-          "loading": "Wczytywanie najnowszych danych kart...",
-          "locale": "Język",
-          "sync": "Synchronizuj dane kart",
-          "up_to_date": "Używasz najnowszych danych kart.",
-          "update_available": "Nowe dane kart są dostępne."
-        },
+      },
+      "card_data": {
+        "card_count": "Liczba kart",
+        "data_version": "Wersja danych",
+        "error": "Nie udało się załadować najnowszych danych kart.",
+        "loading": "Wczytywanie najnowszych danych kart...",
+        "locale": "Język",
+        "sync": "Synchronizuj dane kart",
+        "up_to_date": "Używasz najnowszych danych kart.",
+        "update_available": "Nowe dane kart są dostępne."
+      },
       "collection": {
         "card_collection": "Kolekcja kart",
         "card_count": "Liczba kart",
