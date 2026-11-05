@@ -13,6 +13,7 @@ import { createLookupTables } from "../lib/lookup-tables";
 import type { LookupTables } from "../lib/lookup-tables.types";
 import type { ResolvedDeck } from "../lib/types";
 import type { StoreState } from "../slices";
+import { isFanMadeContentFilterObject } from "../slices/lists.type-guards";
 import type { Metadata } from "../slices/metadata.types";
 
 export const selectMetadata = createSelector(
@@ -228,7 +229,7 @@ export const selectActiveList = (state: StoreState) => {
   return active ? state.lists[active] : undefined;
 };
 
-export const selectShowFanMadeRelations = createSelector(
+const selectRelationsContentType = createSelector(
   selectActiveList,
   (state: StoreState) => state.settings.cardListsDefaultContentType,
   (activeList, defaultContentType) => {
@@ -238,11 +239,17 @@ export const selectShowFanMadeRelations = createSelector(
       const idx = filters.indexOf("fan_made_content");
       const filterValue = idx !== -1 ? filterValues[idx] : undefined;
 
-      if (filterValue != null) return filterValue.value !== "official";
+      if (isFanMadeContentFilterObject(filterValue)) return filterValue.value;
     }
 
-    return defaultContentType !== "official";
+    return defaultContentType;
   },
+);
+
+export const selectRelationsContentFilter = createSelector(
+  selectRelationsContentType,
+  (contentType) => (card: Card) =>
+    contentType === "all" || official(card) === (contentType === "official"),
 );
 
 export const selectPrintingsForCard = createSelector(
@@ -250,16 +257,9 @@ export const selectPrintingsForCard = createSelector(
   selectLookupTables,
   selectLocaleSortingCollator,
   (state: StoreState) => state.settings.showPreviews,
-  selectShowFanMadeRelations,
+  selectRelationsContentFilter,
   (_: StoreState, code: string) => code,
-  (
-    metadata,
-    lookupTables,
-    collator,
-    showPreviews,
-    showFanMadeRelations,
-    cardCode,
-  ) => {
+  (metadata, lookupTables, collator, showPreviews, contentFilter, cardCode) => {
     const packCodes = collectPrintingCodes(cardCode, lookupTables).reduce(
       (acc, code) => {
         const card = metadata.cards[code];
@@ -269,8 +269,7 @@ export const selectPrintingsForCard = createSelector(
         const isSelectedCard = code === cardCode;
         const canShow =
           isSelectedCard ||
-          ((showFanMadeRelations || official(card)) &&
-            (showPreviews || !card.preview));
+          (contentFilter(card) && (showPreviews || !card.preview));
 
         if (!canShow) return acc;
 

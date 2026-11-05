@@ -12,11 +12,11 @@ import {
   selectLocaleSortingCollator,
   selectLookupTables,
   selectMetadata,
-  selectShowFanMadeRelations,
+  selectRelationsContentFilter,
   selectStaticBuildQlInterpreter,
 } from "@/store/selectors/shared";
 import type { StoreState } from "@/store/slices";
-import { isSpecialist, official } from "@/utils/card-utils";
+import { isSpecialist } from "@/utils/card-utils";
 import { formatRelationTitle } from "@/utils/formatting";
 import { isEmpty } from "@/utils/is-empty";
 import { CardSet } from "../cardset";
@@ -31,7 +31,7 @@ const selectSpecialistAccess = createSelector(
   selectLookupTables,
   (state: StoreState) => state.settings,
   selectLocaleSortingCollator,
-  selectShowFanMadeRelations,
+  selectRelationsContentFilter,
   selectStaticBuildQlInterpreter,
   (_: StoreState, card: Card) => card,
   (_: StoreState, _card: Card, investigatorFront?: Card) => investigatorFront,
@@ -40,7 +40,7 @@ const selectSpecialistAccess = createSelector(
     lookupTables,
     settings,
     collator,
-    showFanMadeRelations,
+    contentFilter,
     buildQlInterpreter,
     investigatorBack,
     investigatorFront,
@@ -61,13 +61,12 @@ const selectSpecialistAccess = createSelector(
     return Object.values(metadata.cards)
       .filter((card) => {
         const previewsAllowed = settings.showPreviews || !filterPreviews(card);
-        const fanMadeAllowed = showFanMadeRelations || official(card);
 
         return (
           isSpecialist(card) &&
           investigatorFilter?.(card) &&
           previewsAllowed &&
-          fanMadeAllowed
+          contentFilter(card)
         );
       })
       .sort(makeSortFunction(["name", "level"], metadata, collator))
@@ -99,9 +98,8 @@ export function SpecialistAccess(props: Props) {
 
 const selectUsableByInvestigatorsResolved = createSelector(
   selectUsableByInvestigators,
-  selectShowFanMadeRelations,
-  (cards, showFanMadeRelations) =>
-    cards.filter(({ card }) => showFanMadeRelations || official(card)),
+  selectRelationsContentFilter,
+  (cards, contentFilter) => cards.filter(({ card }) => contentFilter(card)),
 );
 
 export function SpecialistInvestigators(props: Props) {

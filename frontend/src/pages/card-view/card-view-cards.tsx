@@ -21,7 +21,7 @@ import type { CardWithRelations } from "@/store/lib/types";
 import {
   selectLookupTables,
   selectMetadata,
-  selectShowFanMadeRelations,
+  selectRelationsContentFilter,
 } from "@/store/selectors/shared";
 import {
   cardUrl,
@@ -189,14 +189,14 @@ export function CardViewCards({
 }: {
   cardWithRelations: CardWithRelations;
 }) {
-  const showAllFanMadeRelations = useStore(selectShowFanMadeRelations);
+  const contentFilter = useStore(selectRelationsContentFilter);
   const settings = useStore((state) => state.settings);
   const allowSameFanMadePackRelations = official(cardWithRelations.card)
     ? undefined
     : (card: CardType) =>
         !official(card) && card.pack_code === cardWithRelations.card.pack_code;
   const related = getRelatedCards(cardWithRelations, {
-    showAllFanMadeRelations,
+    contentFilter,
     showPreviews: settings.showPreviews,
     fanMadeCardOverride: allowSameFanMadePackRelations,
   });

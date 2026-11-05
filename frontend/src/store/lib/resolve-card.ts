@@ -1,11 +1,19 @@
 import type { Card } from "@arkham-build/shared";
-import { official } from "@/utils/card-utils";
 import { CARD_SET_ORDER } from "@/utils/constants";
 import type { StoreState } from "../slices";
 import { applyCardChanges } from "./card-edits";
 import type { LookupTables } from "./lookup-tables.types";
 import { makeSortFunction, sortByName } from "./sorting";
 import type { CardWithRelations, Customizations, ResolvedCard } from "./types";
+
+const SIGNATURE_RELATIONS = new Set([
+  "requiredCards",
+  "sideDeckRequiredCards",
+  "advanced",
+  "replacement",
+  "parallelCards",
+  "otherSignatures",
+]);
 
 /**
  * Given a card code, resolve the card and its relations for display.
@@ -267,7 +275,7 @@ function sortRelations(a: string, b: string) {
 }
 
 type GetRelatedCardOpts = {
-  showAllFanMadeRelations: boolean;
+  contentFilter: (card: Card) => boolean;
   showPreviews: boolean;
   fanMadeCardOverride?: (card: Card) => boolean;
 };
@@ -281,15 +289,16 @@ export function getRelatedCards(
       (acc, [key, value]) => {
         if (key === "duplicates" || key === "reprints") return acc;
 
+        const isSignatureRelation = SIGNATURE_RELATIONS.has(key);
         const values = (Array.isArray(value) ? value : [value]).filter((v) => {
           if (!v) return false;
 
-          const fanMadeAllowed =
-            opts.showAllFanMadeRelations ||
-            official(v.card) ||
+          const contentAllowed =
+            isSignatureRelation ||
+            opts.contentFilter(v.card) ||
             opts.fanMadeCardOverride?.(v.card) === true;
 
-          return (opts.showPreviews || !v.card.preview) && fanMadeAllowed;
+          return (opts.showPreviews || !v.card.preview) && contentAllowed;
         });
 
         if (values.length > 0) {

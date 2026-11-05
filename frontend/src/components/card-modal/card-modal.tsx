@@ -15,7 +15,7 @@ import {
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectSession } from "@/store/selectors/auth";
 import { selectCardWithRelations } from "@/store/selectors/card-view";
-import { selectShowFanMadeRelations } from "@/store/selectors/shared";
+import { selectRelationsContentFilter } from "@/store/selectors/shared";
 import type { CardModalConfig } from "@/store/slices/ui.types";
 import {
   canShowCardPoolExtension,
@@ -92,7 +92,7 @@ export function CardModal(props: Props) {
 
   const session = useStore(selectSession);
   const settings = useStore((state) => state.settings);
-  const showAllFanMadeRelations = useStore(selectShowFanMadeRelations);
+  const contentFilter = useStore(selectRelationsContentFilter);
 
   const openCardModal = useStore((state) => state.openCardModal);
   const listOrder = useStore((state) => state.ui.cardModal.config?.listOrder);
@@ -135,7 +135,7 @@ export function CardModal(props: Props) {
   const showExtraQuantities = ctx.resolvedDeck?.hasExtraDeck;
 
   const related = getRelatedCards(cardWithRelations, {
-    showAllFanMadeRelations,
+    contentFilter,
     showPreviews: settings.showPreviews,
   });
 
