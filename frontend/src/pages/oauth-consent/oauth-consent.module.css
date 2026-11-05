@@ -1,3 +1,9 @@
+.account {
+  margin-block: 1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
 .permissions-title {
   font-size: var(--text-base);
   margin-bottom: 0.75rem;

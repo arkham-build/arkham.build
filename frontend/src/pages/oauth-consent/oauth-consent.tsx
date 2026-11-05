@@ -30,6 +30,7 @@ type OAuthConsentViewProps =
   | { state: "loading" }
   | { state: "unauthenticated" }
   | {
+      accountName: string;
       details: OAuthConsentDetailsResponse;
       onDecision: (decision: OAuthConsentDecision) => void;
       pendingDecision?: OAuthConsentDecision;
@@ -72,7 +73,7 @@ function OAuthConsentView(props: OAuthConsentViewProps) {
     );
   }
 
-  const { details, onDecision, pendingDecision } = props;
+  const { accountName, details, onDecision, pendingDecision } = props;
 
   return (
     <AuthLayout
@@ -98,6 +99,9 @@ function OAuthConsentView(props: OAuthConsentViewProps) {
             );
           })}
         </ul>
+        <p className={css["account"]}>
+          {t("auth.menu.logged_in_as", { name: accountName })}
+        </p>
         <div className={css["actions"]}>
           <Button
             disabled={pendingDecision != null}
@@ -179,7 +183,7 @@ function OAuthConsent() {
     return <OAuthConsentView state="unauthenticated" />;
   }
 
-  if (!canClaim || consentQuery.isPending) {
+  if (!canClaim || !session || consentQuery.isPending) {
     return <OAuthConsentView state="loading" />;
   }
 
@@ -215,6 +219,7 @@ function OAuthConsent() {
 
   return (
     <OAuthConsentView
+      accountName={session.account.name}
       details={consentQuery.data}
       onDecision={onDecision}
       pendingDecision={pendingDecision}
