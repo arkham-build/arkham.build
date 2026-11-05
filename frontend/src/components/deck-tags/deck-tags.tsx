@@ -212,7 +212,9 @@ function LimitedPoolLabel({ cardPool }: { cardPool: string[] | undefined }) {
     return t("deck_edit.config.card_pool.legacy");
   }
 
-  const packs = resolveLimitedPoolPacks(metadata, cardPool).filter(
+  const packs = resolveLimitedPoolPacks(metadata, cardPool);
+
+  const nonEvergreenPacks = resolveLimitedPoolPacks(metadata, cardPool).filter(
     (p) => !EVERGREEN_CYCLES.includes(p.cycle_code),
   );
 
@@ -221,14 +223,14 @@ function LimitedPoolLabel({ cardPool }: { cardPool: string[] | undefined }) {
     return <>{t("deck_edit.config.card_pool.current")}</>;
   }
 
-  if (packs.length !== 3) {
+  if (nonEvergreenPacks.length !== 3) {
     return t("deck_edit.config.card_pool.custom");
   }
 
   return (
     <>
       {t("deck_edit.config.card_pool.limited")}
-      {packs.map((c) => (
+      {nonEvergreenPacks.map((c) => (
         <PackIcon key={c.code} code={c.code} />
       ))}
     </>
