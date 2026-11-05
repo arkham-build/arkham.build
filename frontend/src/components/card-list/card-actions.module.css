@@ -19,13 +19,10 @@
   justify-content: center;
 }
 
-.actions-output {
-  padding: 0.1875rem;
-}
-
 .actions-row {
   display: inline-flex;
   flex-flow: row wrap;
   align-items: center;
-  gap: 0.125rem;
+  gap: 0.1875rem;
+  padding-inline: 0.1875rem;
 }
