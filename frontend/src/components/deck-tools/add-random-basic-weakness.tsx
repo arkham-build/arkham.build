@@ -17,9 +17,10 @@ import {
 import i18n from "@/utils/i18n";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
-import { Field, FieldLabel } from "../ui/field";
+import { Combobox } from "../ui/combobox/combobox";
+import { ResultTag } from "../ui/combobox/combobox-results";
+import { Field } from "../ui/field";
 import { Plane } from "../ui/plane";
-import { Select } from "../ui/select";
 import { useToast } from "../ui/toast.hooks";
 import css from "./add-random-basic-weakness.module.css";
 import { DraftBasicWeakness } from "./draft-basic-weakness";
@@ -52,7 +53,7 @@ export function AddRandomBasicWeakness(props: Props) {
     () => !deps.settings.useLimitedPoolForWeaknessDraw,
   );
   const [equalProbability, setEqualProbability] = useState(false);
-  const [requiredTrait, setRequiredTrait] = useState<string>();
+  const [requiredTraits, setRequiredTraits] = useState<string[]>([]);
 
   const weaknessPool = basicWeaknessPoolForDeck(
     deps.metadata,
@@ -67,16 +68,14 @@ export function AddRandomBasicWeakness(props: Props) {
     collator,
     weaknessPool,
   );
-  const effectiveRequiredTrait = traitOptions.some(
-    (option) => option.value === requiredTrait,
-  )
-    ? requiredTrait
-    : undefined;
+  const selectedTraits = traitOptions.filter((option) =>
+    requiredTraits.includes(option.code),
+  );
 
   const weaknessOptions = {
     equalProbability,
     ignoreDeckCardPool,
-    requiredTrait: effectiveRequiredTrait,
+    requiredTraits: selectedTraits.map((trait) => trait.code),
   };
   const eligibleWeaknesses = basicWeaknessPoolForDeck(
     deps.metadata,
@@ -140,18 +139,29 @@ export function AddRandomBasicWeakness(props: Props) {
           onCheckedChange={setEqualProbability}
         />
         <Field className={css["trait-field"]}>
-          <FieldLabel htmlFor="random-basic-weakness-trait">
-            {t("deck.tools.random_basic_weakness.require_trait")}
-          </FieldLabel>
-          <Select
-            data-testid="random-basic-weakness-trait"
-            emptyLabel={t("deck.tools.random_basic_weakness.trait_placeholder")}
+          <Combobox
             id="random-basic-weakness-trait"
-            onChange={(event) => {
-              setRequiredTrait(event.target.value || undefined);
+            items={traitOptions}
+            itemToString={(trait) => trait.label}
+            label={t("deck.tools.random_basic_weakness.require_trait")}
+            locale={deps.settings.locale}
+            onValueChange={(traits) => {
+              setRequiredTraits(traits.map((trait) => trait.code));
             }}
-            options={traitOptions}
-            value={effectiveRequiredTrait ?? ""}
+            placeholder={t(
+              "deck.tools.random_basic_weakness.trait_placeholder",
+            )}
+            renderItem={(trait) => trait.label}
+            renderResult={(trait, onRemove) => (
+              <ResultTag
+                data-testid={`combobox-result-${trait.code}`}
+                onRemove={onRemove}
+              >
+                {trait.label}
+              </ResultTag>
+            )}
+            selectedItems={selectedTraits}
+            showLabel
           />
         </Field>
       </div>
@@ -192,7 +202,7 @@ function getTraitOptions(
       const key = `common.traits.${code}`;
       return {
         label: i18n.exists(key) ? i18n.t(key) : code,
-        value: code,
+        code,
       };
     })
     .sort((a, b) => collator.compare(a.label, b.label));

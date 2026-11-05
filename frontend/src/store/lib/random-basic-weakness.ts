@@ -15,7 +15,7 @@ import type { ResolvedDeck } from "./types";
 export type RandomBasicWeaknessOptions = {
   equalProbability?: boolean;
   ignoreDeckCardPool?: boolean;
-  requiredTrait?: string;
+  requiredTraits?: readonly string[];
 };
 
 export function randomBasicWeaknessForDeck(
@@ -47,6 +47,7 @@ export function basicWeaknessPoolForDeck(
   options: RandomBasicWeaknessOptions = {},
 ) {
   const factionCode = deck.investigatorBack.card.faction_code;
+  const requiredTraits = options.requiredTraits ?? [];
 
   const limitedPool = resolveLimitedPoolPacks(
     metadata,
@@ -88,8 +89,10 @@ export function basicWeaknessPoolForDeck(
       !!card.duplicate_of_code ||
       ownedCount === 0 ||
       deck.slots[code] >= cardLimit(card) ||
-      (options.requiredTrait &&
-        !splitMultiValue(card.real_traits).includes(options.requiredTrait))
+      (requiredTraits.length > 0 &&
+        !splitMultiValue(card.real_traits).some((trait) =>
+          requiredTraits.includes(trait),
+        ))
     ) {
       return acc;
     }

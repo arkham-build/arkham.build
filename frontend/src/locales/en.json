@@ -967,7 +967,7 @@
           "equal_probability": "Use equal probability for each weakness",
           "ignore_deck_card_pool": "Ignore deck card pool",
           "replace_random_basic_weakness": "Replace random basic weakness placeholder",
-          "require_trait": "Require trait",
+          "require_trait": "Require trait (1 of n)",
           "title": "Add Random Basic Weakness",
           "trait_placeholder": "Choose trait"
         },
