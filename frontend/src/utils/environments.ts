@@ -8,7 +8,7 @@ const NON_DECKBUILDING_POOL_CYCLE_CODES = new Set([
   "parallel",
   "promotional",
   "side_stories",
-  "small_campaign_expansion",
+  "small_campaign_expansions",
   "scenario_packs_ch2",
 ]);
 
