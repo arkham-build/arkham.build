@@ -88,14 +88,8 @@ function patchLocale(
 }
 
 async function cloneRepo() {
-  const repo = "https://github.com/zzorba/ArkhamCards.git";
+  const repo = "git@github.com:zzorba/ArkhamCards.git";
   const localPath = path.join(tmpdir(), "arkham-cards");
-
-  try {
-    if ((await fs.stat(path.join(localPath, "assets/i18n"))).isDirectory()) {
-      return localPath;
-    }
-  } catch {}
 
   try {
     if ((await fs.stat(localPath)).isDirectory()) {
