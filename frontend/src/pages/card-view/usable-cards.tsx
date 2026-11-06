@@ -58,6 +58,7 @@ function UsableCardsList(props: { card: Card }) {
 
   const titleInterpolationValues = {
     prefix: card.parallel ? `${t("common.parallel")} ` : "",
+    suffix: card.parallel ? ` ${t("common.parallel").toLowerCase()}` : "",
     name: displayAttribute(card, "name"),
   };
 
