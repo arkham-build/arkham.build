@@ -2,6 +2,7 @@ import {
   CardTagSchema,
   type Deck,
   type DeckMeta,
+  type DeckOption,
   type SealedDeckResponse,
   type Slots,
   SPECIAL_CARD_CODES,
@@ -37,11 +38,15 @@ export function decodeDeckMeta(deck: Deck): DeckMeta {
 export function decodeSelections(
   investigator: CardWithRelations,
   deckMeta: DeckMeta,
+  additionalDeckOptions: Omit<DeckOption, "deck_size_select">[] = [],
 ): Selections | undefined {
-  const selections = [
+  const deckOptions: DeckOption[] = [
     ...(investigator.card.deck_options ?? []),
     ...(investigator.card.side_deck_options ?? []),
-  ].reduce<Selections>((acc, option) => {
+    ...additionalDeckOptions,
+  ];
+
+  const selections = deckOptions.reduce<Selections>((acc, option) => {
     let selection: Selection | undefined;
     let key: string | undefined;
 

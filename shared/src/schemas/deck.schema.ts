@@ -123,4 +123,6 @@ export type DeckMeta = {
   [key in `card_pool_extension_${string}`]: string | null;
 } & {
   [key in `custom_behavior:${string}`]: string | null;
+} & {
+  [key in `deck_option:${string}`]: string | null;
 };

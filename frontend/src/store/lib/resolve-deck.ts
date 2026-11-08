@@ -21,6 +21,7 @@ import {
   decodeSealedDeck,
   decodeSelections,
 } from "./deck-meta";
+import { getAdditionalDeckOptions } from "./deck-options";
 import { computeDeckStats } from "./deck-stats";
 import type { LookupTables } from "./lookup-tables.types";
 import { resolveCardWithRelations } from "./resolve-card";
@@ -158,7 +159,11 @@ export function resolveDeck(
     hasReplacements,
     originalDeck: deck,
     sealedDeck,
-    selections: decodeSelections(investigatorBack, deckMeta),
+    selections: decodeSelections(
+      investigatorBack,
+      deckMeta,
+      getAdditionalDeckOptions({ cards, slots: deck.slots }),
+    ),
     sideSlots: Array.isArray(deck.sideSlots) ? {} : deck.sideSlots,
     stats: {
       deckSize,

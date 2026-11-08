@@ -15,13 +15,21 @@ type DeckOptionAllocation = {
   overflowByOption: OptionCardQuantities;
 };
 
-export function getAdditionalDeckOptions(deck: ResolvedDeck) {
+export function getAdditionalDeckOptions(
+  deck: Pick<ResolvedDeck, "cards" | "slots">,
+) {
   return Object.values(deck.cards.slots).reduce((acc, { card }) => {
     if (card.type_code !== "investigator" && card.deck_options) {
       const quantity = deck.slots[card.code] ?? 0;
 
+      const options = card.deck_options.map((option, index) =>
+        option.id == null && (option.option_select || option.faction_select)
+          ? { ...option, id: `deck_option:${card.code}:${index}` }
+          : option,
+      );
+
       for (const _ of range(0, quantity)) {
-        acc.push(...card.deck_options);
+        acc.push(...options);
       }
     }
 
