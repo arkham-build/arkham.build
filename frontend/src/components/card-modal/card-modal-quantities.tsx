@@ -2,6 +2,7 @@ import type { Card } from "@arkham-build/shared";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
+import { countsTowardDeckSize } from "@/store/lib/deck-stats";
 import { getDeckLimitOverride } from "@/store/lib/resolve-deck";
 import type { ResolvedDeck } from "@/store/lib/types";
 import { selectLookupTables } from "@/store/selectors/shared";
@@ -134,7 +135,11 @@ export function CardModalQuantities(props: Props) {
       {!isBonded && (
         <article className={css["quantity"]}>
           <h3 className={css["quantity-title"]}>
-            {t("common.decks.ignoreDeckLimitSlots")}
+            {t(
+              countsTowardDeckSize(card)
+                ? "common.decks.excludeFromDeckSize"
+                : "common.decks.includeInDeckSize",
+            )}
           </h3>
           <QuantityInput
             data-testid="card-modal-quantities-ignored"

@@ -296,9 +296,11 @@
       "decks": {
         "bondedSlots": "Bonded cards",
         "bondedSlots_short": "Bonded",
+        "excludeFromDeckSize": "Exclude from deck size",
         "extraSlots": "Extra deck",
         "extraSlots_short": "Extra",
         "ignoreDeckLimitSlots": "Ignore deck limit",
+        "includeInDeckSize": "Include in deck size",
         "sideSlots": "Side deck",
         "sideSlots_short": "Side",
         "slots": "Deck"
