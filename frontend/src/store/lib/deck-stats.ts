@@ -27,12 +27,16 @@ export function computeDeckStats(
       myriadCounted[card.real_name] = true;
     }
 
-    if (!isSpecialCard(card)) {
-      deckSize += Math.max(
-        quantity - (deck.ignoreDeckLimitSlots?.[code] ?? 0),
-        0,
-      );
-    }
+    const invertedQuantity = Math.max(
+      0,
+      Math.min(quantity, deck.ignoreDeckLimitSlots?.[code] ?? 0),
+    );
+
+    // invert the meaning of "ignore deck limit" for cards that already don't count - e.g. signatures can now count.
+    // this is used by fan-made content.
+    deckSize += countsTowardDeckSize(card)
+      ? Math.max(quantity - invertedQuantity, 0)
+      : invertedQuantity;
   }
 
   if (extraSlots) {
@@ -48,8 +52,8 @@ export function computeDeckStats(
   return { xpRequired, deckSize, deckSizeTotal };
 }
 
-function isSpecialCard(card: Card): boolean {
-  return (
+export function countsTowardDeckSize(card: Card): boolean {
+  return !(
     (!!card.encounter_code && !isRewardCard(card)) ||
     !!card.subtype_code ||
     card.permanent ||
