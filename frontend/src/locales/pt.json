@@ -18,8 +18,7 @@
           "pl": "Polonês",
           "ru": "Russo",
           "title": "Este aplicativo está disponível em vários idiomas graças aos seguintes colaboradores",
-          "zh": "Chinês Simplificado",
-          "pt": "Português"
+          "zh": "Chinês Simplificado"
         },
         "zzorba": "Acesso à API e ícones do ArkhamCards, assistência com dúvidas e inspiração para o construtor de baralhos. Sem você este projeto não seria possível."
       },
@@ -364,7 +363,7 @@
         "requiredCards": "Assinaturas",
         "restrictedTo": "Restrito a",
         "sideDeckRequiredCards": "Assinaturas do Baralho Extra",
-        "specialist": "Especialistas",
+        "specialist": "Especialista",
         "specialist_investigators": "Investigadores Especialistas"
       },
       "reset": "Redefinir",
@@ -394,7 +393,7 @@
       },
       "sort_asc": "Ordem crescente",
       "sort_desc": "Ordem decrescente",
-      "specialist": "Especialistas",
+      "specialist": "Especialista",
       "stage": "Estágio",
       "subtype": {
         "basicweakness": "Fraqueza Básica",
@@ -805,12 +804,11 @@
         "Yithian": "Yithiano",
         "Yoth": "Yoth",
         "Yuggoth": "Yuggoth",
-        "Zoog": "Zoog",
-        "Culprit": "Culpado"
+        "Zoog": "Zoog"
       },
       "type": {
         "act": "Ato",
-        "agenda": "Conspiração",
+        "agenda": "Agenda",
         "asset": "Ativo",
         "enemy": "Inimigo",
         "enemy_location": "Inimigo-Local",
@@ -835,7 +833,7 @@
         "bounties": "Recompensas",
         "brilliance": "Brilho",
         "chances": "Chances",
-        "charges": "Carga",
+        "charges": "Cargas",
         "discoveries": "Descobertas",
         "durability": "Durabilidade",
         "evidence": "Evidências",
@@ -1100,8 +1098,7 @@
           "section_title": "Configurações do conjunto de cartas",
           "selected_cards": "Cartas selecionadas",
           "substitute_chapter_2_with_chapter_1": "Substituir conjunto básico e baralhos de investigador do capítulo 2 pelos equivalentes do capítulo 1",
-          "title": "Conjunto limitado de cartas",
-          "ignore_deck_card_pool": "Ignorar conjunto de cartas do baralho"
+          "title": "Conjunto limitado de cartas"
         },
         "name": "Nome do baralho",
         "sealed": {
@@ -1294,9 +1291,7 @@
         "loading": "Aprimorando baralho",
         "title": "Aprimorar baralho com XP",
         "xp_gained": "XP ganho"
-      },
-      "card_not_in_limited_pool": "As seguintes cartas não fazem parte do conjunto de cartas deste baralho:",
-      "player_cards": "Cartas de investigador"
+      }
     },
     "decklists": {
       "browse": {
