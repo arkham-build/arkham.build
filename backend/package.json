@@ -30,7 +30,7 @@
     "@hono/node-server": "2.1.6",
     "async-mutex": "0.5.0",
     "dbmate": "2.37.0",
-    "hono": "4.13.13",
+    "hono": "4.13.16",
     "kysely": "0.29.7",
     "nodemailer": "10.2.1",
     "pg": "8.23.1",
