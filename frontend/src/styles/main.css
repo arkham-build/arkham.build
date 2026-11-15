@@ -95,6 +95,7 @@
 
     --layout-padding: 0.75rem;
     --layout-max-width: 118rem;
+    --app-viewport-height: 100dvh;
 
     --safe-area-top: env(safe-area-inset-top, 0px);
     --safe-area-right: env(safe-area-inset-right, 0px);
@@ -105,6 +106,13 @@
     --scrollbar-padding: 10px;
 
     --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (display-mode: standalone) {
+    :root {
+      /* iOS can exclude the status bar from the dynamic viewport height. */
+      --app-viewport-height: 100lvh;
+    }
   }
 
   html[data-theme="dark"] {

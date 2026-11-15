@@ -5,7 +5,7 @@
 
   display: grid;
 
-  height: 100dvh;
+  height: var(--app-viewport-height);
   margin-inline: auto;
   max-width: var(--layout-max-width);
   padding-top: var(--safe-area-top);

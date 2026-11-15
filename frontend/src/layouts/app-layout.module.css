@@ -1,7 +1,7 @@
 .layout-inner {
   display: flex;
   flex-flow: column nowrap;
-  min-height: 100dvh;
+  min-height: var(--app-viewport-height);
   margin-inline: auto;
   max-width: var(--layout-max-width);
   padding-top: var(--safe-area-top);
