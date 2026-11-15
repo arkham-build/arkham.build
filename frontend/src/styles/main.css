@@ -109,7 +109,8 @@
     --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* Use a Safari 27+ feature gate for the Home Screen workaround (#494). */
+  /* Keep this check unprefixed; its aliases also match older iOS (#494). */
+  /* autoprefixer: ignore next */
   @supports (-webkit-touch-callout: none) and (height: stretch) {
     @media (display-mode: standalone) {
       :root {

@@ -11,6 +11,8 @@
   container-type: inline-size;
 }
 
+/* Keep this check unprefixed; its aliases also match older iOS (#494). */
+/* autoprefixer: ignore next */
 @supports (-webkit-touch-callout: none) and (height: stretch) {
   @media (display-mode: standalone) {
     .modal {
