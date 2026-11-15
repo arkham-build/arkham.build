@@ -6,7 +6,7 @@
   max-width: var(--layout-max-width);
   padding-top: var(--safe-area-top);
   padding-right: max(var(--layout-padding), var(--safe-area-right));
-  padding-bottom: calc(0.5rem + var(--safe-area-bottom));
+  padding-bottom: calc(0.5rem + var(--layout-safe-area-bottom));
   padding-left: max(var(--layout-padding), var(--safe-area-left));
 }
 
