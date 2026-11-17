@@ -89,6 +89,23 @@
   }
 }
 
+/* Keep this check unprefixed; its aliases also match older iOS (#494). */
+/* autoprefixer: ignore next */
+@supports (-webkit-touch-callout: none) and (height: stretch) {
+  @media (display-mode: standalone) {
+    .layout::before {
+      height: var(--app-viewport-height);
+    }
+
+    .floating {
+      height: calc(
+        var(--app-viewport-height) - 0.5rem - var(--safe-area-top) -
+          var(--layout-safe-area-bottom)
+      );
+    }
+  }
+}
+
 .content {
   grid-area: content;
   contain: size layout style;
