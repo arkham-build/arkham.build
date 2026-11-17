@@ -8,7 +8,6 @@ import {
   JsonDataCampaignSchema,
   type JsonDataCampaignTranslation,
   JsonDataCampaignTranslationSchema,
-  type JsonDataCard,
   type JsonDataCycle,
   type JsonDataEncounterSet,
   JsonDataErrataSchema,
@@ -31,7 +30,7 @@ import { configFromEnv } from "../../../lib/config.ts";
 import { refreshDecklistCardPackMasks } from "../lib/refresh-decklist-card-pack-masks.ts";
 import { resolveCampaignRecords } from "./lib/campaign.ts";
 import { createCanonicalCardPackCodes } from "./lib/card-pack-codes.ts";
-import { mergeTranslations, resolveCards } from "./lib/cards.ts";
+import { resolveCards } from "./lib/cards.ts";
 import { resolveCycles } from "./lib/cycles.ts";
 import { syncDataVersions } from "./lib/data-version.ts";
 import { resolveEncounterSets } from "./lib/encounter-sets.ts";
@@ -49,6 +48,7 @@ import {
 import {
   downloadJsonDataRepo,
   downloadMetadataRepo,
+  getCardDataWithTranslations,
   getJsonData,
   getMetadataWithTranslations,
   withTranslations,
@@ -91,16 +91,11 @@ export async function runIngestJsonData() {
       getLocalDataHash(),
     ]);
 
-    const [packFiles, grimoireFiles] = await Promise.all([
-      readdir(path.join(dir, "pack"), {
-        recursive: true,
-      }).then((files) => files.filter((file) => file.endsWith(".json"))),
-      readdir(path.join(metadataDir, "grimoire"), {
-        recursive: true,
-      })
-        .then((files) => files.filter((file) => file.endsWith(".json")))
-        .catch(() => []),
-    ]);
+    const grimoireFiles = await readdir(path.join(metadataDir, "grimoire"), {
+      recursive: true,
+    })
+      .then((files) => files.filter((file) => file.endsWith(".json")))
+      .catch(() => []);
 
     const grimoireSectionFiles = grimoireFiles.filter(
       (file) => path.parse(file).name === "sections",
@@ -236,12 +231,7 @@ export async function runIngestJsonData() {
         "versions.json",
         JsonDataRulesVersionSchema.array(),
       ),
-      ...packFiles.map((file) =>
-        getMetadataWithTranslations<JsonDataCard>(dir, {
-          locales: config.METADATA_LOCALES,
-          file: `pack/${file}`,
-        }),
-      ),
+      getCardDataWithTranslations(dir, config.METADATA_LOCALES),
     ]).then(
       ([
         factions,
@@ -258,12 +248,10 @@ export async function runIngestJsonData() {
         sourceGrimoireSections,
         sourceGrimoireEntries,
         rulesVersions,
-        ...cardPacks
+        cardData,
       ]) => {
-        const allCardTranslations = mergeTranslations(cardPacks);
-
         const localData = applyLocalData({
-          cards: cardPacks.flatMap((pack) => pack.data),
+          cards: cardData.data,
           cycles: cycles.data,
           encounterSets: encounterSets.data,
           packs: packs.data,
@@ -271,7 +259,7 @@ export async function runIngestJsonData() {
 
         const data = {
           cards: localData.cards.map((card) =>
-            withTranslations(card, allCardTranslations),
+            withTranslations(card, cardData.translations),
           ),
           cycles: localData.cycles.map((cycle) =>
             withTranslations(cycle, cycles.translations),

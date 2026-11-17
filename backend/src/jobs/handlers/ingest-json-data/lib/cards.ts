@@ -1,9 +1,6 @@
 import type { JsonDataCard } from "@arkham-build/shared";
 import type { CardResolution } from "../../../../db/schema.types.ts";
-import type {
-  TranslationTable,
-  WithItemTranslations,
-} from "../../../../lib/json-data.types.ts";
+import type { WithItemTranslations } from "../../../../lib/json-data.types.ts";
 import type { TabooSetWithTranslations } from "./taboo-sets.ts";
 
 type In = WithItemTranslations<JsonDataCard>;
@@ -16,22 +13,6 @@ type Output = {
   cards: Out[];
   cardResolutions: CardResolution[];
 };
-
-type CardPackWithTranslations = {
-  translations: TranslationTable<JsonDataCard>;
-};
-
-export function mergeTranslations(
-  cardPacks: CardPackWithTranslations[],
-): TranslationTable<JsonDataCard> {
-  return cardPacks.reduce((acc, pack) => {
-    for (const [locale, translations] of Object.entries(pack.translations)) {
-      acc[locale] = { ...acc[locale], ...translations };
-    }
-
-    return acc;
-  }, {} as TranslationTable<JsonDataCard>);
-}
 
 export function resolveCards(
   input: In[],

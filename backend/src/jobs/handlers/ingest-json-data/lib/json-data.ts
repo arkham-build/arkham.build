@@ -1,5 +1,6 @@
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
+import { type JsonDataCard, JsonDataCardSchema } from "@arkham-build/shared";
 import type { z } from "zod";
 import type { Config } from "../../../../lib/config.ts";
 import type {
@@ -17,6 +18,56 @@ export function downloadJsonDataRepo(config: Config) {
 
 export function downloadMetadataRepo(config: Config) {
   return downloadRepo(config.INGEST_METADATA_REPO, "metadata");
+}
+
+const cardDataSchema = JsonDataCardSchema.pick({ code: true }).loose().array();
+
+export async function getCardDataWithTranslations(
+  root: string,
+  locales: string[],
+) {
+  const [data, ...translations] = await Promise.all([
+    readCardDirectory(path.join(root, "pack")),
+    ...locales.map(async (locale) => ({
+      locale,
+      translation: await readCardDirectory(
+        path.join(root, "translations", locale, "pack"),
+        true,
+      ),
+    })),
+  ]);
+
+  return {
+    // Duplicate cards receive their source fields in resolveCards.
+    data: data as JsonDataCard[],
+    translations: translationTable<JsonDataCard>(translations),
+  };
+}
+
+async function readCardDirectory(root: string, optional = false) {
+  let files: string[];
+  try {
+    files = await readdir(root, { recursive: true });
+  } catch (error) {
+    if (
+      optional &&
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
+      return [];
+    }
+    throw error;
+  }
+
+  const packs = await Promise.all(
+    files
+      .filter((file) => file.endsWith(".json"))
+      .sort()
+      .map((file) => readSourceData(path.join(root, file), cardDataSchema)),
+  );
+
+  return packs.flat();
 }
 
 type MetadataOptions<
@@ -75,9 +126,10 @@ async function readDataWithTranslations<
   };
 }
 
-function translationTable<SourceItem, TranslationItem extends Coded>(
-  translations: WrappedTranslation<SourceItem, TranslationItem>[],
-) {
+function translationTable<
+  SourceItem,
+  TranslationItem extends Coded = Translatable<SourceItem>,
+>(translations: WrappedTranslation<SourceItem, TranslationItem>[]) {
   const table: TranslationTable<SourceItem, TranslationItem> = {};
 
   for (const { locale, translation } of translations) {
