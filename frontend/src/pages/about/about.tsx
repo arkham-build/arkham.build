@@ -116,6 +116,10 @@ function About() {
             {t("about.hall_of_fame.translation.zh")}:{" "}
             <strong>泡菜大王(@Ruikoto)</strong>
           </li>
+          <li>
+            {t("about.hall_of_fame.translation.pt")}:{" "}
+            <strong>@gustavo-serra</strong>
+          </li>
         </ul>
         <h2>{t("about.image_credits.title")}</h2>
         <ul>

@@ -21,6 +21,7 @@ export const LOCALES: Record<string, Locale> = {
   fr: { value: "fr", label: "Français (fr)" },
   ko: { value: "ko", label: "한국어/Korean (ko)", unicode: true },
   pl: { value: "pl", label: "Polski (pl)" },
+  pt: { value: "pt", label: "Português (pt)" },
   ru: { value: "ru", label: "Русский (ru)", unicode: true },
   "zh-cn": {
     value: "zh-cn",

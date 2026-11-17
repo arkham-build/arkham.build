@@ -141,6 +141,7 @@ function CardView() {
                         <i className="icon-cards" />
                         {t("card_view.actions.usable_by", {
                           prefix: "",
+                          suffix: "",
                           name: displayAttribute(
                             cardWithRelations.card,
                             "name",
@@ -157,6 +158,7 @@ function CardView() {
                           <i className="icon-cards" />
                           {t("card_view.actions.usable_by", {
                             prefix: `${t("common.parallel")} `,
+                            suffix: ` ${t("common.parallel").toLowerCase()}`,
                             name: displayAttribute(
                               cardWithRelations.card,
                               "name",
