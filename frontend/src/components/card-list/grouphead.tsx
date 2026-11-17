@@ -27,7 +27,7 @@ export function Grouphead(props: Props) {
       {keys.map((key, i) => {
         const type = types[i];
 
-        if (type === "slot" && !keys.includes("asset")) {
+        if (type === "slot" && key !== "permanent" && !keys.includes("asset")) {
           return null;
         }
 
