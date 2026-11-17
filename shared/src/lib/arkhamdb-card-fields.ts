@@ -6,9 +6,9 @@ import type {
 
 const DeckSizeSchema = z
   .string()
-  .regex(/^\d+$/)
+  .regex(/^-?\d+$/)
   .transform(Number)
-  .pipe(z.number().int().nonnegative());
+  .pipe(z.number().int());
 
 const FieldValueSchema = z.string().trim().min(1);
 

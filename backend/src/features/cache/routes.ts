@@ -29,7 +29,7 @@ import {
 
 const router = new Hono<HonoEnv>();
 
-const METADATA_VERSION = 4;
+const METADATA_VERSION = 5;
 
 const responseCaches = new WeakMap<Database, Map<string, ResponseCacheEntry>>();
 
@@ -124,10 +124,10 @@ async function cachedResponse<T>(
     options.locale,
     version.cards_updated_at.valueOf(),
     version.translation_updated_at.valueOf(),
+    METADATA_VERSION,
   ];
 
   if (options.resource !== "cards") {
-    etagParts.push(METADATA_VERSION);
     etagParts.push(STARTER_DECKS_VERSION);
   }
 

@@ -68,6 +68,10 @@ describe("decodeDeckRequirements", () => {
     expect(decodeDeckRequirements(value)).toEqual(expected);
   });
 
+  it.each([-5, -1, 0, 25])("decodes signed deck sizes: %s", (size) => {
+    expect(decodeDeckRequirements(`size:${size}`)).toEqual({ size });
+  });
+
   it("uses the last valid size and card entry", () => {
     expect(
       decodeDeckRequirements(
@@ -84,9 +88,11 @@ describe("decodeDeckRequirements", () => {
     "size:invalid",
     "size:30cards",
     "size:30.5",
-    "size:-1",
+    "size:--1",
+    "size:-1.5",
     "size:Infinity",
     "size:9007199254740992",
+    "size:-9007199254740992",
     "random:",
     "random:subtype",
     "random:subtype:",
