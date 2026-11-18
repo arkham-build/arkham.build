@@ -16,7 +16,12 @@ export function canAttach(card: Card, definition: Attachments) {
       filterAttribute(attributeFilter)(card),
     ) ?? true;
 
-  return definition.code !== card.code && traitsMatch && filtersMatch;
+  return (
+    definition.code !== card.code &&
+    traitsMatch &&
+    filtersMatch &&
+    !card.permanent
+  );
 }
 
 function attachmentLimit(card: Card, quantityInDeck: number) {
