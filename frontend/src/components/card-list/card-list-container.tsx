@@ -19,6 +19,7 @@ import css from "./card-list-container.module.css";
 import { CardlistCount } from "./card-list-count";
 import { CardListNav } from "./card-list-nav";
 import { CardSearch } from "./card-search";
+import { PreviewCardsEmptyState } from "./preview-cards-empty-state";
 import type { CardListProps } from "./types";
 
 const LIST_SCAN_MAX_COLUMNS_KEY = "list-scan-max-columns";
@@ -29,11 +30,13 @@ const LIST_SCAN_MAX_COLUMNS_DEFAULT = 6;
 interface Props extends CardListProps {
   ref?: React.Ref<HTMLDivElement>;
   topContent?: React.ReactNode;
+  hasPreviewContent?: boolean;
 }
 
 export function CardListContainer(props: Props) {
   const {
     className,
+    hasPreviewContent,
     showPackQuantities,
     slotLeft,
     slotRight,
@@ -46,6 +49,7 @@ export function CardListContainer(props: Props) {
   const ctx = useResolvedDeck();
 
   const search = useStore(selectActiveListSearch);
+  const showPreviews = useStore((state) => state.settings.showPreviews);
   const metadata = useStore(selectMetadata);
   const data = useStore((state) =>
     selectListCards(state, ctx.resolvedDeck, targetDeck, showPackQuantities),
@@ -125,6 +129,9 @@ export function CardListContainer(props: Props) {
     }
   };
 
+  const showPreviewPlaceholder =
+    data && hasPreviewContent && !showPreviews && data.cards.length === 0;
+
   return (
     <CenterLayout
       className={className}
@@ -152,47 +159,51 @@ export function CardListContainer(props: Props) {
           scanMaxColumns={scanMaxColumns}
           viewMode={listDisplay.viewMode}
         />
-        {data && (
-          <>
-            {listDisplay.viewMode === "scans" && (
-              <CardGrid
-                {...rest}
-                data={data}
-                defaultFlipped={list.defaultFlipped}
-                getListCardProps={getListCardProps}
-                listDisplay={listDisplay}
-                metadata={metadata}
-                resolvedDeck={ctx.resolvedDeck}
-                scanMaxColumns={scanMaxColumns}
-                search={search}
-              />
-            )}
-            {listDisplay.viewMode === "scans-grouped" && (
-              <CardGridGrouped
-                {...rest}
-                data={data}
-                defaultFlipped={list.defaultFlipped}
-                getListCardProps={getListCardProps}
-                listDisplay={listDisplay}
-                metadata={metadata}
-                resolvedDeck={ctx.resolvedDeck}
-                scanMaxColumns={scanMaxColumns}
-                search={search}
-              />
-            )}
-            {listDisplay.viewMode !== "scans" &&
-              listDisplay.viewMode !== "scans-grouped" && (
-                <CardList
+        {showPreviewPlaceholder ? (
+          <PreviewCardsEmptyState />
+        ) : (
+          data && (
+            <>
+              {listDisplay.viewMode === "scans" && (
+                <CardGrid
                   {...rest}
                   data={data}
+                  defaultFlipped={list.defaultFlipped}
                   getListCardProps={getListCardProps}
                   listDisplay={listDisplay}
                   metadata={metadata}
                   resolvedDeck={ctx.resolvedDeck}
+                  scanMaxColumns={scanMaxColumns}
                   search={search}
                 />
               )}
-          </>
+              {listDisplay.viewMode === "scans-grouped" && (
+                <CardGridGrouped
+                  {...rest}
+                  data={data}
+                  defaultFlipped={list.defaultFlipped}
+                  getListCardProps={getListCardProps}
+                  listDisplay={listDisplay}
+                  metadata={metadata}
+                  resolvedDeck={ctx.resolvedDeck}
+                  scanMaxColumns={scanMaxColumns}
+                  search={search}
+                />
+              )}
+              {listDisplay.viewMode !== "scans" &&
+                listDisplay.viewMode !== "scans-grouped" && (
+                  <CardList
+                    {...rest}
+                    data={data}
+                    getListCardProps={getListCardProps}
+                    listDisplay={listDisplay}
+                    metadata={metadata}
+                    resolvedDeck={ctx.resolvedDeck}
+                    search={search}
+                  />
+                )}
+            </>
+          )
         )}
         <Footer className={css["footer"]} />
       </div>

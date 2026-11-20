@@ -4,7 +4,7 @@ import { PageTitle } from "@/components/ui/page-title";
 import { useTabUrlState } from "@/components/ui/tabs.hooks";
 import { ListLayout } from "@/layouts/list-layout";
 import { useStore } from "@/store";
-import { selectIsInitialized } from "@/store/selectors/shared";
+import { selectIsInitialized, selectMetadata } from "@/store/selectors/shared";
 import { useTemporaryList } from "@/utils/use-temporary-list";
 import { type ChapterTab, SetTree } from "./set-tree";
 import { selectInitialChapterTab } from "./set-tree.lib";
@@ -21,6 +21,20 @@ export function BrowseWithFilter(props: Props) {
   const { filterCode: activeCode, filterKey, listKeyPrefix, title } = props;
 
   const isInitalized = useStore(selectIsInitialized);
+
+  const hasPreviewContent = useStore((store) => {
+    const metadata = selectMetadata(store);
+
+    const packCode =
+      filterKey === "cycle"
+        ? undefined
+        : filterKey === "pack"
+          ? activeCode
+          : metadata.encounterSets?.[activeCode]?.pack_code;
+
+    if (!packCode) return false;
+    return metadata.packs[packCode]?.preview ?? false;
+  });
 
   const listReady = useTemporaryList(
     `${listKeyPrefix}-${activeCode}`,
@@ -66,7 +80,13 @@ export function BrowseWithFilter(props: Props) {
         }
         sidebarWidthMax="var(--sidebar-width-one-col)"
       >
-        {(props) => <CardListContainer {...props} showPackQuantities />}
+        {(props) => (
+          <CardListContainer
+            {...props}
+            showPackQuantities
+            hasPreviewContent={hasPreviewContent}
+          />
+        )}
       </ListLayout>
     </>
   );

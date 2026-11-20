@@ -7,6 +7,7 @@ export const JsonDataPackSchema = z.object({
   date_release: z.iso.date().nullish(),
   name: z.string(),
   position: z.number(),
+  preview: z.boolean().nullish(),
   size: z.number().nullish(),
   reprint_type: z.enum(["campaign", "player", "rcore"]).nullish(),
   reprint_packs: z.array(z.string()).nullish(),
@@ -19,7 +20,6 @@ export const PackSchema = JsonDataPackSchema.extend({
   icon_url: z.string().nullish(),
   name: z.string().nullish(),
   official: z.boolean().nullish(),
-  preview: z.boolean().nullish(),
   real_name: z.string(),
 });
 

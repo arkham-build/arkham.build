@@ -97,6 +97,13 @@ function ScenarioContent({
   scenario: ScenarioData;
 }) {
   const { t } = useTranslation();
+  const hasPreviewContent = useStore((state) => {
+    const metadata = selectMetadata(state);
+    return scenario.encounter_sets.some(({ code }) => {
+      const packCode = metadata.encounterSets[code]?.pack_code;
+      return packCode != null && !!metadata.packs[packCode]?.preview;
+    });
+  });
   const listReady = useTemporaryList(
     `scenario-${scenario.code}`,
     {
@@ -135,6 +142,7 @@ function ScenarioContent({
     <CardModalProvider>
       <ListLayoutContextProvider>
         <ListLayoutNoSidebar
+          hasPreviewContent={hasPreviewContent}
           showPackQuantities
           headerActions={
             (originalGuide || guide) && (

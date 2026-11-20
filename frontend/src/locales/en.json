@@ -1577,6 +1577,11 @@
         "subtype": "Subtype",
         "type": "Type"
       },
+      "empty_previews": {
+        "description": "Previews are hidden in your collection settings. Enable them to view this content.",
+        "enable": "Enable previews",
+        "title": "Preview cards hidden"
+      },
       "group_by": "Group by",
       "nav": {
         "card_count_hidden": "({{count}} filtered)",

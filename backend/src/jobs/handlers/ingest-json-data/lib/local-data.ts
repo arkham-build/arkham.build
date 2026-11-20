@@ -1,14 +1,18 @@
-import type {
-  JsonDataCard,
-  JsonDataCycle,
-  JsonDataEncounterSet,
-  JsonDataPack,
+import {
+  type JsonDataCard,
+  type JsonDataCycle,
+  JsonDataCycleSchema,
+  type JsonDataPack,
+  JsonDataPackSchema,
 } from "@arkham-build/shared";
 import localCardData from "../../../../data/card-patches/index.ts";
 import localCycles from "../../../../data/cycles.json" with { type: "json" };
 import localEncounterSets from "../../../../data/encounter_sets.json" with { type: "json" };
 import localPacks from "../../../../data/packs.json" with { type: "json" };
-import type { IngestEncounterSet } from "./encounter-sets.ts";
+import {
+  type IngestEncounterSet,
+  IngestEncounterSetSchema,
+} from "./encounter-sets.ts";
 
 type LocalCard = JsonDataCard & {
   code: string;
@@ -57,22 +61,20 @@ function applyLocalCards(cards: JsonDataCard[]) {
 function applyLocalCycles(cycles: JsonDataCycle[]) {
   const merged = new Map(cycles.map((cycle) => [cycle.code, cycle]));
 
-  for (const cycle of localCycles) {
-    merged.set((cycle as JsonDataCycle).code, normalizeLocalCycle(cycle));
+  for (const cycle of JsonDataCycleSchema.array().parse(localCycles)) {
+    merged.set(cycle.code, cycle);
   }
 
   return Array.from(merged.values());
 }
 
 function applyLocalEncounterSets(encounterSets: IngestEncounterSet[]) {
-  const merged = new Map<string, IngestEncounterSet>();
+  const merged = new Map(encounterSets.map((set) => [set.code, set]));
 
-  for (const encounterSet of encounterSets) {
+  for (const encounterSet of IngestEncounterSetSchema.array().parse(
+    localEncounterSets,
+  )) {
     merged.set(encounterSet.code, encounterSet);
-  }
-
-  for (const encounterSet of localEncounterSets) {
-    merged.set((encounterSet as JsonDataEncounterSet).code, encounterSet);
   }
 
   return Array.from(merged.values());
@@ -87,8 +89,8 @@ function applyLocalPacks(packs: JsonDataPack[]) {
     rcore.reprint_packs = ["core"];
   }
 
-  for (const pack of localPacks) {
-    merged.set((pack as JsonDataPack).code, normalizeLocalPack(pack));
+  for (const pack of JsonDataPackSchema.array().parse(localPacks)) {
+    merged.set(pack.code, pack);
   }
 
   return Array.from(merged.values());
@@ -96,18 +98,4 @@ function applyLocalPacks(packs: JsonDataPack[]) {
 
 function stripPatch({ patch, ...card }: LocalCard) {
   return card;
-}
-
-function normalizeLocalCycle({
-  preview,
-  ...cycle
-}: JsonDataCycle & { preview?: boolean }): JsonDataCycle {
-  return cycle;
-}
-
-function normalizeLocalPack({
-  preview,
-  ...pack
-}: JsonDataPack & { preview?: boolean }): JsonDataPack {
-  return pack;
 }

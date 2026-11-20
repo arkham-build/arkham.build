@@ -1,8 +1,15 @@
-import type { JsonDataCard, JsonDataEncounterSet } from "@arkham-build/shared";
+import {
+  type JsonDataCard,
+  type JsonDataEncounterSet,
+  JsonDataEncounterSetSchema,
+} from "@arkham-build/shared";
+import { z } from "zod";
 
-export type IngestEncounterSet = JsonDataEncounterSet & {
-  pack_code?: string;
-};
+export const IngestEncounterSetSchema = JsonDataEncounterSetSchema.extend({
+  pack_code: z.string().optional(),
+});
+
+export type IngestEncounterSet = z.infer<typeof IngestEncounterSetSchema>;
 
 export function resolveEncounterSets(
   encounterSets: readonly IngestEncounterSet[],

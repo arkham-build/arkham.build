@@ -1,0 +1,28 @@
+.scroller {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.content {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  gap: 1rem;
+  margin-block: auto;
+  padding: 2rem 1rem;
+}
+
+.content > * {
+  text-align: center;
+}
+
+.description {
+  max-width: 32rem;
+  color: var(--palette-4);
+}
+
+.icon {
+  display: inline-block;
+  font-size: var(--icon-3xl);
+  color: var(--palette-4);
+}

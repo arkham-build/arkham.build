@@ -506,6 +506,7 @@ export interface Pack {
   date_release: Timestamp | null;
   name: string;
   position: number;
+  preview: Generated<boolean | null>;
   reprint_packs: string[] | null;
   reprint_type: string | null;
   size: number | null;

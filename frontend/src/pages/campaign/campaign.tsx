@@ -56,12 +56,21 @@ function Campaign() {
       resolveEncounterSetCycleCode(encounterSetCode, metadata),
   );
 
+  const hasPreviewContent = [
+    ...campaignEncounterSets,
+    ...scenarios.flatMap((scenario) => scenario.encounter_sets),
+  ].some(({ code }) => {
+    const packCode = metadata.encounterSets[code]?.pack_code;
+    return packCode != null && !!metadata.packs[packCode]?.preview;
+  });
+
   return (
     <CampaignCards
       campaign={campaign}
       cardCodes={cardCodes}
       encounterSetOrder={encounterSetOrder}
       firstScenario={scenarios.at(0)}
+      hasPreviewContent={hasPreviewContent}
       originalCampaign={originalCampaign}
     />
   );
@@ -72,12 +81,14 @@ function CampaignCards({
   cardCodes,
   encounterSetOrder,
   firstScenario,
+  hasPreviewContent,
   originalCampaign,
 }: {
   campaign: CampaignData;
   cardCodes: ReadonlySet<string>;
   encounterSetOrder: readonly string[];
   firstScenario: Scenario | undefined;
+  hasPreviewContent: boolean;
   originalCampaign: CampaignData | undefined;
 }) {
   const { t } = useTranslation();
@@ -120,6 +131,7 @@ function CampaignCards({
     <CardModalProvider>
       <ListLayoutContextProvider>
         <ListLayoutNoSidebar
+          hasPreviewContent={hasPreviewContent}
           showPackQuantities
           headerActions={
             (originalGuide || guide) && (
