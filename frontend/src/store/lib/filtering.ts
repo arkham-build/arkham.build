@@ -1186,7 +1186,13 @@ function parseOption(
     try {
       const parsed = buildQlInterpeter.evaluate(parse(option.buildql_query));
       parsed({} as Card); // test for runtime errors
-      optionFilter.push(parsed);
+      optionFilter.push((card) => {
+        try {
+          return parsed(card);
+        } catch {
+          return false;
+        }
+      });
     } catch (err) {
       console.warn(err);
     }
