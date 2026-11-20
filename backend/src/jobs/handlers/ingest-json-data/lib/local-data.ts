@@ -1,6 +1,7 @@
 import type {
   JsonDataCard,
   JsonDataCycle,
+  JsonDataEncounterSet,
   JsonDataPack,
 } from "@arkham-build/shared";
 import localCardData from "../../../../data/card-patches/index.ts";
@@ -71,7 +72,7 @@ function applyLocalEncounterSets(encounterSets: IngestEncounterSet[]) {
   }
 
   for (const encounterSet of localEncounterSets) {
-    merged.set(encounterSet.code, encounterSet);
+    merged.set((encounterSet as JsonDataEncounterSet).code, encounterSet);
   }
 
   return Array.from(merged.values());
