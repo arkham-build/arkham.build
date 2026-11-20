@@ -1298,6 +1298,7 @@ function makePlayerCardsFilter(
       (card: Card) => {
         return (
           !!card.encounter_code &&
+          card.xp == null &&
           !!card.deck_limit &&
           !card.double_sided &&
           // some fan-made permanents have non-player backs
