@@ -462,7 +462,10 @@ function validateSlots(
 
     const card = slotEntry.card;
 
-    const isStoryAsset = card.encounter_code && card.faction_code === "neutral";
+    const isStoryAsset =
+      card.encounter_code &&
+      card.faction_code === "neutral" &&
+      !isRewardCard(card);
     if (isStoryAsset || quantity === 0) {
       continue;
     }
