@@ -242,6 +242,7 @@ export function numericalIcon(num: string | number | null | undefined) {
   if (num === -2) return "icon-x";
   if (num === -3) return "icon-star";
   if (num === -4) return "x-icon-question-mark";
+  if (num === -5) return "icon-numNull";
   return `icon-num${num}`;
 }
 
