@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { tooltipTransitionStyles } from "../ui/transition-styles";
 import { CardTooltip } from "./card-tooltip";
+import css from "./card-tooltip.module.css";
 
 export function useCardLinkTooltip() {
   const [cardTooltip, setCardTooltip] = useState<string>("");
@@ -97,10 +98,7 @@ export function useCardLinkTooltip() {
 
   const cardLinkTooltip = isMounted && cardTooltip && (
     <FloatingPortal id={FLOATING_PORTAL_ID}>
-      <div
-        ref={setFloating}
-        style={{ ...floatingStyles, pointerEvents: "none" }}
-      >
+      <div className={css["floating"]} ref={setFloating} style={floatingStyles}>
         <div style={transitionStyles}>
           <CardTooltip code={cardTooltip} />
         </div>

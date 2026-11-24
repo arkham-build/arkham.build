@@ -1,9 +1,12 @@
+.floating {
+  z-index: 80;
+  pointer-events: none;
+}
+
 /* TODO: clean this up with a variant / props. */
 .tooltip {
   width: max(24rem, 33.333dvw);
   max-width: 32rem;
-
-  z-index: 80;
 
   @media screen and (max-width: 36rem) {
     display: none;
