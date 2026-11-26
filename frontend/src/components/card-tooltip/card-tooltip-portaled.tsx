@@ -2,6 +2,7 @@ import type { Card } from "@arkham-build/shared";
 import { FloatingPortal } from "@floating-ui/react";
 import { FLOATING_PORTAL_ID } from "@/utils/constants";
 import { CardTooltip } from "./card-tooltip";
+import css from "./card-tooltip.module.css";
 
 type Props = {
   card: Card;
@@ -16,7 +17,7 @@ export function PortaledCardTooltip(props: Props) {
 
   return (
     <FloatingPortal id={FLOATING_PORTAL_ID}>
-      <div ref={ref} style={floatingStyles}>
+      <div className={css["floating"]} ref={ref} style={floatingStyles}>
         <div style={transitionStyles}>
           {tooltip ?? <CardTooltip code={card.code} />}
         </div>
