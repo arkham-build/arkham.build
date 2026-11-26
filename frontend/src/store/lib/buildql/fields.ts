@@ -17,6 +17,7 @@ import {
   isSpecialist,
   splitCommaSeparatedValue,
   splitMultiValue,
+  cardLimit,
 } from "@/utils/card-utils";
 import { displayPackName } from "@/utils/formatting";
 import type {
@@ -111,7 +112,7 @@ const fieldDefinitions: FieldDefinition[] = [
   },
   {
     aliases: ["dl", "limit"],
-    lookup: backResolver((card) => card.deck_limit ?? null),
+    lookup: backResolver((card) => cardLimit(card) ?? null),
     name: "deck_limit",
     type: "number",
   },

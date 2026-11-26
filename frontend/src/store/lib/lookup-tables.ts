@@ -4,7 +4,7 @@ import {
   type Settings,
 } from "@arkham-build/shared";
 import { applyTaboo } from "@/store/lib/card-edits";
-import { cardUses, splitMultiValue } from "@/utils/card-utils";
+import { cardLimit, cardUses, splitMultiValue } from "@/utils/card-utils";
 import {
   ACTION_TEXT_ENTRIES,
   REGEX_BONDED,
@@ -237,7 +237,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
 
     if (
       card.type_code === "investigator" &&
-      card.deck_limit &&
+      cardLimit(card) &&
       !card.duplicate_of_code &&
       !card.alt_art_investigator &&
       !card.alternate_of_code &&
@@ -302,7 +302,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
             !requiredCardCodes.has(card.code) &&
             !card.duplicate_of_code &&
             // Kate has bonded cards restricted to her, these should not be part of the deck.
-            card.deck_limit
+            cardLimit(card)
           ) {
             setInLookupTable(card.code, tables.relations.requiredCards, key);
           }
@@ -398,7 +398,7 @@ function createRelations(metadata: Metadata, tables: LookupTables) {
     // Index multi-class investigators.
     if (
       card.type_code === "investigator" &&
-      card.deck_limit &&
+      cardLimit(card) &&
       investigatorsByName[card.real_name]?.length > 1
     ) {
       for (const investigator of investigatorsByName[card.real_name]) {

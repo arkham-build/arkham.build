@@ -64,7 +64,7 @@ export function cardBackType(card: Card): CardBackType {
 
   if (
     card.faction_code === "mythos" ||
-    (card.encounter_code && !card.deck_limit)
+    (card.encounter_code && !cardLimit(card))
   ) {
     return "encounter";
   }
@@ -173,8 +173,11 @@ export function isSpecialist(c: Card) {
   return Array.isArray(c.restrictions?.trait) && !isEmpty(c.restrictions.trait);
 }
 
-export function cardLimit(card: Card, limitOverride?: number) {
-  return limitOverride ?? card.deck_limit ?? 0;
+export function cardLimit(card?: Card, limitOverride?: number) {
+  if (!card) return 0;
+  return (
+    limitOverride ?? (card.type_code === "key" ? 1 : (card.deck_limit ?? 0))
+  );
 }
 
 export function cardUses(card: Card) {

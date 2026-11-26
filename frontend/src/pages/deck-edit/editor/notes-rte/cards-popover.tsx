@@ -30,6 +30,7 @@ import {
   type CardOrigin,
   useNotesRichTextEditorContext,
 } from "./notes-rte-context";
+import { cardLimit } from "@/utils/card-utils";
 
 const emptySelection: Card[] = [];
 
@@ -192,7 +193,7 @@ function selectCardOptions(
   } else if (origin === "campaign") {
     const filterRelevantEncounterCards = (card: Card) =>
       !!card.subtype_code || // weaknesses
-      !!card.deck_limit || // story assets
+      !!cardLimit(card) || // story assets
       card.faction_code === "neutral" ||
       ["asset", "enemy", "treachery"].includes(card.type_code);
 

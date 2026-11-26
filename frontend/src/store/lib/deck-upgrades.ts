@@ -5,7 +5,7 @@ import {
   realCardLevel,
   SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
-import { splitMultiValue } from "@/utils/card-utils";
+import { cardLimit, splitMultiValue } from "@/utils/card-utils";
 import { range } from "@/utils/range";
 import type { Customization, ResolvedDeck } from "./types";
 
@@ -652,7 +652,7 @@ function countFreeLevel0Cards(
           }
 
           // check if upgrade reduced limit by name and compensate.
-          const deckLimit = card.deck_limit ?? 0;
+          const deckLimit = cardLimit(card) ?? 0;
           if (deckLimit <= 1) {
             const cardName = canonicalCardName(card);
             const nextLimits = limitQuantitiesByName(next)[cardName];
@@ -774,14 +774,14 @@ function limitQuantitiesByName(deck: ResolvedDeck) {
       if (!acc[name]) {
         acc[name] = {
           quantity,
-          limit: card.deck_limit ?? 0,
+          limit: cardLimit(card),
         };
 
         return acc;
       }
 
       acc[name].quantity += quantity;
-      acc[name].limit = Math.min(acc[name].limit, card.deck_limit ?? 0);
+      acc[name].limit = Math.min(acc[name].limit, cardLimit(card));
 
       return acc;
     },

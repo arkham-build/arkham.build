@@ -20,6 +20,7 @@ import type { StoreState } from "@/store/slices";
 import { assert } from "@/utils/assert";
 import { and } from "@/utils/fp";
 import { isEmpty } from "@/utils/is-empty";
+import { cardLimit } from "@/utils/card-utils";
 
 export const selectDependencies = createStructuredSelector({
   defaultContentType: (state: StoreState) =>
@@ -65,7 +66,7 @@ export const selectAvailableUpgrades = createSelector(
 
     const filters = [
       filterDuplicates,
-      (c: Card) => c.deck_limit !== 0,
+      (c: Card) => !!cardLimit(c),
       filterLevel({ range: [1, 5] }, buildQlInterpreter, lookupTables, {
         checkEffectiveLevel: false,
         investigator: suzi,

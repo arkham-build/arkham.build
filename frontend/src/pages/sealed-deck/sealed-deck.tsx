@@ -13,7 +13,7 @@ import { useStore } from "@/store";
 import { filterSealedPool, getSealedCardQuantity } from "@/store/lib/filtering";
 import { selectLookupTables, selectMetadata } from "@/store/selectors/shared";
 import { ApiError } from "@/store/services/requests/shared";
-import { isStaticInvestigator } from "@/utils/card-utils";
+import { cardLimit, isStaticInvestigator } from "@/utils/card-utils";
 import { useTemporaryList } from "@/utils/use-temporary-list";
 import { ErrorStatus } from "../errors/404";
 
@@ -65,10 +65,7 @@ function SealedDeckBrowser(props: {
         const card = metadata.cards[code];
 
         if (quantity > 0) {
-          result[code] = Math.min(
-            quantity,
-            card?.deck_limit ?? Number.MAX_SAFE_INTEGER,
-          );
+          result[code] = Math.min(quantity, cardLimit(card));
         }
 
         return result;

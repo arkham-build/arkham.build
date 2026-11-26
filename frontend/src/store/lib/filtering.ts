@@ -14,6 +14,7 @@ import {
   SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
 import {
+  cardLimit,
   cardUses,
   isSpecialist,
   official,
@@ -1305,10 +1306,8 @@ function makePlayerCardsFilter(
         return (
           !!card.encounter_code &&
           card.xp == null &&
-          !!card.deck_limit &&
+          !!cardLimit(card) &&
           !card.double_sided &&
-          // some fan-made permanents have non-player backs
-          (!card.back_link_id || !!card.permanent) &&
           card.faction_code !== "mythos"
         );
       },

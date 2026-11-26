@@ -1,6 +1,10 @@
 import type { ApiCard, Card } from "@arkham-build/shared";
 import type { Metadata } from "@/store/slices/metadata.types";
-import { displayAttribute, splitMultiValue } from "@/utils/card-utils";
+import {
+  cardLimit,
+  displayAttribute,
+  splitMultiValue,
+} from "@/utils/card-utils";
 import i18n from "@/utils/i18n";
 import type { Customizations } from "./types";
 
@@ -214,9 +218,9 @@ export function applyTaboo(
 
       // infer updated deck limit from exceptional taboo
       if (key === "exceptional") {
-        nextCard.deck_limit = value ? 1 : card.deck_limit;
+        nextCard.deck_limit = value ? 1 : cardLimit(card);
         nextCard.original ??= {};
-        nextCard.original["deck_limit"] = card.deck_limit;
+        nextCard.original["deck_limit"] = cardLimit(card);
       }
     }
   }

@@ -52,6 +52,7 @@ import type {
   SkillIconsFilter,
   SubtypeFilter,
 } from "./lists.types";
+import { cardLimit } from "@/utils/card-utils";
 
 const SYSTEM_FILTERS: Filter[] = [
   filterBacksides,
@@ -60,7 +61,7 @@ const SYSTEM_FILTERS: Filter[] = [
   // Bonded investigators
   (card: Card) =>
     card.type_code !== "investigator" ||
-    !!card.deck_limit ||
+    !!cardLimit(card) ||
     !!card.encounter_code,
 ];
 

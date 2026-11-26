@@ -120,7 +120,7 @@ export function basicWeaknessPoolForDeck(
       return acc;
     }
 
-    const availableCopies = Math.min(ownedCount, card.deck_limit ?? 0);
+    const availableCopies = Math.min(ownedCount, cardLimit(card));
     const codes = Array.from(
       {
         length: options.equalProbability

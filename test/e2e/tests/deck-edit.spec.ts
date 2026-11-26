@@ -489,6 +489,40 @@ test.describe("deck edit", () => {
     ).toContainText("1");
   });
 
+  test("add and remove a campaign Key", async ({ page }) => {
+    await importDeckFromFile(page, "validation/base_case.json", {
+      navigate: "edit",
+    });
+    await page.getByTestId("card-type-encounter").click();
+    await fillSearch(page, "The Eye of Ravens");
+
+    const listCard = page
+      .getByTestId("card-list-scroller")
+      .getByTestId("listcard-09519a");
+    await listCard.getByTestId("quantity-increment").click();
+    await expect(listCard.getByTestId("quantity-increment")).toBeDisabled();
+    await assertEditorDeckQuantity(page, "09519a", 1);
+    await expect(page.getByTestId("listcard-09519b")).not.toBeVisible();
+    await expect(page.getByTestId("decklist-validation")).not.toBeVisible();
+
+    await listCard.getByTestId("listcard-title").click();
+    const modalQuantity = page.getByTestId("card-modal-quantities-main");
+    await expect(
+      modalQuantity.getByTestId("quantity-increment"),
+    ).toBeDisabled();
+    await modalQuantity.getByTestId("quantity-decrement").click();
+    await expect(modalQuantity.getByTestId("quantity-value")).toHaveText("0");
+    await modalQuantity.getByTestId("quantity-increment").click();
+    await expect(
+      modalQuantity.getByTestId("quantity-increment"),
+    ).toBeDisabled();
+    await page.locator("body").press("Escape");
+
+    await page.getByTestId("editor-save").click();
+    await page.getByTestId("view-edit").click();
+    await assertEditorDeckQuantity(page, "09519a", 1);
+  });
+
   test("add advanced signature", async ({ page }) => {
     await importDeckFromFile(page, "validation/honed_instinct.json", {
       navigate: "edit",

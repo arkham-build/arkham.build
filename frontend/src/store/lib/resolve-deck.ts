@@ -5,7 +5,11 @@ import {
   type DeckMeta,
   SPECIAL_CARD_CODES,
 } from "@arkham-build/shared";
-import { decodeExileSlots, splitMultiValue } from "@/utils/card-utils";
+import {
+  cardLimit,
+  decodeExileSlots,
+  splitMultiValue,
+} from "@/utils/card-utils";
 import i18n from "@/utils/i18n";
 import { isEmpty } from "@/utils/is-empty";
 import type { StoreState } from "../slices";
@@ -287,13 +291,13 @@ export function getDeckLimitOverride(
   card: Card,
 ): number | undefined {
   const code = card.code;
-  const deckLimit = card.deck_limit ?? Number.MAX_SAFE_INTEGER;
+  const deckLimit = cardLimit(card);
 
   const sealed = deck?.sealedDeck?.cards;
   if (!sealed) return undefined;
 
   if (card.xp == null && code !== SPECIAL_CARD_CODES.RANDOM_BASIC_WEAKNESS) {
-    return card.deck_limit ?? card.quantity ?? undefined;
+    return cardLimit(card) ?? card.quantity ?? undefined;
   }
 
   let sealedTotal = sealed[code] ?? 0;

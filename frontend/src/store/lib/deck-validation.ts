@@ -656,7 +656,7 @@ class DeckRequiredCardsValidator implements SlotValidator {
     const errors = Object.entries(requirementCounts).reduce<
       DeckRequirementsNotMetError[]
     >((acc, [code, quantity]) => {
-      let requiredCount = this.cards[code]?.deck_limit ?? 1;
+      let requiredCount = cardLimit(this.cards[code]) || 1;
       let mode = "loose";
 
       if (
@@ -1095,7 +1095,7 @@ class SideDeckLimitsValidator implements SlotValidator {
       const card = this.cards[i];
       const quantity = this.quantities[i];
 
-      const limit = this.limitOverride ?? card.deck_limit ?? 0;
+      const limit = cardLimit(card, this.limitOverride);
 
       if (quantity > limit && card.xp != null) {
         errors.push({

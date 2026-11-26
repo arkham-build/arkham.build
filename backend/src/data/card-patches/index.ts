@@ -7,6 +7,7 @@ import cardBackTypes from "./card-back-types.json" with { type: "json" };
 import gameBeginAttributes from "./game-begin-attributes.json" with { type: "json" };
 import hiddenFixes from "./hidden-fixes.json" with { type: "json" };
 import investigatorDuplicates from "./investigator-duplicates.json" with { type: "json" };
+import miscFixes from "./misc-fixes.json" with { type: "json" };
 import missingTags from "./missing-tags.json" with { type: "json" };
 import perInvestigatorAttributes from "./per-investigator-attributes.json" with { type: "json" };
 import playerCardDeckOptions from "./player-card-deck-options.json" with { type: "json" };
@@ -22,6 +23,7 @@ export default [
   ...gameBeginAttributes,
   ...hiddenFixes,
   ...investigatorDuplicates,
+  ...miscFixes,
   ...missingTags,
   ...perInvestigatorAttributes,
   ...playerCardDeckOptions,
