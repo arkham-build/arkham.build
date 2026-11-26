@@ -53,6 +53,8 @@ export function AddRandomBasicWeakness(props: Props) {
     () => !deps.settings.useLimitedPoolForWeaknessDraw,
   );
   const [equalProbability, setEqualProbability] = useState(false);
+  const [excludeMultiplayerOnly, setExcludeMultiplayerOnly] = useState(false);
+  const [excludeCampaignOnly, setExcludeCampaignOnly] = useState(false);
   const [requiredTraits, setRequiredTraits] = useState<string[]>([]);
 
   const weaknessPool = basicWeaknessPoolForDeck(
@@ -60,7 +62,7 @@ export function AddRandomBasicWeakness(props: Props) {
     deps.lookupTables,
     deps.settings,
     deck,
-    { ignoreDeckCardPool },
+    { ignoreDeckCardPool, excludeMultiplayerOnly, excludeCampaignOnly },
   );
 
   const traitOptions = getTraitOptions(
@@ -74,6 +76,8 @@ export function AddRandomBasicWeakness(props: Props) {
 
   const weaknessOptions = {
     equalProbability,
+    excludeMultiplayerOnly,
+    excludeCampaignOnly,
     ignoreDeckCardPool,
     requiredTraits: selectedTraits.map((trait) => trait.code),
   };
@@ -137,6 +141,18 @@ export function AddRandomBasicWeakness(props: Props) {
           data-testid="random-basic-weakness-equal-probability"
           label={t("deck.tools.random_basic_weakness.equal_probability")}
           onCheckedChange={setEqualProbability}
+        />
+        <Checkbox
+          checked={excludeMultiplayerOnly}
+          data-testid="random-basic-weakness-exclude-multiplayer-only"
+          label={t("deck.tools.random_basic_weakness.exclude_multiplayer_only")}
+          onCheckedChange={setExcludeMultiplayerOnly}
+        />
+        <Checkbox
+          checked={excludeCampaignOnly}
+          data-testid="random-basic-weakness-exclude-campaign-only"
+          label={t("deck.tools.random_basic_weakness.exclude_campaign_only")}
+          onCheckedChange={setExcludeCampaignOnly}
         />
         <Field className={css["trait-field"]}>
           <Combobox

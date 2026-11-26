@@ -14,6 +14,8 @@ import type { ResolvedDeck } from "./types";
 
 export type RandomBasicWeaknessOptions = {
   equalProbability?: boolean;
+  excludeMultiplayerOnly?: boolean;
+  excludeCampaignOnly?: boolean;
   ignoreDeckCardPool?: boolean;
   requiredTraits?: readonly string[];
 };
@@ -89,6 +91,10 @@ export function basicWeaknessPoolForDeck(
       !!card.duplicate_of_code ||
       ownedCount === 0 ||
       deck.slots[code] >= cardLimit(card) ||
+      (options.excludeMultiplayerOnly &&
+        /multiplayer only\./i.test(card.real_text ?? "")) ||
+      (options.excludeCampaignOnly &&
+        /campaign mode only\./i.test(card.real_text ?? "")) ||
       (requiredTraits.length > 0 &&
         !splitMultiValue(card.real_traits).some((trait) =>
           requiredTraits.includes(trait),

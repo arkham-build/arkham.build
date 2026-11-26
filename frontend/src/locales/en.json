@@ -966,6 +966,8 @@
           "add": "Add random basic weakness",
           "draft": "Draft random basic weakness",
           "equal_probability": "Use equal probability for each weakness",
+          "exclude_campaign_only": "Exclude campaign-only weaknesses",
+          "exclude_multiplayer_only": "Exclude multiplayer-only weaknesses",
           "ignore_deck_card_pool": "Ignore deck card pool",
           "replace_random_basic_weakness": "Replace random basic weakness placeholder",
           "require_trait": "Require trait (1 of n)",

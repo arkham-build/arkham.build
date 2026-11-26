@@ -304,6 +304,74 @@ test.describe("deck edit", () => {
     );
   });
 
+  for (const { pack, packName, exclusion, otherExclusion, codes } of [
+    {
+      pack: "tdep",
+      packName: "The Dream-Eaters",
+      exclusion: "multiplayer-only",
+      otherExclusion: "campaign-only",
+      codes: ["06035", "06036", "06037", "06038"],
+    },
+    {
+      pack: "rtptc",
+      packName: "Return to the Path to Carcosa",
+      exclusion: "campaign-only",
+      otherExclusion: "multiplayer-only",
+      codes: ["52011", "52012", "52013"],
+    },
+  ]) {
+    test(`exclude ${exclusion} weaknesses from deck tools`, async ({
+      page,
+    }) => {
+      await page.goto("/deck/create/01001");
+      await page.getByTestId("create-save").click();
+      await page.getByTestId("editor-tab-config").click();
+      await page.getByTestId("combobox-input").click();
+      await page.getByTestId("combobox-input").fill(packName);
+      await page.getByTestId(`combobox-menu-item-${pack}`).click();
+      await page.getByTestId("editor-tools").click();
+
+      const draftButton = page.getByTestId("draft-basic-weakness-tool");
+      const checkbox = page.getByRole("checkbox", {
+        name: `Exclude ${exclusion} weaknesses`,
+        exact: true,
+      });
+      const otherCheckbox = page.getByRole("checkbox", {
+        name: `Exclude ${otherExclusion} weaknesses`,
+        exact: true,
+      });
+      await expect(checkbox).not.toBeChecked();
+      await expect(otherCheckbox).not.toBeChecked();
+      await expect(draftButton).toBeEnabled();
+
+      await page
+        .getByTestId(`random-basic-weakness-exclude-${otherExclusion}`)
+        .click();
+      await expect(otherCheckbox).toBeChecked();
+      await expect(draftButton).toBeEnabled();
+      await page
+        .getByTestId(`random-basic-weakness-exclude-${exclusion}`)
+        .click();
+      await expect(checkbox).toBeChecked();
+      await expect(draftButton).toBeDisabled();
+      await page.getByTestId("add-random-basic-weakness").click();
+      await expect(page.getByTestId("toast")).toContainText(
+        "Too few random basic weaknesses",
+      );
+
+      await page
+        .getByTestId(`random-basic-weakness-exclude-${exclusion}`)
+        .click();
+      await expect(checkbox).not.toBeChecked();
+      await expect(draftButton).toBeEnabled();
+      await draftButton.click();
+      await expect(page.getByTestId("drafted-weakness")).toHaveCount(3);
+      for (const weakness of await page.getByTestId("drafted-weakness").all()) {
+        expect(codes).toContain(await weakness.getAttribute("data-code"));
+      }
+    });
+  }
+
   test("draft random basic weakness", async ({ page }) => {
     await page.goto("/deck/create/01001");
     await page.getByTestId("create-save").click();
