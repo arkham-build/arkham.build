@@ -164,7 +164,7 @@
     },
     "card_scenarios": {
       "standalone": "独立冒险",
-      "title": "使用 <em>{{name}}</em> 的场景",
+      "title": "使用 <em>{{name}}</em> 的剧本",
       "tooltip": "{{name}} <em>({{campaignName}})</em>"
     },
     "card_view": {
@@ -941,6 +941,8 @@
           "add": "添加随机基础弱点",
           "draft": "轮抽随机基础弱点",
           "equal_probability": "让每个弱点的抽取概率相同",
+          "exclude_campaign_only": "排除剧本模式专用弱点",
+          "exclude_multiplayer_only": "排除多人游戏专用弱点",
           "ignore_deck_card_pool": "忽略卡组卡牌池",
           "replace_random_basic_weakness": "替换随机基础弱点占位卡",
           "require_trait": "要求特性",
@@ -1115,7 +1117,7 @@
         "cancel_button": "取消",
         "choice_title": "选择并禁用一个弱点",
         "confirm_button": "确认",
-        "explanation_body": "这是一条常用村规，相较于完全随机地抽取基本弱点，玩家会拥有更多的控制权。首先随机抽取三个基本弱点，玩家可以禁用其中一个，然后从剩下的两个弱点中随机选择一个加入卡组。",
+        "explanation_body": "这是一条常用村规，相较于完全随机地抽取基础弱点，玩家会拥有更多的控制权。首先随机抽取三个基础弱点，玩家可以禁用其中一个，然后从剩下的两个弱点中随机选择一个加入卡组。",
         "explanation_title": "说明",
         "title": "抽取随机基础弱点（3禁1）",
         "too_few_rbw": "用于随机抽取的基础弱点数量太少。"
